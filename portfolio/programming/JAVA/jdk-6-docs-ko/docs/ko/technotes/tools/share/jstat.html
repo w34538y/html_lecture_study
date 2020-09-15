@@ -1,0 +1,1165 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+<link rel="stylesheet" href="../../css/tools.css"  type="text/css" />
+<title>jstat - Java 가상 머신 통계 데이터 감시 툴 - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+<h1>jstat - Java 가상 머신 통계 데이터 감시 툴</h1>
+
+  <ul>
+<li><a href="#synopsis">형식</a> </li>
+
+<li><a href="#parameters">파라미터</a> </li>
+
+<li><a href="#description">설명</a> </li>
+
+<li><a href="#vmidentifier">가상 머신 식별자</a> </li>
+
+<li><a href="#options">옵션</a> <br /> &nbsp;&nbsp; - <a href="#general_options">일반적인 옵션</a> <br /> &nbsp;&nbsp; - <a href="#output_options">출력 옵션</a> </li>
+
+<li><a href="#examples">례</a> </li>
+
+<li><a href="#seealso">관련 항목</a> </li>
+  </ul>
+
+<h2><a name="synopsis">형식</a> </h2>
+<blockquote>
+<pre>
+<b>jstat</b> [ <i>generalOption</i> | <i>outputOptions</i> <i>vmid</i> [<i>interval</i>[s|ms] [<i>count</i>]] ]
+</pre>
+</blockquote>
+<h2><a name="parameters"/>파라미터</h2>
+<blockquote>
+
+  <dl>
+<dt><code><a href=     "#general_options"><i>generalOption</i></a> </code></dt>
+
+<dd>단독으로 사용하는 일반적인 커멘드행 옵션입니다 (-help, -options, 또는 -version). </dd>
+
+    <dd><a href="#output_options"></a> </dd>
+
+<dt><code><i>outputOptions</i></code></dt>
+
+<dd>단일의 <i>statOption</i> 와-t, -h, 및 -J 옵션의 어느쪽이든을 조합한, 1 개(살) 또는 복수의 출력 옵션입니다. </dd>
+
+    <dd><a href="#vmidentifier"></a> </dd>
+
+<dt><code><i>vmid</i></code></dt>
+
+    <dd>
+타겟의 Java 가상 머신 (JVM)을 나타내는 캐릭터 라인인 가상 머신 식별자입니다. 일반적인 구문은 다음과 같이 됩니다.
+      <pre>
+[<i>protocol</i>:][//]<b><i>lvmid</i></b>[@<i>hostname</i>[:<i>port</i>]/<i>servername</i>]
+</pre>vmid 캐릭터 라인의 구문의 대부분은, URI 의 구문에 대응하고 있습니다. <i>vmid</i> 는, 로컬 JVM 를 나타내는 단순한 정수로부터, 통신 프로토콜, 포트 번호, 및 다른 구현 고유의 값을 나타내는 복잡한 구조까지, 여러가지로 다릅니다. 자세한 것은,<a href="#vmidentifier">「가상 머신 식별자」</a>를 참조해 주세요.
+    </dd>
+
+<dt><code><i>interval</i>[s|ms]</code></dt>
+
+<dd>초 (s) 또는 밀리 세컨드 (ms)중  지정한 단위에서의 샘플링 간격입니다. 디폴트의 단위는 밀리 세컨드입니다. &nbsp;정의 정수가 아니면 안됩니다. &nbsp;이것이 지정되었을 경우,<b>jstat</b> 는 interval 마다 출력을 생성합니다. </dd>
+
+<dt><code><i>count</i></code></dt>
+
+<dd>표시하는 샘플수입니다. 디폴트 값는 무한합니다.  즉,<b>jstat</b> 는, 타겟 JVM 가 종료될 때까지, 또는 <b>jstat</b> 커멘드가 종료할 때까지, 통계 데이터를 표시합니다.  정의 정수치를 사용할 필요가 있습니다. </dd>
+  </dl>
+</blockquote>
+<h2><a name="description"/> 설명</h2>
+<blockquote>
+<p><b>jstat</b> 툴은, 설치되어 있는 HotSpot Java 가상 머신 (JVM)의 퍼포먼스 통계 데이터를 표시합니다. 타겟 JVM 는, 가상 머신 식별자, 즉 아래와 같은 <a href=   "#vmidoption"><i>vmid</i></a>  옵션에 의해 식별됩니다. </p>
+
+<p><b>주 - </b>이 유틸리티는 지원 대상외이며, 장래의 JDK 의 버젼에서는 이용할 수 없게 될 가능성이 있습니다. 현재, Windows 98 및 Windows Me 플랫폼에서는 사용할 수 없습니다. <br /></p>
+</blockquote>
+<h3><a name="vmidentifier"/><a name="vmidoption"/>가상 머신 식별자</h3>
+<blockquote>
+<p><i>vmid</i> 캐릭터 라인의 구문의 대부분은, URI 의 구문에 대응하고 있습니다. </p>
+  <pre>
+[<i>protocol</i>:][//]<b><i>lvmid</i></b>[@<i>hostname</i>][:<i>port</i>][/<i>servername</i>]
+</pre>
+
+  <dl>
+<dt><i><a name="protocol"><code>protocol</code></a> </i></dt>
+
+<dd>통신 프로토콜입니다. <i>protocol</i> 가 생략 되어<i>hostname</i> 가 지정되어 있지 않은 경우, 디폴트의 프로토콜이, 플랫폼 고유의 최적화된 로컬 프로토콜이 됩니다. <i>protocol</i> 가 생략 되어<i>hostname</i> 가 지정되고 있는 경우는, 디폴트 프로토콜은 <b>rmi</b> 가 됩니다. </dd>
+
+<dt><i><a name="lvmid"><code>lvmid</code></a> </i></dt>
+
+<dd>타겟 JVM 의 로컬 가상 머신 식별자입니다. <i>lvmid</i> 는, 시스템상의 JVM 를 일의에 식별하는 플랫폼 고유의 값입니다. <i>lvmid</i> 는, 가상 머신 식별자의 유일한 필수 요소입니다. <i>lvmid</i> 는, 절대라고 하는 것은 아닙니다만, 일반적으로는 타겟 JVM 프로세스에 대한  operating system의 프로세스 식별자입니다. <a href="jps.html"><b>jps</b></a>  커멘드를 사용해,<i>lvmid</i> 를 지정할 수 있습니다. 또, Unix 플랫폼에서는<b>ps</b> 커멘드를 사용해, Windows 에서는 Windows 태스크 매니저-를 사용해,<i>lvmid</i> 를 지정할 수 있습니다. </dd>
+
+<dt><i><a name="hostname"><code>hostname</code></a> </i></dt>
+
+<dd>타겟 호스트를 나타내는 호스트명 또는 IP 주소입니다. <i>hostname</i> 가 생략 되고 있는 경우는, 타겟 호스트는 로컬 호스트가 됩니다. </dd>
+
+<dt><i><a name="port"><code>port</code></a> </i></dt>
+
+<dd>원격 서버-와 통신하기 위한 디폴트 포트입니다. <i>hostname</i> 가 생략 되고 있는지,<i>protocol</i> 로 최적화된 로컬 프로토콜이 지정되고 있는 경우,<i>port</i> 는 무시됩니다. 그렇지 않으면,<i>port</i> 파라미터의 취급은, 구현에 따라서 다릅니다. 디폴트의 <b>rmi</b> 프로토콜의 경우,<i>port</i> 는, 원격 호스트상의 rmiregistry 의 포트 번호를 나타냅니다. <i>port</i> 가 생략 되어<i>protocol</i> 로 <b>rmi</b> 가 지정되고 있는 경우, 디폴트의 rmiregistry 포트 (1099)가 사용됩니다. </dd>
+
+<dt><i><a name=     "servername"><code>servername</code></a> </i></dt>
+
+<dd>이 파라미터의 취급은, 구현에 따라서 다릅니다. 최적화된 로컬 프로토콜의 경우, 이 필드는 무시됩니다. <b>rmi</b> 프로토콜의 경우는, 이 파라미터는, 원격 호스트상의 RMI 자원 객체의 이름을 나타냅니다. </dd>
+  </dl>
+</blockquote>
+<h2><a name="options">옵션</a> </h2>
+<blockquote>
+<p><b>jstat</b> 커멘드는,<a href="#general_options">일반적인 옵션</a>과<a href=   "#output_options">출력 옵션</a>의 2 개의 타입의 옵션을 지원하고 있습니다. 일반적인 옵션을 사용했을 경우,<b>jstat</b> 는 간단한 사용율 및 버젼 정보를 표시합니다. 출력 옵션에서는, 통계 데이터 출력의 내용과 형식을 지정합니다. <br /></p>
+
+<p><b>주 - </b>모든 옵션과 그 기능은, 장래의 릴리스로 변경 또는 폐지될 가능성이 있습니다. </p>
+
+<h3><a name="general_options"></a> 일반적인 옵션</h3>
+
+<p>몇개의 일반적인 옵션을 지정했을 경우, 다른 옵션 또는 파라미터는 일절 지정할 수 없습니다. </p>
+
+  <dl>
+<dt><b>-help</b></dt>
+
+<dd>헬프 메세지를 표시합니다. </dd>
+
+<dt><b>-version</b></dt>
+
+<dd>버젼 정보를 표시합니다. </dd>
+
+<dt><b>-options</b></dt>
+
+<dd>통계 데이터 옵션을 일람표 가리킵니다. 아래와 같은<a href=     "#output_options">「출력 옵션」</a>시에를 참조해 주세요. </dd>
+  </dl>
+</blockquote>
+<h3><a name="output_options">출력 옵션</a> </h3>
+<blockquote>
+<p>일반적인 옵션을 지정하지 않는 경우에, 출력 옵션을 지정할 수 있습니다. 출력 옵션은,<b>jstat</b> 의 출력의 내용 및 형식을 지정해, 단일의 <i>statOption</i> 와 다른 몇개의 출력 옵션 (-h, -t, 및 -J)으로 구성됩니다. &nbsp;<i> statOption</i> 는 최초로 기술할 필요가 있습니다. </p>
+
+<p>출력은, 각 열이 공백에서 단락지어진 테이블의 형식으로 구성됩니다. 타이틀을 적은 헤더행에, 각 열의 설명이 기록됩니다. <b> -h</b> 옵션을 사용해, 헤더를 표시하는 빈도를 설정합니다. &nbsp; 일반적으로, 열의 헤더명은 옵션이 차이가 나는 경우에서도 일관하고 있습니다. 일반적으로, 2  개의 옵션으로 같은 이름의 열이 사용되고 있으면, 2 개의 열의 데이터 소스는 같게 됩니다. </p>
+
+<p><b>-t</b> 옵션을 사용하면(자),<code>Timestamp</code> 라고 하는 라벨이 붙은 타임 스탬프의 열이, 출력의 최초의 열로서 표시됩니다. <code>Timestamp</code> 열에는, 타겟 JVM 의 기동으로부터의 경과시간이, 초단위로 표시됩니다. 타임 스탬프의 정밀도는, 다양한 요인에 따라서 달라, 대량의 부하가 걸린 시스템에서의 thread 스케줄의 지연에 의해 변동합니다. </p>
+
+<p><i>interval</i> 및 <i>count</i> 파라미터를 사용해,<b>jstat</b> 가 그 출력을 표시하는 빈도와 회수를 각각 지정합니다. </p>
+
+<p><b>주 - </b>장래의 릴리스로 이 형식은 변경될 가능성이 있기 (위해)때문에,<b>jstat</b> 의 출력을 해석하는 스크립트는 작성하지 않는 것을 추천합니다. <b>jstat</b> 출력을 해석하는 스크립트를 작성하는 경우는, 이 툴의 장래의 릴리스로, 그 스크립트를 변경해야 하는 것에 유의해 주세요. </p>
+
+  <dl>
+<dt><b>-<i>statOption</i></b></dt>
+
+    <dd>
+<b>jstat</b> 가 표시하는 통계 데이터 정보를 지정합니다. 다음의 겉(표)에는, 이용 가능한 옵션이 일람표 나타나고 있습니다. 특정의 플랫폼의 인스톨에 대해, 옵션을 일람표시 하려면 , 일반적인 옵션의 <b>-options</b> 를 사용합니다. <br /> <br />
+
+      <table width="681">
+        <tbody>
+          <tr>
+<th align="left">Option</th>
+
+<th align="left">표시 내용</th>
+          </tr>
+
+          <tr>
+<td><a href="#class_option">class</a> </td>
+
+<td>클래스 로더의 동작에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#compiler_option">compiler</a> </td>
+
+<td>HotSpot Just-in-Time 컴파일러의 동작에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#gc_option">gc</a> </td>
+
+<td>가베지 컬렉트된 heap의 동작에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#gccapacity_option">gccapacity</a> </td>
+
+<td>세대마다의 용량과 대응하는 영역에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#gccause_option">gccause</a> </td>
+
+<td>가베지 컬렉션 통계 데이터의 개요 (<b>-gcutil</b> 와 같다)와 직전 및 현재 (적용 가능한 경우)의 가베지 컬렉션 이벤트의 원인</td>
+          </tr>
+
+          <tr>
+<td><a href="#gcnew_option">gcnew</a> </td>
+
+<td>New 세대의 동작에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href=             "#gcnewcapacity_option">gcnewcapacity</a> </td>
+
+<td>New 세대의 사이즈와 대응하는 영역에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#gcold_option">gcold</a> </td>
+
+<td>Old 세대 및 Permanent 세대의 동작에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href=             "#gcoldcapacity_option">gcoldcapacity</a> </td>
+
+<td>Old 세대의 사이즈에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href=             "#gcpermcapacity_option">gcpermcapacity</a> </td>
+
+<td>Permanent 세대의 사이즈에 관한 통계 데이터</td>
+          </tr>
+
+          <tr>
+<td><a href="#gcutil_option">gcutil</a> </td>
+
+<td>가베지 컬렉션 통계 데이터의 개요</td>
+          </tr>
+
+          <tr>
+<td><a href=             "#printcompilation_option">printcompilation</a> </td>
+
+<td>HotSpot 컴파일 방법의 통계 데이터</td>
+          </tr>
+        </tbody>
+      </table>
+    </dd>
+
+<dt><b>-h</b> <i>n</i></dt>
+
+<dd><i>n</i> 샘플 (출력행) 마다 열헤더를 표시.  다만,<i>n</i> 는 정의 정수치. 디폴트 값는 0.  이 때, 데이터의 최초의 행 위에 열헤더가 표시된다</dd>
+
+<dt><b>-t</b> <i>n</i></dt>
+
+<dd>타임 스탬프열을 출력의 최초의 열로서 표시. 타임 스탬프는, 타겟 JVM 의 기동시부터의 경과시간</dd>
+
+<dt><b>-J</b> <i>javaOption</i></dt>
+
+    <dd>
+<i>javaOption</i> 를 <b>java</b> 어플리케이션 기동 툴에 건네준다. 예를 들어,<b>-J-Xms48m</b> 와 지정하면(자), 스타트 업 메모리는 48M 바이트로 설정됩니다. 옵션의 완전한 리스트에 대해서는, 「<a href="../index.html#java">java - Java 어플리케이션 기동 툴</a>」의 문서를 참조해 주세요. </dd>
+  </dl>
+</blockquote>
+<h3><a name="statoption">statOption 와 출력</a> </h3>
+<blockquote>
+<p>이후의 겉(표)에서는,<b>jstat</b> 가 <i>statOption</i> 마다 출력하는 열에 대해 개요를 나타냅니다. <br /></p>
+
+<h3><a name="class_option"></a> -class 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+클래스 로더의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>Loaded</td>
+
+<td>로드 된 클래스의 수</td>
+      </tr>
+
+      <tr>
+<td>Bytes</td>
+
+<td>로드 된 K 바이트수</td>
+      </tr>
+
+      <tr>
+<td>Unloaded</td>
+
+<td>언로드된 클래스의 수</td>
+      </tr>
+
+      <tr>
+<td>Bytes</td>
+
+<td>언로드된 K 바이트수</td>
+      </tr>
+
+      <tr>
+<td>Time</td>
+
+<td>클래스의 로드나 언로드 처리에 필요로 한 시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="compiler_option"></a> -compiler 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+HotSpot Just-In-Time 컴파일러의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>Compiled</td>
+
+<td>실행된 컴파일 태스크의 수</td>
+      </tr>
+
+      <tr>
+<td>Failed</td>
+
+<td>실패한 컴파일 태스크의 수</td>
+      </tr>
+
+      <tr>
+<td>Invalid</td>
+
+<td>무효로 된 컴파일 태스크의 수</td>
+      </tr>
+
+      <tr>
+<td>Time</td>
+
+<td>컴파일 태스크의 실행에 필요로 한 시간</td>
+      </tr>
+
+      <tr>
+<td>FailedType</td>
+
+<td>마지막에 실패한 컴파일의 컴파일 타입</td>
+      </tr>
+
+      <tr>
+<td>FailedMethod</td>
+
+<td>마지막에 실패한 컴파일의 클래스명과 메소드</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gc_option"/>-gc 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+가베지 컬렉트된 heap의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>S0C</td>
+
+<td>Survivor 영역 0 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1C</td>
+
+<td>Survivor 영역 1 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S0U</td>
+
+<td>Survivor 영역 0 의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1U</td>
+
+<td>Survivor 영역 1 의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EC</td>
+
+<td>Eden 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EU</td>
+
+<td>Eden 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OC</td>
+
+<td>Old 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OU</td>
+
+<td>Old 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PC</td>
+
+<td>Permanent 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PU</td>
+
+<td>Permanent 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>YGCT</td>
+
+<td>젊은 세대의 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGCT</td>
+
+<td>풀 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>GCT</td>
+
+<td>가베지 컬렉션총시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gccapacity_option"/>-gccapacity 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+메모리 풀 세대 및 영역 용량
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>NGCMN</td>
+
+<td>New 세대의 최소 용량 (KB) </td>
+      </tr>
+
+      <tr>
+<td>NGCMX </td>
+
+<td>New 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>NGC </td>
+
+<td>New 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S0C</td>
+
+<td>Survivor 영역 0 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1C</td>
+
+<td>Survivor 영역 1 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EC</td>
+
+<td>Eden 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OGCMN</td>
+
+<td>Old 세대의 최소 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OGCMX</td>
+
+<td>Old 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OGC</td>
+
+<td>Old 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OC</td>
+
+<td>Old 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PGCMN</td>
+
+<td>Permanent 세대의 최소 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PGCMX</td>
+
+<td>Permanent 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PGC</td>
+
+<td>Permanent 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PC</td>
+
+<td>Permanent 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gccause_option"/>-gccause 옵션</h3>
+
+<p>이 옵션은,<b>-gcutil</b> 옵션과 같은 가베지 컬렉션 통계 데이터의 개요를 표시합니다만, 마지막 가베지 컬렉션 이벤트와 (적용 가능한 경우는) 현재의 가베지 컬렉션 이벤트의 원인이 포함됩니다. <b>-gcutil</b> 로 일람표 나타나는 열 외에, 이 옵션에서는 다음의 열이 추가됩니다. </p>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+GC 이벤트를 포함한 가베지 컬렉션 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>LGCC</td>
+
+<td>마지막 가베지 컬렉션의 원인<br /></td>
+      </tr>
+
+      <tr>
+<td>GCC</td>
+
+<td>현재의 가베지 컬렉션의 원인<br /></td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcnew_option"/>-gcnew 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+New 세대의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>S0C</td>
+
+<td>Survivor 영역 0 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1C</td>
+
+<td>Survivor 영역 1 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S0U</td>
+
+<td>Survivor 영역 0 의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1U</td>
+
+<td>Survivor 영역 1 의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>TT</td>
+
+<td>전당 들어가 임계치(threshold)</td>
+      </tr>
+
+      <tr>
+<td valign="top">MTT</td>
+
+<td valign="top">최대 전당 들어가 임계치(threshold)</td>
+      </tr>
+
+      <tr>
+<td>DSS</td>
+
+<td>적절한 Survivor 사이즈 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EC</td>
+
+<td>Eden 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EU</td>
+
+<td>Eden 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>YGCT</td>
+
+<td>젊은 세대의 가베지 컬렉션 시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcnewcapacity_option"></a> -gcnewcapacity 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+New 세대 영역 사이즈의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+        <td>
+NGCMN
+        </td>
+
+<td>New 세대의 최소 용량 (KB) <br></td>
+      </tr>
+
+      <tr>
+<td>NGCMX &nbsp;&nbsp;&nbsp;</td>
+
+<td>New 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>NGC &nbsp;&nbsp;&nbsp;</td>
+
+<td>New 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S0CMX</td>
+
+<td>Survivor 영역 0 의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S0C</td>
+
+<td>Survivor 영역 0 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1CMX</td>
+
+<td>Survivor 영역 1 의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>S1C</td>
+
+<td>Survivor 영역 1 의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>ECMX</td>
+
+<td>Eden 영역의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>EC</td>
+
+<td>Eden 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcold_option"/>-gcold 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+Old 및 Permanent 세대의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>PC</td>
+
+<td>Permanent 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PU</td>
+
+<td>Permanent 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OC</td>
+
+<td>Old 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OU</td>
+
+<td>Old 영역의 사용율 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGCT</td>
+
+<td>풀 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>GCT</td>
+
+<td>가베지 컬렉션총시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcoldcapacity_option"/>-gcoldcapacity 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+Old 세대의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>OGCMN</td>
+
+<td>Old 세대의 최소 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OGCMX</td>
+
+<td>Old 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OGC</td>
+
+<td>Old 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>OC</td>
+
+<td>Old 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGCT</td>
+
+<td>풀 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>GCT</td>
+
+<td>가베지 컬렉션총시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcpermcapacity_option"/>-gcpermcapacity 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+Permanent 세대의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>PGCMN</td>
+
+<td>Permanent 세대의 최소 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PGCMX</td>
+
+<td>Permanent 세대의 최대 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PGC</td>
+
+<td>Permanent 세대의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>PC</td>
+
+<td>Permanent 영역의 현재의 용량 (KB)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGCT</td>
+
+<td>풀 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>GCT</td>
+
+<td>가베지 컬렉션총시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="gcutil_option"/>-gcutil 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+가베지 컬렉션 통계 데이터의 개요
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>S0</td>
+
+<td>Survivor 영역 0 의 사용율 (현재의 용량에 대한 퍼센티지)</td>
+      </tr>
+
+      <tr>
+<td>S1</td>
+
+<td>Survivor 영역 1 의 사용율 (현재의 용량에 대한 퍼센티지)</td>
+      </tr>
+
+      <tr>
+<td>E</td>
+
+<td>Eden 영역의 사용율 (현재의 용량에 대한 퍼센티지)</td>
+      </tr>
+
+      <tr>
+<td>O</td>
+
+<td>Old 영역의 사용율 (현재의 용량에 대한 퍼센티지)</td>
+      </tr>
+
+      <tr>
+<td>P</td>
+
+<td>Permanent 영역의 사용율 (현재의 용량에 대한 퍼센티지)</td>
+      </tr>
+
+      <tr>
+<td>YGC</td>
+
+<td>젊은 세대의 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>YGCT</td>
+
+<td>젊은 세대의 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>FGC</td>
+
+<td>풀 GC 이벤트수</td>
+      </tr>
+
+      <tr>
+<td>FGCT</td>
+
+<td>풀 가베지 컬렉션 시간</td>
+      </tr>
+
+      <tr>
+<td>GCT</td>
+
+<td>가베지 컬렉션총시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+<h3><a name="printcompilation_option"/>-printcompilation 옵션</h3>
+
+  <table border="0" width="70%" cellpadding="2" cellspacing="2">
+    <caption>
+HotSpot 컴파일 방법의 통계 데이터
+    </caption>
+
+    <tbody>
+      <tr>
+<th valign="top" align="left">렬</th>
+
+<th valign="top" align="left">설명</th>
+      </tr>
+
+      <tr>
+<td>Compiled</td>
+
+<td>실행된 컴파일 태스크의 수</td>
+      </tr>
+
+      <tr>
+<td>사이즈</td>
+
+<td>메소드의 바이트 코드의 바이트수</td>
+      </tr>
+
+      <tr>
+<td>형</td>
+
+<td>컴파일 타입</td>
+      </tr>
+
+      <tr>
+<td>메소드</td>
+
+<td>컴파일 방법을 특정하는 클래스명과 메소드명. 클래스명에서는, 이름 공간의 단락 문자로서 「.」(은)는 아니고 「/」이 사용된다. 메소드명은, 지정된 클래스내의 메소드이다. 이러한 2 개의 필드의 형식은, HotSpot - <b>XX:+PrintComplation</b> 옵션과 대응하고 있다</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><a name="gc_option"/></h3>
+
+  <h2><a name="examples"/></h2>
+
+<p>이 항에서는, 21891 의 <i>lvmid</i> 를 가지는 로컬 JVM 를 감시하는 예를 나타냅니다. </p>
+
+<h3><a name="gcutil-option-example"><b>gcutil</b> 옵션의 사용</a> </h3>
+
+<p>이 예는,<i>lvmid</i> 21891 에 접속해, 250 밀리 세컨드 간격으로 7 개의 샘플을 취득해,<b>-gcutil</b> 옵션에서의 지정에 따라 출력을 표시합니다. </p>
+  <pre>
+<b>jstat -gcutil 21891 250 7</b><br />
+  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT<br />
+ 12.44   0.00  27.20   9.49  96.70    78    0.176     5    0.495    0.672<br />
+ 12.44   0.00  62.16   9.49  96.70    78    0.176     5    0.495    0.672<br />
+ 12.44   0.00  83.97   9.49  96.70    78    0.176     5    0.495    0.672<br />
+  0.00   7.74   0.00   9.51  96.70    79    0.177     5    0.495    0.673<br />
+  0.00   7.74  23.37   9.51  96.70    79    0.177     5    0.495    0.673<br />
+  0.00   7.74  43.82   9.51  96.70    79    0.177     5    0.495    0.673<br />
+  0.00   7.74  58.11   9.51  96.71    79    0.177     5    0.495    0.673<br />
+</pre>
+
+<p>이 예의 출력은, 젊은 세대의 컬렉션이 3 번째와 4 번째의 샘플간에 행해진 것을 나타내고 있습니다. 컬렉션에는 0.001 초 걸리고 있어 객체가 Eden 영역 (E)으로부터 Old 영역 (O)에 승격했기 때문에, Old 영역의 사용율은 9.49% 에서 9.51% 에 증가하고 있습니다. Survivor 영역은, 컬렉션전은 12.44% 가 사용되고 있었습니다만, 컬렉션 후는 7.74% 밖에 사용되고 있지 않습니다. </p>
+
+<h3><a name="gcnew-option-repeatheader-example">열헤더 캐릭터 라인의 반복</a> </h3>
+
+<p>이 예는,<i>lvmid</i> 21891 에 접속해, 250 밀리 세컨드 간격으로 샘플을 취득해,<b>-gcutil</b> 옵션에서의 지정에 따라 출력을 표시합니다. 게다가<b>-h3</b> 옵션을 사용해, 데이터가 3 행 표시될 때 마다 열헤더를 출력합니다. </p>
+  <pre>
+<b>jstat -gcnew -h3 21891 250</b><br />
+ S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT<br />
+  64.0   64.0    0.0   31.7 31  31   32.0    512.0    178.6    249    0.203<br />
+  64.0   64.0    0.0   31.7 31  31   32.0    512.0    355.5    249    0.203<br />
+  64.0   64.0   35.4    0.0  2  31   32.0    512.0     21.9    250    0.204<br />
+ S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT<br />
+  64.0   64.0   35.4    0.0  2  31   32.0    512.0    245.9    250    0.204<br />
+  64.0   64.0   35.4    0.0  2  31   32.0    512.0    421.1    250    0.204<br />
+  64.0   64.0    0.0   19.0 31  31   32.0    512.0     84.4    251    0.204<br />
+ S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT<br />
+  64.0   64.0    0.0   19.0 31  31   32.0    512.0    306.7    251    0.204<br />
+</pre>
+
+<p>이 예에서는, 헤더 캐릭터 라인의 반복을 볼 수 있는 것 외에도, 2 번째와 3 번째의 샘플간에 Young GC 를 한 것을 알 수 있습니다. 이 계속 시간은 0.001 초였습니다. 이 컬렉션에서는, Survivor 영역 0 의 사용율 (S0U)이 적절한 Survivor 사이즈 (DSS)를 초과하게 되는 라이브 데이터가 검출되었습니다. 이 결과, 객체는, Old 세대 (이 출력에는 비표시)에 승격되어 전당 들어가 임계치(threshold) (TT)가, 31 에서 2 에 격하되었습니다. </p>
+
+<p>다른 컬렉션이, 5 번째와 6 번째의 샘플간에 행해지고 있습니다. 이 컬렉션에서는, Survivor 를 거의 보지 못하고, 전당 들어가 임계치(threshold)를 31 에 되돌렸습니다. </p>
+
+<h3><a name="timestamp-example">샘플마다의 타임 스탬프의 삽입</a> </h3>
+
+<p>이 예는,<i>lvmid</i> 21891 에 접속해, 250 밀리 세컨드 간격으로 3 개의 샘플을 취득하고 있습니다. <b>-t</b> 옵션을 사용해, 최초의 열에 샘플마다의 타임 스탬프를 표시하고 있습니다. </p>
+  <pre>
+<b>jstat -gcoldcapacity -t 21891 250 3</b><br />
+Timestamp          OGCMN        OGCMX         OGC           OC       YGC   FGC    FGCT    GCT<br />
+          150.1       1408.0      60544.0      11696.0      11696.0   194    80    2.874   3.799<br />
+          150.4       1408.0      60544.0      13820.0      13820.0   194    81    2.938   3.863<br />
+          150.7       1408.0      60544.0      13820.0      13820.0   194    81    2.938   3.863<br />
+</pre>
+
+<p><code>Timestamp</code> 열에는, 타겟 JVM 의 기동시부터의 경과시간이, 초단위로 리포트되고 있습니다. 게다가<b>-gcoldcapacity</b> 출력으로는, 할당 요구 또는 승격 요구 혹은 그 양쪽 모두를 채우기 위해서(때문에) heap가 확장할 때 마다, Old 세대의 용량 (OGC)과 Old 영역의 용량 (OC)이 증가하고 있는 것을 알 수 있습니다. Old 세대의 용량 (OGC)은, 81 번째의 풀 GC (FGC) 후에, 11696 KB 에서 13820 KB 에 증가하고 있습니다. Old 세대 ( 및 영역)의 최대 용량은, 60544 KB (OGCMX)이므로, 아직 확장할 수 있을 여유가 남아 있습니다. </p>
+
+<h3><a name="monitor-remote">원격 JVM 의 Instrumentation의 감시</a> </h3>
+
+<p>이 예는,<b>-gcutil</b> 옵션을 사용해,<i>remote.domain</i> 라고 하는 시스템상의 <i>lvmid</i> 40496 에 접속해, 샘플을 초단위로 무기한으로 취득하고 있습니다. </p>
+  <pre>
+<b>jstat -gcutil 40496@remote.domain 1000</b><br />
+... <i>output omitted</i><br />
+</pre>
+
+<p><i>lvmid</i> 는, 원격 호스트의 이름과 결합되어,<i>40496@remote.domain</i> 의 <i>vmid</i> 를 구성해 있습니다. 결과적으로, 이 <i>vmid</i> 는,<b>rmi</b> 프로토콜을 사용해, 원격 호스트상의 디폴트의 <b>jstatd</b> 서버와 통신합니다. <b>jstatd</b> 서버는,<b>rmiregistry</b> 를 사용해, 디폴트의 <b>rmiregistry</b> 포트 (포트 1099)에 바인드 된 <i>remote.domain</i> 에 배치. </p>
+</blockquote>
+<h2><a name="seealso">관련 항목</a> </h2>
+
+  <ul>
+<li>「<a href="../index.html#java">java</a>  - Java 어플리케이션 기동 툴」</li>
+
+<li>「<a href="jps.html">jps</a>  - Java 가상 머신 프로세스 상태 툴」</li>
+
+<li>「<a href="jstatd.html">jstatd</a>  - 가상 머신 jstat demon」</li>
+
+<li>「<a href="../index.html#rmiregistry">rmiregistry</a>  - Java 원격 객체 레지스트리」</li>
+  </ul>
+  <hr/>
+
+  <table border="0" width="100%">
+    <tbody>
+      <tr valign="top">
+        <td>
+<p><a href=           "../../../legal/SMICopyright.html">Copyright</a>  &#169; 2003 - 2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+        </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"         alt="Sun" width="64" height="30" /><br /> <i> Java Software </i></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

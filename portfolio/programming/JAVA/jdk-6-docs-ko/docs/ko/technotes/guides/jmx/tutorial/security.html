@@ -1,0 +1,595 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:54:25" />
+<title>시큐리티  - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="tutorialTOC.html" />
+    <link rel="Previous" href="lookup.html" />
+    <link rel="Next" href="" />
+    <link rel="Index" href="security.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table summary="layout" id="layout" width="100%">
+      <tr><td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="lookup.html">전의 항목</a>  | 다음의 항목
+        </td>
+		<td align="right"><i>Java Management Extensions (JMX) 테크놀러지의 튜토리얼</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp874"> </a> <h2 class="pChapNum">
+제 5 장
+</h2>
+<a name="wp997030"> </a> <h2 class="pChapTitle">
+시큐리티 
+</h2>
+<a name="wp996730"> </a> <p class="pBody">
+이 장에서는, JMX 테크놀러지의 시큐리티 기능의 설정 방법법의 예를, 다음의 섹션내에서 설명합니다.
+</p>
+<ul class="pBullet1"><a name="wp1003791"> </a> <div class="pBullet1"><li><a  href="security.html#wp997044"><span style="color: #3366CC">「5.1 간단한 시큐리티」</span></a> 에서는, 패스워드 인증과 파일 액세스 제어에 근거한 간단한 시큐리티를 구현하는, 연결기의 예를 나타냅니다. </li></div>
+<a name="wp1003792"> </a> <div class="pBullet1Plus"><li><a  href="security.html#wp997056"><span style="color: #3366CC">「5.2 주체 위양」</span></a> 에서는, 특정의 인증된 접속으로 조작을 실행하는 경우에, 복수가 다른 ID 대신에 주체 위양 모델을 사용하는 연결기의 예를 나타냅니다. </li></div>
+<a name="wp1009581"> </a> <div class="pBullet1Last"><li><a  href="security.html#wp997065"><span style="color: #3366CC">「5.3 상세한 시큐리티」</span></a> 에서는, 개개의 조작을 실행하는 권한이 제어되는, 보다 고도의 시큐리티 기구를 구현하는 연결기의 예를 나타냅니다. </li></div>
+</ul>
+<a name="wp997044"> </a> <h2 class="pHeading1">
+5.1	간단한 시큐리티
+</h2>
+<a name="wp1027581"> </a> <p class="pBody">
+JMX 테크놀러지를 사용해 구현할 수 있는 가장 간단한 시큐리티는, 암호화, 사용자명과 사용자 패스워드의 인증, 및 파일 액세스 제어에 근거하는 것입니다.  
+</p>
+<a name="wp997047"> </a> <h3 class="pHeading2">
+5.1. 1	간단한 시큐리티를 사용한 RMI 연결기 
+</h3>
+<a name="wp997112"> </a> <p class="pBody">
+간단한 시큐리티를 사용한 RMI 연결기의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Security/simple</code> 내에 있습니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997117"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples</code><code class="cCode">/Security/simple</code> 디렉토리를 엽니다. <b class="cBold"></b></li>
+<a name="wp997119"> </a> <p class="pBody">
+이 디렉토리내에, 다음의 디렉토리가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp1073624"> </a> <div class="pBullet1"><li><code class="cCode">/server</code>.  파일 <code class="cCode">Server.java</code> 를 거두고 있습니다. </li></div>
+<a name="wp1003828"> </a> <div class="pBullet1Plus"><li><code class="cCode">/config</code>.  시큐리티 설정 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1003829"> </a> <div class="pBullet2"><li><code class="cCode">access.properties</code></li></div>
+<a name="wp1003830"> </a> <div class="pBullet2Plus"><li><code class="cCode">keystore</code></li></div>
+<a name="wp1003833"> </a> <div class="pBullet2Plus"><li><code class="cCode">password.properties</code></li></div>
+<a name="wp1003831"> </a> <div class="pBullet2Last"><li><code class="cCode">truststore</code></li></div>
+</ul>
+<a name="wp1003832"> </a> <div class="pBullet1Plus"><li><code class="cCode">/mbeans</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1003834"> </a> <div class="pBullet2"><li><code class="cCode">SimpleStandardMBean.java</code></li></div>
+<a name="wp1003835"> </a> <div class="pBullet2Last"><li><code class="cCode">SimpleStandard.java</code></li></div>
+</ul>
+<a name="wp1003836"> </a> <div class="pBullet1Plus"><li><code class="cCode">/client</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1003837"> </a> <div class="pBullet2"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1003838"> </a> <div class="pBullet2LastEnd"><li><code class="cCode">ClientListener.java</code></li></div>
+</ul>
+</ul><a name="wp1000178"> </a> <li>텍스트 문자 편집기로,<code class="cCode">*. java</code> 와 <code class="cCode">*. properties</code> 의 모든 파일을 엽니다. </li>
+<a name="wp1003839"> </a> <p class="pListEndingPara">이러한 파일에 대해, 이후시에로 분석합니다. </p>
+</ol>
+<a name="wp997331"> </a> <h4 class="pHeading3">
+5.1. 1.1	Server.java
+</h4>
+<a name="wp997178"> </a> <p class="pBody">
+<code class="cCode">Server.java</code> 클래스를<a  href="security.html#wp1003992">코드예&#160;5-1</a>  에 나타냅니다.
+</p>
+<a name="wp1003992"> </a> <div class="pCodeCaption">
+코드예&#160;5-1	RMI 연결기의 예제 (간단한 시큐리티) 클래스 Server.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1003998"> </a> 
+public class Server {<a name="wp1005694"> </a> 
+<a name="wp1005695"> </a> 
+  public static void main(String[] args) {<a name="wp1005696"> </a> 
+  try {<a name="wp1005697"> </a> 
+       MBeanServer mbs = MBeanServerFactory.createMBeanServer();<a name="wp1005698"> </a> 
+<a name="wp1005699"> </a> 
+       HashMap env = new HashMap();<a name="wp1005700"> </a> 
+<a name="wp1005701"> </a> 
+       <span class="cUserType">SslRMIClientSocketFactory</span><b class="cBold"> csf =</b> <a name="wp1005702"> </a> 
+                  <b class="cBold">new SslRMIClientSocketFactory()</b>;<a name="wp1070825"> </a> 
+       <span class="cUserType">Ssl</span><b class="cBold">RMIServerSocketFactory ssf =</b> <a name="wp1070826"> </a> 
+                  <b class="cBold">new SslRMIServerSocketFactory()</b>;<a name="wp1070827"> </a> 
+       env.put(RMIConnectorServer. <a name="wp1005706"> </a> 
+                  RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, csf);<a name="wp1005707"> </a> 
+       env.put(RMIConnectorServer. <a name="wp1005708"> </a> 
+                  RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);<a name="wp1005709"> </a> 
+<a name="wp1005710"> </a> 
+       <b class="cBold">env.put(&quot;jmx.remote.x.password.file&quot;,</b><a name="wp1005711"> </a> 
+<b class="cBold">                 &quot;config&quot; + File.separator + &quot;password.properties&quot;)</b>;<a name="wp1005712"> </a> 
+       <b class="cBold">env.put(&quot;jmx.remote.x.access.file&quot;,</b><a name="wp1005713"> </a> 
+<b class="cBold">                 &quot;config&quot; + File.separator + &quot;access.properties&quot;)</b>;<a name="wp1005714"> </a> 
+<a name="wp1005715"> </a> 
+       JMXServiceURL url = new JMXServiceURL(<a name="wp1005716"> </a> 
+        &quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);<a name="wp1005717"> </a> 
+         JMXConnectorServer cs =<a name="wp1005718"> </a> 
+            JMXConnectorServerFactory.newJMXConnectorServer(url, <a name="wp1005719"> </a> 
+                                                            env, <a name="wp1005720"> </a> 
+                                                            mbs);<a name="wp1005721"> </a> 
+       cs.start();<a name="wp1005722"> </a> 
+     } catch (Exception e) {<a name="wp1005723"> </a> 
+       e.printStackTrace();<a name="wp1005724"> </a> 
+     }<a name="wp1005725"> </a> 
+  }<a name="wp1005726"> </a> 
+}<a name="wp1004191"> </a> 
+<a name="wp1004196"> </a> 
+</pre></div>
+<a name="wp1004153"> </a> <p class="pBody">
+<a  href="security.html#wp1003992">코드예&#160;5-1</a>  에 나타내는 <code class="cCode">Server</code> 클래스는, MBean 서버 <code class="cCode">mbs</code> 를 작성해, 환경 맵 <code class="cCode">env</code> 에 시큐리티 보호된 RMI 클라이언트 소켓 팩토리 <code class="cCode">csf</code>, 시큐리티 보호된 RMI 서버 소켓 팩토리 <code class="cCode">ssf</code>, 및 프로퍼티 파일 <code class="cCode">password.properties</code> 와 <code class="cCode">access.properties</code> 를 건네줍니다.  
+</p>
+<a name="wp997899"> </a> <p class="pBody">
+프로퍼티 파일 <code class="cCode">password.properties</code> 에는, 사용자명으로 패스워드가 포함되어 JMX 원격 API 인터페이스 <code class="cCode">JMXAuthenticator</code> 를 사용해 액세스 합니다. 프로퍼티 <code class="cCode">jmx.remote.x. </code><code class="cCode">password.file</code> 를 사용하는 것은, 패스워드 베이스의 <code class="cCode">JMXAuthenticator</code> 를 작성해, 이것을 <code class="cCode">jmx.remote.authenticator</code> 프로퍼티을 통해서 환경 맵에 건네주는 것과 같은 의미를 가집니다.
+</p>
+<a name="wp1011555"> </a> <p class="pBody">
+프로퍼티 파일 <code class="cCode">access.properties</code> 에는, 사용자명과 일정 레벨의 액세스권,<code class="cCode">readwrite</code> 와 <code class="cCode">readonly</code> 중 한쪽이 포함됩니다. 이것은 액티브한 사용자가, MBean 서버 조작에 어느 레벨로 액세스 할 수 있는지를 나타냅니다. 이 파일 베이스의 액세스 제어는, 액세스 콘트롤러 MBean 서버내에 실제의 MBean 서버를 랩 하는, JMX 테크놀러지의 인터페이스 <code class="cCode">MBeanServerForwarder</code> 를 사용해 구현됩니다. 액세스 콘트롤러 MBean 서버는, 적절한 체크를 실행한 후에, 실제의 MBean 서버에 요구를 전송 합니다.
+</p>
+<a name="wp997393"> </a> <p class="pBody">
+<code class="cCode">Server</code> 는 RMI 연결기용으로 JMX 서비스 URL,<code class="cCode">url</code> 를 작성합니다.  이 RMI 연결기는 디폴트의 JRMP 트랜스폴트상에서 동작해, 로컬 호스트의 포트 <code class="cCode">9999</code> 의 RMI 레지스트리에 RMI 연결기 Stub를 등록합니다.
+</p>
+<a name="wp997308"> </a> <p class="pBody">
+MBean 서버 <code class="cCode">mbs</code>, 환경 맵 env, 및 서비스 URL <code class="cCode">url</code> 는 모두 <code class="cCode">JMXConnectorServer</code> 에게 건네져 안전한 JMX 연결기 서버 <code class="cCode">cs</code> 가 신규에 작성됩니다.
+</p>
+<a name="wp1005491"> </a> <h4 class="pHeading3">
+5.1. 1.2	SimpleStandardMBean.java
+</h4>
+<a name="wp1005489"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean</code> 클래스는,<a  href="connectors.html#wp5529"><span style="color: #3366CC">「 제 3 장 JMX 연결기」</span></a> 로 사용된 것과 같은 간단한 MBean 인터페이스를 정의합니다.
+</p>
+<a name="wp997093"> </a> <h4 class="pHeading3">
+5.1. 1.3	SimpleStandard.java
+</h4>
+<a name="wp997309"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> 클래스는,<a  href="connectors.html#wp5529"><span style="color: #3366CC">「 제 3 장 JMX 연결기」</span></a> 로 사용된 것과 같은 간단한 MBean 를 정의합니다.
+</p>
+<a name="wp997100"> </a> <h4 class="pHeading3">
+5.1. 1.4	ClientListener.java
+</h4>
+<a name="wp997323"> </a> <p class="pBody">
+<code class="cCode">ClientListener</code> 클래스는,<a  href="connectors.html#wp5529"><span style="color: #3366CC">「 제 3 장 JMX 연결기」</span></a> 로 사용된 것과 같은 간단한 통지 청취자를 정의합니다.
+</p>
+<a name="wp997102"> </a> <h4 class="pHeading3">
+5.1. 1.5	Client.java
+</h4>
+<a name="wp997359"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 클래스를<a  href="security.html#wp1004197">코드예&#160;5-2</a>  에 나타냅니다.
+</p>
+<a name="wp1004197"> </a> <div class="pCodeCaption">
+코드예&#160;5-2	RMI 연결기의 예제 (간단한 시큐리티) 클래스 Client.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1013255"> </a> 
+public class Client {<a name="wp1013301"> </a> 
+<a name="wp1013302"> </a> 
+  public static void main(String[] args) {<a name="wp1013303"> </a> 
+  try {<a name="wp1013304"> </a> 
+      HashMap env = new HashMap();<a name="wp1013305"> </a> 
+<a name="wp1013306"> </a> 
+      String[] credentials = new String[] { &quot;username&quot; , &quot;password&quot; };<a name="wp1013307"> </a> 
+      env.put(&quot;jmx.remote.credentials&quot;, credentials);<a name="wp1013308"> </a> 
+      JMXServiceURL url = new JMXServiceURL(<a name="wp1013309"> </a> 
+         &quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);      <a name="wp1013310"> </a> 
+      JMXConnector jmxc = JMXConnectorFactory.connect(url, env);<a name="wp1013311"> </a> 
+      MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();<a name="wp1013312"> </a> 
+      String domains[] = mbsc.getDomains();<a name="wp1013313"> </a> 
+      for (int i = 0; i &lt; domains.length; i++) {<a name="wp1013314"> </a> 
+         System.out.println(&quot;Domain[&quot; + i + &quot;] = &quot; + domains[i]);<a name="wp1013315"> </a> 
+      }<a name="wp1013316"> </a> 
+      <a name="wp1013317"> </a> 
+      ObjectName mbeanName = <a name="wp1013318"> </a> 
+          new ObjectName(&quot;MBeans:type=SimpleStandard&quot;);<a name="wp1013319"> </a> 
+      mbsc.createMBean(&quot;SimpleStandard&quot;, mbeanName, null, null);<a name="wp1013320"> </a> 
+      // Perform MBean operations<a name="wp1013321"> </a> 
+      [...]<a name="wp1013322"> </a> 
+     <a name="wp1013323"> </a> 
+      mbsc.removeNotificationListener(mbeanName, listener);<a name="wp1013324"> </a> 
+      mbsc.unregisterMBean(mbeanName);<a name="wp1013325"> </a> 
+      jmxc.close();<a name="wp1013326"> </a> 
+    }  catch (Exception e) {<a name="wp1013327"> </a> 
+      e.printStackTrace();<a name="wp1013328"> </a> 
+    }<a name="wp1013329"> </a> 
+  }<a name="wp1013330"> </a> 
+}<a name="wp1013299"> </a> 
+<a name="wp1013287"> </a> 
+</pre></div>
+<a name="wp997822"> </a> <p class="pBody">
+<a  href="security.html#wp1004197">코드예&#160;5-2</a>  에 나타내는 <code class="cCode">Client</code> 클래스는, 환경 맵 <code class="cCode">env</code> 에 <code class="cCode">Server</code> 가 요구하는 자격 세트, 즉 <code class="cCode">username</code> 나 <code class="cCode">password</code> 를 건네줍니다. 이러한 자격은, 연결기 Stub의 서비스 URL 와 환경 맵이 <code class="cCode">JMXConnectorFactory.connect()</code> 에게 건네질 때,<code class="cCode">JMXConnector</code> 의 인스턴스 <code class="cCode">jmxc</code> 에 부여됩니다. <code class="cCode">Client</code> 는 <code class="cCode">jmxc</code> 를 통해서,<code class="cCode">Server</code> 측에서 기동된 MBean 에 접속해, MBean 의 조작을 실행합니다.
+</p>
+<a name="wp998207"> </a> <p class="pBody">
+접속이 확립하면(자), 환경 맵 <code class="cCode">env</code> 로 부여된 자격은 서버에 송신됩니다. 서버는 다음에,<code class="cCode">JMXAuthenticator</code> 인터페이스의 <code class="cCode">authenticate()</code> 메소드를 호출해, 클라이언트 자격을 파라미터로서 건네줍니다. <code class="cCode">authenticate()</code> 메소드는, 클라이언트를 인증해, 액세스 제어의 확인에 사용되는 주체 세트를 포함한 피인증자를 돌려줍니다.
+</p>
+<a name="wp997110"> </a> <h3 class="pHeading2">
+5.1. 2	간단한 시큐리티를 사용한 RMI 연결기의 예제의 실행
+</h3>
+<a name="wp997111"> </a> <p class="pBody">
+간단한 시큐리티를 사용한 RMI 연결기의 예제를 실행하려면 , 다음의 순서를 실행합니다.
+</p>
+<a name="wp1073735"> </a> <li></li>
+<div class="pPreformatted"><pre class="pPreformatted">
+$ <span class="cUserType">javac</span><a name="wp1073740"> </a> 
+<span class="cUserType">      mbeans/SimpleStandard.java \</span><a name="wp1074882"> </a> 
+<span class="cUserType">      mbeans/SimpleStandardMBean.java \</span><a name="wp1074883"> </a> 
+<span class="cUserType">      server/Server.java \</span><a name="wp1074884"> </a> 
+<span class="cUserType">      client/Client.java \</span><a name="wp1074885"> </a> 
+<span class="cUserType">      client/ClientListener.java</span><a name="wp1004317"> </a> 
+<a name="wp1004324"> </a> 
+</pre></div>
+<a name="wp997841"> </a> <li>로컬 호스트의 포트 <b class="cBold">9999</b> 로 RMI 레지스트리를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp998232"> </a> 
+<code class="cCode">$ </code><span class="cUserType">export CLASSPATH=server ; rmiregistry 9999 &amp;</span><a name="wp1016378"> </a> 
+<a name="wp1016377"> </a> 
+</pre></div>
+<a name="wp1016372"> </a> <li><code class="cCode">Server</code> 를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1016373"> </a> 
+<code class="cCode">$ </code>java -classpath server:mbeans \<a name="wp1073756"> </a> 
+     -Djavax.net.ssl.keyStore=config/keystore \<a name="wp1074685"> </a> 
+     -Djavax.net.ssl.keyStorePassword=password \<a name="wp1074686"> </a> 
+     Server &amp;<a name="wp1016380"> </a> 
+</pre></div>
+<a name="wp1016374"> </a> <p class="pBody">
+Mbean 서버와 RMI 연결기의 작성의 확인이 표시됩니다.
+</p>
+<a name="wp1003505"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1003506"> </a> 
+<code class="cCode">$</code>java -classpath client:server:mbeans \<a name="wp1074692"> </a> 
+     -Djavax.net.ssl.trustStore=config/truststore \<a name="wp1074693"> </a> 
+     -Djavax.net.ssl.trustStorePassword=trustword \<a name="wp1074694"> </a> 
+     Client<a name="wp1017959"> </a> 
+<a name="wp1017955"> </a> 
+</pre></div>
+<a name="wp1003507"> </a> <p class="pListEndingPara">연결기 클라이언트와 각종의 MBean 조작의 작성, 및 작성 후의 접속의 종료의 확인이 표시됩니다. </p>
+</ol>
+<a name="wp998089"> </a> <p class="pBody">
+이 예로부터 알도록(듯이), 모든 처리가,<a  href="connectors.html#wp5529"><span style="color: #3366CC">제&#160;3 장 「JMX 연결기」</span></a> 로 가리키는 기본적인 RMI 연결기의 예와 완전히 같은 방법으로 진행되어 있는 것처럼 보입니다. 다만,<code class="cCode">password.properties</code> 를 열어 패스워드를 변경하는 경우,<code class="cCode">Client</code> 를 기동하면(자) <code class="cCode">java.lang.SecurityException</code> 가 표시되어 접속에 실패합니다.
+</p>
+<a name="wp999457"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp997056"> </a> <h2 class="pHeading1">
+5.2	주체 위양
+</h2>
+<a name="wp997058"> </a> <p class="pBody">
+구현에 대해 접속의 클라이언트측이,<a  href="security.html#wp997044"><span style="color: #3366CC">「5.1 간단한 시큐리티」</span></a> 로 가리킨 시큐리티 기구를 사용해, 복수의 사용자 또는 어플리케이션에 대신해 다른 조작을 실행하는 경우, 각 사용자가 조작을 실행할 때마다 안전한 접속을 확립하지 않으면 안됩니다. 연결기 클라이언트가 많은 사용자라고 대화하는 것이 예측되는 경우, 「주체 위양」을 구현해 시스템의 부하를 줄일 수가 있습니다. 주체 위양을 구현하면(자), 사용자 마다 1 개(살)의 안전한 접속이 확립되어 이 접속을 사용하면(자), 임의의 수의 사용자에 대신해 관련하는 조작을 실행할 수 있습니다. 접속 자체는 「인증되었다」사용자에 의해 설정됩니다. 다른 사용자에 대신해 동작하는 것을 허가하는 <code class="cCode">SubjectDelegationPermission</code> 가 인증 사용자에게 부여되고 있는 경우, 그 사용자에 대신해, 접속을 사용한 조작을 실행할 수 있습니다.
+</p>
+<a name="wp997059"> </a> <h3 class="pHeading2">
+5.2. 1	주체 위양을 사용한 안전한 RMI 연결기
+</h3>
+<a name="wp1000510"> </a> <p class="pBody">
+주체 위양을 구현하는 안전한 RMI 연결기의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Security/subject_delegation</code> 내에 있습니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1000511"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples</code><code class="cCode">/Security/subject_delegation</code> 디렉토리를 엽니다. </li>
+<a name="wp1000512"> </a> <p class="pBody">
+이 디렉토리내에, 다음의 디렉토리가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp1004599"> </a> <div class="pBullet1"><li><code class="cCode">/server</code>.  파일 <code class="cCode">Server.java</code> 를 거두고 있습니다. </li></div>
+<a name="wp1004601"> </a> <div class="pBullet1Plus"><li><code class="cCode">/config</code>.  시큐리티 설정 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1004602"> </a> <div class="pBullet2"><li><code class="cCode">access.properties</code></li></div>
+<a name="wp1004603"> </a> <div class="pBullet2Plus"><li><code class="cCode">java.policy</code></li></div>
+<a name="wp1004604"> </a> <div class="pBullet2Last"><li><code class="cCode">password.properties</code></li></div>
+</ul>
+<a name="wp1004605"> </a> <div class="pBullet1Plus"><li><code class="cCode">/mbeans</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1004606"> </a> <div class="pBullet2"><li><code class="cCode">SimpleStandardMBean.java</code></li></div>
+<a name="wp1004607"> </a> <div class="pBullet2Last"><li><code class="cCode">SimpleStandard.java</code></li></div>
+</ul>
+<a name="wp1004608"> </a> <div class="pBullet1Plus"><li><code class="cCode">/client</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1004609"> </a> <div class="pBullet2"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1004610"> </a> <div class="pBullet2LastEnd"><li><code class="cCode">ClientListener.java</code></li></div>
+</ul>
+</ul><a name="wp1000508"> </a> <li>텍스트 문자 편집기로,<code class="cCode">*. java</code> 와 <code class="cCode">*. properties</code> 의 모든 파일을 엽니다. </li>
+<a name="wp1004611"> </a> <p class="pListEndingPara">이러한 파일에 대해, 이후시에로 분석합니다. </p>
+</ol>
+<a name="wp997060"> </a> <h4 class="pHeading3">
+5.2. 1.1	Server.java
+</h4>
+<a name="wp1000555"> </a> <p class="pBody">
+<code class="cCode">Server.java</code> 클래스를<a  href="security.html#wp1004612">코드예&#160;5-3</a>  에 나타냅니다.
+</p>
+<a name="wp1004612"> </a> <div class="pCodeCaption">
+코드예&#160;5-3	안전한 RMI 연결기 (주체 위양) 예제 클래스 Server.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1004617"> </a> 
+public class Server {<a name="wp1006008"> </a> 
+<a name="wp1006009"> </a> 
+   public static void main(String[] args) {<a name="wp1006010"> </a> 
+     try {<a name="wp1006011"> </a> 
+          MBeanServer mbs = MBeanServerFactory.createMBeanServer();<a name="wp1006012"> </a> 
+          HashMap env = new HashMap();<a name="wp1006013"> </a> 
+          env.put(&quot;jmx.remote.x.password.file&quot;,<a name="wp1006014"> </a> 
+                  &quot;config&quot; + File.separator + &quot;password.properties&quot;);<a name="wp1006015"> </a> 
+          env.put(&quot;jmx.remote.x.access.file&quot;,<a name="wp1006016"> </a> 
+                  &quot;config&quot; + File.separator + &quot;access.properties&quot;);<a name="wp1006017"> </a> 
+<a name="wp1006018"> </a> 
+          JMXServiceURL url = new JMXServiceURL(<a name="wp1006019"> </a> 
+             &quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);<a name="wp1006020"> </a> 
+          JMXConnectorServer cs =<a name="wp1006021"> </a> 
+              JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);<a name="wp1006022"> </a> 
+          cs.start();<a name="wp1006023"> </a> 
+     } catch (Exception e) {<a name="wp1006024"> </a> 
+          e.printStackTrace();<a name="wp1006025"> </a> 
+     }<a name="wp1006026"> </a> 
+   }<a name="wp1006027"> </a> 
+}<a name="wp1004643"> </a> 
+<a name="wp1004644"> </a> 
+</pre></div>
+<a name="wp1000861"> </a> <p class="pBody">
+<a  href="security.html#wp1004612">코드예&#160;5-3</a>  는, MBean 서버 <code class="cCode">mbs</code> 의 작성으로부터 시작됩니다. 환경 맵 <code class="cCode">env</code> 에는,<code class="cCode">password.properties</code> 라고 하는 패스워드 파일과 <code class="cCode">access.properties</code> 라고 하는 액세스 파일이 포함됩니다.  
+</p>
+<ul class="pBullet1"><a name="wp1004651"> </a> <div class="pBullet1"><li>패스워드 파일에는, 사용자명과 패스워드의 편성을 거둘 수 있어 접속을 시도하는 사용자의 인증에 사용된다 </li></div>
+<a name="wp1004648"> </a> <div class="pBullet1Last"><li>액세스 파일에는, 사용자명과 액세스 레벨의 편성이 포함되어 MBean 서버의 MBean 에의 액세스의 인증에 사용된다. 액세스 레벨은, 읽고 쓰기 가능한가 read 전용의 언젠가</li></div>
+</ul>
+<a name="wp1000878"> </a> <p class="pBody">
+다음에 <code class="cCode">Server</code> 는 연결기 서버 <code class="cCode">cs</code> 를 작성해, 전술의 RMI 연결기의 예제와 완전히 같은 방법으로 연결기 서버를 기동합니다.
+</p>
+<a name="wp1019573"> </a> <h4 class="pHeading3">
+5.2. 1.2	java.policy
+</h4>
+<a name="wp1019596"> </a> <p class="pBody">
+<code class="cCode">java.policy</code> 파일은 <code class="cCode">username</code> 에 <code class="cCode">SubjectDelegationPermission</code> 를 부여해, 이 사용자가 <code class="cCode">Client</code> 로 작성된 <code class="cCode">JMXPrincipal</code> 의 인스턴스인, 사용자 <code class="cCode">delegate</code> 대신에 조작을 실행하는 것을 허가합니다. <code class="cCode">java.policy</code> 파일이 요구되는 것은,<code class="cCode">Server</code> 클래스의 기동시입니다.
+</p>
+<a name="wp1000562"> </a> <h4 class="pHeading3">
+5.2. 1.3	SimpleStandardMBean.java
+</h4>
+<a name="wp1000563"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 MBean 인터페이스를 정의합니다.
+</p>
+<a name="wp1005519"> </a> <h4 class="pHeading3">
+5.2. 1.4	SimpleStandard.java
+</h4>
+<a name="wp1005520"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 MBean 를 정의합니다.
+</p>
+<a name="wp1000567"> </a> <h4 class="pHeading3">
+5.2. 1.5	ClientListener.java
+</h4>
+<a name="wp1000556"> </a> <p class="pBody">
+<code class="cCode">ClientListener</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 통지 리스너를 정의합니다.
+</p>
+<a name="wp998359"> </a> <h4 class="pHeading3">
+5.2. 1.6	Client.java
+</h4>
+<a name="wp1000930"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 클래스를<a  href="security.html#wp1004675">코드예&#160;5-4</a>  에 나타냅니다.
+</p>
+<a name="wp1004675"> </a> <div class="pCodeCaption">
+코드예&#160;5-4	안전한 RMI 연결기 (주체 위양) 예제 클래스 Client.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1004765"> </a> 
+public class Client {<a name="wp1004766"> </a> 
+<a name="wp1004767"> </a> 
+  public static void main(String[] args) {<a name="wp1004768"> </a> 
+    try {<a name="wp1004769"> </a> 
+         HashMap env = new HashMap();<a name="wp1004770"> </a> 
+         <b class="cBold">String[] credentials = new String[] { &quot;username&quot; , &quot;password&quot; }</b>;<a name="wp1004771"> </a> 
+         <b class="cBold">env.put(&quot;jmx.remote.credentials&quot;, credentials)</b>;<a name="wp1004772"> </a> 
+         JMXServiceURL url = new JMXServiceURL(<a name="wp1004773"> </a> 
+            &quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);<a name="wp1004774"> </a> 
+         JMXConnector jmxc = JMXConnectorFactory.connect(url, env);<a name="wp1004776"> </a> 
+         <b class="cBold">Subject delegationSubject =</b><a name="wp1004777"> </a> 
+<b class="cBold">            new Subject(true,</b><a name="wp1004778"> </a> 
+<b class="cBold">                Collections.singleton(new JMXPrincipal(&quot;delegate&quot;)),</b><a name="wp1004779"> </a> 
+<b class="cBold">                Collections.EMPTY_SET,</b><a name="wp1004780"> </a> 
+<b class="cBold">                Collections.EMPTY_SET)</b>;<a name="wp1004781"> </a> 
+<a name="wp1004782"> </a> 
+         <b class="cBold">MBeanServerConnection mbsc =</b><a name="wp1004783"> </a> 
+<b class="cBold">            jmxc.getMBeanServerConnection(delegationSubject)</b>;<a name="wp1004784"> </a> 
+         String domains[] = mbsc.getDomains();<a name="wp1004785"> </a> 
+         ObjectName mbeanName =<a name="wp1004786"> </a> 
+            new ObjectName(&quot;MBeans:type=SimpleStandard&quot;);<a name="wp1004787"> </a> 
+         mbsc.createMBean(&quot;SimpleStandard&quot;, mbeanName, null, null);<a name="wp1004788"> </a> 
+         // Perform MBean operations<a name="wp1004789"> </a> 
+         //<a name="wp1004790"> </a> 
+<a name="wp1006148"> </a> 
+[...]<a name="wp1006149"> </a> 
+         mbsc.removeNotificationListener(mbeanName, listener);<a name="wp1004791"> </a> 
+         mbsc.unregisterMBean(mbeanName);<a name="wp1004792"> </a> 
+         jmxc.close();<a name="wp1004793"> </a> 
+     } catch (Exception e) {<a name="wp1004794"> </a> 
+         e.printStackTrace();<a name="wp1004795"> </a> 
+     }<a name="wp1004796"> </a> 
+  }<a name="wp1004797"> </a> 
+}<a name="wp1004753"> </a> 
+<a name="wp1004801"> </a> 
+</pre></div>
+<a name="wp1004758"> </a> <p class="pBody">
+<a  href="security.html#wp1004675">코드예&#160;5-4</a>  는, 사용자명 <code class="cCode">username</code> 와 패스워드 <code class="cCode">password</code> 가 포함된 환경 맵 <code class="cCode">env</code> 의 작성으로부터 시작됩니다. 이러한 캐릭터 라인은,<code class="cCode">Server</code> 가 연결기 서버에 액세스 하는 사용자를 인증하기 위해서 보관 유지하는 <code class="cCode">password.properties</code> 파일에 보존된 사용자명과 패스워드에 일치합니다.
+</p>
+<a name="wp1001266"> </a> <p class="pBody">
+JMX 테크놀러지의 연결기 클라이언트 <code class="cCode">jmxc</code> 는, 전술의 RMI 연결기의 예제와 같은 방법으로 작성되어 사용자명과 패스워드는 환경 맵 <code class="cCode">env</code> 에게 건네집니다.
+</p>
+<a name="wp1001300"> </a> <p class="pBody">
+다음에,<code class="cCode">Client</code> 는,<code class="cCode">JMXPrincipal</code> 의 인스턴스인 <code class="cCode">delegate</code> 라는 이름의 <code class="cCode">Principal</code> 를 사용해,<code class="cCode">Subject</code> 의 인스턴스 <code class="cCode">delegationSubject</code> 를 작성합니다.
+</p>
+<a name="wp1001332"> </a> <p class="pBody">
+MBean 서버 접속 <code class="cCode">mbsc</code> 는,<code class="cCode">JMXConnector</code> 의 <code class="cCode">getMBeanServerConnection()</code> 메소드를 호출해, 파라미터로서 <code class="cCode">delegationSubject</code> 를 건네주어 작성됩니다. 따라서, 이 MBean 서버 접속을 사용하면(자),<code class="cCode">delegationSubject</code> 에 보존된 주체, 이 예에서는 <code class="cCode">delegate</code> 라는 이름의 <code class="cCode">JMXPrincipal</code> 에 대신해, 원격 MBean 서버상에서 조작을 실행할 수 있습니다.
+</p>
+<a name="wp1001360"> </a> <p class="pBody">
+이 예제에서는 게다가 지금까지의 예와 완전히 같은 방법으로, MBean 서버로 <code class="cCode">SimpleStandard</code> MBean 가 작성 및 등록되어 이 MBean 상에서 조작이 실행됩니다.
+</p>
+<a name="wp1001471"> </a> <h3 class="pHeading2">
+5.2. 2	주체 위양을 사용한 안전한 RMI 연결기의 예제의 실행
+</h3>
+<a name="wp1001472"> </a> <p class="pBody">
+주체 위양을 사용한 안전한 RMI 연결기의 예제를 실행하려면 , 다음의 순서를 실행합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+$ <span class="cUserType">javac  mbeans/SimpleStandard.java \</span><a name="wp1075326"> </a> 
+<span class="cUserType">  mbeans/SimpleStandardMBean.java \</span><a name="wp1004815"> </a> 
+<span class="cUserType">  server/Server.java \</span><a name="wp1004816"> </a> 
+<span class="cUserType">  client/Client.java \</span><a name="wp1004817"> </a> 
+<span class="cUserType">  client/ClientListener.java</span><a name="wp1004818"> </a> 
+<a name="wp1004819"> </a> 
+</pre></div>
+<a name="wp1001393"> </a> <li>로컬 호스트의 포트 <b class="cBold">9999</b> 로 RMI 레지스트리를 기동합니다. </li>
+<a name="wp1006366"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">export CLASSPATH=server ; rmiregistry 9999 &amp;</span>
+</p>
+<a name="wp1002356"> </a> <li><code class="cCode">Server</code> 를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+$ <span class="cUserType">java -classpath server:mbeans \</span><a name="wp1001396"> </a> 
+<span class="cUserType">  -Djava.security.policy=config/java.policy Server &amp;</span><a name="wp1004823"> </a> 
+<a name="wp1004824"> </a> 
+</pre></div>
+<a name="wp1001397"> </a> <p class="pBody">
+MBean 서버의 작성, 환경 맵의 초기화, RMI 연결기의 작성, 및 연결기의 MBean 서버에의 등록의 확인이 표시됩니다.
+</p>
+<a name="wp1001398"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<a name="wp1001399"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">java -classpath client:server:mbeans Client</span>
+</p>
+<a name="wp1001400"> </a> <p class="pListEndingPara">연결기 클라이언트의 작성, 주체 위양의 작성, MBean 서버에의 접속, 및 다양한 MBean 조작, 그 후의 접속의 종료의 확인이 표시됩니다. </p>
+<a name="wp1001815"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp997065"> </a> <h2 class="pHeading1">
+5.3	상세한 시큐리티
+</h2>
+<a name="wp1002215"> </a> <p class="pBody">
+Java Authentication and Authorization Service (JAAS)와 Java platform Standard Edition (Java SE) 시큐리티 아키텍쳐(architecture)에 의해 사용자 액세스를 관리하는 것으로, 보다 상세한 레벨의 시큐리티를 연결기에 구현할 수 있습니다. JAAS 와 Java SE 시큐리티의 기본은, 시큐리티 매니저와 정책 파일을 사용해, 사용자 마다 다른 액세스 레벨을 지정하는 것입니다. 최종적으로, 어느 사용자에게 어느 조작의 실행을 허가할까를 보다 정확하게 결정할 수가 있습니다.  
+</p>
+<a name="wp1002258"> </a> <p class="pBody">
+이 마디의 2 개의 예제는,<a  href="security.html#wp997044"><span style="color: #3366CC">「5.1 간단한 시큐리티」</span></a> 에 나타내는 예제와 매우 닮습니다만, 다른 점으로서 간단한 파일 베이스의 액세스 제어가, 정책 베이스의 액세스 제어로 옮겨지고 있습니다.
+</p>
+<a name="wp1001853"> </a> <h3 class="pHeading2">
+5.3. 1	상세한 시큐리티를 사용한 RMI 연결기
+</h3>
+<a name="wp1001854"> </a> <p class="pBody">
+상세한 시큐리티를 사용한 RMI 연결기의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Security/fine_grained</code> 내에 있습니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1001855"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples</code><b class="cBold">/Security/fine_grained</b> 를 엽니다. </li>
+<a name="wp1001856"> </a> <p class="pBody">
+이 디렉토리내에, 다음의 디렉토리가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp1074305"> </a> <div class="pBullet1"><li><code class="cCode">/server</code>.  파일 <code class="cCode">Server.java</code> 를 거두고 있습니다. </li></div>
+<a name="wp1005068"> </a> <div class="pBullet1Plus"><li><code class="cCode">/config</code>.  시큐리티 설정 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1005069"> </a> <div class="pBullet2"><li><code class="cCode">java.policy</code></li></div>
+<a name="wp1005070"> </a> <div class="pBullet2Plus"><li><code class="cCode">keystore</code></li></div>
+<a name="wp1005071"> </a> <div class="pBullet2Plus"><li><code class="cCode">password.properties</code></li></div>
+<a name="wp1005072"> </a> <div class="pBullet2Last"><li><code class="cCode">truststore</code></li></div>
+</ul>
+<a name="wp1005073"> </a> <div class="pBullet1Plus"><li><code class="cCode">/mbeans</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1005074"> </a> <div class="pBullet2"><li><code class="cCode">SimpleStandard.java</code></li></div>
+<a name="wp1005075"> </a> <div class="pBullet2Last"><li><code class="cCode">SimpleStandardMBean.java</code></li></div>
+</ul>
+<a name="wp1005076"> </a> <div class="pBullet1Plus"><li><code class="cCode">/client</code>.  다음의 파일을 거두고 있습니다. </li></div>
+<ul class="pBullet2"><a name="wp1005077"> </a> <div class="pBullet2"><li><code class="cCode">ClientListener.java</code></li></div>
+<a name="wp1005078"> </a> <div class="pBullet2LastEnd"><li><code class="cCode">Client.java</code></li></div>
+</ul>
+</ul><a name="wp1001872"> </a> <li>텍스트 문자 편집기로,<code class="cCode">*. java</code> 와 <code class="cCode">*. properties</code> 의 모든 파일을 엽니다. </li>
+<a name="wp1001905"> </a> <h4 class="pHeading3">
+5.3. 1.1	이러한 파일에 대해, 이후의 섹션으로 분석합니다.
+</h4>
+<a name="wp1001895"> </a> <p class="pBody">
+이 예제로 사용되는 <code class="cCode">Server.java</code> 클래스는, 간단한 시큐리티를 사용한 RMI 연결기로 사용되는 클래스에 매우 닮았습니다. 다만, 상세한 시큐리티의 예제에서는, 환경 맵에 맵 되는 <code class="cCode">access.properties</code> 파일이 없습니다. 그 이외는, 양클래스는 동일합니다.
+</p>
+<a name="wp1046649"> </a> <h4 class="pHeading3">
+5.3. 1.2	java.policy
+</h4>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1074915"> </a> 
+</pre></div>
+<a name="wp1076293"> </a> <p class="pBody">
+<code class="cCode">java.policy</code> 파일은, 다음의 권한을 부여합니다.
+</p>
+<ul class="pBullet1"><a name="wp1046707"> </a> <div class="pBullet1"><li><code class="cCode">server</code> 코드 베이스의 모든 권한. 이것이 있는 것으로, 연결기 서버는 연결기를 작성해, 원격 사용자-의 호출로 요구되는 조작을 실행할 수 있다. </li></div>
+<a name="wp1046708"> </a> <div class="pBullet1Plus"><li><code class="cCode">mbeans</code> 코드 베이스에 대한 <code class="cCode">MBeanTrustPermission</code>. 이것에 의해, 신뢰된 MBean 를 MBean 서버에 등록할 수 있다. </li></div>
+<a name="wp1046709"> </a> <div class="pBullet1Last"><li><code class="cCode">JMXPrincipal</code> 로 나타내지는 사용자,<code class="cCode">username</code> 에 대한, 각종의 MBean 조작 및 MBean 서버 조작을 실행하는 권한</li></div>
+</ul>
+<a name="wp1001938"> </a> <h4 class="pHeading3">
+5.3. 1.3	SimpleStandardMBean.java
+</h4>
+<a name="wp1001939"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 MBean 인터페이스를 정의합니다.
+</p>
+<a name="wp1005539"> </a> <h4 class="pHeading3">
+5.3. 1.4	SimpleStandard.java
+</h4>
+<a name="wp1005540"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 MBean 를 정의합니다.
+</p>
+<a name="wp1001940"> </a> <h4 class="pHeading3">
+5.3. 1.5	ClientListener.java
+</h4>
+<a name="wp1001941"> </a> <p class="pBody">
+<code class="cCode">ClientListener</code> 클래스는, 전출의 예제로 사용된 것과 같은 간단한 통지 리스너를 정의합니다.
+</p>
+<a name="wp1001948"> </a> <h4 class="pHeading3">
+5.3. 1.6	Client.java
+</h4>
+<a name="wp1002200"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 클래스는, 간단한 시큐리티를 사용한 RMI 연결기의 예제로 사용되는 클래스와 완전히 같습니다.
+</p>
+<a name="wp1001949"> </a> <h3 class="pHeading2">
+5.3. 2	상세한 시큐리티를 사용한 RMI 연결기의 예제의 실행
+</h3>
+<a name="wp1002267"> </a> <p class="pBody">
+상세한 시큐리티를 사용한 RMI 연결기의 예제를 실행하려면 , 다음의 순서를 실행합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+$ <span class="cUserType">javac</span><a name="wp1074405"> </a> 
+<span class="cUserType">      mbeans/SimpleStandard.java \</span><a name="wp1074931"> </a> 
+<span class="cUserType">      mbeans/SimpleStandardMBean.java \</span><a name="wp1074932"> </a> 
+<span class="cUserType">      server/Server.java \</span><a name="wp1074933"> </a> 
+<span class="cUserType">      client/Client.java \</span><a name="wp1074934"> </a> 
+<span class="cUserType">      client/ClientListener.java</span><a name="wp1005159"> </a> 
+<a name="wp1005160"> </a> 
+</pre></div>
+<a name="wp1002313"> </a> <li>로컬 호스트의 포트 <b class="cBold">9999</b> 로 RMI 레지스트리를 기동합니다. </li>
+<a name="wp1002283"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">export CLASSPATH=server ; rmiregistry 9999 &amp;</span>
+</p>
+<a name="wp1002326"> </a> <li><code class="cCode">Server</code> 를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+<code class="cCode">$ </code><span class="cUserType">java -classpath server:mbeans \</span><a name="wp1021439"> </a> 
+<span class="cUserType">     -Djavax.net.ssl.keyStore=config/keystore \</span><a name="wp1074743"> </a> 
+<span class="cUserType">     -Djavax.net.ssl.keyStorePassword=password \</span><a name="wp1074744"> </a> 
+<span class="cUserType">     -Djava.security.manager \</span><a name="wp1021442"> </a> 
+<span class="cUserType">     -Djava.security.policy=config/java.policy \</span><a name="wp1021443"> </a> 
+<span class="cUserType">     Server &amp;</span><a name="wp1005165"> </a> 
+<a name="wp1005166"> </a> 
+</pre></div>
+<a name="wp1002286"> </a> <p class="pBody">
+환경 맵의 초기화, MBean 서버와 RMI 연결기의 작성의 확인이 표시됩니다.
+</p>
+<a name="wp1021452"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1021453"> </a> 
+$ <span class="cUserType">java -classpath client:server:mbeans \</span><a name="wp1021471"> </a> 
+<span class="cUserType">     -Djavax.net.ssl.trustStore=config/truststore \</span><a name="wp1074749"> </a> 
+<span class="cUserType">     -Djavax.net.ssl.trustStorePassword=trustword \</span><a name="wp1074750"> </a> 
+<span class="cUserType">     Client</span><a name="wp1021465"> </a> 
+<a name="wp1021466"> </a> 
+</pre></div>
+<a name="wp1021467"> </a> <p class="pListEndingPara">연결기 클라이언트의 작성, RMI 서버에의 접속, 각종의 MBean 조작, 및 접속의 종료의 확인이 표시됩니다. </p>
+<a name="wp1002613"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp1002570"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table id="layout" width="100%">
+      <tr>
+        <td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="lookup.html">전의 항목</a>  | 다음의 항목
+        </td>
+        <td class="go-right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지의 튜토리얼<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

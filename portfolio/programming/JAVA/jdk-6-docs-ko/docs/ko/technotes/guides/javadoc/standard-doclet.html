@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>도크 렛의 개요 - xrath.com 에서 번역됨</title>
+  </head>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+<td align=center>
+
+<h1>표준 도크 렛</h1>
+
+</td>
+
+<td align=right valign=top>
+
+<font size="-1"><a href="index.html">Javadoc 의 목차</a> </font>
+</td>
+
+</tr>
+
+</table>
+
+<!-- Body text begins here -->
+
+<h2>목차</h2>
+   <ul>
+<li><a href=#what">「표준 도크 렛의 개요」</a>  <li><a href="#running">「커멘드행으로부터의 표준 도크 렛의 실행」</a>  <li><a href="#runningprogrammatically">「프로그램으로부터의 표준 도크 렛의 실행」</a>  <li><a href="#source">「표준 도크 렛의 소스」</a>  </ul>
+
+
+<a name="what"> <h2>표준 도크 렛의 개요</h2></a> 
+
+표준 도크 렛은, Sun<font size="-2"><sup>TM</sup></font> 가 제공하는 도크 렛으로, Javadoc 의 디폴트의 HTML 형식에 의한 API 출력을 생성합니다. 이 JDK 문서에 포함되는 Java<font size="-2"><sup>TM</sup></font> 플랫폼용의 <a href="../../../api/index.html">「API 문서」</a>는, 표준 도크 렛의 출력예입니다. Javadoc 의 <tt>-doclet</tt> 옵션을 사용해 커멘드행으로 다른 도크 렛이 지정되어 있지 않은 경우는, 표준 도크 렛이 사용됩니다. <p>
+
+<a name="running"> <h2>커멘드행으로부터의 표준 도크 렛의 실행</h2></a>  커멘드행으로 <tt>-doclet</tt> 태그에 의해 다른 도크 렛이 지정되어 있지 않은 경우, 표준 도크 렛이 디폴트로 불려 갑니다. 예를 들어, 다음의 커멘드를 실행한다고 합니다. <blockquote><pre>
+% javadoc myPackage
+</pre></blockquote> 이 커멘드에서는, 표준 도크 렛을 사용해 <tt>myPackage</tt> 의 디폴트 스타일의 HTML API 문서가 생성됩니다. <tt>-doclet</tt> 옵션을 지정하지 않고 javadoc 를 실행했을 경우는,<tt>-doclet</tt> 옵션을 지정해 표준 도크 렛을 호출했을 경우와 같은 처리를 합니다. 즉, 전술의 커멘드는, 다음의 커멘드와 동등합니다. <blockquote><pre>
+% javadoc -docletpath /home/user/jdk1. 5.0/lib/tools.jar \
+  -doclet com.sun.tools.doclets.standard.Standard \
+  myPackage
+</pre>
+또는 다음의 커멘드와 동등합니다.
+<pre>
+% javadoc -docletpath /home/user/jdk1. 5.0/lib/tools.jar \
+  -doclet com.sun.tools.doclets.formats.html.HtmlDoclet \
+  myPackage
+</pre></blockquote>
+어느 쪽의 어프로치에서도 같은 결과가 됩니다. <p>
+
+<a name="runningprogrammatically"></a>  <h2>프로그램으로부터의 표준 도크 렛의 실행</h2>
+
+Javadoc 툴에는, 프로그램으로부터 이용할 수 있는 인터페이스가 있습니다. 이 인터페이스에는, Java 언어로 기술된 다른 프로그램으로부터 Javadoc 툴을 호출하기 위한 public 메소드가 몇개인가 준비되어 있습니다. 이러한 메소드는,<code>lib/tools.jar</code> 내의 <code>com.sun.tools.javadoc.Main</code> 클래스에 있습니다. 다음에 그 예를 나타냅니다. <p> <p>
+
+<code>main</code> 를 호출하는 경우, 다음과 같은 단점이 있습니다. <br><br>(1) 실행할 때마다 1 회 밖에 호출할 수 없습니다. 1.2.x 또는 1.3.x 에서는, 몇번이나 호출할 필요가 있는 경우는,<code>java.lang.Runtime.exec("javadoc ...")</code> (을)를 사용해 주세요. <br>(2) <code>System.exit()</code> 를 사용해 종료합니다. <code>System.exit()</code> 에서는 프로그램 전체가 종료합니다. <br>(3) 종료 코드가 돌려주어지지 않습니다.
+
+<pre>
+public static void <b>main</b>(java.lang.String[] args)
+</pre> <blockquote> <dl> <dt>커멘드행 인터페이스. <br> <dt><b>파라미터:</b> <dd><code>args</code> - 커멘드행 파라미터. </dl> </blockquote>
+
+<code>execute</code> 메소드에서는,<code>main</code> 의 단점이 해결되고 있습니다. <p>
+
+<pre>
+public static int <b>execute</b>(java.lang.String[] args)
+</pre> <blockquote> <dl> <dt>프로그램 인터페이스. <dt><b>파라미터:</b> <dd><code>args</code> - 커멘드행 파라미터. <dt><b>반환값:</b> <dd>return code. </dl> </blockquote>
+
+<pre>
+public static int <b>execute</b>(java.lang.String programName,
+                          java.lang.String[] args)
+</pre> <blockquote> <dl> <dt>프로그램 인터페이스. <dt><b>파라미터:</b> <dd><code>programName</code> - 프로그램명 (에러 메세지용). <dd><code>args</code> - 커멘드행 파라미터. <dt><b>반환값:</b> <dd>return code. </dl> </blockquote>
+
+<pre>
+public static int <b>execute</b>(java.lang.String programName,
+                          java.lang.String defaultDocletClassName,
+                          java.lang.String[] args)
+</pre> <blockquote> <dl> <dt>프로그램 인터페이스. <dt><b>파라미터:</b> <dd><code>programName</code> - 프로그램명 (에러 메세지용). <dd><code>defaultDocletClassName</code> - 완전 수식 클래스명. <dd><code>args</code> - 커멘드행 파라미터. <dt><b>반환값:</b> <dd>return code. </dl> </blockquote>
+
+
+<pre>
+public static int <b>execute</b>(java.lang.String programName,
+                          java.io.PrintWriter errWriter,
+                          java.io.PrintWriter warnWriter,
+                          java.io.PrintWriter noticeWriter,
+                          java.lang.String defaultDocletClassName,
+                          java.lang.String[] args)
+</pre> <blockquote> <dl> <dt>프로그램 인터페이스. <dt><b>파라미터:</b> <dd><code>programName</code> - 프로그램명 (에러 메세지용). <dd><code>errWriter</code> - 에러 메세지를 받아들이는 PrintWriter. <dd><code>warnWriter</code> - 에러 메세지를 받아들이는 PrintWriter. <dd><code>noticeWriter</code> - 에러 메세지를 받아들이는 PrintWriter. <dd><code>defaultDocletClassName</code> - 완전 수식 클래스명. <dd><code>args</code> - 커멘드행 파라미터. <dt><b>반환값:</b> <dd>return code. </dl> </blockquote> <p>
+
+<b>례</b> <p>
+
+Java SE 의 클래스 패스를 <code>lib/tools.jar</code> 로 설정해, 각 옵션과 인수를 다른 캐릭터 라인으로서 건네줍니다.
+
+<p> <code> com.sun.tools.javadoc.Main.execute(new String[] {"-d", "docs", "-sourcepath", "/home/usr/src", "p1", "p2"}); </code> <br> <br>
+
+<a name="source"> <h2>표준 도크 렛의 소스</h2></a>  표준 도크 렛의 원시 코드는 Java SE 의 일부로서 다음의 URL 로 다운로드할 수 있습니다. <ul> <li><a href="http://java.sun.com/j2se/javadoc/faq/#sourcecode"><b>Java SE 원시 코드의 릴리스</b></a> <BR> (주: JDK 가 입수 가능하게 되고 나서 원시 코드의 릴리스가 입수 가능하게 되기까지 시간의 차이가 있습니다). </ul>
+
+원시 파일은,<code>src/share/classes/com/sun/tools/doclets</code> 디렉토리에 있습니다.
+
+<p>
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT> </P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+</body> </html>

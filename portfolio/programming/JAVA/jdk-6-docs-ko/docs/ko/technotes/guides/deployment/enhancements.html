@@ -1,0 +1,36 @@
+<hr> 
+<h1> Java SE 6 에 있어서의 배치의 확장 기능</h1>
+<hr>
+<ul>
+<li><a href="#webstartpluginenehance">Java Web Start 와 Java Plug-in 공통의 확장 기능</a> 
+    <ul>
+<li><a href="#cachesystemformat">캐쉬 및 시스템 형식 </a> <a href="#webstartpluginenehance"><br /></a>  </li>
+    </ul>
+  </li>
+  <ul>
+<li><a href="#enginecacheconsolidation"> 다운로드 엔진과 캐쉬의 통합</a> </li>
+<li><a href="#secureversioning">안전한 버젼 관리</a> </li>
+<li><a href="#otherenhance">그 외의 확장 기능 </a> <br />
+    </li>
+  </ul>
+</ul>
+<h2><a name="webstartpluginenehance" id="webstartpluginenehance"></a> Java Web Start 와 Java Plug-in 공통의 확장 기능</h2>
+<h3><a name="cachesystemformat" id="cachesystemformat"></a> 캐쉬 및 시스템 형식</h3>
+<p> 캐쉬 형식에 대해서는 전체가 변경되었기 때문에, 이전의 것과는 호환성이 없어졌습니다. 그 때문에, 이전의 캐쉬 형식을 Java Web Start 나 Java Plug-in 에 사용하고 있는 기존의 코드는, 향후는 기능하지 않습니다. Java Web Start 의 기존의 어플리케이션의 캐쉬는, Java Web Start 어플리케이션을 최초로 실행했을 때, 또는 <code>javaws -viewer</code> 를 사용해 캐쉬 viewer를 기동했을 경우에 업그레이드 되어 새로운 캐쉬 형식에 변환됩니다. </p>
+<p>시스템 캐쉬는, Java Web Start 를 시스템 모드로 최초로 실행했을 때, 또는 <code>javaws -system</code> 를 기동했을 때에 업그레이드 되어 새로운 형식에 변환됩니다. </p>
+<h3><a name="enginecacheconsolidation" id="enginecacheconsolidation"></a> 다운로드 엔진과 캐쉬의 통합</h3>
+<p> 캐쉬 메카니즘과 다운로드 엔진은 재설계되어 Java Web Start 와 Java Plug-in 간에 통합되었습니다. 이것에 의해, 종래는 Java Web Start 또는 Java Plug-in 의 어느쪽이든으로 밖에 사용할 수 없었던 기능이, 신기능으로서 양쪽 모두로 사용할 수 있게 되었습니다. 이것들은 이하대로입니다. </p>
+<ul>
+<li> Java 컨트롤 패널로 캐쉬 기능을 무효로 할 수 있습니다.  </li>
+<li> Java 컨트롤 패널을 사용해 설정한 최대 캐쉬 사이즈가 Java Web Start 로 사용됩니다.  </li>
+<li>Java Web Start 를 사용해 클린 업 thread를 개시하는 것으로, 최대 캐쉬 사이즈에 도달하기 전에 캐쉬로부터 LRU (Least Recently Used) 항목을 삭제할 수 있습니다.  </li>
+<li> <code>&lt;no-cache&gt;</code> 지시가 지원되게 되었습니다. no-cache 지시를 사용하면(자), 갱신 확인을 해 캐쉬의 내용이 대상의 URL 의 내용과 동일한가 어떤가를 검증할 수 있습니다. 그 후, 자원이 캐쉬에 다운로드되어 유효기간의 필드가 무시됩니다.   </li>
+<li> expiration-date 가 지원됩니다. 다운로드한 자원에 유효기간이 있는 경우, 그 일자 이후 그 자원은 사용되지 않습니다.  </li>
+</ul>
+<h3><a name="secureversioning" id="secureversioning"></a> 안전한 버젼 관리</h3>
+<p>Java SE 6 에서는, 최신의 버젼 이외를 지정하고 있는 서명이 없는 Java Web Start 어플리케이션을 사용하면(자), 시큐리티의 경고가 발 다투어집니다. 이 경고가 발 다투어지면(자), 어플리케이션을 실행하기 전에, 사용자측의 명확한 허가가 필요하게 됩니다. 서명이 있는 Java Web Start 어플리케이션에는 영향 없습니다.  </p>
+<h3><a name="otherenhance" id="otherenhance"></a> 그 외의 확장 기능</h3>
+<p>Java Web Start 와 Java Plug-in 에서는, 증명서의 검증에 증명서의 취소 리스트 (CRL)와 OCSP (Online Certificate Status Protocol)를 지원하게 되었습니다. </p>
+<p> Java 컨트롤 패널에, SSL 핸드 쉐이크 프로토콜을 디폴트로 선택할 수 있는 옵션이 추가되었습니다. 디폴트에서는, SSLv3 및 SSLv2 로 설정되어 있습니다. 이것을 TSL 로 변경할 수도 있습니다. </p>
+<p>Java 콘솔이 모다리티로부터 독립했습니다. Java 6 에 있는 AWT 의 새로운 모다리티 기능을 사용하는 것으로, 어플리케이션이 모덜 다이얼로그를 표시하고 있을 때에도, Java 콘솔로 대화할 수 있습니다. </p>
+<p> Java Web Start 와 Java Plug-in 의 모든 다이얼로그와 화면이 재설계되어 종래보다 사용자 플렌들리 또한 직감적인 것이 되어, 또, 액세스하기 쉬워졌습니다.  </p>

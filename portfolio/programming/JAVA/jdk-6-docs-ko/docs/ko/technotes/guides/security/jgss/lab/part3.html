@@ -1,0 +1,135 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>고도의 JGSS 시큐리티 프로그래밍 - xrath.com 에서 번역됨</title>
+  
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="keywords" value="">
+  <meta name="description" value="">
+  
+  <!--      <link rel="stylesheet" href="index-j1_files/default.css"><!--stopindex    .style1 { 	color: #FF0000; 	font-style: italic; 	font-weight: bold; } .style8 {font-size: 12pt} .style10 {color: #594fbf} -->
+
+<style type="text/css">
+
+. style1 {
+	color: #FF0000;
+	font-style: italic;
+	font-weight: bold;
+}
+. style8 {font-size: 12pt}
+. style10 {color: #594fbf}
+
+p, li,  ul li { margin-left: 40pt;
+                   font-family: Helvetica, Arial, sans-serif;
+			    font-size: medium; 
+			    }
+
+h2  { margin-left: 40pt;
+      margin-top:32pt;
+      font-family: Helvetica, Arial, sans-serif;
+	 font-size: larger; }
+	 
+h3	{ font-family: helvetica, arial, sans-serif;
+       font-size: medium;
+       font-weight: bold; 
+
+	  margin-left: 40pt;
+	  }
+			    
+</style>
+
+
+<meta name="author" content="Seema Malkani">
+<meta name="author" content="Seema Malkani"></head>
+
+<body leftmargin="0" topmargin="0" style="background-color: rgb(255, 255, 255);" marginheight="0" marginwidth="0">
+
+
+
+
+
+
+
+<!-- part III --> <a name="PART3"></a> 
+<h2 class="main1"><a name="PART3">제 III 부 :Kerberos 환경에서의 싱글 싸인온의 배치</a> </h2>
+
+
+<h2 style="text-align: left;"><a name="SSO" href="#SSO"></a> 과제 6:싱글 싸인온의 배치</h2>
+
+<h3>이 과제의 목표:</h3>
+
+<P>이 과제의 목표는, 인증에 Kerberos 를 사용해 「싱글 싸인온」을 실시하는 JAAS 어플리케이션을 구성하는 방법에 대해 학습하는 것입니다. 싱글 싸인온은, 사용자가 시스템 또는 일련의 서비스에 대해서 1 회만 인증을 실시할 필요가 있는 것을 의미합니다. 초기 인증뒤, 사용자는 초기 인증에 사용한 것과 같은 아이덴티티를 사용해, 시스템내외의 서비스에 액세스 할 수 있습니다. </p>
+
+<p>싱글 싸인온은, 다른 타입의 인증을 기술하는 경우에 사용할 수 있습니다. HTTP 베이스의 네트워크 싱글 싸인온 프로토콜이 있습니다. 네트워크 서비스용의 Kerberos 베이스의 싱글 싸인온이 있습니다. 이 과제에서는, Kerberos 베이스의 시스템으로 싱글 싸인온을 실시하는 방법에 대해 설명합니다. 또, 기반이 되는 네이티브  operating system로부터 벌써 취득되고 있는 Kerberos 자격을 임포트 하는 방법에 대해서도 설명합니다.
+</p>
+<h3>이 과제의 내용 및 자원:</h3>
+
+
+
+<ol>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/single-signon.html">Kerberos 를 사용한 Java 의 싱글 싸인온</a> </li>
+</ol>
+<p>또, Kerberos 및 Java GSS 의 내용 설명에 대해서는,<a href="part1.html#KRB5BG">과제 2</a>  및 <a href="part2.html#JGSSBG">4</a>  의 설명을 참조해 주세요.
+
+
+<p><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;">실행 순서:</span></span></p>
+
+
+<ol>
+<li>JAAS 구성 파일을 편집합니다. 이것은 <a href="src/jaas-krb5.conf"><code>src/jaas-krb5.conf</code></a>  에 있습니다. </li>
+</ol>
+
+
+<div>
+
+<p>이 파일에는, 「클라이언트」 및 「서버」의 2 개의 엔트리가 있습니다. 클라이언트 엔트리에, 행<b><tt>「useTicketCache=true」</tt></b>를 추가합니다. </p>
+
+<p>갱신된 <code>jaas-krb5.conf</code> 의 코드 리스트</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>client {</code></li>
+<li><code>&nbsp; &nbsp; com.sun.security.auth.module.Krb5LoginModule required</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 0, 0);">useTicketCache=true</span></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;principal="test";</code></li>
+        <li><code>};</code></li>
+<li><code>server {</code></li>
+<li><code>&nbsp;&nbsp; com.sun.security.auth.module.Krb5LoginModule required</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;useKeyTab=true</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;storeKey=true</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;keyTab=sample.keytab</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;principal="host/j1hol-001";</code></li>
+        <li><code>};</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</p>
+</div>
+<ol style="list-style-type: decimal;" start="2">
+<li>네이티브  operating system에의 Kerberos 로그인을 실행합니다. <!-- This step is usually not necessary in a typical enterprise environment because the Kerberos login would be done automatically as part of by the operating system's login procedure. However, in this  environment, due to multiple labs running on the same machine with different requirements, the Kerberos login was not part of the operating system login. --> <br> Kerberos 에 로그인하려면 , 다음과 같이 <b>kinit</b> 커멘드를 사용합니다.  <b> <code></code>
+<pre><blockquote><br>% kinit test<br></blockquote></pre>
+</b>다음에, 패스워드의 입력이 요구되었을 경우는,<tt>changeit</tt> 을 입력합니다.
+  </li>
+<li>이전과 같게 과제 1 ?  5 의 클라이언트 프로그램 및 서버 프로그램을 실행하면(자), 클라이언트 어플리케이션으로부터 패스워드의 입력이 요구되는 것이 없어집니다. </li>
+</ol>
+</span><span style="font-family: helvetica,arial,sans-serif;">
+<hr> <a name="PART3"></a> 
+
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
+  <tbody>
+    <tr>
+      <td class="grey1"><span class="sp5">&nbsp;</span></td>
+    </tr>
+  </tbody>
+</table>
+<div class="sitelinks" align="center"> <a href="http://wwws.sun.com/company/">Company Info</a>  &nbsp;&nbsp;|&nbsp;&nbsp; <a href="http://wwws.sun.com/contact/">Contact</a>  &nbsp;&nbsp;|&nbsp;&nbsp; Copyright 2006 Sun Microsystems <br>
+</div>
+<!-- END GLOBAL FOOTER -->
+</body></html>

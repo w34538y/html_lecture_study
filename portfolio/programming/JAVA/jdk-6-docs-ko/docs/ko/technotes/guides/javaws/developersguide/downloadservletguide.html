@@ -1,0 +1,439 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
+<html>
+<title>JnlpDownloadServlet 가이드 - xrath.com 에서 번역됨</title>
+<link href="../../deployment/css/styles1.css" rel="stylesheet" type="text/css">
+
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<body bgcolor="white">
+<hr>
+<h1>JnlpDownloadServlet 가이드</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="../../../../technotes/guides/javaws/developersguide/menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p>
+<h2>
+목차</h2>
+
+<blockquote><b><a href="#intro">처음에</a> </b> <br> <b><a href="#examples">례</a> </b> <br> <b><a href="#configuration">서브 렛의 구성</a> </b> <br><b><a href="#resources">자원의 지정</a> </b> <br><b><a href="#mapping">자원에의 요구의 매핑</a> </b> <br><b><a href="#processing">JNLP 파일의 처리</a> </b> <br><b><a href="#pack200">Pack200 의 지원</a> </b>
+</blockquote>
+
+<h2><a NAME="intro"></a>  	처음에</h2>
+<p> Java Web Start 에서는, JDK 의 <code>sample/jnlp</code> 디렉토리에 서브 렛이 포함되어 있습니다. 이 서브 렛은, Web 어카이브(archive) (<code>. war</code>) 파일에 패키지화된 JNLP 파일과 그 관련 자원, 또는 어카이브(archive)되어 있지 않은 디렉토리에서 사용할 수 있습니다. 이 서브 렛의 목적은, JNLP 어플리케이션용의 간단해 편리성의 높은 패키징 형식을 제공하는 것에 의해, Tomcat 나 Java EE 준거의 어플리케이션 서버등의 Web 컨테이너에 JNLP 어플리케이션을 용이하게 배치할 수 있도록(듯이) 하는 것입니다.  </p>
+<p> 다운로드 서브 렛은, 다음의 기능을 지원합니다.  </p>
+<ul>
+<li>JNLP 파일에의 코드 베이스 URL의 자동 인스톨.  이것에 의해, 하드 코드 된 URL 를 수동으로 JNLP 파일에 인스톨 할 필요가 없어집니다. </li>
+<li>JNLP 파일의 타임 스탬프의 명시적인 지정.  파일 시스템의 타임 스탬프와는 별도로, 타임 스탬프를 지정할 수 있습니다. </li>
+<li>JNLP 스펙 v1. 0.1 에 정의되고 있는, 모든 다운로드 프로토콜의 지원. 기본 다운로드 프로토콜, 버젼 베이스의 다운로드 프로토콜, 및 확장 다운로드 프로토콜이 있습니다. </li>
+<li>버젼 베이스의 정보는, Web archive파일 또는 디렉토리 마다 설정됩니다. 이 때문에, 어카이브(archive) 전체를 일원 관리하기 위한 파일은 필요 없습니다.  </li>
+<li>JARDiff 파일의 자동 생성</li>
+<li>Pack200 의 지원</li>
+</ul>
+<p> 패키지화를 지원하고 있는 것은,<tt>JnlpDownloadServlet</tt> 라고 하는 1 개의 서브 렛입니다. 이 서브 렛은,<tt>jnlp-servlet.jar</tt> 파일에 패키지화되고 있습니다. <tt> jnlp-servlet.jar</tt> 파일은, SDK 의 <code>samples/jnlp/servlet/</code> 아래에 있습니다. </p>
+<p> 다음에, 서브 렛의 사용 방법을 나타내는 2 개의 예, 및 서브 렛의 기능의 상세를 설명합니다.  </p>
+<h2><a NAME="examples" id="examples"></a> 례</h2>
+<p> 1 번째의 예에서는, 버젼 베이스의 다운로드를 사용하지 않고 , 어플리케이션을 WAR 파일에 패키지화하는 방법을 나타냅니다. <tt>JnlpDownloadServlet</tt> 를 사용해, 요구시에 정확한 URL (URL 절대 패스)를 JNLP 파일에 삽입합니다. 2 번째의 예에서는, 버젼 베이스의 다운로드를 지원하는 방법을 나타냅니다.  <a name="example1"></a> 
+</p>
+<h3>버젼 다운로드 프로토콜을 사용하지 않는 WAR 파일</h3>
+<p><tt>example1.war</tt> 에는, 이하의 파일이 포함되어 있습니다.  </p>
+<pre>
+   /index.html
+   /app/launch.jnlp
+   /app/application.jar
+   /app/images/icon.gif
+   /WEB-INF/web.xml
+   /WEB-INF/lib/jnlp-servlet.jar
+   /WEB-INF/lib/&lt;XML 퍼서의 jar 파일 &gt; (서브 렛 컨테이너가 J2SE 1.4+ 를 실행하고 있는 경우는 필요없음)
+</pre>
+<p> 어플리케이션의 JNLP 파일은, 다음과 같이 됩니다.  </p>
+<pre>
+   TS: 2002-04-23 19:21:05
+   &lt;? xml version="1.0" encoding="UTF-8"? >
+   &lt;jnlp codebase="$$codebase">
+     &lt;information>
+         &lt;title>Example 1&lt;/title>
+         &lt;vendor>Myself&lt;/vendor>
+         &lt;description>just an example&lt;/description>
+         &lt;icon href="images/icon.gif"/>
+     &lt;/information>
+     &lt;resources>
+       &lt;j2se version="1.2+"/>
+       &lt;jar href="application.jar"/>
+     &lt;/resources>
+     &lt;application-desc/>
+   &lt;/jnlp>
+</pre>
+<p> <tt>TS</tt> 태그가 붙은 최초의 행에는, 서브 렛이 돌려주는 JNLP 파일의 타임 스탬프가 포함되어 있습니다. 타임 스탬프의 형식은,<a href="#iso8601">ISO 8601 형식</a>입니다. 이 행이 생략 되면(자), WAR 파일내의 파일의 타임 스탬프가 사용됩니다. <tt>$$codebase</tt> 캐릭터 라인은,<tt>JnlpDownloadServlet</tt> 에 의해, 요구를 실시하는 실제의 URL 로 옮겨집니다.  </p>
+<p> <tt>web.xml</tt> 파일은, JNLP 파일에의 모든 요구에 대해서 <tt>JNLPDownloadServlet</tt> 를 호출하도록(듯이), Web 컨테이너에 지시합니다.  </p>
+<pre>
+  &lt;web-app>
+     &lt;servlet>
+        &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+        &lt;servlet-class>jnlp.sample.servlet.JnlpDownloadServlet&lt;/servlet-class>
+     &lt;/servlet>
+     &lt;servlet-mapping>
+        &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+        &lt;url-pattern>*. jnlp&lt;/url-pattern>
+     &lt;/servlet-mapping>
+  &lt;/web-app>
+</pre>
+<p> <tt>JnlpDownloadServlet</tt> 가 동작하기 위해서는, XML 퍼서가 필요합니다. 서브 렛 컨테이너가 J2SE 1.4+ 를 실행하고 있는 경우는, J2SE 에 XML 퍼서가 통합되고 있습니다. J2SE 1.4+ 를 실행하고 있지 않는 경우는, Java XML 퍼서를 구현하는 jar 파일을 <tt>WEB-INF/lib</tt> 디렉토리에 추가해 주세요. 퍼서의 레퍼런스 구현은,<a href="http://java.sun.com/xml/">http://java.sun.com/xml</a>  로부터 다운로드할 수 있습니다.  버젼 다운로드 프로토콜을 사용하는 WAR 파일 <a name="example2"></a> 
+</p>
+<h3>버젼 다운로드 프로토콜을 사용한 WAR 파일</h3>
+<p><tt>example2.war</tt> 에는, 다음의 파일이 포함되어 있습니다.  </p>
+<pre>
+   /index.html
+   /app/version.xml
+   /app/launch.jnlp
+   /app/application.jar
+   /app/lib__V2. 1. jar
+   /app/images/icon.gif
+   /WEB-INF/web.xml
+   /WEB-INF/lib/jnlp-servlet.jar
+   /WEB-INF/lib/&lt;XML 퍼서의 jar 파일 &gt; (서브 렛 컨테이너가 J2SE 1.4+ 를 실행하고 있는 경우는 필요없음)
+</pre>
+<p> <tt>/app</tt> 디렉토리에는, 2 개의 JAR 자원,<tt>application.jar</tt> 와 <tt>lib.jar</tt> 가 포함됩니다. lib.jar</tt> 는, 명명 규약을 사용해 버젼 ID 2.1 을 관련짓습니다 (즉, 버젼 정보는 파일 마다 관련지을 수 있습니다). <tt>application.jar</tt> 파일의 버젼은,<tt>version.xml</tt> 파일에 기술됩니다 (즉, 버젼 정보는 디렉토리 마다 기술됩니다). <tt>version.xml</tt> 파일은, 다음과 같이 됩니다.  </p>
+<pre>
+   &lt;jnlp-versions>
+      &lt;resource>
+         &lt;pattern>
+           &lt;name>application.jar&lt;/name>
+            &lt;version-id>1.1&lt;/version-id>
+         &lt;/pattern>
+         &lt;file>application.jar&lt;/file>
+      &lt;/resource>
+   &lt;/jnlp-versions>
+</pre>
+<p> 어플리케이션의 JNLP 파일은, 다음과 같이 됩니다.  </p>
+<pre>
+   TS: 2002-04-23 19:21:05
+   &lt;? xml version="1.0" encoding="UTF-8"? >
+   &lt;jnlp codebase="$$codebase" href="$$name">
+     &lt;information>
+         &lt;title>Example 2&lt;/title>
+         &lt;vendor>Myself&lt;/vendor>
+         &lt;description>just an example&lt;/description>
+         &lt;icon href="images/icon.gif"/>
+     &lt;/information>
+     &lt;resources>
+       &lt;j2se version="1.2+"/>
+       &lt;jar href="application.jar" version="1.1"/>
+       &lt;jar href="lib.jar" version="2.1"/>
+     &lt;/resources>
+     &lt;application-desc/>
+   &lt;/jnlp>
+</pre>
+<p> 마지막으로,<tt>/app</tt> 디렉토리에의 모든 요구에 대해서 <tt>JnlpDownloadServlet</tt> 가 불려 가도록(듯이),<tt>web.xml</tt> 파일을 구성합니다.  </p>
+<pre>
+  &lt;web-app>
+     &lt;servlet>
+        &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+        &lt;servlet-class>jnlp.sample.servlet.JnlpDownloadServlet&lt;/servlet-class>
+     &lt;/servlet>
+     &lt;servlet-mapping>
+        &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+        &lt;url-pattern>/app/*&lt;/url-pattern>
+     &lt;/servlet-mapping>
+  &lt;/web-app>
+</pre>
+<h2><br> <a name="configuration"></a> 서브 렛의 구성</h2>
+<p> 이 섹션에서는,<tt>JnlpDownloadServlet</tt> 를 포함해 WAR 파일을 구성하는 방법, 및 서브 렛의 구성 방법을 설명합니다.  </p>
+<p>&nbsp; </p>
+<h3>WAR 어카이브(archive)에의 서브 렛의 추가</h3>
+<p> 우선, 필요한 서브 렛 코드를 서브 렛 컨테이너로부터 이용할 수 있도록(듯이) 할 필요가 있습니다. 이것은,<tt>WEB-INF/lib</tt> 디렉토리를 생성하는 것으로써 행해집니다. <tt>WEB-INF/lib/</tt> 디렉토리에 <tt>jnlp-servlet.jar</tt> 파일을 포함하는 것에 의해, WAR 어카이브(archive)에 서브 렛이 추가됩니다. 서브 렛은 XML 퍼서에게 액세스 할 필요가 있습니다. 서브 렛 컨테이너가 J2SE 1.4+ 를 실행하고 있는 경우는, J2SE 에 XML 퍼서가 통합되고 있습니다. J2SE 1.4+ 를 실행하고 있지 않는 경우는, Java XML 퍼서를 구현하는 JAR 파일도 추가할 필요가 있습니다. 이러한 파일은,<a href="http://java.sun.com/xml/">http://java.sun.com/xml</a>  로부터 다운로드할 수 있습니다.
+</p>
+<p> 서브 렛의 코드가 이용 가능하게 되면(자), 적절한 JNLP 파일과 JAR 파일세트 또는 지정된 서브 디렉토리에 대해서 서브 렛을 호출하도록(듯이), Web 컨테이너에 지시할 필요가 있습니다. 이것은 모두,<tt>WEB-INF/web.xml</tt> file inside the <tt>&lt;web-app></tt> 태그로 지정합니다.  </p>
+<pre>
+   &lt;web-app>
+      ...
+   &lt;/web-app>
+</pre>
+<p> 최초로, 서브 렛의 호출 방법을 Web 컨테이너에 지시합니다. 이것에는,<tt>&lt;servlet></tt> 태그를 사용합니다.  </p>
+<pre>
+   &lt;servlet>
+      &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+      &lt;servlet-class>jnlp.sample.servlet.JnlpDownloadServlet&lt;/servlet-class>
+   &lt;/servlet>
+</pre>
+<p> 다음에, 서브 렛을 언제 호출할까를 Web 컨테이너에 지시합니다. 이것에는, 몇개의 방법이 있습니다. 1 개의 방법으로서 특정의 디렉토리, 또는 특정의 확장자(extension)를 가지는 파일이 지정되었을 경우에 호출할 수가 있습니다. 예를 들어, JNLP 파일에 대해서 서브 렛을 호출하는 경우는, 다음의 코드를 <tt>web.xml</tt> 파일에 추가합니다.  </p>
+<pre>
+   &lt;servlet-mapping>
+     &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+     &lt;url-pattern>*. jnlp&lt;/url-pattern>
+   &lt;/servlet-mapping>
+</pre>
+<p> 특정의 서브 디렉토리에 대해서 서브 렛을 호출하는 경우는, 다음의 코드를 추가합니다.  </p>
+<pre>
+   &lt;servlet-mapping>
+     &lt;servlet-name>JnlpDownloadServlet&lt;/servlet-name>
+     &lt;url-pattern>/app/*&lt;/url-pattern>
+   &lt;/servlet-mapping>
+</pre>
+<p> 서브 렛의 구성 방법의 예에 대해서는,<a href="#example1">example1</a>  와 <a href="#example2">example2</a>  도 참조해 주세요.  </p>
+<h3>로그 기능</h3>
+<p> 서브 렛에는, 그 동작을 감시하기 위한 로그 기능이 짜넣어지고 있습니다. 생성되는 로그 메세지는, 다음의 4 개의 카테고리로 나눌 수 있습니다.  </p>
+<dl>
+<dt>FATAL (치명적)</dt>
+  <dt>&nbsp;</dt>
+<dd>서브 렛 내부에서 발생한 기능 부전 에러 또는 내부 에러</dd>
+<dt>WARNING (경고)</dt>
+<dd>WAR 파일내의 정보의 처리중 (<tt>version.xml</tt> 파일의 구문 분석등)에 발생한 에러</dd>
+<dt>INFORMATIONAL (정보)</dt>
+<dd>모든 요구, 응답, 디렉토리의 재주사등의 로그</dd>
+<dt>DEBUG</dt>
+<dd>요구가 어떻게 처리되고 있는지를 나타내는 상세한 내부 정보</dd>
+</dl>
+<p> 로그 출력은, 2 개의 서브 렛 초기화 파라미터 <tt>logLevel</tt> 와 <tt>logPath</tt> 에 의해 제어됩니다. 로그 레벨은, NONE, FATAL, WARNING, INFORMATIONAL, DEBUG 의 어느 쪽인가에 설정할 수 있습니다. 로그 패스에는, 출력의 기입처의 파일을 지정합니다. 패스를 지정하지 않는 경우, 로그는 서브 렛의 표준 로그에 기입해집니다 (<tt>ServletContext.log</tt> 메소드를 사용). 예를 나타냅니다.  </p>
+<pre>
+ &lt;servlet>
+    &lt;servlet-name>
+      JnlpDownloadServlet
+    &lt;/servlet-name>
+    &lt;servlet-class>
+      jnlp.sample.servlet.JnlpDownloadServlet
+    &lt;/servlet-class>
+
+    &lt;init-param>
+      &lt;param-name>
+        logLevel
+      &lt;/param-name>
+
+      &lt;param-value>
+        DEBUG
+      &lt;/param-value>
+    &lt;/init-param>
+
+    &lt;init-param>
+      &lt;param-name>
+        logPath
+      &lt;/param-name>
+
+      &lt;param-value>
+        /logs/jnlpdownloadservlet.log
+      &lt;/param-value>
+    &lt;/init-param>
+
+  &lt;/servlet>
+</pre>
+<h3>파일 확장자(extension)와 MIME 타입의 구성</h3>
+<p> 서브 렛은, JNLP 파일과 JAR 파일을 특별히 취급합니다. <a href="#processing">후술의 마디</a>로 설명하도록(듯이),JNLP 파일은 매크로에 의해 전개됩니다. JAR 파일에 대한 버젼 베이스의 요구에 의해, 증분 갱신이 생성되는 일이 있습니다. 서브 렛은, 확장자(extension)를 이용해, 파일이 JNLP 또는 JAR 의 어디에서 있는지를 특정합니다. JNLP 파일의 디폴트의 확장자(extension)는 <tt>. jnlp</tt>, JAR 파일의 디폴트의 확장자(extension)는 <tt>. jar</tt> 입니다. 이러한 디폴트의 확장자(extension)는, 초기화 파라미터 <tt>jnlp-extension</tt> 와 <tt>jar-extension</tt> 를 사용해 변경할 수 있습니다. 예를 나타냅니다.  </p>
+<pre>
+    &lt;init-param>
+      &lt;param-name>
+        jnlp-extension
+      &lt;/param-name>
+
+      &lt;param-value>
+        . xjnlp
+      &lt;/param-value>
+    &lt;/init-param>
+</pre>
+<p> 반환되는 MIME 타입도, 파일의 확장자(extension)에 근거해 결정됩니다. MIME 타입은, Web 컨테이너나 WAR 파일의 구성 파일로 확인됩니다. 매핑이 지정되어 있지 않은 경우, 디폴트의 MIME 타입은 다음과 같이 됩니다.  </p>
+<pre>
+     확장자(extension) 디폴트의 MIME 타입
+     -------------------------------------------
+       . jnlp        application/x-java-jnlp-file
+       . jar         application/x-java-archive
+       . jardiff     application/x-java-archive-diff
+</pre>
+<p> 매핑은,<tt>web.xml</tt> 파일의 <tt>&lt;mime-type></tt> 요소를 사용해 변경할 수 있습니다. 다음에 예를 나타냅니다. 예를 나타냅니다.  </p>
+<pre>
+  &lt;web-app>
+     ...
+     &lt;mime-mapping>
+        &lt;extension>jnlp&lt;/extension>
+        &lt;mime-type>text/ascii&lt;/mime-type>
+     &lt;/mime-mapping>
+     ...
+  &lt;/web-app>
+</pre>
+<h2> <a name="resources"></a> 자원의 지정</h2>
+<p> 이미지, JAR 파일, JNLP 파일등의 어플리케이션 자원은, WAR 파일에 포함됩니다. WAR 파일 자체는 계층 디렉토리 구조가 되어 있어, WAR 파일내의 자원의 위치에 의해, 검색에 사용되는 URL 가 정해집니다.  </p>
+<p> WAR 파일 (또는 서브 렛)이,<tt>http://www.mytool.com/tool/</tt> 로 시작되는 모든 URL 요구를 처리하도록(듯이) 구성되어 있는 경우를 생각해 봅시다. <tt>http://www.mytool.com/tool/app/launch.jnlp</tt> 가 요구되었다고 합니다. 이 경우,<tt>JnlpDownloadServlet</tt> 은, WAR 파일중의 <tt>app/</tt> 디렉토리내에서 <tt>launch.jnlp</tt> 자원을 검색합니다.  </p>
+<h3>버젼 정보를 보관 유지하지 않는 경우</h3>
+<p> 관련지을 수 있었던 버젼 정보를 가지지 않는 자원 (어플리케이션의 JNLP 파일등)은, 단지 WAR 파일에 추가될 뿐입니다. 예를 들어, 위의 예에서는, WAR 파일에는 다음의 파일이 포함됩니다.  </p>
+<pre>
+    /app/launch.jnlp
+</pre>
+<p> 일반적으로, 반환되는 타임 스탬프는, 파일이 WAR 파일내에서 보관 유지하는 최종 갱신 타임 스탬프입니다. 유일한 예외는 JNLP 파일로, 타임 스탬프는 JNLP 파일내에서 명시적으로 지정됩니다 (<a href="#processing">후술의 설명</a>을 참조).
+</p>
+<h3>버젼 정보 그 외를 보관 유지하는 경우</h3>
+<p> JNLP 스펙에 준거한 버젼 베이스 및 확장자(extension) 베이스의 다운로드 프로토콜에서는, 버젼 ID,  operating system, 시스템 아키텍쳐(architecture), 및 로케일에 근거해, 자원을 검색할 수 있습니다. <tt>JnlpDownloadServlet</tt> 는, 이 정보를 자원에 관련짓는 2 개의 기구를 제공합니다. 한편은 명명 규약을 사용해 파일 마다 관련짓고를 실시해, 이제(벌써) 한편은 구성 파일을 사용해 디렉토리 마다 관련짓고를 실시합니다. 같은 디렉토리에서 양쪽 모두의 메소드를 사용할 수 있습니다.  </p>
+<p>다음의 정보를, 자원에 관련지을 수가 있습니다.  </p>
+<ul>
+<li> 자원의 패스 (<tt>/app</tt> 등)</li>
+<li>  자원의 이름 (<tt>launch.jnlp</tt> 등)</li>
+<li>  버젼 ID (1.1. 0 등)</li>
+<li>지원하는  operating system의 리스트 (<tt>SunOS Linux</tt> 등) </li>
+<li>지원하는 아키텍쳐(architecture)의 리스트 (<tt>x86</tt> 등) </li>
+<li>지원하는 로케일의 리스트 (<tt>da da_DK</tt> 등) </li>
+<li>버젼 ID 가 제품의 버젼 또는 플랫폼의 버젼의 어디에서 있는지를 나타내는 플래그 (JRE 다운로드에서만 사용) </li>
+</ul>
+<p> 패스는, WAR 어카이브(archive)내의 자원의 위치에 의해 지정됩니다. 나머지의 정보는, 명명 규약을 사용해 지정되는지,<tt>version.xml</tt> 파일내에서 지정됩니다.  </p>
+<h3>자원의 명명</h3>
+<p> 이중 밑줄 (__) 마커가 파일명에 포함되는 경우, 파일의 명명 규약이 사용됩니다. 파일명은, 다음에 나타내는 BNF 표기법에 따라 구문 분석 됩니다.  </p>
+<pre>
+	file    ::= name __ options .  ext
+	options ::= option ( __ options ) *
+	option  ::= V version-id |
+        	    O os |
+            	    A arch |
+            	    L locale
+</pre>
+<p> 버젼 ID 는, 파일 마다 1 개(살)만 지정할 수 있습니다. 다만, os, arch, locale 의 각 필드는 복수 지정할 수 있습니다. 예를 나타냅니다.  </p>
+<pre>
+	application__V1. 2__Len_US__Len.jar
+</pre>
+<p> 이 예에서는, 자원 <tt>application.jar</tt> 에는, 버젼 ID 1.2 로 로케일 <tt>en_US</tt> 및 <tt>en</tt> 를 관련지을 수 있고 있습니다.  </p>
+<h3><tt>version.xml</tt> 파일</h3>
+<p> 각 디렉토리에 <tt>version.xml</tt> 파일을 배치하는 것으로써, 특정의 그 디렉토리내의 파일의 추가 정보 (버젼 ID 등)를 기술할 수 있습니다. 이 파일은, 파일 명명 규약 대신에 사용할 수가 있습니다.  </p>
+<p> 예를 들어, 디렉토리내에 파일 <tt>application-1_2-us.jar</tt> 와 <tt>version.xml</tt> 를 배치해,<tt>version.xml</tt> 의 내용을 다음과 같이 합니다.  </p>
+<pre>
+       &lt;jnlp-versions>
+          &lt;resource>
+             &lt;pattern>
+                &lt;name>application.jar&lt;/name>
+                &lt;version-id>1.2&lt;/version-id>
+                &lt;locale>en_US&lt;/locale>
+                &lt;locale>en&lt;/locale>
+             &lt;/pattern>
+             &lt;file>application-1_2-us.jar&lt;/file>
+         &lt;/resource>
+       &lt;/jnlp-versions>
+</pre>
+<p> 이것은,<tt>application__V1. 2__Len_US__Len.jar</tt> 라는 이름의 파일을 디렉토리내에 배치하는 것이라고 같은 것이 됩니다.  </p>
+<p> <tt>version.xml</tt> 파일중에서 플랫폼 버젼 ID 를 지정하는 것으로써, 자원을 지정할 수도 있습니다. 이 경우, 자원은, JRE 용의 특정의 플랫폼 요구를 채우기 위해서(때문에) 사용됩니다. 플랫폼 버젼 ID 첨부의 자원은,<tt>&lt;platform></tt> 요소를 사용해 지정됩니다. 예를 나타냅니다.  </p>
+<pre>
+	  &lt;platform>
+             &lt;pattern>
+                &lt;name>JRE&lt;/name>
+                &lt;version-id>1.3&lt;/version-id>
+                &lt;locale>en_US&lt;/locale>
+                &lt;locale>en&lt;/locale>
+             &lt;/pattern>
+             &lt;file>j2re-1_3. 0-us.jnlp&lt;/file>
+             &lt;product-version-id>1.3. 0&lt;/product-version-id>
+         &lt;/platform>
+</pre>
+<p> 현재 로컬 시스템에 인스톨되어 있지 않은 Java 2 플랫폼의 버젼을 어플리케이션이 요구하면(자), Java Web Start 는 플랫폼 버젼 요구를 내부에서 생성합니다.  </p>
+<p> <tt>version.xml</tt> 의 모든 문서형 정의 (DTD)를 다음에 나타냅니다.  </p>
+<pre>
+   &lt;! ELEMENT jnlp-versions &lt;resource*, platform*)>
+   &lt;! ELEMENT resource (pattern, file)>
+   &lt;! ELEMENT platform (pattern, file, product-version-id)>
+   &lt;! ELEMENT pattern (name, version-id, os*, arch*, locale*)>
+   &lt;! ELEMENT name (#PCDATA)>
+   &lt;! ELEMENT version-id (#PCDATA)>
+   &lt;! ELEMENT os (#PCDATA)>
+   &lt;! ELEMENT arch (#PCDATA)>
+   &lt;! ELEMENT locale (#PCDATA)>
+   &lt;! ELEMENT file (#PCDATA)>
+   &lt;! ELEMENT product-version-id (#PCDATA)>
+</pre>
+<h2><a NAME="mapping"></a> 자원에의 요구의 매핑</h2>
+<p> JNLP 스펙에는, 4 종류가 다른 다운로드 요구가 정의되고 있습니다.  Java Web Start (보다 일반적으로는 JNLP 클라이언트)는, 자원의 요구시에, 서버에 대해서 이러한 다운로드 요구를 실행할 수 있습니다.  </p>
+<ul>
+<li><b>기본 다운로드 요구:</b>이것은, 특정의 파일에 대한 일반적으로의 URL 요구입니다. 응답의 <tt>Last-Modified</tt> 필드를 사용해, 서버상에서 갱신이 가능한가 어떤가가 판단됩니다. 기본 다운로드 요구는, 모든 resource type로 사용할 수 있습니다.  </li>
+<li><b>버젼 베이스의 다운로드 요구:</b>이 요구 타입은, JAR 파일과 이미지에 대해서 사용할 수 있습니다. 즉,<tt>version</tt> 속성이 포함되어 있는 경우,<tt>&lt;jar></tt>,<tt>&lt;nativelib></tt>, 및 <tt>&lt;icon></tt> 요소가 존재하면(자), 버젼 베이스의 다운로드 요구가 생성됩니다.  </li>
+<li><b>확장 다운로드 요구:</b>이 요구 타입은, 버젼 베이스의 다운로드 요구의 확장 기능이며,<tt>&lt;j2se></tt> 또는 <tt>&lt;extension></tt> 요소에 의해 생성됩니다. 버젼 정보 외에,  operating system, 시스템 아키텍쳐(architecture), 및 로케일에 관한 정보도 포함됩니다.  </li>
+<li><b>플랫폼 버젼의 다운로드 요구:</b>이것은, 확장 다운로드 요구를 닮아 있습니다만, Java 2 SE Runtime Environment (J2RE)의 특정의 버젼을 요구할 때에 사용됩니다. 클라이언트 시스템에 현재 인스톨되어 있지 않은 J2RE 의 특정의 버젼을 JNLP 파일이 요구했을 경우, 이 요구가 Java Web Start 에 의해 생성됩니다.  </li>
+</ul>
+<p> 요구는, 최초로 <tt>JNLPDownloadServlet</tt> 에 의해 처리되어 다음의 정보가 추출됩니다.  </p>
+<ul>
+<li> WAR 파일내의 패스 </li>
+<li> 요구된 파일의 이름 </li>
+<li> 버젼 캐릭터 라인 (<tt>version-id</tt> 파라미터 또는 <tt>platform-version-id</tt> 파라미터) </li>
+<li> 현재의 버젼 ID (<tt>current-version-id</tt> 파라미터) </li>
+<li>  operating system의 리스트 (<tt>os</tt> 파라미터) </li>
+<li> 아키텍쳐(architecture)의 리스트 (<tt>arch</tt> 파라미터) </li>
+<li> 로케일의 리스트 (<tt>locale</tt> 파라미터) </li>
+</ul>
+<p> <a href="#example2">example2</a>  의 사례로, 그것이 <tt>http://www.mytool.com/tool2/</tt> 에 배치되고 있는 경우를 생각해 봅시다. 이 때,<tt>http://www.mytool.com/tool2/app/lib.jar&version-id=2. 1</tt> 이 실행된다고 합니다. 이 경우, 자원의 패스는 <tt>app/</tt> 에, 이름은 <tt>lib.jar</tt> 에, 버젼 캐릭터 라인은 <tt>2.1</tt> 에, OS, 아키텍쳐(architecture), 로케일의 각 리스트는 비웁니다.  </p>
+<p> 디렉토리에의 요구 (<tt>http://www.mytool.com/tool2/app/</tt> 등)에는, 디폴트의 파일명<tt>launch.jnlp</tt> 가 추가됩니다. 이 때문에, 이 요구는 <tt>http://www.mytool.com/tool2/app/launch.jnlp</tt> 와 같게 됩니다.  </p>
+<h3>기본 다운로드 요구의 처리</h3>
+<p>버젼 ID 가 지정되어 있지 않은 요구 (<tt>version-id</tt> 파라미터도 <tt>platform-version-id</tt> 파라미터도 지정되어 있지 않은 요구)는, 기본 다운로드 요구로서 처리됩니다.  </p>
+<p> 최초로, 요구에 이중 밑줄 (__)이 포함될지 어떨지, 또는 <tt>version.xml</tt> 파일에의 요구인가 어떤가가 체크됩니다. 어딘가에 해당하는 경우, 요구는 거부되어 HTTP 404 에러 코드가 돌려주어집니다.  </p>
+<p> 다음에,<tt>JnlpDownloadServlet</tt> 에 의해, 지정된 패스와 이름을 가지는 자원이 WAR 파일내에서 검색되어 발견되었을 경우는 그 자원이 돌려주어집니다. 발견되지 않았던 경우는, 그 요구에 대해서 HTTP 404 에러 코드가 돌려주어집니다.  </p>
+<p> 발견된 자원이 JNLP 파일의 경우는,<a href="#processing">후술</a>의 방법으로 사전 처리 되고 나서 돌려주어집니다.  JARDiff 의 자동 생성 </p>
+<h3>버젼 베이스의 다운로드 요구의 처리</h3>
+<p>버젼 ID 가 지정된 자원의 검색 방법은, 버젼 베이스의 다운로드 요구, 확장 다운로드 요구, 플랫폼 버젼의 다운로드 요구에 대해 동일합니다.  </p>
+<p> 우선,<tt>JnlpDownloadServlet</tt> 는, URL 요구가 (요구중의 패스에 근거해) 액세스 하는 WAR 파일 디렉토리내에 있는 모든 자원의 데이타베이스를 구축합니다. <tt>version.xml</tt> 파일 (존재하는 경우)과 전술의 명명 규약을 사용하는 디렉토리내의 파일 리스트를 주사 하는 것에 의해, 데이타베이스가 구축됩니다. 서브 렛은, 정보를 내부에 캐쉬합니다. <tt>version.xml</tt> 파일의 타임 스탬프가 마지막에 주사 한 것보다 새로운 경우에게만, 재주사가 실행됩니다. 이 때문에, 명명 규약을 이용해 파일을 추가하는 경우는,<tt>version.xml</tt> 파일의 타임 스탬프를 갱신해, 서브 렛에 의한 재주사가 확실히 실행되도록 해 주세요.  </p>
+<p> 다음에, 서브 렛은 데이타베이스내의 엔트리를 주사 해, 지정된 요구에 일치하는 것을 검색합니다 (일치 규칙에 대해서는 후술 합니다). 플랫폼에 관계하지 않는 요구의 경우, 최초로 <tt>version.xml</tt> 파일내의 <tt>resource</tt> 엔트리가 지정된 순서로 주사 되어 다음에 명명 규약을 사용해 지정된 엔트리가 주사 됩니다. 플랫폼 버젼 요구의 경우,<tt>version.xml</tt> 파일내의 <tt>platform</tt> 엔트리가, 지정된 순서로 주사 됩니다. 요구를 채우는 엔트리가 복수 존재하는 경우, 버젼 ID 의 값이 가장 큰 엔트리가 돌려주어집니다. 요구를 채우는 엔트리가 복수 존재해, 한편 버젼 ID 의 값이 동일한 경우, 지정된 최초의 엔트리가 돌려주어집니다.  </p>
+<p> 일치 규칙은, 다음과 같습니다.  </p>
+<ol>
+<li>자원의 이름이, 요구에 일치할 필요가 있다 </li>
+<li>자원의 버젼 ID 가, 요구내의 버젼 캐릭터 라인에 일치할 필요가 있다
+  </li>
+<li> operating system, 아키텍쳐(architecture), 로케일의 각 리스트에 대해서는, 다음의 규칙이 적용된다
+    <ol>
+<li>자원에 대해빈 상태(empty)의 리스트가 지정되었을 경우, 일치로 간주해진다 </li>
+<li>자원에 대해빈 상태(empty)이 아닌 리스트가 지정되었을 경우, 자원으로 지정된 1 개(살) 이상의 값이, 요구내에서 지정된 1 개(살) 이상의 값의 전치와 동일하면, 일치로 간주해진다 </li>
+    </ol>
+  </li>
+</ol>
+<p>응답으로서 반환된 <tt>x-java-jnlp-version-id</tt> 는, 대응하는 자원의 버젼 ID 가 됩니다. 다만, 플랫폼 요구는 예외로,<tt>version.xml</tt> 파일의 <tt>&lt;product-version-id></tt> 필드로부터 취득됩니다.
+</p>
+<p> 발견된 자원이 JNLP 파일의 경우는,<a href="#processing">후술</a>의 방법으로 사전 처리 되고 나서 돌려주어집니다.  JARDiff 의 자동 생성 </p>
+<h3>JARDiff 의 자동 생성</h3>
+<p>서브 렛은, 가능한 경우에는, 증분 갱신을 자동적으로 생성해, JAR 파일에 돌려줍니다. current-version-id</tt> 파라미터가 요구에 포함되어 있어 서브 렛이 <tt>current-version-id</tt> 의 일치라고 요구된 버젼의 양쪽 모두를 (상기의 일치 규칙으로) 검색할 수가 있어 한편 요구가 JAR 파일에 대하는 것이다 (타겟의 자원의 확장자(extension)가 <tt>. jar</tt>) 경우, JARDiff 파일이 서브 렛에 의해 생성됩니다. JARDiff 파일은, 그 사이즈가 요구된 버젼의 사이즈보다 작은 것으로 있는 한 돌려주어집니다.  </p>
+<p> 생성된 JARDiff 파일은, 지정된 Web 컨테이너에 고유의 일시 디렉토리에 포함됩니다. 서브 렛은,<tt>javax.servlet.context.tempdir</tt> 문맥 속성을 사용해, 일시 작업 디렉토리를 검색합니다.
+</p>
+<h2><a name="processing"></a> JNLP 파일의 처리</h2>
+<p> <tt>JnlpDownloadServlet</tt> 는, JNLP 파일내의 특정의 템플릿의 값을 매크로에 의해 자동적으로 전개해, 현재의 요구에 고유한 URL 로 옮겨놓습니다. 이것에 의해, 하드 코드 된 URL 를 포함하지 않고 , JNLP 파일을 기술 및 배치할 수가 있습니다.  </p>
+<h3>매크로 전개</h3>
+<p>서브 렛은 자동적으로, JNLP 파일내의 특정의 고정 키 (접두사 <tt>$$</tt> 가 붙은 것)를, 현재의 요구에 근거하는 URL 로 옮겨놓습니다. 이러한 키는, 위치에 의존하지 않는 WAR 파일을 작성해, Web 컨테이너내에 배치할 수 있도록(듯이) 설계된 것입니다.  </p>
+<p> 서브 렛이 검색 및 치환을 실시하는 4 개의 키를, 다음의 겉(표)에 나타냅니다.
+</p>
+<pre>
+         패턴치
+         ----------------------------------------------------------------
+         $$codebase    요구의 완전한 URL (JNLP 파일의 이름은 제외하다)
+	 $$name        JNLP 파일의 이름
+         $$context     Web 어카이브(archive)의 베이스 URL
+	 $$site	       Web 사이트의 주소 (WAR 문맥 부분은 제외하다)			
+	  
+</pre>
+<p><b>예를 나타냅니다. </b><a href="#example1">example1</a>  의 WAR 파일을 생각합시다. 이 WAR 파일이<tt>http://www.mytool.com/tool</tt> 에 배치되고 있는 것으로 합니다. 이 경우,<tt>http://www.mytool.com/tool/app/launch.jnlp</tt> 에의 요구에 의해, JNLP 파일이 돌려주어집니다. 매크로에 의해 전개된 키의 값은, 다음과 같이 됩니다.  </p>
+<pre>
+      $$codebase = http://www.mytool.com/tool/app/
+      $$name     = launch.jnlp
+      $$context  = http://www.mytool.com/tool/
+      $$site     = http://www.mytool.com/
+</pre>
+<p> 서브 렛은, JNLP 파일의 형식이나, XML 가 올바르게 형성되고 있는지 어떤지를 검증할 것은 없습니다. 값의 치환은, 단지 텍스트상에서 행해집니다.  </p>
+<h3>명시적인 타임 스탬프</h3>
+<p>명시적인 타임 스탬프를 JNLP 파일에 포함하는 것으로, Web 서버가 돌려주는 타임 스탬프를 일정하게 할 수 있습니다. JNLP 파일이, 라운드로빈 방식 또는 부하 균형 방식에서 동일한 URL 의 서버로서 가동하는 복수의 Web 서버상에서 복제되는 경우, 특히 유용합니다. 같은 수법은, JAR 파일에는 적용되지 않는 것에 주의해 주세요. JAR 파일의 경우, 버젼 베이스의 다운로드 프로토콜을 대신에 사용할 필요가 있습니다.  </p>
+<p> 최초의 행이 <tt>TS:</tt> 로 시작되는 경우, 명시적인 타임 스탬프가 JNLP 에 포함됩니다. 이 경우, 타임 스탬프는 ISO 8601 형식에 근거해 구문 분석 됩니다 (<a href="#iso8601">다음의 마디</a>를 참조). 최초의 행은, 컨텐츠로부터도 삭제됩니다.  </p>
+<p> TS: </tt> 요소를 사용한 샘플 JNLP 파일의 예에 대해서는, 전술의 <a href="#example1">example1</a>  및 <a href="#example2">example2</a>  를 참조해 주세요. </p>
+<p><a name="iso8601"></a>  </p>
+<h3>ISO 8601 형식</h3>
+<p>일반적인 타임 스탬프의 형식은, 다음과 같습니다.  </p>
+<pre>
+   YYYY-MM-DD hh:mm:ss
+</pre>
+<p> 다음에 나타내도록(듯이), 데쉬, 구두점, 및 초를 붙이지 않고 기술할 수도 있습니다.  </p>
+<pre>
+   YYYYMMDDhhmm
+</pre>
+<p> hh 는 24 시간 단위로 표기합니다. 디폴트에서는, 로컬 타임 존이 사용됩니다. 다음에 나타내도록(듯이), 시각의 마지막에 대문자의 Z 를 추가하는 것으로써, UTC (세계 표준시, GMT 로서도 알려진다)를 지정할 수도 있습니다.  </p>
+<pre>
+     23:59:59Z 또는 235959Z
+</pre>
+<p> 캐릭터 라인</p>
+<pre>
+     +hh:mm, +hhmm, 또는 +hh
+</pre>
+<p> (을)를 시각에 추가하는 것으로써, 사용하는 로컬 타임 존이, UTC 에 hh 시간 mm 분을 추가한 것인 것을 지정할 수 있습니다. 경도 제로부터 서쪽의 타임 존 (UTC 보다 전의 시간이 된다)의 경우는, </p>
+<pre>
+     -hh:mm, -hhmm, 또는 -hh
+</pre>
+<p>  (와)과 같이 표기합니다. 예를 들어, 중앙 유럽 표준시 (CET)는 +0100, 미국 및 캐나다의 동부 표준시 (EST)는 -0500 됩니다.  다음의 캐릭터 라인은, 모두 같은 시각을 가리킵니다.  </p>
+<pre>
+     12:00Z = 13:00+01:00 = 0700-0500
+</pre>
+<h2><a name="pack200"></a> Pack200 의 지원</h2>
+<p><code>*. jar.pack.gz</code> 또는 <code>*. jar.gz</code> 파일을 원의 <code>*. jar</code> 파일과 함께 수용할 수 있게 되었습니다. 클라이언트가 pack200-gzip 또는 gzip 파일 형식을 지원하고 있는 경우, 서버로 압축파일을 사용할 수 있으면, 서브 렛은 압축파일을 돌려줍니다. Java Web Start 5.0 에서는, 어느 쪽의 압축 형식도 지원하고 있습니다. 원의 jar 파일과 팩 파일은 양쪽 모두 서버에 수용할 필요가 있습니다.  그렇지 않은 경우, 서브 렛은 팩 파일을 꺼내지 않습니다. 팩 파일은, J2SE 5.0 에 포함되는 pack200.exe 커멘드를 사용해 작성할 수 있습니다. pack200 압축 테크놀러지의 상세한 것에 대하여는,<a href="http://java.sun.com/j2se/1.5.0/docs/guide/deployment/deployment-guide/pack200.html">「Pack200 and Compression for Network Deployment」</a>를 참조해 주세요.
+</body>
+</html>

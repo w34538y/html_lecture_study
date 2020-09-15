@@ -1,0 +1,970 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:08:17 오후 2002" />
+<title>Java 2D&#8482; API 의 개요 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-preface.html" />
+    <link rel="Next" href="j2d-awt.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-preface.html">전의 항목</a>  | <a accesskey="n" href="j2d-awt.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp60754"> </a> <h2 class="pChapNum">
+제 1 장&#160;&#160;
+</h2>
+<a name="wp62980"> </a> <h2 class="pChapTitle">
+Java 2D&#8482; API 의 개요
+</h2>
+<a name="wp62975"> </a> <p class="pBody">
+Java 2D&#8482; API 에서는, Abstract Windowing Toolkit (AWT)의 그래픽스, 텍스트, 및 이미징의 기능이 강화되어, 충실한 사용자 인터페이스와 새로운 종류의 Java&#8482; 어플리케이션을 개발할 수 있게 되어 있습니다.  
+</p>
+<a name="wp61788"> </a> <p class="pBody">
+그래픽스, 폰트, 및 이미지에 관한 풍부한 API 에 가세해, Java 2D API 에서는, 확장된 색의 정의와 합성, 임의의 기하학 도형과 텍스트의 히트 검출, 및 프린터와 표시장치를 위한 통일된 렌더링 모델이 지원되고 있습니다.
+</p>
+<a name="wp61790"> </a> <p class="pBody">
+Java 2D API 에서는, CAD-CAM 라이브러리 및 그래픽스나 이미징의 특수 효과 라이브러리등의 고도의 그래픽스 라이브러리 뿐만이 아니라, 이미지 파일이나 그래픽 파일의 입출력 필터도 작성할 수 있습니다.  
+</p>
+<a name="wp62464"> </a> <p class="pBody">
+Java Media Framework 및 다른 Java Media API 와 함께 Java 2D API 를 사용하면(자), 애니메이션이나 다른 멀티미디어 표현을 작성하거나 표시하거나 할 수 있습니다. Java Animation 및 Java Media Framework 의 API 는, Java 2D API 를 사용해 렌더링을 지원합니다.  
+</p>
+<a name="wp61793"> </a> <h2 class="pHeading1">
+1.1	그래픽스, 텍스트, 및 이미징의 확장
+</h2>
+<a name="wp62206"> </a> <p class="pBody">
+이전의 버젼의 AWT 에서는, 일반적으로의 HTML 페이지의 렌더링에 적절한 간단한 렌더링 패키지가 제공되었습니다만, 복잡한 그래픽스, 텍스트, 또는 이미징의 렌더링에는 기능이 부족했습니다. 이 때문에, 이전의 AWT 에서는, 범용적인 렌더링 가운데, 특정의 개념만이 지원되고 있었습니다. Java 2D&#8482; API 의 AWT 에서는, 보다 유연해 기능이 충실한 렌더링 패키지가 제공되기 (위해)때문에, 보다 범용적인 그래픽스 및 렌더링 조작을 실시할 수가 있게 되었습니다.
+</p>
+<a name="wp62878"> </a> <p class="pBody">
+예를 들어,<code class="cCode">Graphics</code> 클래스를 사용해, 구형, 타원, 및 다각형을 draw 할 수가 있습니다. <code class="cCode">+<code class="cCode">Graphics2D</code> 에서는, 모든 기하학 도형을 실질상 렌더링 할 수 있는 기구가 제공되고 있기 (위해)때문에, 지오 시학 렌더링의 개념이 확장되고 있습니다. 같이 Java 2D API 에서는, 임의의 폭의 형상 첨부선을 draw 해, 실질상 모든 재질감으로 지오 시학 도형을 전부 칠할 수가 있습니다.  
+</p>
+<a name="wp62964"> </a> <p class="pBody">
+기하학적인 형상은,<code class="cCode">Rectangle2D</code> 및 <code class="cCode">Ellipse2D</code> 등의 <code class="cCode">Shape</code> 인터페이스의 구현으로부터 제공됩니다. 예를 들어, 곡선 및 호도 <code class="cCode">Shape</code> 의 구현입니다.
+</p>
+<a name="wp62938"> </a> <p class="pBody">
+전부 칠해 및 펜스 타일은,<code class="cCode">BasicStroke</code>,<code class="cCode">GradientPaint</code>,<code class="cCode">TexturePaint</code>,<code class="cCode">Color</code> 등의,<code class="cCode">Paint</code> 및 <code class="cCode">Stroke</code> 인터페이스로부터 제공됩니다.  
+</p>
+<a name="wp62939"> </a> <p class="pBody">
+<code class="cCode">AffineTransform</code> 에는, 슬캘링, 평행이동, 회전, 변형 등, 2D 좌표의 선형 변환을 정의합니다.
+</p>
+<a name="wp62940"> </a> <p class="pBody">
+클리핑 영역은,<code class="cCode">Rectangle2D</code>,<code class="cCode">GeneralPath</code> 등의 범용 클리핑 영역의 정의에 사용되는 <code class="cCode">Shape</code> 인터페이스와 같은 구현에 의해 정의됩니다.  
+</p>
+<a name="wp62960"> </a> <p class="pBody">
+색의 합성은,<code class="cCode">AlphaComposite</code> 등의 <code class="cCode">Composite</code> 인터페이스의 구현으로부터 제공됩니다.  
+</p>
+<a name="wp62961"> </a> <p class="pBody">
+<code class="cCode">Font</code> 는, 각 <code class="cCode">Shape</code> 에 의해 정의되는 <code class="cCode">Glyph</code> 에 의해 정의됩니다.  
+</p>
+<a name="wp61830"> </a> <h2 class="pHeading1">
+1.2	렌더링 모델
+</h2>
+<a name="wp65374"> </a> <p class="pBody">
+기본적인 그래픽스 렌더링 모델에 대해서는, Java 2D&#8482; API 의 추가에 수반하는 변경은 없습니다. 그래픽을 렌더링 하려면 , 그래픽스 문맥을 설정해,<code class="cCode">Graphics</code> 객체의 렌더링 메소드를 호출합니다.  
+</p>
+<a name="wp65379"> </a> <p class="pBody">
+Java 2D API 의 <code class="cCode">Graphics2D</code> 클래스는, 많은 그래픽스 속성을 지원해, 새로운 렌더링 메소드를 제공하기 위해(때문에),<code class="cCode">Graphics</code> 를 상속하고 있습니다. <code class="cCode"><code class="cCode">Graphics2D</code> 문맥의 설정에 대해서는,<a  href="j2d-awt.html#wp70028">「Graphics2D 를 사용한 렌더링」</a>을 참조해 주세요.
+</p>
+<a name="wp61854"> </a> <p class="pBody">
+Java 2D API 는, 렌더링 장치의 차이를 자동적으로 보정해, 어떠한 종류의 장치에 대해서도 같은 렌더링 모델을 제공합니다. 렌더링처의 장치가 디스플레이에서도 프린터에서도, 어플리케이션 레벨에서의 렌더링 처리는 같습니다.
+</p>
+<a name="wp67727"> </a> <p class="pBody">
+Java<sup class="cSuperscript">TM</sup> 2 SDK 버젼 1.3 의 릴리스에 의해, Java 2D API 는 멀티스크린 환경을 지원합니다. 자세한 것은,<a  href="j2d-intro.html#wp61857">1.2. 1 좌표계</a>  및 <a  href="j2d-awt.html#wp70485">「멀티스크린 환경에서의 렌더링」</a>을 참조해 주세요.
+</p>
+<a name="wp61857"> </a> <h3 class="pHeading2">
+1.2. 1	좌표계
+</h3>
+<a name="wp61859"> </a> <p class="pBody">
+Java 2D API 에서는, 2 종류의 좌표계가 사용되고 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp65480"> </a> <div class="pBullet1"><li> 「사용자 공간」은, 장치에 의존하지 않는 논리적인 좌표계입니다. <em class="cEmphasis"></em>어플리케이션에서는, 이 좌표계만을 사용합니다.  Java 2D 의 렌더링 루틴에 건네주는 기하 도형은 모두, 사용자 공간에서 지정합니다.  </li></div>
+<a name="wp67706"> </a> <div class="pBullet1Last"><li>「디바이스 공간」은 장치에 의존하는 좌표계로, 렌더링처의 장치에 따라서 다릅니다. <em class="cEmphasis"></em><br />「디바이스 공간」은 장치에 의존하는 좌표계로, 렌더링처의 장치에 따라서 다릅니다. 복수의 물리 화면 디바이스에 걸쳐 윈도우를 표시 가능한 가상 데스크탑을 가지는 멀티스크린 환경에서는, 모든 화면을 포함한 가상 데스크탑의 좌표계가 사용됩니다. Java 2D<sup class="cSuperscript">TM</sup> API 에 의한 멀티스크린 환경 지원에 대한 자세한 것은,<a  href="j2d-awt.html#wp70485">「멀티스크린 환경에서의 렌더링」</a>을 참조해 주세요. </li></div>
+</ul>
+<a name="wp67707"> </a> <p class="pBody">
+Java 2D 시스템은, 사용자 공간과 사용하는 렌더링 장치의 디바이스 공간과의 사이에 필요한 변환을, 자동적으로 실시합니다. 모니터의 좌표계는 프린터의 좌표계와 크게 다릅니다만, 어플리케이션으로부터 이 차이가 보일 것은 없습니다.
+</p>
+<a name="wp65471"> </a> <h4 class="pHeading3">
+1.2. 1.1	사용자 공간 
+</h4>
+<a name="wp63158"> </a> <p class="pBody">
+<a  href="j2d-intro.html#wp61866">그림 1-1</a>  에 나타내도록(듯이), 사용자 공간의 원점은 영역의 좌상구석에 있어,<em class="cEmphasis">x</em> 좌표의 값은 왼쪽에서 오른쪽으로,<em class="cEmphasis">y</em> 좌표는 위에서 아래로, 각각 커집니다.
+</p>
+<a name="wp67784"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-introa.gif" height="164" width="478" alt="전의 문장으로, 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp61866"> </a> <div class="pFigureCaption">
+그림 1-1	사용자 공간의 좌표계<br /><br />
+</div><a name="wp63182"> </a> <p class="pBody">
+사용자 공간은, 사용 가능한 모든 장치의 좌표계를 통일하는 추상 표현입니다. 개개의 장치의 디바이스 공간의 원점과 방향은, 사용자 공간과 같은 경우도 다른 경우도 있습니다. 어느 쪽의 경우도, 그래픽 객체가 렌더링 될 때, 사용자 공간의 좌표는 적절한 디바이스 공간에 자동적으로 변환됩니다. 많은 경우, 이 변환은, 기본으로 되어 있는 플랫폼의 디바이스 드라이버를 사용해 행해집니다.  
+</p>
+<a name="wp63193"> </a> <h4 class="pHeading3">
+1.2. 1.2	디바이스 공간
+</h4>
+<a name="wp61870"> </a> <p class="pBody">
+Java 2D API 에서는, 사용자 공간으로부터 디바이스 공간에의 변환을 지원하기 위해서, 3 개의 레벨의 구성 정보가 정의되고 있습니다. 이 정보는, 3 개의 클래스에 캡슐화되고 있습니다
+</p>
+<ul class="pBullet1"><a name="wp61872"> </a> <div class="pBullet1"><li><code class="cCode">GraphicsEnvironment</code></li></div>
+<a name="wp61873"> </a> <div class="pBullet1Plus"><li><code class="cCode">GraphicsDevice</code></li></div>
+<a name="wp61874"> </a> <div class="pBullet1Last"><li><code class="cCode">GraphicsConfiguration</code></li></div>
+</ul>
+<a name="wp61876"> </a> <p class="pBody">
+<code class="cCode">GraphicsEnvironment</code> 와 <code class="cCode">GraphicsDevice</code> 와 <code class="cCode">GraphicsConfiguration</code> 의 3 개의 클래스를 사용해, Java 플랫폼상에서의 렌더링 장치와 폰트의 특정과 사용자 공간으로부터 디바이스 공간에의 좌표변화에 필요한 정보가 모두 나타내집니다. 어플리케이션은 이 정보에 액세스 할 수 있습니다만, 사용자 공간과 디바이스 공간의 사이의 변환을 실시할 필요는 없습니다.
+</p>
+<a name="wp67743"> </a> <p class="pBody">
+<code class="cCode">GraphicsEnvironment</code> 에서는, 특정의 플랫폼의 Java 어플리케이션을 인식할 수 있는 렌더링 장치의 집합이 기술되고 있습니다. 렌더링 장치로서는, 화면, 프린터, 이미지 버퍼등이 있습니다. <code class="cCode">GraphicsEnvironment</code> 에는, 플랫폼에서 이용 가능한 폰트의 일람도 포함되어 있습니다.  
+</p>
+<a name="wp63198"> </a> <p class="pBody">
+<code class="cCode">GraphicsDevice</code> 에서는, 화면이나 프린터 등, 어플리케이션을 인식할 수 있는 렌더링 장치가 기술되고 있습니다. 장치로 사용 가능한 구성은, 각각 <code class="cCode">GraphicsConfiguration</code> 로 나타내집니다. 예를 들어, SVGA 디스플레이 장치는, 640x480x16 색, 640x480x256 색, 800x600x256 색 등, 다양한 모드로 동작할 수 있습니다. SVGA 디스플레이는 <code class="cCode">GraphicsDevice</code> 객체로 나타내져, 개개의 모드는 <code class="cCode">GraphicsConfiguration</code> 객체로 나타내집니다.
+</p>
+<a name="wp63248"> </a> <p class="pBody">
+1 개의 <code class="cCode">GraphicsEnvironment</code> 에는 1 개 이상의 <code class="cCode">GraphicsDevice</code> 를 포함할 수가 있어 개개의 <code class="cCode">GraphicsDevice</code> 에는 1 개 이상의 <code class="cCode">GraphicsConfigurations</code> 를 포함할 수가 있습니다.
+</p>
+<a name="wp61888"> </a> <h3 class="pHeading2">
+1.2. 2	변환
+</h3>
+<a name="wp63314"> </a> <p class="pBody">
+Java 2D API 에서는, 통일된 좌표변화 모델이 사용되고 있습니다. 사용자 공간으로부터 디바이스 공간에의 변환을 포함한 모든 좌표변화는,<code class="cCode">AffineTransform</code> 객체로 나타내집니다. <code class="cCode">AffineTransform</code> 에서는, 변환 조작의 규칙이 행렬로 정의되고 있습니다.  
+</p>
+<a name="wp63322"> </a> <p class="pBody">
+그래픽스 문맥에 <code class="cCode">AffineTransform</code> 를 추가하면, 도형, 텍스트, 또는 이미지를 렌더링 할 경우에, 회전, 확대 축소, 평행이동, 변형등을 실행할 수 있습니다. 추가한 변환은, 그 문맥으로 렌더링 되는 모든 그래픽 객체에 적용됩니다. 변환은, 사용자 공간의 좌표가 디바이스 공간의 좌표에 변환될 때 행해집니다.
+</p>
+<a name="wp61894"> </a> <h3 class="pHeading2">
+1.2. 3	폰트
+</h3>
+<a name="wp65521"> </a> <p class="pBody">
+캐릭터 라인은, 일반적으로, 캐릭터 라인을 구성하는 문자라고 하는 관점으로부터 생각됩니다. 캐릭터 라인을 draw 할 때, 그 체재는, 선택되고 있는 폰트로 정해집니다. 다만, 캐릭터 라인을 표시하기 위해서 폰트로 사용되고 있는 형상은, 개개의 문자와 일치하지 않는 경우도 있습니다. 예를 들어, 출판 업계등에서는, 2 개(살) 이상의 문자의 특정의 편성을, 「합자」라고 불리는 단일의 형상에 옮겨놓는 것이 자주(잘) 행해집니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp65522"> </a> <p class="pBody">
+캐릭터 라인안의 문자를 나타내기 위해서(때문에) 폰트로 사용되는 형상을, 「Glyph」라고 부릅니다. 폰트에서는,<em class="cEmphasis">a</em> 와 같은 이탤릭 문자를 복수의 Glyph로 나타내거나<em class="cEmphasis">fi</em> 와 같은 특정의 문자의 편성을 최종적으로 1 개의 Glyph로 나타내거나 하는 일이 있습니다. Java 2D API 의 경우, Glyph는 단순한 <code class="cCode">Shape</code> 로, 다른 <code class="cCode">Shape</code> 와 같이 조작하거나 렌더링 하거나 할 수 있습니다.  
+</p>
+<a name="wp65523"> </a> <p class="pBody">
+「폰트」는 Glyph의 집합이라고 생각할 수가 있습니다. 1 개의 폰트에는, heavy, medium, oblique, gothic, regular 등 많은 파생형이 있는 경우가 있습니다. 이러한 다른 파생형을, 「페이스」라고 부릅니다. <em class="cEmphasis"></em>같은 폰트로부터 만들어지는 페이스는 모두 닮은 문자 체재의 디자인이 되어 있어, 같은 「패밀리」의 멤버라고 생각할 수가 있습니다. <em class="cEmphasis"></em>즉, 특정의 스타일을 가지는 Glyph의 집합이 폰트 페이스를 형성해, 폰트 페이스의 집합이 폰트 패밀리를 형성해, 폰트 패밀리의 집합이 특정의 <code class="cCode">GraphicsEnvironment</code> 로 이용할 수 있는 폰트의 그룹을 형성하고 있습니다.  
+</p>
+<a name="wp61900"> </a> <p class="pBody">
+Java 2D API 에서는, Helvetica Bold 와 같이 특정의 폰트 페이스를 나타내는 이름을 사용해 폰트를 지정합니다. 이것은 JDK 1.1 과 다른 점입니다.  JDK 1.1 에서는, 폰트는 논리명으로 기술되고 있어 특정의 플랫폼에서 이용 가능한 폰트 페이스의 종류에 따라서는, 같은 논리명이 다른 폰트 페이스에 매핑 됩니다. 구버젼과의 호환성을 유지하기 (위해)때문에, Java 2D API 에서는, 폰트 페이스명 뿐만이 아니라 논리명에 의한 폰트의 지정도 지원되고 있습니다.  
+</p>
+<a name="wp61904"> </a> <p class="pBody">
+Java 2D API 를 사용하면(자), 패밀리, 페이스, 사이즈, 또 언어까지 다른 복수의 폰트를 포함한 캐릭터 라인을, 변환하거나 렌더링 하거나 할 수가 있습니다. 텍스트의 체재는, 텍스트의 레이아웃과는 떼어내져, 논리적으로 보관 유지됩니다. 폰트의 체재는 <code class="cCode">Font</code> 객체를 사용해 기술되어, 레이아웃의 정보는 <code class="cCode">TextLayout</code> 객체와 <code class="cCode">TextAttributeSet</code> 객체에 포함됩니다. 폰트의 정보와 레이아웃의 정보를 따로 가지는 것으로, 같은 폰트를 다른 레이아웃 구성으로 간단하게 사용할 수 있게 됩니다.
+</p>
+<a name="wp61906"> </a> <h3 class="pHeading2">
+1.2. 4	이미지
+</h3>
+<a name="wp61908"> </a> <p class="pBody">
+이미지는, 공간에 조직적으로 배치된 픽셀의 집합입니다. 「픽셀」은, 1 개의 표시 위치에 있어서의 이미지의 체재를 정의하고 있습니다. <em class="cEmphasis"></em>픽셀의 2 차원 배열을 「라스터」라고 부릅니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp65775"> </a> <p class="pBody">
+픽셀의 표현 방법은, 직접 정의하는 일도, 이미지의 칼라 테이블에 대한 인덱스로서 정의할 수도 있습니다.  
+</p>
+<a name="wp65776"> </a> <p class="pBody">
+많은 (256 색보다 많다) 색을 사용하는 이미지의 경우는, 일반적으로, 스크린의 개개의 위치에 대한 색, 알파, 및 그 다른 표시 특성을, 픽셀로 직접 나타냅니다. 이러한 이미지는, 인덱스로 색을 지정한 이미지보다 꽤 커집니다만, 보다 실물에 가까운 표현이 됩니다.  
+</p>
+<a name="wp61918"> </a> <p class="pBody">
+인덱스 칼라 이미지의 경우, 이미지의 색은, 칼라 테이블로 지정되고 있는 색인 만큼 제한됩니다.  그 결과, 이미지로 사용할 수 있는 색 가지수가 적게 되는 일이 자주 있습니다. 다만, 일반적으로, 색의 값 보다 인덱스가 필요한 기억 영역이 적어도 되므로, 인덱스 지정의 색의 모임으로서 포함된 이미지가 작아집니다. 이 픽셀 형식은, 16 색 또는 256 색만으로 표현된 이미지에 잘 사용되고 있습니다.
+</p>
+<a name="wp61929"> </a> <p class="pBody">
+Java 2D API 의 이미지에는, 2 개(살)의 중요한 요소가 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp63396"> </a> <div class="pBullet1"><li>미처리의 이미지 데이터 (픽셀)</li></div>
+<a name="wp65780"> </a> <div class="pBullet1Last"><li>픽셀의 해석에 필요한 정보</li></div>
+</ul>
+<a name="wp65789"> </a> <p class="pBody">
+픽셀을 해석할 때의 규칙은,<code class="cCode">ColorModel</code> 객체로 캡슐화되고 있습니다. 예를 들어, 값을 색으로서 직접 해석하는지, 그렇지 않으면 인덱스로 나타내진 색으로서 해석하는지, 등의 정보입니다. 픽셀을 표시할 때는, 픽셀과 칼라 모델을 당황하고 취급할 필요가 있습니다.  
+</p>
+<a name="wp65813"> </a> <p class="pBody">
+밴드는, 이미지에 대한 칼라 영역의 1 개의 성분입니다. 예를 들어, 적, 록, 청의 각 성분은, RGB 이미지의 밴드입니다. 직접 칼라 모델의 이미지로 사용되는 픽셀은, 스크린상의 1 지점에 대한 밴드치의 집합으로서 생각할 수가 있습니다.  
+</p>
+<a name="wp65816"> </a> <p class="pBody">
+<code class="cCode">java.awt.image</code> 패키지에는,<code class="cCode">ColorModel</code> 의 복수의 구현이 포함되어 있습니다.  이것에는, 팍크드피크셀과 성분 픽셀의 표현도 포함됩니다.  
+</p>
+<a name="wp65790"> </a> <p class="pBody">
+<code class="cCode">ColorSpace</code> 객체는, 측정한 수치의 집합과 특정의 색의 사이의 대응방안법을 관리하는 규칙을 캡슐화하고 있습니다. <code class="cCode"><code class="cCode">java.awt.color</code> 에서의 <code class="cCode">ColorSpace</code> 의 구현은, RGB 나 그레이 스케일을 포함한 대부분의 일반적인 칼라 영역을 나타내고 있습니다. 색공간(color space)는 색의 집합은 아닌 것에 주의해 주세요. 색공간(color space)는, 구체적인 색의 값을 해석하는 방법에 대한 규칙을 정의하는 것입니다.
+</p>
+<a name="wp61933"> </a> <p class="pBody">
+색공간(color space)와 칼라 모델을 떼어내는 것으로, 색의 표현 방법과 다른 표현동안에서의 색의 변환 방법이, 보다 유연하게 됩니다.
+</p>
+<a name="wp61939"> </a> <h3 class="pHeading2">
+1.2. 5	칠해와 stroke
+</h3>
+<a name="wp65822"> </a> <p class="pBody">
+Java 2D API 에서는, 다양한 펜스 타일과 전부 칠해 패턴을 사용해 <code class="cCode">Shape</code> 를 렌더링 할 수 있습니다. 텍스트는 최종적으로 Glyph의 집합으로 나타내지므로, 캐릭터 라인에도 펜스 타일이나 칠해를 적용할 수 있습니다.  
+</p>
+<a name="wp65866"> </a> <p class="pBody">
+펜의 스타일은,<code class="cCode">Stroke</code> 인터페이스를 구현하는 객체로 정의됩니다. <kbd><kbd>Stroke</kbd> 를 사용하면(자), 직선이나 곡선에, 다양한 폭이나 파선 패턴을 지정할 수 있습니다.
+</p>
+<a name="wp61943"> </a> <p class="pBody">
+칠해의 패턴은,<code class="cCode">Paint</code> 인터페이스를 구현하는 객체로 정의됩니다. 구버젼의 AWT 로 이용할 수 있던 <code class="cCode">Color</code> 클래스는, 단순한 형태의 <code class="cCode">Paint</code> 객체로, 1 색의 칠해를 정의하기 위해서 사용합니다. Java 2D API 에서는,<code class="cCode">Paint</code> 인터페이스의 새로운 구현으로서<code class="cCode">TexturePaint</code> 와 <code class="cCode">GradientPaint</code> 의 2 개가 제공되고 있습니다. <code class="cCode">TexturePaint</code> 는, 규칙적으로 반복해지는 단순한 이미지편을 사용한 전부 칠해 패턴을 정의하고 있습니다. <code class="cCode">GradientPaint</code> 는, 2 종류의 색의 사이의 그라데이션으로서 전부 칠해 패턴을 정의합니다.
+</p>
+<a name="wp65867"> </a> <p class="pBody">
+Java 2D 에서는, 도형의 윤곽선의 렌더링과 패턴을 사용한 도형의 칠는, 2 종류가 다른 조작입니다.
+</p>
+<ul class="pBullet1"><a name="wp65874"> </a> <div class="pBullet1"><li><code class="cCode">Stroke</code> 속성으로 지정한 펜의 스타일과 <code class="cCode">Paint</code> 속성으로 지정한 전부 칠해 패턴으로 도형의 윤곽을 렌더링 하려면 ,<code class="cCode">draw</code> 계 메소드의 어떤 것인지를 사용한다. </li></div>
+<a name="wp65871"> </a> <div class="pBullet1Last"><li><code class="cCode">Paint</code> 속성으로 지정한 패턴으로 도형의 내부를 전부 칠하려면 ,<code class="cCode">fill</code> 메소드를 사용한다</li></div>
+</ul>
+<a name="wp61947"> </a> <p class="pBody">
+캐릭터 라인의 렌더링에서는, 그 때의 <code class="cCode">Paint</code> 속성이, 캐릭터 라인을 형성하는 Glyph에 적용됩니다. 다만, 렌더링 되는 Glyph를 실제로 전부 칠하는 것은 <code class="cCode">drawString</code> 입니다. 텍스트 캐릭터 라인의 Glyph의 윤곽선을 draw 하려면 , 윤곽선을 취득해,<code class="cCode">draw</code> 메소드를 사용해 윤곽선을 도형으로서 렌더링 할 필요가 있습니다.
+</p>
+<a name="wp63573"> </a> <h3 class="pHeading2">
+1.2. 6	거듭해 맞추어라
+</h3>
+<a name="wp61958"> </a> <p class="pBody">
+거듭해 맞댐 기존의 객체와 겹치는 객체를 렌더링 할 때는, draw 하려고 하는 영역의 현재의 색과 새로운 객체의 색을 혼합하는 방법을 결정할 필요가 있습니다. Java 2D API 에서는, 색을 혼합할 때의 규칙은,<code class="cCode">Composite</code> 객체에 캡슐화되고 있습니다.  
+</p>
+<a name="wp63588"> </a> <p class="pBody">
+간단한 렌더링 시스템에서는, 기본적인 불 연산만으로 색의 혼합을 합니다. 예를 들어, 불 연산에 의한 합성 규칙에서는, 소스색의 값과 목적지색의 값의 논리적 (AND), 논리합 (OR), 또는 배타적 논리합 (XOR)을 요구하는 것이 가능합니다. 이러한 방법에는, 몇개인가 문제가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp63619"> </a> <div class="pBullet1"><li>예를 들어, 빨강과 파랑을 혼합하는 것이 아니라 논리적을 계산하는 경우, 완성되는 색을 상상하는 것은 어렵다.  </li></div>
+<a name="wp63622"> </a> <div class="pBullet1Plus"><li>불 연산에 의한 합성은, 다른 색공간(color space)에서의 정확한 색의 합성을 지원하고 있지 않다 </li></div>
+<a name="wp63628"> </a> <div class="pBullet1Last"><li>직접적인 불 합성은, 색의 칼라 모델을 고려하고 있지 않다. 예를 들어, 인덱스 형식 칼라 모델의 경우, 이미지의 2 개의 픽셀치에 대한 불 연산의 결과는, 2 개의 색의 합성은 아니고, 2 개의 행렬의 합성이다</li></div>
+</ul>
+<a name="wp61960"> </a> <p class="pBody">
+Java 2D API 에서는, 색을 합성할 경우에 칼라 모델의 정보를 고려하는 아르파브렌딘그<a href="#wp66182"><span class="Footnote">1</span></a> 규칙을 구현하는 것으로, 이러한 결점을 회피하고 있습니다. <code class="cCode"><code class="cCode">AlphaComposite</code> 객체에는, 소스색과 목적지색의 칼라 모델이 포함되어 있습니다.
+</p>
+<a name="wp61978"> </a> <h2 class="pHeading1">
+1.3		하위 호환성과 플랫폼으로부터의 독립성
+</h2>
+<a name="wp61980"> </a> <p class="pBody">
+Java 2D&#8482; API 에서는, JDK 1.1 에 대한 하위 호환성이 유지되고 있습니다. 또, 플랫폼으로부터의 독립성이 유지되도록(듯이) 설계되고 있습니다.
+</p>
+<a name="wp63962"> </a> <h3 class="pHeading2">
+1.3. 1	하위 호환성
+</h3>
+<a name="wp61985"> </a> <p class="pBody">
+하위 호환성을 보증하기 위해(때문에), 그래픽스와 이미징에 관한 JDK 의 기존의 클래스와 인터페이스의 기능은 남아 있습니다. 기존의 기능은 삭제되지 않고, 기존의 클래스에 대한 패키지의 정의는 변경되고 있지 않습니다. AWT 의 기능의 확장은, 기존의 클래스에서의 새로운 메소드의 구현, 기존의 클래스의 확장, 종래의 API 에 영향을 주지 않는 새로운 클래스와 인터페이스의 추가등으로 행해지고 있습니다.
+</p>
+<a name="wp61987"> </a> <p class="pBody">
+예를 들어, Java 2D API 의 기능의 상당수는, 확장된 그래픽스 문맥인 <code class="cCode">Graphics2D</code> 를 통해 실현되고 있습니다. 하위 호환성을 유지한 채로 이 확장 그래픽스 문맥을 제공하기 위해(때문에),<code class="cCode">Graphics2D</code> 는 JDK 1.1 의 <code class="cCode">Graphics</code> 클래스를 상속하고 있습니다.
+</p>
+<a name="wp63834"> </a> <p class="pBody">
+그래픽스 문맥의 사용 모델도, 변경되고 있지 않습니다. AWT 는, 다음의 메소드를 사용해, AWT 의 <code class="cCode">Component</code> 에 그래픽스 문맥을 건네줍니다.
+</p>
+<ul class="pBullet1"><a name="wp63835"> </a> <div class="pBullet1"><li><code class="cCode">paint</code></li></div>
+<a name="wp61997"> </a> <div class="pBullet1Plus"><li><code class="cCode">paintAll</code></li></div>
+<a name="wp61998"> </a> <div class="pBullet1Plus"><li><code class="cCode">update</code></li></div>
+<a name="wp61999"> </a> <div class="pBullet1Plus"><li><code class="cCode">print</code></li></div>
+<a name="wp62839"> </a> <div class="pBullet1Plus"><li><code class="cCode">printAll</code></li></div>
+<a name="wp62840"> </a> <div class="pBullet1Last"><li><code class="cCode">getGraphics</code></li></div>
+</ul>
+<a name="wp62841"> </a> <p class="pBody">
+JDK 1.1 의 애플릿은, 건네받은 그래픽스 문맥을 <code class="cCode">Graphics</code> 의 인스턴스로서 해석합니다. Java 2D API 와 호환성이 있는 애플릿이,<code class="cCode">Graphics2D</code> 로 구현되고 있는 새로운 기능에 액세스 하려면 , 그래픽스 문맥을 <code class="cCode">Graphics2D</code> 객체에 캐스트 합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void Paint (Graphics g) {<a name="wp62005"> </a> 
+<a name="wp62006"> </a> 
+	Graphics2D g2 = (Graphics2D) g;<a name="wp62007"> </a> 
+	...<a name="wp62008"> </a> 
+	...<a name="wp62009"> </a> 
+	g2.setTransform (t);<a name="wp62010"> </a> 
+}<a name="wp62011"> </a> 
+</pre></div>
+<a name="wp62013"> </a> <p class="pBody">
+종래의 클래스를 상속하는 것이 아니라, Java 2D API 가 종래의 클래스를 일반화하고 있는 경우도 있습니다. 종래의 클래스의 일반화에는, 다음의 2 종류의 방법이 사용되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp63864"> </a> <div class="pBullet1"><li>1 개(살) 이상의 친클래스를 계층에 삽입해, 새로운 친클래스를 상속하도록(듯이) 종래의 클래스를 변경한다. 이 방법은, 범용적으로 구현된 메소드와 인스턴스 데이터를 종래의 클래스에 추가하는 경우에 사용된다 </li></div>
+<a name="wp63880"> </a> <div class="pBullet1Last"><li>1 개(살) 이상의 인터페이스의 구현을, 종래의 클래스에 추가한다. 이 방법은, 범용적인 추상 메소드를 종래의 클래스에 추가하는 경우에 사용된다 </li></div>
+</ul>
+<a name="wp63895"> </a> <p class="pBody">
+예를 들어, AWT 의 <code class="cCode">Rectangle</code> 클래스의 일반화에는, 양쪽 모두의 방법이 사용되고 있습니다. <KBD><KBD>Rectangle</kbd> 클래스의 계층은 다음과 같이 변경되고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp62015"> </a> 
+java.lang.object<a name="wp65331"> </a> 
+|<a name="wp62016"> </a> 
++-------java.awt.geom.RectangularShape<a name="wp62017"> </a> 
+             |<a name="wp62018"> </a> 
++---------java.awt.geom.Rectangle2D<a name="wp62019"> </a> 
+                               |<a name="wp62020"> </a> 
++-------java.awt.Rectangle<a name="wp62855"> </a> 
+</pre></div>
+<a name="wp62856"> </a> <p class="pBody">
+JDK 1.1 에서는,<code class="cCode">Rectangle</code> 는 <code class="cCode">Object</code> 를 직접 상속하고 있었습니다. JDK 1.2 에서는,<code class="cCode">Rectangle</code> 는 새로운 <code class="cCode">Rectangle2D</code> 클래스를 상속해,<code class="cCode">Shape</code> 와 <code class="cCode">Serializable</code> 의 양쪽 모두를 구현하고 있습니다. <code class="cCode">Rectangle</code> 의 계층에는, 2 살의 친클래스 <code class="cCode">RectangularShape</code> 와 <code class="cCode">Rectangle2D</code> 가 추가되었습니다. JDK 1.1 용으로 작성된 애플릿은, 새로운 친클래스와 인터페이스의 구현에 대응하고 있었습니다만, 구버젼에 있던 메소드와 멤버는 아직 <code class="cCode">Rectangle</code> 에 포함되어 있으므로, 애플릿이 영향을 받을 것은 없습니다.
+</p>
+<a name="wp62031"> </a> <p class="pBody">
+Java 2D API 에서는, 종래의 API 와 「직교 한다」새로운 클래스와 인터페이스가 몇개인가 추가되고 있습니다. 추가된 클래스와 인터페이스는, 기존의 클래스를 상속 또는 일반화하는 것은 아니고, 완전히 새로운 다른 것입니다. 이러한 새로운 클래스와 인터페이스는, 종래의 API 에서는 명시적으로 나타나지 않은 개념을 구체화하고 있습니다.  
+</p>
+<a name="wp63955"> </a> <p class="pBody">
+예를 들어, Java 2D API 에서는,<code class="cCode">Arc2D</code>,<code class="cCode">CubicCurve2D</code>,<code class="cCode">QuadCurve2D</code> 등, 새로운 <code class="cCode">Shape</code> 클래스가 몇개인가 구현되고 있습니다. 구버젼의 AWT 에서도 <code class="cCode">drawArc</code> 메소드와 <code class="cCode">fillArc</code> 메소드를 사용해 원호를 렌더링 할 수 있었습니다만, 원호의 범용적인 추상 표현은 없고, 원호를 구체화하는 독립한 클래스도 없었습니다. 이러한 독립한 클래스가, Java 2D API 에서는 추가되고 있습니다.  다만,<code class="cCode">Graphics</code> 클래스를 통해 <code class="cCode">drawArc</code> 와 <code class="cCode">fillArc</code> 는 아직 지원되고 있으므로, 종래의 애플릿에는 영향 없습니다.
+</p>
+<a name="wp63963"> </a> <h3 class="pHeading2">
+1.3. 2	플랫폼으로부터의 독립성
+</h3>
+<a name="wp62033"> </a> <p class="pBody">
+플랫폼에 의존하지 않는 어플리케이션을 개발할 수 있도록, 렌더링처의 장치의 해상도, 색공간(color space), 및 칼라 모델에 대해, Java 2D API 에서는 어떠한 전제도 없습니다. 또, 이미지 파일에 대해서도 특정의 형식은 상정되고 있지 않습니다.  
+</p>
+<a name="wp63973"> </a> <p class="pBody">
+진정한 의미로 플랫폼에 의존하지 않는 폰트는, 편입의 폰트 (JDK 의 일부로서 제공되고 있다)의 경우, 혹은 수학적 또는 프로그램적으로 폰트가 생성되는 경우에만 가능합니다. 현재, Java 2D API 에서는, 편입 폰트 또는 수학적인 폰트의 생성은 지원되고 있지 않습니다만, Glyph세트를 사용해, 폰트 전체를 프로그램으로 정의하는 것은 가능합니다. 이 경우, 각각의 Glyph는, 선분과 곡선으로 구성되는 <code class="cCode">Shape</code> 로 정의됩니다. 고유의 스타일과 사이즈를 가지는 다양한 폰트를, 단일의 Glyph셋트로부터 생성할 수 있습니다.  
+</p>
+<a name="wp62037"> </a> <h2 class="pHeading1">
+1.4	Java 2D&#8482; API 의 패키지
+</h2>
+<a name="wp62039"> </a> <p class="pBody">
+Java 2D API 의 클래스는, 다음의 패키지로 편성되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp62041"> </a> <div class="pBullet1"><li><code class="cCode">java.awt</code></li></div>
+<a name="wp66198"> </a> <div class="pBullet1Plus"><li><code class="cCode">java.awt.geom</code></li></div>
+<a name="wp66206"> </a> <div class="pBullet1Plus"><li><code class="cCode">java.awt.font</code></li></div>
+<a name="wp66210"> </a> <div class="pBullet1Plus"><li><code class="cCode">java.awt.color</code></li></div>
+<a name="wp66194"> </a> <div class="pBullet1Plus"><li><code class="cCode">java.awt.image</code></li></div>
+<a name="wp66196"> </a> <div class="pBullet1Plus"><li><code class="cCode">java.awt.image.renderable</code></li></div>
+<a name="wp62589"> </a> <div class="pBullet1Last"><li><code class="cCode">java.awt.print</code></li></div>
+</ul>
+<a name="wp66217"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt</code> 에는, Java 2D API 의 클래스와 인터페이스 중(안)에서도 일반적인 성질의 것 및 종래의 클래스를 확장하는 것이 포함되어 있습니다. 따라서,<code class="cCode">java.awt</code> 에는, Java 2D 이외의 클래스도 포함되어 있습니다.
+</p>
+<a name="wp67789"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp66220">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66220"> </a> <div class="pCellBody">
+<code class="cCode">AlphaComposite </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66222"> </a> <div class="pCellBody">
+<code class="cCode">BasicStroke </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66224"> </a> <div class="pCellBody">
+<code class="cCode">Color </code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66226"> </a> <div class="pCellBody">
+<code class="cCode">Composite</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66228"> </a> <div class="pCellBody">
+<code class="cCode">CompositeContext</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66230"> </a> <div class="pCellBody">
+<code class="cCode">Font</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66232"> </a> <div class="pCellBody">
+<code class="cCode">GradientPaint</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66316"> </a> <div class="pCellBody">
+<code class="cCode">Graphics2D</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66236"> </a> <div class="pCellBody">
+<code class="cCode">GraphicsConfiguration</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66317"> </a> <div class="pCellBody">
+<code class="cCode">GraphicsDevice</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66240"> </a> <div class="pCellBody">
+<code class="cCode">GraphicsEnvironment</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66242"> </a> <div class="pCellBody">
+<code class="cCode">Paint</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66244"> </a> <div class="pCellBody">
+<code class="cCode">PaintContext</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66246"> </a> <div class="pCellBody">
+<code class="cCode">Rectangle</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66248"> </a> <div class="pCellBody">
+<code class="cCode">Shape</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66250"> </a> <div class="pCellBody">
+<code class="cCode">Stroke</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66252"> </a> <div class="pCellBody">
+<code class="cCode">TexturePaint</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66254"> </a> <div class="pCellBody">
+<code class="cCode">Transparency</code>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp66189"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.geom</code> 에는, 기하학적 프리미티브(primitive)의 정의에 관한 클래스와 인터페이스가 포함되어 있습니다.
+</p>
+<a name="wp67794"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp66419">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66419"> </a> <div class="pCellBody">
+AffineTransform
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66421"> </a> <div class="pCellBody">
+Arc2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66423"> </a> <div class="pCellBody">
+Arc2D.Double
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66425"> </a> <div class="pCellBody">
+Arc2D.Float
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66427"> </a> <div class="pCellBody">
+Area
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66429"> </a> <div class="pCellBody">
+CubicCurve2D
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66431"> </a> <div class="pCellBody">
+CubicCurve2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66433"> </a> <div class="pCellBody">
+CubicCurve2D.Float
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66435"> </a> <div class="pCellBody">
+Dimension2D
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66437"> </a> <div class="pCellBody">
+Ellipse2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66439"> </a> <div class="pCellBody">
+Ellipse2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66441"> </a> <div class="pCellBody">
+Ellipse2D.Float
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66443"> </a> <div class="pCellBody">
+FlatteningPathIterator
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66445"> </a> <div class="pCellBody">
+GeneralPath
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66447"> </a> <div class="pCellBody">
+Line2D
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66545"> </a> <div class="pCellBody">
+Line2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66552"> </a> <div class="pCellBody">
+Line2D.Float
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66453"> </a> <div class="pCellBody">
+PathIterator
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66455"> </a> <div class="pCellBody">
+Point2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66457"> </a> <div class="pCellBody">
+Point2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66485"> </a> <div class="pCellBody">
+Point2D.Float
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66461"> </a> <div class="pCellBody">
+QuadCurve2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66463"> </a> <div class="pCellBody">
+QuadCurve2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66503"> </a> <div class="pCellBody">
+QuadCurve2D.Float
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66467"> </a> <div class="pCellBody">
+Rectangle2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66514"> </a> <div class="pCellBody">
+Rectangle2D.Double
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66520"> </a> <div class="pCellBody">
+Rectangle2D.Float
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66473"> </a> <div class="pCellBody">
+RectangularShape
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66475"> </a> <div class="pCellBody">
+RoundRectangle2D
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66576"> </a> <div class="pCellBody">
+RoundRectangle2D.Double
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66578"> </a> <div class="pCellBody">
+RoundRectangle2D.Float
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66580"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66483"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62052"> </a> <p class="pBody">
+기하학적 프리미티브(primitive)이 많게는, 대응한다 <code class="cCode">. Float</code> 와 <code class="cCode">. Double</code> 의 구현이 있습니다. 이것은, 단정밀도와 배정밀도의 부동 소수점 표현의 구현을 가능하게 하기 위해서 행해졌습니다. 배정밀도의 구현을 사용하면(자) 렌더링의 정밀도는 높아집니다만, 플랫폼에 따라서는 퍼포먼스가 저하합니다.
+</p>
+<a name="wp62612"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.font</code> 에는, 텍스트의 레이아웃과 폰트의 정의에 사용하는 클래스와 인터페이스가 포함되어 있습니다.
+</p>
+<a name="wp67796"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp66588">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66588"> </a> <div class="pCellBody">
+FontRenderContext
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66590"> </a> <div class="pCellBody">
+GlyphJustificationInfo
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66592"> </a> <div class="pCellBody">
+GlyphMetrics
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64007"> </a> <div class="pCellBody">
+GlyphVector
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64009"> </a> <div class="pCellBody">
+GraphicAttribute
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64011"> </a> <div class="pCellBody">
+ImageGraphicAttribute
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62618"> </a> <div class="pCellBody">
+LineBreakMeasurer
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62620"> </a> <div class="pCellBody">
+LineMetrics
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62622"> </a> <div class="pCellBody">
+MultipleMaster
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64021"> </a> <div class="pCellBody">
+OpenType
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64023"> </a> <div class="pCellBody">
+ShapeGrapicAttribute
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64025"> </a> <div class="pCellBody">
+TextAttribute
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64034"> </a> <div class="pCellBody">
+TextHitInfo
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64036"> </a> <div class="pCellBody">
+TextLayout
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64038"> </a> <div class="pCellBody">
+TransformAttribute
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62057"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.color</code> 에는, 색공간(color space)와 칼라 프로파일의 정의를 위한 클래스와 인터페이스가 포함되어 있습니다.
+</p>
+<a name="wp67801"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp62635">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62635"> </a> <div class="pCellBody">
+ColorSpace 
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62637"> </a> <div class="pCellBody">
+ICC_ColorSpace 
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62639"> </a> <div class="pCellBody">
+ICC_Profile 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62641"> </a> <div class="pCellBody">
+ICC_ProfileGray 
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62643"> </a> <div class="pCellBody">
+ICC_ProfileRGB
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62645"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62648"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.image</code> 와 <code class="cCode">java.awt.image.renderable</code> 에는, 이미지의 정의와 렌더링에 관한 클래스와 인터페이스가 포함되어 있습니다.
+</p>
+<a name="wp67803"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp62662">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62662"> </a> <div class="pCellBody">
+<code class="cCode">AffineTransformOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62664"> </a> <div class="pCellBody">
+<code class="cCode">BandCombineOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62666"> </a> <div class="pCellBody">
+<code class="cCode">BandedSampleModel</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64138"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImage</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64140"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImageFilter</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64142"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImageOp</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62668"> </a> <div class="pCellBody">
+<code class="cCode">ByteLookupTable</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62670"> </a> <div class="pCellBody">
+<code class="cCode">ColorConvertOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62672"> </a> <div class="pCellBody">
+<code class="cCode">ColorModel</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64086"> </a> <div class="pCellBody">
+<code class="cCode">ComponentColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64088"> </a> <div class="pCellBody">
+<code class="cCode">ComponentSampleModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64090"> </a> <div class="pCellBody">
+<code class="cCode">ConvolveOp</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td colspan="2" rowspan="1"><a name="wp67434"> </a> <div class="pCellBody">
+ContextualRenderedImageFactory
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp67438"> </a> <div class="pCellBody">
+<code class="cCode">DataBuffer</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp65031"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferByte</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65033"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferInt</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65035"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferShort</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62674"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferUShort</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62676"> </a> <div class="pCellBody">
+<code class="cCode">DirectColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62678"> </a> <div class="pCellBody">
+<code class="cCode">IndexColorModel</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62680"> </a> <div class="pCellBody">
+<code class="cCode">Kernel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62682"> </a> <div class="pCellBody">
+<code class="cCode">LookupOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62684"> </a> <div class="pCellBody">
+<code class="cCode">LookupTable</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64120"> </a> <div class="pCellBody">
+<code class="cCode">MultiPixelPackedSampleModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64122"> </a> <div class="pCellBody">
+<code class="cCode">PackedColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64124"> </a> <div class="pCellBody">
+<code class="cCode">ParameterBlock</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp67444"> </a> <div class="pCellBody">
+<code class="cCode">PixelInterleavedSampleModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp67446"> </a> <div class="pCellBody">
+<code class="cCode">Raster</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp67448"> </a> <div class="pCellBody">
+<code class="cCode">RasterOp</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64210"> </a> <div class="pCellBody">
+<code class="cCode">RenderableImage</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64212"> </a> <div class="pCellBody">
+<code class="cCode">RenderableImageOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64214"> </a> <div class="pCellBody">
+RenderableImageProducer
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64216"> </a> <div class="pCellBody">
+<code class="cCode">RenderContext</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64218"> </a> <div class="pCellBody">
+RenderedImageFactory
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64220"> </a> <div class="pCellBody">
+<code class="cCode">RenderedImage</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62692"> </a> <div class="pCellBody">
+<code class="cCode">RescaleOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62694"> </a> <div class="pCellBody">
+<code class="cCode">SampleModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62696"> </a> <div class="pCellBody">
+<code class="cCode">ShortLookupTable</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td colspan="2" rowspan="1"><a name="wp67417"> </a> <div class="pCellBody">
+<code class="cCode">SinglePixelPackedSampleModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp67421"> </a> <div class="pCellBody">
+<code class="cCode">TileObserver</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp65004"> </a> <div class="pCellBody">
+<code class="cCode">WritableRaster</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65006"> </a> <div class="pCellBody">
+<code class="cCode">WritableRenderedImage</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65013"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62063"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.image</code> 는, 구버젼의 AWT 에도 있었습니다. Java 2D API 에서는, 다음의 종래의 AWT 이미지 클래스가 확장되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp62064"> </a> <div class="pBullet1"><li><code class="cCode">ColorModel</code></li></div>
+<a name="wp62065"> </a> <div class="pBullet1Plus"><li><code class="cCode">DirectColorModel</code></li></div>
+<a name="wp62066"> </a> <div class="pBullet1Last"><li><code class="cCode">IndexColorModel</code></li></div>
+</ul>
+<a name="wp62068"> </a> <p class="pBody">
+이러한 칼라 모델 클래스는, 구버젼과의 호환성을 유지하기 (위해)때문에 <code class="cCode">java.awt.image</code> 패키지에 남아 있습니다. 일관성을 유지하기 (위해)때문에, 새로운 칼라 모델의 클래스도,<code class="cCode">java.awt.image</code> 패키지에 놓여져 있습니다.
+</p>
+<a name="wp66255"> </a> <p class="pBody">
+패키지 <code class="cCode">java.awt.print</code> 에는, Java 2D 베이스의 모든 텍스트, 그래픽, 및 이미지를 인쇄할 수 있도록(듯이)하기 위한 클래스와 인터페이스가 포함되어 있습니다.
+</p>
+<a name="wp67811"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="layout" border="0" cellpadding="7" id="wp66278">
+  <caption></caption>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66278"> </a> <div class="pCellBody">
+Book
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66280"> </a> <div class="pCellBody">
+Pageable
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66282"> </a> <div class="pCellBody">
+PageFormat
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66284"> </a> <div class="pCellBody">
+Paper
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66286"> </a> <div class="pCellBody">
+Printable
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66288"> </a> <div class="pCellBody">
+PrinterGraphics
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp66290"> </a> <div class="pCellBody">
+PrinterJob
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66292"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66294"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp66274"> </a> <p class="pBody">
+
+</p>
+
+  <a name="wp66182"> </a> <div class="pFootNote">
+<a href="#wp61960"><span class="Footnote">1</span></a> 아르파브렌딘그에 대한 자세한 것은, 「Computer Graphics:Principles and Practice」(J.D.  Foley, A.  van Dam, S.K.  Feiner, J.F.  Hughes.  Addison- Wesley, 1990)의 섹션 17.6 을 참조해 주세요.
+
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-preface.html">전의 항목</a>  | <a accesskey="n" href="j2d-awt.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

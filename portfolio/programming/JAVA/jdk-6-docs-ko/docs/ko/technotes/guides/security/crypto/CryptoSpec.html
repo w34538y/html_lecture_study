@@ -1,0 +1,4759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<!-- The .red css class is for writers notes      so I don't forget to change things.       New Features section commented out temporarily.       Forced the paragraph tag to properly define itself       Forced the code tag font to match the size      of the paragraph font. -->
+
+<style type="text/css">
+. red {
+text-align: left;
+color: red ;
+font-stretch: wider ;
+font-weight:  bold
+}
+
+p, li { font-family: serif;
+    font-size: 100% ;
+    font-weight: normal;
+    }
+
+code {font-size: 133% }
+
+</style>
+
+<TITLE>Java 암호화 아키텍쳐(architecture) (JCA) - xrath.com 에서 번역됨</TITLE>
+
+<META NAME="AUTHOR" CONTENT="br">
+<META NAME="OPERATOR" CONTENT="br">
+</HEAD>
+
+<BODY BGCOLOR="white">
+<HR>
+
+<center>
+<H1>Java<!--<font size=-1><sup>TM</sup></font> --> &trade; 암호화 아키텍쳐(architecture)<br> (JCA) 레퍼런스 가이드</H1>
+<h2>Java<sup><font size="-2">TM</font></sup> Platform Standard Edition 6</h2>
+
+<!-- <H3><I>Last Modified: 25 July 2006</I></H3> Brad R.  Wetmore:      Partial merge of the JCA/JCE completed      Major restructuring for content flow.  -->
+</center>
+
+<HR>
+
+<p>
+
+<FONT SIZE="+2"><A HREF="#Introduction"><B>처음에</B></A> </FONT>
+<blockquote>
+<A HREF="#Design"><B>설계 방침</B></A> <br> <A HREF="#Architecture"><B>아키텍쳐(architecture)</B></A> <br> <A HREF="#Concepts"><B>JCA 의 개념</B></A> <br>
+</blockquote>
+<p>
+
+<FONT SIZE="+2"><A HREF="#CoreClasses"><B>코어 클래스와 인터페이스</B></A> </FONT>
+<blockquote>
+<A HREF="#Provider"><B><code>Provider</code> 클래스</B></A> <br>
+    <blockquote>
+<A HREF="#ProviderImplReq"><B>프로바이더 구현의 요구 및 획득 방법</B></A> <br> <A HREF="#ProviderInstalling"><B>프로바이더의 인스톨</B></A> <br>
+    </blockquote>
+<A HREF="#Security"><B><code>Security</code> 클래스</B></A> <br> <A HREF="#SecureRandom"><B><code>SecureRandom</code> 클래스</B></A> <br> <A HREF="#MessageDigest"><B><code>MessageDigest</code> 클래스</B></A> <br> <A HREF="#Signature"><B><code>Signature</code> 클래스</B></A> <br> <A HREF="#Cipher"><B><code>Cipher</code> 클래스</B></A> <br> <A HREF="#CipherBased"><B>그 외의 <code>Cipher</code> 베이스의 클래스</B></A> <br>
+    <blockquote>
+<A HREF="#CipherStream"><B>Cipher Stream 클래스</B></A> <br>
+        <blockquote>
+<A HREF="#CipherInput"><B><code>CipherInputStream</code> 클래스</B></A> <br> <A HREF="#CipherOutput"><B><code>CipherOutputStream</code> 클래스</B></A> <br>
+        </blockquote>
+<A HREF="#SealedObject"><B><code>SealedObject</code> 클래스</B></A> <br>
+    </blockquote>
+<A HREF="#Mac"><B><code>Mac</code> 클래스</B></A> <br> <A HREF="#Key"><B><code>Key</code> 인터페이스</B></A> <br> <A HREF="#KeyPair"><B><code>KeyPair</code> 클래스</B></A> <br> <A HREF="#KeySpecs"><B><code>열쇠</code>스펙의 인터페이스 및 클래스</B></A> <br>
+    <blockquote>
+<A HREF="#KeySpec"><B><code>KeySpec</code> 인터페이스</B></A> <br> <A HREF="#KeySpecSubs"><B><code>KeySpec</code> 서브 인터페이스</B></A> <br> <A HREF="#EncodedKeySpec"><B><code>EncodedKeySpec</code> 클래스</B></A> <br>
+	<blockquote>
+<A HREF="#PKCS8EncodedKeySpec"><B><code>PKCS8EncodedKeySpec</code> 클래스</B></A> <br> <A HREF="#X509EncodedKeySpec"><B><code>X509EncodedKeySpec</code> 클래스</B></A> <br>
+	</blockquote>
+    </blockquote>
+<A HREF="#GeneratorFactory"><B>팩토리 및 제네레이터</B></A> <br> <A HREF="#KeyFactory"><B><code>KeyFactory</code> 클래스</B></A> <br> <A HREF="#SecretKeyFactory"><B><code>SecretKeyFactory</code> 클래스</B></A> <br> <A HREF="#KeyPairGenerator"><B><code>KeyPairGenerator</code> 클래스</B></A> <br> <A HREF="#KeyGenerator"><B><code>KeyGenerator</code> 클래스</B></A> <br> <A HREF="#KeyAgreement"><B><code>KeyAgreement</code> 클래스</B></A> <br>
+
+<A HREF="#KeyManagement"><B>열쇠 관리</B></A> <br>
+    <blockquote>
+<A HREF="#KeystoreLocation"><B>키스토어의 장소</B></A> <br> <A HREF="#KeystoreImplementation"><B>키스토어의 구현</B></A> <br> <A HREF="#KeyStore"><B><code>KeyStore</code> 클래스</B></A> <br>
+    </blockquote>
+
+<A HREF="#AlgSpec"><B>알고리즘 파라미터의 클래스</B></A> <br>
+    <blockquote>
+<A HREF="#AlgorithmParameterSpec"><B><code>AlgorithmParameterSpec</code> 인터페이스</B></A> <br> <A HREF="#AlgorithmParameters"><B><code>AlgorithmParameters</code> 클래스</B></A> <br> <A HREF="#AlgorithmParameterGenerator"><B><code>AlgorithmParameterGenerator</code> 클래스</B></A> <br>
+    </blockquote>
+
+<A HREF="#CertificateFactory"><B><code>CertificateFactory</code> 클래스</B></A> <br>
+</blockquote>
+
+<A HREF="#SSLTLS"><font size="+2"><b>SSL/TLS 구현에서의 JCA 의 사용 방법 </B></FONT></A> <BR>
+<p>
+<A HREF="#ExemptApps"><font size="+2"><b>어플리케이션의 암호화 제한의 「면책」을 취득하는 방법</B></FONT></A> <BR>
+<p>
+
+<A HREF="#Examples"><B><FONT SIZE="+2">코드예</FONT></B></A> 
+<blockquote>
+<A HREF="#MDEx"><B><code>MessageDigest</code> 객체의 계산</B></A> <br> <A HREF="#KPGEx"><B>열쇠의 페어의 생성</B></A> <br> <A HREF="#SigEx"><B>생성된 열쇠를 사용한 서명의 생성 및 검증</B></A> <br> <A HREF="#KeyFactoryEx"><B><code>열쇠</code>스펙 및 <code>KeyFactory</code> 를 사용한 서명의 생성과 검증</B></A> <br> <A HREF="#Equal"><B>2 개의 열쇠의 동일성의 판정</B></A> <br> <A HREF="#ReadCert"><B>Base64? encode 된 증명서의 읽기</B></A> <br> <A HREF="#ParseCert"><B>인증 응답의 해석</B></A> <br> <A HREF="#SimpleEncrEx"><b>암호화의 사용</B></A> <br> <A HREF="#PBEEx"><b>패스워드 베이스 암호화의 사용</B></A> <br> <A HREF="#KeyAgreeEx"><b>열쇠 협정의 사용</B></A> <br>
+</blockquote>
+
+<A HREF="#AppA"><B><FONT SIZE="+2">부록 A:표준명</FONT></B></A> 
+<P>
+<A HREF="#AppB"><font size="+2"><b>부록 B:관할 정책 파일의 형식</b></font></a> 
+<P>
+<A HREF="#AppC"><font size="+2"><b>부록 C: 「강력」인 관할 정책 파일에 의해 허가되는 최대 키 사이즈</b></font></a> 
+<P>
+<A HREF="#AppD"><font size="+2"><b>부록 D:샘플 프로그램</b></font></a> 
+<blockquote>
+<A HREF="#DH2Ex"><b>2 개의 파티간의 Diffie-Hellman 열쇠 교환</B></A> <br> <A HREF="#DH3Ex"><b>3 개의 파티간의 Diffie-Hellman 열쇠 교환</B></A> <br> <A HREF="#BlowKeyEx"><b>Blowfish 암호의 예</B></A> <br> <A HREF="#HmacEx"><b>HMAC-MD5 의 예</B></A> <br> <A HREF="#ReadPassword"><b>InputStream 로부터 ASCII 패스워드를 읽어내는 예 </B></A> <br>
+</blockquote>
+
+<HR>
+
+<h1><a name="Introduction">처음에</a> </h1>
+
+<blockquote>
+
+<p>
+
+Java 플랫폼은, 언어의 안전성, 암호화, 공개키 인프라스트럭쳐(infrastructure), 인증, 안전한 통신, 액세스 제어 등, 시큐리티에 중점을 두고 있습니다.
+
+<p>
+
+JCA 는 플랫폼의 주요한 부분이며, 「프로바이더」아키텍쳐(architecture), 디지털 서명, 메세지 다이제스트 (해시), 증명서와 증명서 검증, 암호화 (대칭/비대칭 블록/스트림 암호), 열쇠의 생성과 관리, 안전한 난수 생성등을 (위해)때문에의 일련의 API 가 포함되어 있습니다. 이러한 API 에 의해, 개발자는 어플리케이션 코드에 시큐리티를 간단하게 통합할 수 있습니다. 아키텍쳐(architecture)는, 다음의 방침에 근거해 설계되었습니다.
+
+<ol>
+<li><dl><dt><b>구현의 독립성</b></dt>
+<dd>어플리케이션으로 시큐리티 알고리즘을 구현할 필요는 없습니다. Java 플랫폼으로부터 시큐리티 서비스를 요구할 수 있습니다. 시큐리티 서비스는 프로바이더 (아래와 같이를 참조)에 구현되고 있습니다. 프로바이더는, 표준 인터페이스에 의해 Java 플랫폼에 플러그 인 됩니다. 어플리케이션의 시큐리티 기능은, 복수의 독립한 프로바이더에 의존하고 있는 경우가 있습니다.
+
+</dd></dl></li>
+
+<li><dl><dt><b>구현의 상호 운용성</b></dt>
+<dd>프로바이더는, 어플리케이션간에 상호 운용할 수 있습니다. 구체적으로는, 어플리케이션은 특정의 프로바이더에 바인드 되지 않고, 프로바이더는 특정의 어플리케이션에 바인드 되지 않습니다.
+</dd></dl></li>
+
+<li><dl><dt><b>알고리즘의 확장성</b></dt>
+<dd>Java 플랫폼에는, 현재 넓게 사용되고 있는 기본적인 시큐리티 서비스를 구현하는 다수의 편입 프로바이더가 포함되어 있습니다. 다만, 일부의 어플리케이션은, 아직 구현되어 있지 않은 보급하고 있는 규격이나 독자적인 서비스에 의존하고 있는 경우가 있습니다. Java 플랫폼은, 그러한 서비스를 구현하는 커스텀 프로바이더의 인스톨을 지원하고 있습니다.
+</dd></dl></li>
+</ol>
+
+<p>
+
+JDK 로 사용할 수 있는 그 외의 암호화 통신 라이브러리는 JCA 프로바이더 아키텍쳐(architecture)를 사용합니다만, 이것들에 대해서는 별도 설명합니다. <a href="../jsse/JSSERefGuide.html">Java<sup><font size="-2">TM</font></sup> Secure Socket Extension (JSSE)</a>  는, Secure Socket Layer (SSL) 및 Transport Layer Security (TLS)의 구현에의 액세스를 제공합니다. 통신하고 있는 어플리케이션간에 안전하게 메세지를 교환하기 위해서,<a href="../jgss/tutorials/index.html">Java Generic Security Services (JGSS) </a> (Kerberos 에 의한다) API, 및 <a href="../sasl/sasl-refguide.html"> Simple Authentication and Security Layer (SASL)</a>  를 사용할 수도 있습니다.
+
+</p>
+
+<h3><a name="Terminology">용어에 관한 주기</a> </h3>
+  <blockquote>
+  <ul>
+<li>JDK 1.4 보다 이전에는 JCE 는 번들되어 있지 않은 제품이었기 때문에, JCA 와 JCE 는 항상 별개의 컴퍼넌트로서 참조되고 있었습니다. 현재 JCE 는 JDK 에 번들 되고 있기 (위해)때문에, 구별은 명확하지 않게 되어 있습니다. JCE 는 JCA 와 같은 아키텍쳐(architecture)를 사용하기 위해(때문에), JCE 는 JCA 의 일부로서 생각할 수가 있습니다. </li>
+    <p></p>
+<li>JDK 의 JCA 에는, 다음의 2 개의 소프트웨어 컴퍼넌트가 포함됩니다.
+    <p></p>
+    <ol>
+	<li>프로바이더가 구현을 제공 가능한 암호화 서비스를 정의 및 제공하는 시스템. 이 시스템에는,<code>java.security</code>,<code>javax.crypto</code>,<code>javax.crypto.spec</code>,<code>javax.crypto.interfaces</code> 등의 패키지가 포함됩니다.
+      </li>
+    <p></p>
+	<li><code>Sun</code>,<code>SunRsaSign</code>,<code>SunJCE</code> 등의 실제의 프로바이더. 실제의 암호화 구현이 포함됩니다. </li>
+    </ol>
+    <p>
+특정의 JCA 프로바이더를 채택하는 경우는, 항상 프로바이더의 이름으로 명시적으로 지정됩니다.
+  </ul>
+</blockquote>
+
+<hr>
+<p>
+<b>경고 :JCA 를 사용하면(자), 어플리케이션에의 시큐리티 기능의 편입이 간단하게 됩니다. 다만, 이 문서에서는, API 의 설명에 필요한 개념의 기본적인 소개 이외, 시큐리티/암호화의 이론에 대해서는 설명하지 않습니다. 이 문서에서는, 특정의 알고리즘의 장점과 약점이나 프로토콜의 설계에 대해서도 설명하지 않습니다. 암호화는 고도의 토픽이며, 이러한 툴을 최적으로 사용하려면 , 신뢰할 수 있는, 가능한 한최근의 레퍼런스를 참조하도록 해 주세요.
+<p>
+실행하고 있는 내용과 그 이유를 항상 이해하고 있을 필요가 있습니다. 랜덤 코드를 단순하게 카피해, 그것이 용도를 채우는 줄거리를 완전하게 해결해 준다고는 생각하지 말아 주세요. 잘못한 툴 또는 알고리즘이 선택되었기 때문에, 시큐리티 또는 퍼포먼스에 중대한 문제가 있는 어플리케이션이 많이 배치되고 있습니다. </b>
+</p>
+<hr>
+
+<H2><a name="Design">설계 방침</a> </H2>
+
+<blockquote>
+
+<P>
+JCA 는, 다음의 방침에 근거해 설계되었습니다.
+<UL>
+<LI>구현의 독립성과 상호 조작성<p>
+<LI>알고리즘의 독립성과 확장성
+</UL>
+
+<P>
+구현의 독립성과 알고리즘의 독립성은 상보 관계에 있습니다. 그 때문에, 디지털 서명이나 메세지 다이제스트등의 암호화 서비스를, 구현의 상세나 이러한 개념의 기본으로 되는 알고리즘을 의식하지 않고 사용할 수 있습니다. 완전한 알고리즘의 독립성은 불가능합니다만, JCA 는 표준화 된, 알고리즘 의존의 API 를 제공합니다. 구현의 독립성이 바람직하지 않은 경우, JCA 에서는, 개발자가 특정의 구현을 지정할 수 있습니다.
+
+<P>
+알고리즘의 독립성은, 암호화 「엔진」(서비스)의 형태를 정의해, 이러한 암호화 엔진의 기능을 제공하는 클래스를 정의하는 것으로써 실현되고 있습니다. 이러한 클래스는 「엔진 클래스」라고 불려<a href="#MessageDigest"><code>MessageDigest</code></a>  클래스,<a href="#Signature"><code>Signature</code></a>  클래스,<a href="#KeyFactory"><code>KeyFactory</code></a>  클래스,<a href="#KeyPairGenerator"><code>KeyPairGenerator</code></a>  클래스, 및 <a href="#Cipher"><code>Cipher</code></a>  클래스가 이것에 포함됩니다.
+<P>
+구현의 독립성은, 「프로바이더」베이스의 아키텍쳐(architecture)를 사용해 실현됩니다. <a href="#ProviderArch">암호화 서비스 프로바이더 (CSP)</a>  (이 문서에서는 「프로바이더」라고도 불린다)란, 디지털 서명 알고리즘, 메세지 다이제스트, 열쇠의 변환 서비스등의 1 개 이상의 암호화를 실행하는 패키지나 패키지 세트를 의미합니다. 프로그램은 단지, 특정의 서비스 (예를 들어 DSA 서명 알고리즘)를 실행하는 특정형의 객체 (예를 들어 <code>Signature</code> 객체)를 요구하는 것만으로, 인스톨 되고 있는 프로바이더의 1 개로부터 구현을 획득할 수 있습니다. 필요에 따라서, 프로그램은 특정 프로바이더로부터 구현을 요구할 수도 있습니다. 예를 들어, 보다 고속으로  안전성의 높은 버젼을 이용할 수 있을 때는, 프로바이더를 어플리케이션에 대해서 투과적으로 갱신할 수가 있습니다.
+
+<P>
+구현의 상호 조작성이란, 다양한 구현을 서로 기능할 수 있어 서로의 열쇠를 사용하거나 서로의 서명을 검증할 수 있는 것을 의미합니다. 즉, 1 개의 프로바이더가 생성한 같은 알고리즘이나 열쇠를 다른 프로바이더가 사용하거나 있는 프로바이더가 생성한 서명을 다른 프로바이더가 검증한다고 하는 것입니다.
+
+<P>
+알고리즘의 확장성이란, 지원되는 엔진 클래스의 1 개에 들어맞는 신규 알고리즘을 용이하게 추가할 수 있는 것을 의미합니다.
+
+</blockquote>
+
+<H2><a name="Architecture">아키텍쳐(architecture)</a> </H2>
+
+<blockquote>
+
+<H4><a name="ProviderArch">암호화 서비스 프로바이더</a> </H4>
+
+<p>
+
+<code>java.security.Provider</code> 는, 모든 시큐리티 프로바이더의 base class입니다. 각 CSP 는 이 클래스의 인스턴스를 포함합니다. 인스턴스는 프로바이더의 이름을 포함해, 구현하는 시큐리티 서비스/알고리즘을 모두 일람표 가리킵니다. 특정의 알고리즘의 인스턴스가 필요한 경우, JCA 시스템는 프로바이더의 데이타베이스에 문의해 일치하는 것이 발견되었을 경우는 그 인스턴스가 작성됩니다.
+
+<p>
+
+프로바이더는, 공개되고 있는 암호화 알고리즘의 고정 구현을 제공하는 패키지 (또는, 패키지세트)를 포함합니다. 각 JDK 의 인스톨에서는, 1 개(살) 이상의 프로바이더가 인스톨 되어 디폴트로 구성됩니다. 추가 프로바이더는 정적 또는 동적으로 추가할 수 있습니다 (<a href="#Provider">Provider</a>  클래스와 <a href="#Security">Security</a>  클래스를 참조). 클라이언트는 실행 환경을 구성해, 프로바이더의 「우선 순위」를 지정할 수 있습니다. 우선 순위란, 특정 프로바이더의 지정이 없는 경우에, 요구된 서비스에 관해서 검색되는 프로바이더의 순위입니다.
+
+<p>
+
+JCA 를 사용하려면 , 어플리케이션은 특정의 객체의 형태 (예를 들어 <code>MessageDigest</code>)와 특정의 알고리즘 또는 서비스 (예를 들어 「MD5」알고리즘)를 요구해, 인스톨 되고 있는 프로바이더 가운데 1 개로부터 구현을 획득합니다. 혹은, 특정 프로바이더의 객체를 요구할 수도 있는 각 프로바이더는, 각각의 참조명을 가집니다.
+
+<pre>
+    md = MessageDigest.getInstance("MD5");
+    md = MessageDigest.getInstance("MD5", "ProviderC");
+</pre>
+
+<p>
+
+다음의 그림은, 「MD5」메세지 다이제스트 구현의 요구를 나타내고 있습니다. 이 그림은, 다양한 메세지 다이제스트 알고리즘 ( 「SHA-1」, 「MD5」, 「SHA-256」, 및 「SHA-256」)을 구현하는 3 개(살)이 다른 프로바이더를 나타내고 있습니다. 프로바이더는, 왼쪽에서 오른쪽에의 우선 순위 (1? 3)으로 나란해질 수 있고라고 있습니다. 최초의 그림에서는, 어플리케이션은 프로바이더명을<b>지정하지 않고</b> MD5 알고리즘 구현을 요구하고 있습니다. 프로바이더가 우선 순위에 따라 검색되어 그 알고리즘을 제공하는 최초의 프로바이더 ProviderB 로부터 구현이 돌려주어집니다. 2 번째의 그림에서는, 어플리케이션은<b>특정의 프로바이더</b> ProviderC 로부터 MD5 알고리즘 구현을 요구하고 있습니다. 이 경우는, 우선 순위의 높은 프로바이더 ProviderB 도 MD5 구현을 제공합니다만, ProviderC 로부터 구현이 돌려주어집니다. </p>
+
+<p>
+<center>
+<img src="../images/jca/Overview.gif" alt="<일반적인 JCA 아키텍쳐(architecture)의 화상>">
+</center>
+
+<p>
+
+Sun JDK 에서의 암호화 구현은, 다양한 프로바이더 (<code>Sun</code>,<code>SunJSSE</code>,<code>SunJCE</code>,<code>SunRsaSign</code>)에 의해 배포됩니다. 이것은 주로 역사적인 이유에 의합니다만, 그것들이 제공하는 기능 및 알고리즘의 타입에 의하는 곳(중)도 있습니다. 그 외의 Java 실행 환경은, 반드시 이러한 Sun 프로바이더를 포함하지 않습니다. 따라서, 특정의 프로바이더가 사용 가능하게 되는 것을 알 수 있고 있는 경우를 제외해, 어플리케이션은 프로바이더 고유의 구현을 요구하지 않게 할 필요가 있습니다.
+
+<p>
+
+JCA 에는, 인스톨 되고 있는 프로바이더 및 그것들이 지원하는 서비스에 대해, 사용자가 문의할 수가 있는 API 세트가 있습니다.
+
+<p>
+
+이 아키텍쳐(architecture)를 사용하면(자), 최종 사용자가 프로바이더를 추가하는 일도 간단하게 됩니다. 많은 서드 파티의 프로바이더 구현이 벌써 사용 가능합니다. 프로바이더의 기술, 인스톨, 및 등록의 방법의 자세한 것은,<a href="#Provider"><code>「Provider</code> 클래스」</a>를 참조해 주세요.
+
+<H4>프로바이더의 실제의 구현 방법</H4>
+<p>
+
+전술과 같이, 알고리즘의 독립성은, 서비스 타입에 액세스 하기 위해서 모든 어플리케이션이 사용하는 범용으로 고레벨의 Application Programming Interface (API)를 정의하는 것에 의해 실현됩니다. 구현의 독립성은, 모든 프로바이더 구현을, 명확하게 정의된 인터페이스에 준거시키는 것에 의해 실현됩니다. 따라서, 엔진 클래스의 인스턴스는, 같은 메소드시그니챠를 가지는 구현 클래스에 근거하고 있습니다. 어플리케이션 호출은 엔진 클래스에 의해 건네받아 기반이 되는 구현에 전송됩니다. 구현은 요구를 처리해, 올바른 결과를 돌려줍니다.
+
+<p>
+
+각 엔진 클래스내의 어플리케이션 API 메소드는, 대응하는 Service Provider Interface (SPI)를 구현하는 클래스에 의해 프로바이더의 구현에게 건네집니다. 즉, 각 엔진 클래스에 대응하는 추상 SPI 클래스가 존재해, 이 추상 SPI 클래스에 의해 각 암호화 서비스 프로바이더의 알고리즘이 구현할 필요가 있는 메소드가 정의됩니다. SPI 클래스의 이름은, 대응하는 엔진 클래스명의 후에 <code>Spi</code> 를 추가한 이름이 됩니다. 예를 들어 <code>Signature</code> 엔진 클래스는, 디지털 서명 알고리즘의 기능에의 액세스를 제공합니다. 실제의 프로바이더 구현은,<code>SignatureSpi</code> 의 서브 클래스내에서 제공됩니다. 어플리케이션은 각 엔진 클래스의 API 메소드를 호출해, API 메소드는 실제의 구현내의 SPI 메소드를 호출합니다.
+
+<p>
+
+각 SPI 클래스는, 추상 클래스입니다. 지정한 알고리즘에 대한 특정의 형태의 서비스의 구현을 제공하려면 , 프로바이더는, 대응하는 SPI 클래스를 서브 클래스화해, 모든 추상 메소드의 구현을 제공할 필요가 있습니다.
+
+<p>
+
+API 의 각 엔진 클래스에 대해서는, 엔진 클래스 특유의 <code>getInstance()</code>「팩토리 메소드」를 호출하는 것에 의해 구현 인스턴스가 요구되어 인스턴스가 생성됩니다. 팩토리 메소드는, 클래스의 인스턴스를 돌려주는 static 메소드입니다. 엔진 클래스는, 전술의 시스템 프로바이더 선택 기구를 사용해 실제의 기반이 되는 구현 (SPI)을 취득해, 실제의 엔진 객체를 작성합니다. 엔진 클래스의 각 인스턴스는, SPI 객체로 불리는 대응하는 SPI 클래스의 인스턴스를, private 필드로서 캡슐화합니다. API 객체의 모든 API 메소드는, final 로서 선언해, 그것들을 구현하는 것에 의해, 캡슐화되는 SPI 객체의 대응하는 SPI 메소드가 불려 갑니다.
+
+<p>
+
+이것을 명확하게 하기 위해서, 다음의 코드와 그림을 확인해 주세요.
+
+<pre>
+    import javax.crypto. *;
+
+    Cipher c = Cipher.getInstance("AES");
+    c.init(ENCRYPT_MODE, key);
+</pre>
+
+<p>
+
+<center>
+<img src="../images/jca/ArchDesignPrincipals.gif" alt="<프로바이더 아키텍쳐(architecture)의 개요의 화상>">
+</center>
+
+<p>
+
+여기서, 어플리케이션은 「AES」<code>javax.crypto.Cipher</code> 인스턴스를 필요로 해, 사용하는 프로바이더는 문제가 되지 않습니다. 어플리케이션은 <code>Cipher</code> 엔진 클래스의 <code>getInstance()</code> 팩토리 메소드를 호출해, 팩토리 메소드는 JCA 시스템에 「AES」를 지원하는 최초의 프로바이더 인스턴스를 찾아내는 것을 요구합니다. 시스템는 인스톨 되고 있는 각 프로바이더에 문의해<code>Provider</code> 클래스의 프로바이더의 인스턴스를 가져옵니다. <code>Provider</code> 클래스는, 사용 가능한 알고리즘의 데이타베이스입니다. 시스템는 각 프로바이더를 검색해, 최종적으로 CSP3 로 적절한 엔트리를 찾아냅니다. 이 데이타베이스 엔트리는,<code>CipherSpi</code> 를 확장하는 구현 클래스 <code>com.foo.AESCipher</code> 를 지정해, 따라 <code>Cipher</code> 엔진 클래스에 의한 사용에 적절하고 있습니다. <code>com.foo.AESCipher</code> 의 인스턴스가 작성되어<code>javax.crypto.Cipher</code> 의 새롭게 작성되는 인스턴스에 캡슐화됩니다. 새롭게 작성되는 인스턴스가 어플리케이션에 돌려주어집니다. 어플리케이션이 <code>Cipher</code> 인스턴스상에서 <code>init()</code> 오퍼레이션을 실행하면(자),<code>Cipher</code> 엔진 클래스는 그 요구를 <code>com.foo.AESCipher</code> 클래스내의 대응하는 <code>engineInit()</code> 배킹 메소드에 건네줍니다.
+
+<p>
+
+<a href="#AppA">「부록 A」</a>에는,Java 환경에 대해서 정의되고 있는 표준명이 일람표 나타나고 있습니다. 다른 서드 파티 프로바이더가, 이러한 서비스 또는 추가 서비스의 독자적인 구현을 정의하고 있는 경우가 있습니다.
+
+
+<H4>열쇠 관리</H4>
+
+<P>
+
+「키스토어」라고 불리는 데이타베이스는, 열쇠 및 증명서의 리포지터리(repository)를 관리하기 위해서 사용할 수 있습니다. 키스토어는, 인증, 암호화, 또는 서명의 목적으로 데이터가 필요한 어플리케이션으로 이용할 수 있습니다.
+
+<p>
+
+어플리케이션은,<code>KeyStore</code> 클래스의 구현을 경유해 키스토어에 액세스 할 수 있습니다. 키스토어크라스의 구현은,<code>java.security</code> 패키지내에 있습니다. 디폴트의 키스토어의 구현은, 미국 Sun Microsystems, Inc 에 의해 제공됩니다. 이것은, 「jks」라고 하는 이름의 독자적인 키스토어타이프 (형식)를 사용해서 , 키스토어를 파일로서 구현하고 있습니다. 그 외의 키스토어 형식도 사용할 수 있습니다. 「jks」보다 큰폭으로 강력한 암호화를 갖춘 독자적인 대체 키스토어 형식인 「jceks」나 RSA <a href="http://www.rsasecurity.com/rsalabs/pkcs">PKCS12 Personal Information Exchange Syntax Standard</a>  에 근거한 「pkcs12」 등입니다.
+
+<p>
+
+어플리케이션은, 전술의 같은 프로바이더 기구를 사용해, 다른 프로바이더로부터 다른 키스토어 구현을 선택할 수 있습니다.
+
+<p>자세한 것은,<a href="#KeyManagement">「열쇠 관리」</a>의 항을 참조해 주세요.
+
+</blockquote>
+
+<H2><a name="Concepts">JCA 의 개념</a> </H2>
+
+<blockquote>
+
+<P>
+이 항에서는, 주요한 JCA API 에 대해 설명합니다.
+
+<H4><a name="Engine">엔진 클래스와 알고리즘</a> </H4>
+
+<p>
+
+엔진 클래스는, 특정의 암호화 알고리즘 또는 프로바이더에 의존하지 않는, 특정의 형태의 암호화 서비스에의 인터페이스를 제공합니다. 엔진은, 다음의 어느쪽이든을 제공합니다.
+
+<ul>
+<li>암호화 조작 (암호화, 디지털 서명, 메세지 다이제스트 등)
+</li>
+
+<li>암호화 데이터 (열쇠 및 알고리즘 파라미터)의 제네레이터 또는 컨버터
+</li>
+
+<li>암호화 데이터를 캡슐화해, 상위의 추상 층으로 사용할 수 있는 객체 (키스토어 또는 증명서)</li>
+
+</ul>
+
+<p>
+
+다음의 엔진 클래스가 사용 가능합니다.
+
+<ul>
+
+<li><a href="#SecureRandom"><code>SecureRandom</code></a> :난수 또는 의사 난수의 생성에 사용한다</li>  <p>
+
+<li><a href="#MessageDigest"><code>MessageDigest</code></a> :지정 데이터의 메세지 다이제스트 (해시)의 계산에 사용합니다. </li><p>
+
+<li><a href="#Signature"><code>Signature</code></a> :열쇠에 의해 초기화됩니다. 디지털 서명의 서명 및 검증에 사용합니다. </li><p>
+
+<li><a href="#Cipher"><code>Cipher</code></a> :열쇠에 의해 초기화됩니다. 데이터의 암호화/복호화에 사용합니다. 대칭 벌크 암호화 (AES, DES, DESede, Blowfish, IDEA 등), 스트림 암호화 (RC4 등), 비대칭 암호화 (RSA 등), 패스워드 베이스의 암호화 (PBE) 등, 다양한 종류의 알고리즘이 있습니다.   </li><p>
+
+<li><a href="#Mac">메세지 인증 코드 (MAC)</a> :<code>MessageDigest</code> 와 같게 이것들도 해시치를 생성합니다만, 메세지의 무결성을 보호하기 위해서 최초로 열쇠에 의해 초기화됩니다. </li><p>
+
+<br>
+
+<li><a href="#KeyFactory"><code>KeyFactory</code></a> :<a href="#Key"><code>Key</code></a>  형의 기존의 불투명한 암호화열쇠를 「열쇠 스펙」(배후 키 데이터의 투명한 표현)로 변환하거나 그 역의 변환을 실시하기 위해서(때문에) 사용합니다. </li><p>
+
+<li><a href="#SecretKeyFactory"><code>SecretKeyFactory</code></a> :<a href="#Key"><code>SecretKey</code></a>  형의 기존의 불투명한 암호화열쇠를 「열쇠 스펙」(배후 키 데이터의 투명한 표현)로 변환하거나 그 역의 변환을 실시하기 위해서(때문에) 사용합니다. <code>SecretKeyFactory</code> 는, 비밀 (대칭) 열쇠만을 작성하는 특수한 <code>KeyFactory</code> 입니다. </li><p>
+
+<li><a href="#KeyPairGenerator"><code>KeyPairGenerator</code></a> :지정의 알고리즘에서의 사용에 적합한, 새로운 공개키, 비공개키 페어의 생성에 사용합니다. </li><p>
+
+<li><a href="#KeyGenerator"><code>KeyGenerator</code></a> :지정의 알고리즘으로 사용하기 위한 , 새로운 비밀열쇠의 생성에 사용합니다. </li><p>
+
+<li><a href="#KeyAgreement"><code>KeyAgreement</code></a> :특정의 암호화 조작에 사용하는 특정의 열쇠의 합의 및 확립을 위해서(때문에), 복수의 파티에 의해 사용됩니다. </li><p>
+
+<br>
+
+<li><a href="#AlgorithmParameters"><code>AlgorithmParameters</code></a> :파라미터의 encode 및 복호화 등, 특정의 알고리즘의 파라미터의 포함에 사용합니다. </li><p>
+
+<li><a href="#AlgorithmParameterGenerator"><code>AlgorithmParameterGenerator</code></a> :특정의 알고리즘에 적절한 알고리즘 파라미터 세트의 생성에 사용합니다. <p>
+
+<br>
+
+<li><a href="#KeyStore"><code>KeyStore</code></a>  :「키스토어」의 작성 및 관리에 사용합니다. 키스토어는, 열쇠의 데이타베이스입니다. 키스토어내의 비공개키에는, 열쇠에 관련한 증명서 체인이 있습니다. 증명서 체인은, 대응하는 공개키를 인증합니다. 또, 키스토어에는, 신뢰할 수 있는 엔티티로부터의 증명서도 포함되고 있습니다. </li> <p>
+
+<br>
+
+<li><a href="#CertificateFactory"><code>CertificateFactory</code></a> :공개키의 증명서 및 증명서의 취소 리스트 (CRL)의 작성에 사용한다<p>
+
+<li><a href="../certpath/CertPathProgGuide.html"><code>CertPathBuilder</code></a> :증명서 체인 ( 「증명서 패스」라고도 불린다)의 구축에 사용한다</li><p>
+
+<li><a href="../certpath/CertPathProgGuide.html"><code>CertPathValidator</code></a> :증명서 체인의 검증에 사용합니다. </li><p>
+
+<li><a href="../certpath/CertPathProgGuide.html"><code>CertStore</code></a> :리포지터리(repository)로부터<code>증명서</code>와 <code>CRL</code> 를 취득하기 위해서 사용합니다. </li><p>
+
+
+</ul>
+
+<blockquote>
+<hr>
+<B>주:</B> 「제네레이터 (generator)」는, 최신의 내용으로 객체를 작성합니다만, 「팩토리 (factory)」는 기존의 원가요소 (encode법등)로부터 객체를 작성합니다.
+<hr>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H1><a name="CoreClasses">코어 클래스와 인터페이스</a> </H1>
+
+<blockquote>
+
+<P>
+이 항에서는, JCA 로 제공하는 코어 클래스와 인터페이스에 대해 설명합니다.
+
+<ul>
+
+<li><a href="#Provider"><code>Provider</code></a>  클래스와 <a href="#Security"><code>Security</code></a>  클래스</li><p>
+
+<li> <a href="#SecureRandom"><code>SecureRandom</code></a> ,<a href="#MessageDigest"><code>MessageDigest</code></a> ,<a href="#Signature"><code>Signature</code></a> ,<a href="#Cipher"><code>Cipher</code></a> ,<a href="#Mac"><code>Mac</code></a> ,
+
+<a href="#KeyFactory"><code>KeyFactory</code></a> ,<a href="#SecretKeyFactory"><code>SecretKeyFactory</code></a> ,<a href="#KeyPairGenerator"><code>KeyPairGenerator</code></a> ,<a href="#KeyGenerator"><code>KeyGenerator</code></a> ,<a href="#KeyAgreement"><code>KeyAgreement</code></a> ,
+
+<a href="#AlgorithmParameters"><code>AlgorithmParameters</code></a> ,<a href="#AlgorithmParameterGenerator"><code>AlgorithmParameterGenerator</code></a> ,
+
+<a href="#KeyStore"><code>KeyStore</code></a> , 및 <a href="#CertificateFactory"><code>CertificateFactory</code></a>  엔진 클래스</li><p>
+
+<li><a href="#Key"><code>Key</code></a>  인터페이스 및 클래스
+</li><p>
+
+<li><a href="#AlgSpec">「알고리즘 파라미터의 스펙의 인터페이스 및 클래스」 </a>및<a href="#KeySpecs">「열쇠 스펙의 인터페이스 및 클래스」</a> </li><p>
+
+<li>그 외의 지원 및 유용한 인터페이스 및 클래스
+</li><p>
+
+<hr>
+<b>주:</b>
+
+<a href="../../../../api/java/security/cert/CertPathBuilder.html"><code>CertPathBuilder</code></A> ,<a href="../../../../api/java/security/cert/CertPathValidator.html"><code>CertPathValidator</code></A> , 및 <a href="../../../../api/java/security/cert/CertStore.html"><code>CertStore</code></A>  엔진 클래스의 자세한 것은,<a href="../certpath/CertPathProgGuide.html">「Java(TM) PKI 개발자 안내」</a>를 참조해 주세요.
+<hr>
+
+</ul>
+
+이 가이드에서는, 가장 유용한 고레벨의 클래스에 도착해 최초로 설명해 (<code>Provider</code>,<code>Security</code>,<code>SecureRandom</code>,<code>MessageDigest</code>,<code>Signature</code>,<code>Cipher</code>, 및 <code>Mac</code>), 다음에 다양한 지원 클래스에 도착해 설명합니다. 현시점에서는, 열쇠 (공개, 비공개, 및 비밀)는 다양한 JCA 클래스에 의해 생성 및 표현되어 고레벨의 클래스에 의해 그 조작의 일부로서 사용된다고 하는 설명만으로 충분합니다.
+
+<p>
+
+이 항에서는, 각 클래스 및 인터페이스의 메인 메소드의 서명을 나타냅니다. 해당하는<a href="#Examples">예의 </a>항에는, 클래스 (<code>MessageDigest</code>,<code>Signature</code>,<code>KeyPairGenerator</code>,<code>SecureRandom</code>,<code>KeyFactory</code>, 및 열쇠 스펙 클래스)의 예가 있습니다.
+
+<p>
+
+관련하는 Security API 패키지의 완전한 레퍼런스 문서는, 다음의 패키지의 개요에 있습니다.
+
+<table>
+<tr>
+<td valign="top">
+<ul>
+<li><a href="../../../../api/java/security/package-summary.html"><code>java.security</code></a>  </li>
+<li><a href="../../../../api/javax/crypto/package-summary.html"><code>javax.crypto</code></a>  </li>
+<li><a href="../../../../api/java/security/cert/package-summary.html"><code>java.security.cert</code></a>  </li>
+</ul>
+</td>
+
+<td valign="top">
+<ul>
+<li><a href="../../../../api/java/security/spec/package-summary.html"><code>java.security.spec</code></a>  </li>
+<li><a href="../../../../api/javax/crypto/spec/package-summary.html"><code>javax.crypto.spec</code></a>  </li>
+</ul>
+</td>
+
+<td valign="top">
+<ul>
+<li><a href="../../../../api/java/security/interfaces/package-summary.html"><code>java.security.interfaces</code></a>  </li>
+<li><a href="../../../../api/javax/crypto/interfaces/package-summary.html"><code>javax.crypto.interfaces</code></a>  </li>
+</ul>
+</td>
+</tr>
+</table>
+
+<p>
+
+
+<H2><a name="Provider"><code>Provider</code> 클래스</a> </H2>
+
+<blockquote>
+
+<p>「암호화 서비스 프로바이더」(이 문서에서는 「프로바이더」라고도 불린다)이란, JDK Security API 의 암호화 기능의 부분집합의 고정 구현을 제공하는 패키지 또는 패키지 세트입니다. <code>Provider</code> 클래스는, 이러한 패키지나 패키지 세트에의 인터페이스입니다. 프로바이더명, 버젼 번호, 그 외의 정보에 액세스하기 위한 메소드를 갖추고 있습니다. <code>Provider</code> 클래스를 사용하면(자), 암호화 서비스의 구현을 등록할 뿐만 아니라, 그 외의 시큐리티 서비스의 구현을 등록할 수도 있습니다. 그 외의 시큐리티 서비스는, JDK Security API 또는 그 확장 기능의 1 개의 일부로서 정의되고 있는 경우가 있습니다.
+
+<p>암호화 서비스의 구현을 제공하려면 , 엔티티 (개발 그룹등)는 구현 코드를 작성해,<code>Provider</code> 클래스의 서브 클래스를 생성합니다. <code>Provider</code> 서브 클래스의 생성자 은, 프로바이더가 구현한 서비스를 검색하기 위해서 JDK Security API 가 사용하는 각종 프로퍼티의 값을 설정합니다. 즉, 서브 클래스는, 서비스를 구현하는 클래스명을 지정합니다.
+
+<p>
+
+<center>
+<img src="../images/jca/Provider.gif" alt="<Provider 조작의 화상>">
+</center>
+
+<p>프로바이더 패키지를 구현할 수 있는 서비스에는, 다양한 종류가 있습니다. 상세한 것에 대하여는,<a href="#Engine">「엔진 클래스와 알고리즘」</a>을 참조해 주세요.
+
+<p>
+구현이 다르면(자), 특징도 달라지는 경우가 있습니다. 소프트웨어 베이스의 것도 있으면, 하드웨어 베이스의 것도 있습니다. 플랫폼 독립의 것도 있으면, 플랫폼 고유의 것도 있습니다. 또, 리뷰나 평가용으로 사용할 수 있는 프로바이더 코드도 있으면, 사용할 수 없는 것도 있습니다. JCA 에서는, 최종 사용자와 개발자의 쌍방이 독자적인 요구를 결정할 수 있습니다.
+
+<P>이 항에서는, 최종 사용자를 위한 암호 구현의 인스톨 방법과 요구에의 맞추는 방법, 및 개발자를 위한 필요한 구현의 요구 방법을 설명합니다.
+
+<blockquote>
+<hr>
+<B>주:</B>프로바이더의 구현의 자세한 것은,<a href="HowToImplAProvider.html">「Java 암호화 아키텍쳐(architecture)용 프로바이더의 구현 방법」</a>을 참조해 주세요.
+<hr>
+</blockquote>
+
+
+<H3><a name="ProviderImplReq">프로바이더 구현의 요구 및 획득 방법</a> </H3>
+
+<blockquote>
+
+이 API 의 각<a href="#Engine">엔진 클래스</a>에 대해서는, 구현 인스턴스가 요구되어 그 엔진 클래스의 <code>getInstance</code> 메소드의 1 개를 호출해 인스턴스가 생성됩니다. 이 때에, 희망하는 알고리즘의 이름과 구현하는 프로바이더 (또는 <code>Provider</code> 클래스)의 이름 (옵션)을 지정합니다.
+
+<blockquote>
+<pre>
+static <i>EngineClassName</i> getInstance(String algorithm)
+    throws NoSuchAlgorithmException
+
+static <i>EngineClassName</i> getInstance(String algorithm, String provider)
+    throws NoSuchAlgorithmException, NoSuchProviderException
+
+static <i>EngineClassName</i> getInstance(String algorithm, Provider provider)
+    throws NoSuchAlgorithmException
+</pre>
+</blockquote>
+
+<i>EngineClassName</i> 는, 필요한 엔진 타입 (MessageDigest/Cipher/그 외)입니다. 예를 나타냅니다.
+
+<pre>
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    KeyAgreement ka = KeyAgreement.getInstance("DH", "SunJCE");
+</pre>
+
+각각, 「MD5」MessageDigest 및 「DH」KeyAgreement 객체의 인스턴스를 돌려줍니다.
+
+<p>
+
+<a href="#AppA">「부록 A」</a>에는,Java 환경에서의 사용에 대해 표준화 되고 있는 이름의 리스트가 있습니다. 일부의 프로바이더에는, 같은 알고리즘을 참조하는 별명이 있는 경우도 있습니다. 예를 들어, 「SHA-1」알고리즘이 「SHA1」로서 참조되는 경우가 있습니다. 반드시 모든 프로바이더가 똑같이 알고리즘명의 별명을 가지는 것은 아니기 때문에, 어플리케이션은 별명은 아니고 표준명을 사용할 필요가 있습니다.
+
+<blockquote>
+<HR>
+<B>주:</B>알고리즘명의 대문자와 소문자는 구별되지 않습니다. 예를 들어, 다음의 호출은 모두 등가로 간주해집니다.
+
+<blockquote>
+<pre>
+MessageDigest.getInstance("SHA-1")
+MessageDigest.getInstance("sha-1")
+MessageDigest.getInstance("sHa-1")
+</pre>
+</blockquote>
+<HR>
+</blockquote>
+
+
+<p>프로바이더를 지정하지 않는 경우,<code>getInstance</code> 는, 지정된 알고리즘에 관련한다, 요구된 암호화 서비스의 구현에 대응하는 등록 프로바이더를 검색합니다. 어느 Java 가상 머신 (JVM)에서도, 프로바이더는 지정의 「우선 순위」로<a href="#ProviderInstalling">인스톨 </a>됩니다. 우선 순위란, 특정 프로바이더의 지정이 없는 경우에, 프로바이더 리스트가 검색되는 순위입니다. 예를 들어, JVM 에,<code>PROVIDER_1</code> 와 <code>PROVIDER_2</code>라고 하는 2 개의 프로바이더가 인스톨 되어 다음과 같이 되어 있으면(자) 가정합니다.
+
+<ul>
+<li><code>PROVIDER_1</code> 는 SHA1withDSA, SHA-1, MD5, DES, DES3 를 구현<BR> <code>PROVIDER_1</code> 의 우선 순위가 1 (최고의 우선 순위)<p>
+<li><code>PROVIDER_2</code> 는 SHA1withDSA, MD5withRSA, MD2withRSA, MD2, MD5, RC4, RC5, DES, RSA 를 구현<BR><code>PROVIDER_2</code> 의 우선 순위는 2
+</ul>
+
+여기서, 3 개의 시나리오에 대해 보겠습니다.
+<OL>
+
+<LI>MD5 구현을 검색한다고 한다. 어느 쪽의 프로바이더도 이 구현을 공급한다. <code>PROVIDER_1</code> 가 최고의 우선 순위를 가져 최초로 검색되므로,<code>PROVIDER_1</code> 구현이 반환된다
+
+<LI>MD5withRSA 서명 알고리즘을 검색하는 경우, 우선 최초로 <code>PROVIDER_1</code> 가 검색된다. 구현이 발견되지 않기 때문에 다음에 <code>PROVIDER_2</code> 가 검색된다. 구현이 발견되므로, 이 프로바이더가 반환된다
+
+<LI>
+SHA1withRSA 서명 알고리즘을 검색하는 경우를 상정한다. 이것을 구현하는 프로바이더는 인스톨되어 있지 않기 때문에,<code>NoSuchAlgorithmException</code> 가 throw 된다
+</OL>
+
+<p>
+프로바이더 인수를 가지는 <code>getInstance</code> 메소드는, 필요한 알고리즘을 제공하는 프로바이더를 지정하고 싶은 개발자를 위한 것입니다. 예를 들어, 연방 증명서를 받은 프로바이더 구현을 연방국을 사용하고 싶다고 합니다. <code>PROVIDER_1</code> 의 SHA1withDSA 구현은 이 증명서를 받지 않았는데 대해,<code>PROVIDER_2</code> 의 DSA 구현이 이것을 받고 있으면(자) 가정합니다.
+
+<p>연방국의 프로그램은 이하의 호출을 실행합니다. <code>PROVIDER_2</code> 가 인증된 구현을 가지기 (위해)때문에, 이것을 지정합니다.
+
+<blockquote>
+<pre>
+Signature dsa = Signature.getInstance("SHA1withDSA", "PROVIDER_2");
+</pre>
+</blockquote>
+
+<p>이 경우,<code>PROVIDER_2</code> 가 인스톨되어 있지 않으면 인스톨 되고 있는 다른 프로바이더가 요구 알고리즘을 구현하고 있는 경우여도,<code>NoSuchProviderException</code> 가 throw 됩니다.
+
+<p>프로그램은, (<a href="#Security"><code>Security</code></a>  클래스의 <code>getProviders</code> 메소드를 사용해) 인스톨 되고 있는 프로바이더의 리스트를 획득해, 리스트로부터 선택할 수도 있습니다.
+
+<blockquote>
+<hr>
+<b>주:</b>
+
+범용 어플리케이션은, 특정의 프로바이더로부터 암호화 서비스를 요구<b>하지 않게 할 필요가 있습니다. </b>요구를 실시하면, 어플리케이션은 다른 Java 구현으로 사용할 수 없을 가능성이 있는 특정의 프로바이더에 연결시킬 수 있습니다. 특정의 요구된 프로바이더보다 우선 순위가 높은, 사용 가능한 최적화된 프로바이더 (예를 들어, PKCS11 에 의한 하드웨어 가속기 또는 Microsoft 의 MSCAPI 등의 네이티브 OS 구현)를 이용할 수 없는 경우도 있습니다.
+
+<hr>
+</blockquote>
+
+</blockquote>
+
+<H3><a name="ProviderInstalling">프로바이더의 인스톨</a> </H3>
+
+<blockquote>
+
+<p>
+암호화 프로바이더를 사용하려면 , 최초로 인스톨 해, 다음에 정적 또는 동적으로 등록합니다. 다양한 Sun 프로바이더가 이 릴리스에 동고 되어 있어 (<code>SUN</code>,<code>SunJCE</code>,<code>SunJSSE</code>,<code>SunRsaSign</code> 등), 벌써 인스톨 및 등록되어 있습니다. 이후의 항에서는, 추가 프로바이더의 인스톨 및 등록 방법에 대해 설명합니다.
+
+<H4>프로바이더 클래스의 인스톨</H4>
+
+<p>프로바이더 클래스의 인스톨에는, 다음의 2 개의 방법이 있습니다.
+<ol>
+<li> <b>일반적으로의 Java classpath</b>
+<p> 클래스가 포함되고 있는 zip 또는 JAR 파일을, classpath 의 임의의 장소에 둔다. 일부의 알고리즘 타입 (암호)에서는, 프로바이더는 서명된 JAR 파일일 필요가 있습니다.
+<p>
+<li><b>인스톨/번들 된 확장 기능</b>
+<p>
+프로바이더는, 표준의 확장 기능 디렉토리에 배치되었을 경우, 「인스톨형」확장 기능이라고 보여집니다. Sun 의 JDK 에서는, 다음의 장소에 배치됩니다.
+</p>
+
+<blockquote>
+    <pre>
+    &lt;java-home&gt;/lib/ext                   [Unix]
+    &lt;java-home&gt;\lib\ext                   [Windows] </pre>
+</blockquote>
+
+여기서,<tt>&lt;java-home&gt;</tt> 는, 런타임 소프트웨어의 인스톨처 디렉토리 (Java<sup><font size="-2">TM</font></sup> Runtime Environment (JRE)의 톱 레벨 디렉토리 또는 Java<sup><font size="-2">TM</font></sup> JDK 소프트웨어의 <tt>jre</tt> 디렉토리)를 가리킵니다. 예를 들어, JDK 6 을 <code>/home/user1/JDK1. 6.0</code> 디렉토리 (Solaris), 또는 <code>C:\Java\JDK1. 6.0</code> 디렉토리 (Microsoft Windows)에 인스톨 했을 경우, JAR 파일을 다음의 디렉토리에 인스톨 할 필요가 있습니다.  <p></p>
+
+<blockquote>
+    <pre>
+    /home/user1/JDK1. 6.0/jre/lib/ext      [Unix]
+    C:\JDK1. 6.0\jre\lib\ext               [Windows]</pre>
+</blockquote>
+
+<p>같이 JRE 6 을 <code>/home/user1/jre1. 6.0</code> 디렉토리 (Solaris), 또는 <code>C:\jre1. 6.0</code> 디렉토리 (Microsoft Windows)에 인스톨 했을 경우, JAR 파일을 다음의 디렉토리에 인스톨 할 필요가 있습니다.  </p>
+
+    <blockquote>
+      <pre>
+      /home/user1/jre1. 6.0/lib/ext          [Unix]
+      C:\jre1. 6.0\lib\ext                   [Windows]</pre>
+    </blockquote>
+
+확장 기능의 배치 방법의 자세한 것은,<a href="../../extensions/spec.html#deployment">「확장 기능의 배치」</a>를 참조해 주세요.
+
+</ol>
+
+<H4>프로바이더의 등록</H4>
+
+<p>다음의 순서에서는, 등록이 끝난 프로바이더의 리스트에 프로바이더를 추가합니다. 프로바이더는, Java 어플리케이션을 실행하기 전에 시큐리티 프로퍼티 구성 파일을 편집해 정적으로 등록하는지, 또는 실행시에 메소드를 호출해 동적으로 등록할 수 있습니다. 파괴 행위를 실시하는 프로바이더의 인스톨이 실행 환경에 추가되는 것을 막기 위해서(때문에), 프로바이더를 동적으로 등록하려고 하는 어플리케이션은 적절한 실행 특권을 보관 유지하고 있을 필요가 있습니다.
+
+<h5>정적 등록</h5>
+
+구성 파일은, 다음의 디렉토리에 포함되고 있습니다. </p>
+
+<blockquote>
+    <pre>
+    &lt;java-home&gt;/lib/security/java.security     [Unix]
+    &lt;java-home&gt;\lib\security\java.security     [Windows] </pre>
+</blockquote>
+
+등록된 프로바이더 마다, 이 파일은 다음의 형식의 문장을 보관 유지합니다.  <p></p>
+
+<blockquote>
+    <pre>
+    security.provider. <i>n</i>=<i>masterClassName</i></pre>
+</blockquote>
+
+<p>이것은 프로바이더를 선언해, 그 우선 순위 <i>n</i> 를 지정합니다. 우선 순위란, 특정 프로바이더의 지정이 없는 경우에, 요구된 서비스에 관해서 검색되는 프로바이더의 순위입니다. 순위는 1 으로부터 시작됩니다. 1 이 최우선으로 다음에 2, 3 ...(와)과 계속됩니다.
+
+<p>
+
+<i><code>masterClassName</code></i> 에는, 프로바이더의 「마스터 클래스」를 완전 수식명으로 지정합니다. 프로바이더의 문서로 그 마스터 클래스를 지정합니다. 이 클래스는, 항상 <code>Provider</code> 클래스의 서브 클래스입니다. 서브 클래스 생성자 은, 프로바이더가 구현한 알고리즘이나 그 외의 기능을 검색하기 위해서 Java 암호화 API 에 필요한 각종 프로퍼티의 값을 설정합니다.
+
+<p>
+
+JDK 에는, 「SUN」나 「SunJCE」 등, 표준으로 자동적으로 인스톨 및 구성되는 프로바이더가 부수 합니다. 「SUN」프로바이더의 마스터 클래스는,<code>sun.security.provider</code> 패키지내의 <code>SUN</code> 클래스입니다. 대응하는 java.security 파일 엔트리는, 다음과 같습니다.   </p>
+
+<blockquote>
+    <pre>
+    security.provider. 5=sun.security.provider.Sun</pre>
+</blockquote>
+<p>
+
+다른 JCA 프로바이더를 이용하는 경우, 대체 프로바이더를 참조하는 행을 추가해, 우선 순위를 지정합니다. 필요에 따라서 다른 프로바이더의 순서도 조정합니다.  </p>
+
+<p>
+
+CompanyX 의 프로바이더의 마스터 클래스가 <code>com.companyx.provider.ProviderX</code> 로, 이 프로바이더를 우선 순위가 제 8 위의 프로바이더로서 구성한다고 합니다. 이 때문에는, 다음의 행을 <code>java.security</code> 파일에 추가합니다.
+
+<blockquote>
+    <pre>
+    security.provider. 8=com.companyx.provider.ProviderX</pre>
+</blockquote>
+
+<h5>동적 등록</h5>
+
+프로바이더를 동적으로 등록하려면 , 어플리케이션은 <code>Security</code> 클래스의 <code>addProvider</code> 또는 <code>insertProviderAt</code> 의 어느 쪽인가의 메소드를 호출합니다. 이 등록은 VM 인스턴스간에 지속적은 아니고, 적절한 특권을 가지는 「신뢰할 수 있다」프로그램으로 밖에 실행할 수 없습니다. <a href="#Security">Security 클래스</a>를 참조해 주세요.
+
+<h4><a name="SettingPerms">프로바이더 액세스권의 설정</a> </h4>
+
+<p>
+암호화 프로바이더가 사용되고 (즉, Cipher, KeyAgreement, KeyGenerator, Mac, 또는 SecretKeyFactory 의 구현을 제공하는 프로바이더), 프로바이더가 인스톨이 끝난 확장 기능이 아닌 경우, JCA 를 사용하는 애플릿 또는 어플리케이션을 시큐리티 매니저가 인스톨 되고 있는 환경에서 실행할 때는<a href="../permissions.html">액세스권</a>을 부여할 필요가 있는 경우가 있습니다. 일반적으로, 애플릿의 실행시에는 시큐리티 매니저가 항상 인스톨 됩니다. 어플리케이션의 경우에서도, 어플리케이션 자체의 코드내 또는 커멘드행 인수로 지정하는 것으로써, 시큐리티 매니저를 인스톨 할 수 있습니다. 디폴트 시스템의<a href="../PolicyFiles.html">정책 구성 파일</a>은, 인스톨형 확장 기능 (즉,<a href="#ProviderInstalling">확장 기능 디렉토리</a>에 인스톨 되고 있다)에 모든 액세스권을 부여하기 위해(때문에), 인스톨형 확장 기능에 액세스권을 설정할 필요는 없습니다.
+
+</p><p>
+벤더의 제공하는 각 프로바이더용 문서에는, 필수의 액세스권이나 그것을 부여할 방법이 기재되어 있습니다. 예를 들어, 확장 기능이 인스톨형은 아니고, 시큐리티 매니저가 인스톨 되고 있는 경우, 프로바이더에 다음의 액세스권을 부여할 필요가 있습니다.
+</p>
+<ul>
+    <li>
+	<code>java.lang.RuntimePermission "getProtectionDomain"</code> (클래스 보호 도메인을 취득하기 위해(때문에)). 프로바이더는, 자기 무결성 체크의 실행 과정에서, 독자적인 보호 도메인의 취득이 필요하게 되는 경우가 있습니다.
+    </li>
+    <p></p>
+<li><code>java.security.SecurityPermission "putProviderProperty. {name}"</code> (프로바이더 프로퍼티을 설정하기 위해(때문에),<code>{name}</code> 에는 실제의 프로바이더명을 지정)
+    </li>
+</ul>
+<p>
+예를 들어, 이름이 「MyJCE」로, 코드가 <code>myjce_provider.jar</code> 내에 존재하는 프로바이더에 액세스권을 부여하는 샘플 코드를 다음에 나타냅니다. 이런 종류의 문장은, 정책 파일에 기술됩니다. 이 예에서는,<code>myjce_provider.jar</code> 파일은 <code>/localWork</code> 디렉토리에 포함되는 것으로 합니다.
+</p>
+<blockquote>
+    <pre>
+    grant codeBase "file:/localWork/myjce_provider.jar" {
+	permission java.lang.RuntimePermission "getProtectionDomain";
+	permission java.security.SecurityPermission
+	    "putProviderProperty.MyJCE";
+     };</pre>
+</blockquote>
+</blockquote>
+
+<H3><code>Provider</code> 클래스의 메소드</H3>
+
+<blockquote>
+
+<p>
+각 <code>Provider</code> 클래스 인터페이스는, 이름 (현시점에서는 대문자 소문자를 구별한다), 버젼 번호, 및 프로바이더와 그 서비스의 캐릭터 라인 기술을 가집니다. 이하의 메소드를 호출해, 이러한 정보에 대해 <code>Provider</code> 의 인스턴스를 조회할 수 있습니다.
+
+<blockquote>
+<pre>
+public String getName()
+public double getVersion()
+public String getInfo()
+</pre>
+</blockquote>
+
+</blockquote>
+</blockquote>
+
+<H2><a name="Security"><code>Security</code> 클래스</a> </H2>
+
+<blockquote>
+
+<p>
+<code>Security</code> 클래스는, 인스톨 되고 있는 프로바이더 및 시큐리티에 관한 프로퍼티을 관리합니다. 이 클래스에 포함되는 것은, 인스턴스가 생성되지 않는 static 메소드 뿐입니다.
+
+프로바이더의 추가 또는 삭제, 및 <code>Security</code> 프로퍼티의 설정용 메소드는, 신뢰할 수 있는 프로그램에 의해서 밖에 실행할 수 없습니다. 현시점에서의 「신뢰할 수 있는 프로그램」은, 이하의 어떤 것인가입니다.
+
+<ul>
+
+<li>시큐리티 매니저아래에서 동작하고 있지 않는 로컬 어플리케이션<p>
+
+<li>지정된 메소드를 실행하는 권한이 있는 애플릿 또는 어플리케이션 (이하를 참조)
+
+</ul>
+
+어느 코드가, 실행하려고 하고 있는 액션 (프로바이더의 추가등)을 실시할 수가 있는 것 같은, 신뢰할 수 있는 코드이다고 판단하려면 , 그 액션을 실시하는 적절한 권한이 그 애플릿에게 줄 수 있고 있을 필요가 있습니다. 인스톨 한 JDK 의 정책 구성 파일에서는, 지정된 코드 소스로부터의 코드에 대해, 어떠한 액세스권 (system resource에의 액세스의 종류)을 주는지를 지정합니다. 자세한 것은, 이후의 설명 및<a href="../PolicyFiles.html">「디폴트의 Policy 의 구현과 정책 파일의 구문」이라고</a> <a href="../spec/security-spec.doc.html">「Java 시큐리티 아키텍쳐(architecture)」</a>를 참조해 주세요.
+
+<p>실행되는 코드는, 항상, 특정의 「코드 소스」로부터 온다고 생각됩니다. 코드 소스에는, 그 코드의 원의 장소 (URL) 뿐만이 아니라, 코드의 서명에 사용된 비공개키에 대응하는 임의의 공개키에의 참조도 포함되어 있습니다. 코드 소스내의 공개키는, 사용자의<a href="#KeyManagement">키스토어</a>의 별명 (기호명)으로 참조합니다.
+
+<p>정책 구성 파일내에서는, 코드 소스는, 코드 베이스 (URL), 및 (<code>signedBy</code> 로 시작된다) 별명의 2 개의 컴퍼넌트로 나타내집니다. 별명은, 코드의 서명의 검증에 사용할 필요가 있는 공개키를 포함한 키스토어의 엔트리를 식별합니다.
+
+<p>이러한 파일내의 각 「허가」문은, 지정된 코드 소스에 액세스권세트를 주어 허가된 처리를 지정합니다.
+
+<p>다음에, 정책 구성 파일의 예를 나타냅니다.
+
+<blockquote>
+<pre>
+grant codeBase "file:/home/sysadmin/", signedBy "sysadmin" {
+    permission java.security.SecurityPermission "insertProvider. *";
+    permission java.security.SecurityPermission "removeProvider. *";
+    permission java.security.SecurityPermission "putProviderProperty. *";
+};
+</pre>
+</blockquote>
+
+이 구성 파일은, 로컬 파일 시스템상의 <code>/home/sysadmin/</code> 디렉토리내의 서명된 JAR 파일로부터 로드 된 코드가, 프로바이더의 추가 또는 삭제, 혹은 프로바이더의 프로퍼티의 설정을 할 수 있는 것을 나타냅니다. JAR 파일의 서명은, 사용자의 키스토어내의 별명 <code>sysadmin</code> 로 참조하는 공개키를 사용해 검증할 수 있습니다.
+
+<p>코드 소스를 지정하는 요소는, 어느쪽이나 (또는 양쪽 모두를) 생략 가능합니다. 다음에,<code>codeBase</code> 를 생략 한 구성 파일의 예를 나타냅니다.
+<blockquote>
+<pre>
+grant signedBy "sysadmin" {
+    permission java.security.SecurityPermission "insertProvider. *";
+    permission java.security.SecurityPermission "removeProvider. *";
+};
+</pre>
+</blockquote>
+이 정책가 시행되었을 경우,<code>sysadmin</code> 에 의해 서명된 JAR 파일의 코드에 의한 프로바이더의 추가 또는 삭제가 가능하게 됩니다. JAR 파일의 장소는 관계 없습니다.
+
+<p>다음에, 서명자를 생략 한 예를 나타냅니다.
+
+<blockquote>
+<pre>
+grant codeBase "file:/home/sysadmin/" {
+    permission java.security.SecurityPermission "insertProvider. *";
+    permission java.security.SecurityPermission "removeProvider. *";
+};
+</pre>
+</blockquote>
+
+이 경우, 로컬 파일 시스템의 <code>/home/sysadmin/</code> 디렉토리내에 놓여진 코드는, 프로바이더의 추가와 삭제를 실시할 수가 있습니다. 코드에 서명은 필요 없습니다.
+
+<p><code>codeBase</code> 와 <code>signedBy</code> 를 양쪽 모두 생략 한 예를 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+grant {
+    permission java.security.SecurityPermission "insertProvider. *";
+    permission java.security.SecurityPermission "removeProvider. *";
+};
+</pre>
+</blockquote>
+
+이 예에서는, 코드 소스를 지정하는 요소가 어느쪽이나 생략 되고 있습니다. 따라서, 출처(소)가 어딘가, 서명이 붙어 있는지, 누구의 서명이 붙어 있을까에 관계없이, 어느 코드에서도 프로바이더의 추가와 삭제 을 할 수가 있습니다. 이 부여는 시큐리티 홀을 만들어 낼 가능성이 있기 (위해)때문에, 절대로<b>추천하지 않습니다</b>. 신뢰되어 있지 않은 코드에 의해 프로바이더가 인스톨 되기 (위해)때문에, 적절히 기능하는 구현에 의존하는 후속의 코드에 영향을 줄 가능성이 있습니다. 예를 들어, 파괴 행위를 실시하는 <code>Cipher</code> 객체가, 수신한 기밀 정보를 수중에 넣어 포함하는 경우가 있습니다.
+
+
+<H3>프로바이더의 관리</H3>
+
+<BLOCKQUOTE>
+<P>다음의 겉(표)에,<code>Security</code> 클래스내의 메소드 가운데, 인스톨 되고 있는<code>프로바이더</code>를 조회하기 위해서 사용할 수 있는 메소드와 실행시에 프로바이더를 인스톨 또는 삭제하기 위한 메소드의 요약을 나타냅니다. </P>
+
+  <P><TABLE summary="querying providers" WIDTH="700" BORDER="1"
+    CELLSPACING="2" CELLPADDING="0">
+    <TR>
+      <TD COLSPAN="2" BGCOLOR="#dedeef">
+<P><CENTER><B>프로바이더의 조회</B></CENTER></TD>
+    </TR>
+	<thead>
+    <TR>
+      <TH WIDTH="280">
+<B>메소드</B></TH>
+      <TH WIDTH="420">
+<B>설명</B></TH>
+    </TR>
+	</thead>
+    <TR>
+      <TD WIDTH="280">
+<code>static Provider[] getProviders()</code></TD>
+      <TD WIDTH="420">
+인스톨 떠날 수 있어 모든 프로바이더를 포함한 배열 (즉, 각 패키지 프로바이더의 <code>Provider</code> 서브 클래스)을 돌려줍니다. 배열내의<code>프로바이더</code>의 순서는, 우선 순위에 따릅니다. </TD>
+    </TR>
+    <TR>
+      <TD WIDTH="280">
+<code>static Provider getProvider<BR> (String providerName)</code></TD>
+      <TD WIDTH="420">
+이 메소드는,<code>providerName</code> 라는 이름의<code>프로바이더</code>를 돌려줍니다. 이<code>프로바이더</code>가 발견되지 않으면 <code>null</code> 를 돌려줍니다. </TD>
+    </TR>
+  </TABLE><p></P>
+  <P><TABLE WIDTH="700" summary="adding providers" BORDER="1"
+    CELLSPACING="2" CELLPADDING="0">
+    <TR>
+      <TD COLSPAN="2" BGCOLOR="#dedeef">
+<P><CENTER><B>프로바이더의 추가</B></CENTER></TD>
+    </TR>
+	<thead>
+    <TR>
+      <TH WIDTH="280">
+<B>메소드</B></TH>
+      <TH WIDTH="420">
+<B>설명</B></TH>
+    </TR>
+	</thead>
+    <TR>
+      <TD>
+<pre><code>static int <BR>addProvider(Provider provider)</code></pre>
+</TD>
+      <TD>
+인스톨 된<code>프로바이더</code>리스트의 말미에<code>프로바이더</code>를 추가합니다. <code>프로바이더</code>가 추가된 우선 순위를 돌려주는지, 벌써 인스톨 되고 있기 위해서(때문에)<code>프로바이더</code>가 추가되지 않았던 경우는 <code>-1</code> 을 돌려줍니다. </TD>
+    </TR>
+    <TR>
+      <TD>
+<code>static int insertProviderAt<BR> (Provider provider, int position)</code>
+</TD>
+      <TD>
+<P>지정된 위치에 신규의<code>프로바이더</code>를 추가합니다. 어느 프로바이더가 요구된 장소에 인스톨 되었을 경우는, 그것까지 그 자리소에 있던 프로바이더, 및 <code>position</code> 보다 나머지의 위치의 모든 프로바이더의 순위는, 1 개(살) 나중에 되어, 일람의 최후미로 향해 1 개 이동합니다. <code>프로바이더</code>가 추가된 우선 순위를 돌려주는지, 벌써 인스톨 되고 있기 위해서(때문에)<code>프로바이더</code>가 추가되지 않았던 경우는 <code>-1</code> 을 돌려줍니다. </TD>
+    </TR>
+  </TABLE><p></P>
+  <P><TABLE WIDTH="700" summary="removing providers" BORDER="1"
+    CELLSPACING="2" CELLPADDING="0">
+    <TR>
+      <TD COLSPAN="2" BGCOLOR="#dedeef">
+<P><CENTER><B>프로바이더의 삭제</B></CENTER></TD>
+    </TR>
+	<thead>
+    <TR>
+      <TH WIDTH="280">
+&nbsp;<B>메소드</B></TH>
+      <TH WIDTH="420">
+&nbsp;<B>설명</B></TH>
+    </TR>
+	</thead>
+    <TR>
+      <TD WIDTH="280">
+<code>static void removeProvider(String name)</code>
+</TD>
+      <TD WIDTH="420">
+지정한 이름의<code>프로바이더</code>를 삭제합니다. 프로바이더가 인스톨되어 있지 않은 경우는, 아무것도 하지 않고 복귀합니다. 지정된 프로바이더가 삭제되면(자), 그 프로바이더보다 나머지의 위치에 있는 모든 프로바이더의 위치가 1 개전이 되어, 인스톨 된 프로바이더 일람의 선두로 향해 1 개 이동합니다. </TD>
+    </TR>
+  </TABLE><p></P>
+
+  <blockquote>
+  <HR ALIGN=LEFT>
+<B>주:</B>프로바이더의 우선 순위를 변경하는 경우는, 우선 목적의 프로바이더를 삭제하고 나서, 희망하는 우선 순위의 위치에 다시 삽입할 필요가 있습니다.
+  <HR ALIGN=LEFT>
+  </BLOCKQUOTE>
+
+  </BLOCKQUOTE>
+
+<H3>시큐리티의 프로퍼티</H3>
+
+<blockquote>
+
+<p><code>Security</code> 클래스는, 시스템에 관한 시큐리티의 프로퍼티 리스트를 보관 유지합니다. 이러한 프로퍼티은 <code>System</code> 프로퍼티을 닮아 있습니다만, 시큐리티 관련입니다. 이러한 프로퍼티은, 정적이게도 동적이게도 설정할 수 있습니다. 정적 시큐리티 프로퍼티의 예 (<code>"security.provider.i"</code> 시큐리티 프로퍼티에 의한 프로바이더의 정적인 등록)에 대해서는 벌써 설명했습니다. 프로퍼티을 동적으로 설정하는 경우, 신뢰할 수 있는 프로그램은 다음의 메소드를 사용할 수 있습니다.
+
+<BLOCKQUOTE>
+<pre>
+static String getProperty(String key)
+static void setProperty(String key, String datum)
+</pre>
+</BLOCKQUOTE>
+
+주:시큐리티 프로바이더의 리스트는, VM 의 기동중에 확립됩니다. 따라서, 전술의 메소드는, 프로바이더 리스트를 변경하는 경우에 사용해 주세요.
+
+<p>
+
+구성 파일은, 다음의 디렉토리에 포함되고 있습니다. </p>
+
+<blockquote>
+<pre>
+&lt;java-home&gt;/lib/security/java.security     [Unix]
+&lt;java-home&gt;\lib\security\java.security     [Windows]
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="SecureRandom"><code>SecureRandom</code> 클래스</a> </H2>
+
+<blockquote>
+
+<P>
+<code>SecureRandom</code> 클래스는, 난수 제네레이터 (RNG)의 기능을 제공하는<a href="#Engine">엔진 클래스</a>입니다. 강력한 암호화에 의한 난수를 생성하는 점이 <code>Random</code> 클래스와는 다릅니다. 제네레이터의 랜덤성이 불충분한 경우, 보호 기구가 간단하게 위협해지게 됩니다. 암호화열쇠의 생성이나 알고리즘의 파라미터 등, 난수는 암호화 전체로 사용됩니다.
+
+<p>
+<center>
+<img src="../images/jca/SecureRandom.gif" alt="<SecureRandom 조작의 화상>">
+</center>
+
+<H3><code>SecureRandom</code> 객체의 작성</H3>
+
+<blockquote>
+
+다른 엔진 클래스와 같게,<code>SecureRandom</code> 객체를 가져오려면 ,<code>SecureRandom</code> 클래스의 <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 호출합니다.   <P>
+
+</blockquote>
+
+<H3><code>SecureRandom</code> 객체의 배정 또는 재배정</H3>
+
+<blockquote>
+
+<p>호출측이,<code>setSeed</code> 메소드의 1 개에의 호출로,<code>getInstance</code> 메소드에의 호출에 따르는 경우 이외는,<code>SecureRandom</code> 의 구현은, 제네레이터의 내부 상태 자체를 완전하게 랜덤화하려고 합니다.
+<blockquote>
+<pre>
+synchronized public void setSeed(byte[] seed)
+public void setSeed(long seed)
+</pre>
+</blockquote>
+
+<code>SecureRandom</code> 객체에 한 번 배정이 넣을 수 있으면(자), 이것은 오리지날의 배정과 같이 랜덤에 비트를 생성합니다.
+
+<p><code>SecureRandom</code> 객체는,<code>setSeed</code> 메소드의 1 개를 사용해 항상 재배정 될 가능성이 있습니다. 지정된 배정은, 기존의 배정과 옮겨놓을 수 있는 것이 아니라, 기존의 배정에 추가됩니다. 따라서, 호출을 반복해도, 랜덤성이 감소하지 않는 것이 보증됩니다.
+
+</blockquote>
+
+
+<H3><code>SecureRandom</code> 객체의 사용법</H3>
+
+<blockquote>
+
+<P>
+랜덤 바이트를 얻으려면 , 호출측은 단순하게 임의의 길이의 배열을 건네줍니다. 그러자(면), 이 배열에 랜덤 바이트가 들어옵니다.
+
+
+<blockquote>
+<pre>
+synchronized public void nextBytes(byte[] bytes)
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<H3>배정 바이트의 생성</H3>
+
+<blockquote>
+
+다른 난수 제네레이터에 배정을 넣는 경우 등, 필요한 경우는,<code>generateSeed</code> 메소드를 호출해, 주어진 수의 배정 바이트를 생성할 수 있습니다.
+
+<blockquote>
+<pre>
+byte[] generateSeed(int numBytes)
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="MessageDigest"><code>MessageDigest</code> 클래스</a> </H2>
+
+<blockquote>
+
+<P>
+
+<code>MessageDigest</code> 클래스는<a href="#Engine">엔진 클래스</a>에서, 안전한 암호화 메세지 다이제스트 (SHA-1 나 MD5 등)의 기능을 제공하도록(듯이) 설계되고 있습니다. 안전한 암호화 메세지 다이제스트는, 임의 사이즈의 입력 (바이트 배열)을 취해, 고정 사이즈 출력을 생성합니다. 이것을 「다이제스트」또는 「해시」라고 말합니다.
+
+<center>
+<img src="../images/jca/MessageDigest.gif" alt="<MessageDigest 조작의 화상>" >
+</center>
+
+<p>
+
+예를 들어, MD5 의 알고리즘은 16 바이트의 다이제스트를 생성해, SHA1 의 알고리즘은 20 바이트의 다이제스트를 생성합니다.
+
+<p>
+
+다이제스트에는 다음의 2 개의 특징이 있습니다.
+
+<UL>
+<LI>계산에 의해, 같은 값에 해시 된 2 개의 메세지를 검색할 수 없다<p>
+<LI>다이제스트의 생성에 사용한 입력 정보를 분명히 하지 않는다
+</UL>
+
+<P>
+
+메세지 다이제스트를 사용해, 일의로, 신뢰할 수 있는 데이터 식별자를 생성합니다. 데이터 식별자를 데이터의 「체크 섬」또는 「디지털 지문」이라고 부르는 일도 있습니다. 메세지 가운데 1 비트를 변경하는 것만으로, 다른 다이제스트치가 생성됩니다.
+
+<p>
+
+메세지 다이제스트에는 많은 용도가 있어, 의도적인가 어떤가에 관계없이, 언제 데이터가 변경되었는지를 판단할 수 있습니다. 근년, 일반적인 알고리즘에 약점이 있을지 어떨지를 판단하기 위해서(때문에) 큰 노력이 지불해지고 있습니다만, 결과는 다양합니다. 다이제스트 알고리즘을 선택하는 경우는, 최근의 레퍼런스를 조사해, 그 상황과 당면의 태스크에서의 타당성을 판단할 필요가 있습니다.
+
+<H3><code>MessageDigest</code> 객체의 생성</H3>
+
+<blockquote>
+
+<P>
+다이제스트 계산에서는, 우선 최초로 메세지 다이제스트의 인스턴스를 생성합니다. <code>MessageDigest</code> 객체는,<code>MessageDigest</code> 클래스의 <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다. 팩토리 메소드는, 초기화된 메세지 다이제스트 객체를 돌려줍니다. 따라서, 이후에로 초기화를 실시할 필요는 없습니다.
+
+</blockquote>
+
+<H3>메세지 다이제스트 객체의 업데이트</H3>
+
+<blockquote>
+
+<P>
+
+데이터의 다이제스트를 계산하기 위한 다음의 순서는, 초기화한 메세지 다이제스트 객체에 데이터를 넣는 것입니다. 모든 것을 한 번에, 또는 체크로 넣을 수가 있습니다. 다음의 몇개의 <code>update</code> 메소드를 호출하는 것에 의해, 메세지 다이제스트에 건네줄 수가 있습니다.
+
+<P>
+
+<blockquote>
+<pre>
+void update(byte input)
+void update(byte[] input)
+void update(byte[] input, int offset, int len)
+</pre>
+</blockquote>
+
+</blockquote>
+
+<H3>다이제스트의 계산</H3>
+
+<blockquote>
+
+<P>
+
+<code>update</code> 를 호출해 데이타체크를 넣은 후에, 다음의 <code>digest</code> 메소드 가운데 어떤 것이나 1 개를 사용해 다이제스트를 계산합니다.
+
+<P>
+
+<blockquote>
+<pre>
+byte[] digest()
+byte[] digest(byte[] input)
+int digest(byte[] buf, int offset, int len)
+</pre>
+</blockquote>
+
+<P>
+최초의 메소드는, 계산된 다이제스트를 돌려줍니다. 2 번째의 메소드는, 다이제스트의 바이트 배열을 돌려주는 <code>digest()</code> 를 호출하기 전에, 입력 바이트의 배열로 마지막 <code>update(input)</code> 를 실시합니다. 마지막 메소드는, 오프셋(offset) 위치 <code>offset</code> 로부터 개시하는 제공 버퍼 <code>buf</code> 내에 산출 다이제스트를 포함합니다. <code>len</code> 는, 다이제스트에 할당할 수 있었던 <code>buf</code> 내의 바이트수입니다. 이 메소드는, 실제로 <code>buf</code> 내에 포함된 바이트수를 돌려줍니다. 버퍼내에 충분한 영역이 없는 경우, 메소드는 예외를 throw 합니다.
+
+<p>
+자세한 것은,<a href="#Examples">「코드예」</a>의 항의 <a href="#MDEx"><code>MessageDigest</code> 의 계산</a>의 예를 참조해 주세요.
+
+</blockquote>
+
+</blockquote>
+
+
+<H2><a name="Signature"><code>Signature</code> 클래스</a> </H2>
+
+<blockquote>
+
+<code>Signature</code> 클래스는<a href="#Engine">엔진 클래스</a>이며,DSA 나 RSAwithMD5 등의 암호화 디지털 서명 기능을 제공하도록(듯이) 설계되고 있습니다. 안전한 암호화 서명 알고리즘은, 임의 사이즈의 입력과 비공개카기를 잡아, 「서명」이라고 불리는 비교적 짧은 (고정 사이즈의 경우도 자주 있다) 바이트 캐릭터 라인을 생성합니다. 이 프로퍼티은 다음과 같습니다.
+
+<UL>
+<li>공개키와 비공개키의 페어의 소유자만이 서명을 작성할 수 있습니다. 계산에 의해, 공개키를 보관 유지하는 사람이 비공개키를 회복할 수 없습니다.
+<LI>서명의 생성에 사용하는 비공개키에 대응하는 공개키가 주어진다. 이것은 입력의 인증성 및 무결성을 검증할 수 있다<p>
+<LI>서명 및 공개키는, 비공개키에 관한 정보를 분명하게는 하지 않는다
+</UL>
+
+또, 지정의 서명이, 관련 데이터의 실제의 인증 서명인가 어떤가를 검증할 수도 있습니다.
+
+<p>
+<center>
+<img src="../images/jca/Signature.gif" alt="<Signature 조작의 화상>">
+</center>
+
+<P> <code>Signature</code> 객체는, 비공개키에서의 서명에 대해서 초기화되어 서명하는 데이터가 주어집니다. 결과의 서명 바이트는, 일반적으로은 서명된 데이터와 함께 보관 유지됩니다. 검증이 필요한 경우, 다른 <code>Signature</code> 객체가 작성되어 검증에 대해서 초기화되어 대응하는 공개키가 주어집니다. 데이터 및 서명 바이트는 signature (서명) 객체에게 건네져 데이터와 서명이 일치했을 경우에,<code>Signature</code> 객체는 성공을 보고합니다.
+
+<p>
+
+서명은 메세지 다이제스트를 닮아 있습니다만, 제공하는 보호의 종류의 점으로써 목적이 크게 차이가 납니다. 실제, 「SHA1WithRSA」등의 알고리즘은, 메세지 다이제스트 「SHA1」를 사용해 최초로 큰 데이터 세트를 관리하기 쉬운 형식에 「압축」해, 다음에 「RSA」알고리즘으로 결과의 20 바이트의 메세지 다이제스트에 서명합니다.
+
+<p>
+
+데이터의 서명 및 검증의 예는,<a href="#SigEx">예의 </a>항을 참조해 주세요.
+
+<H3><code>Signature</code> 객체 상태</H3>
+
+<blockquote>
+
+<code>Signature</code> 객체는 모델 객체입니다. 즉,<code>Signature</code> 객체는, 항상 지정 상태에 있어, 이 상태로 1 개의 형태의 오퍼레이션만을 실행할 수 있습니다. 상태는, 개개의 클래스에서 정의한 final (파이널) 정수의 정수로 나타내집니다.
+
+<P>
+<code>Signature</code> 객체에 가능한 상태는, 다음의 3 개입니다.
+<UL>
+<LI><code>UNINITIALIZED</code>
+<LI><code>SIGN</code>
+<LI><code>VERIFY</code>
+</UL>
+
+<code>Signature</code> 객체가 처음으로 생성될 때는,<code>UNINITIALIZED</code> 상태입니다. <code>Signature</code> 클래스는, 상태를 <code>SIGN</code> 로 변경하는 <code>initSign</code> 와 상태를 <code>VERIFY</code> 로 변경하는 <code>initVerify</code> 의 2 개의 초기화 메소드를 정의합니다.
+
+</blockquote>
+
+<H3><code>Signature</code> 객체의 생성</H3>
+
+<blockquote>
+서명을 붙이거나 검증하거나 하려면 , 최초로 <code>Signature</code> 의 인스턴스를 생성합니다. <code>Signature</code> 객체는,<code>Signature</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3><code>Signature</code> 객체의 초기화</H3>
+
+<blockquote>
+<P>
+<code>Signature</code> 객체를 사용하려면 , 최초로 반드시 이것을 초기화합니다. 초기화 메소드는, 객체를 서명용으로 사용할까 검증용으로 사용할까에 응해 다릅니다.
+
+<p>서명으로 사용하는 경우, 객체는 최초로, 서명을 생성하는 엔티티의 비공개키를 사용해 초기화할 필요가 있습니다. 이 초기화는, 이하의 메소드를 호출해 실행합니다.
+
+<blockquote>
+<pre>
+final void initSign(PrivateKey privateKey)
+</pre>
+</blockquote>
+
+이 메소드에서는,<code>Signature</code> 객체는 <code>SIGN</code> 상태가 됩니다.
+
+<p><code>Signature</code> 객체를 검증으로 사용하는 경우는, 우선 최초로, 서명을 검증하는 엔티티의 공개키를 사용해 초기화할 필요가 있습니다. 이 초기화는, 이하의 몇개의 메소드를 호출해 실행합니다.
+
+<p>
+
+<pre>
+    final void initVerify(PublicKey publicKey)
+
+    final void initVerify(Certificate certificate)
+</pre>
+
+<P>
+이 메소드에서는,<code>Signature</code> 객체는 <code>VERIFY</code> 상태가 됩니다.
+
+</blockquote>
+
+<H3>서명</H3>
+
+<blockquote>
+
+<P>
+<code>Signature</code> 객체를 서명용으로 초기화했을 경우 (이 객체가 <code>SIGN</code> 상태의 경우), 서명을 붙이는 데이터를 객체에 넣을 수가 있습니다. 이것은, 이하의 <code>update</code> 메소드의 어떤 것이나 1 개를 1 회 또는 여러 차례 호출해 실행합니다.
+<P>
+
+<blockquote>
+<pre>
+final void update(byte b)
+final void update(byte[] data)
+final void update(byte[] data, int off, int len)
+</pre>
+</blockquote>
+
+<P>
+서명을 붙이는 데이터가 모두 <code>Signature</code> 객체에 들어갈 때까지,<code>update</code> 메소드를 호출합니다.
+
+<P>
+서명을 생성하려면 ,<code>sign</code> 메소드의 1 개를 호출할 뿐입니다.
+
+<blockquote>
+<pre>
+final byte[] sign()
+final int sign(byte[] outbuf, int offset, int len)
+</pre>
+</blockquote>
+
+<P>
+최초의 메소드는, 서명의 결과를 바이트 배열로 돌려줍니다. 2 번째의 메소드는, 오프셋(offset) 위치 <i>offset</i> 로부터 개시하는 제공 버퍼 <i>outbuf</i> 내에 서명의 결과를 포함합니다. <i>len</i> 는, 서명에 할당할 수 있었던 <i>outbuf</i> 내의 바이트수입니다. 이 메소드는, 실제로 포함된 바이트수를 돌려줍니다.
+
+<p>서명의 encode는, 알고리즘에 의존합니다. Java 암호화 아키텍쳐(architecture)에서의 ASN. 1 encode의 사용 방법에 대해서는,<a href="../StandardNames.html">표준명</a>의 문서를 참조해 주세요.
+
+<p><code>sign</code> 메소드를 호출하면(자), signature (서명) 객체는,<code>initSign</code> 를 호출해 최초로 서명용으로 초기화되었을 때 상태에 리셋 됩니다. 즉, 객체를 리셋 하므로, 필요하면 <code>update</code> 와 <code>sign</code> 를 호출해, 같은 비공개키를 사용해 다른 서명을 생성할 수 있습니다.
+
+<p>혹은 다른 비공개키를 지정해,<code>initSign</code> 에의 신규 호출을 작성하거나(서명을 검증하기 위해서 <code>Signature</code> 객체를 초기화하는 목적으로) <code>initVerify</code> 에의 신규 호출을 작성하거나 성 할 수 있습니다.
+
+</blockquote>
+
+<H3>검증</H3>
+
+<blockquote>
+
+<P>
+<code>Signature</code> 객체를 검증용으로 초기화했을 경우 (<code>VERIFY</code> 상태에 있는 경우)는, 지정의 서명이, 거기에 관련한 데이터의 실제의 인증 서명일지 어떨지를 검증할 수 있습니다. 이 처리를 개시하려면 , 검증 데이터 (서명 자체는 아니다)를 객체에 넣습니다. 데이터는, 다음의 몇개의 <code>update</code> 메소드를 호출하는 것에 의해 객체에게 건네집니다.
+
+<blockquote>
+<pre>
+final void update(byte b)
+final void update(byte[] data)
+final void update(byte[] data, int off, int len)
+</pre>
+</blockquote>
+
+<P>
+검증하는 데이터가 모두 <code>Signature</code> 객체에 들어갈 때까지,<code>update</code> 메소드를 호출합니다. 이것으로, 다음의 몇개의 <code>verify</code> 메소드를 호출해 서명을 검증할 수 있습니다.
+
+<blockquote>
+<pre>
+final boolean verify(byte[] signature)
+
+final boolean verify(byte[] signature, int offset, int length)
+</pre>
+</blockquote>
+
+<P>
+인수는, 서명을 포함한 바이트 배열일 필요가 있습니다. 인수는, 서명을 포함한 바이트 배열일 필요가 있습니다. 이 바이트 배열은, 전에 몇개의 <code>sign</code> 메소드의 호출에 의해 반환된 서명 바이트를 보관 유지합니다.
+
+<p>
+<code>verify</code> 메소드는, 코드화한 서명이 <code>update</code> 메소드에 넣은 데이터의 인증 서명인가 어떤가를 나타내는 <code>boolean</code> 를 돌려줍니다.
+
+<p><code>verify</code> 메소드를 호출하면(자), signature (서명) 객체는,<code>initVerify</code> 를 호출해 검증용으로 초기화되었을 때 상태에 리셋 됩니다. 즉, 객체를 리셋 하므로,<code>initVerify</code> 에의 호출로 지정한 공개키를 가지는 식별의 다른 서명을 검증할 수 있습니다.
+
+<p>혹은 다른 비공개키를 지정해, (다른 엔티티의 서명을 검증하기 위해서 <code>Signature</code> 객체를 초기화하는 목적으로) <code>initVerify</code> 에의 신규 호출을 작성하거나(서명을 생성하기 위해서 <code>Signature</code> 객체를 초기화하는 목적으로) <code>initSign</code> 에의 신규 호출을 작성하거나 할 수 있습니다.
+
+</blockquote>
+
+</blockquote>
+
+<h2><a name="Cipher">Cipher 클래스</a> </h2>
+<blockquote>
+
+	<p><code>Cipher</code> 클래스는, 암호화 및 암호 해독으로 사용되는 암호 기능을 제공합니다. 암호화란, 데이터 ( 「clear text」라고 불린다) 및 「키」를 받아, 열쇠를 모르는 서드 파티에 있어 무의미한 데이터 ( 「암호 텍스트」)를 생성하는 처리입니다. 복호화는 그 역으로, 암호 텍스트 및 열쇠를 받아, clear text를 생성하는 처리입니다.
+
+<p>
+<center>
+<img src="../images/jca/Cipher.gif" alt="<Cipher 조작의 화상>">
+</center>
+
+<h3>대칭 암호화 방식과 비대칭 암호 방식</h3>
+
+<blockquote>
+
+암호화에는, 대칭 (비밀열쇠라고도 불린다)과 비대칭 (또는 공개키암호 방식)이라고 하는 2 개의 주요한 타입이 있습니다. 대칭 암호화 방식으로는, 같은 비밀열쇠가 데이터의 암호화와 복호화의 양쪽 모두를 실시합니다. 데이터의 기밀성을 보관 유지하려면 , 열쇠를 비공개로 하는 것이 중요해집니다. 한편, 비대칭 암호 방식은, 공개키와 비공개키의 페어를 사용해 데이터를 암호화합니다. 한편의 열쇠로 암호화된 데이터는, 한편의 열쇠로 복호화 됩니다. 사용자는 최초로 공개키와 비공개키의 페어를 생성해, 누구라도 액세스 할 수 있는 신뢰할 수 있는 데이타베이스에 공개키를 발행합니다. 그 사용자와 안전하게 통신하는 것을 희망하는 사용자는, 취득한 공개키를 사용해 데이터를 암호화합니다. 비공개키의 보유자만을 복호화 할 수 있습니다. 이 방식으로는, 비공개키를 기밀로 하는 것이 중요해집니다.
+
+<p>
+
+RSA 등의 비대칭 알고리즘은, 일반적으로, 대칭 알고리즘보다 큰폭으로 늦어집니다. 이러한 알고리즘은, 대량 데이터를 효율적으로 보호하도록(듯이) 설계되고 있지 않습니다. 실제로는, 비대칭 알고리즘은, 대칭 알고리즘을 초기화하기 위해서 사용되는 소량의 비밀열쇠를 교환하는 경우에 사용됩니다.
+
+</blockquote>
+
+<h3>스트림 암호와 블록 암호</h3>
+
+<blockquote>
+
+블록과 스트림이라고 하는 2 개의 주요한 암호 타입이 있습니다. 블록 암호는, 블록 전체를 한 번에 처리합니다. 일반적으로은 긴 바이트장이 됩니다. 완전한 입력 블록을 작성하는데 데이터가 부족하는 경우는, 데이터의 패딩이 필요합니다. 즉, 암호화전에, 더미 바이트를 추가해 암호의 블록 사이즈의 배수로 합니다. 이러한 바이트는, 복호화의 단계에서 삭제됩니다. 패딩은, 어플리케이션인가, 또는 「PKCS5PADDING」등의 패딩 타입을 사용하도록(듯이) 암호를 초기화하는 것에 의해 실행할 수 있습니다. 이것에 대해서, 스트림 암호는 입력 데이터를 한 번에 1 개(살)의 작은 단위 (일반적으로은 바이트, 또는 비트의 경우도 있다)로 처리합니다. 이것에 의해, 암호는 임의의 양의 데이터를 패딩을 실시하지 않고 처리할 수 있습니다.
+
+</blockquote>
+
+<h3>조작 모드</h3>
+
+<blockquote>
+
+단순한 블록 암호를 사용해 암호화하는 경우, 2 개(살)의 같은 plaintext의 블록은, 항상 같은 암호 텍스트의 블록을 생성합니다. 암호 텍스트를 찢으려고 하는 암호 해독자가 반복의 텍스트의 블록을 알아차리면(자), 간단하게 해독되어 버립니다. 텍스트에 복잡함을 더하기 위해서(때문에), 피드백 모드는, 암호화 알고리즘을 적용하기 전에, 이전의 출력 블록을 사용해 입력 블록을 변경합니다. 최초의 블록에는 초기치가 필요합니다. 이 값은, 초기화 벡터 (IV)로 불립니다. IV 는 암호화전에 단순하게 데이터를 변경하기 위해(때문에), IV 는 랜덤일 필요가 있습니다만, 반드시 비밀일 필요는 없습니다. CBC (Cipher Block Chaining), CFB (Cipher Feedback Mode), OFB (Output Feedback Mode) 등, 다양한 모드가 있습니다. ECB (Electronic Cookbook Mode)는, 피드백이 없는 모드입니다.
+
+</blockquote>
+
+<p>
+
+AES 나 RSA 등의 일부의 알고리즘에서는 다른 길이의 열쇠가 가능합니다만, 그 이외 (DES 나 3DES 등)는 고정입니다. 긴 열쇠를 사용하는 암호화는, 일반적으로 메세지 복원에 대해서 저항력이 강한 일을 의미합니다. 여느 때처럼, 시큐리티와 시간이라고 하는 상반되는 것의 사이에 타협을 붙이기 (위해)때문에, 적절한 열쇠의 길이를 선택합니다.
+
+<p>
+
+대부분의 알고리즘은, 바이너리열쇠를 사용합니다. 대부분의 사람은, 16 진수로 표현되고 있어도, 긴 바이너리의 수치를 기억할 수 없습니다. 문자의 패스워드 쪽이 기억하는 것은 간단합니다. 일반적으로, 문자의 패스워드는 소수의 문자 ([a-zA-Z0-9] 등)로부터 선택되기 (위해)때문에, 「패스워드 베이스의 암호화」(PBE)등의 프로토콜은, 문자의 패스워드를 취득해 강력한 바이너리열쇠를 생성하도록(듯이) 정의되고 있습니다. 패스워드로부터 암호화열쇠를 취득하려고 하는 공격자의 태스크 (일반의 사전의 「단어->값」의 매핑이 사전에 계산되고 있는, 이른바 「사전 공격」에 의한다)를 매우 시간이 걸리는 것으로 하기 위해서(때문에), 대부분의 PBE 구현에서는, 열쇠의 랜덤성을 높이기 위해서(때문에) 난수에의 혼입 (salt 로 불린다)을 합니다.
+
+	<h4>Cipher 객체의 작성</h4>
+	<blockquote>
+
+<code>Cipher</code> 객체는,<code>Cipher</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다. 여기서의 알고리즘명은, 알고리즘명 뿐만이 아니라 「변환」을 지정하는 점으로써, 다른 엔진 클래스의 경우와 조금 다릅니다. <a name="trans">변환은, 지정된 입력에 대해서 실행해, 어떠한 출력을 생성하는 조작 (또는 조작세트)을 설명하는 캐릭터 라인입니다. 변환에는, 암호화 알고리즘 (<code>DES</code> 등)의 이름이 반드시 포함됩니다. 거기에 모드 및 패딩 방식이 계속되는 경우도 있습니다. </p> <p> 변환은, 다음의 서식에서 기술됩니다.
+</p>
+<ul>
+<li>"<i>algorithm/mode/padding</i>" 또는 </li>
+<li>"<i>algorithm</i>" </li>
+</ul>
+
+<p>예를 들어, 이하는 유효한 변환입니다.  </p>
+<p></p>
+<pre>
+    "<i>DES/CBC/PKCS5Padding</i>"
+
+    "<i>DES</i>"
+</pre>
+
+	  <p>변환명만을 지정하면(자), 요구된 변환의 구현이 그 환경에서 사용 가능한가 어떤가를 시스템이 판별해, 복수의 구현이 존재하는 경우에는 우선도의 높은 구현이 존재하는 것을 돌려줍니다.  </p>
+	  <p>변환명과 패키지 프로바이더의 양쪽 모두를 지정하면(자), 시스템은 요구된 패키지내에 요구된 변환의 구현이 존재할지 어떨지를 확인해, 존재하지 않는 경우에는 예외를 throw 합니다.  </p>
+
+<p>모드나 패딩을 지정하지 않는 경우, 모드 및 패딩 방식의 프로바이더 고유의 디폴트 값가 사용됩니다. 예를 들어,<code>SunJCE</code> 프로바이더는,<code>DES</code>,<code>DES-EDE</code>, 및 <code>Blowfish</code> 암호의 디폴트 모드로서 <code>ECB</code> 를, 디폴트 패딩 방식으로서 <code>PKCS5Padding</code> 를 사용합니다. 이 때문에,<code>SunJCE</code> 프로바이더에서는,</p>
+
+<p>
+
+<pre>
+    Cipher c1 = Cipher.getInstance("<i>DES/ECB/PKCS5Padding</i>");
+</pre>
+
+및
+
+<pre>
+    Cipher c1 = Cipher.getInstance("<i>DES</i>");
+</pre>
+
+<a name="trans">의 2 개의 문장은, 등가가 됩니다.  </p>
+
+<p> CFB 나 OFB 등의 모드를 사용하면(자), 블록 암호는 암호의 실제의 블록 사이즈보다 작은 단위로 데이터를 암호화할 수 있습니다. 이러한 모드를 요구하는 경우, 「DES/CFB8/NoPadding」 및 「DES/OFB32/PKCS5Padding」변환에 나타나도록(듯이), 이 수치를 모드명에 추가하는 것으로써, 한 번에 처리하는 비트수를 옵션으로 지정할 수 있습니다. 수치를 지정하지 않는 경우, 프로바이더 고유의 디폴트가 사용됩니다 예를 들어,<code>SunJCE</code> 프로바이더에서는 디폴트의 64 비트가 DES 로 사용됩니다. 따라서, 블록 암호는, CFB8 나 OFB8 등의 8 비트 모드를 사용해, 바이트 지향의 스트림 암호로 변환할 수 있습니다. </p>
+
+<p>이 문서의<a href="#AppA">「부록 A」</a>에는, 변환의 알고리즘명, 모드, 및 패딩 방식 컴퍼넌트의 지정에 사용 가능한 표준명의 리스트가 게재되고 있습니다.  </p>
+
+<p>팩토리 메소드에 의해 반환되는 객체는 초기화되어 있지 않기 때문에, 사용하기 전에 초기화할 필요가 있습니다.  </p>
+	</blockquote>
+
+<h4><a name="InitaCipher">Cipher 객체의 초기화</a> </h4>
+    <blockquote>
+	  <p><code>getInstance</code> 를 개입시켜 취득된 Cipher 객체는, 다음의 4 개의 모드의 어느쪽이든으로 초기화할 필요가 있습니다. 이러한 모드는,<code>Cipher</code> 클래스의 final (파이널) 정수의 정수로서 정의됩니다. 모드는, 심볼명으로 참조할 수 있습니다. 다음에, 각 모드의 심볼명 및 목적을 나타냅니다.  </p>
+	  <p> </p>
+<blockquote>
+<dl>
+<dt>ENCRYPT_MODE</dt>
+<dd>데이터의 암호화</dd>
+<dt>DECRYPT_MODE</dt>
+<dd>데이터의 암호 해독</dd>
+<dt>WRAP_MODE</dt>
+<dd>안전하게 전송 하기 위해서 <code>java.security.Key</code> 를 랩핑 한다</dd>
+<dt>UNWRAP_MODE</dt>
+<dd>랩핑 된 열쇠를 <code>java.security.Key</code> 객체에 unwrapping 한다 </dd>
+</dl>
+</blockquote>
+
+	  <p>Cipher 초기화 메소드는, 각각 조작 모드 파라미터 (<code>opmode</code>)를 취해, 그 모드용의 Cipher 객체를 초기화합니다. 다른 파라미터에는, 열쇠 (<code>key</code>) 또는 열쇠를 포함한 증명서 (<code>certificate</code>), 알고리즘 파라미터 (<code>params</code>), 및 난수의 발생원 (<code>random</code>)이 포함됩니다.   </p>
+
+<p>Cipher 객체를 초기화하는 경우, 다음의 몇개의 <code>init</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public void init(int opmode, Key key);
+
+    public void init(int opmode, Certificate certificate);
+
+    public void init(int opmode, Key key, SecureRandom random);
+
+    public void init(int opmode, Certificate certificate, 
+		     SecureRandom random);
+
+    public void init(int opmode, Key key,
+		     AlgorithmParameterSpec params);
+
+    public void init(int opmode, Key key,
+		     AlgorithmParameterSpec params, SecureRandom random);
+
+    public void init(int opmode, Key key,
+                     AlgorithmParameters params);
+
+    public void init(int opmode, Key key,
+                     AlgorithmParameters params, SecureRandom random);
+</pre>
+<p>초기화 벡터등의 파라미터를 필요로 하는 Cipher 객체를 암호화용으로 초기화하는 경우,<code>init</code> 메소드에 파라미터를 아무것도 지정하지 않으면 랜덤 파라미터를 생성하는지, 프로바이더 고유의 파라미터 세트 (디폴트)를 사용하는 것으로써, 기반이 되는 암호 구현이 필수 파라미터를 제공한다고 보여집니다.  </p>
+	  <p>다만, 파라미터를 필요로 하는 Cipher 객체를 암호 해독용으로 초기화하는 경우,<code>init</code> 메소드에 파라미터를 아무것도 지정하지 않으면 사용한 <code>init</code> 메소드에 응해 <code>InvalidKeyException</code> 또는 <code>InvalidAlgorithmParameterException</code> 예외가 발생합니다.
+</p>
+<p>자세한 것은,<a href="#ManagingParameters">「알고리즘 파라미터의 관리」</a>에 관한 섹션을 참조해 주세요.  </p>
+<p>암호 해독에는, 암호화에 사용한 것과 같은 파라미터를 사용할 필요가 있습니다.  </p>
+<p>Cipher 객체를 초기화하면(자), 그때까지 획득한 상태가 모두 없어지는 것에 유의해 주세요. 즉, Cipher 를 초기화하는 것은, 그 Cipher 의 신규 인스턴스를 작성해 초기화하는 것으로 등가입니다. 예를 들어, 지정된 열쇠로 암호 해독을 실시하기 위해서(때문에) Cipher 를 초기화하고 나서, 암호화를 실시하기 위해서(때문에) 초기화하면(자), 암호 해독 모드로 획득한 상태는 모두 없어집니다.  </p>
+        </blockquote>
+<h4><a name="EncrDecr">데이터의 암호화 및 암호 해독</a> </h4>
+        <blockquote>
+<p>데이터의 암호화 또는 암호 해독은, 1 개의 스텝에서 실행 ( 「단일 부분 조작」)하는 일도 , 복수의 스텝에서 실행 ( 「복수 부분 조작」)할 수도 있습니다. 데이터의 길이가 불명한 경우, 또는 데이터가 너무 길어 한 번에 메모리에 포함할 수 없는 경우에, 복수 부분 조작은 유용합니다.  </p>
+<p>단독의 스텝에서 데이터의 암호화 또는 암호 해독을 실시하는 경우, 다음의 몇개의 <code>doFinal</code> 메소드를 호출합니다.  </p>
+<pre>
+    public byte[] doFinal(byte[] input);
+
+    public byte[] doFinal(byte[] input, int inputOffset, int inputLen);
+
+    public int doFinal(byte[] input, int inputOffset, 
+		       int inputLen, byte[] output);
+
+    public int doFinal(byte[] input, int inputOffset, 
+		       int inputLen, byte[] output, int outputOffset)
+</pre>
+<p>복수의 스텝에서 데이터의 암호화 또는 암호 해독을 실시하려면 , 다음의 몇개의 <code>update</code> 메소드를 호출합니다.  </p>
+<pre>
+    public byte[] update(byte[] input);
+    
+    public byte[] update(byte[] input, int inputOffset, int inputLen);
+    
+    public int update(byte[] input, int inputOffset, int inputLen,
+		      byte[] output);
+
+    public int update(byte[] input, int inputOffset, int inputLen,
+		      byte[] output, int outputOffset)
+</pre>
+<p>복수 부분 조작은, 상기의 <code>doFinal</code> 메소드의 언젠가 (마지막 스텝에서 입력 데이터가 남겨지는 경우), 또는 다음의 <code>doFinal</code> 메소드의 어느쪽이든 (마지막 스텝에서 입력 데이터가 남지 않는 경우)을 사용해 종료시킵니다.  </p>
+<pre>
+    public byte[] doFinal();
+
+    public int doFinal(byte[] output, int outputOffset);
+</pre>
+<p>지정된 변환의 일부로서 패딩 (또는 안 패딩)이 요구되었을 경우, 모든 <code>doFinal</code> 메소드로, 필요한 패딩 (또는 안 패딩) 조작이 모두 처리됩니다.  </p>
+	  <p><code>doFinal</code> 를 호출하면(자), Cipher 객체는 <code>init</code> 를 호출해 초기화했을 때 상태에 리셋 됩니다. 즉, Cipher 는 리셋 되어, 데이터를 한층 더 암호화 또는 암호 해독 (<code>init</code> 의 호출로 지정된 조작 모드에 근거한다) 할 수 있게 됩니다.  </p>
+	</blockquote>
+	<h4><a name="WrapUnwrap">열쇠의 랩핑과 unwrapping</a> </h4>
+	<blockquote>
+	  <p>열쇠를 랩핑 하면(자), 어느 장소로부터 다른 장소에 안전하게 전송 할 수 있습니다.  </p>
+	  <p><code>wrap/unwrap</code> API 는 열쇠 객체에 대해서 직접 기능하기 위해(때문에), 이 API 를 사용하면(자) 코드의 기술이 용이하게 됩니다. 다음의 메소드를 사용하면(자), 하드웨어 베이스의 열쇠의 안전한 전송도 가능하게 됩니다.  </p>
+	  <p>Key 를 <b>wrap</b> 하는 경우, 우선 WRAP_MODE 의 Cipher 객체를 초기화해, 다음의 메소드를 호출합니다.  </p>
+	  <pre>    public final byte[] wrap(Key key);<br></pre>
+	  <p>랩 된 열쇠의 바이트 (<code>wrap</code> 를 호출한 결과)를, 그 랩을 해제하는 다른 사용자에게 제공하는 경우, 수신자가 <code>unwrap</code> 를 실행하는데 필요한, 다음의 추가 정보도 송신할 필요가 있습니다.  </p>
+	  <p> </p>
+	  <ol>
+	    <li>열쇠 알고리즘의 이름
+	      <p></p>
+	    </li>
+	    <li>랩 된 열쇠의 형태 (<code>Cipher.SECRET_KEY</code>,<code>Cipher.PRIVATE_KEY</code>, 또는 <code>Cipher.PUBLIC_KEY</code> 의 언젠가)  </li>
+	  </ol>
+	  <p>열쇠 알고리즘명은, 다음에 나타내도록(듯이) Key 인터페이스로부터 <code>getAlgorithm</code> 메소드를 호출하는 것으로 확인할 수 있습니다.  </p>
+<pre>
+    public String getAlgorithm();
+</pre>
+	  <p><code>wrap</code> 에의 호출에 의해 반환된 바이트의<b>랩을 해제</b>하려면 , UNWRAP_MODE 의 Cipher 객체를 초기화하고 나서, 이하를 호출합니다.  </p>
+<pre>
+    public final Key unwrap(byte[] wrappedKey,
+			    String wrappedKeyAlgorithm,
+			    int wrappedKeyType));
+</pre>
+	  <p>여기서,<code>wrappedKey</code> 는 랩에의 호출에 의해 반환된 바이트를,<code>wrappedKeyAlgorithm</code> 는 랩 된 열쇠에 관련지을 수 있었던 알고리즘을,<code>wrappedKeyType</code> 는 랩 된 열쇠의 형태를 각각 가리킵니다. 이것은,<code>Cipher.SECRET_KEY</code>,<code>Cipher.PRIVATE_KEY</code>, 또는 <code>Cipher.PUBLIC_KEY</code> 의 언젠가가 아니면 안됩니다.
+
+          </p>
+
+	</blockquote>
+	<h4><a name="ManagingParameters">알고리즘 파라미터의 관리</a> </h4>
+	<blockquote>
+	  <p>기반이 되는 Cipher 구현에 의해 사용되는 파라미터 (어플리케이션에 의해 <code>init</code> 메소드에 명시적에게 건네졌는지, 기반이 되는 구현 자체에 의해 생성되었다)는,<code>getParameters</code> 메소드를 호출하는 것으로 Cipher 객체로부터 취득할 수 있습니다. 이 메소드는, 파라미터를 <code>java.security.AlgorithmParameters</code> 객체 (파라미터가 사용되지 않는 경우는 <code>null</code>)로서 돌려줍니다. 파라미터가 초기화 벡터 (IV)의 경우,<code>getIV</code> 메소드를 호출하는 것으로 파라미터를 취득할 수 있습니다.  </p>
+	  
+	  <p>다음의 예에서는, 패스워드 베이스 암호화 (PBE)를 구현하는 Cipher 객체를, 파라미터를 사용하지 않고 열쇠만을 사용해 초기화합니다. 다만, 선택된 패스워드 베이스 암호화용으로 선택된 알고리즘은,<i>salt</i> 및 <i>iteration count</i> 라고 하는 2 개의 파라미터를 필요로 합니다. 이것들은, 기반이 되는 알고리즘 구현 자체에 의해 생성됩니다. 어플리케이션은, 생성된 파라미터를 이하의 방법으로 Cipher 객체로부터 취득할 수 있습니다.  </p>
+
+<pre>
+    import javax.crypto. *;
+    import java.security.AlgorithmParameters;
+    
+    // get cipher object for password-based encryption
+    Cipher c = Cipher.getInstance("PBEWithMD5AndDES");
+    
+    // initialize cipher for encryption, without supplying
+    // any parameters.  Here, "myKey" is assumed to refer 
+    // to an already-generated key.
+    c.init(Cipher.ENCRYPT_MODE, myKey);
+    
+    // encrypt some data and store away ciphertext
+    // for later decryption
+    byte[] cipherText = c.doFinal("This is just an example". getBytes());
+    
+    // retrieve parameters generated by underlying cipher
+    // implementation
+    AlgorithmParameters algParams = c.getParameters();
+    
+    // get parameter encoding and store it away
+    byte[] encodedAlgParams = algParams.getEncoded();
+</pre>
+
+	  <p>암호 해독에는, 암호화에 사용한 것과 같은 파라미터를 사용할 필요가 있습니다. 이것들은, 인코딩으로부터 인스턴스화하는 것이 가능하고, 다음에 나타내도록(듯이), 대응하는 Cipher 객체를 암호 해독용으로 초기화할 때에 사용할 수 있습니다.  </p>
+
+<pre>
+    import javax.crypto. *;
+    import java.security.AlgorithmParameters;
+    
+    // get parameter object for password-based encryption
+    AlgorithmParameters algParams;
+    algParams = AlgorithmParameters.getInstance("PBEWithMD5AndDES");
+    
+    // initialize with parameter encoding from above
+    algParams.init(encodedAlgParams);
+    
+    // get cipher object for password-based encryption
+    Cipher c = Cipher.getInstance("PBEWithMD5AndDES");
+    
+    // initialize cipher for decryption, using one of the 
+    // init() methods that takes an AlgorithmParameters 
+    // object, and pass it the algParams object from above
+    c.init(Cipher.DECRYPT_MODE, myKey, algParams);
+</pre>
+
+	  <p>Cipher 객체의 초기화시에 파라미터를 일절 지정하지 않고, 기반이 되는 구현이 몇개의 파라미터를 사용할지 어떨지 불명한 경우, Cipher 객체의 <code>getParameters</code> 메소드를 호출해, 반환되는 값을 체크하는 것만으로 확인할 수 있습니다. 반환값이 <code>null</code> 의 경우, 파라미터가 사용되지 않았던 것을 나타냅니다.  </p>
+
+<p><code>SunJCE</code> 프로바이더에 의해 구현되는 다음의 암호 알고리즘은, 파라미터를 사용합니다.  </p>
+
+	  <p> </p>
+	  <ul>
+	    <li>DES, DES-EDE, 및 Blowfish 는, 피드백 (즉 CBC, CFB, OFB, 또는 PCBC) 모드에서의 사용시에, 초기화 벡터 (IV)를 사용합니다. <code>javax.crypto.spec.IvParameterSpec</code> 클래스는, 지정된 IV 에서의 Cipher 객체의 초기화에 사용할 수 있습니다.
+	      <p></p>
+	    </li>
+	    <li>PBEWithMD5AndDES 는, salt 및 iteration count 로 구성되는 파라미터 세트를 사용합니다. <code>javax.crypto.spec.PBEParameterSpec</code> 클래스는, 지정된 salt 및 iteration count 를 사용해 PBEWithMD5AndDES 를 구현하는 Cipher 객체를 초기화하는 경우에 사용할 수 있습니다.  </li>
+	  </ul>
+
+	  <p><a href="#SealedObject"><code>SealedObject</code></a>  클래스를 사용하는 경우, 암호 해독 조작에 사용하는 알고리즘 파라미터의 포함 또는 전송에 대해 걱정할 필요는 없습니다. 이 클래스는, 씰 (암호화)에 사용되는 파라미터가 암호화된 객체 컨텐츠에 첨부합니다. 또, 안시르 (암호 해독)에서도 같은 파라미터를 사용합니다.  </p>
+	</blockquote>
+	<h4>암호 출력시의 고려사항</h4>
+	<blockquote>
+	  <p>Cipher 의 <code>update</code> 및 <code>doFinal</code> 안에는, 호출 측에 의한 출력 버퍼의 지정이 가능한 것이 있습니다. 암호화 또는 암호 해독 된 데이터는, 이 버퍼내에 출력됩니다. 이 경우, 암호화 또는 암호 해독 조작의 결과를 보관 유지 가능한 한의 크기의 버퍼를 건네주는 것은 중요합니다.  </p>
+	  <p>Cipher 내의 다음의 메소드를 사용해, 설정해야 할 출력 버퍼의 사이즈를 확인할 수 있습니다.  </p>
+	  <pre>    public int getOutputSize(int inputLen)<br></pre>
+	</blockquote>
+      </blockquote>
+
+<h2><a name="CipherBased">그 외의 <code>Cipher</code> 베이스의 클래스</a> </h2>
+
+<blockquote>
+
+<code>Cipher</code> 를 내부적으로 사용해 공통의 암호 사용에의 간단한 액세스를 제공하는, 몇개의 헬퍼 클래스가 있습니다.
+
+<h3><a name="CipherStream">Cipher Stream 클래스</a> </h3>
+      <blockquote>
+
+<p>
+
+기존의 <code>InputStream/OutputStream</code> 와 <code>Cipher</code> 객체를 결합하는 것에 의해, 단순하고 안전한 스트림 베이스의 통신 객체를 작성할 수 있습니다.
+
+</p>
+
+<blockquote>
+
+<h4><a name="CipherInput">CipherInputStream 클래스</a> </h4>
+<blockquote>
+
+	<p>이 클래스는, 통과하는 데이터의 암호화 또는 암호 해독을 실시하는 <code>FilterInputStream</code> 입니다. 이것은,<code>InputStream</code> 또는 그 서브 클래스의 언젠가, 및 <code>Cipher</code> 로 구성됩니다. CipherInputStream 는, Cipher 객체의 삽입처의, 시큐리티 보호된 입력 스트림을 나타냅니다. CipherInputStream 의 <code>read</code> 메소드는, 기반이 되는 InputStream 로부터 읽어내져 파묻힌 Cipher 객체에 의해 한층 더 처리된 데이터를 돌려줍니다. Cipher 객체는, CipherInputStream 로 사용하기 전에 완전하게 초기화할 필요가 있습니다.  </p>
+
+		<p>예를 들어, 파묻힌 Cipher 가 암호 해독용으로 초기화되고 있는 경우, CipherInputStream 는 기반이 되는 InputStream 로부터 읽어들인 데이터의 암호 해독을 시도하고 나서, 데이터를 어플리케이션에 돌려줍니다.  </p>
+		
+		<p>이 클래스는, 상위 클래스 <code>java.io.FilterInputStream</code> 및 <code>java.io.InputStream</code> 의 시멘틱스 (특히 에러에 관한 시멘틱스)에 엄밀하게 준거합니다. 이 클래스는, 상위 클래스에서 지정된 메소드를 정확하게 보관 유지해, 그것들 모든 것을 오버라이드(override) 합니다. 이 때문에, 파묻힌 암호에 의한 데이터의 추가 처리가 가능하게 됩니다. 게다가 이 클래스는, 상위 클래스가 throw 하지 않는 예외를 모두 캐치 합니다. 특히,<code>skip(long)</code> 메소드는, Cipher 에 의해 처리된 데이터만을 무시합니다.  </p>
+
+		<p>이 클래스를 사용하는 프로그래머에게 있어, 이 클래스가 정의 또는 오버라이드(override)되어 있지 않은 메소드 (상위 클래스의 어느 쪽인가에 나중에 추가된 신규 메소드 또는 생성자 )를 사용하지 않게 하는 것은 중요합니다. 이러한 메소드 구현은, CipherInputStream 에의 시큐리티면의 영향을 고려에 넣지 않기 때문입니다.  </p>
+
+		<p>사용 방법의 일례로서<code>cipher1</code> 가 암호화용으로 초기화되고 있는 경우를 생각해 봅시다. 이하의 코드는, 암호 및 FileInputStream 를 포함한 CipherInputStream 를 사용해, 입력 스트림 데이터를 암호화하는 방법을 나타냅니다.  </p>
+
+<pre>
+    FileInputStream fis;
+    FileOutputStream fos;
+    CipherInputStream cis;
+    
+    fis = new FileInputStream("/tmp/a.txt");
+    cis = new CipherInputStream(fis, cipher1);
+    fos = new FileOutputStream("/tmp/b.txt");
+    byte[] b = new byte[8];
+    int i = cis.read(b);
+    while (i ! = -1) {
+	fos.write(b, 0, i);
+	i = cis.read(b);
+    }
+    fos.close();
+</pre>
+
+		<p>상기의 프로그램은, 파일 <code>/tmp/a.txt</code> 로부터 컨텐츠를 읽어내 암호화해, 결과 (암호화된 바이트)를 <code>/tmp/b.txt</code> 에 포함합니다.  </p>
+
+		<p>다음의 예는, CipherInputStream 및 FileInputStream 의 복수 인스턴스를 간단하게 접속하는 방법을 나타냅니다. 이 예에서는,<code>cipher1</code> 및 <code>cipher2</code> 가, 각각 암호화 및 암호 해독용으로 (대응하는 열쇠를 사용해) 초기화되고 있는 것으로 합니다.  </p>
+
+<pre>
+    FileInputStream fis;
+    FileOutputStream fos;
+    CipherInputStream cis1, cis2;
+    
+    fis = new FileInputStream("/tmp/a.txt");
+    cis1 = new CipherInputStream(fis, cipher1);
+    cis2 = new CipherInputStream(cis1, cipher2);
+    fos = new FileOutputStream("/tmp/b.txt");
+    byte[] b = new byte[8];
+    int i = cis2.read(b);
+    while (i ! = -1) {
+	fos.write(b, 0, i);
+	i = cis2.read(b);
+    }
+    fos.close();
+    </pre>
+
+<p>상기의 프로그램은, 파일 <code>/tmp/a.txt</code> 의 내용을 <code>/tmp/b.txt</code> 에 카피합니다. 다만,<code>/tmp/a.txt</code> 로부터의 읽기시에, 최초로 내용의 암호화, 다음에 암호 해독을 합니다. 실제의 곳, 이 프로그램은 텍스트를 암호화한 후, 곧바로 암호 해독을 실시하기 (위해)때문에, CipherInputStreams 의 체인을 알기 쉽게 가리키는 이외는 특히 유용한 것이 아닙니다.
+</p><p>
+<code>CipherInputStream</code> 의 읽기 메소드는, 기반이 되는 암호로부터 데이터가 돌려주어질 때까지 블록 합니다. 블록 암호가 사용되는 경우, 기반이 되는 InputStream 로부터 암호 텍스트의 완전한 블록이 취득될 필요가 있습니다.
+
+</blockquote>
+<h4><a name="CipherOutput">CipherOutputStream 클래스</a> </h4>
+<blockquote>
+		
+		<p>이 클래스는, 통과하는 데이터의 암호화 또는 암호 해독을 실시하는 <code>FilterOutputStream</code> 입니다. 이것은,<code>OutputStream</code> 또는 그 서브 클래스의 언젠가, 및 <code>Cipher</code> 로 구성됩니다. CipherOutputStream 는, Cipher 객체의 삽입처의, 시큐리티 보호된 출력 스트림을 나타냅니다. CipherOutputStream 의 <code>write</code> 메소드는, 파묻힌 Cipher 객체를 사용해 데이터를 처리하고 나서, 기반이 되는 OutputStream 에 데이터를 써냅니다. Cipher 객체는, CipherOutputStream 로 사용하기 전에 완전하게 초기화할 필요가 있습니다.  </p>
+
+		<p>예를 들어, 파묻힌 Cipher 가 암호화용으로 초기화되고 있는 경우, CipherOutputStream 는 데이터를 암호화하고 나서, 기반이 되는 출력 스트림에 써냅니다.  </p>
+
+		<p>이 클래스는, 상위 클래스 <code>java.io.OutputStream</code> 및 <code>java.io.FilterOutputStream</code> 의 시멘틱스 (특히 에러에 관한 시멘틱스)에 엄밀하게 준거합니다. 이 클래스는, 상위 클래스에서 지정된 메소드를 정확하게 보관 유지해, 그것들 모든 것을 오버라이드(override) 합니다. 이 때문에, 파묻힌 암호에 의한 모든 데이터의 추가 처리가 가능하게 됩니다. 게다가 이 클래스는, 상위 클래스가 throw 하지 않는 예외를 모두 캐치 합니다.  </p>
+
+		<p>이 클래스를 사용하는 프로그래머에게 있어, 이 클래스가 정의 또는 오버라이드(override)되어 있지 않은 메소드 (상위 클래스의 어느 쪽인가에 나중에 추가된 신규 메소드 또는 생성자 )를 사용하지 않게 하는 것은 중요합니다. 이러한 메소드 구현은, CipherOutputStream 에의 시큐리티면의 영향을 고려에 넣지 않기 때문입니다.  </p>
+
+		<p>사용 방법의 일례로서<code>cipher1</code> 가 암호화용으로 초기화되고 있는 경우를 생각해 봅시다. 이하의 코드는, 암호 및 FileOutputStream 를 포함한 CipherOutputStream 를 사용해, 암호화된 데이터를 출력 스트림에 써내는 방법을 나타냅니다.  </p>
+<pre>
+    FileInputStream fis;
+    FileOutputStream fos;
+    CipherOutputStream cos;
+    
+    fis = new FileInputStream("/tmp/a.txt");
+    fos = new FileOutputStream("/tmp/b.txt");
+    cos = new CipherOutputStream(fos, cipher1);
+    byte[] b = new byte[8];
+    int i = fis.read(b);
+    while (i ! = -1) {
+	cos.write(b, 0, i);
+	i = fis.read(b);
+    }
+    cos.flush();
+</pre>
+<p>상기의 프로그램은, 파일 <code>/tmp/a.txt</code> 로부터 컨텐츠를 읽어내 암호화해, 결과 (암호화된 바이트)를 <code>/tmp/b.txt</code> 에 포함합니다. </p>
+
+		<p>다음의 예는, CipherOutputStream 및 FileOutputStream 의 복수 인스턴스를 간단하게 접속하는 방법을 나타냅니다. 이 예에서는,<code>cipher1</code> 및 <code>cipher2</code> 가, 각각 암호 해독 및 암호화용으로 (대응하는 열쇠를 사용해) 초기화되고 있는 것으로 합니다.  </p>
+
+<pre>
+    FileInputStream fis;
+    FileOutputStream fos;
+    CipherOutputStream cos1, cos2;
+    
+    fis = new FileInputStream("/tmp/a.txt");
+    fos = new FileOutputStream("/tmp/b.txt");
+    cos1 = new CipherOutputStream(fos, cipher1);
+    cos2 = new CipherOutputStream(cos1, cipher2);
+    byte[] b = new byte[8];
+    int i = fis.read(b);
+    while (i ! = -1) {
+	cos2.write(b, 0, i);
+	i = fis.read(b);
+    }
+    cos2.flush();
+</pre>
+
+<p>상기의 프로그램은, 파일 <code>/tmp/a.txt</code> 의 내용을 <code>/tmp/b.txt</code> 에 카피합니다. 다만,<code>/tmp/b.txt</code> 에 기입하기 전에, 내용의 암호화 및 암호 해독을 합니다.
+</p>
+
+<p> <b>블록</b>암호 알고리즘을 사용하는 경우는, 데이터가 암호화되어 기반이 되는 출력 스트림에 송신되기 전에, plaintext 데이터의 완전한 블록을 <code>CipherOutputStream</code> 에게 줄 필요가 있습니다.
+
+<p>이 클래스의 <code>flush</code> 와 <code>close</code> 메소드에는, 그 밖에 1 개(살)의 중요한 차이점이 있습니다. 캡슐화된 Cipher 객체가 패딩을 유효하게 해 블록 암호 알고리즘을 구현하는 경우, 이 차이점에 특히 유의할 필요가 있습니다.  </p>
+<ul>
+<li><code>flush</code> 는, 캡슐화된 Cipher 객체에 의해 처리필 보고의 버퍼링 된 출력 바이트를 모두 강제적으로 써내는 것으로, 기반이 되는 OutputStream 를 플래시 합니다. 캡슐화된 Cipher 객체에 의해 버퍼링 되어 처리 대기 상태에 있는 바이트는,<b>써내지지 않습니다</b>.  </p></li>
+
+<li><code>close</code> 는, 기반이 되는 OutputStream 를 닫아, 관련지을 수 있던 모든 system resource를 해제합니다. 캡슐화된 Cipher 객체의 <code>doFinal</code> 메소드를 호출해, 이 객체에 의해 버퍼링 된 모든 바이트를 처리합니다. 한층 더 <code>flush</code> 메소드를 호출해, 처리한 바이트를 기반이 되는 스트림에 써냅니다. </li>
+</ul>
+	      </blockquote>
+	</blockquote>
+      </blockquote>
+
+<h3><a name="SealedObject">SealedObject 클래스</a> </h3>
+      <blockquote>
+<p>프로그래머는, 이 클래스를 사용해 객체를 작성해, 암호화 알고리즘을 이용해 그 기밀성을 보호할 수가 있습니다.  </p>
+
+	<p><code>java.io.Serializable</code> 인터페이스를 구현하는 객체가 지정되었을 경우, 원의 객체를 직렬화 형식 ( 「딥 카피」)에서 캡슐화하는 <code>SealedObject</code> 를 작성해, DES 등의 암호화 알고리즘을 사용해 직렬화 된 내용을 씰 (암호화) 하는 것으로써, 기밀성을 보호할 수 있습니다. 그 후, 암호화된 내용의 암호 해독 (적정한 암호 해독열쇠를 사용), 및 직렬화 해제를 실시하는 것으로, 원의 객체를 복원할 수 있습니다.  </p>
+
+<p>일반적인 사용법을, 다음의 코드예에 나타냅니다. 객체를 씰 하는 경우, 씰 대상의 객체로부터 <code>SealedObject</code> 를 작성해, 직렬화 된 객체 내용을 암호화하는, 완전하게 초기화된 <code>Cipher</code> 객체를 작성합니다. 이 예에서는, 캐릭터 라인 「This is a secret」가 DES 알고리즘을 사용해 씰 됩니다. 씰 조작에 사용되는 모든 알고리즘 파라미터는,<code>SealedObject</code> 의 내부에 포함되는 것에 유의해 주세요.  </p>
+        <p></p>
+<pre>
+    // create Cipher object
+    // NOTE: sKey is assumed to refer to an already-generated
+    // secret DES key.
+    Cipher c = Cipher.getInstance("DES");
+    c.init(Cipher.ENCRYPT_MODE, sKey);
+    
+    // do the sealing
+    SealedObject so = new SealedObject("This is a secret", c);
+</pre>
+
+<p>씰 된 원의 객체는, 다음이 다른 2 개의 방법으로 복원 가능합니다.  </p>
+        <p> </p>
+        <ul>
+<li>엄밀하게 동일한 알고리즘, 열쇠, 패딩 방식등으로 초기화되어 객체의 씰에 사용된 <code>Cipher</code> 객체를 사용하는 방법
+            <p></p>
+<pre>
+    c.init(Cipher.DECRYPT_MODE, sKey);
+    try {
+	String s = (String) so.getObject(c);
+    } catch (Exception e) {
+	// do something
+    };
+</pre>
+<p>이 방법에는, 암호 해독열쇠에 관한 지식이 없어도, 씰 된 객체의 안시르를 실행할 수 있다고 하는 이점이 있습니다. 예를 들어, 어느 파티가 암호 객체를 필수의 암호 해독열쇠를 사용해 초기화한 후에, 다른 파티에 건네주면(자), 그 파티는 씰 된 객체를 안시르 할 수 있습니다.  </p>
+            <p></p>
+          </li>
+<li>적절한 암호 해독열쇠를 사용하는 방법 (DES 는 대칭 암호화 알고리즘이기 (위해)때문에, 씰과 안시르에 같은 열쇠를 사용할 수 있다)
+            <p></p>
+<pre>
+    try {
+	String s = (String) so.getObject(sKey);
+    } catch (Exception e) {
+	// do something
+    };
+</pre>
+<p>이 방법에서는,<code>getObject</code> 메소드는, 적절한 암호 해독 알고리즘용의 암호 객체를 작성해, 씰 끝난 객체에 포함된 암호 해독열쇠 및 알고리즘 파라미터 (존재하는 경우)를 사용해 초기화를 실시합니다. 이 방법의 이점은, 객체를 안시르 하는 파티가, 객체의 씰에 사용한 파라미터 (IV 등)를 추적할 필요가 없는 것입니다.  </p>
+          </li>
+        </ul>
+      </blockquote>
+</blockquote>
+
+<h2><a name="Mac">Mac 클래스</a> </h2>
+<blockquote>
+
+<p>
+
+<code>MessageDigest</code> 와 같게, 메세지 인증 코드 (MAC)는, 송신된 정보나 신뢰할 수 없는 미디어에 보존되고 있는 정보의 무결성을 체크하는 방법을 제공합니다만, 비밀열쇠가 계산에 포함됩니다. 적절한 열쇠를 가지는 사람만이, 수신한 메세지를 검증할 수 있습니다. 일반적으로, 메세지 인증 코드는, 비밀열쇠를 공유하는 2 개의 파티간에 송신되는 정보의 유효성을 검증하는 경우에 사용됩니다.  </p>
+
+<p>
+<center>
+<img src="../images/jca/Mac.gif" alt="<Mac 조작의 화상>">
+</center>
+
+<p>
+
+암호화 해시 기능에 근거하는 MAC 기구는, HMAC 로 불립니다. HMAC 는, 비밀 공유열쇠와 조합해, MD5 나 SHA-1 등의 임의의 암호화 해시 기능으로 사용할 수 있습니다.
+
+<p><code>Mac</code> 클래스는, 메세지 인증 코드 (MAC)의 기능을 제공합니다. <a href="#HmacEx">「코드예」</a>를 참조해 주세요.  </p>
+
+<h4><code>Mac</code> 객체의 작성</h4>
+        <blockquote>
+
+<code>Mac</code> 객체는,<code>Mac</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+        </blockquote>
+<h4>Mac 객체의 초기화</h4>
+        <blockquote>
+<p>Mac 객체는, 항상 (비밀) 열쇠를 사용해 초기화됩니다. 또, 기반이 되는 MAC 알고리즘에 따라서는, 파라미터 세트를 사용해 초기화할 수도 있습니다.  </p>
+<p>Mac 객체를 초기화하는 경우, 다음의 몇개의 <code>init</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public void init(Key key);
+    
+    public void init(Key key, AlgorithmParameterSpec params);
+</pre>
+	  <p><code>javax.crypto.SecretKey</code> 인터페이스를 구현하는 임의의 (비밀) 열쇠 객체를 사용해, Mac 객체를 초기화할 수 있습니다. 이것은,<code>javax.crypto.KeyGenerator.generateKey()</code> 이 돌려주는 객체,<code>javax.crypto.KeyAgreement.generateSecret()</code> 등이 돌려주는 열쇠 협정 프로토콜의 결과 생성되는 객체, 또는 <code>javax.crypto.spec.SecretKeySpec</code> 의 인스턴스입니다.  </p>
+	  <p>MAC 알고리즘안에는, Mac 객체의 초기화에 사용되는 (비밀) 열쇠 객체에 관련지을 수 있었던 (비밀) 열쇠 알고리즘이 중요하지 않는 것이 있습니다 (<code>SunJCE</code> 프로바이더의 HMAC-MD5 및 HMAC-SHA1 구현의 경우). 다만, 그 이외의 경우, (비밀) 열쇠 알고리즘은 중요하고, (비밀) 열쇠 객체가 올바르지 않은 (비밀) 열쇠 알고리즘으로 사용되면(자),<code>InvalidKeyException</code> 가 throw 됩니다.  </p>
+        </blockquote>
+<h4>MAC 의 계산</h4>
+        <blockquote>
+<p>MAC 는, 1 개의 스텝에서 계산 ( 「단일 부분 조작」)하는 일도 , 복수의 스텝에서 계산 ( 「복수 부분 조작」)할 수도 있습니다. 데이터의 길이가 불명한 경우, 또는 데이터가 너무 길어 한 번에 메모리에 포함할 수 없는 경우에, 복수 부분 조작은 유용합니다.  </p>
+<p>어느 데이터의 MAC 를 1 회의 스텝에서 계산하려면 , 다음의 <code>doFinal</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public byte[] doFinal(byte[] input);
+</pre>
+
+<p>복수의 스텝에서 데이터의 MAC 를 계산하려면 , 다음의 몇개의 <code>update</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public void update(byte input);
+    
+    public void update(byte[] input);
+    
+    public void update(byte[] input, int inputOffset, int inputLen);
+</pre>
+	  <p>복수 부분 조작은, 상기의 <code>doFinal</code> 메소드 (마지막 스텝에서 입력 데이터가 남겨지는 경우), 또는 다음의 <code>doFinal</code> 메소드의 어느쪽이든 (마지막 스텝에서 입력 데이터가 남지 않는 경우)을 사용해 종료시킵니다.  </p>
+
+<pre>
+    public byte[] doFinal();
+    
+    public void doFinal(byte[] output, int outOffset);
+</pre>
+        </blockquote>
+      </blockquote>
+
+
+<H2><a name="Key"><code>Key</code> 인터페이스</a> </H2>
+
+<blockquote>
+
+<P>
+
+여기까지는, 열쇠란 무엇인가, 열쇠는 어떻게 생성 및 표현될까에 임해서 자세한 것은 설명하지 않고 , JCA 의 고레벨의 사용에 중점을 두어 왔습니다. 여기에서는 열쇠에 주의를 향합니다.
+
+<p>
+
+<code>java.security.Key</code> 인터페이스는, 모든 불투명한 열쇠에 관한 톱 레벨의 인터페이스입니다. 모든 불투명한 열쇠 객체가 공유하는 기능을 정의합니다.
+
+<p>「불투명한」열쇠의 표현에서는, 열쇠를 구성하는 열쇠 데이터에 직접 액세스 할 수 없습니다. 즉, 「불투명」에 의해, 열쇠에의 액세스가,<code>Key</code> 인터페이스에 의해 정의되는<code>getAlgorithm</code>,<code>getEncoded</code>, 및 <code>getFormat</code> 의 3 개의 메소드인 만큼 제한됩니다.
+<p>
+이것과 대조적인 것이 「투명한」표현으로, 이 경우는, 대응하는<a href="#KeySpec">스펙 클래스</a>내에 정의된 <code>get</code> 메소드의 1 개를 사용해, 각 열쇠 데이터의 값에 개개에 액세스 할 수 있습니다.
+
+<p>불투명한 열쇠는 모두, 다음의 3 개의 특성을 가집니다.
+
+<blockquote>
+<DL>
+<DT><b>알고리즘</b></DT>
+
+<DD>
+
+열쇠에 대한 열쇠의 알고리즘입니다. 일반적으로, 열쇠의 알고리즘은, 암호화 또는 비대칭 오퍼레이션 알고리즘 (<code>AES</code>,<code>DSA</code>,<code>RSA</code> 등)으로, 이러한 알고리즘이나 관련 알고리즘 (<code>MD5withRSA</code>,<code>SHA1withRSA</code> 등)과 제휴해 기능합니다. 열쇠의 알고리즘명은, 다음의 메소드를 사용해 획득합니다.
+
+<blockquote>
+<pre>
+String getAlgorithm()
+</pre>
+</blockquote>
+
+
+<DT><B>코드화 형식</b></DT>
+
+<DD>
+열쇠의 외부 코드화 형식은, 열쇠를 다른 조직에 전송 하는 경우 등, 열쇠의 표준 표시가 Java 가상 머신의 외부에서 필요한 때에 사용합니다. 열쇠는 표준 형식 (X. 509 나 PKCS8 등)에 따라 코드화 되어 다음의 메소드를 사용해 돌려주어집니다.
+<P>
+
+<blockquote>
+<pre>
+byte[] getEncoded()
+</pre>
+</blockquote>
+
+
+<DT><B>포맷</b></DT>
+
+<DD>
+코드화한 열쇠의 포맷명입니다. 이하의 메소드로부터 돌려주어집니다.
+<blockquote>
+<pre>
+String getFormat()
+</pre>
+</blockquote>
+</DL>
+</blockquote>
+
+열쇠는 일반적으로,<a href="#KeyGenerator"<code>KeyGenerator</code></a>  나 <a href="#KeyPairGenerator"<code>KeyPairGenerator</code></a>  등의 열쇠 제네레이터, 증명서,<a href="#KeySpec">열쇠 스펙</a>  (<a href="#KeyFactory"><code>KeyFactory</code></a>  를 사용), 또는 열쇠 관리로 사용하는 키스토어데이타베이스에 액세스 하는 <a href="#KeyStore"><code>KeyStore</code></a>  의 구현으로부터 획득합니다. <a href="#KeyFactory"><code>KeyFactory</code></a>  를 사용해, 알고리즘 의존형의 방법으로 encode 된 열쇠를 해석하는 것이 가능합니다.
+
+<p>또,<a href="#CertificateFactory"><code>CertificateFactory</code></a>  를 사용해, 인증을 해석하는 일도 가능합니다.
+
+<P>
+
+다음에,<code>java.security.interfaces</code> 및 <code>javax.crypto.interfaces</code> 패키지내의 <code>Key</code> 인터페이스를 확장하는 인터페이스의 리스트를 나타냅니다.
+
+<p>
+<TABLE summary="layout">
+<TR>
+
+<TD valign="top">
+<UL>
+<LI><a href="../../../../api/javax/crypto/SecretKey.html">SecretKey</A> </li>
+<LI><a href="../../../../api/javax/crypto/interfaces/PBEKey.html">PBEKey</A> </li>
+</UL>
+</TD>
+
+<TD valign="top">
+<ul>
+<LI><a href="../../../../api/java/security/PrivateKey.html">PrivateKey</A> </li>
+<LI><a href="../../../../api/javax/crypto/interfaces/DHPrivateKey.html">DHPrivateKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/DSAPrivateKey.html">DSAPrivateKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/ECPrivateKey.html">ECPrivateKey</A> </li>
+<LI><a href=     "../../../../api/java/security/interfaces/RSAMultiPrimePrivateCrtKey.html">RSAMultiPrimePrivateCrtKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/RSAPrivateCrtKey.html">RSAPrivateCrtKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/RSAPrivateKey.html">RSAPrivateKey</A> </li>
+</UL>
+</TD>
+
+<TD valign="top">
+<ul>
+<LI><a href=     "../../../../api/java/security/PublicKey.html">PublicKey</A> </li>
+<LI><a href="../../../../api/javax/crypto/interfaces/DHPublicKey.html">DHPublicKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/DSAPublicKey.html">DSAPublicKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/ECPublicKey.html">ECPublicKey</A> </li>
+<LI><a href="../../../../api/java/security/interfaces/RSAPublicKey.html">RSAPublicKey</A> </li>
+</ul>
+</TD>
+
+</TR>
+</TABLE>
+
+<H3><code>PublicKey</code> 및 <code>PrivateKey</code> 인터페이스</H3>
+
+<blockquote>
+
+<P>
+<code>PublicKey</code> 및 <code>PrivateKey</code> 인터페이스는 어느쪽이나 <code>Key</code> 인터페이스를 상속합니다만, 이것들은 메소드를 사용하지 않는 인터페이스로, 형태의 안전성 및 형태의 식별로 사용합니다.
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="KeyPair"><code>KeyPair</code> 클래스</a> </H2>
+
+<blockquote>
+
+<P>
+<code>KeyPair</code> 클래스는 열쇠의 페어 (공개키와 비공개키)의 간단한 홀더입니다. 이것에는 2 개의 public 메소드가 있습니다. 1 개(살)은 비공개키를 돌려주어, 이제(벌써) 1 개(살)은 공개키를 돌려줍니다.
+
+<blockquote>
+<pre>
+PrivateKey getPrivate()
+PublicKey getPublic()
+</pre>
+</blockquote>
+</blockquote>
+
+<H2><a name="KeySpecs">열쇠 스펙의 인터페이스 및 클래스</a> </H2>
+
+<blockquote>
+
+<P> <code>Key</code> 객체와 열쇠 스펙 (<code>KeySpec</code>)은, 열쇠 데이터가 다른 2 개의 표현입니다. <code>Cipher</code> 는 <code>Key</code> 객체를 사용해 암호화 알고리즘을 초기화합니다만, 전송 또는 포함을 위해서(때문에) 열쇠를 이식성의 높은 형식으로 변환할 필요가 있는 경우가 있습니다.
+
+<p>열쇠의 「투명한」표현이란, 대응하는 스펙 클래스에서 정의된 <code>get</code> 메소드의 1 개를 사용해, 각 열쇠 데이터에 개개에 액세스 할 수 있다고 하는 것입니다. 예를 들어,<code>DSAPrivateKeySpec</code> 는,<code>getX</code>,<code>getP</code>,<code>getQ</code>, 및 <code>getG</code> 메소드를 정의해, 비공개키 <code>x</code> 및 열쇠의 계산에 사용하는 DSA 알고리즘의 파라미터 (프라임의 <code>p</code>, 서브 프라임의 <code>q</code> 및 베이스의 <code>g</code>) 프라임의 <code>p</code>, 서브 프라임의 <code>q</code>, 및 베이스의 <code>g</code> 를 돌려줍니다. 열쇠가 하드웨어 디바이스상에 포함되고 있는 경우는, 그 열쇠 스펙에는, 디바이스상의 열쇠의 식별을 돕는 정보가 포함되어 있는 일이 있습니다.
+
+<p>이 표현과 대조적인 것이,<a href="#Key"><code>Key</code></a>  인터페이스에 의해 정의되는 것 같은, 「불투명한」표현입니다. 「불투명한」열쇠의 표현에서는, 열쇠 요소 필드에 직접 액세스 할 수 없습니다. 즉, 「불투명」에 의해, 열쇠에의 액세스가,<code>Key</code> 인터페이스에 의해 정의되는<code>getAlgorithm</code>,<code>getEncoded</code>, 및 <code>getFormat</code> 의 3 개의 메소드인 만큼 제한됩니다.
+
+<P> 열쇠는, 알고리즘 특정형인가, 또는 알고리즘 독립형의 encode 형식 (ASN. 1 등) 방법으로 지정할 수 있습니다. 예를 들어, DSA 비공개키는, 비공개키의 컴퍼넌트 <code>x</code>,<code>p</code>,<code>q</code>, 및 <code>g</code> 에 의해 지정하는지 (<a href="../../../../api/java/security/spec/DSAPrivateKeySpec.html"><code>DSAPrivateKeySpec</code></a>  를 참조), 또는, 비공개키의 DER encode를 사용해 지정하는 것이 가능합니다 (<a href="../../../../api/java/security/spec/PKCS8EncodedKeySpec.html"><code>PKCS8EncodedKeySpec</code></a>  를 참조).
+
+<p>
+<a href="#KeyFactory"><code>KeyFactory</code></a>  및 <a href="#SecretKeyFactory"><code>SecretKeyFactory</code></a>  클래스는, 불투명한 열쇠의 표현과 투명한 열쇠의 표현동안 (즉,<code>Key</code> 와 <code>KeySpec</code> 의 사이. 조작이 가능하다라고 상정)으로 변환을 실시하기 위해서(때문에) 사용할 수 있습니다. 예를 들어, 스마트 카드상의 비공개키는, 카드로부터 꺼낼 수 없는 경우가 있습니다. 그러한 <code>Key</code> 는 변환 불가능합니다.
+
+<p>다음에,<code>java.security.spec</code> 패키지내에 포함되는 열쇠 스펙의 인터페이스 및 클래스에 도착해 설명합니다.
+
+<H3><a name="KeySpec"><code>KeySpec</code> 인터페이스</a> </H3>
+
+<blockquote>
+
+<P> 이 인터페이스에는, 메소드 또는 정수가 포함되어 있지 않습니다. 이 인터페이스의 유일한 목적은, 모든 열쇠 스펙을 그룹화 하는 것 및 그러한 그룹에 안전한 형태를 제공하는 것입니다. 모든 열쇠 스펙으로, 이 인터페이스를 구현할 필요가 있습니다.
+
+</blockquote>
+
+<H3><a name="KeySpecSubs"><code>KeySpec</code> 서브 인터페이스</a> </H3>
+<blockquote>
+
+<code>Key</code> 인터페이스와 같이,<code>KeySpec</code> 인터페이스의 같은 세트가 있습니다.
+<p>
+
+<TABLE summary="layout">
+<TR>
+
+<TD valign="top">
+<UL>
+<LI><a href="../../../../api/javax/crypto/spec/SecretKeySpec.html">SecretKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/EncodedKeySpec.html">EncodedKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/PKCS8EncodedKeySpec.html">PKCS8EncodedKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/X509EncodedKeySpec.html">X509EncodedKeySpec</A> </li>
+<br>
+<LI><a href="../../../../api/javax/crypto/spec/DESKeySpec.html">DESKeySpec</A> </li>
+<LI><a href="../../../../api/javax/crypto/spec/DESedeKeySpec.html">DESedeKeySpec</A> </li>
+<LI><a href="../../../../api/javax/crypto/spec/PBEKeySpec.html">PBEKeySpec</A> </li>
+</UL>
+</TD>
+<TD valign="top">
+<UL>
+<LI><a href="../../../../api/javax/crypto/spec/DHPrivateKeySpec.html">DHPrivateKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/DSAPrivateKeySpec.html">DSAPrivateKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/ECPrivateKeySpec.html">ECPrivateKeySpec</A> </li>
+<LI><a href=     "../../../../api/java/security/spec/RSAMultiPrimePrivateCrtKeySpec.html">RSAMultiPrimePrivateCrtKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/RSAPrivateCrtKeySpec.html">RSAPrivateCrtKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/RSAPrivateKeySpec.html">RSAPrivateKeySpec</A> </li>
+</UL>
+</TD>
+<TD valign="top">
+<UL>
+<LI><a href="../../../../api/javax/crypto/spec/DHPublicKeySpec.html">DHPublicKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/DSAPublicKeySpec.html">DSAPublicKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/ECPublicKeySpec.html">ECPublicKeySpec</A> </li>
+<LI><a href="../../../../api/java/security/spec/RSAPublicKeySpec.html">RSAPublicKeySpec</A> </li>
+</UL>
+</TD>
+</TR>
+</TABLE>
+
+</blockquote>
+
+<H3><a name="EncodedKeySpec"><code>EncodedKeySpec</code> 클래스</a> </H3>
+
+<blockquote>
+
+이 abstract 클래스 (<a href="#KeySpec"><code>KeySpec</code></a>  인터페이스를 구현한다)는, encode 된 형식의 공개키 또는 비공개키를 나타냅니다. 그 <code>getEncoded</code> 메소드는, 다음의 encode 된 열쇠를 돌려줍니다.
+
+<blockquote>
+<pre>
+abstract byte[] getEncoded();
+</pre>
+</blockquote>
+
+이 클래스의 <code>getFormat</code> 메소드는, 다음의 encode 형식의 이름을 돌려줍니다.
+
+<blockquote>
+<pre>
+abstract String getFormat();
+</pre>
+</blockquote>
+
+<p>구체적인 구현 <code>PKCS8EncodedKeySpec</code> 및 <code>X509EncodedKeySpec</code> 에 대해서는, 다음의 마디를 참조해 주세요.
+
+
+<H4><a name="PKCS8EncodedKeySpec"><code>PKCS8EncodedKeySpec</code> 클래스</a> </H4>
+
+<blockquote>
+
+이 클래스는,<code>EncodedKeySpec</code> 의 서브 클래스에서, PKCS8 표준으로 지정된 형식에 따라, 비공개키의 DER encode를 표현합니다.
+
+이 클래스의 <code>getEncoded</code> 메소드는, PKCS8 표준에 따라 encode 된 열쇠의 바이트를 돌려줍니다. 이 클래스의 <code>getFormat</code> 메소드는, 캐릭터 라인 PKCS#8 를 돌려줍니다.
+
+</blockquote>
+
+<H4><a name="X509EncodedKeySpec"><code>X509EncodedKeySpec</code> 클래스</a> </H4>
+
+<blockquote>
+
+이 클래스는,<code>EncodedKeySpec</code> 의 서브 클래스에서, X. 509 표준으로 지정된 형식에 따라, 공개키의 DER encode를 표현합니다.
+
+이 클래스의 <code>getEncoded</code> 메소드는, X. 509 표준에 따라 encode 된 열쇠의 바이트를 돌려줍니다. 이 클래스의 <code>getFormat</code> 메소드는, 캐릭터 라인 X. 509 를 돌려줍니다.
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="GeneratorFactory">제네레이터 및 팩토리</a> </H2>
+<blockquote>
+
+Java 및 JCA API 를 처음으로 사용하는 사람은, 제네레이터와 팩토리의 구별이 되지 않는 경우가 있습니다.   
+
+<p>
+<center>
+<img src="../images/jca/GeneratorFactory.gif" alt="<제네레이터와 팩토리의 비교의 화상>">
+</center>
+
+<p>
+
+제네레이터는,<b>새로운 객체를 생성하는</b>경우에 사용됩니다. 제네레이터는, 알고리즘 의존 또는 알고리즘비의존으로 초기화할 수 있습니다. 예를 들어, Diffie-Hellman (DH) 열쇠 페어를 작성하기 위해서, 어플리케이션은 필요한 P 및 G 치를 지정할 수 있습니다. 또는, 제네레이터를 적절한 열쇠의 길이로 단순하게 초기화할 수 있습니다. 제네레이터는 적절한 P 및 G 치를 선택합니다. 어느 쪽의 경우도, 제네레이터는 파라미터에 근거해 새로운 열쇠를 생성합니다.
+
+<p>
+
+한편, 팩토리는,<b>기존의 객체형으로부터 다른 객체형에 데이터를 변환하는</b>경우에 사용됩니다. 예를 들어, 어플리케이션에 DH 비공개키의 사용 가능한 컴퍼넌트가 있는 경우가 있습니다. 어플리케이션은, 그것들을 <a href="#KeySpec"><code>KeySpec</code></a>  로서 패키지화할 수 있습니다만,<code>KeyAgreement</code> 객체를 사용할 수 있도록(듯이) <a href="#Key"><code>PrivateKey</code></a>  객체로 변환할 필요가 있습니다. 또는 역의 변환이 필요한 경우도 있습니다. 또는, 그것들에 증명서의 바이트 배열이 있지만,<code>CertificateFactory</code> 를 사용해 <code>X509Certificate</code> 객체로 변환할 필요가 있는 경우가 있습니다. 어플리케이션은, 변환을 실시하기 위해서(때문에) 팩토리 객체를 사용합니다.
+
+</blockquote>
+
+<H2><a name="KeyFactory"><code>KeyFactory</code> 클래스</a> </H2>
+
+<blockquote>
+
+<code>KeyFactory</code> 클래스는, 불투명한 암호화 <a href="#Key"><code>Key</code></a>  와<a href="#KeySpecs">열쇠 스펙</a>  (배후의 열쇠 데이터의 투명한 표현) 간의 변환을 실행하는 목적으로 설계된<a href="#Engine">엔진 클래스</a>입니다.
+
+<p>
+<center>
+<img src="../images/jca/KeyFactory.gif" alt="<KeyFactory 조작의 화상>">
+</center>
+
+<P> 열쇠 팩토리는, 쌍방향성이 있습니다. 즉, 이것에 의해, 주어진 열쇠 스펙 (열쇠의 데이터)으로부터 불투명한 열쇠 객체를 구축하는 일도, 열쇠 객체의 배후의 열쇠 데이터를 적절한 형식에서 취득할 수도 있습니다.
+
+<P> 동일한 열쇠에 대해서, 복수의 호환성이 있는 열쇠 스펙을 존재시킬 수도 있습니다. 예를 들어, DSA 공개키는, 컴퍼넌트 <code>y</code>,<code>p</code>,<code>q</code>, 및 <code>g</code> 에 의해 지정하는 일도 (<code>java.security.spec.DSAPublicKeySpec</code> 를 참조), X. 509 표준에 따라 DER encode를 사용해 지정할 수도 (<a href="#X509EncodedKeySpec"><code>X509EncodedKeySpec</code></a>  를 참조) 있습니다.
+
+<p>열쇠 팩토리는, 호환성이 있는 열쇠 스펙간의 변환에 사용할 수 있습니다. 호환성이 있는 열쇠 스펙간의 변환에서는, 열쇠의 구문 분석을 합니다. 예를 들어,<code>X509EncodedKeySpec</code> 를 <code>DSAPublicKeySpec</code> 로 변환하는 경우는, 기본적으로 encode 된 열쇠를 컴퍼넌트 단위로 해석 처리합니다. 예에 대해서는,<a href="#KeyFactoryEx">「열쇠 스펙 및 <code>KeyFactory</code> 를 사용한 서명의 생성과 검증」</a>의 최후를 참조해 주세요.
+
+
+<H3><code>KeyFactory</code> 객체의 작성</H3>
+
+<blockquote>
+
+<P>
+<code>KeyFactory</code> 객체는,<code>KeyFactory</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3>열쇠 스펙과 Key 객체간의 변환</H3>
+
+<blockquote>
+
+<p>공개키용의 열쇠 스펙이 있는 경우는,<code>generatePublic</code> 메소드를 사용해, 그 스펙으로부터 불투명한 <code>PublicKey</code> 객체를 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+PublicKey generatePublic(KeySpec keySpec)
+</pre>
+</blockquote>
+
+<p>같이 비공개건용의 열쇠 스펙이 있는 경우는,<code>generatePrivate</code> 메소드를 사용해, 그 스펙으로부터 불투명한 <code>PrivateKey</code> 객체를 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+PrivateKey generatePrivate(KeySpec keySpec)
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3>Key 객체와 열쇠 스펙간의 변환</H3>
+
+<blockquote>
+
+<p><code>Key</code> 객체가 있는 경우는,<code>getKeySpec</code> 메소드의 호출에 의해, 대응하는 열쇠 스펙을 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+KeySpec getKeySpec(Key key, Class keySpec)
+</pre>
+</blockquote>
+
+<code>keySpec</code> 는, 열쇠의 데이터가 돌려주어져야 할 스펙 클래스를 식별합니다. 예를 들어,<code>DSAPublicKeySpec.class</code> 는, 열쇠의 데이터가 <code>DSAPublicKeySpec</code> 클래스의 인스턴스에 돌려주어져야 하는 것인 것을 지시합니다.
+
+<p>
+자세한 것은,<a href="#KeyFactoryEx">예</a>를 참조해 주세요.
+
+</blockquote>
+
+</blockquote>
+
+<h2><a name="SecretKeyFactory">SecretKeyFactory 클래스</a> </h2>
+      <blockquote>
+
+<p>이 클래스는, 비밀열쇠의 팩토리를 나타냅니다. <a href="#KeyFactory"><code>KeyFactory</code></a>  과는 달리,<code>javax.crypto.SecretKeyFactory</code> 객체는 비밀 (대칭) 열쇠만을 처리해, 한편,<code>java.security.KeyFactory</code> 객체는 열쇠 페어의 공개키 및 비공개키 컴퍼넌트를 처리합니다.  </p>
+
+<p>
+<center>
+<img src="../images/jca/SecretKeyFactory.gif" alt="<SecretKeyFactory 조작의 화상>">
+</center>
+
+	<p>열쇠 팩토리는,<a href="#Key"><code>Key</code></a>  (<code>java.security.Key</code> 형의 불투명한 암호화열쇠)를<a href="#KeySpecs">열쇠 스펙</a>  (배후의 열쇠 데이터의 적절한 형식의 투명 표현)으로 변환하거나 그 역의 변환을 실시하기 위해서(때문에) 사용합니다.  </p>
+
+<p><code>java.security.Key</code> 형의 객체 (<code>java.security.PublicKey</code>,<code>java.security.PrivateKey</code>, 및 <code>javax.crypto.SecretKey</code> 는 그 서브 클래스)는, 그 구현 방법이 불명하기 때문에, 불투명한 열쇠 객체가 됩니다. 기반이 되는 구현은 프로바이더 의존이기 (위해)때문에, 소프트웨어 베이스에도 하드웨어 베이스에도 할 수 있습니다. 열쇠 팩토리를 사용하면(자), 프로바이더는 독자적인 암호화열쇠 구현을 제공할 수 있게 됩니다.  </p>
+
+<p>예를 들어, 공개치 <code>y</code>, 프라임 계수 <code>p</code>, 베이스 <code>g</code> 로 구성되는 Diffie Hellman 공개키의 열쇠 스펙을 보관 유지하고 있어, 같은 스펙을 다른 프로바이더의 Diffie-Hellman 열쇠 팩토리에 보내는 경우, 생성되는 <code>PublicKey</code> 객체는 대체로, 다른 기반 구현을 보관 유지하게 됩니다.  </p>
+
+	<p>프로바이더는, 비밀열쇠 팩토리가 지원하는 열쇠 스펙을 문서화할 필요가 있습니다. 예를 들어,<code>SunJCE</code> 프로바이더에 의해 제공되는 DES 열쇠의 <code>SecretKeyFactory</code> 는,<code>DESKeySpec</code> 를 DES 열쇠의 투명 표현으로서 지원합니다. 또, DES-EDE 열쇠의 <code>SecretKeyFactory</code> 는 <code>DESedeKeySpec</code> 를 DES-EDE 열쇠의 투명 표현으로서 PBE 의 <code>SecretKeyFactory</code> 는 <code>PBEKeySpec</code> 를 기반이 되는 패스워드의 투명 표현으로서 각각 지원합니다.  </p>
+
+	<p>다음의 예는,<code>SecretKeyFactory</code> 를 사용해 비밀열쇠 데이터를 <code>SecretKey</code> 객체로 변환하는 방법을 나타냅니다. 이것은, 이후의 <code>Cipher</code> 조작으로 사용할 수 있습니다.  </p>
+
+<pre>
+    // Note the following bytes are not realistic secret key data
+    // bytes but are simply supplied as an illustration of using data
+    // bytes (key material) you already have to build a DESKeySpec.
+    byte[] desKeyData = { (byte) 0x01, (byte) 0x02, (byte) 0x03, 
+    (byte) 0x04, (byte) 0x05, (byte) 0x06, (byte) 0x07, (byte) 0x08 };
+    DESKeySpec desKeySpec = new DESKeySpec(desKeyData);
+    SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+    SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
+</pre>
+
+<p>이 경우,<code>SecretKey</code> 의 기반 구현은,<code>KeyFactory</code> 의 프로바이더에 근거합니다.  </p>
+<p>다른 방법으로서 프로바이더에 의존하지 않고 , 같은 열쇠 데이터로부터 등가인 기능을 가지는 <code>SecretKey</code> 객체를 작성하는 일도 가능합니다. 그 경우,<code>javax.crypto.SecretKey</code> 인터페이스를 구현하는 <code>javax.crypto.spec.SecretKeySpec</code> 클래스를 사용합니다.  </p>
+
+<pre>
+    byte[] desKeyData = { (byte) 0x01, (byte) 0x02, ...};
+    SecretKeySpec secretKey = new SecretKeySpec(desKeyData, "DES");
+</pre>
+
+<H3><code>SecretKeyFactory</code> 객체의 작성</H3>
+
+<blockquote>
+
+<P>
+<code>SecretKeyFactory</code> 객체는,<code>SecretKeyFactory</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3>열쇠 스펙과 Secret Key 객체간의 변환</H3>
+
+<blockquote>
+
+<p>비밀열쇠용의 열쇠 스펙이 있는 경우는,<code>generateSecret</code> 메소드를 사용해, 그 스펙으로부터 불투명한 <code>SecretKey</code> 객체를 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+SecretKey generateSecret(KeySpec keySpec)
+</pre>
+</blockquote>
+
+</blockquote>
+
+<H3>Secret Key 객체와 열쇠 스펙간의 변환</H3>
+
+<blockquote>
+
+<p><code>Secret Key</code> 객체가 있는 경우는,<code>getKeySpec</code> 메소드의 호출에 의해, 대응하는 열쇠 스펙을 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+KeySpec getKeySpec(Key key, Class keySpec)
+</pre>
+</blockquote>
+
+<code>keySpec</code> 는, 열쇠의 데이터가 돌려주어져야 할 스펙 클래스를 식별합니다. 예를 들어,<code>DESKeySpec.class</code> 는, 열쇠의 데이터가 <code>DESKeySpec</code></a>  클래스의 인스턴스에 돌려주어질 필요가 있는 것을 지시합니다.
+
+</blockquote>
+</blockquote>
+
+<H2><a name="KeyPairGenerator"><code>KeyPairGenerator</code> 클래스</a> </H2>
+
+<blockquote>
+
+<P>
+<code>KeyPairGenerator</code> 클래스는<a href="#Engine">엔진 클래스</a>에서, 공개키와 비공개키의 페어의 생성에 사용합니다.
+
+<p>
+<center>
+<img src="../images/jca/KeyPairGenerator.gif" alt="<KeyPairGenerator 조작의 화상>">
+</center>
+
+<P>
+열쇠의 페어의 생성 방법에는, 알고리즘 독립형과 알고리즘 특정형의 2 개가 있습니다. 이 2 개(살)의 유일한 차이점은, 객체의 초기화에 있습니다.
+
+<P>
+이하의 메소드의 호출예는,<a href="#KPGEx">예의 </a>항을 참조해 주세요.
+
+<H3><code>KeyPairGenerator</code> 의 생성</H3>
+
+<blockquote>
+
+<P>
+모든 열쇠의 페어는, 우선 최초로 <code>KeyPairGenerator</code> 를 사용해 생성합니다. <code>KeyPairGenerator</code> 객체는,<code>KeyPairGenerator</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3><code>KeyPairGenerator</code> 의 초기화</H3>
+
+<blockquote>
+
+특정의 알고리즘용의 열쇠의 페어의 제네레이터는, 그 알고리즘으로 사용할 수 있는 공개키 또는 비공개키를 작성합니다. 또, 알고리즘 특정형의 파라미터가 생성된 각 열쇠에 관련짓습니다.
+
+<P>
+
+우선, 열쇠의 페어를 초기화하지 않으면, 열쇠의 페어는 열쇠를 생성할 수 없습니다. 대부분의 경우, 알고리즘 독립형의 초기화로 충분합니다. 다만, 그 외의 경우는, 알고리즘 특정형의 초기화를 사용할 수 있습니다.
+
+<H4>알고리즘 독립형의 초기화</H4>
+
+<P> 모든 열쇠 제네레이터는, 키 사이즈 및 난수의 발생원의 개념을 공유합니다. 키 사이즈는, 알고리즘 마다 해석이 다릅니다. 예를 들어, DSA 알고리즘의 경우, 키 사이즈는 계수(modulus)의 길이와 일치합니다. 특정의 알고리즘의 키 사이즈에 대해서는,<a href="../StandardNames.html">표준명</a>의 문서를 참조해 주세요.
+
+<p>보편적으로 공유되는 이것들 2 개의 인수의 형태를 취하는 <code>initialize</code> 메소드가 있습니다.
+
+<blockquote>
+<pre>
+void initialize(int keysize, SecureRandom random)
+</pre>
+</blockquote>
+
+또,<code>keysize</code> 인수만을 취해, 시스템이 제공하는 난수의 발생원을 사용하는 <code>initialize</code> 메소드도 있습니다.
+
+<blockquote>
+<pre>
+void initialize(int keysize)
+</pre>
+</blockquote>
+
+<P>
+위의 알고리즘 독립형 <code>initialize</code> 메소드를 호출할 때는, 그 외의 파라미터는 지정하지 않기 때문에, 각 열쇠에 관련지을 수 있는 알고리즘 특정형의 파라미터가 있는 경우는, 그 파라미터의 처리는, 프로바이더에 따라서 다릅니다.
+
+<p>알고리즘이 DSA 알고리즘으로, 계수(modulus)의 사이즈 (키 사이즈)가 512, 768, 또는 1024 의 경우는,<code>SUN</code> 프로바이더는 <code>p</code>,<code>q</code>, 및 <code>g</code> 파라미터용으로 사전에 계산한 값을 사용합니다. 계수(modulus)의 사이즈가 상기의 값의 1 개가 아닌 경우는,<code>SUN</code> 프로바이더는, 새로운 파라미터세트를 작성합니다. 이러한 3 개의 모듈러 여물 이즈 이외의, 사전에 계산된 파라미터 세트를 가지는 프로바이더가 존재할 가능성도 있습니다. 또, 사전에 계산된 파라미터가 없고, 항상 새로운 파라미터 세트를 작성하는 프로바이더가 존재할 가능성도 있습니다.
+
+
+<H4>알고리즘 특정형의 초기화</H4>
+
+<p>알고리즘 특정형 파라미터세트가 벌써 존재하는 상황에서는 (DSA 의 「커뮤니티 파라미터」 등),<a href="#AlgorithmParameterSpec"><code>AlgorithmParameterSpec</code></a>  인수를 취하는 <code>initialize</code> 메소드가 2 개 있습니다. 이 중의 한편은 <code>SecureRandom</code> 인수도 취합니다만, 한편에서는, 난수의 발생원은 시스템에 의해 제공됩니다.
+
+<blockquote>
+<pre>
+void initialize(AlgorithmParameterSpec params,
+                SecureRandom random)
+
+void initialize(AlgorithmParameterSpec params)
+</pre>
+</blockquote>
+
+자세한 것은<a href="#KPGEx">예의 </a>항을 참조해 주세요.
+
+</blockquote>
+
+
+<H3>열쇠의 페어의 생성</H3>
+
+<blockquote>
+
+<P>
+열쇠의 페어의 생성 순서는, 초기화 ( 및 알고리즘)에 관계없이, 항상 같습니다. 반드시 <code>KeyPairGenerator</code> 로부터 이하의 메소드를 호출합니다.
+
+<blockquote>
+<pre>
+KeyPair generateKeyPair()
+</pre>
+</blockquote>
+
+<code>generateKeyPair</code> 를 호출할 때마다, 다른 열쇠의 페어가 만들어집니다.
+
+</blockquote>
+
+</blockquote>
+
+<h2><a name="KeyGenerator">KeyGenerator 클래스</a> </h2>
+      <blockquote>
+	<p>열쇠 제네레이터는, 대칭 알고리즘용의 비밀열쇠를 생성합니다.  </p>
+
+<p>
+<center>
+<img src="../images/jca/KeyGenerator.gif" alt="<KeyGenerator 조작의 화상>">
+</center>
+
+	<h4><code>KeyGenerator</code> 의 작성</h4>
+	<blockquote>
+
+<code>KeyGenerator</code> 객체는,<code>KeyGenerator</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<h4>KeyGenerator 객체의 초기화</h4>
+        <blockquote>
+<p>특정의 대칭열쇠 알고리즘의 열쇠 제레네이타는, 그 알고리즘으로 사용 가능한 대칭열쇠를 작성합니다. 또, 생성된 열쇠에, 알고리즘에 특정의 파라미터 (존재하는 경우)를 관련짓습니다.  </p>
+<p>열쇠의 생성 방법에는, 알고리즘 독립형과 알고리즘 특정형의 2 개가 있습니다. 이 2 개(살)의 유일한 차이점은, 객체의 초기화에 있습니다.  </p>
+          <p> </p>
+          <ul>
+<li><b>알고리즘 독립형의 초기화</b>
+<p>모든 열쇠 제네레이터는, 「키 사이즈」 및 「난수의 발생원」의 개념을 공유합니다. 보편적으로 공유되는 이것들 2 개의 인수의 형태를 취하는 <code>init</code> 메소드가 존재합니다. 또,<code>keysize</code> 인수만을 취해, 시스템에 의해 제공되는 난수의 발생원을 사용하는 <code>init</code> 메소드나, 난수의 발생원만을 취하는 <code>init</code> 메소드도 존재합니다.  </p>
+
+<pre>    
+    public void init(SecureRandom random);
+    
+    public void init(int keysize);
+    
+    public void init(int keysize, SecureRandom random);
+</pre>
+<p>위의 알고리즘에 의존하지 않는 <code>init</code> 메소드를 호출할 때는, 그 외의 파라미터는 지정하지 않기 때문에, 생성된 열쇠에 관련지을 수 있는 알고리즘에 특정의 파라미터가 존재하는 경우, 그 파라미터의 처리는, 프로바이더에 따라서 다릅니다.  </p>
+              <p></p>
+            </li>
+<li><b>알고리즘 특정형의 초기화</b>
+<p>알고리즘에 특정의 파라미터세트가 벌써 존재하는 상황에서는,<code>AlgorithmParameterSpec</code> 인수를 취하는 <code>init</code> 메소드가 2 개 있습니다. 이 중의 한편은 <code>SecureRandom</code> 인수도 취합니다만, 한편에서는, 난수의 발생원은 시스템에 의해 제공됩니다.  </p>
+
+<pre>
+    public void init(AlgorithmParameterSpec params);
+    
+    public void init(AlgorithmParameterSpec params, SecureRandom random);
+</pre>
+            </li>
+          </ul>
+<p>클라이언트가 (<code>init</code> 메소드의 호출을 개입시켜) KeyGenerator 를 명시적으로 초기화하지 않는 경우, 각 프로바이더는 디폴트의 초기화를 제공 및 문서화할 필요가 있습니다.  </p>
+        </blockquote>
+<h4>열쇠의 작성</h4>
+<blockquote>다음의 메소드에 의해, 비밀열쇠가 생성됩니다.
+<pre>
+    public SecretKey generateKey();
+</pre>
+        </blockquote>
+      </blockquote>
+
+<h2><a name="KeyAgreement">KeyAgreement 클래스</a> </h2>
+      <blockquote>
+
+열쇠 협정이란, 복수의 파티가 비밀 정보를 교환하지 않아도 같은 암호화열쇠를 확립 가능한 프로토콜을 가리킵니다.
+
+<p>
+<center>
+<img src="../images/jca/KeyAgreement.gif" alt="<KeyAgreement 조작의 화상>">
+</center>
+
+<p>
+
+각 파티는, 비공개키에 의해 열쇠 협정 객체를 초기화해, 통신에 참가하는 각 파티의 공개키를 입력합니다. 대부분의 경우는 2 개의 파티만입니다만, Diffie-Hellman 등의 알고리즘에서는 3 개 이상의 파티의 참가가 가능합니다. 공개키가 모두 입력되면(자), 각 <code>KeyAgreement</code> 객체는 같은 열쇠를 생성 (합의)합니다.
+
+<p>KeyAgreement 클래스는, 열쇠 협정 프로토콜의 기능을 제공합니다. 공유의 비밀 작성에 관계하는 열쇠는,<code>KeyPairGenerator</code> 또는 <code>KeyGenerator</code> 의 몇개의 열쇠 제네레이터인가,<code>KeyFactory</code> 에 의해, 또는 열쇠 협정 프로토콜의 중간 국면의 결과로서 작성됩니다.  </p>
+
+<h4>KeyAgreement 객체의 작성</h4>
+        <blockquote>
+<p>열쇠 협정에 관계하는 각 파티는, KeyAgreement 객체를 작성할 필요가 있습니다. <code>KeyAgreement</code> 객체는,<code>KeyAgreement</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+        </blockquote>
+<h4>KeyAgreement 객체의 초기화</h4>
+        <blockquote>
+<p>비공개 정보를 사용해 KeyAgreement 객체를 초기화할 수 있습니다. Diffie-Hellman 의 경우, Diffie-Hellman 비공개키를 사용해 초기화합니다. 보완적인 초기화 정보에는, 난수의 발생원, 알고리즘 파라미터세트가 포함됩니다. 요구된 열쇠 협정 알고리즘으로, 알고리즘 파라미터를 지정할 필요가 있어, 또 KeyAgreement 객체의 초기화에 파라미터는 아니고 열쇠만이 제공되는 경우, 필수의 알고리즘 파라미터를 열쇠에 포함할 필요가 있습니다. 예를 들어, Diffie-Hellman 알고리즘은, 프라임 계수 <code>p</code> 및 베이스 제네레이터 <code>g</code> 를 파라미터로서 사용합니다.  </p>
+	  <p>KeyAgreement 객체를 초기화하는 경우, 다음의 몇개의 <code>init</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public void init(Key key);
+    
+    public void init(Key key, SecureRandom random);
+    
+    public void init(Key key, AlgorithmParameterSpec params);
+    
+    public void init(Key key, AlgorithmParameterSpec params,
+		     SecureRandom random);
+</pre>
+
+        </blockquote>
+<h4>KeyAgreement 국면의 실행</h4>
+        <blockquote>
+<p>각 협정 프로토콜은, 열쇠 협정에 관계하는 각 파티가 실행할 필요가 있는 다수의 국면으로 구성됩니다.  </p>
+
+<p>열쇠 협정의 다음의 국면을 실행하려면 ,<code>doPhase</code> 메소드를 호출합니다.  </p>
+
+<pre>
+    public Key doPhase(Key key, boolean lastPhase);
+</pre>
+<p><code>key</code> 파라미터에는, 그 국면으로 처리하는 열쇠가 포함됩니다. 대체로의 경우, 이것은, 열쇠 협정에 관계하는 다른 파티의 몇개의 공개키, 또는 전의 국면으로 생성된 중간열쇠입니다. <code>doPhase</code> 는, 이 열쇠 협정의 다른 파티에 송신할 필요가 있는 중간열쇠를 돌려주기 (위해)때문에, 계속되는 국면으로 그 열쇠를 처리할 수 있습니다.  </p>
+	  <p><code>lastPhase</code> 파라미터에는, 실행하는 국면이 열쇠 협정의 마지막 국면인가 어떤가를 지정합니다. 값 <code>FALSE</code> 는, 이것이 열쇠 협정의 마지막 국면이 아닌 (이 후에 국면이 계속된다) 것을 나타냅니다. 값 <code>TRUE</code> 는, 이것이 열쇠 협정의 마지막 국면이며, 열쇠 협정이 완료하는 (다음에 <code>generateSecret</code> 이 불려 간다) 일을 나타냅니다.  </p>
+<p><a href="#AppD">2 개의 파티간의 Diffie-Hellman</a>  의 예에서는,<code>lastPhase</code> 를 <code>TRUE</code> 로 설정해 <code>doPhase</code> 를 호출합니다. Diffie-Hellman 로 3 개의 파티가 존재하는 경우,<code>doPhase</code> 를 2 번 호출합니다. 처음은 <code>lastPhase</code> 를 <code>FALSE</code> 로 설정해, 2 번째에는 <code>lastPhase</code> 를 <code>TRUE</code> 로 설정합니다.  </p>
+        </blockquote>
+<h4>공유되는 비밀의 생성</h4>
+        <blockquote>
+<p>각 파티가 모든 필수열쇠 협정 국면을 실행한 후에,<code>generateSecret</code> 메소드의 어느쪽이든을 호출해 공유되는 비밀을 계산할 수 있습니다.  </p>
+
+<pre>
+    public byte[] generateSecret();
+    
+    public int generateSecret(byte[] sharedSecret, int offset);
+    
+    public SecretKey generateSecret(String algorithm);
+</pre>
+
+        </blockquote>
+      </blockquote>
+
+<H2><a name="KeyManagement">열쇠 관리</a> </H2>
+
+<blockquote>
+
+「키스토어」라고 불리는 데이타베이스는, 열쇠 및 증명서의 리포지터리(repository)를 관리하기 위해서 사용할 수 있습니다. 「증명서」는, 어느 엔티티로부터의 디지털에 서명된 문장으로, 다른 있는 엔티티의 공개키에 특정의 값이 포함되어 있는 것을 나타냅니다.
+
+<H3><a name="KeystoreLocation">키스토어의 장소</a> </H3>
+
+      <blockquote>
+
+	<p>유자키스토어는, 디폴트에서는 사용자의 홈 디렉토리의 <code>. keystore</code> 라는 이름의 파일에 포함됩니다. 사용자의 홈 디렉토리는, &quot;user.home&quot; 시스템 프로퍼티에 의해 정해집니다. Solaris 시스템의 경우, &quot;user.home&quot; 가 디폴트로 사용자의 홈 디렉토리가 되어 있습니다. Win32 시스템의 경우, 사용자명이 「uName」 때, user.home 의 디폴트는 다음과 같이 설정됩니다.
+	<blockquote>
+	  <ul>
+	      <li><tt>C:\Winnt\Profiles\uName</tt> - 다중 사용자 Windows NT 시스템의 경우
+	      <li><tt>C:\Windows\Profiles\uName</tt> - 다중 사용자 Windows 95/98/2000 시스템의 경우
+	      <li><tt>C:\Windows</tt> - 단일 사용자 Windows 95/98/2000 시스템의 경우
+	  </ul>
+	</blockquote>
+	키스토어파일은 필요한 장소에 배치할 수 있습니다. 환경에 따라서는, 복수의 키스토어가 존재하는 것에 의미가 있는 경우가 있습니다. 예를 들어,<a 	href="../jsse/JSSERefGuide.html">JSSE (SSL/TLS)</a>  에서는, 1 개의 키스토어가 사용자의 비공개키를 보관 유지해, 다른 키스토어가 신뢰 관계를 확립하기 위해서 사용되는 증명서를 보관 유지하는 경우가 있습니다.
+
+<p>사용자의 키스토어 이외에, Sun JDK 는, 다양한 증명서 발행국 (CA)으로부터의 신뢰할 수 있는 증명서를 포함하기 위해서 사용되는 시스템 전체의 키스토어도 보관 유지합니다. 이러한 CA 증명서는, 신뢰성의 판정을 실시하는 경우에 사용할 수 있습니다. 예를 들어, SSL/TLS 로 <code>SunJSSE</code> 프로바이더가 원격 피어로부터 증명서가 제시되었을 경우, 디폴트의 트러스트 매니저는,
+
+    <pre>
+    &lt;java-home&gt;/lib/ext/cacerts           [Unix], 또는
+    &lt;java-home&gt;\lib\ext\cacerts           [Windows]
+    </pre>
+파일에 문의해, 접속을 신뢰할 수 있을지 어떨지를 판단합니다. 시스템 전체의 <code>cacerts</code> 키스토어를 사용하는 대신에, 어플리케이션은 독자적인 키스토어를 설정해 사용하는지, 전술의 유자키스토어를 사용할 수 있습니다.
+
+    </blockquote>
+
+<H3><a name=KeystoreImplementation>키스토어의 구현</a> </H3>
+
+<blockquote>
+
+<a href="#KeyStore"><code>키스토어</code></a> 클래스는, 키스토어내의 정보에의 액세스 및 정보의 변경을 행하기 위한, 명확하게 정의된 인터페이스를 제공합니다. 키스토어의 고정 구현으로서는, 각각이 특정의 「타입」의 키스토어를 대상으로 하는 복수가 다른 구현이 존재 가능합니다.
+
+<p>현재,<code>키스토어</code>를 이용하는 커멘드행 툴에는,<b><code>keytool</code></b> 와 <b><code>jarsigner</code></b> 의 2 개가 있습니다. 또, GUI 베이스의 <b><code>policytool</code></b> 라고 하는 툴도 있습니다. 다양한 소스의 코드에 대해서 (system resource에의) 액세스권을 지정하는 정책 파일을 처리하는 경우, 이 툴은 <code>Policy</code> 의 레퍼런스 구현에 의해도 사용됩니다. KeyStore</code> 는 public 로서 사용 가능해서, JDK 사용자는 <code>KeyStore</code> 를 사용한 것 외의 시큐리티 어플리케이션도 작성할 수 있습니다.
+<p>어플리케이션에서는,<code>KeyStore</code> 클래스의 <code>getInstance</code> 팩토리 메소드를 사용하는 것으로, 다양한 프로바이더로부터 다른 「타입」의 키스토어의 구현을 선택할 수 있습니다. 키스토어의 타입은, 키스토어 정보의 포함 형식과 데이터 형식을 정의함과 함께, 키스토어내의 비공개키와 키스토어 자체의 무결성을 보호하기 위해서 사용되는 알고리즘을 정의합니다. 다른 타입의 키스토어의 구현에는, 호환성은 없습니다.
+
+<a name="JksKeystore">
+
+<p>Sun 가 제공하는 <code>jks</code> 라고 하는 편입의 디폴트의 키스토어 구현 타입이 있습니다. 이것은, 독자적인 키스토어타이프 (형식)를 이용해서 , 키스토어를 파일로서 구현하고 있습니다. 이 구현에서는, 개개의 비공개키는 독자적인 개별의 패스워드에 의해 보호되어 키스토어 전체의 무결성도 (비공개키와는 다른) 패스워드에 의해 보호됩니다. 디폴트는, 시큐리티 프로퍼티 파일내의 다음의 행에 의해 지정되고 있습니다.
+
+<pre>
+    keystore.type=jks
+</pre>
+
+<p>
+툴 및 다른 어플리케이션으로 다른 디폴트의 키스토어 구현을 사용하려면 , 이 행을 변경해 디폴트의 타입을 지정합니다. jceks 라고 하는 타입의 키스토어 구현을 제공하는 프로바이더 패키지가 있는 경우는, 이 행을 다음과 같이 변경합니다.
+
+<pre>
+    keystore.type=jceks
+</pre>
+
+<code>keytool</code> 등의 일부의 어플리케이션에서도,<code>-storetype</code> 커멘드행 파라미터에 의해, 디폴트의 키스토어타이프를 오버라이드(override) 할 수 있습니다.
+
+<blockquote>
+<hr>
+<b>주:</B>키스토어의 타입의 지정에서는, 대문자와 소문자는 구별되지 않습니다. 예를 들어, JKS 와 jks 는 같은 것으로서 다루어집니다.
+<hr>
+</blockquote>
+
+그 밖에 2 개의 타입의 키스토어가, Sun JDK 구현에 부속되어 있습니다.
+
+<ol>
+<li>
+<a name="JceKeystore"><b>jceks</b></a> 
+
+(은)는, jks 에 대한 독자적인 대체 키스토어 형식이며, 트리플 DES 에 의한 패스워드 베이스의 암호화 형식의, 큰폭으로 강력한 암호화를 사용합니다.
+
+<p>
+
+Sun 의 jceks 구현은, jks 키스토어파일을 해석해 jceks 형식으로 변환할 수 있습니다. 키스토어내의 비공개키 엔트리의 패스워드를 변경해, 키스토어타이프로서 <code>"-storetype jceks"</code> 를 지정하는 것에 의해, jks 타입의 키스토어를 jceks 타입의 키스토어에 업그레이드 할 수 있습니다. 제공된다 (로부터 강력한 암호화에 의한 열쇠 보호를, 데포르트키스토어내의 「signkey」라고 하는 이름의 비공개키에 적용하는 경우는, 다음의 커멘드를 입력합니다. 이 커멘드에 의해, 구패스워드 및 신규 패스워드의 지정이 요구됩니다.  </p>
+
+<blockquote>
+    <pre>
+    keytool -keypasswd -alias signkey -storetype jceks</pre>
+</blockquote>
+
+<code>keytool</code> 와 키스토어, 및 그 관리 방법의 자세한 것은,<a href="../../../tools/index.html#security">「시큐리티 툴」</a>을 참조해 주세요.  <p></p>
+</li>
+
+<li>
+<b>pkcs12</b> 가 하나 더의 옵션입니다. 이것은, RSA <a href="http://www.rsasecurity.com/rsalabs/pkcs">PKCS12 Personal Information Exchange Syntax Standard</a>  에 근거하는 크로스프랏트포무키스토어입니다. 이 규격은, 사용자의 비공개키, 증명서, 그 외의 비밀을 포함 및 전송 하는 것을 주된 목적으로 하고 있습니다. JDK 6 에서는, 신뢰할 수 있는 증명서를 pkcs12 에 포함하는 규격은 아직 확립되어 있지 않기 때문에, jks 또는 jceks 를 신뢰할 수 있는 증명서에 사용할 필요가 있습니다.
+</li>
+</ol>
+
+<p>키스토어의 구현은, 프로바이더 베이스입니다. 독자적인 키스토어 구현을 기술하는 것에 관심이 있는 개발자는,<a href="HowToImplAProvider.html">「Java 암호화 아키텍쳐(architecture)용 프로바이더의 구현 방법」</a>으로 이 토픽의 상세를 참조해 주세요.
+
+</blockquote>
+
+<H3><a name="KeyStore"><code>키스토어</code>클래스</a> </H3>
+
+<blockquote>
+
+<code>키스토어</code>클래스는, 키스토어내의 정보에의 액세스 및 정보의 변경을 행하기 위한 명확하게 정의된 인터페이스를 제공하는<a href="#Engine">엔진 클래스</a>입니다.
+
+<p>
+<center>
+<img src="../images/jca/KeyStore.gif" alt="<KeyStore 조작의 화상>">
+</center>
+
+<p>키스토어크라스는, 메모리내의 열쇠 및 증명서의 컬렉션을 나타내서 , 다음의 2 종류의 엔트리를 관리합니다.
+
+<blockquote>
+<dl>
+
+<dt><b>열쇠 엔트리</b></dt>
+<dd>
+<p>이 타입의 키스토어엔트리에는, 매우 중요한 암호화열쇠의 정보가 보관 유지됩니다. 정보는, 보호된 형식에서 포함되어 권한이 없는 액세스를 막습니다. 일반적으로, 이 종류의 엔트리로 포함되는 열쇠는 비공개키로, 대응하는 공개키를 증명하는 증명서 체인이 수반합니다.
+
+<p>비공개키 및 증명서 체인은, 디지털 서명을 사용한 자기 인증용으로 특정의 엔티티가 사용합니다. 예를 들어, 소프트웨어 배포 단체는, 릴리스 또는 허가하는 소프트웨어의 일부로서 JAR 파일에 디지털 서명을 붙입니다. <p>
+
+<dt><b>신뢰할 수 있는 증명서 엔트리</b></dt>
+<dd>
+<p>이 종류의 엔트리에는, 다른 조직에 속하는 단일의 공개키가 포함되어 「신뢰할 수 있는 증명서」라고 불립니다. 이것은, 키스토어의 소유자가, 증명서내의 공개키가 실제로 증명서의 「주제」(소유자)에 의해 식별된 아이덴티티에 속하는 것을 신뢰하기 (위해)때문에입니다.
+
+<p>이 종류의 엔트리는, 다른 조직의 인증에 사용할 수 있습니다.
+
+</dl>
+</blockquote>
+
+키스토어내의 각 엔트리는, 「별명」캐릭터 라인에 의해 식별됩니다. 비공개키와 거기에 관련지을 수 있었던 증명서 체인의 경우는, 이러한 캐릭터 라인은, 엔티티 자체가 인증한다고 하는 것처럼, 방법별로 구별됩니다. 예를 들어, 엔티티가 다른 증명서 발행국을 사용하거나 다른 공개키 알고리즘을 사용하거나 해, 엔티티 자체를 인증하는 일도 가능합니다.
+
+<p>키스토어가 지속성이 있을지 어떨지, 및 지속성이 있는 경우에 사용되는 기구는, 여기에서는 지정되지 않습니다. 이 규칙에 의해, 중요한 (비밀 또는 비공개) 열쇠를 보호하기 위한 다양한 기술을 사용할 수 있습니다. 스마트 카드 또는 그 외의 통합 암호화 엔진 (SafeKeyper)을 사용하는 일도 1 개의 방법입니다. 또, 파일등의 보다 단순한 기구를 다양한 형식에서 사용할 수도 있습니다.
+
+<p>주요한<code>키스토어</code>메소드를 이하로 설명합니다.
+
+
+<H3><code>키스토어</code>객체의 작성</H3>
+
+<blockquote>
+
+<P>
+
+<code>KeyStore</code> 객체는,<code>KeyStore</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+
+<H3>특정 키스토어의 메모리에의 로드</H3>
+
+<blockquote>
+
+<code>키스토어</code>객체를 사용하기 전에,<code>load</code> 메소드에 의해 메모리내에 실제의 키스토어데이타를 로드할 필요가 있습니다.
+
+<blockquote>
+<pre>
+final void load(InputStream stream, char[] password)
+</pre>
+</blockquote>
+
+옵션의 패스워드를 사용해, 키스토어데이타의 무결성을 체크합니다. 패스워드가 제공되지 않는 경우는, 무결성의 체크는 행해지지 않습니다.
+
+<p>빈 상태(empty)의 키스토어를 작성하려면 ,<code>InputStream</code> 인수로서 <code>null</code> 를 <code>load</code> 메소드에 건네줍니다.
+
+</blockquote>
+
+
+<H3>키스토어의 별명 일람의 취득</H3>
+
+<blockquote>
+
+<p>키스토어엔트리에는, 모두 일의의 「별명」 (aliases)로부터 액세스 합니다. <code>aliases</code> 메소드는, 키스토어내의 별명의 열거를 돌려줍니다.
+
+<blockquote>
+<pre>
+final Enumeration aliases()
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3>키스토어엔트리의 종류의 결정</H3>
+
+<blockquote>
+
+<a href="#KeyStore">「키스토어크라스」</a>로 설명한 것처럼, 키스토어의 엔트리에는,2 종류 있습니다.
+
+<p>다음의 메소드는, 주어진 별명에 의해 지정된 엔트리가, 각각 열쇠 또는 증명서인가, 신뢰할 수 있는 증명서 엔트리인 것을 결정합니다.
+
+<blockquote>
+<pre>
+final boolean isKeyEntry(String alias)
+final boolean isCertificateEntry(String alias)
+</pre>
+</blockquote>
+</blockquote>
+
+
+<H3>키스토어엔트리의 추가, 설정, 및 삭제</H3>
+
+<blockquote>
+
+<code>setCertificateEntry</code> 메소드는, 증명서가 지정된 별명에 할당합니다.
+
+<blockquote>
+<pre>
+final void setCertificateEntry(String alias, Certificate cert)
+</pre>
+</blockquote>
+
+<code>alias</code> 가 존재하지 않는 경우는, 그 베츠묘가 도착한 신뢰할 수 있는 증명서의 엔트리가 작성됩니다. <code>alias</code> 가 존재해, 신뢰할 수 있는 증명서의 엔트리가 식별되었을 경우는, 거기에 관련지을 수 있었던 증명서를 <code>cert</code> 에 의해 옮겨놓을 수 있습니다.
+
+<p><code>setKeyEntry</code> 메소드는,<code>alias</code> 가 아직 존재하지 않는 경우에, 열쇠의 엔트리의 추가 또는 설정을 실시합니다.
+
+<blockquote>
+<pre>
+final void setKeyEntry(String alias,
+                       Key key,
+                       char[] password,
+                       Certificate[] chain)
+
+final void setKeyEntry(String alias,
+                       byte[] key,
+                       Certificate[] chain)
+</pre>
+</blockquote>
+
+바이트 배열로서 <code>key</code> 를 취하는 메소드에서는, 이 인수는, 보호된 형식의 열쇠의 바이트입니다. 예를 들어,<code>SUN</code> 프로바이더에 의해 제공되는 키스토어의 구현에서는,<code>key</code> 바이트 배열은, PKCS8 표준의 정의에 따라 <code>EncryptedPrivateKeyInfo</code> 로서 encode 된, 보호된 비공개키를 포함합니다. 이제(벌써) 한편의 메소드의 <code>password</code> 는, 열쇠의 보호에 사용하는 패스워드입니다.
+
+<p><code>deleteEntry</code> 메소드는, 엔트리를 삭제합니다.
+
+<blockquote>
+<pre>
+final void deleteEntry(String alias)
+</pre>
+</blockquote>
+</blockquote>
+
+
+<H3>키스토어로부터의 정보의 취득</H3>
+
+<blockquote>
+
+<code>getKey</code> 메소드는, 주어진 별명에 관련지을 수 있었던 열쇠를 돌려줍니다. 열쇠는, 주어진 패스워드를 사용해 복원됩니다.
+
+
+<blockquote>
+<pre>
+final Key getKey(String alias, char[] password)
+</pre>
+</blockquote>
+
+다음의 메소드는, 주어진 별명에 관련지을 수 있었던 증명서, 또는 증명서 체인을 각각 돌려줍니다.
+
+<blockquote>
+<pre>
+final Certificate getCertificate(String alias)
+final Certificate[] getCertificateChain(String alias)
+</pre>
+</blockquote>
+
+다음의 문장을 사용해, 주어진 증명서와 일치한 최초의 엔트리의 이름 (<code>별명</code>)을 결정할 수 있습니다.
+
+<blockquote>
+<pre>
+final String getCertificateAlias(Certificate cert)
+</pre>
+</blockquote>
+</blockquote>
+
+
+
+<H3>키스토어의 보존</H3>
+
+<blockquote>
+
+메모리내의 키스토어를,<code>store</code> 메소드를 사용해 보존할 수 있습니다.
+
+<blockquote>
+<pre>
+final void store(OutputStream stream, char[] password)
+</pre>
+</blockquote>
+
+패스워드는, 키스토어데이타의 통합 체크 섬의 계산에 사용됩니다. 통합 체크 섬은, 키스토어데이타의 후에 추가됩니다.
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="AlgSpec">알고리즘 파라미터의 클래스</a> </H2>
+
+<blockquote>
+
+<code>Key</code> 및 <code>Keyspec</code> 와 같게, 알고리즘의 초기화 파라미터는 <code>AlgorithmParameter</code> 또는 <code>AlgorithmParameterSpec</code> 에 의해 나타내집니다. 사용 상황에 따라, 알고리즘은 파라미터를 직접 사용할 수 있습니다. 또는, 전송 또는 포함을 위해서(때문에) 파라미터를 이식성의 높은 형식으로 변환할 필요가 있는 경우가 있습니다.
+
+<p><code>AlgorithmParameterSpec</code> 에 의한 파라미터세트의 「투명한」표현이란, 세트의 각 파라미터의 값에 개별적으로 액세스 할 수 있는 것을 의미합니다. 이러한 값에는, 대응하는 스펙 클래스에 정의된 <code>get</code> 메소드의 1 개를 사용해 액세스 할 수 있습니다 (<code>DSAParameterSpec</code> 에서는,<code>getP</code>,<code>getQ</code>, 및 <code>getG</code> 메소드를 정의해, 각각 <code>p</code>,<code>q</code>, 및 <code>g</code> 에 액세스 하는 등).
+
+<p>이것에 대해서,<a href="#AlgorithmParameters"><code>AlgorithmParameters</code></a>  클래스는 「불투명한」표현을 제공합니다. 「불투명한」표현에서는, 파라미터 필드에 직접 액세스 할 수 없습니다. 파라미터 세트에 관련지을 수 있었던 알고리즘명의 취득 (<code>getAlgorithm</code> 에 의한다), 및 그 파라미터 세트용이 있는 종의 encode의 취득 (<code>getEncoded</code> 에 의한다) 밖에 할 수 없습니다.
+
+<H3><a name="AlgorithmParameterSpec"><code>AlgorithmParameterSpec</code> 인터페이스</a> </H3>
+<blockquote>
+
+<code>AlgorithmParameterSpec</code> 는, 암호화 파라미터의 투명한 스펙에의 인터페이스입니다. 이 인터페이스에는, 메소드 또는 정수가 포함되어 있지 않습니다. 이 인터페이스의 유일한 목적은, 모든 파라미터의 스펙을 그룹화 하는 것 ( 및 그러한 파라미터에 안전한 형태를 제공하는 것)입니다. 모든 파라미터의 스펙으로, 이 인터페이스를 구현할 필요가 있습니다.
+
+<p><code>java.security.spec</code> 및 <code>javax.crypto.spec</code> 패키지에 포함되는 알고리즘 파라미터 스펙의 인터페이스 및 클래스에 대해서는, JDK javadoc 로 설명되고 있습니다.
+
+<p>
+<table summary="layout">
+<tr>
+<td valign="top">
+<ul>
+<li><a href="../../../../api/javax/crypto/spec/DHParameterSpec.html">DHParameterSpec</a> </li>
+<li><a href="../../../../api/javax/crypto/spec/DHGenParameterSpec.html">DHGenParameterSpec</a> </li>
+<li><a href="../../../../api/java/security/spec/DSAParameterSpec.html">DSAParameterSpec</a> </li>
+<li><a href="../../../../api/java/security/spec/ECGenParameterSpec.html">ECGenParameterSpec</a> </li>
+<li><a href="../../../../api/java/security/spec/ECParameterSpec.html">ECParameterSpec</a> </li>
+</ul>
+</td>
+<td valign="top">
+<ul>
+<li><a href="../../../../api/javax/crypto/spec/IvParameterSpec.html">IvParameterSpec</a> </li>
+<li><a href="../../../../api/java/security/spec/MGF1ParameterSpec.html">MGF1ParameterSpec</a> </li>
+<li><a href="../../../../api/javax/crypto/spec/OAEPParameterSpec.html">OAEPParameterSpec</a> </li>
+<li><a href="../../../../api/javax/crypto/spec/PBEParameterSpec.html">PBEParameterSpec</a> </li>
+</ul>
+</td>
+<td valign="top">
+<ul>
+<li><a href="../../../../api/java/security/spec/PSSParameterSpec.html">PSSParameterSpec</a> </li>
+<li><a href="../../../../api/javax/crypto/spec/RC2ParameterSpec.html">RC2ParameterSpec</a> </li>
+<li><a href="../../../../api/javax/crypto/spec/RC5ParameterSpec.html">RC5ParameterSpec</a> </li>
+<li><a href="../../../../api/java/security/spec/RSAKeyGenParameterSpec.html">RSAKeyGenParameterSpec</a> </li>
+</ul>
+</td>
+</tr>
+</table>
+
+<p>
+다음의 알고리즘 파라미터 스펙은,<a href="http://www.jcp.org/en/jsr/detail?id=105">JSR 105</a>  의 일부로서 특히 디지털 서명에 사용됩니다.
+
+<p>
+<table summary="layout">
+<tr>
+<td valign="top">
+<ul>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/C14NMethodParameterSpec.html">C14NMethodParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/DigestMethodParameterSpec.html">DigestMethodParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/SignatureMethodParameterSpec.html">SignatureMethodParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/TransformParameterSpec.html">TransformParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/ExcC14NParameterSpec.html">ExcC14NParameterSpec</a> </li>
+</ul>
+</td>
+<td valign="top">
+<ul>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/HMACParameterSpec.html">HMACParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/XPathFilter2ParameterSpec.html">XPathFilter2ParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/XPathFilterParameterSpec.html">XPathFilterParameterSpec</a> </li>
+<li><a href= "../../../../api/javax/xml/crypto/dsig/spec/XSLTTransformParameterSpec.html">XSLTTransformParameterSpec</a> </li>
+</ul>
+</td>
+</tr>
+</table>
+
+</blockquote>
+
+<H3><a name="AlgorithmParameters"><code>AlgorithmParameters</code> 클래스</a> </H3>
+
+<blockquote>
+
+<code>AlgorithmParameters</code> 클래스는, 암호화 파라미터의 불투명한 표현을 제공하는<a href="#Engine">엔진 클래스</a>입니다. 특정의 <code>AlgorithmParameterSpec</code> 객체를 사용하는지, 또는 인식되는 서식에서 파라미터를 encode 하는 것에 의해,<code>AlgorithmParameters</code> 클래스를 초기화할 수 있습니다. 결과의 스펙을 <code>getParameterSpec</code> 메소드로 취득할 수 있습니다 (다음의 항을 참조).
+
+<H3><code>AlgorithmParameters</code> 객체의 작성</H3>
+
+<blockquote>
+
+<P>
+<code>AlgorithmParameters</code> 객체는,<code>AlgorithmParameters</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3><code>AlgorithmParameters</code> 객체의 초기화</H3>
+
+<blockquote>
+
+<p><code>AlgorithmParameters</code> 객체의 인스턴스가 생성되면(자), 적절한 파라미터의 스펙 또는 파라미터의 encode를 사용해,<code>init</code> 에의 호출에 의한 초기화를 실시할 필요가 있습니다.
+
+<blockquote>
+<pre>
+void init(AlgorithmParameterSpec paramSpec)
+void init(byte[] params)
+void init(byte[] params, String format)
+</pre>
+</blockquote>
+
+이러한 <code>init</code> 메소드로, <code>params</code> 는, encode 된 파라미터를 포함한 배열로,<code>format</code> 는, 복호화 형식의 이름입니다. <code>params</code> 인수를 지정해,<code>format</code> 인수를 지정하지 않는 <code>init</code> 메소드에서는, 파라미터의 primary 복호화 형식이 사용됩니다. 파라미터의 ASN. 1 스펙이 존재하는 경우는, primary 복호화 형식은, ASN. 1 입니다.
+
+<blockquote>
+<hr>
+<B>주:</B> <code>AlgorithmParameters</code> 객체는, 1 회만 초기화할 수 있습니다. 재사용은 할 수 없습니다.
+<hr>
+</blockquote>
+
+</blockquote>
+
+<H3>encode 된 파라미터의 취득</H3>
+
+<blockquote>
+
+<p><code>AlgorithmParameters</code> 객체로 표현되는 파라미터의 바이트 encode는,<code>getEncoded</code> 에의 호출에 의해 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+byte[] getEncoded()
+</pre>
+</blockquote>
+
+이 메소드는, 파라미터를 primary encode 형식에서 돌려줍니다. 이런 종류의 파라미터의 ASN. 1 스펙이 존재하는 경우는, primary 복호화 형식은, ASN. 1 입니다.
+
+<p>특정의 형식에서 파라미터가 돌려주어지도록(듯이) 하려면 , 다음과 같이 기술합니다.
+<blockquote>
+<pre>
+byte[] getEncoded(String format)
+</pre>
+</blockquote>
+
+<code>format</code> 가 null 의 경우는, 다른 <code>getEncoded</code> 메소드와 같게, primary 복호화 형식이 사용됩니다.
+
+<blockquote>
+<hr>
+<B>주:</B> <code>SUN</code> 프로바이더에 의해 제공되는 디폴트의 <code>AlgorithmParameters</code> 의 구현에서는,<code>format</code> 인수는, 현재로서는 무시됩니다.
+<hr>
+</blockquote>
+
+
+</blockquote>
+
+<H3><code>AlgorithmParameters</code> 객체로부터 투명한 스펙에의 변환</H3>
+
+<blockquote>
+
+<p>알고리즘 파라미터의 투명한 파라미터의 스펙은,<code>getParameterSpec</code> 에의 호출에 의해,<code>AlgorithmParameters</code> 객체로부터 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+AlgorithmParameterSpec getParameterSpec(Class paramSpec)
+</pre>
+</blockquote>
+
+<code>paramSpec</code> 는, 파라미터가 돌려주어져야 할 스펙 클래스를 식별합니다. 예를 들어, 스펙 클래스 <code>DSAPublicKeySpec.class</code> 가 식별되었을 경우, 파라미터가 <code>DSAParameterSpec</code> 클래스의 인스턴스에 돌려주어져야 하는 것인 것을 지시합니다. 이 클래스는,<code>java.security.spec</code> 패키지에 포함됩니다.
+
+</blockquote>
+
+</blockquote>
+
+<H3><a name="AlgorithmParameterGenerator"><code>AlgorithmParameterGenerator</code> 클래스</a> </H3>
+
+<blockquote>
+
+<code>AlgorithmParameterGenerator</code> 클래스는, 특정의 알고리즘에 적절한<b>새로운</b>파라미터세트의 생성에 사용되는<a href="#Engine">엔진 클래스</a>입니다. 알고리즘은,<code>AlgorithmParameterGenerator</code> 의 인스턴스의 작성시로 지정됩니다. 이 객체는, 기존의 알고리즘 파라미터세트가 없고, 제로로부터 생성하는 경우에 사용됩니다.
+
+<H3><code>AlgorithmParameterGenerator</code> 객체의 작성</H3>
+
+<blockquote>
+
+<P>
+
+<code>AlgorithmParameterGenerator</code> 객체는,<code>AlgorithmParameterGenerator</code> <a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+<H3><code>AlgorithmParameterGenerator</code> 객체의 초기화</H3>
+
+<blockquote>
+
+<P><code>AlgorithmParameterGenerator</code> 객체는, 알고리즘 독립형, 또는 알고리즘 특정형의 2 종류의 방법으로 초기화할 수 있습니다.
+
+<P>알고리즘 독립형의 방법에서는, 모든 파라미터 제네레이터가 「사이즈」 및 난수의 발생원이라고 하는 개념을 공유한다고 하는 특성을 이용합니다. 사이즈의 단위는, 모두 알고리즘 파라미터로 보편적으로 공통되고 있습니다만, 그 해석은 알고리즘에 의해 다릅니다. 예를 들어, DSA 알고리즘의 파라미터의 경우, 「사이즈」는 프라임계수(modulus)의 비트수의 사이즈에 일치합니다. 특정의 알고리즘의 사이즈에 대해서는,<a href="../StandardNames.html">표준명</a>의 문서를 참조해 주세요. 이 방법을 사용하면(자), 알고리즘 특정형의 파라미터의 생성치가 (있는 경우는), 디폴트 기준치가 됩니다.
+
+보편적으로 공유되는 이것들 2 개의 인수의 형태를 취하는 <code>init</code> 메소드가 1 개 있습니다.
+
+<blockquote>
+<pre>
+void init(int size, SecureRandom random);
+</pre>
+</blockquote>
+
+또,<code>size</code> 인수만을 취해, 시스템이 제공하는 난수의 발생원을 사용하는 <code>init</code> 메소드도 있습니다.
+
+<blockquote>
+<pre>
+void init(int size)
+</pre>
+</blockquote>
+
+<P>3 번째의 방법에서는, 파라미터 제네레이터 객체의 초기화에 알고리즘 특정형의 시멘틱스를 사용합니다. 알고리즘 특정형의 시멘틱스는,<code>AlgorithmParameterSpec</code> 객체내에 제공되는 알고리즘 특정형의 파라미터 생성치세트에 의해 나타내집니다.
+
+<blockquote>
+<pre>
+void init(AlgorithmParameterSpec genParamSpec,
+                          SecureRandom random)
+
+void init(AlgorithmParameterSpec genParamSpec)
+</pre>
+</blockquote>
+
+예를 들어, Diffie-Hellman 시스템 파라미터를 생성하려면 , 일반적으로, 파라미터 생성치는, 프라임계수(modulus) 및 랜덤 지수의 사이즈로 구성됩니다. 어느 쪽의 사이즈도 비트수로 지정합니다.
+
+</blockquote>
+
+
+<H3>알고리즘 파라미터의 생성</H3>
+
+<blockquote>
+
+<code>AlgorithmParameterGenerator</code> 객체를 작성 및 초기화하면(자),<code>generateParameters</code> 메소드를 사용해 알고리즘 파라미터를 생성할 수 있습니다.
+
+<blockquote>
+<pre>
+AlgorithmParameters generateParameters()
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H2><a name="CertificateFactory"><code>CertificateFactory</code> 클래스</a> </H2>
+
+<blockquote>
+
+<code>CertificateFactory</code> 클래스는, 증명서 팩토리의 기능을 정의하는<a href="#Engine">엔진 클래스</a>입니다. 증명서 팩토리는, 증명서 및 증명서의 취소 리스트 (CRL) 객체를 그 encode로부터 생성하기 위해서 사용됩니다.
+
+<p>X. 509 의 증명서 팩토리는,<code>java.security.cert.X509Certificate</code> 의 인스턴스인 증명서, 및 <code>java.security.cert.X509CRL</code> 의 인스턴스인 CRL 를 돌려줍니다.
+
+
+<H3><code>CertificateFactory</code> 객체의 작성</H3>
+
+<blockquote>
+
+<P>
+
+<code>CertificateFactory</code> 객체는,<code></code><a href="#ProviderImplReq"><code>getInstance()</code> static 팩토리 메소드</a>의 1 개를 사용하는 것에 의해 취득됩니다.
+
+</blockquote>
+
+
+<H3>증명서 객체의 생성</H3>
+
+<blockquote>
+
+증명서 객체를 생성해, 입력 스트림로부터 읽힌 데이터를 사용해 초기화하려면 ,<code>generateCertificate</code> 메소드를 사용합니다.
+
+<blockquote>
+<pre>
+final Certificate generateCertificate(InputStream inStream)
+</pre>
+</blockquote>
+
+특정의 입력 스트림로부터 읽힌 증명서의 코레크션뷰 (빈 상태(empty)의 가능성도 있다)를 돌려주려면 ,<code>generateCertificates</code> 메소드를 사용합니다.
+
+<blockquote>
+<pre>
+final Collection generateCertificates(InputStream inStream)
+</pre>
+</blockquote>
+
+</blockquote>
+
+<H3>CRL 객체의 생성</H3>
+
+<blockquote>
+
+(CRL) 증명서의 취소 리스트 객체를 생성해, 입력 스트림로부터 읽힌 데이터를 사용해 초기화하려면 ,<code>generateCRL</code> 메소드를 사용합니다.
+
+<blockquote>
+<pre>
+final CRL generateCRL(InputStream inStream)
+</pre>
+</blockquote>
+
+특정의 입력 스트림로부터 읽힌 CRL 의 코레크션뷰 (빈 상태(empty)의 가능성도 있다)를 돌려주려면 ,<code>generateCRLs</code> 메소드를 사용합니다.
+
+<blockquote>
+<pre>
+final Collection generateCRLs(InputStream inStream)
+</pre>
+</blockquote>
+
+</blockquote>
+
+<H3><code>CertPath</code> 객체의 생성</H3>
+
+<blockquote>
+
+PKIX 용의 증명서 패스 빌더 및 발리 데이터는, 「Internet X. 509 Public Key Infrastructure Certificate and CRL Profile」<a href="http://www.ietf.org/rfc/rfc3280.txt">RFC 3280</A>  에 의해 정의됩니다.
+
+<P>
+PKIX LDAP V2 schema를 사용해 증명서와 CRL 를 Collection 디렉토리 및 LDAP 디렉토리로부터 취득하기 위한 증명서 스토어의 구현도,<A HREF="http://www.ietf.org/rfc/rfc2587.txt">RFC 2587</A>  으로서 IETF 로부터 사용 가능합니다.
+
+<P>
+<code>CertPath</code> 객체를 생성해, 그 객체를 입력 스트림로부터 읽힌 데이터를 사용해 초기화하려면 , 다음의 몇개의 <code>generateCertPath</code> 메소드를 사용합니다 (필요에 따라서, 데이터에 대해서 사용하는 인코딩을 지정합니다).
+
+<blockquote>
+<pre>
+final CertPath generateCertPath(InputStream inStream)
+
+final CertPath generateCertPath(InputStream inStream,
+                                String encoding)
+</pre>
+</blockquote>
+
+<code>CertPath</code> 객체를 생성해, 증명서의 리스트를 사용해 초기화하려면 , 다음의 메소드를 사용합니다.
+
+<blockquote>
+<pre>
+final CertPath generateCertPath(List certificates)
+</pre>
+</blockquote>
+
+증명서 팩토리로 지원되고 있는 <code>CertPath</code> 인코딩의 리스트를 가져오려면 ,<code>getCertPathEncodings</code> 메소드를 호출합니다.
+
+<blockquote>
+<pre>
+final Iterator getCertPathEncodings()
+</pre>
+</blockquote>
+
+처음에 디폴트의 인코딩이 일람표 나타납니다.
+
+</blockquote>
+
+</blockquote>
+</blockquote>
+
+<h1><a name="SSLTLS">SSL/TLS 구현에서의 JCA 의 사용 방법 </a> </h1>
+
+<blockquote>
+
+JCA 의 클래스에 도착해 이해했기 때문에, 다음에, 이러한 클래스가 어떻게 결합되어 SSL/TLS 와 같은 고도의 네트워크 프로토콜을 구현할까에 임해서 생각합니다. <a href="../jsse/JSSERefGuide.html">「JSSE 레퍼런스 가이드」</a>의<a href="../jsse/JSSERefGuide.html#SSLOverview"> SSL/TLS 의 개요</a>의 항에, 프로토콜의 기능의 고레벨의 설명이 있습니다. 비대칭 (공개키) 암호 조작은 대칭 조작 (비밀열쇠)보다 큰폭으로 늦기 때문에, 공개키암호 방식은, 실제의 어플리케이션 데이터를 보호하기 위해서 사용되는 비밀열쇠를 확립하는 경우에 사용됩니다. 매우 단순하게 말하면(자), SSL/TLS 핸드 쉐이크에는, 초기화 데이터의 교환, 몇개의 공개키 조작의 실행에 의한 비밀열쇠에의 도달, 및 그 열쇠를 사용한 그 후의 트래픽의 암호화가 포함됩니다.
+
+<blockquote>
+<hr>
+<b>주:</b> 여기서 설명하는 상세한 것은, 단순하게, 전술의 클래스가 어떻게 사용되는지를 나타냅니다. 이 항에서는, SSL/TLS 구현을 구축하기 위한 충분한 정보는 제공하지 않습니다. 자세한 것은,<a href="../jsse/JSSERefGuide.html">「JSSE 레퍼런스 가이드」 </a>및<a href="http://www.ietf.org/rfc/rfc2246.txt">「RFC 2246: The TLS Protocol」</a>를 참조해 주세요.   <hr> </blockquote>
+
+<p>
+
+이 SSL/TLS 구현이 JSSE 프로바이더로서 사용 가능하게 된다고 합니다. <code>Provider</code> 클래스의 고정 구현이 최초로 기술되어 최종적으로 프로바이더의 <code>Security</code> 클래스의 리스트에 등록됩니다. 이 프로바이더는, 주로, 알고리즘명으로부터 실제의 구현 클래스에의 매핑을 제공합니다. 예를 들어, 「SSLContext.TLS」-&gt; 「com.foo.TLSImpl」입니다. 어플리케이션이 <code>SSLContext.getInstance("TLS")</code> 에 의해 「TLS」인스턴스를 요구하면(자), 요구된 알고리즘이 프로바이더의 리스트에 문의하고 되어 적절한 인스턴스가 작성됩니다.
+
+<p>
+
+실제의 핸드 쉐이크의 상세를 설명하기 전에, JSSE 의 아키텍쳐(architecture)의 몇개인가를 간단하게 확인할 필요가 있습니다. JSSE 아키텍쳐(architecture)의 중심은,<code>SSLContext</code> 입니다. 문맥은, 최종적으로 SSL/TLS 프로토콜을 실제로 구현하는 최종 객체 (<code>SSLSocket</code> 및 <code>SSLEngine</code>)를 작성합니다. <code>SSLContext</code> 는, 2 개의 콜백 클래스 <code>KeyManager</code> 및 <code>TrustManager</code> 에 의해 초기화됩니다. 이것들을 사용하면(자), 어플리케이션은 송신하는 인증 데이터를 최초로 선택해, 다음에 피어에 의해 송신된 증명서를 검증할 수 있습니다.
+
+<p>
+
+JSSE <code>KeyManager</code> 는, 피어에 제시하는 증명서의 선택을 실시합니다. 많은 알고리즘이 가능합니다만, 일반적인 방법은, RSA 또는 DSA 공개키와 비공개키의 페어를, 디스크 파일에 근거하는 <code>KeyStore</code> 내의 <code>X509Certificate</code> 와 함께 보관 유지하는 것입니다. <code>KeyStore</code> 객체가 초기화되어 파일로부터 로드 되면(자), 파일의 미변환의 바이트는 <code>KeyFactory</code> 를 사용해 <code>PublicKey</code> 및 <code>PrivateKey</code> 객체에 변환되어 증명서 체인의 바이트는 <code>CertificateFactory</code> 를 사용해 변환됩니다. 자격이 필요한 경우,<code>KeyManager</code> 는 단순하게 이 <code>KeyStore</code> 객체에 문의해 어느 자격을 제시할까를 판단합니다.
+
+<p>
+
+<code>KeyStore</code> 의 내용은, 최초로 <code>keytool</code> 등의 유틸리티를 사용해 작성되고 있는 경우가 있습니다. <code>keytool</code> 는, RSA 또는 DSA <code>KeyPairGenerator</code> 를 작성해, 적절한 키 사이즈로 초기화합니다. 이 제네레이터는, 다음에,<code>keytool</code> 가 새롭게 작성된 증명서와 함께 <code>KeyStore</code> 에 포함하는 <code>KeyPair</code> (최종적으로 디스크에 기입해진다)를 작성하는 경우에 사용됩니다.
+
+<p>
+
+JSSE <code>TrustManager</code> 는, 피어로부터 수신한 자격의 검증을 실시합니다. 자격의 검증에는 다수의 방법이 있습니다. 그 하나는,<code>CertPath</code> 객체를 작성해, JDK 의 편입 공개키 인프라스트럭쳐(infrastructure) (PKI) 시스템로 검증을 처리하는 방법입니다. 내부적으로, CertPath 구현은 <code>Signature</code> 객체를 작성해, 그것을 사용해 증명서 체인내의 각각의 서명을 검증하는 경우가 있습니다.
+
+<p>
+
+아키텍쳐(architecture)의 기본에 대해 이해하는 것에 의해, SSL/TLS 핸드 쉐이크의 순서의 몇개인가를 조사할 수가 있습니다. 클라이언트는, ClientHello 메세지를 서버에 송신하는 것에 의해 개시합니다. 서버는 사용하는 암호군을 선택해, ServerHello 메세지내에서 그것을 답장해, 암호군의 선택에 근거해 JCA 객체의 작성을 개시합니다. 다음의 예에서는, 서버만의 인증을 사용합니다.
+
+<p>
+<center>
+<img src="../jsse/sslmessages.gif" alt="<SSL/TSL 메세지의 화상>">
+</center>
+
+<p>
+
+최초의 예에서는, 서버는 TLS_RSA_WITH_AES_128_CBC_SHA 등의 RSA 베이스의 암호군을 사용하려고 합니다. 서버의 <code>KeyManager</code> 가 쿼리되어 적절한 RSA 엔트리를 돌려줍니다. 서버의 자격 (즉, 증명서/공개키)이 서버의 Certificate 메세지내에서 송신됩니다. 클라이언트의 <code>TrustManager</code> 는 서버의 증명서를 검증해, 받아들였을 경우, 클라이언트는 <code>SecureRandom</code> 객체를 사용해 나가는 개인가의 랜덤 바이트를 생성합니다. 다음에, 서버의 증명서내에서 발견된 <code>PublicKey</code> 에 의해 초기화된 암호화 비대칭 RSA <code>Cipher</code> 객체를 사용해 암호화됩니다. 이 암호화된 데이터는, Client Key Exchange 메세지내에서 송신됩니다. 서버는, 대응하는 <code>PrivateKey</code> 를 사용해, 같은 <code>Cipher</code> 를 복호 모드로 사용해 바이트를 회복합니다. 이러한 바이트는, 실제의 암호화열쇠를 확립하는 경우에 사용됩니다.
+
+<p>
+
+다른 예에서는, 일시적인 Diffie-Hellman 열쇠 협정 알고리즘과 TLS_DHE_DSS_WITH_AES_128_CBC_SHA 등의 DSA 서명 알고리즘이 선택됩니다. 양쪽 모두의 옆에서 각각,<code>KeyPairGenerator</code> 를 사용해, 새로운 일시적인 DH 공개키와 비공개키의 페어를 확립합니다. 각 제네레이터는,<code>KeyFactory</code> 및 <code>DHPublicKeySpec</code> 클래스를 사용해, 한층 더 세세하게 변환할 수 있는 DH 열쇠를 작성합니다. 각각의 옆은, 다음에 <code>KeyAgreement</code> 객체를 작성해, 각각의 DH <code>PrivateKey</code> 에 의해 초기화합니다. 서버는 그 공개키를 ServerKeyExchange 메세지내에서 송신해 (DSA 서명 알고리즘에 의해 보호된다), 클라이언트는 그 공개키를 ClientKeyExchange 메세지내에서 송신합니다. 공개키가 다른 <code>KeyFactory</code> 를 사용해 재차 조립할 수 있으면(자), 이것들은 협정 객체에게 건네집니다. <code>KeyAgreement</code> 객체는, 실제의 암호화열쇠를 확립하는 경우에 사용되는 합의가 끝난 바이트를 생성합니다.
+
+<p>
+
+실제의 암호화열쇠가 확립되면(자), 대칭 <code>Cipher</code> 객체를 초기화하기 위해서 비밀열쇠가 사용되어 이 암호가 송신중의 모든 데이터를 보호하는 경우에 사용됩니다. 데이터가 변경되었는지의 여부를 판단할 수 있도록(듯이) <code>MessageDigest</code> 가 작성되어 네트워크에 송신되는 데이터의 카피를 수신합니다. 패킷이 완전한 경우, 다이제스트 (해시)가 데이터의 후에 부가되어 패킷 전체가 <code>Cipher</code> 에 의해 암호화됩니다. AES 등의 블록 암호가 사용되는 경우는, 데이터에 패딩을 실시해 완전한 블록으로 합니다. 원격측에서는, 순서는 단순하게 거꾸로 됩니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 헤더 </th>
+<th BGCOLOR="#dedeef"> 데이터 </th>
+<th width="10%" BGCOLOR="#dedeef"> 다이제스트</th>
+<th width="10%" BGCOLOR="#dedeef"> 패딩 (존재하는 경우) </th>
+</tr>
+</table>
+<p>
+
+이것은 매우 단순화 되고 있습니다만, 이러한 클래스가 어떻게 결합되어 고레벨의 프로토콜을 작성하는지를 나타내고 있습니다.
+
+</blockquote>
+
+<h1><a name="ExemptApps">어플리케이션의 암호화 제한의 「면책」을 취득하는 방법</a> </h1>
+<blockquote>
+  <blockquote>
+  <hr>
+<b>주의 1:</b>대부분의 어플리케이션 개발자에게는, 이 섹션으로 설명하는 내용은 관계 없습니다. 관계가 있는 것은, 작성하는 어플리케이션이, 정부에 의해 암호화 제한이 부과된 나라에 수출될 가능성이 있어, 어플리케이션을 그 제한으로 적합시킬 필요가 있는 경우만입니다.
+    <p></p>
+<b>주의 2:</b>이 섹션 전체로, 「어플리케이션」이라고 하는 말은, 어플리케이션과 애플릿의 양쪽 모두를 가리킵니다.
+  <hr>
+  </blockquote>
+<p>JCA 시스템에는, 암호화 알고리즘 및 최대 암호화 강도에 관한 제한을 시행하는 기능이 포함되어 있어 이 제한은, 다양한 관할 문맥 (위치)으로 애플릿/어플리케이션으로부터 이용 가능합니다. 이러한 제한은 모두, 「관할 정책 파일」로 지정됩니다.  </p>
+<p>수입 제어의 제한된 나라가 존재하기 위해(때문에), Sun Microsystems 의 Java SE Development Kit 6 에 동고 되는 관할 정책 파일에서는, 「강력」이어도 제한부의 암호화가 사용 가능하게 되어 있습니다. 적격국 (대부분의 나라가 해당)의 거주자는, 암호화 기능에 제한이 없는 「강도 무제한」의 버젼을 이용할 수 있습니다. 다만, 정부가 제한을 부과하고 있는 이러한 나라를 수입할 수 있는 것은 「강력한」버젼 뿐입니다. JCA 시스템에서는, 인스톨 끝난 관할 정책 파일로 지정된 제한이 시행됩니다.  </p>
+<p>이러한 나라의 일부 또는 모두로, 특정의 어플리케이션에 대해, 암호화 제한의 일부 또는 모든 면책이 허가되고 있습니다. 예를 들어, 특정의 종류의 어플리케이션은 「특별」이라고 보여져 면책됩니다. 또, 열쇠 복원등의 「면책 기구」를 이용하는 어플리케이션은, 면책 가능합니다. 이런 종류의 나라에서는, 면책되었다고 보여지는 어플리케이션은, 면책되어 있지 않은 어플리케이션에 허가되는 것보다도 강력한 암호화에 액세스 할 수 있습니다.  </p>
+<p>실행시에 어플리케이션이 「면책되고 있다」라고 인식되도록(듯이) 하려면 , 다음의 조건을 채울 필요가 있습니다.  </p>
+  <ul>
+<li>JAR 파일내에 액세스권 정책 파일을 보관 유지할 필요가 있습니다. 액세스권 정책 파일에는, 어플리케이션이 보관 유지하는 암호화 관련의 액세스권, 및 그것을 보관 유지하는 조건 (존재하는 경우)을 지정합니다.
+      <p></p>
+    </li>
+<li>어플리케이션 및 액세스권 정책 파일을 포함한 JAR 파일에는, 어플리케이션이 면책을 받은 후에 발행된 코드 서명 증명서를 사용해 서명할 필요가 있습니다.  </li>
+  </ul>
+<p>다음에, 암호화 제한의 일부 또는 모든 면책을 어플리케이션으로 설정하기 위해서 필요한 순서의 샘플을 나타냅니다. 이것은, 면책된 것으로서 어플리케이션을 인식 및 처리하기 위해(때문에), JCA 에 의해 요구되는 정보를 포함한, 기본 정보입니다. 실제로는, 어플리케이션을 실행 가능하게 하는 (정부가 암호화 제한을 부과하고 있다) 특정의 나라의 면책 요건을 알 필요가 있습니다. 또, 면책된 어플리케이션의 처리 프로세스를 보관 유지하는 JCA 시스템 벤더의 요건도 이해해 둘 필요가 있습니다. 자세한 것은, 벤더에 질문해 주세요. 주:<code>SunJCE</code> 프로바이더는, ExemptionMechanismSpi 클래스의 구현을 제공하지 않습니다.
+</p>
+
+  <p> </p>
+  <ul>
+<li>스텝 1:어플리케이션 코드의 기술 및 컴파일
+      <p></p>
+    </li>
+<li>스텝 2:적절한 암호화 액세스권을 부여하는 액세스권 정책 파일의 작성
+      <p></p>
+    </li>
+<li>스텝 3:테스트의 준비
+      <p> </p>
+<blockquote> <li>스텝 3 a:정부가 부과하는 제한에 관한 정부 승인의 신청
+          <p></p>
+        </li>
+<li>스텝 3 b:코드 서명 증명서의 취득
+          <p></p>
+        </li>
+<li>스텝 3 c:어플리케이션 및 액세스권 정책 파일의 JAR 파일에의 번들
+          <p></p>
+        </li>
+<li>스텝 3d:<a href="HowToImplAProvider.html#Step61">JAR 파일에의 서명</a> 
+          <p></p>
+        </li>
+<li>스텝 3 e:제한국의 사용자와 같은 환경의 설정
+          <p></p>
+        </li>
+<li>스텝 3 f:액세스권 정책 파일의 엔트리에 의해 지정된 면책 기구를 구현하는 프로바이더의 인스톨 (면책 기구를 사용하는 어플리케이션만) 
+          <p></p>
+        </li>
+      </blockquote>
+    
+<li>스텝 4:어플리케이션의 테스트
+      <p></p>
+    </li>
+<li>스텝 5:미국 정부에 의한 수출 승인의 신청 (필요한 경우)
+      <p></p>
+    </li>
+<li>스텝 6:어플리케이션의 배치
+      <p></p>
+    </li>
+  </ul>
+  <br>
+<h2>면책 기구를 사용하는 어플리케이션에 대한 특수 코드 요건</h2>
+  <blockquote>
+<p>어플리케이션을 관련지을 수 있었던 액세스권 정책 파일을 (같은 JAR 파일내에) 보관 유지해, 액세스권 정책 파일로 면책 기구가 지정되고 있는 경우, Cipher <code>getInstance</code> 메소드가 불려 가 Cipher 가 인스턴스화 되면(자), JCA 코드는 인스톨 끝난 프로바이더내에서 지정된 면책 기구를 구현하는 것을 검색합니다. 목적의 프로바이더가 발견되면(자), JCA 는, 프로바이더의 구현에 관련지을 수 있었던 ExemptionMechanism API 객체를 인스턴스화하고 나서, ExemptionMechanism 객체를 <code>getInstance</code> 가 돌려주는 Cipher 와 관련짓습니다.  </p>
+<p>Cipher 를 인스턴스화한 후, 한편 초기화하기 전에 (Cipher <code>init</code> 메소드를 호출해), 코드로부터 다음의 Cipher 메소드를 호출할 필요가 있습니다.  </p>
+
+<pre>
+    public ExemptionMechanism getExemptionMechanism()
+</pre>
+
+<p>이 호출에 의해, Cipher 에 관련지을 수 있었던 ExemptionMechanism 객체가 돌려주어집니다. 다음에, 반환된 ExemptionMechanism 에 대해서 다음의 메소드를 실행해, 면책 기구의 구현을 초기화할 필요가 있습니다.  </p>
+<pre>
+    public final void init(Key key)
+</pre>
+<p>여기서 지정하는 인수의 형태는, 이후에로 Cipher <code>init</code> 메소드로 지정하는 인수의 형태와 같게 할 필요가 있습니다.  </p>
+<p>ExemptionMechanism 의 초기화가 완료하면(자), 일반적으로과 같은 방법으로 Cipher 를 초기화해 사용할 수 있습니다.  </p>
+  </blockquote>
+<h2>액세스권 정책 파일 </h2>
+  <blockquote>
+<p>실행시에 어플리케이션이 암호화 제한의 일부 또는 모든 것을 「면책」되고 있다고 인식되려면 , JAR 파일내에 액세스권 정책 파일을 번들 할 필요가 있습니다. 액세스권 정책 파일에는, 어플리케이션이 보관 유지하는 암호화 관련의 액세스권, 및 그것을 보관 유지하는 조건 (존재하는 경우)을 지정합니다.  </p>
+
+    <p><blockquote>
+    <hr>
+<b>주:</b>어플리케이션에 번들 하는 액세스권 정책 파일의 이름은,<b><code>cryptoPerms</code></b> 로 할 필요가 있습니다.
+    <hr>
+    </blockquote>
+    </p>
+<p>면책되는 어플리케이션에 번들 되는 액세스권 정책 파일내의 액세스권 엔트리의 서식은, Java 2 SDK, v 5.0 과 함께 다운로드되는 관할 정책 파일의 서식과 같습니다.  다음에 그 서식을 나타냅니다.  </p>
+
+<pre>
+    permission &lt;crypto permission class name&gt;[ &lt;alg_name&gt;
+        [[, &lt;exemption mechanism name&gt;][, &lt;maxKeySize&gt;
+        [, &lt;AlgorithmParameterSpec class name&gt;,
+        &lt;parameters for constructing an AlgorithmParameterSpec object&gt;
+	]]]];
+</pre>
+
+<p>관할 정책 파일의 서식의 자세한 것은,<a href="#AppB">「부록 B」</a>를 참조해 주세요.  </p>
+<h3>면책되는 어플리케이션의 액세스권 정책 파일</h3>
+    <blockquote>
+<p>어플리케이션안에는, 제한을 완전하게 해제 가능한 것도 있습니다. 일반적으로, 그 종의 어플리케이션에 번들 하는 액세스권 정책 파일에는, 이하를 포함하는 것만으로 충분합니다.  </p>
+<pre>
+    grant {
+        // There are no restrictions to any algorithms.
+        permission javax.crypto.CryptoAllPermission;
+    };
+</pre>
+
+<p>어플리케이션이 1 개 (또는 몇개의 특정의) 알고리즘만을 사용하는 경우, 액세스권 정책 파일에는, CryptoAllPermission 를 부여하는 것이 아니라, 그 알고리즘을 명시적으로 기술합니다. 예를 들어, 어플리케이션이 Blowfish 알고리즘만을 사용하는 경우, 액세스권 정책 파일로 모든 알고리즘에 CryptoAllPermission 를 부여할 필요는 없습니다. Blowfish 알고리즘이 사용되는 경우, 암호화 제한이 존재하지 않는 것을 지정하는 것만으로 충분합니다. 이 경우, 액세스권 정책 파일은, 다음과 같이 됩니다.  </p>
+<pre>
+    grant {
+        permission javax.crypto.CryptoPermission "Blowfish";
+    };
+</pre>
+    </blockquote>
+<h3>면책 기구에 의해 면책되는 어플리케이션의 액세스권 정책 파일</h3>
+    <blockquote>
+<p>면책 기구가 도입되기 위해서(때문에) 어플리케이션이 「면책된다」라고 보여지는 경우, 어플리케이션에 번들 되는 액세스권 정책 파일에 1 개 이상의 면책 기구를 지정할 필요가 있습니다. 실행시에, 이러한 면책 기구중 한쪽이 기능하고 있으면(자), 어플리케이션은 면책된 것이라고 보여집니다. 다음과 같은 액세스권 엔트리내에, 각 면책 기구를 지정할 필요가 있습니다.  </p>
+<pre>
+    // No algorithm restrictions if specified
+    // exemption mechanism is enforced.
+    permission javax.crypto.CryptoPermission *, 
+	"&lt;ExemptionMechanismName&gt;";
+</pre>
+<p>여기서,<code>&lt;ExemptionMechanismName&gt;</code> 에는 면책 기구의 이름을 지정합니다. 지정 가능한 면책 기구의 이름에는, 이하가 포함됩니다.  </p>
+      <ul>
+<li>KeyRecovery
+          <p></p>
+        </li>
+<li>KeyEscrow
+          <p></p>
+        </li>
+<li>KeyWeakening </li>
+      </ul>
+예로서 열쇠 복원 또는 키 에스크로중 한쪽이 기능하면(자), 어플리케이션이 면책되는 경우를 생각합시다. 그 경우, 액세스권 정책 파일에는, 이하가 포함됩니다.
+<pre>
+    grant {
+	// No algorithm restrictions if KeyRecovery is enforced.
+	permission javax.crypto.CryptoPermission *, 
+	    "KeyRecovery";
+	// No algorithm restrictions if KeyEscrow is enforced.
+	permission javax.crypto.CryptoPermission *, 
+	    "KeyEscrow";
+    };
+</pre>
+<p>주:면책 기구를 지정하는 액세스권 엔트리에는, 최대 키 사이즈를 지정 해서는 안됩니다. 허가되는 열쇠의 사이즈는, 실제로는 인스톨 된 면책 관할 정책 파일에 의해 결정됩니다. 자세한 것은, 다음의 섹션을 참조해 주세요.  </p>
+    </blockquote>
+<h3>번들 된 액세스권 정책 파일에 의한 암호화 액세스권에의 영향</h3>
+    <blockquote>
+<p>실행시에 어플리케이션이 (<code>getInstance</code> 메소드를 호출하는 것으로) Cipher 를 인스턴스화해, 한편 그 어플리케이션이 관련하는 액세스권 정책 파일을 보관 유지하는 경우, JCA 는 액세스권 정책 파일에 <code>getInstance</code> 의 호출로 지정된 알고리즘에 적용되는 엔트리가 포함될지 어떨지를 체크합니다. 해당하는 엔트리가 포함되어 엔트리가 CryptoAllPermission 를 부여할까 면책 기구의 실시를 지정하지 않는 경우, 이 알고리즘에는 암호화 제한이 존재하지 않는 것을 의미합니다.  </p>
+<p>액세스권 정책 파일에 <code>getInstance</code> 의 호출로 지정된 알고리즘에 적용되는 엔트리가 포함되어 한편 엔트리로 면책 기구의 실시가 지정되고 있는 경우, 면책 관할 정책 파일이 체크됩니다. 면책되는 액세스권이 관련하는 알고리즘 및 면책 기구의 엔트리를 포함해, 그 엔트리가 어플리케이션에 첨부의 액세스권 정책 파일내의 액세스권에 의해 암묵적으로 설정되어 있는 경우, 및 지정된 면책 기구의 구현이 몇개의 등록이 끝난 프로바이더로부터 이용 가능한 경우, Cipher 의 최대 키 사이즈 및 알고리즘 파라미터치는, 면책 액세스권 엔트리에 의해 결정됩니다.  </p>
+<p>어플리케이션에 번들 되는 액세스권 정책 파일내의 관련하는 엔트리에, 암묵적으로 설정된 면책 액세스권이 존재하지 않는 경우, 또는 몇개의 등록이 끝난 프로바이더로부터 이용 가능한, 지정된 면책 기구의 구현이 존재하지 않는 경우, 디폴트의 표준 암호화 액세스권만이 어플리케이션에 부여됩니다.  </p>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<H1><a name="Examples">코드예</a> </H1>
+
+<blockquote>
+
+다음에 나타내는 것은, JCA 기구의 몇개의 사용을 설명하는 짧은 예입니다. 또, 전체를 나타내는 실제의 예가<a href="#AppD">「부록 D」</a>에 있습니다.
+
+<H3><a name="MDEx"><code>MessageDigest</code> 객체의 계산</a> </H3>
+
+<blockquote>
+
+<P>
+우선 최초로, 이하의 예의 같게 해 <a href="#MessageDigest">MessageDigest</a>  를 생성합니다.
+
+<P>
+
+<blockquote>
+<pre>
+MessageDigest sha = MessageDigest.getInstance("SHA-1");
+</pre>
+</blockquote>
+
+이 호출은, 올바르게 초기화된 메세지 다이제스트 객체를 변수 <code>sha</code> 에 대입합니다. 이 구현은, National Institute for Standards and Technology (NIST)의 <A HREF="http://csrc.nist.gov/publications/fips/index.html">FIPS 180-2 문서</a>의 정의에 따라,Secure Hash 알고리즘 (SHA-2)을 구현합니다. 표준명과 알고리즘에 관한 자세한 것은,<a href="#AppA">「부록 A」</a>를 참조해 주세요.
+
+<P>
+다음에, 3 살의 바이트 배열 <code>i1</code>,<code>i2</code>, 및 <code>i3</code> 가 있다고 합니다. 계산하는 메세지 다이제스트를 가지는 합계 입력은, 이 3 개의 배열로부터 형성됩니다. 이 다이제스트 (또는 「해시」)는, 이하의 호출을 사용해 계산할 수 있습니다.
+
+<blockquote>
+<pre>
+sha.update(i1);
+sha.update(i2);
+sha.update(i3);
+byte[] hash = sha.digest();
+</pre>
+</blockquote>
+
+<P>
+이하의 일련의 호출을 사용해도 같습니다.
+
+<blockquote>
+<pre>
+sha.update(i1);
+sha.update(i2);
+byte[] hash = sha.digest(i3);
+</pre>
+</blockquote>
+메세지 다이제스트가 계산되면(자), 메세지 다이제스트 객체는 자동적으로 리셋 되어 새로운 데이터를 리뷰 해 그 다이제스트를 계산할 수 있는 상태가 됩니다. 이전 상태 (예를 들어 <code>update</code> 호출로 넣은 데이터)는 모두 없어집니다.
+
+<P>
+해시 구현에 따라서는, 복제 (카피)를 개입시켜 중간 해시를 지원하는 것도 있습니다. 다음에 대해, 다른 해시를 계산하면(자) 가정합니다.
+
+<ul>
+<li><code>i1</code>
+<li><code>i1 및 i2</code>
+<li><code>i1, i2, 및 i3</code>
+
+</ul>
+
+<p>
+다음과 같이 처리합니다.
+
+<blockquote>
+<pre>
+/* compute the hash for i1 */
+sha.update(i1);
+byte[] i1Hash = sha.clone(). digest();
+
+/* compute the hash for i1 and i2 */
+sha.update(i2);
+byte[] i12Hash = sha.clone(). digest();
+
+/* compute the hash for i1, i2 and i3 */
+sha.update(i3);
+byte[] i123hash = sha.digest();
+</pre>
+</blockquote>
+
+이 코드는, SHA-1 구현이 복제 (카피) 가능한 경우에만 기능합니다. 메세지 다이제스트의 구현안에는, 복제 (카피) 가능한 것도 있으면, 불가능한 것도 있습니다. 복제 (카피)가 가능한가 어떤가를 판단하려면 , 다음과 같이 <code>MessageDigest</code> 객체를 복제해, 발생할 가능성이 있는 예외를 캐치 합니다.
+
+<blockquote>
+<pre>
+try {
+    // try and clone it
+    /* compute the hash for i1 */
+    sha.update(i1);
+    byte[] i1Hash = sha.clone(). digest();
+    .  .  .
+    byte[] i123hash = sha.digest();
+} catch (CloneNotSupportedException cnse) {
+    // do something else, such as the code shown below
+}
+</pre>
+</blockquote>
+
+메세지 다이제스트가 복제 (카피) 불가능한 경우는, 다른 다소 복잡한 방법을 사용합니다. 즉, 복수의 다이제스트를 생성해 중간 다이제스트를 계산합니다. 이 경우, 계산하는 중간 다이제스트의 수를 미리 알아 둘 필요가 있습니다.
+
+<blockquote>
+<pre>
+<code>MessageDigest</code> sha1 = MessageDigest.getInstance("SHA-1");
+<code>MessageDigest</code> sha12 = MessageDigest.getInstance("SHA-1");
+<code>MessageDigest</code> sha123 = MessageDigest.getInstance("SHA-1");
+
+byte[] i1Hash = sha1.digest(i1);
+
+sha12.update(i1);
+byte[] i12Hash = sha12.digest(i2);
+
+sha123.update(i1);
+sha123.update(i2);
+byte[] i123Hash = sha123.digest(i3);
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+
+<H3><a name="KPGEx">열쇠의 페어의 생성</a> </H3>
+
+<blockquote>
+
+<P>
+
+이 예에서는, 「DSA」(디지털 서명 알고리즘)이라는 이름의 알고리즘에 대해, 「공개 - 비공개」의 열쇠의 페어를 생성해, 이 열쇠의 페어를 그 후의 예로 사용합니다. 열쇠는, 1024 빗트계수(modulus)로 생성합니다. 여기에서는, 알고리즘 구현을 제공하는 프로바이더는 고려하지 않습니다.
+
+<H4><a href="#KeyPairGenerator">KeyPairGenerator</a>  의 생성</H4>
+
+<blockquote>
+
+<P>
+최초의 순서는, DSA 알고리즘의 열쇠를 생성하기 위한 열쇠의 페어 제네레이터 객체의 획득입니다.
+<blockquote>
+<pre>
+KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+</pre>
+</blockquote>
+</blockquote>
+
+<H4>KeyPairGenerator 의 초기화</H4>
+
+<blockquote>
+
+다음의 순서는, 열쇠의 페어 제네레이터의 초기화입니다. 대부분의 경우, 알고리즘 독립형의 초기화로 충분합니다만, 알고리즘 특정형의 초기화를 사용할 필요가 있는 경우도 있습니다.
+
+<H5>알고리즘 독립형의 초기화</H5>
+
+<P>
+
+모든 열쇠 제네레이터는, 키 사이즈 및 난수의 발생원의 개념을 공유합니다. <code>KeyPairGenerator</code> 클래스 초기화 메소드에는, 최저한 키 사이즈가 필요합니다. 난수의 발생원이 명시적으로 제공되지 않는 경우, 가장 높은 우선 순위로 인스톨 되고 있는 프로바이더의 <code>SecureRandom</code> 구현이 사용됩니다. 따라서, 키 사이즈 1024 로 열쇠를 생성하려면 , 다음의 코드를 호출할 뿐입니다.
+
+<blockquote>
+<pre>
+SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+keyGen.initialize(1024, random);
+</pre>
+</blockquote>
+
+다음의 코드는, 특정의, 추가로 배정 되는 <a href="#SecureRandom"><code>SecureRandom</code></a>  객체를 사용하는 방법을 나타내고 있습니다.
+
+<blockquote>
+<pre>
+SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+random.setSeed(userSeed);
+keyGen.initialize(1024, random);
+</pre>
+</blockquote>
+
+위의 알고리즘 독립형 <code>initialize</code> 메소드를 호출할 때는, 그 외의 파라미터는 지정하지 않기 때문에, 각 열쇠에 관련지을 수 있는 알고리즘 특정형의 파라미터가 있는 경우는, 파라미터를 어떻게 할까는, 프로바이더에 따라서 다릅니다. 프로바이더는, 사전에 계산된 파라미터치를 사용하는 일도, 새로운 값을 생성할 수도 있습니다.
+
+
+<H5>알고리즘 특정형의 초기화</H5>
+
+<p>알고리즘 특정형 파라미터세트가 벌써 존재하는 상황에서는 (DSA 의 「커뮤니티 파라미터」 등),<a href="#AlgorithmParameterSpec"><code>AlgorithmParameterSpec</code></a>  인수를 취하는 <code>initialize</code> 메소드가 2 개 있습니다. 열쇠의 페어의 제네레이터가 DSA 알고리즘의 제네레이터로, DSA 특정 파라미터세트 <code>p</code>,<code>q</code>, 및 <code>g</code> 가 있어, 이것을 사용해 열쇠의 페어를 생성하고 싶다고 합니다. 다음의 코드를 실행해 열쇠의 페어의 제네레이터를 초기화할 수 있습니다. <code>DSAParameterSpec</code> 는 AlgorithmParameterSpec 입니다.
+
+<blockquote>
+<pre>
+DSAParameterSpec dsaSpec = new DSAParameterSpec(p, q, g);
+SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+random.setSeed(userSeed);
+keyGen.initialize(dsaSpec, random);
+</pre>
+</blockquote>
+
+<blockquote>
+<hr>
+<b>주:</B>이름이 <code>p</code> 의 파라미터는, 길이가 계수(modulus)의 길이 (사이즈)의 프라임수입니다. 따라서, 계수(modulus)의 길이를 지정하기 위해서 다른 메소드를 호출할 필요는 없습니다.
+<hr>
+</blockquote>
+
+</blockquote>
+
+
+<H4>열쇠의 페어의 생성</H4>
+
+<blockquote>
+
+최종 순서는, 열쇠의 페어의 실제의 생성입니다. 사용한 초기화의 형태 (알고리즘 독립형 또는 알고리즘 특정형)에 관계없이, 같은 코드를 사용해<a href="#KeyPair">열쇠의 페어</a>를 생성합니다.
+
+<blockquote>
+<pre>
+KeyPair pair = keyGen.generateKeyPair();
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H3><a name="SigEx">생성된 열쇠를 사용한 서명의 생성 및 검증</a> </H3>
+
+<blockquote>
+
+<p>다음의 서명의 생성 및 검증의 예에서는, 전술의<a href="#KPGEx">열쇠의 페어의 예</a>로 생성된 <code>KeyPair</code> 를 이용하고 있습니다.
+
+
+<H4>서명의 생성</H4>
+
+<blockquote>
+
+<P>
+우선 최초로<a href="#Signature">서명 </a>객체를 생성합니다.
+
+<blockquote>
+<pre>
+Signature dsa = Signature.getInstance("SHA1withDSA");
+</pre>
+</blockquote>
+
+열쇠의 페어의 예로 생성한 열쇠의 페어를 사용해, 비공개키를 지정해 객체를 초기화합니다. 이후에로 <code>data</code> 라고 하는 바이트 배열에 서명을 붙입니다.
+
+<blockquote>
+<pre>
+/* Initializing the object with a private key */
+PrivateKey priv = pair.getPrivate();
+dsa.initSign(priv);
+
+/* Update and sign the data */
+dsa.update(data);
+byte[] sig = dsa.sign();
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+<H4><a name="VerifyEx">서명의 검증</a> </H4>
+
+<blockquote>
+
+서명의 검증은 간단합니다. 여기에서도, 열쇠의 페어의 예로 생성한 열쇠의 페어를 사용합니다.
+
+<blockquote>
+<pre>
+/* Initializing the object with the public key */
+PublicKey pub = pair.getPublic();
+dsa.initVerify(pub);
+
+/* Update and verify the data */
+dsa.update(data);
+boolean verifies = dsa.verify(sig);
+System.out.println("signature verifies: " + verifies);
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<H3><a name="KeyFactoryEx">열쇠 스펙 및 <code>KeyFactory</code> 를 사용한 서명의 생성과 검증</a> </H3>
+
+<blockquote>
+
+전술의<a href="#KPGEx">열쇠의 페어의 예</a>로 생성한 것 같은 공개키와 비공개키의 페어를 사용하는 것보다도, 단지 DSA 비공개키의 컴퍼넌트 <code>x</code> (비공개키),<code>p</code> (프라임),<code>q</code> (서브 프라임), 및 <code>g</code> (베이스)를 사용한다고 합니다.
+
+<p>게다가 비공개키를 사용해 <code>someData</code> 라고 하는 바이트 배열내가 있는 데이터에 디지털 서명을 붙이고 싶다고 합니다. 다음의 순서를 실행합니다. 이 순서는, 열쇠 스펙의 작성, 및 열쇠 팩토리를 사용해 열쇠 스펙으로부터 <code>PrivateKey</code> 를 취득하는 방법도 가리키고 있습니다. <code>initSign</code> 에는 <code>PrivateKey</code> 가 필요합니다.
+
+<blockquote>
+<pre>
+DSAPrivateKeySpec dsaPrivKeySpec = new DSAPrivateKeySpec(x, p, q, g);
+
+KeyFactory keyFactory = KeyFactory.getInstance("DSA");
+PrivateKey privKey = keyFactory.generatePrivate(dsaPrivKeySpec);
+
+Signature sig = Signature.getInstance("SHA1withDSA");
+sig.initSign(privKey);
+sig.update(someData);
+byte[] signature = sig.sign();
+</pre>
+</blockquote>
+
+Alice 가 서명한 데이터를 사용하고 싶다고 합니다. 그녀가 그 데이터를 사용하기 (위해)때문에, 및 서명을 검증하기 위해서는, 그녀에게 다음의 3 개의 것을 보낼 필요가 있습니다.
+
+<ol>
+
+<li>데이터
+
+<li>서명
+
+<li>데이터의 서명에 사용한 비공개키에 대응하는 공개키
+
+</ol>
+
+<code>someData</code> 바이트를 있는 파일에 포함해,<code>signature</code> 바이트를 다른 파일에 포함해, 양쪽 모두를 Alice 에 보낼 수가 있습니다.
+
+<p>공개키에 관해서는, 위의 서명의 예의 같게, 데이터의 서명에 사용한 DSA 비공개키에 대응하는 DSA 공개키의 컴퍼넌트를 가지고 있으면(자) 상정합니다. 이 경우는, 컴퍼넌트로부터 <code>DSAPublicKeySpec</code> 를 작성할 수 있습니다.
+
+<blockquote>
+<pre>
+DSAPublicKeySpec dsaPubKeySpec = new DSAPublicKeySpec(y, p, q, g);
+</pre>
+</blockquote>
+
+다만, 열쇠 바이트를 파일에 기술할 수 있도록(듯이), 열쇠 바이트를 추출할 필요가 있습니다. 이 때문에는, 우선, 위의 예로 벌써 작성한 DSA 열쇠 팩토리의 <code>generatePublic</code> 메소드를 호출합니다.
+
+<blockquote>
+<pre>
+PublicKey pubKey = keyFactory.generatePublic(dsaPubKeySpec);
+</pre>
+</blockquote>
+
+다음에, 이하의 코드를 사용해 encode 된 열쇠 바이트를 추출합니다.
+
+<blockquote>
+<pre>
+byte[] encKey = pubKey.getEncoded();
+</pre>
+</blockquote>
+
+이 시점에서 바이트를 파일에 보존해, 데이터 및 서명을 보존한 파일과 함께 Alice 에 보낼 수가 있습니다.
+
+<p>여기서, Alice 가 이러한 파일을 받아, 데이터 파일의 데이터 바이트를 <code>data</code> 라고 하는 바이트 배열에, 서명 파일의 서명 바이트를 <code>signature</code> 라고 하는 바이트 배열에, 공개키 파일의 encode 된 공개키 바이트를 <code>encodedPubKey</code> 라고 하는 바이트 배열에 카피했다고 합니다.
+
+<P>Alice 는, 다음의 코드를 실행해 서명을 검증할 수 있습니다. 이 코드는, encode 된 상태로부터 DSA 공개키의 인스턴스를 생성하기 위해서, 열쇠 팩토리를 사용하는 방법도 가리키고 있습니다. <code>initVerify</code> 에는 <code>PublicKey</code> 가 필요합니다.
+
+<pre>
+    X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(encodedPubKey);
+
+    KeyFactory keyFactory = KeyFactory.getInstance("DSA");
+    PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
+
+    Signature sig = Signature.getInstance("SHA1withDSA");
+    sig.initVerify(pubKey);
+    sig.update(data);
+    sig.verify(signature);
+</pre>
+
+주:상의 코드에서는,<code>initVerify</code> 가 <code>PublicKey</code> 를 필요로 하기 (위해)때문에, Alice 는 encode 된 열쇠 비트로부터 <code>PublicKey</code> 를 생성할 필요가 있었습니다. <code>PublicKey</code> 를 취득하면(자),<code>KeyFactory</code> <code>getKeySpec</code> 메소드를 사용해,<code>PublicKey</code> 를 <code>DSAPublicKeySpec</code> 로 변환해, 필요한 경우에 컴퍼넌트에 액세스 하는 것이 가능합니다.
+
+<pre>
+    DSAPublicKeySpec dsaPubKeySpec =
+        (DSAPublicKeySpec) keyFactory.getKeySpec(pubKey,
+            DSAPublicKeySpec.class)
+</pre>
+
+이것으로 Alice 는, DSA 공개키 컴퍼넌트 <code>y</code>,<code>p</code>,<code>q</code>, 및 <code>g</code> 에,<code>DSAPublicKeySpec</code> 클래스의 대응하는 get 메소드 (<code>getY</code>,<code>getP</code>,<code>getQ</code>, 및 <code>getG</code>)를 사용해 액세스 할 수 있습니다.
+
+</blockquote>
+
+
+<a name = "Equal"></a> 
+<H3>2 개의 열쇠의 동일성의 판정</H3>
+<blockquote>
+
+<P>
+자주, 2 개의 열쇠의 동일성의 판정이 필요하게 되는 일이 있습니다만, 디폴트의<code>java.lang.Object.equals</code> 메소드에서는, 필요한 결과를 얻을 수  없는 경우가 있습니다. 프로바이더에 대한 의존도가 가장 적은 방법은, encode 된 열쇠를 비교하는 방법입니다. 이 방법으로 적절히 비교할 수 없는 경우 (예를 들어,<code>RSAPrivateKey</code> 와 <code>RSAPrivateCrtKey</code> 를 비교하는 경우), 각 컴퍼넌트를 비교할 필요가 있습니다. 그방법을 나타내는 코드를 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+static boolean keysEqual(Key key1, Key key2) {
+    if (key1.equals(key2)) {
+        return true;
+    }
+
+    if (Arrays.equals(key1.getEncoded(), key2.getEncoded())) {
+        return true;
+    }
+
+    // More code for different types of keys here.
+    // For example, the following code can check if
+    // an RSAPrivateKey and an RSAPrivateCrtKey are equal:
+    // if ((key1 instanceof RSAPrivateKey) &&
+    //     (key2 instanceof RSAPrivateKey)) {
+    //     if ((key1.getModulus(). equals(key2.getModulus())) &&
+    //         (key1.getPrivateExponent(). equals(
+    //                                      key2.getPrivateExponent()))) {
+    //         return true;
+    //     }
+    // }
+
+    return false;
+}
+</pre>
+</blockquote>
+</blockquote>
+
+
+<H3><a name="ReadCert">Base64? encode 된 증명서의 읽기</a> </H3>
+
+<blockquote>
+
+<p>다음의 예는, Base64- encode 된 증명서를 읽어냅니다. 인증의 개시는, 다음의 코드로 지정됩니다.
+
+<pre>
+-----BEGIN CERTIFICATE-----
+</pre>
+
+최후는, 다음의 행으로 끝납니다.
+
+<pre>
+-----END CERTIFICATE-----
+</pre>
+
+<code>FileInputStream</code> (<code>mark</code> 및 <code>reset</code> 를 지원하지 않는다)를 <code>ByteArrayInputStream</code> (<code>mark</code> 및 <code>reset</code> 를 지원한다)로 변환해,<code>generateCertificate</code> 에의 각 호출에 증명서가 1 개만 사용되어, 입력 스트림이 읽어내진 위치가 파일내의 다음의 증명서에 배치되도록(듯이) 합니다. <p>
+
+<pre>
+FileInputStream fis = new FileInputStream(filename);
+BufferedInputStream bis = new BufferedInputStream(fis);
+
+CertificateFactory cf = CertificateFactory.getInstance("X. 509");
+
+while (bis.available() > 0) {
+    Certificate cert = cf.generateCertificate(bis);
+    System.out.println(cert.toString());
+}
+</pre>
+
+</blockquote>
+
+
+<H3><a name="ParseCert">인증 응답의 해석</a> </H3>
+
+<blockquote>
+
+<p>다음의 예는, 파일내에 보존된 PKCS7 형식의 인증 응답을 해석해, 거기로부터 증명서를 모두 추출합니다. <p>
+
+<pre>
+FileInputStream fis = new FileInputStream(filename);
+CertificateFactory cf = CertificateFactory.getInstance("X. 509");
+Collection c = cf.generateCertificates(fis);
+Iterator i = c.iterator();
+while (i.hasNext()) {
+   Certificate cert = (Certificate) i.next();
+   System.out.println(cert);
+}
+</pre>
+
+</blockquote>
+
+<h3><a name="SimpleEncrEx">암호화의 사용</a> </h3>
+  <blockquote>
+<p>이 섹션에서는, 열쇠의 생성, Cipher 객체의 작성과 초기화, 및 파일의 암호화와 암호 해독이라고 하는 일련의 처리에 대해 설명합니다. 이 예전체로, Advanced Encryption Standard (AES)를 사용합니다.  </p>
+<h4>열쇠의 생성</h4>
+    <blockquote>
+<p>AES 열쇠를 작성하려면 , AES 용의 KeyGenerator 를 인스턴스화할 필요가 있습니다. 특정의 AES 열쇠 생성 구현에 대해 고려할 필요는 없기 때문에, 프로바이더는 지정하지 않습니다. KeyGenerator 를 초기화하지 않기 때문에, AES 열쇠의 작성에는 시스템 제공의 random number generation원 및 디폴트의 키 사이즈가 사용됩니다.  </p>
+
+<pre>
+    KeyGenerator keygen = KeyGenerator.getInstance("AES");
+    SecretKey aesKey = keygen.generateKey();
+</pre>
+
+<p>열쇠를 생성한 후, 같은 KeyGenerator 를 사용해 다른 열쇠를 재차 작성할 수 있습니다.  </p>
+    </blockquote>
+	    <h4>Cipher 의 작성</h4>
+	    <blockquote>
+	      <p>다음의 스텝은, Cipher 인스턴스의 작성입니다. 이것에는, Cipher 클래스의 몇개의 <code>getInstance</code> 팩토리 메소드를 사용합니다. 다음의 컴퍼넌트를 포함한 필수의 변환명을, slash (/)로 단락지어 지정할 필요가 있습니다.  </p>
+	      <ul>
+		<li>알고리즘명 </li>
+		<li>모드 (옵션) </li>
+		<li>패딩 방식 (옵션) </li>
+	      </ul>
+	      <p>이 예에서는, Electronic Codebook 모드 및 PKCS5 패딩 방식에서 AES 암호를 작성합니다. 특정의 필수 변환의 구현에 대해 고려할 필요는 없기 때문에, 프로바이더는 지정하지 않습니다.  </p>
+	      <p>AES 의 표준 알고리즘명은 「AES」, Electronic Codebook 모드의 표준명은 「ECB」, PKCS5 패딩 방식의 표준명은 「PKCS5Padding」입니다.  </p>
+
+<pre>
+    Cipher aesCipher;
+    
+    // Create the cipher
+    aesCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+</pre>
+
+	      <p>위에서 생성된 <code>aesKey</code> 를 사용해, Cipher 객체를 암호화용으로 초기화합니다.  </p>
+
+<pre>
+    // Initialize the cipher for encryption
+    aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
+	  
+    // Our cleartext
+    byte[] cleartext = "This is just an example". getBytes();
+	  
+    // Encrypt the cleartext
+    byte[] ciphertext = aesCipher.doFinal(cleartext);
+
+    // Initialize the same cipher for decryption
+    aesCipher.init(Cipher.DECRYPT_MODE, aesKey);
+      
+    // Decrypt the ciphertext
+    byte[] cleartext1 = aesCipher.doFinal(ciphertext);
+</pre>
+
+	      <p><code>cleartext</code> 와 <code>cleartext1</code> 는, 동일합니다.  </p>
+	    </blockquote>
+	  </blockquote>
+	  <h3><a name="PBEEx">패스워드 베이스 암호화의 사용</a> </h3>
+	  <blockquote>
+	    <p>이 예에서는, 사용자에게 패스워드를 요구해, 암호화열쇠를 그 패스워드로부터 이끌어냅니다.  </p>
+	    <p><code>java.lang.String</code> 형의 객체에 패스워드를 수집 및 포함하는 것은, 적절하다고 생각할 수 있습니다. 다만, 주의해야 할 점이 있습니다. 그것은,<code>String</code> 형의 객체는 불변이다고 하는 것입니다. 이 때문에, 사용후에 <code>String</code> 의 내용을 변경 (덧쓰기) 또는 제로로 하는 것 같은 메소드는 존재하지 않습니다. 이 기능을 위해서(때문에),<code>String</code> 객체는, 사용자 패스워드 등 시큐리티상 중요한 정보의 포함에는 적합하지 않습니다. 시큐리티 관련의 정보는, 항상 char 형의 배열에 수집 및 포함하도록 해 주세요.  </p>
+
+	    <p>이 이유로써,<code>javax.crypto.spec.PBEKeySpec</code> 클래스는, 패스워드를 char 형의 배열로서 받아, 돌려줍니다. 입력 스트림로부터 문자 배열 패스워드를 읽어들이는 1 개의 방법으로서<a href="#AppD">「부록 D」</a>의 샘플 코드내의 <a 	href="#ReadPassword">ReadPassword</a>  클래스를 참조해 주세요.
+
+	    <p>PKCS5 로 정의된 패스워드 베이스 암호화 (PBE)를 사용하려면 , salt 및 iteration count 를 지정할 필요가 있습니다. 암호 해독시에도, 암호화시와 같은 salt 및 반복 처리의 회수를 사용할 필요가 있습니다.  </p>
+	    <pre>
+	    PBEKeySpec pbeKeySpec;
+	    PBEParameterSpec pbeParamSpec;
+	    SecretKeyFactory keyFac;
+
+	    // Salt
+	    byte[] salt = {
+		(byte) 0xc7, (byte) 0x73, (byte) 0x21, (byte) 0x8c,
+		(byte) 0x7e, (byte) 0xc8, (byte) 0xee, (byte) 0x99
+	    };
+
+	    // Iteration count
+	    int count = 20;
+
+	    // Create PBE parameter set
+	    pbeParamSpec = new PBEParameterSpec(salt, count);
+
+	    // Prompt user for encryption password.
+	    // Collect user password as char array (using the
+	    // "readPassword" method from above), and convert
+	    // it into a SecretKey object, using a PBE key
+	    // factory.
+	    System.out.print("Enter encryption password:  ");
+	    System.out.flush();
+	    pbeKeySpec = new PBEKeySpec(readPassword(System.in));
+	    keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+	    SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+
+	    // Create PBE Cipher
+	    Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+
+	    // Initialize PBE Cipher with key and parameters
+	    pbeCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
+
+	    // Our cleartext
+	    byte[] cleartext = "This is another example". getBytes();
+
+	    // Encrypt the cleartext
+	    byte[] ciphertext = pbeCipher.doFinal(cleartext);
+	    </pre>
+	  </blockquote>
+	  <h3><a name="KeyAgreeEx">열쇠 협정의 사용</a> </h3>
+	  <blockquote>
+	    <p>2 개(살) 및 3 개의 파티간에 Diffie-Hellman 열쇠 교환을 실행하는 샘플 프로그램에 관해서는,<a href="#AppD">「부록 D」</a>를 참조해 주세요.  </p>
+	  </blockquote>
+
+	</blockquote>
+
+	</blockquote>
+
+	<HR>
+
+<!-- ==================================================== -->
+<H1><a name="AppA">부록 A:표준명</a> </H1>
+
+<blockquote>
+
+<P>
+
+JDK Security API 는, 다양한 알고리즘, 증명서, 및 키스토어의 타입의 표준명을 필요로 해, 이것들을 사용합니다. 이전에 이 부록 A 및 다른 스펙 (JSSE/CertPath/그 외)에 있던 스펙명은,<a href="../StandardNames.html">표준명의 문서</a>에 정리했습니다. 이 문서에는, 알고리즘의 스펙에 관한 상세도 포함되어 있습니다. 특정의 프로바이더의 정보는,<a href="../SunProviders.html">「Sun Provider Documentation」</a>에 있습니다.
+
+<p>
+
+Sun JDK 에서의 암호화 구현은, 주로 역사적인 이유에 의해, 다양한 프로바이더에 의해 배포됩니다 (<code>Sun</code>,<code>SunJSSE</code>,<code>SunJCE</code>,<code>SunRsaSign</code>). 이러한 프로바이더는, 모든 JDK 구현으로 사용 가능하지 않는 경우가 있기 (위해)때문에, 실로 이식 가능한 어플리케이션은, 특정의 프로바이더를 지정하지 않고 <code>getInstance()</code> 를 호출할 필요가 있습니다. 특정의 프로바이더를 지정하는 어플리케이션은, 기반이 되는 오퍼레이팅(operating) 환경 (PKCS 나 Microsoft 의 CAPI 등)용으로 조정된 네이티브 프로바이더를 사용할 수 없는 경우가 있습니다.
+
+<p>
+
+<code>SunPKCS11</code> 프로바이더 자체에는 암호화 알고리즘은 포함되어 있지 않습니다만, 대신에 요구를 기반이 되는 PKCS11 구현에 보냅니다. <a href="../p11guide.html">「PKCS#11 레퍼런스 가이드」 </a>및 기반이 되는 PKCS11 구현을 참조해, 필요한 알고리즘이 PKCS11 프로바이더로 사용 가능한가 어떤가를 판단하도록 해 주세요. 같이 Windows 시스템에서는,<code>SunMSCAPI</code> 프로바이더는 암호화 기능을 제공합니다만, 대신에 기반이 되는  operating system에 요구를 처리하도록(듯이) 건네줍니다.
+
+<p>
+
+</blockquote>
+
+<hr>
+
+<!-- ==================================================== -->
+<h1><a name="AppB">부록 B:관할 정책 파일의 형식</a> </h1>
+<blockquote>
+<p>JCA 의 관할 정책 파일은, Java 형식의 정책 파일 (대응하는 액세스권을 지정하는 문장을 포함한다)로 나타내집니다. <a  href="../PolicyFiles.html">「디폴트의 Policy 의 구현과 정책 파일의 구문」</a>에 설명되고 있도록(듯이),Java 정책 파일에서는, 지정된 코드 소스로부터 코드에 부여하는 액세스권을 지정합니다. 액세스권은, system resource에의 액세스를 나타냅니다. JCA 의 경우, 「자원」은 암호화 알고리즘입니다. 또, 암호화 제한은 모든 코드에 적용되기 (위해)때문에, 코드 소스를 지정할 필요는 없습니다.  </p>
+<p>관할 정책 파일은, 1 개(살) 이상의 「액세스권 엔트리」를 포함한, 매우 기본적인 「부여 엔트리」로 구성됩니다.  </p>
+  <blockquote>
+<pre>grant {<br>    &lt;permission entries&gt;;<br>};<br></pre>
+  </blockquote>
+<p>다음에, 관할 정책 파일의 액세스권 엔트리의 서식을 나타냅니다.
+  </p>
+  <blockquote>
+<pre>permission &lt;crypto permission class name&gt;[ &lt;alg_name&gt;
+    [[, &lt;exemption mechanism name&gt;][, &lt;maxKeySize&gt;
+    [, &lt;AlgorithmParameterSpec class name&gt;,
+    &lt;parameters for constructing an 
+	AlgorithmParameterSpec object&gt;]]]];</pre>
+  </blockquote>
+<p>다음에, 「Blowfish」알고리즘을 64 비트의 최대 키 사이즈에 제한하는, 관할 정책 파일의 샘플을 나타냅니다.  </p>
+    <pre>
+    grant {
+        permission javax.crypto.CryptoPermission "Blowfish", 64;
+	.  .  . ;
+    };
+    </pre>
+
+<p>액세스권 엔트리는,<code>permission</code> 로 시작됩니다. 상기의 템플릿내의 <code>&lt;crypto permission class name&gt;</code> 에는,<code>javax.crypto.CryptoPermission</code> 등이 구체적인 액세스권 클래스명을 지정합니다. 암호화 액세스권 클래스는, 특정의 환경하에서 특정의 키 사이즈를 사용하는 어플리케이션/애플릿의 기능에 대응합니다. 암호화 액세스권 클래스에는,<code>CryptoPermission</code> 및 <code>CryptoAllPermission</code> 의 2 개가 존재합니다. 특별한 <code>CryptoAllPermission</code> 클래스는, 암호화 관련의 액세스권 모든 것을 나타냅니다. 즉, 암호화 관련의 제한은 없는 것을 나타냅니다.  </p>
+
+<p>&lt;alg_name&gt; 를 지정하는 경우,"DES" 나 "RSA" 등 암호화 알고리즘의 표준명을 나타내는 캐릭터 라인 (<a href="#AppA">「부록 A」</a>를 참조)을 인용부호로 둘러싸 지정합니다.  </p>
+<p>&lt;면책 기구명 &gt; 를 지정하는 경우, 면책 기구를 가리키는 캐릭터 라인을 인용부호로 둘러싸 지정합니다. 면책 기구를 실시하면(자), 암호화 제한이 완화됩니다. 사용 가능한 면책 기구명에는, 「KeyRecovery」, 「KeyEscrow」, 및 「KeyWeakening」가 포함됩니다.  </p>
+<p>&lt;maxKeySize&gt; 에는, 지정한 알고리즘에 허가하는 최대열쇠 사이즈 (비트)를 나타내는 정수치를 지정합니다.  </p>
+<p>알고리즘에 따라서는, 키 사이즈로 알고리즘의 강도를 지정하는 것 만으로는 불충분한 경우가 있습니다. 예를 들어,"RC5" 알고리즘의 경우에는, 라운드수도 고려할 필요가 있습니다. 알고리즘의 강도를 키 사이즈만으로 표현하는 것은 불충분한 경우, 액세스권 엔트리로 AlgorithmParameterSpec 클래스명 (<code>javax.crypto.spec.RC5ParameterSpec</code> 등), 및 지정된 AlgorithmParameterSpec 객체의 구축용 파라미터 리스트도 지정할 필요가 있습니다.  </p>
+<p>액세스권 엔트리의 각 항목은, 지정된 순서로 기술할 필요가 있습니다. 각 엔트리는 세미콜론으로 끝납니다.  </p>
+<p>식별자 (<code>grant</code>,<code>permission</code>)에서는 대문자와 소문자는 구별됩니다만,<code>&lt;crypto permission class name&gt;</code>, 및 값으로 해서 인도해지는 캐릭터 라인에서는 대문자와 소문자가 구별됩니다.  </p>
+<p>주:「*」은, 모든 액세스권 엔트리 옵션으로 와일드 카드로서 사용할 수 있습니다. 예를 들어, &lt;alg_name&gt; 옵션에 「*」을 지정하면(자), 「모든 알고리즘」이라고 하는 의미가 됩니다.  </p>
+</blockquote>
+<hr>
+
+<!-- ==================================================== -->
+<h1><a name="AppC">부록 C: 「강력」인 관할 정책 파일에 의해 허가되는 최대 키 사이즈</a> </h1>
+<blockquote>
+<p>수입관리 제한이 있기 (위해)때문에, Java SE Development Kit 6 에 동고 된 관할 정책 파일은 「강고」입니다만, 암호화의 사용에는 제한이 있습니다. 다음에, 이 「강력한」버젼의 관할 정책 파일로 허가되는 최대 키 사이즈를 나타냅니다.  </p>
+  <p>
+
+<table border="5" frame="border" align="center"
+cellpadding="5">
+<thead>
+<tr>
+<th BGCOLOR="#dedeef"> 알고리즘 </th>
+<th BGCOLOR="#dedeef"> 최대 키 사이즈</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> DES </td><td> 64 </td>
+</tr>
+<tr>
+<td> DESede </td><td> * </td>
+</tr>
+<tr>
+<td> RC2 </td><td> 128 </td>
+</tr>
+<tr>
+<td> RC4 </td><td> 128 </td>
+</tr>
+<tr>
+<td> RC5 </td><td> 128 </td>
+</tr>
+<tr>
+<td> RSA </td><td> * </td>
+</tr>
+<tr>
+<td> 그 외 모두</td><td> 128 </td>
+</tr>
+</tbody>
+</table>
+
+<p></p>
+</blockquote>
+<hr>
+
+<!-- ==================================================== -->
+<h1><a name="AppD">부록 D:샘플 프로그램</a> </h1>
+<ul>
+   <li><a name="DH2Ex">
+<H3>2 개의 파티간의 Diffie-Hellman 열쇠 교환</H3></A> <pre>/*
+ * Copyright 1997-2001 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+import java.io. *;
+import java.math.BigInteger;
+import java.security. *;
+import java.security.spec. *;
+import java.security.interfaces. *;
+import javax.crypto. *;
+import javax.crypto.spec. *;
+import javax.crypto.interfaces. *;
+import com.sun.crypto.provider.SunJCE;
+
+/**
+ * This program executes the Diffie-Hellman key agreement protocol
+ * between 2 parties: Alice and Bob.
+ *
+ * By default, preconfigured parameters (1024-bit prime modulus and base
+ * generator used by SKIP) are used.
+ * If this program is called with the "-gen" option, a new set of
+ * parameters is created.
+ */
+
+public class DHKeyAgreement2 {
+
+    private DHKeyAgreement2() {}
+
+    public static void main(String argv[]) {
+        try {
+            String mode = "USE_SKIP_DH_PARAMS";
+
+            DHKeyAgreement2 keyAgree = new DHKeyAgreement2();
+
+            if (argv.length &gt; 1) {
+                keyAgree.usage();
+                throw new Exception("Wrong number of command options");
+            } else if (argv.length == 1) {
+                if (! (argv[0]. equals("-gen"))) {
+                    keyAgree.usage();
+                    throw new Exception("Unrecognized flag: " + argv[0]);
+                }
+                mode = "GENERATE_DH_PARAMS";
+            }
+
+            keyAgree.run(mode);
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
+            System.exit(1);
+        }
+    }
+
+    private void run(String mode) throws Exception {
+
+        DHParameterSpec dhSkipParamSpec;
+
+        if (mode.equals("GENERATE_DH_PARAMS")) {
+            // Some central authority creates new DH parameters
+            System.out.println
+                ("Creating Diffie-Hellman parameters (takes VERY long) ...");
+            AlgorithmParameterGenerator paramGen
+                = AlgorithmParameterGenerator.getInstance("DH");
+            paramGen.init(512);
+            AlgorithmParameters params = paramGen.generateParameters();
+            dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec
+                (DHParameterSpec.class);
+        } else {
+            // use some pre-generated, default DH parameters
+            System.out.println("Using SKIP Diffie-Hellman parameters");
+            dhSkipParamSpec = new DHParameterSpec(skip1024Modulus,
+                                                  skip1024Base);
+        }
+
+        /*
+         * Alice creates her own DH key pair, using the DH parameters from
+         * above
+         */
+        System.out.println("ALICE: Generate DH keypair ...");
+        KeyPairGenerator aliceKpairGen = KeyPairGenerator.getInstance("DH");
+        aliceKpairGen.initialize(dhSkipParamSpec);
+        KeyPair aliceKpair = aliceKpairGen.generateKeyPair();
+
+        // Alice creates and initializes her DH KeyAgreement object
+        System.out.println("ALICE: Initialization ...");
+        KeyAgreement aliceKeyAgree = KeyAgreement.getInstance("DH");
+        aliceKeyAgree.init(aliceKpair.getPrivate());
+
+        // Alice encodes her public key, and sends it over to Bob.
+        byte[] alicePubKeyEnc = aliceKpair.getPublic(). getEncoded();
+
+        /*
+         * Let's turn over to Bob.  Bob has received Alice's public key
+         * in encoded format.
+         * He instantiates a DH public key from the encoded key material.
+         */
+        KeyFactory bobKeyFac = KeyFactory.getInstance("DH");
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec
+            (alicePubKeyEnc);
+        PublicKey alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
+
+        /*
+         * Bob gets the DH parameters associated with Alice's public key.
+         * He must use the same parameters when he generates his own key
+         * pair.
+         */
+        DHParameterSpec dhParamSpec = ((DHPublicKey) alicePubKey). getParams();
+
+        // Bob creates his own DH key pair
+        System.out.println("BOB: Generate DH keypair ...");
+        KeyPairGenerator bobKpairGen = KeyPairGenerator.getInstance("DH");
+        bobKpairGen.initialize(dhParamSpec);
+        KeyPair bobKpair = bobKpairGen.generateKeyPair();
+
+        // Bob creates and initializes his DH KeyAgreement object
+        System.out.println("BOB: Initialization ...");
+        KeyAgreement bobKeyAgree = KeyAgreement.getInstance("DH");
+        bobKeyAgree.init(bobKpair.getPrivate());
+
+        // Bob encodes his public key, and sends it over to Alice.
+        byte[] bobPubKeyEnc = bobKpair.getPublic(). getEncoded();
+
+        /*
+         * Alice uses Bob's public key for the first (and only) phase
+         * of her version of the DH
+         * protocol.
+         * Before she can do so, she has to instantiate a DH public key
+         * from Bob's encoded key material.
+         */
+        KeyFactory aliceKeyFac = KeyFactory.getInstance("DH");
+        x509KeySpec = new X509EncodedKeySpec(bobPubKeyEnc);
+        PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
+        System.out.println("ALICE: Execute PHASE1 ...");
+        aliceKeyAgree.doPhase(bobPubKey, true);
+
+        /*
+         * Bob uses Alice's public key for the first (and only) phase
+         * of his version of the DH
+         * protocol.
+         */
+        System.out.println("BOB: Execute PHASE1 ...");
+        bobKeyAgree.doPhase(alicePubKey, true);
+
+        /*
+         * At this stage, both Alice and Bob have completed the DH key
+         * agreement protocol.
+         * Both generate the (same) shared secret.
+         */
+        byte[] aliceSharedSecret = aliceKeyAgree.generateSecret();
+        int aliceLen = aliceSharedSecret.length;
+
+        byte[] bobSharedSecret = new byte[aliceLen];
+        int bobLen;
+        try {
+            // show example of what happens if you
+            // provide an output buffer that is too short
+            bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 1);
+        } catch (ShortBufferException e) {
+            System.out.println(e.getMessage());
+        }
+        // provide output buffer of required size
+        bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
+
+        System.out.println("Alice secret: " +
+          toHexString(aliceSharedSecret));
+        System.out.println("Bob secret: " +
+          toHexString(bobSharedSecret));
+
+        if (! java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
+            throw new Exception("Shared secrets differ");
+        System.out.println("Shared secrets are the same");
+
+        /*
+         * Now let's return the shared secret as a SecretKey object
+         * and use it for encryption.  First, we generate SecretKeys for the
+         * "DES" algorithm (based on the raw shared secret data) and
+         * then we use DES in ECB mode
+         * as the encryption algorithm.  DES in ECB mode does not require any
+         * parameters.
+         *
+         * Then we use DES in CBC mode, which requires an initialization
+         * vector (IV) parameter.  In CBC mode, you need to initialize the
+         * Cipher object with an IV, which can be supplied using the
+         * javax.crypto.spec.IvParameterSpec class.  Note that you have to use
+         * the same IV for encryption and decryption: If you use a different
+         * IV for decryption than you used for encryption, decryption will
+         * fail.
+         *
+         * NOTE: If you do not specify an IV when you initialize the
+         * Cipher object for encryption, the underlying implementation
+         * will generate a random one, which you have to retrieve using the
+         * javax.crypto.Cipher.getParameters() method, which returns an
+         * instance of java.security.AlgorithmParameters.  You need to transfer
+         * the contents of that object (e.g., in encoded format, obtained via
+         * the AlgorithmParameters.getEncoded() method) to the party who will
+         * do the decryption.  When initializing the Cipher for decryption,
+         * the (reinstantiated) AlgorithmParameters object must be passed to
+         * the Cipher.init() method.
+         */
+        System.out.println("Return shared secret as SecretKey object ...");
+        // Bob
+        // NOTE: The call to bobKeyAgree.generateSecret above reset the key
+        // agreement object, so we call doPhase again prior to another
+        // generateSecret call
+        bobKeyAgree.doPhase(alicePubKey, true);
+        SecretKey bobDesKey = bobKeyAgree.generateSecret("DES");
+
+        // Alice
+        // NOTE: The call to aliceKeyAgree.generateSecret above reset the key
+        // agreement object, so we call doPhase again prior to another
+        // generateSecret call
+        aliceKeyAgree.doPhase(bobPubKey, true);
+        SecretKey aliceDesKey = aliceKeyAgree.generateSecret("DES");
+
+        /*
+         * Bob encrypts, using DES in ECB mode
+         */
+        Cipher bobCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        bobCipher.init(Cipher.ENCRYPT_MODE, bobDesKey);
+
+        byte[] cleartext = "This is just an example". getBytes();
+        byte[] ciphertext = bobCipher.doFinal(cleartext);
+
+        /*
+         * Alice decrypts, using DES in ECB mode
+         */
+        Cipher aliceCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        aliceCipher.init(Cipher.DECRYPT_MODE, aliceDesKey);
+        byte[] recovered = aliceCipher.doFinal(ciphertext);
+
+        if (! java.util.Arrays.equals(cleartext, recovered))
+            throw new Exception("DES in CBC mode recovered text is " +
+              "different from cleartext");
+        System.out.println("DES in ECB mode recovered text is " +
+            "same as cleartext");
+
+        /*
+         * Bob encrypts, using DES in CBC mode
+         */
+        bobCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        bobCipher.init(Cipher.ENCRYPT_MODE, bobDesKey);
+
+        cleartext = "This is just an example". getBytes();
+        ciphertext = bobCipher.doFinal(cleartext);
+        // Retrieve the parameter that was used, and transfer it to Alice in
+        // encoded format
+        byte[] encodedParams = bobCipher.getParameters(). getEncoded();
+
+        /*
+         * Alice decrypts, using DES in CBC mode
+         */
+        // Instantiate AlgorithmParameters object from parameter encoding
+        // obtained from Bob
+        AlgorithmParameters params = AlgorithmParameters.getInstance("DES");
+        params.init(encodedParams);
+        aliceCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        aliceCipher.init(Cipher.DECRYPT_MODE, aliceDesKey, params);
+        recovered = aliceCipher.doFinal(ciphertext);
+
+        if (! java.util.Arrays.equals(cleartext, recovered))
+            throw new Exception("DES in CBC mode recovered text is " +
+              "different from cleartext");
+        System.out.println("DES in CBC mode recovered text is " +
+            "same as cleartext");
+    }
+
+    /*
+     * Converts a byte to hex digit and writes to the supplied buffer
+     */
+    private void byte2hex(byte b, StringBuffer buf) {
+        char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                            '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        int high = ((b &amp; 0xf0) &gt;&gt; 4);
+        int low = (b &amp; 0x0f);
+        buf.append(hexChars[high]);
+        buf.append(hexChars[low]);
+    }
+
+    /*
+     * Converts a byte array to hex string
+     */
+    private String toHexString(byte[] block) {
+        StringBuffer buf = new StringBuffer();
+
+        int len = block.length;
+
+        for (int i = 0; i &lt; len; i++) {
+             byte2hex(block[i], buf);
+             if (i &lt; len-1) {
+                 buf.append(":");
+             }
+        }
+        return buf.toString();
+    }
+
+    /*
+     * Prints the usage of this test.
+     */
+    private void usage() {
+        System.err.print("DHKeyAgreement usage: ");
+        System.err.println("[-gen]");
+    }
+
+    // The 1024 bit Diffie-Hellman modulus values used by SKIP
+    private static final byte skip1024ModulusBytes[] = {
+        (byte) 0xF4, (byte) 0x88, (byte) 0xFD, (byte) 0x58,
+        (byte) 0x4E, (byte) 0x49, (byte) 0xDB, (byte) 0xCD,
+        (byte) 0x20, (byte) 0xB4, (byte) 0x9D, (byte) 0xE4,
+        (byte) 0x91, (byte) 0x07, (byte) 0x36, (byte) 0x6B,
+        (byte) 0x33, (byte) 0x6C, (byte) 0x38, (byte) 0x0D,
+        (byte) 0x45, (byte) 0x1D, (byte) 0x0F, (byte) 0x7C,
+        (byte) 0x88, (byte) 0xB3, (byte) 0x1C, (byte) 0x7C,
+        (byte) 0x5B, (byte) 0x2D, (byte) 0x8E, (byte) 0xF6,
+        (byte) 0xF3, (byte) 0xC9, (byte) 0x23, (byte) 0xC0,
+        (byte) 0x43, (byte) 0xF0, (byte) 0xA5, (byte) 0x5B,
+        (byte) 0x18, (byte) 0x8D, (byte) 0x8E, (byte) 0xBB,
+        (byte) 0x55, (byte) 0x8C, (byte) 0xB8, (byte) 0x5D,
+        (byte) 0x38, (byte) 0xD3, (byte) 0x34, (byte) 0xFD,
+        (byte) 0x7C, (byte) 0x17, (byte) 0x57, (byte) 0x43,
+        (byte) 0xA3, (byte) 0x1D, (byte) 0x18, (byte) 0x6C,
+        (byte) 0xDE, (byte) 0x33, (byte) 0x21, (byte) 0x2C,
+        (byte) 0xB5, (byte) 0x2A, (byte) 0xFF, (byte) 0x3C,
+        (byte) 0xE1, (byte) 0xB1, (byte) 0x29, (byte) 0x40,
+        (byte) 0x18, (byte) 0x11, (byte) 0x8D, (byte) 0x7C,
+        (byte) 0x84, (byte) 0xA7, (byte) 0x0A, (byte) 0x72,
+        (byte) 0xD6, (byte) 0x86, (byte) 0xC4, (byte) 0x03,
+        (byte) 0x19, (byte) 0xC8, (byte) 0x07, (byte) 0x29,
+        (byte) 0x7A, (byte) 0xCA, (byte) 0x95, (byte) 0x0C,
+        (byte) 0xD9, (byte) 0x96, (byte) 0x9F, (byte) 0xAB,
+        (byte) 0xD0, (byte) 0x0A, (byte) 0x50, (byte) 0x9B,
+        (byte) 0x02, (byte) 0x46, (byte) 0xD3, (byte) 0x08,
+        (byte) 0x3D, (byte) 0x66, (byte) 0xA4, (byte) 0x5D,
+        (byte) 0x41, (byte) 0x9F, (byte) 0x9C, (byte) 0x7C,
+        (byte) 0xBD, (byte) 0x89, (byte) 0x4B, (byte) 0x22,
+        (byte) 0x19, (byte) 0x26, (byte) 0xBA, (byte) 0xAB,
+        (byte) 0xA2, (byte) 0x5E, (byte) 0xC3, (byte) 0x55,
+        (byte) 0xE9, (byte) 0x2F, (byte) 0x78, (byte) 0xC7
+    };
+
+    // The SKIP 1024 bit modulus
+    private static final BigInteger skip1024Modulus
+    = new BigInteger(1, skip1024ModulusBytes);
+
+    // The base used with the SKIP 1024 bit modulus
+    private static final BigInteger skip1024Base = BigInteger.valueOf(2);
+}
+</pre></li>
+  <HR>
+
+  <LI><A name=DH3Ex>
+<H3>3 개의 파티간의 Diffie-Hellman 열쇠 교환</H3></A> <pre>/*
+ * Copyright 1997-2001 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+import java.io. *;
+import java.math.BigInteger;
+import java.security. *;
+import java.security.spec. *;
+import java.security.interfaces. *;
+import javax.crypto. *;
+import javax.crypto.spec. *;
+import javax.crypto.interfaces. *;
+import com.sun.crypto.provider.SunJCE;
+
+/**
+ * This program executes the Diffie-Hellman key agreement protocol
+ * between 3 parties: Alice, Bob, and Carol.
+ *
+ * We use the same 1024-bit prime modulus and base generator that are
+ * used by SKIP.
+ */
+
+public class DHKeyAgreement3 {
+
+    private DHKeyAgreement3() {}
+
+    public static void main(String argv[]) {
+        try {
+            DHKeyAgreement3 keyAgree = new DHKeyAgreement3();
+            keyAgree.run();
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
+            System.exit(1);
+        }
+    }
+
+    private void run() throws Exception {
+
+        DHParameterSpec dhSkipParamSpec;
+
+        System.out.println("Using SKIP Diffie-Hellman parameters");
+        dhSkipParamSpec = new DHParameterSpec(skip1024Modulus, skip1024Base);
+
+        // Alice creates her own DH key pair
+        System.out.println("ALICE: Generate DH keypair ...");
+        KeyPairGenerator aliceKpairGen = KeyPairGenerator.getInstance("DH");
+        aliceKpairGen.initialize(dhSkipParamSpec);
+        KeyPair aliceKpair = aliceKpairGen.generateKeyPair();
+
+        // Bob creates his own DH key pair
+        System.out.println("BOB: Generate DH keypair ...");
+        KeyPairGenerator bobKpairGen = KeyPairGenerator.getInstance("DH");
+        bobKpairGen.initialize(dhSkipParamSpec);
+        KeyPair bobKpair = bobKpairGen.generateKeyPair();
+
+        // Carol creates her own DH key pair
+        System.out.println("CAROL: Generate DH keypair ...");
+        KeyPairGenerator carolKpairGen = KeyPairGenerator.getInstance("DH");
+        carolKpairGen.initialize(dhSkipParamSpec);
+        KeyPair carolKpair = carolKpairGen.generateKeyPair();
+
+
+        // Alice initialize
+        System.out.println("ALICE: Initialize ...");
+        KeyAgreement aliceKeyAgree = KeyAgreement.getInstance("DH");
+        aliceKeyAgree.init(aliceKpair.getPrivate());
+
+        // Bob initialize
+        System.out.println("BOB: Initialize ...");
+        KeyAgreement bobKeyAgree = KeyAgreement.getInstance("DH");
+        bobKeyAgree.init(bobKpair.getPrivate());
+
+        // Carol initialize
+        System.out.println("CAROL: Initialize ...");
+        KeyAgreement carolKeyAgree = KeyAgreement.getInstance("DH");
+        carolKeyAgree.init(carolKpair.getPrivate());
+
+
+        // Alice uses Carol's public key
+        Key ac = aliceKeyAgree.doPhase(carolKpair.getPublic(), false);
+
+        // Bob uses Alice's public key
+        Key ba = bobKeyAgree.doPhase(aliceKpair.getPublic(), false);
+
+        // Carol uses Bob's public key
+        Key cb = carolKeyAgree.doPhase(bobKpair.getPublic(), false);
+
+
+        // Alice uses Carol's result from above
+        aliceKeyAgree.doPhase(cb, true);
+
+        // Bob uses Alice's result from above
+        bobKeyAgree.doPhase(ac, true);
+
+        // Carol uses Bob's result from above
+        carolKeyAgree.doPhase(ba, true);
+
+
+        // Alice, Bob and Carol compute their secrets
+        byte[] aliceSharedSecret = aliceKeyAgree.generateSecret();
+        System.out.println("Alice secret: " + toHexString(aliceSharedSecret));
+
+        byte[] bobSharedSecret = bobKeyAgree.generateSecret();
+        System.out.println("Bob secret: " + toHexString(bobSharedSecret));
+
+        byte[] carolSharedSecret = carolKeyAgree.generateSecret();
+        System.out.println("Carol secret: " + toHexString(carolSharedSecret));
+
+
+        // Compare Alice and Bob
+        if (! java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
+            throw new Exception("Alice and Bob differ");
+        System.out.println("Alice and Bob are the same");
+
+        // Compare Bob and Carol
+        if (! java.util.Arrays.equals(bobSharedSecret, carolSharedSecret))
+            throw new Exception("Bob and Carol differ");
+        System.out.println("Bob and Carol are the same");
+    }
+
+
+    /*
+     * Converts a byte to hex digit and writes to the supplied buffer
+     */
+    private void byte2hex(byte b, StringBuffer buf) {
+        char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                            '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        int high = ((b &amp; 0xf0) &gt;&gt; 4);
+        int low = (b &amp; 0x0f);
+        buf.append(hexChars[high]);
+        buf.append(hexChars[low]);
+    }
+
+    /*
+     * Converts a byte array to hex string
+     */
+    private String toHexString(byte[] block) {
+        StringBuffer buf = new StringBuffer();
+
+        int len = block.length;
+
+        for (int i = 0; i &lt; len; i++) {
+             byte2hex(block[i], buf);
+             if (i &lt; len-1) {
+                 buf.append(":");
+             }
+        }
+        return buf.toString();
+    }
+
+    /*
+     * Prints the usage of this test.
+     */
+    private void usage() {
+        System.err.print("DHKeyAgreement usage: ");
+        System.err.println("[-gen]");
+    }
+
+    // The 1024 bit Diffie-Hellman modulus values used by SKIP
+    private static final byte skip1024ModulusBytes[] = {
+        (byte) 0xF4, (byte) 0x88, (byte) 0xFD, (byte) 0x58,
+        (byte) 0x4E, (byte) 0x49, (byte) 0xDB, (byte) 0xCD,
+        (byte) 0x20, (byte) 0xB4, (byte) 0x9D, (byte) 0xE4,
+        (byte) 0x91, (byte) 0x07, (byte) 0x36, (byte) 0x6B,
+        (byte) 0x33, (byte) 0x6C, (byte) 0x38, (byte) 0x0D,
+        (byte) 0x45, (byte) 0x1D, (byte) 0x0F, (byte) 0x7C,
+        (byte) 0x88, (byte) 0xB3, (byte) 0x1C, (byte) 0x7C,
+        (byte) 0x5B, (byte) 0x2D, (byte) 0x8E, (byte) 0xF6,
+        (byte) 0xF3, (byte) 0xC9, (byte) 0x23, (byte) 0xC0,
+        (byte) 0x43, (byte) 0xF0, (byte) 0xA5, (byte) 0x5B,
+        (byte) 0x18, (byte) 0x8D, (byte) 0x8E, (byte) 0xBB,
+        (byte) 0x55, (byte) 0x8C, (byte) 0xB8, (byte) 0x5D,
+        (byte) 0x38, (byte) 0xD3, (byte) 0x34, (byte) 0xFD,
+        (byte) 0x7C, (byte) 0x17, (byte) 0x57, (byte) 0x43,
+        (byte) 0xA3, (byte) 0x1D, (byte) 0x18, (byte) 0x6C,
+        (byte) 0xDE, (byte) 0x33, (byte) 0x21, (byte) 0x2C,
+        (byte) 0xB5, (byte) 0x2A, (byte) 0xFF, (byte) 0x3C,
+        (byte) 0xE1, (byte) 0xB1, (byte) 0x29, (byte) 0x40,
+        (byte) 0x18, (byte) 0x11, (byte) 0x8D, (byte) 0x7C,
+        (byte) 0x84, (byte) 0xA7, (byte) 0x0A, (byte) 0x72,
+        (byte) 0xD6, (byte) 0x86, (byte) 0xC4, (byte) 0x03,
+        (byte) 0x19, (byte) 0xC8, (byte) 0x07, (byte) 0x29,
+        (byte) 0x7A, (byte) 0xCA, (byte) 0x95, (byte) 0x0C,
+        (byte) 0xD9, (byte) 0x96, (byte) 0x9F, (byte) 0xAB,
+        (byte) 0xD0, (byte) 0x0A, (byte) 0x50, (byte) 0x9B,
+        (byte) 0x02, (byte) 0x46, (byte) 0xD3, (byte) 0x08,
+        (byte) 0x3D, (byte) 0x66, (byte) 0xA4, (byte) 0x5D,
+        (byte) 0x41, (byte) 0x9F, (byte) 0x9C, (byte) 0x7C,
+        (byte) 0xBD, (byte) 0x89, (byte) 0x4B, (byte) 0x22,
+        (byte) 0x19, (byte) 0x26, (byte) 0xBA, (byte) 0xAB,
+        (byte) 0xA2, (byte) 0x5E, (byte) 0xC3, (byte) 0x55,
+        (byte) 0xE9, (byte) 0x2F, (byte) 0x78, (byte) 0xC7
+    };
+
+    // The SKIP 1024 bit modulus
+    private static final BigInteger skip1024Modulus
+    = new BigInteger(1, skip1024ModulusBytes);
+
+    // The base used with the SKIP 1024 bit modulus
+    private static final BigInteger skip1024Base = BigInteger.valueOf(2);
+}
+</pre></li>
+  <HR>
+
+  <LI><A name=BlowKeyEx>
+<H3>Blowfish 암호의 예</H3></A> <pre>/*
+ * Copyright 1997-2001 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+import java.security. *;
+import javax.crypto. *;
+import javax.crypto.spec. *;
+
+/**
+ * This program generates a Blowfish key, retrieves its raw bytes, and
+ * then reinstantiates a Blowfish key from the key bytes.
+ * The reinstantiated key is used to initialize a Blowfish cipher for
+ * encryption.
+ */
+
+public class BlowfishKey {
+
+    public static void main(String[] args) throws Exception {
+
+        KeyGenerator kgen = KeyGenerator.getInstance("Blowfish");
+        SecretKey skey = kgen.generateKey();
+        byte[] raw = skey.getEncoded();
+        SecretKeySpec skeySpec = new SecretKeySpec(raw, "Blowfish");
+
+        Cipher cipher = Cipher.getInstance("Blowfish");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+        byte[] encrypted =
+            cipher.doFinal("This is just an example". getBytes());
+    }
+}
+</pre></li>
+  <HR>
+
+  <LI><A name=HmacEx>
+<H3>HMAC-MD5 의 예</H3></A> <pre>/*
+ * Copyright 1997-2001 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+import java.security. *;
+import javax.crypto. *;
+
+/**
+ * This program demonstrates how to generate a secret-key object for
+ * HMAC-MD5, and initialize an HMAC-MD5 object with it.
+ */
+
+public class initMac {
+
+    public static void main(String[] args) throws Exception {
+
+        // Generate secret key for HMAC-MD5
+        KeyGenerator kg = KeyGenerator.getInstance("HmacMD5");
+        SecretKey sk = kg.generateKey();
+
+        // Get instance of Mac object implementing HMAC-MD5, and
+        // initialize it with the above secret key
+        Mac mac = Mac.getInstance("HmacMD5");
+        mac.init(sk);
+        byte[] result = mac.doFinal("Hi There". getBytes());
+    }
+}
+</pre></li>
+<hr>
+  <li><a name="ReadPassword">
+
+<H3>InputStream 로부터 ASCII 패스워드를 읽어내는 예</H3></A> <pre>
+/*
+ * @(#) ReadPassword.java  1.1 06/06/07
+ *
+ * Copyright 2006 Sun Microsystems, Inc.  All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL.  Use is subject to license terms.
+ */
+
+import java.util. *;
+import java.io. *;
+import java.security. *;
+
+public class ReadPassword {
+    /**
+     * Read a password from the InputStream "in".
+     * &lt;p&gt;
+     * As Strings are immutable, passwords should be stored as an array
+     * of characters, which can be blanked out when no longer needed.
+     * &lt;p&gt;
+     * If the provided InputStream is the System's Console, this method
+     * uses the non-echoing readPassword() method of java.io.Console
+     * (new to JDK 6).   If not, a fallback implementation is used.
+     * &lt;p&gt;
+     * NOTE:  For expository purposes, and because some applications do
+     * not understand multi-byte characters, only 8-bit ASCII passwords
+     * are handled here.
+     * &lt;p&gt;
+     * NOTE:  If a SecurityManager is used, the default standard
+     * java.policy file found in Sun's JDK (i.e.
+     * <java-home>/lib/security/java.policy) allows reading the
+     * line.separator property.   If your environment is different, this
+     * code will need to be granted the appropriate privilege.
+     *
+     * @param	in
+     *		the InputStream used to obtain the password.
+     *
+     * @return	A character array containing the password or passphrase,
+     *		not including the line-termination characters,
+     *		or <tt>null</tt> if an end of stream has been reached.
+     *
+     * @throws	IOException
+     *		if an I/O problem occurs
+     */
+    public static final char[] readPassword(InputStream in)
+	    throws IOException {
+
+	/*
+	 * If available, directly use the java.io.Console class to
+	 * avoid character echoing.
+	 */
+	if (in == System.in && System.console() ! = null) {
+	    // readPassword returns "" if you just print ENTER,
+	    return System.console(). readPassword();
+	}
+
+	/*
+	 * If a console is not available, read the InputStream
+	 * directly.   This approach may cause password echoing.
+	 *
+	 * Since different operating systems have different End-Of-Line
+	 * (EOL) sequences, this algorithm should allow for
+	 * platform-independent implementations.   Typical EOL sequences
+	 * are a single line feed ('\n'), or a carriage return/linefeed
+	 * combination ('\r\n').   However, some OS's use a single
+	 * a carriage return ('\r'), which complicates portability.
+	 *
+	 * Since we may not have the ability to push bytes back into the
+	 * InputStream, another approach is used here.   The javadoc for
+	 * <code>java.lang.System.getProperties()</code> specifies that
+	 * the set of system properties will contain a system-specific
+	 * value for the "line.separator".   Scan for this character
+	 * sequence instead of hard-coding a particular sequence.
+	 */
+	 
+	/*
+	 * Enclose the getProperty in a doPrivileged block to minimize
+	 * the call stack permission required.
+	 */
+	char [] EOL = AccessController.doPrivileged(
+	    new PrivilegedAction<char[]>() {
+		public char[] run() {
+		    String s = System.getProperty("line.separator");
+		    // Shouldn't happen.
+		    if (s == null) {
+			throw new RuntimeException(
+			    "line.separator not defined");
+		    }
+		    return s.toCharArray();
+		}
+	    });
+
+	char [] buffer = new char[128];
+	try {
+	    int len = 0;		// len of data in buffer.
+	    boolean done = false;	// found the EOL sequence
+	    int b;			// byte read
+
+	    while (! done) {
+		/*
+		 * realloc if necessary
+		 */
+		if (len >= buffer.length) {
+		    char [] newbuffer = new char[len + 128];
+		    System.arraycopy(buffer, 0, newbuffer, 0, len);
+		    Arrays.fill(buffer, ' ');
+		    buffer = newbuffer;
+		}
+
+		/*
+		 * End-of-Stream?
+		 */
+		if ((b = in.read()) == -1) {
+		    // Return as much as we have, null otherwise.
+		    if (len == 0) {
+			return null;
+		    }
+		    break;
+		} else {
+		    /*
+		     * NOTE:  In the simple PBE example here,
+		     * only 8 bit ASCII characters are handled.
+		     */
+		    buffer[len++] = (char) b;
+		}
+
+		/*
+		 * check for the EOL sequence.   Do we have enough bytes?
+		 */
+		if (len >= EOL.length) {
+		    int i = 0;
+		    for (i = 0; i < EOL.length; i++) {
+			if (buffer[len - EOL.length + i] ! = EOL[i]) {
+			    break;
+			}
+		    }
+		    done = (i == EOL.length);
+		}
+	    }
+
+	    /*
+	     * If we found the EOL, strip the EOL chars.
+	     */
+	    char [] result = new char[done ?  len - EOL.length : len];
+	    System.arraycopy(buffer, 0, result, 0, result.length);
+
+	    return result;
+	} finally {
+	    /*
+	     * Zero out the buffer.
+	     */
+	    if (buffer ! = null) {
+		Arrays.fill(buffer, ' ');
+	    }
+	}
+    }
+}
+  </li>
+</ul>
+</BODY>
+</HTML>

@@ -1,0 +1,112 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+<link rel="stylesheet" href="../../css/tools.css"  type="text/css" />
+<title>jsadebugd - 서비스 능력 에이전트 디버그 demon - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+<h1>jsadebugd - 서비스 능력 에이전트 디버그 demon</h1>
+
+  <ul>
+<li><a href="#synopsis">형식</a> </li>
+
+<li><a href="#parameters">파라미터</a> </li>
+
+<li><a href="#description">설명</a> </li>
+
+<li><a href="#seealso">관련 항목</a> </li>
+  </ul>
+
+<h2><a name="synopsis"/>형식</h2>
+
+  <blockquote>
+    <pre>
+<b>jsadebugd</b> pid [ server-id ]
+<b>jsadebugd</b> executable core [ server-id ]
+</pre>
+  </blockquote>
+
+<h2><a name="parameters"/>파라미터</h2>
+
+  <blockquote>
+    <dl>
+<dt><span style="font-weight: bold;">pid</span></dt>
+
+<dd>디버그 서버가 접속하는 프로세스의 프로세스 ID 입니다. 프로세스는 Java 프로세스일 필요가 있습니다. 머신상에서 실행하고 있는 Java 프로세스의 일람을 가져오려면 ,<a href=       "jps.html">jps</a>  를 사용합니다. 단일의 프로세스에 접속할 수 있는 디버그 서버의 인스턴스는, 1 개(살)에 제한됩니다. </dd>
+    </dl>
+
+    <dl>
+<dt><span style="font-weight: bold;">executable</span></dt>
+    </dl>
+
+    <dl style="margin-left: 40px;">
+<dt>코어덤프의 작성 바탕으로 되는 Java 실행 가능 파일입니다. </dt>
+    </dl>
+
+    <dl>
+<dt><span style="font-weight: bold;">core</span></dt>
+
+<dd>디버그 서버를 접속하는 코어 파일입니다. </dd>
+    </dl>
+    <dl>
+    <dt>
+<span style="font-weight: bold;">server-id</span></dt>
+
+    <dd>
+복수의 디버그 서버가 동일한 머신상에서 실행하고 있는 경우에 필요하게 되는, 옵션 고유의 ID 입니다. 이 ID 는, 원격 클라이언트가, 접속처의 디버그 서버를 특정하기 위해서 사용할 필요가 있습니다. 이 ID 는, 단일의 머신내에서 일의가 아니면 안됩니다.
+    </dd></dl>
+  </blockquote>
+
+<h2><a name="description" id="description">설명</a> </h2>
+
+  <blockquote>
+  <p>
+<b>jsadebugd</b> 는, Java 프로세스 또는 코어 파일에 접속해, 디버그 서버로서 기능합니다. <a href=     "jstack.html">jstack</a> ,<a href="jmap.html">jmap</a> , 및 <a href="jinfo.html">jinfo</a>  등의 원격 클라이언트는, Java Remote Method Invocation (RMI)를 사용하고 있는 서버에 접속할 수 있습니다. <code>jsadebugd</code> 를 기동하기 전에, 다음과 같이 지정해 <a href=     "../index.html#rmi">rmiregistry</a>  를 기동할 필요가 있습니다.
+</p>
+    <blockquote>
+      <pre>
+<code>rmiregistry -J-Xbootclasspath/p:$JAVA_HOME/lib/sajdi.jar</code>
+</pre>
+    </blockquote>
+    <p>
+여기서,<code>$JAVA_HOME</code> 는, JDK 의 인스톨 디렉토리입니다. rmiregistry 가 기동하고 있지 않는 경우, jsadebugd 는 표준 (1099) 포트의 rmiregistry 를 내부에서 기동합니다. 디버그 서버는, SIGINT 를 송신하는 (Ctrl+C 를 누른다)  것에 따라 정지할 수 있습니다.
+</p>
+<p><b>주 - 이 유틸리티는 지원 대상외이며, 장래의 JDK 의 버젼에서는 이용할 수 없게 될 가능성이 있습니다. jsadebugd 는, 현시점에서는, Windows 플랫폼에서는 사용할 수 없습니다. </b></p>
+  </blockquote>
+
+<h2><a name="seealso">관련 항목</a> </h2>
+
+    <ul>
+<li><a href="jinfo.html">jinfo</a> </li>
+
+<li><a href="jmap.html">jmap</a> </li>
+
+<li><a href="jps.html">jps</a> </li>
+
+<li><a href="jstack.html">jstack</a> </li>
+
+<li><a href="../index.html#rmi">rmiregistry</a> </li>
+    </ul>
+  <hr/>
+
+  <table border="0" width="100%" summary="layout">
+    <tbody>
+      <tr valign="top">
+        <td>
+<p><a href=           "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2004 - 2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+        </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"         alt="Sun" width="64" height="30" /><br /> <i> Java Software </i></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

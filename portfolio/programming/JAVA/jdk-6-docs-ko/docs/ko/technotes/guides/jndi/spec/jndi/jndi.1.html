@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>1 처음에 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><TABLE summary="layout" WIDTH="100%" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD>
+<A HREF="jndiTOC.html">목차</A>  | <A HREF="jndiTOC.html">전의 항목</A>  | <A HREF="jndi.2.html">다음의 항목</A> </TD> 
+    <TD ALIGN="RIGHT">
+<I><FONT COLOR="#707070">JNDI API</FONT></I></TD> 
+  </TR>
+</TABLE><BR>
+<HR ALIGN=LEFT SIZE="8" WIDTH="35%" NOSHADE><p></P>
+
+<H2 CLASS="chapter"><A NAME="pgfId=997832"></A> 	1. 	 <A NAME="38451"></A> 처음에</H2>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997833"></A> 디렉토리 서비스는, 사용자, 머신, 네트워크, 서비스, 및 어플리케이션에 관한 다양한 정보에의 액세스를 제공하는 것에 의해, 인트라넷 및 인터넷에 대해 중요한 역할을 완수합니다. 그 성질상, 디렉토리 서비스에는, 인간이 이해할 수 있는 이름 공간을 제공하는 네이밍 기능이 짜넣어지고 있어 다양한 엔티티의 처리 및 식별을 용이하게 실시할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=997834"></A> 기업의 컴퓨팅 환경은 일반적으로, 복합명의 이름 공간의 다양한 부분을 나타내는 몇개의 네이밍 기능으로 구성되어 있습니다. 예를 들어, 기업내의 다양한 조직의 톱 레벨의 네이밍 기능으로서 Internet Domain Name System (DNS)가 사용되는 경우가 있습니다. 한편, 그 조직 자체는, LDAP, NDS, NIS 등의 디렉토리 서비스를 사용하고 있을 가능성이 있습니다. 사용자의 관점으로부터 보면(자), 복합명으로 구성되는 1 개의 이름 공간이 있는 것처럼 보입니다. 복합명의 예로서 URL 를 들 수가 있습니다.  URL 는, 복수의 네이밍 기능의 이름 공간에 걸치고 있습니다. 디렉토리 서비스를 사용하는 어플리케이션에서는, 이 사용자의 관점을 지원하지 않으면 안됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=997835"></A> 디렉토리 서비스 API 는, Java<SUP><FONT SIZE="-2">TM</FONT></SUP> 어플리케이션의 개발자에게 있어 편리한 기능입니다.  특정의 디렉토리 또는 네임 서비스의 구현에 의존하지 않는 데다가, 복수의 네이밍 기능을 경유해 디렉토리 객체에 심리스에 액세스 할 수 있기 (위해)때문에입니다. 실제, 모든 어플리케이션으로부터 독자적인 객체를 이름 공간에 접속할 수 있습니다. 이 네이밍 기능을 사용해, Java 어플리케이션으로부터, 임의의 형태의 객체의 검출 및 취득을 실시할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=997836"></A> 최종 사용자는, 논리 이름 공간을 사용해, 네트워크내의 객체의 검출 및 식별을 간단하게 실시할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=997837"></A> 디렉토리 서비스의 개발자는, 서비스 프로바이더 기능을 사용해, 클라이언트를 변경하지 않고 각 구현을 짜넣을 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=997838"></A> Java Naming and Directory Interface<SUP><FONT SIZE="-2">TM</FONT></SUP> (JNDI)는, 디렉토리 및 네이밍 기능을 Java 어플리케이션에 제공하는 API 입니다. JNDI 는, 특정의 디렉토리 서비스 구현에 의존하지 않게 정의되고 있습니다. 따라서, 다양한 디렉토리에 공통의 방법으로 액세스 할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=997839"></A> 다음에, 자주(잘) 사용되는 JNDI 의 기능의 간단한 예를 2 개 가리킵니다. </P>
+<P CLASS="body"><A NAME="pgfId=997840"></A> 프린터에 액세스 하는 어플리케이션에는, 대응하는 프린터 객체가 필요합니다. 이 대응부는, 다음과 같이 해 실시합니다. </P>
+  <BLOCKQUOTE>
+<PRE>prt = (Printer) building7.lookup(&quot;puffin&quot;);
+prt.print(document);</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997843"></A> 프린터 객체의 구축에 필요한 정보의 검색은, 모두 JNDI 가 실시합니다. </P>
+<P CLASS="body"><A NAME="pgfId=997844"></A> 조직의 디렉토리에 포함되고 있는 사용자의 전화번호를 어플리케이션으로부터 검색하는 경우는, 다음과 같이 지정합니다. </P>
+  <BLOCKQUOTE>
+<PRE>String[] attrs = {&quot;workPhone&quot;, &quot;cellPhone&quot;, &quot;faxNumber&quot;};
+bobsPhones = directory.getAttributes(&quot;cn=Bob, o=Widget, c=US&quot;, attrs);</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997847"></A> 또 「Widget」라고 하는 조직에 「Bob」라고 하는 이름의 사용자가 복수 존재하는 경우는, 다음과 같이 하면, 조직의 디렉토리를 검색해 올바른 「Bob」를 찾아낼 수가 있습니다. </P>
+  <BLOCKQUOTE>
+<PRE>bob = directory.search(&quot;o=Widget, c=US&quot;, &quot;(cn=Bob) &quot;, searchctls);</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997849"></A> 이 문서에서는, JNDI 의 아키텍쳐(architecture) 및 인터페이스에 대해 설명합니다. </P>
+</BLOCKQUOTE>
+
+<P CLASS="body"><HR ALIGN=LEFT><A HREF="jndiTOC.html">목차</A>  | <A HREF="jndiTOC.html">전의 항목</A>  | <A HREF="jndi.2.html">다음의 항목</A> <HR ALIGN=LEFT><I><FONT  SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright</A>  &COPY;1997-1999 Sun Microsystems, Inc.  All Rights Reserved. </FONT></I>
+
+</BODY>
+</HTML>

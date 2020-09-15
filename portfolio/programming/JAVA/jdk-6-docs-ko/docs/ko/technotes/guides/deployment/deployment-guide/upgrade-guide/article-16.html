@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Java Plug-in 가 브라우저 증명서 스토어내의 증명서를 사용하지 않는다 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2><span class="bg2">Java Plug-in 가 HTTPS 클라이언트 인증에 브라우저 증명서 스토어내의 증명서를 사용하지 않는다</span></h2>
+<h3><font color="#CC0033"><br> 증상</font></h3>
+  <blockquote> 
+<p>클라이언트의 인증에 브라우저로부터의 증명서를 사용할 수 없다</p>
+  </blockquote>
+<h3> <font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p>Java Plug-in 에서는, 클라이언트를 인증하기 위해서, JRE 전용의 증명서 스토어로부터의 증명서를 사용합니다. 그러나, 브라우저 증명서 스토어로부터의 증명서를 사용하지 않습니다. </p>
+  </blockquote>
+<h3> <font color="#CC0033">해결 방법</font></h3>
+  <blockquote> 
+<p>Java Plug-in 에서의 클라이언트 인증에는, 사용자의 디스크상에 있는 클라이언트 증명서 스토어, 키스토어의 타입, 및 액세스하기 위한 패스워드가 필요합니다. 이것들 3 개의 파라미터는, 다음과 같이 해 시스템 프로퍼티으로 지정하지 않으면 안됩니다. </p>
+    <blockquote> 
+      <p><code>-Djavax.net.ssl.keyStore=&lt;client_keystore_file_path&gt;</code><br> <code>-Djavax.net.ssl.keyStorePassword=&lt;password to access the client keystore file&gt;<br> -Djavax.net.ssl.keyStoreType=&lt;keystore_type&gt;</code></p>
+    </blockquote>
+<p>이러한 프로퍼티은, Java 컨트롤 패널의 「상세」탭으로 지정합니다. </p>
+<p>디지털 증명서를 브라우저 증명서 스토어로부터 파일에 export 하는 순서를 다음에 나타냅니다. </p>
+    <ol>
+<li>브라우저 윈도우를 열어, 「툴」을 클릭해, 「인터넷 옵션」부메뉴 항목을 클릭합니다. </li>
+<li>「컨텐츠」탭을 클릭합니다. </li>
+<li>안정도의 증명서의 영역에서, 「증명서」버튼을 클릭합니다. 이용 가능한 증명서가 다이알로그 박스에 표시됩니다. </li>
+<li>「목적」드롭 다운 메뉴로부터 「클라이언트 인증」을 선택합니다. </li>
+<li>export 하는 증명서를 선택합니다. </li>
+<li>「export」버튼을 클릭합니다. 「증명서의 export 위저드」가 기동합니다. </li>
+<li>「증명서의 export 위저드의 개시」윈도우로 「다음에」를 클릭합니다. </li>
+      <li>Keep the default to &quot;Yes, export the private key&quot; and click Next. </li>
+      <li>Keep the default to &quot;Personal Information Exchange - PKCS #12(. PFX) &quot; and click Next. </li>
+<li>「Password」윈도우에 입력합니다. </li>
+<li>export 하는 파일의 패스와 파일명을 입력합니다. 자동적으로 확장자(extension) <code>. pfx</code> 가 부가됩니다. 「다음에」를 클릭합니다. </li>
+<li>정보를 확인해, 「완료」를 클릭합니다. </li>
+    </ol>
+<h4>례:</h4>
+    <p>증명서를 파일 (패스를 포함한다)<code> c:\certs\client.pfx </code>에 export 해, 패스워드 &quot;test&guot; 를 사용해<code> . pfx </code>파일을 보호하는 경우는, 필요한 시스템 프롭퍼티의 값은 다음과 같이 됩니다. </p>
+    <blockquote> 
+<p><code>-Djavax.net.ssl.keyStore=c:\certs\client.pfx<br> -Djavax.net.ssl.keyStorePassword=test<br> -Djavax.net.ssl.keyStoreType=pkcs12</code></p>
+    </blockquote>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+  <blockquote> 
+<p>없음 <br>
+    </p>
+  </blockquote>
+</blockquote>
+</body>
+</html>

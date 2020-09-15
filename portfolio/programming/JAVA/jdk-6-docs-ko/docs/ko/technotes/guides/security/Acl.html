@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE> 액세스 콘트롤 리스트
+
+ - xrath.com 에서 번역됨</TITLE>
+<META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (Win95; I) [Netscape]">
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>액세스 컨트롤의 개요</H1>
+<br>
+
+<H3 ALIGN=CENTER><I>최종 갱신일:2001 연 4 월 30 일</I></H3>
+
+<HR>
+
+<H1>java.security.acl </H1>
+
+<HR>
+
+<H2>처음에</H2>
+
+<P>액세스 콘트롤 리스트 (ACL)는, 자원에의 액세스를 보호하는 데이터 구조체입니다. java.security.acl 패키지는, 이러한 데이터 구조체에의 인터페이스를 제공해, sun.security.acl 패키지는 java.security.acl 패키지로 지정한 인터페이스의 디폴트의 구현을 제공합니다.  
+
+<p>주:이 API 는, JDK system security용으로 내부적으로 사용할 수 없습니다. 이 API 는 JDK 1.1 으로부터 도입되어 후방 호환성을 위해서(때문에) 남아 있습니다. 장래의 릴리스로 실질적인 변경, 확장을 하거나 또 완전하게 옮겨놓을 수 있을 가능성이 있습니다. 이 문서에서는, 현재의 인터페이스에 대해 설명합니다.
+
+<p>ACL 는, 복수의 ACL 항목을 가지는 데이터 구조체라고 생각할 수가 있습니다. 각각의 ACL 항목은, 특정의 법칙에 관련하는 액세스권세트를 포함하고 있습니다. (법칙은 개별의 사용자나 그룹등의 엔티티를 나타낸다). 게다가 각 ACL 항목은, 정 또는 부로 지정되고 있습니다. 정의 경우는, 관련하는 법칙에 액세스권이 주어집니다. 부의 경우, 액세스권은 거부됩니다. <p>
+
+<p>액세스 콘트롤 리스트는, 법칙의 타당성의 검사에 사용하는 인증 방식으로 의존하지 않습니다. 또, 네트워크 전체에 데이터를 전송 하기 위해서 사용되는 암호화 방식에도 의존하지 않습니다. ACL 는 인증 국면의 나중에 조사됩니다. 법칙이 시스템으로 권한이 있는 사용자이다고 확인되면(자), 법칙은 자원에 액세스 할 수가 있습니다. 자원 마다, 자원을 보호하는 ACL 의 법칙에게 줄 수 있었던 액세스권에 응해, 법칙은 액세스가 허가되거나 되지 않거나 합니다. ACL 그것 자신은, 보호하는 법칙에 의존하지 않습니다. ACL 를 조사하는 것으로써, 특정의 법칙이 가지는 액세스권의 리스트를 찾아내거나 법칙에 특정의 액세스권이 주어지고 있는지 어떤지를 조사하거나 할 수가 있습니다.
+</P>
+
+<H2>ACL 구조체 </H2>
+
+<P>ACL 는, java.security.acl.Acl 인터페이스를 구현하는 객체입니다. 각 ACL 는, AclEntry 객체의 리스트입니다. 각 AclEntry 는, Principal 또는 Group 객체를 Permission 객체의 리스트에 관련짓습니다. 덧붙여 Group 는 Principal 의 서브 클래스입니다. ) 각 AclEntry 는, 정의 엔트리 또는 부의 엔트리로서 작성할 수도 있습니다. 정의 엔트리는 엔트리의 액세스권의 리스트를 법칙이나 그룹에게 주어 부의 엔트리는 법칙이나 그룹에의 액세스권의 리스트를 거부합니다.  </P>
+
+<H2>부여된 액세스권의 계산 </H2>
+
+<P>법칙이 부여되는 넷 액세스권을 계산할 때는, 다음의 규칙을 사용합니다.  </P>
+
+<OL>
+<LI>각각의 법칙이나 그룹은, 최대로 1 살의 정의 ACL 엔트리와 1 개의 부의 엔트리를 가질 수가 있습니다. 즉, 법칙이나 그룹에 복수의 정 또는 부의 ACL 엔트리를 할당할 수 없습니다.  </LI>
+
+<LI>특정의 법칙 또는 그룹에 엔트리가 없을 때는, 법칙 또는 그룹은 null 의 액세스권 세트를 가지고 있습니다.  </LI>
+
+<LI>법칙에 대한 넷 그룹의 정의 액세스권 세트는, 그 법칙이 부속되는 각 그룹의 정의 액세스권의 공용체입니다.  </LI>
+
+<LI>법칙에 대한 넷 그룹의 부의 액세스권 세트는, 그 법칙이 부속되는 각 그룹의 부의 액세스권 모든 공용체입니다.  </LI>
+
+<LI>법칙 또는 그룹에 특정의 액세스권을 부여하는 정의 엔트리, 및 법칙 또는 그룹에 같은 액세스권을 거부하는 부의 엔트리가 있는 경우는, 그 액세스권이 정의 액세스권 세트와 부의 액세스권 세트의 양쪽 모두로부터 삭제됩니다.  </LI>
+
+<LI>개개의 액세스권 (특정의 법칙에 부여 또는 거부된 액세스권)은, 항상 Group 액세스권을 오버라이드(override) 합니다. 특히, 개개의 부의 액세스권 (액세스권의 특정 거부)은, 그룹의 정의 액세스권을 오버라이드(override) 합니다. 또, 개개의 정의 액세스권은 그룹의 부의 액세스권을 오버라이드(override) 합니다.  </LI>
+
+<LI>여기서, 법칙이 소속하는 모든 그룹의 정의 액세스권 세트를 g1, 법칙이 소속하는 모든 그룹의 부의 액세스권 세트를 g2 로 합니다. 게다가 법칙에 대한 개개의 부의 액세스권 세트를 p1, 법칙에 대한 개개의 부의 액세스권 세트를 p2 로 합니다. 법칙이 부여되는 액세스권은 (p1 + (g1 - p2)) - (p2 + (g2 - p1))가 됩니다.  </LI>
+</OL>
+
+<H2>액세스권 계산의 예 </H2>
+
+<P>법칙 P 가 그룹 G1 와 G2 에 소속한다고 합니다. 다음에, G1, G2, P 에게 줄 수 있는 액세스권의 예를 사용해 5 열의 겉(표)를 나타냅니다. P 에게 줄 수 있는 액세스권은 마지막 열에 표시됩니다.
+</P>
+
+<TABLE summary="example permissions calculations" CELLSPACING=0 CELLPADDING=0 >
+<thead>
+<TR>
+<TH></TH>
+
+<TH>그룹 G1 액세스권</TH>
+
+<TH>그룹 G2 액세스권 </TH>
+
+<TH>공용체 (G1, G2) 액세스권</TH>
+
+<TH>개개의 액세스권 </TH>
+
+<TH>부여되는 액세스권 </TH>
+
+<TD></TD>
+</TR>
+</thead>
+<TR>
+<TH>정 </TH>
+
+<TD align = center>A </TD>
+
+<TD align = center>B </TD>
+
+<TD align = center>A+B </TD>
+
+<TD align = center>C </TD>
+
+<TD align = center rowspan = 2>A+B+C </TD>
+</TR>
+
+<TR>
+<TH>부 </TH>
+
+<TD align = center>null 세트 </TD>
+
+<TD align = center>null 세트</TD>
+
+<TD align = center>null 세트 </TD>
+
+<TD align = center>null 세트 </TD>
+</TR>
+
+<TR>
+<TD><BR>
+</TD>
+</TR>
+
+<TR>
+<TH>정 </TH>
+
+<TD align = center>A </TD>
+
+<TD align = center>B </TD>
+
+<TD align = center>B </TD>
+
+<TD align = center>C </TD>
+
+<TD align = center rowspan = 2>B+C </TD>
+</TR>
+
+<TR>
+<TH>부 </TH>
+
+<TD align = center>-C </TD>
+
+<TD align = center>-A </TD>
+
+<TD align = center>-C </TD>
+
+<TD align = center>null 세트</TD>
+</TR>
+
+<TR>
+<TD><BR>
+</TD>
+</TR>
+
+<TR>
+<TH>정 </TH>
+
+<TD align = center>A </TD>
+
+<TD align = center>B </TD>
+
+<TD align = center>A+B </TD>
+
+<TD align = center>C </TD>
+
+<TD align = center rowspan = 2>B+C </TD>
+</TR>
+
+<TR>
+<TH>부 </TH>
+
+<TD align = center>null 세트</TD>
+
+<TD align = center>null 세트</TD>
+
+<TD align = center>null 세트</TD>
+
+<TD align = center>-A</TD>
+</TR>
+
+<TR>
+<TD><BR>
+</TD>
+</TR>
+
+<TR>
+<TH>정 </TH>
+
+<TD align = center>A </TD>
+
+<TD align = center>C </TD>
+
+<TD align = center>A </TD>
+
+<TD align = center>B </TD>
+
+<TD align = center rowspan = 2>B </TD>
+</TR>
+
+<TR>
+<TH>부 </TH>
+
+<TD align = center>-C</TD>
+
+<TD align = center>-B</TD>
+
+<TD align = center>-B</TD>
+
+<TD align = center>-A</TD>
+</TR>
+</TABLE>
+
+<P><BR>
+</P>
+
+<H2>사용예 </H2>
+
+<pre>
+/* Note: This sample program is meant just as an example
+ * of the types of things that can be done with an
+ * implementation of the java.security.acl interfaces.  
+ * This example uses the implementation supplied by the 
+ * sun.security.acl package.  Please note that sun. * classes 
+ * are unsupported and subject to change.
+*/
+
+import java.security.Principal;
+import java.security.acl. *;
+import sun.security.acl. *;
+import java.util.Enumeration;
+
+public class AclEx {
+
+  public static void main(String argv[])  
+    throws Exception
+  {
+
+    Principal p1 = new PrincipalImpl("user1");
+    Principal p2 = new PrincipalImpl("user2");
+    Principal owner = new PrincipalImpl("owner");
+ 
+    Permission read = new PermissionImpl("READ");
+    Permission write = new PermissionImpl("WRITE");
+ 
+    System.out.println("Creating a new group with two members: user1 and
+user2");
+    Group g = new GroupImpl("group1");
+    g.addMember(p1);
+    g.addMember(p2);
+ 
+    // 
+    // create a new acl with the name "exampleAcl" 
+    // 
+    System.out.println("Creating a new Acl named 'exampleAcl'");
+    Acl acl = new AclImpl(owner, "exampleAcl"); 
+ 
+    // 
+    // Allow group all permissions 
+    // 
+    System.out.println("Creating a new Acl Entry in exampleAcl for the
+group, ");
+    System.out.println("  with read & write permissions");
+    AclEntry entry1 = new AclEntryImpl(g); 
+    entry1.addPermission(read); 
+    entry1.addPermission(write); 
+    acl.addEntry(owner, entry1); 
+ 
+    // 
+    // Take away WRITE permissions for  
+    // user1.  All others in groups still have 
+    // WRITE privileges.  
+    // 
+    System.out.println("Creating a new Acl Entry in exampleAcl for user1");
+    System.out.println("  without write permission");
+    AclEntry entry2 = new AclEntryImpl(p1); 
+    entry2.addPermission(write); 
+    entry2.setNegativePermissions(); 
+    acl.addEntry(owner, entry2);         
+ 
+    // 
+    // This enumeration is an enumeration of  
+    // Permission interfaces.  It should return 
+    // only "READ" permission.  
+    Enumeration e1 = acl.getPermissions(p1); 
+    System.out.println("Permissions for user1 are:");
+    while (e1.hasMoreElements()) {
+	System.out.println("  " + e1.nextElement());
+	};
+ 
+    // 
+    // This enumeration should have "READ" and"WRITE"  
+    // permissions.  
+    Enumeration e2 = acl.getPermissions(p2); 
+    System.out.println("Permissions for user2 are:");
+    while (e2.hasMoreElements()) {
+	System.out.println("  " + e2.nextElement());
+	};
+
+    // This should return false.  
+    boolean b1 = acl.checkPermission(p1, write); 
+    System.out.println("user1 has write permission: " + b1);
+     
+    // This should all return true; 
+    boolean b2 = acl.checkPermission(p1, read); 
+    boolean b3 = acl.checkPermission(p2, read); 
+    boolean b4 = acl.checkPermission(p2, write); 
+    System.out.println("user1 has read permission: " + b2);
+    System.out.println("user2 has read permission: " + b3);
+    System.out.println("user2 has write permission: " + b4);
+  }
+}
+</pre>
+
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+ 
+<IMG alt="Sun 로고" SRC="../../../images/sunlogo64x30.gif" ALIGN=RIGHT>
+ 
+<FONT SIZE=-2><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1996-2001 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA 94043-1100 USA.All rights reserved. </FONT>
+
+<br><br> <FONT SIZE=-1>코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> </FONT>
+
+
+</BODY>
+</HTML>

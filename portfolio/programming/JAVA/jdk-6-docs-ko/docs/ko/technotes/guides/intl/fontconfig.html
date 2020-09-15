@@ -1,0 +1,313 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>폰트 구성 파일 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>폰트 구성 파일</CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<P>Java 플랫폼에서는, 모든 구현으로 지원가 요구되는 5 개의 논리 폰트명 (Serif, SansSerif, Monospaced, Dialog, DialogInput)이 정의되고 있습니다. 논리 폰트명은, 구현에 의존한 방법으로, 물리 폰트에 맵 됩니다. </P>
+
+<P>Sun 의 Java SE Runtime Environment 에서는, 논리 폰트명으로부터 물리 폰트에의 매핑에 「폰트 구성」파일이 사용됩니다. 호스트  operating system의 버젼에 응해, 다른 매핑을 지원하는 복수의 파일이 존재합니다. 파일의 위치는, JRE 의 인스톨처의 lib 디렉토리입니다. 사용자는 폰트 구성 파일을 변경하거나 신규에 작성하거나 하는 것으로, 특정의 시스템 설정에 응해 매핑을 조정할 수 있습니다. 다만, 이 조작에 의해 JRE 가 변경되는 것, 그리고 Sun 는 변경 후의 JRE 를 지원하지 않는 것에 주의해 주세요. </P>
+
+<P>폰트 구성 파일에는 2 개의 형식이 있습니다. 프로퍼티 형식과 바이너리 형식입니다. 프로퍼티 형식에 대해서는, 이 문서로 자세하게 설명합니다.  이 형식은, 사용자 정의의 구성을 위해서(때문에) 사용할 수 있습니다. 바이너리 형식에 대해서는, 문서가 준비되지 않고, JRE 의 사전 정의 끝난 구성 에 대해서만 사용됩니다.  참조용으로, 그러한 구성에 대응하는 프로퍼티 형식의 파일이, 「. properties.src」라고 하는 확장자(extension)의 파일로서 준비되어 있습니다. </P>
+
+<P>폰트 구성 파일은 구현에 의존하고 있습니다. Java 플랫폼의 모든 구현으로 이 파일이 사용되는 것은 아닙니다. 또, 그 내용과 형식은 실행 환경이나 릴리스의 틀림에 따라 다릅니다. 이 문서에서는, Sun 의 Java SE Runtime Environment 버젼 6 으로 사용되는 형식에 대해 설명합니다. </P>
+
+<OL>
+<LI><A HREF="#loading">폰트 구성 파일의 로드</A> 
+   
+<LI><A HREF="#names">폰트 구성 파일내에서 사용되는 이름</A> 
+   
+<LI><A HREF="#all">모든 플랫폼에 공통의 프로퍼티</A> 
+   
+<LI><A HREF="#windows">Windows 용의 프로퍼티</A> 
+   
+<LI><A HREF="#unix">Solaris 및 Linux 용의 프로퍼티</A> 
+</OL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="loading"></A> 폰트 구성 파일의 로드</H2>
+
+<P>호스트  operating system에 적절한 폰트 구성 파일을 검색하기 위해서, 다음의 정보가 사용됩니다. </P>
+
+<UL>
+<LI>JavaHome - JRE 의 디렉토리.  java.home 시스템 프로퍼티으로 지정된다
+   
+<LI><I>OS</I> -  operating system의 종류를 식별하는 캐릭터 라인
+   
+   <UL>
+<LI>Windows 에서는,<CODE>98</CODE>,<CODE>2000</CODE>,<CODE>Me</CODE>,<CODE>XP</CODE>,<CODE>2003</CODE>
+      
+<LI>Solaris 에서는 공백
+      
+<LI>Linux 에서는,<CODE>Sun</CODE>,<CODE>RedHat</CODE>,<CODE>Turbo</CODE>,<CODE>SuSE</CODE>
+   </UL>
+   
+<LI><I>Version</I> -  operating system의 버젼을 식별하는 캐릭터 라인
+</UL>
+
+<P>런타임에서는, 다음의 파일 가운데, 최초로 발견된 것이 사용됩니다. </P>
+
+<pre><I>	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>OS.Version</I><CODE>. properties</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>OS.Version</I><CODE>. bfc</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>OS</I><CODE>. properties</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>OS</I><CODE>. bfc</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>Version</I><CODE>. properties</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig. </CODE><I>Version</I><CODE>. bfc</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig.properties</CODE><I>
+	JavaHome</I><CODE>/lib/fontconfig.bfc</CODE></pre>
+
+<P>「. properties」라고 하는 확장자(extension)의 파일은,<CODE><A HREF="../../../api/java/util/Properties.html#load(java.io.InputStream)">Properties</A> </CODE> 클래스에서 지정되는 프로퍼티 파일이라고 보여져 그 클래스에 의해 로드 됩니다. 그 확장자(extension)가 없는 파일은, 바이너리 형식이라고 보여집니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="names"></A> 폰트 구성 파일내에서 사용되는 이름</H2>
+
+<P>폰트 구성 파일 전체로, 다양한 이름이 사용됩니다. </P>
+
+<UL>
+<LI><I>LogicalFontName</I> - 5 개의 논리 폰트명 <CODE>serif</CODE>,<CODE>sansserif</CODE>,<CODE>monospaced</CODE>,<CODE>dialog</CODE>, 및 <CODE>dialoginput</CODE> 의 언젠가. 폰트 구성 파일에서는, 이러한 이름은 모두 소문자로 기술된다
+   
+<LI><I>StyleName</I> - 4 개의 표준 폰트 스타일 <CODE>plain</CODE>,<CODE>bold</CODE>,<CODE>italic</CODE>, 및 <CODE>bolditalic</CODE> 의 언젠가. 이 경우도, 모두 소문자로 나타내진다
+   
+<LI><A NAME="PlatformFontName"></A> PlatformFontName - 플랫폼에서 일반적으로 사용되는 형식의 물리 폰트명
+   
+   <UL>
+<LI>Windows 에서는,<CODE>Courier New</CODE> 나 <CODE>\uad74\ub9bc</CODE> 와 같은 폰트 페이스명
+      
+<LI>Solaris 및 Linux 에서는,<CODE>-monotype-times new roman-regular-r---*-%d-*-*-p-*-iso8859-1</CODE> 과 같은 xlfd 명. <CODE>%d</CODE> 는 font size를 나타내, 실제의 font size가 실행시에 삽입된다
+   </UL>
+   
+<LI>CharacterSubsetName - 특정의 컴퍼넌트 폰트로 렌더링 할 수 있는 Unicode 캐릭터 세트의 부분집합명. Windows 에 대해서 사전에 정의되고 있는 이름은, alphabetic, arabic, chinese-ms936, chinese-gb18030, chinese-ms950, chinese-hkscs, cyrillic-iso8859-5, cyrillic-cp1251, cyrillic-koi8-r, devanagari, dingbats, greek, hebrew, japanese, korean, latin, symbol, thai 입니다. Solaris 및 Linux 에 대해서 사전에 정의되고 있는 이름은, arabic, chinese-gb2312, chinese-gbk, chinese-gb18030-0, chinese-gb18030-1, chinese-cns11643-1, chinese-cns11643-2, chinese-cns11643-3, chinese-big5, chinese-hkscs, cyrillic, devanagari, dingbats, greek, hebrew, japanese-x0201, japanese-x0208, japanese-x0212, korean, korean-johab, latin-1, latin-2, latin-4, latin-5, latin-7, latin-9, symbol, thai 입니다. 폰트 구성 파일에서는, 추가의 문자 부분집합을 식별하기 위해서, 부분집합명을 추가해 정의할 수가 있습니다.
+   
+<LI>Encoding - 디폴트 인코딩의 정 준명. <CODE> java.nio.charset.Charset.defaultCharset(). name()</CODE> 에 의해 반환되는 이름
+   
+<LI><I>Language</I> - 초기의 디폴트 로케일의 언어
+   
+<LI><I>Country</I> - 초기의 디폴트 로케일의 국명
+</UL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="all"></A> 모든 플랫폼에 공통의 프로퍼티</H2>
+
+<H4>버젼 프로퍼티</H4>
+
+<P>버젼 프로퍼티은, 폰트 구성의 형식의 버젼을 식별하는 것입니다. 이 문서로 규정하고 있는 것은, 버젼 1 입니다. </P>
+
+<P>완전한 프로퍼티의 형식은 다음과 같습니다. </P>
+
+<BLOCKQUOTE><pre>version=1</pre></BLOCKQUOTE>
+
+<H4>컴퍼넌트 폰트의 매핑</H4>
+
+<P>컴퍼넌트 폰트의 매핑의 프로퍼티에서는, 특정의 문자 부분집합의 문자를, 특정의 스타일의 특정의 논리 폰트로 렌더링 할 경우에 사용하는 물리 폰트를 지정합니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><I>	</I>allfonts<CODE>. </CODE><I>CharacterSubsetName
+	LogicalFontName</I><CODE>. </CODE><I>StyleName</I><CODE>. </CODE><I>CharacterSubsetName</I></pre>
+
+<P>제 1 의 형식은, 논리 폰트나 스타일 (와)는 관계없는 것으로, 같은 폰트를 문자 부분집합에 사용하는 경우에 이용합니다.  이 경우, 폰트 렌더링 엔진은, 알고리즘적으로 스타일을 폰트에 적용합니다. 제 2 의 형식은, 다른 논리 폰트 및 스타일 마다, 다른 물리 폰트를 문자 부분집합에 사용하는 경우에 이용합니다. 이 형식에서는, 논리 폰트와 스타일의 편성 각각 붙어 프로퍼티을 지정할 필요가 있기 (위해)때문에, 1 개의 문자 부분집합에 대해서 20 의 프로퍼티을 지정하게 됩니다. 어느 문자 부분집합에 대해서 제 1 의 형식의 프로퍼티이 지정되고 있는 경우, 같은 문자 부분집합에 대해서 제 2 의 형식의 프로퍼티이 지정되고 있어도 무시됩니다. </P>
+
+<P>지정하는 값은,<A HREF="#PlatformFontName">전의 항</a>으로 설명한, 플랫폼의 폰트명입니다. </P>
+
+<P>각종 폰트에 의해 지원되는 문자 부분집합은 중복 하는 것이 많기 때문에, 문자를 렌더링 할 때에 사용하는 폰트의 순서를 정의하기 위해서, 다른 검색 순서 프로퍼티을 사용합니다. </P>
+
+<H4>검색 순서</H4>
+
+<P><A NAME="lookup"></A> Java 런타임에서는, 5 개의 논리 폰트의 검색 순서를 판별하기 위해서 sequence 프로퍼티이 사용됩니다. 다만, 폰트 구성 파일에서는, 인코딩, 언어, 나라의 특정의 편성에 대해서 프로퍼티을 지정할 수 있습니다.  그 경우, 런타임에서는, 각론리폰트의 sequence 프로퍼티을 참조해 순서가 판별됩니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	sequence.allfonts</CODE><I>. Encoding.Language.Country</I><CODE>
+	sequence. </CODE><I>LogicalFontName.Encoding.Language.Country</I><CODE>
+	sequence.allfonts</CODE><I>. Encoding.Language</I><CODE>
+	sequence. </CODE><I>LogicalFontName.Encoding.Language</I><CODE>
+	sequence.allfonts</CODE><I>. Encoding</I><CODE>
+	sequence. </CODE><I>LogicalFontName.Encoding</I><CODE>
+	sequence.allfonts
+	sequence. </CODE><I>LogicalFontName</I></pre>
+
+<P><CODE>allfonts</CODE> 의 형식은, 5 개의 논리 폰트 모두에 대해서 순서를 사용하는 경우에 이용합니다. 논리 폰트명을 지정하는 형식은, 다른 논리 폰트에 대해 다른 순서를 사용하는 경우에 이용합니다.
+</P>
+
+<P>각론리폰트에 대해, Java 런타임에서는, 상기의 키의 쳐 최초로 등장하는 프로퍼티치가 사용됩니다. 이 프로퍼티에 의해, 논리 폰트의 주검색 순서가 정해집니다. </P>
+
+<P>이 파일에서는, 1 개의 대체 검색 순서를 정의할 수도 있습니다. 대체 sequence 프로퍼티의 키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	sequence</CODE>. fallback</pre>
+
+<P>모든 sequence 프로퍼티의 값은, 다음의 형식에서 지정합니다. </P>
+
+<pre><I>SearchSequenceValue:</I>
+	<I>CharacterSubsetName</I>
+	<I>CharacterSubsetName</I> , <I>SearchSequenceValue</I></pre>
+
+<P>주 sequence 프로퍼티에서는, 필수 폰트의 문자 부분집합명을 지정합니다.  AWT 및 2D 의 폰트 렌더링에서는 어느쪽이나, 이러한 폰트가 사용됩니다. 대체 sequence 프로퍼티에서는, 옵션 폰트의 문자 부분집합명을 지정합니다.  이러한 폰트는 모든 논리 폰트에 대해 사용됩니다만, 2D 의 폰트 렌더링의 경우 뿐입니다. 실행시 환경에서는, Lucida Sans Regular 폰트가 2D 렌더링용의 대체 폰트로서 자동적으로 추가됩니다 ( 아직 지정되어 있지 않은 경우). 또, 런타임에 lib/fonts/fallback 디렉토리가 존재해, 그 디렉토리에 유효한 TrueType 폰트 또는 Type 1 폰트가 포함되어 있는 경우는, 그러한 폰트가 2D 렌더링용의 대체 폰트로서 자동적으로 추가됩니다. Windows 에서는, 시스템 EUDC (End User Defined Characters) 폰트가 Windows 에 등록되어 있는 경우, 그 폰트도 2D 렌더링용의 대체 폰트로서 자동적으로 추가됩니다. </P>
+
+<P>sequence 프로퍼티에 의해, 특정의 문자를 렌더링 하기 위해서, 컴퍼넌트 폰트를 어떠한 순서로 사용할지가 정해집니다. 예를 들어, 다음과 같은 프로퍼티을 지정했다고 합니다. </P>
+
+<BLOCKQUOTE><pre>sequence.monospaced=japanese, alphabetic
+sequence.fallback=korean
+monospaced.plain.alphabetic=Arial
+monospaced.plain.japanese=MSGothic
+monospaced.plain.korean=Gulim</pre></BLOCKQUOTE>
+
+<P>런타임에서는, 우선, MSGothic 폰트를 사용해 문자를 렌더링 하려고 합니다. 그 폰트가 그 문자의 Glyph를 제공하고 있지 않는 경우는, Arial 폰트를 시험합니다. 2D 렌더링에서는, 게다가 Gulim 폰트와 Lucida Sans Regular 폰트외, 런타임의 lib/fonts/fallback 디렉토리에 있는 TrueType 폰트 또는 Type 1 폰트도 시험합니다. Windows 상에서의 2D 렌더링에서는, 시스템 EUDC 폰트가 Windows 에 등록되어 있는 경우, 마지막에 그 EUDC 폰트도 시험합니다. </P>
+
+<P>캐릭터 라인을 참조하지 않고 논리 폰트의 폰트메트릭스를 계산하는 경우에는, 필수 폰트만이 고려에 넣어집니다. 예를 들어, 상기의 프로퍼티 설정의 경우이면,<A HREF="../../../api/java/awt/FontMetrics.html#getMaxDescent()">FontMetrics.getMaxDescent</A>  메소드는 MSGothic 폰트와 Arial 폰트에 근거해 결과를 돌려줍니다.  Gulim 폰트와 Lucida Sans 폰트는 고려에 넣어지지 않습니다. 이 때문에, 버튼 등, 단순한 사용자 인터페이스 요소 (폰트 시학에 근거해 요소의 사이즈가 계산되는 일이 있다)는, 그 요소가 일반적으로은 사용하지 않는 컴퍼넌트 폰트를 포함한 확장 리스트로부터 영향을 받을 것은 없습니다. 한편, 텍스트 컴퍼넌트에서는, 일반적으로 실제로 표시하는 텍스트에 근거해 시학을 계산하기 위해(때문에), 올바른 결과를 얻을 수 있습니다. </P>
+
+<P>5 개의 논리 폰트에 대해 런타임이 취득하는 sequence 프로퍼티은, 같은 문자 부분집합을 열거하고 있을 필요가 있습니다만, 캐릭터 세트 열거하는 순서는 차이가 나도 괜찮습니다. </P>
+
+<H4>제외 범위</H4>
+
+<P>제외 범위 프로퍼티에서는, 특정의 문자 부분집합에 대응하는 폰트에 의한 렌더링의 대상으로부터 제외하는 Unicode 문자의 범위를 지정합니다. 이 프로퍼티은, (퍼포먼스상의 이유등으로) 다수의 문자를 지원하고 있는 폰트를 빠른 검색 순위에 둘 필요가 있지만, 그 폰트가 지원하고 있는 문자의 일부를 다른 폰트로 draw 할 필요가 있는 경우에 사용합니다. 이 프로퍼티은 옵션으로, 지정할 수 있는 것은 문자 부분집합 근처 1 개(살)까지입니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	exclusion. </CODE><I>CharacterSubsetName</I></pre>
+
+<P>값의 형식은 다음과 같습니다. </P>
+
+<pre><I>ExclusionRangeValue:
+	Range
+	Range</I> <CODE>,</CODE> <I>ExclusionRangeValue
+&nbsp;
+Range:
+	Char</I> <CODE>-</CODE> <I>Char
+&nbsp;
+Char:
+	HexDigit</I> <I>HexDigit</I> <I>HexDigit</I> <I>HexDigit
+	HexDigit</I> <I>HexDigit</I> <I>HexDigit</I> <I>HexDigit HexDigit</I> <I>HexDigit</I></pre>
+
+<P>Char 는, Unicode 문자를 16 진수로서 표현한 것입니다.
+</P>
+
+<H4>proportional font</H4>
+
+<P>proportional font 프로퍼티에서는, 같은 폰트의 proportional판과 비proportional판의 관계를 기술합니다. 이 프로퍼티은,<A HREF="../../../api/java/awt/GraphicsEnvironment.html#preferProportionalFonts()">GraphicsEnvironment.preferProportionalFonts</A>  메소드로 지정하는 설정을 구현하기 위해서 사용됩니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	proportional. </CODE><I>PlatformFontName</I></pre>
+
+<P>플랫폼 폰트명에 포함되어 있는 공백 문자는, 밑줄 ("_")에 옮겨놓을 필요가 있습니다. </P>
+
+<P>값의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	</CODE><I>PlatformFontName</I></pre>
+
+<P>값의 지정에서는, 공백 문자는 원인 채 남깁니다. </P>
+
+<P>각 프로퍼티은, 값으로 해서 지정한 폰트가 키로 지정한 폰트의 proportional판인 것으로, 키로 지정한 폰트가 값으로 해서 지정한 폰트의 비proportional판인 것을 나타냅니다. </P>
+
+<H4>폰트 파일명</H4>
+
+<P>폰트 파일명의 프로퍼티은, 폰트 구성 파일로 사용되는 물리 폰트를 포함하고 있는 파일의 이름을 지정합니다. Windows 에서는, 모든 물리 폰트에 대해 파일명의 지정이 필수입니다.  Solaris 및 Linux 에서는, 모든 물리 폰트에 대해 파일명의 지정이 추천 되고 있습니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	filename. </CODE><I>PlatformFontName</I></pre>
+
+<P>플랫폼 폰트명에 포함되어 있는 공백 문자는, 밑줄 ("_")에 옮겨놓을 필요가 있습니다. </P>
+
+<P>값은, 폰트를 포함하고 있는 파일의 파일명입니다. Windows 에서는, 단순한 파일명을 지정합니다.  그 때문에, 런타임에서는, 우선 런타임의 <CODE>lib/fonts</CODE> 디렉토리로부터 각 파일이 검색되어 다음에 Windows 의 폰트 디렉토리로부터 검색됩니다. Solaris 및 Linux 에서는, 절대 경로명 (실행시 환경의 <CODE>lib/fonts</CODE> 디렉토리를 나타내는 「<CODE>$JRE_LIB_FONTS</CODE>」를 선두에 둔다)을 지정하는지, xlfd 명을 지정합니다. </P>
+
+<H4>추가의 폰트 패스</H4>
+
+<P>Java 런타임에서는, 런타임의 <CODE>lib/fonts</CODE> 디렉토리나, Windows 의 폰트 폴더 등, 폰트 파일이 포함되고 있는 몇개의 디렉토리를 자동적으로 판별할 수 있습니다. 이 폰트 패스에 추가하기 위해(때문에), 추가의 디렉토리를 지정할 수가 있습니다. </P>
+
+<P>키의 형식은 다음과 같습니다. </P>
+
+<pre><CODE>	</CODE>appendedfontpath</pre>
+
+<P>값의 형식은 다음과 같습니다. </P>
+
+<pre><I>AppendedFontPathValue:
+	Directory
+	Directory PathSeparator</I> <I>AppendedFontPathValue</I></pre>
+
+<P>패스 단락 문자는, 플랫폼에 의존하는 <A HREF="../../../api/java/io/File.html#pathSeparator">java.io.File.pathSeparator</A>  의 값입니다.
+</P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="windows"></A> Windows 용의 프로퍼티</H2>
+
+<P>Windows 에서는, 플랫폼 고유의 프로퍼티은 없습니다. 다만, 검색 순서의 지정에 사용하는, 특별한 형식의 문자 부분집합명이 있습니다. 「alphabetic」라고 하는 문자 부분집합명에, 그 부분집합에 관련짓는 문자 인코딩을 나타내는 접미사(suffix)을 붙일 수가 있습니다. </P>
+
+<pre><CODE>	</CODE>alphabetic<CODE>
+	</CODE>alphabetic/default<CODE>
+	</CODE>alphabetic/1252</pre>
+
+<P>이 정보는, AWT 에서만 사용되어 2D 에서는 사용되지 않습니다. 「/default」라고 하는 접미사(suffix)을 지정하면(자), 이 문자 부분집합에 대한 컴퍼넌트 폰트의 사용이, 디폴트 인코딩의 캐릭터 세트로 한정됩니다.  또, 「/1252」이라고 하는 접미사(suffix)을 지정하면(자), Windows-1252 캐릭터 세트로 한정됩니다. 컴퍼넌트 폰트의 매핑과 제외 범위에 액세스 하려면 , 문자 인코딩의 접미사(suffix)을 생략 합니다. 이외의 모든 문자 부분집합에 대해, AWT 의 문자 인코딩은, Java 런타임에 의해 내부적으로 판별됩니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="unix"></A> Solaris 및 Linux 용의 프로퍼티</H2>
+
+<H4>Motif 컴퍼넌트 폰트의 매핑</H4>
+
+<P>AWT 텍스트 컴퍼넌트는, 텍스트의 렌더링을 Motif 베이스의 피어에 의존하고 있기 (위해)때문에, 다른 AWT 컴퍼넌트나 2D 로 같은 플랫폼 폰트를 항상 사용할 수가 없습니다. 이러한 컴퍼넌트용으로 컴퍼넌트 폰트를 검색하려면 , 추가의 키가 인식됩니다. 이 케이스로 참조되는 키의 일식은, 다음과 같습니다. </P>
+
+<pre><CODE>	allfonts. </CODE><I>CharacterSubsetName</I><CODE>. motif
+	</CODE><I>LogicalFontName</I><CODE>. </CODE><I>StyleName</I><CODE>. </CODE><I>CharacterSubsetName</I><CODE>. motif
+	allfonts. </CODE><I>CharacterSubsetName</I><CODE>
+	</CODE><I>LogicalFontName</I><CODE>. </CODE><I>StyleName</I><CODE>. </CODE><I>CharacterSubsetName</I></pre>
+
+<H4>AWT 의 X11 폰트 패스</H4>
+
+<P>AWT 폰트 패스 프로퍼티에서는, X11 서버 폰트 패스에 추가할 필요가 있는 플랫폼 디렉토리를 지정합니다. 키의 형식은 다음과 같습니다.
+</P>
+
+<pre>	awtfontpath. <I>CharacterSubsetName</I></pre>
+
+<P>값의 형식은 다음과 같습니다. </P>
+
+<pre><I>AWTFontPathValue:</I>
+	<I>Directory</I>
+	<I>Directory</I> <CODE>:</CODE> <I>AWTFontPathValue</I></pre>
+
+<P>지정하는 디렉토리는, 유효한 X11 폰트 디렉토리인 것이 필요합니다. Java 런타임은,<A HREF="#lookup">검색 순서의 참조</a>로 발견되는 주검색 순서에 포함되는 모든 문자 부분집합의 디렉토리가, 확실히 X11 폰트 패스에 짜넣어지도록(듯이) 합니다. 구현에서는, 같은 인코딩, 언어, 나라가 설정되어 있는 특정의 환경에 도착해, 모든 논리 폰트가 같은 일식의 문자 부분집합을 사용하는 것을 전제로 하고 있습니다. </P>
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2004 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT          SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/intl/fontconfig.html&category=api&mailsubject=Internationalization Support">피드백</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I><FONT SIZE="+1"></FONT>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

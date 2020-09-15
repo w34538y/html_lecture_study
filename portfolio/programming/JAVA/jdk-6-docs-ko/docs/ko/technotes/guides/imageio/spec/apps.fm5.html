@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:3 - Image I/O 어플리케이션의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm4.html">전의 항목</a>  | <a href="apps.fm6.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="997099"><i>3.5	</i> 메타데이타의 처리</a> </h2>
+
+<blockquote>
+<a name="997356"><!-- --></a>  이미지 파일에 포함되고 있는 데이터 가운데, 실제의 픽셀치를 나타내고 있는 것 이외를, 메타데이타라고 합니다. <code>javax.imageio.metadata</code> 패키지에는, 메타데이타에 액세스하기 위한 클래스 및 인터페이스가 포함되고 있습니다. <p>
+<a name="997364"><!-- --></a>  메타데이타에는, 복잡해 계층 구조가 된 데이터가 포함되어 있는 일이 있습니다. 이러한 구조는 Java XML Document Object Model (DOM) API 를 사용해 표현할 수 있으므로, 개발자는 이 인터페이스에 관한 지식을 활용할 수 있습니다. <p>
+<a name="997367"><!-- --></a>  Image I/O API 에서는, 스트림메타데이타 (이미지 파일에 포함된 전이미지에 관계하고 있다)와 이메이지메타데이타 (1 개의 이미지인 만큼 관계하고 있다)가 구별됩니다. 이미지를 1 개 밖에 포함할 수 없는 이미지 형식에서는, 이메이지메타데이타만이 사용됩니다. <p>
+<a name="997377"><!-- --></a>  메타데이타를 가져오려면 ,<code>ImageReader.getStreamMetadata</code> 및 <code>getImageMetadata(int imageIndex)</code> 메소드를 사용합니다. 이러한 메소드로부터는,<code>IIOMetadata</code> 인터페이스를 구현한 객체가 돌려주어집니다. 반환되는 객체의 실제의 클래스형은 <code>ImageReader</code> 에 따라서 다릅니다만, 일반적으로은, 그 특정의 read 플러그 인만으로 사용되는 독자적인 클래스형이 됩니다. 이 객체는, 특정의 이미지 형식에서 사용할 수 있는 메타데이타를 할 수 있는 한 많이 포함할 수 있도록(듯이), 즉 미대응의 메타데이타를 할 수 있는 한 줄이도록(듯이) 설계할 필요가 있습니다. 다만, 이미지 형식의 스펙에 충실해도 하면(자), 무리가 생기는 일이 있습니다. 메타데이타에 액세스 할 방법이, 이미지 형식 마다 한정적인 것이 되기 때문입니다. <p>
+<a name="997385"><!-- --></a>  메타데이타에 액세스 할 때에 이미지 형식에 특유의 어플리케이션 코드를 불필요하게 하기 위한(해),<code>IIOMetadata</code> 객체는, 내부 정보를 XML DOM 구조의 형태로 공개합니다. 이 구조는, 다양한 형태의 노드로부터 완성되는 트리가 기본으로, 각 노드에는, 속성 세트 (이름에 의해 액세스 하는 <code>String</code> 치)가 들어가 있습니다. 자식(child) 노드를 참조할 수도 있습니다. <p>
+<a name="997462"><!-- --></a>  1 개의 플러그 인에서는, 복수의 문서 형식을 지원할 수 있습니다. 각각은, 형식의 이름으로 구별됩니다. 일반적으로, 개개의 플러그 인은, 적어도 2 개의 문서 형식을 지원합니다.  제 1 의 형식은,<code>com.sun.imageio_1. 0</code> 이라는 이름의, 플러그 인에 의존하지 않는 공통의 문서 형식에서,<code>IIOMetadata</code> 인터페이스의 클래스 코멘트로 정의되고 있습니다. 제 2 의 형식은, 각 플러그 인에 완전히 고유의 문서 형식에서,<code>IIOMetadata</code> 의 내부 구조 모든 것을 DOM 의 형태로 공개합니다. 후자의 문서 형식은, 플러그 인의 네이티브 형식으로 불립니다. 그 이름을 판별하려면 , read 객체로부터 반환되는 <code>IIOMetadata</code> 객체의 <code>getNativeMetadataFormatName</code> 메소드를 호출합니다 (조작 방법을 알 수 있는 경우에는, read 객체의 인스턴스를 생성하는데 사용한 <code>ImageReaderSpi</code> 객체의, 같은 이름의 메소드를 호출해도 괜찮습니다. 이 방법은, 특정의 문서 형식을 지원하고 있을지 어떨지에 근거해 플러그 인을 선택하는 경우에 편리합니다). 지원 떠날 수 있어 모든 문서 형식의 이름을 판별하려면 , 똑같이 해 <code>getMetadataFormatNames</code> 메소드를 호출합니다. <p>
+<a name="997478"><!-- --></a>  <code>IIOMetadata</code> 객체의 내용은, XML 의 <code>Node</code> 객체로 완성되는 트리의 형식에서 액세스 할 수 있습니다. 액세스 하려면 , 그 객체의 <code>getAsTree</code> 메소드를 호출합니다. 이 메소드에는, 플러그 인에 의해 지원되고 있는 문서 형식의 이름의 1 개를,<code>String</code> 인수로서 지정합니다.  반환된 문서는, 표준의 XML DOM 트리로서 조작할 수 있습니다. <p>
+<a name="997656"><!-- --></a>  일례로서 XML DOM 트리의 내용을 출력하려면 , 다음과 같은 코드를 사용할 수 있습니다. <p>
+</blockquote><blockquote><pre>
+public void displayMetadata(Node root) {
+	displayMetadata(root, 0);
+}
+
+void indent(int level) {
+	for (int i = 0; i &lt; level; i++) {
+		System.out.print("  ");
+	}
+} 
+
+void displayMetadata(Node node, int level) {
+	indent(level); // emit open tag
+	System.out.print("&lt;" + node.getNodeName());
+	NamedNodeMap map = node.getAttributes();
+	if (map ! = null) { // print attribute values
+		int length = map.getLength();
+		for (int i = 0; i &lt; length; i++) {
+			Node attr = map.item(i);
+			System.out.print(" " + attr.getNodeName() +
+			                 "=\&#34;" + attr.getNodeValue() + "\&#34;");
+		}
+	}
+
+	Node child = node.getFirstChild();
+	if (child ! = null) {
+		System.out.println("&gt;"); // close current tag
+		while (child ! = null) { // emit child tags recursively
+			displayMetadata(child, level + 1);
+			child = child.getNextSibling();
+		}
+		indent(level); // emit close tag
+		System.out.println("&lt;/" + node.getNodeName() + "&gt;");
+	} else {
+		System.out.println(&#34;/&gt;&#34;);
+	}
+}
+
+</pre></blockquote><blockquote>
+<a name="998078"><!-- --></a>  PNG 의 표준 테스트 이미지 (<code>http://www.schaik.com/pngsuite/ccwn2c08.png</code>)의 메타데이타에 대해서 <code>displayMetadata</code> 를 실행하면(자), 다음과 같은 출력을 얻을 수 있습니다. <p>
+</blockquote><blockquote><pre>
+&lt;com.sun.imageio.png_1. 0&gt;
+  &lt;IHDR width="32" height="32" bitDepth="8" colorType="RGB"
+compressionMethod="deflate" filterMethod="adaptive" interlaceMethod="none"/&gt;
+  &lt;cHRM whitePointX="31270" whitePointY="32900" redX="64000" redY="33000"
+greenX="30000" greenY="60000" blueX="15000" blueY="6000"/&gt;
+  &lt;gAMA value="100000"/&gt;
+&lt;/com.sun.imageio.png_1. 0&gt;
+</pre></blockquote><blockquote>
+<a name="998094"><!-- --></a>  이 출력을 보면(자), 이 이미지에는 <code>IHDR</code>,<code>cHRM</code>, 및 <code>gAMA</code> 라고 하는 메타데이타의 블록이 포함되어 있는 것을 알 수 있습니다. 각 속성치를 해석하기 위해서는, PNG 형식에 대해 이해하고 있을 필요가 있습니다. 그러나, PNG 의 내부를 읽어들일 수 없는 어플리케이션이어도, 이러한 속성치를 표시해, 대화식에 편집하는 것은 가능합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997442"><!-- --></a>  <i>3.5. 1	</i> <code>IIOMetadataFormat</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="997443"><!-- --></a> 
+<p>
+<a name="997440"><!-- --></a>  <code>IIOMetadataFormat</code> 객체는, 메타데이타의 문서 형식에 대해 유효한 구조를 기술하기 위해서 사용합니다. 이 기술에 의해 제약이 부과되는 것은, 출현해도 좋은 노드의 형태, 특정의 형태의 노드의 자식(child) 노드가 될 수 있는 노드의 형태, 특정의 형태의 노드에 출현해도 좋은 속성의 이름과 데이터형, 그리고 특정의 형태의 노드에 포함할 수 있는 <code>Object</code> 치의 녹음 테이프입니다. XML 용어로 말하면,<code>IIOMetadataFormat</code> 인터페이스에 의해 제공되는 정보는, 노드의 형, 아이, 및 속성에 대해 정보를 제공하는 DTD (Document Type Definition)와 데이터형에 대해 상세한 정보를 제공하는 XML Schema 의 중간에 위치하고 있습니다. <p>
+<a name="997523"><!-- --></a>  간단하게 하기 위한(해),<code>IIOMetadataFormat</code> 로 기술할 수 있는 것은, 유효한 DTD 구조의 부분집합 뿐입니다. 예를 들어,<code>IIOMetadataFormat</code> 로 정의할 수 있는 자식(child) 노드는, 반드시 1 회 출현해야 하는 자식(child) 노드의 차례를 기술하는 <code>(a, b, c)</code>, 생략 가능한 자식(child) 노드의 차례를 기술한다 <code>(a?, b?, c? )</code>, 자식(child) 노드를 1 개 선택하는 것을 기술한다 <code>(a | b | c)</code>, 또는 1 개의 노드형의 반복을 기술하는 <code>(a)*</code> 뿐입니다. 그러나, DTD 에서는, 좀 더 많은 편성을 기술할 수 있습니다. <p>
+<a name="998235"><!-- --></a>  노드에는 텍스트 데이터를 넣을 수가 없습니다만, 임의의 <code>Object</code> 에의 참조를 넣을 수가 있습니다. <code>IIOMetadataFormat</code> 에서는, 그 <code>Object</code> 에 대해, 클래스형과 유효한 값의 열거 리스트 또는 범위 (이것은 생략 가능)를 지정합니다. 배열도 지원되고 있습니다. <p>
+<a name="997524"><!-- --></a>  DTD 에서는, 속성의 데이터형으로 지정할 수 있는 것은 캐릭터 라인형 뿐입니다. XML Schema 에서는, 단순 데이터형으로부터 구축한 매우 복잡한 데이터형을 지정할 수 있습니다. <code>IIOMetadataFormat</code> 는, 양자의 중간에 위치하고 있습니다. 즉, 속성의 데이터형으로서 사전에 정의된 단순한 데이터형의 1 개를 지정할 수 있습니다. 정수, 부동 소수점수(실수), 일자등의 데이터형이 있습니다. 이러한 데이터형의 리스트도 지정할 수 있습니다. <p>
+<a name="997520"><!-- --></a>  <code>IIOMetadataFormat</code> 는, 메타데이타의 표시 및 편집용의 사용자 인터페이스를 자동적으로 구축할 경우에 이용할 수 있기 (위해)때문에, 유효한 구조가 제한되고 있다고 하는 것은, 문서 형식과 사용자 인터페이스 설계의 대응부의 대폭적인 간략화로 연결됩니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm4.html">전의 항목</a>  | <a href="apps.fm6.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher 3.5.0 --> <!-- by Suzette Pelouch --> <!-- Last updated: Fri Apr 27 11:22:59 2001 -->
+ 
+
+
+</body>
+</html>

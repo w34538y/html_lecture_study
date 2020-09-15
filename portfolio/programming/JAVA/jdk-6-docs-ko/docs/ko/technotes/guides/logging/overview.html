@@ -1,0 +1,590 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java TM 로깅의 개요 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+<TD>
+
+<center>
+
+<h1>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> 로깅의 개요</h1>
+<I> 최종 갱신일: 2001 년 11 월 26 일</I>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+
+<!-- Body text begins here -->
+
+
+  <P>
+<A HREF="#1.0">1.0 로깅의 개요</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.1">1.1 제어 플로우의 개요</A>  <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.2"> 1.2 로그 레벨</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.3"> 1.3 로거</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.4"> 1.4 로깅메소드</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.5"> 1.5 핸들러</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.6"> 1.6 포매터</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.7"> 1.7 LogManager</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.8"> 1.8 구성 파일</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.9"> 1.9 디폴트의 구성</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.10"> 1.10 구성의 동적 갱신</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.11"> 1.11 네이티브 메소드</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.12"> 1.12 XML DTD</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.13"> 1.13 일의의 메세지 ID</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.14"> 1.14 시큐리티</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.15"> 1.15 구성 관리</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.16"> 1.16 패키지화</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.17"> 1.17 각국어화</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#1.18"> 1.18 원격 접근과 직렬화</A> <BR> <A HREF="#2.0">2.0 예</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#2.1"> 2.1 간단한 용법</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#2.2"> 2.2 구성의 변경</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#2.3"> 2.3 글로벌 설정을 무시한 간단한 용법</A> <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#2.4"> 2.4 XML 의 출력예</A> <BR> <A HREF="#3.0">3.0 부록 A:XMLFormatter 출력용의 DTD</A> <BR>
+  </P>
+
+<H2><A NAME="1.0">1.0 Java<SUP><FONT SIZE="-2">TM</FONT></SUP> 로깅의 개요</A> </H2>
+
+  <P>
+로깅 API 의 자세한 것은,<a href="../../../api/java/util/logging/package-summary.html">「Java SE API 스펙」</a>을 참조해 주세요. 이 문서는, 주된 요소의 개요에 대해 설명하는 것을 목적으로 하고 있습니다.  
+  </P>
+
+<H3><A NAME="1.1">1.1 제어 플로우의 개요</A> </H3>
+
+  <P>
+어플리케이션은 <I>Logger</I> 객체로 로깅 호출을 실시합니다. 로거는 계층 구조를 가지는 이름 공간에 편성되어 자식(child) 로거는 이름 공간에 있어서의 부모로부터 로깅프로파티의 일부를 상속할 수 있습니다.
+  </P>
+  <P>
+어플리케이션은 <I>Logger</I> 객체로 로깅 호출을 실시합니다. 이 Logger 객체는 <I>LogRecord</I> 객체를 할당합니다. <I>LogRecord</I> 객체는,<I>Handler</I> 객체에게 건네지고 발행됩니다. 로거도 핸들러도, 로깅의 「레벨」<I></I>과 경우에 따라서는 「필터」<I></I>를 사용해, 특정의 <I>LogRecord</I> 와 관계가 있을지 어떨지를 판단합니다. LogRecord 를 외부에 발행할 필요가 있는 경우, 핸들러는 I/O 스트림에 발행하기 전에, 「포매터」<I></I>를 사용해 메세지를 로컬라이즈 하거나 서식화하거나 할 수가 있습니다.
+  </P>
+
+  <P>
+  <CENTER>
+<IMG SRC="logging1.gif" alt="전의 문장에서의 이 그래픽스를 설명하고 있습니다. "> 
+  </CENTER>
+  </P>
+
+  <P>
+각 로거는 출력 핸들러세트를 추적합니다. 디폴트에서는, 모든 로거가 자신의 친로거에 출력을 송신합니다. 보다 높은 계층에 있는 핸들러는 무시하도록(듯이) 로거를 설정할 수도 있습니다.
+  </P>
+
+  <P>
+핸들러안에는 다른 핸들러에 직접 출력하는 것도 있습니다. 예를 들어,<I>MemoryHandler</I> 는 <I>LogRecord</I> 의 내부 링 버퍼를 보관 유지해, 방아쇠 이벤트로 타겟 핸들러를 통해 LogRecord 를 발행합니다. 그러한 경우, 연쇄내의 마지막 핸들러로 임의의 서식화가 실행됩니다.  
+  </P>
+
+  <P>
+  <CENTER>
+<IMG SRC="logging2.gif" alt="전의 문장에서의 이 그래픽스를 설명하고 있습니다. ">  
+ </CENTER>
+  </P>
+
+  <P>
+API 는, 로깅이 무효가 되어 있는 경우, 로거 API 의 호출 코스트를 억제하도록(듯이) 구성되어 있습니다. 어느 로그 레벨로 로깅이 무효가 되어 있는 경우, 로거는 코스트의 비교 테스트를 실시해 결과를 돌려줄 수가 있습니다. 어느 로그 레벨로 로깅이 유효하게 되어 있는 경우도, 로거는 코스트를 억제하도록(듯이) 주의하면서 핸들러에 LogRecord 를 건네줍니다. 특히 각국어화와 서식화는 비교적 코스트가 들므로, 핸들러로부터의 요구가 있을 때까지는 실행되지 않습니다. 예를 들어, MemoryHanlder 는 서식화 코스트를 지불하지 않고 LogRecord 의 순환 버퍼를 유지할 수가 있습니다.
+  </P>
+
+
+<H3><A NAME="1.2">1.2 로그 레벨</A> </H3>
+
+  <P>
+각 로그 메세지에는, 로그 레벨<I></I>을 관련지을 수 있고 있습니다. 로그 레벨에 의해, 로그 메세지의 중요도와 긴급도를 거의 압니다. 로그 레벨 객체는 정수치를 캡슐화합니다. 값이 큰 만큼 우선 순위도 높아집니다.  
+  </P> 
+  <P>
+<TT>Level</TT> 클래스에서는, FINEST (최저의 우선 순위, 값은 최소)로부터 SEVERE (최고의 우선 순위, 값은 최대)까지 7 개의 표준 로그 레벨이 정의되고 있습니다.
+  <P>
+
+<H3><A NAME="1.3">1.3 로거</A> </H3>
+
+  <P>
+전술과 같이, 클라이언트 코드는 Logger 객체에 로그 요구를 송신합니다. 각 로거는 관계가 있는 로그 레벨을 추적해, 이 레벨 이하의 로그 요구를 파기합니다.
+  </P>
+
+  <P>
+일반적으로, 로거는 이름이 붙은 엔티티이며, 「java.awt」와 같이 닷 단락의 이름을 사용합니다. 이름 공간에는 계층이 있어, LogManager 에 의해 관리되고 있습니다. 많은 경우, 이름 공간은 Java 패키지 이름 공간에 대응하고 있습니다만, 반드시 대응할 필요는 없습니다. 예를 들어, 「java.awt」라고 하는 로거는 java.awt 패키지내의 클래스의 로깅 요구를 처리합니다만, java.awt.package 로 정의된, 클라이언트로부터 보이는 추상화를 지원하는 sun.awt 의 클래스의 로깅을 처리하는 일도 있습니다.
+  </P> 
+
+  <P>
+이름 첨부 로거외에, 공유명 마에조라간에 표시되지 않는 익명 로거를 만들 수도 있습니다. 자세한 것은,<a href="#1.14">1.14</a>  항을 참조해 주세요.
+  </P>
+
+  <p>
+각 로거는, 로깅의 이름 공간에 있어서의 친로거를 추적합니다. 로거의 부모란, 로깅의 이름 공간에 현존 하는 가장 가까운 조상입니다. 루트 로거의 이름은 "" 으로, 루트 로거에 부모는 없습니다. 모든 익명 로거에 있어, 루트 로거가 부모가 됩니다. 로거는, 로거의 이름 공간에 있어서의 부모로부터 다양한 속성을 상속할 수 있습니다. 특히, 다음과 같은 속성을 상속할 수 있습니다.
+  <UL>
+<LI>로깅레벨. 로거의 레벨이 null 로 설정되어 있는 경우, 이 로거는 트리를 거슬러 올라가 최초로 발견된 null 이외의 유효한 레벨을 사용합니다.
+<LI>핸들러. 디폴트에서는, 로거는 자신의 부모의 핸들러에 모든 출력 메세지를 송신합니다. 이렇게 해, 차례차례로 트리를 거슬러 올라가 송신을 합니다.
+<LI>자원 번들명. 로거의 자원 번들명이 null 인 경우, 이 로거는 부모의 자원 번들명을 상속합니다. 이렇게 해, 차례차례로 트리를 거슬러 올라가 상속을 합니다.
+  </UL>
+  <p></P>
+  
+<H3><A NAME="1.4">1.4 로깅메소드</A> </H3>
+
+  <P>
+Logger 클래스는, 로그 메세지를 생성하기 위한 편리한 메소드를 많이 제공합니다. 로깅레벨 마다 메소드가 있어, 편의상, 메소드명에는 로깅의 레벨명이 사용되고 있습니다. 이 때문에, 개발자는 「logger.log(Constants.WARNING,...」(은)는 아니고, 편리한 메소드 「logger.warning(...」(을)를 호출할 수가 있습니다.
+  </P>
+
+  <P>
+로깅메소드에는 2 종류의 서식이 있어, 다양한 사용자의 요구에 대응하고 있습니다.
+  </P>
+
+  <P>
+1 번째는, 명시적인 소스 클래스명과 소스 메소드명을 취하는 메소드입니다. 이 메소드는, 특정의 로깅멧세이지의 소스를 재빠르게 밝혀 낼 필요가 있는 개발자전용입니다. 다음에 이 서식의 예를 나타냅니다.  
+
+  <BLOCKQUOTE>
+<TT>void warning(String sourceClass, String sourceMethod, String msg);</TT>
+  </BLOCKQUOTE>
+  <p></P>
+
+  <P>
+2 번째는, 명시적인 소스 클래스명과 소스 메소드명을 취하지 않는 메소드입니다. 이것은, 간단한 로깅을 사용하는 것만으로, 상세한 소스 정보를 필요로 하지 않는 개발자전용입니다.   
+
+ <BLOCKQUOTE>
+<TT>void warning(String msg);</TT>
+  </BLOCKQUOTE>
+  <p></P>
+
+  <P>
+2 번째의 메소드에서는, 로깅후레임워크는 불러 들여진 클래스와 메소드의 식별을 집중적으로 실시해, 이 정보를 LogRecord 에 추가합니다. 다만, 자동적으로 추측된 이 정보는 개략에 지나지 않는 것을 이해해 둘 필요가 있습니다. 최신의 가상 머신에서는, JIT 처리 시에 대규모 최적화를 행해 스택 프레임을 모두 삭제하기 위해(때문에), 호출 클래스와 메소드를 확실히 검출하는 것은 불가능이 되고 있습니다.  
+  </P>
+
+<H3><A NAME="1.5">1.5 핸들러</A> </H3>
+
+  <P>
+Java SE 에는, 다음과 같은 핸들러가 있습니다.
+  <UL>
+<LI><I>StreamHandler:</I> 서식 첨부 레코드를 OutputStream 에 기입하는 단순한 핸들러 
+<LI><I>ConsoleHandler:</I> 서식 첨부 레코드를 System.err 에 기입하는 단순한 핸들러
+<LI><I>FileHandler:</I> 서식 첨부 레코드를 1 개의 파일 또는 회전 로그 파일세트에 기입하는 핸들러 
+<LI><I>SocketHandler:</I> 서식 첨부 레코드를 원격의 TCP 포트에 기입하는 핸들러 
+<LI><I>MemoryHandler:</I> 로그 레코드를 메모리에 버퍼링 하는 핸들러
+  </UL>
+  <p></P>
+
+  <P>
+새로운 핸들러를 개발하는 것은 비교적 간단합니다. 특수한 기능이 필요한 개발자는, 핸들러를 제로로부터 개발하는 일도, 제공된 핸들러의 1 개를 서브 클래스화할 수도 있습니다.  
+  </P>
+
+
+<H3><A NAME="1.6">1.6 포매터</A> </H3>
+Java SE 에는, 다음의 2 개의 표준 포매터가 있습니다.
+  <UL>
+<LI><I>SimpleFormatter</I>:로그 레코드의 개요를 「인간이 읽을 수 있도록(듯이)」기술합니다.
+<LI><I>XMLFormatter</I>:상세한 XML 구성의 정보를 기술한다
+  </UL>
+  <P>
+핸들러와 같게, 새로운 포매터의 개발은 비교적 간단합니다.  
+  </P>
+
+
+<H3><A NAME="1.7">1.7 LogManager</A> </H3>
+그로바르로깅 정보를 추적하는 글로벌인 LogManager 객체가 있습니다. 이 객체에는 다음의 것이 포함됩니다.
+  <UL>
+<LI>이름 첨부 로거의 계층 이름 공간.
+<LI>구성 파일로부터 읽어낸 로깅 제어 프로퍼티. 자세한 것은,<a href="#1.8">1.8</a>  항을 참조해 주세요.
+  </UL>
+   
+  <P>
+정적인 LogManager.getLogManager 메소드를 사용해 취득할 수 있는 단독의 LogManager 객체가 있습니다. 이것은, LogManager 의 초기화중에 시스템 프로퍼티에 근거해 작성됩니다. 이 프로퍼티을 사용하면(자), 컨테이너 어플리케이션 (EJB 컨테이너등)은 LogManager 의 독자적인 서브 클래스를 디폴트 클래스와 옮겨놓을 수가 있습니다.   
+  </P>
+
+<H3><A NAME="1.8">1.8 구성 파일</A> </H3>
+
+  <P>
+로깅 구성은, 기동시에 읽어내지는 로깅 구성 파일로 초기화할 수가 있습니다. 이 로깅 구성 파일은, 표준의 java.util.Properties 형식입니다.  
+  </P>
+
+
+  <P>
+또, 초기화 프로퍼티의 읽어들여에 사용하는 클래스를 지정해 로깅 구성을 초기화할 수도 있습니다. 이 기구를 사용하면(자), LDAP 나 JDBC 등, 임의의 소스로부터 구성 데이터를 읽어낼 수도 있습니다. 자세한 것은,<A HREF="../../../api/java/util/logging/LogManager.html">「LogManager API 스펙」</a>을 참조해 주세요.
+  </P>
+
+  <P>
+글로벌 구성 정보의 양은 정확히 알 수 없는 것입니다. 이것은 LogManager 클래스의 기술로 지정되고 있어 기동시에 인스톨 하는 루트 레벨의 핸들러의 리스트가 포함되어 있습니다.
+  </P>
+
+  <P>
+초기 구성으로 이름 첨부 로거의 레벨을 지정할 수도 있습니다. 이러한 레벨은, 그 이름 첨부 로거 및 이름 계층에서 그 아래에 있는 모든 로거에 적용됩니다. 레벨은, 구성 파일로 정의한 순서에 적용됩니다.   
+  </P>
+
+  <P>
+초기 구성에는, 핸들러나 로깅을 실시하는 하부조직이 사용하는 임의의 프로퍼티이 포함됩니다. 편의상, 이러한 프로퍼티에는, 핸들러 클래스의 이름이나 하부조직의 메인 로거이름으로 시작되는 이름을 사용합니다.
+  </P>
+
+  <P>
+예를 들어, MemoryHandler 는 프로퍼티 「java.util.logging.MemoryHandler.size」를 사용해 링 버퍼의 디폴트 사이즈를 결정합니다.  
+  </P>
+
+<H3><A NAME="1.9">1.9.  디폴트의 구성</A> </H3>
+
+   <P>
+JRE 의 출하시로 설정되어 있는 디폴트의 로깅 구성은 디폴트에 지나지 않기 때문에, ISV, 시스템 관리 책임자, 및 최종 사용자가 오버라이드(override) 할 수가 있습니다.  
+   </P>
+
+   <P>
+디폴트의 구성은, 한정된 디스크 용량만을 이용합니다. 처리할 수 없을 정도 정보량이 많아질 것은 없습니다만, 중요한 불편 정보는 반드시 수중에 넣습니다.
+   </P>
+
+   <P>
+디폴트의 구성에서는, 루트 로거의 핸들러의 1 개가 콘솔에의 출력용으로서 설정됩니다.
+   </P>
+
+<H3><A NAME="1.10">1.10 구성의 동적 갱신</A> </H3>
+프로그래머는, 다양한 방법으로 실행시에 로깅 구성을 갱신할 수 있습니다.
+
+    <UL>
+<LI>FileHandler, MemoryHandler, 및 PrintHandler 는, 모두 다양한 속성을 사용해 작성할 수 있습니다.
+<LI>새로운 핸들러를 추가하거나 낡은 핸들러를 삭제하거나 할 수 있습니다.
+<LI>새로운 로거를 작성해, 특정의 핸들러를 공급할 수가 있습니다.  
+<LI>핸들러에 레벨을 설정할 수 있습니다.
+    </UL>
+
+<H3><A NAME="1.11">1.1. 1 네이티브 메소드</A> </H3>
+
+로깅에는 네이티브 API 가 없습니다.
+
+  <P>
+native code로 Java 로깅 기구를 사용하는 경우는, 일반적으로의 JNI 호출로 Java 로깅 API 를 호출할 필요가 있습니다.
+  </P>
+
+<H3><A NAME="1.12">1.12 XML DTD</A> </H3>
+
+   <P>
+XMLFormatter 로 사용되는 XML DTD 는<a href="#3.0">부록 A</a>  로 지정되고 있습니다.
+   </P> 
+이 DTD 에서는, 톱 레벨의 문서로서 「log」요소가 설계됩니다. 다음에 각각의 로그가 「record」요소로서 기술됩니다.
+
+   <P>
+JVM 가 크래쉬 하면(자), &lt;/log&gt; 으로 XMLFormatter 스트림을 올바르게 닫아 제대로 종료할 수 없는 것이 있습니다. 그 때문에, 로그 레코드를 분석하는 툴을 준비해, 종료하고 있지 않는 스트림에 대처할 필요가 있습니다.
+   </P>
+
+<H3><A NAME="1.13">1.13 일의의 메세지 ID</A> </H3>
+
+  <P>
+Java 로깅 API 는, 일의의 메세지 ID 를 직접은 지원하지 않습니다. 일의의 메세지 ID 를 필요로 하는 어플리케이션이나 하부조직은, 독자적인 규칙을 정의해 메세지 캐릭터 라인에 적절한 일의의 ID 를 부여할 필요가 있습니다.
+  </P>
+
+
+<H3><A NAME="1.14">1.14 시큐리티</A> </H3>
+
+  <P>
+시큐리티의 제일 요건은, 신뢰되어 있지 않은 코드가 로깅 구성을 변경할 수 없게 하는 것입니다. 특히, 특정의 카테고리의 정보를 특정의 핸들러에 기록하도록(듯이) 로깅 구성을 설정했을 경우는, 신뢰되어 있지 않은 코드가 로깅을 방해하거나 중단하거나 할 수 없게 할 필요가 있습니다.
+  </P>
+
+  <P>
+새로운 시큐리티 액세스권인 LoggingPermission 를 정의해, 로깅의 갱신을 제어합니다.
+  </P>
+
+  <P>
+신뢰되고 있는 어플리케이션에는 적절한 LoggingPermission 가 주어져 임의의 로깅 API 를 호출할 수가 있습니다. 다만, 이것은 신뢰되어 있지 않은 애플릿에는 들어맞지 않습니다. 신뢰되어 있지 않은 애플릿은, 이름 첨부 로거를 일반적으로의 방법으로 작성해 사용할 수 있습니다만, 로깅 제어 설정을 변경해 핸들러의 추가나 삭제를 행하거나 로그 레벨을 변경할 수 없습니다. 다만, 신뢰되어 있지 않은 애플릿은 Logger.getAnonymousLogger 로 「익명」로거를 독자적으로 작성해 사용할 수 있습니다. 이러한 익명 로거는 글로벌 이름 공간에는 등록되지 않습니다. 또 익명 로거의 메소드의 액세스는 체크되지 않기 때문에, 신뢰되어 있지 않은 코드여도 그러한 메소드의 로깅 제어 설정을 변경할 수가 있습니다.  
+  </P>
+
+  <P>
+로깅후레임워크는 부정행위를 방지하려고는 하지 않습니다. 로깅 호출의 소스는 확실히 식별할 수 있다고는 할 수 없기 때문에, 특정의 소스 클래스와 소스 메소드로부터의 것이다고 하는 LogRecord 가 발행되어도, 가짜인 일이 있습니다. 같이 XMLFormatter 등의 포매터도, 메세지 캐릭터 라인내의 상자의 로그 메세지에 대해서 자신을 보호하려고 하지 않습니다. 이와 같이, 가짜의 LogRecord 는 메세지 캐릭터 라인내에 가짜의 XML 를 포함하고 있는 일이 있어, 출력시에 다른 XML 레코드가 있는 것처럼 보이는 일이 있습니다.
+  </P>
+
+  <P>
+또, 로깅후레임워크는 서비스 방해 공격에 대해서 자신을 보호하려고는 하지 않습니다. 임의의 로깅크라이안트가 로깅후레임워크를 의미가 없는 메세지로 넘치게 해 중요한 로그 메세지를 숨길 수가 있습니다.
+  </P>
+
+<H3><A NAME="1.15">1.15 구성 관리</A> </H3>
+
+<P>
+API 는, 최초의 구성 정보를 구성 파일로부터 프로퍼티으로서 읽어내도록(듯이) 구성되어 있습니다. 다음에 구성 정보는 다양한 로깅크라스나 객체를 호출해, 프로그램에 의해 변경할 수가 있습니다.
+</P>
+
+<P>
+게다가 LogManager 에는 구성 파일을 재독 보고 포함 할 수 있는 메소드가 있습니다. 재독 보고 포함을 실시하면, 구성 파일의 값이 프로그램이 행한 변경을 오버라이드(override) 합니다.
+</P>
+
+
+<H3><A NAME="1.16">1.16 패키지화</A> </H3>
+
+  <P>
+모든 로깅크라스는, java.util.logging 패키지에 있는 이름 공간의 java. * 의 부분에 있습니다.
+  </P>
+
+<H3><A NAME="1.17">1.17 각국어화</A> </H3>
+
+  <P>
+로그 메세지를 각국어화 시킬 필요가 있는 경우가 있습니다.
+  </P>
+  <P>
+각 로거에는, 관련지을 수 있었던 자원 번들명이 있습니다. 대응하는 자원 번들을 사용해, 원문의 메세지 캐릭터 라인과 각국어화 시키는 메세지 캐릭터 라인을 매핑 할 수가 있습니다.
+  </P>
+  <P>
+일반적으로, 각국어화는 포매터가 실시합니다. 편의상, 포매터 클래스는 기본적인 각국어화와 서식화를 지원하는 formatMessage 메소드를 제공합니다.
+  </P>
+
+
+<H3><A NAME="1.18">1.18 원격 접근과 직렬화</A> </H3>
+
+  <P>
+대부분의 Java 플랫폼 API 에서는, 로깅 API 는 단독의 address 공간으로 사용하는 설계가 되어 있습니다. 호출은 모두 로컬이 됩니다. 다만, 출력을 다른 시스템에 전송 하려고 하는 핸들러가 있는 일도 생각할 수 있습니다. 다음과 같은 다양한 방법으로 이것을 실시할 수가 있습니다.
+  </P>
+  
+  <P>
+SocketHandler 등, XMLFormatter 를 사용해 다른 시스템에 데이터를 기입하는 핸들러가 있습니다. 이것에 의해, 다양한 시스템으로 구문 분석과 처리가 가능한 간단하고 표준적인 인터체인지 형식이 제공됩니다.
+  </P>
+
+  <P>
+RMI 로 LogRecord 객체를 건네주는 핸들러도 있습니다. 따라서, LogRecord 클래스는 직렬화 가능합니다. 다만, LogRecord 파라미터를 어떻게 취급하는가 하는 문제가 있습니다. 직렬화할 수 없는 파라미터가 있는 한편으로, 로깅에 필요하게 되는 이상 상태에 직렬화하는 파라미터도 있기 때문입니다. 이 문제를 회피하기 위해(때문에), LogRecord 클래스에는, Object.toString()로 파라미터를 캐릭터 라인으로 변환하고 나서 써내는 커스텀의 writeObject 메소드가 준비되어 있습니다. 자세한 것은,<a href="../../../api/java/util/logging/LogRecord.html">「LogRecord API 스펙」</a>을 참조해 주세요.
+  </P>
+
+  <P>
+대부분의 로깅크라스는, 직렬화 가능하게는 되어 있지 않습니다. 로거도 핸들러도, 특정의 가상 머신에 연결시킬 수 있었던 스테이트 풀 클래스입니다. 이 점에서는, 어느쪽이나 Java.io 클래스와 닮아 있습니다. 이 클래스도 직렬화할 수 없습니다.
+  </P>
+
+
+<H2><A NAME="2.0">2.0 예</A> </H2>
+
+
+<H3><A NAME="2.1">2.1 간단한 용법</A> </H3>
+
+  <P>
+디폴트 설정을 사용해 로깅을 실행하는 작은 프로그램을 다음에 나타냅니다.
+  </P>
+
+  <P>
+이 프로그램은, 구성 파일에 근거해 LogManager 가 설정한 루트 핸들러에 의존하고 있습니다. 독자적인 Logger 객체를 작성해, 이것을 호출해 다양한 이벤트를 리포트하는 프로그램입니다.
+  </P>
+
+<CODE>
+<pre>
+
+package com.wombat;
+
+public class Nose{
+    // Obtain a suitable logger.
+    private static Logger logger = Logger.getLogger(&quot;com.wombat.nose&quot;);
+    public static void main(String argv[]) {
+        // Log a FINE tracing message
+        logger.fine(&quot;doing stuff&quot;);
+        try{
+            Wombat.sneeze();
+        } catch (Exception ex) {
+            // Log the exception
+            logger.log(Level.WARNING, &quot;trouble sneezing&quot;, ex);
+        }
+        logger.fine(&quot;done&quot;);
+    }
+}
+  </pre>
+  </CODE>
+
+<H3><A NAME="2.2">2.2 구성의 변경</A> </H3>
+
+<P>
+로깅 구성을 동적으로 조정해 특정의 파일에 출력을 송신해, wombat 에 관한 많은 정보를 취득하는 작은 프로그램을 다음에 나타냅니다. 패턴 「%t」는, 시스템의 일시 디렉토리를 나타냅니다.  
+</P>
+<CODE>
+<pre>
+public static void main(String[] args) {
+    Handler fh = new FileHandler(&quot;%t/wombat.log&quot;);
+    Logger.getLogger(&quot;&quot;). addHandler(fh);
+    Logger.getLogger(&quot;com.wombat&quot;). setLevel(&quot;com.wombat&quot;, Level.FINEST);
+    ...
+}
+</pre>
+</CODE>
+
+
+<H3><A NAME="2.3">2.3 글로벌 설정을 무시한 간단한 용법</A> </H3> 
+
+<P>
+독자적인 로깅한드라를 설정해, 글로벌 설정을 무시하는 작은 프로그램을 다음에 나타냅니다.
+</P>
+<CODE>
+<pre>
+package com.wombat;
+
+import java.util.logging. *;
+
+public class Nose {
+    private static Logger logger = Logger.getLogger(&quot;com.wombat.nose&quot;);
+    private static FileHandler fh = new FileHandler(&quot;mylog.txt&quot;);
+    public static void main(String argv[]) {
+        // Send logger output to our FileHandler.
+        logger.addHandler(fh);
+        // Request that every detail gets logged.
+        logger.setLevel(Level.ALL);
+        // Log a simple INFO message.
+        logger.info(&quot;doing stuff&quot;);
+        try {
+            Wombat.sneeze();
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, &quot;trouble sneezing&quot;, ex);
+        }
+        logger.fine(&quot;done&quot;);
+    }
+}
+</pre>
+</CODE>
+
+<H3><A NAME="2.4">2.4 XML 의 출력예</A> </H3>
+다음에, XMLFormatter XML 출력의 예를 나타냅니다. <pre><CODE>
+&lt;? xml version=&quot;1. 0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;? &gt;
+&lt;! DOCTYPE log SYSTEM &quot;logger.dtd&quot;&gt;
+&lt;log&gt;
+&lt;record&gt;
+  &lt;date&gt;2000-08-23 19:21:05&lt;/date&gt;
+  &lt;millis&gt;967083665789&lt;/millis&gt;
+  &lt;sequence&gt;1256&lt;/sequence&gt;
+  &lt;logger&gt;kgh.test.fred&lt;/logger&gt;
+  &lt;level&gt;INFO&lt;/level&gt;
+  &lt;class&gt;kgh.test.XMLTest&lt;/class&gt;
+  &lt;method&gt;writeLog&lt;/method&gt;
+  &lt;thread&gt;10&lt;/thread&gt;
+  &lt;message&gt;Hello world! &lt;/message&gt;
+&lt;/record&gt;
+&lt;/log&gt;
+</CODE>
+</pre>
+
+<H2><A NAME="3.0">3.0 부록 A:XMLFormatter 출력용의 DTD</A> </H2>
+<pre><CODE>
+&lt;! -- DTD used by the java.util.logging.XMLFormatter --&gt;
+&lt;! -- This provides an XML formatted log message.  --&gt;
+
+&lt;! -- The document type is &quot;log&quot; which consists of a sequence
+of record elements --&gt;
+&lt;! ELEMENT log (record*) &gt;
+
+&lt;! -- Each logging call is described by a record element.  --&gt;
+&lt;! ELEMENT record (date, millis, sequence, logger?, level,
+class?, method?, thread?, message, key?, catalog?, param*, exception? ) &gt;
+
+&lt;! -- Date and time when LogRecord was created in ISO 8601 format --&gt;
+&lt;! ELEMENT date (#PCDATA) &gt;
+
+&lt;! -- Time when LogRecord was created in milliseconds since
+midnight January 1st, 1970, UTC.  --&gt;
+&lt;! ELEMENT millis (#PCDATA) &gt;
+
+&lt;! -- Unique sequence number within source VM.  --&gt;
+&lt;! ELEMENT sequence (#PCDATA) &gt;
+
+&lt;! -- Name of source Logger object.  --&gt;
+&lt;! ELEMENT logger (#PCDATA) &gt;
+
+&lt;! -- Logging level, may be either one of the constant
+names from java.util.logging.Constants (such as &quot;SEVERE&quot;
+or &quot;WARNING&quot;) or an integer value such as &quot;20&quot;.  --&gt;
+&lt;! ELEMENT level (#PCDATA) &gt;
+
+&lt;! -- Fully qualified name of class that issued
+logging call, e.g.  &quot;javax.marsupial.Wombat&quot;.  --&gt;
+&lt;! ELEMENT class (#PCDATA) &gt;
+
+&lt;! -- Name of method that issued logging call.
+It may be either an unqualified method name such as
+&quot;fred&quot; or it may include argument type information
+in parenthesis, for example &quot;fred(int, String) &quot;.  --&gt;
+&lt;! ELEMENT method (#PCDATA) &gt;
+
+&lt;! -- Integer thread ID.  --&gt;
+&lt;! ELEMENT thread (#PCDATA) &gt;
+
+&lt;! -- The message element contains the text string of a log message.  --&gt;
+&lt;! ELEMENT message (#PCDATA) &gt;
+
+&lt;! -- If the message string was localized, the key element provides
+the original localization message key.  --&gt;
+&lt;! ELEMENT key (#PCDATA) &gt;
+
+&lt;! -- If the message string was localized, the catalog element provides
+the logger's localization resource bundle name.  --&gt;
+&lt;! ELEMENT catalog (#PCDATA) &gt;
+
+&lt;! -- If the message string was localized, each of the param elements
+provides the String value (obtained using Object.toString())
+of the corresponding LogRecord parameter.  --&gt;
+&lt;! ELEMENT param (#PCDATA) &gt;
+
+&lt;! -- An exception consists of an optional message string followed
+by a series of StackFrames.  Exception elements are used
+for Java exceptions and other java Throwables.  --&gt;
+&lt;! ELEMENT exception (message?, frame+) &gt;
+
+&lt;! -- A frame describes one line in a Throwable backtrace.  --&gt;
+&lt;! ELEMENT frame (class, method, line? ) &gt;
+
+&lt;! -- an integer line number within a class's source file.  --&gt;
+&lt;! ELEMENT line (#PCDATA) &gt;
+</code>
+</pre>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2002
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+<!--    <FONT SIZE="-1">     Please send comments to:     </FONT> -->
+
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+</BODY>
+
+</HTML>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

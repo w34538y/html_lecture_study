@@ -1,0 +1,784 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Mon Oct 21 10:24:34 오후 2002" />
+<title> JavaBeans 버젼 1.0 의 확장 기능 가능 런타임 포함 관계 및 서비스의 프로토콜 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="beancontextTOC.html" />
+    <link rel="Previous" href="beancontextTOC.html" />
+    <link rel="Next" href="" />
+    <link rel="Index" href="beancontext.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="beancontextTOC.html">목차</a> 
+       </td>
+	   <td align="right"><i>JavaBeans 의 확장 기능 가능 런타임 포함 관계 및 서버 프로토콜</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp473591"> </a> <h2 class="pChapTitle">
+JavaBeans 버젼 1.0 의 확장 기능 가능 런타임 포함 관계 및 서비스의 프로토콜
+</h2>
+<a name="wp918532"> </a> <p class="pBody">
+코멘트의 송부처: java-beans@java.sun.com
+</p>
+<a name="wp916002"> </a> <h2 class="pHeading1">
+1.0 처음에
+</h2>
+<a name="wp916293"> </a> <p class="pBody">
+현재, JavaBeans 스펙 (버젼 1.0)에는, JavaBeans 의 계층이나 논리 구조를 설명한 규칙도, JavaBeans 가, 내부에서 JavaBean 의 인스턴스를 생성한 런타임을 인식하거나 그 런타임으로부터 임의의 서비스나 기능을 취득하거나 할 때의 규칙도 포함되어 있지 않습니다.
+</p>
+<a name="wp916686"> </a> <p class="pBody">
+바람직한 방법은, 논리적이어 traversal인 JavaBeans 의 계층을 제공하는 것과 동시에, 임의의 JavaBean 의 인스턴스를 생성하는 객체가 종래의 방법으로 JavaBean 에 다양한 서비스를 제공하거나 기본적인 시스템 서비스와 JavaBean 간에의 인터럽트를 행하기 위한 일반적인 기구를 제공하는 것입니다.
+</p>
+<a name="wp916294"> </a> <p class="pBody">
+다른 컴퍼넌트 모델에서는, 컴퍼넌트와 그 환경, 또는 컨테이너간의 관계라고 하는 개념이 존재합니다.  그곳에서는, 새롭게 인스턴스가 생성된 컴퍼넌트가, 그 컨테이너 또는 짜넣어 문맥에의 참조와 함께 제공됩니다.
+</p>
+<a name="wp916610"> </a> <p class="pBody">
+컨테이너 또는 짜넣어 문맥은, 계층 또는 논리 구조를 확립하는 것 만이  아니고, 문맥이 제공하는 서비스를 판별해 이용하기 위해서 컴퍼넌트가 조사하는 서비스 프로바이더라고 해도 기능합니다.
+</p>
+<a name="wp916323"> </a> <p class="pBody">
+여기에서는, 다음의 확장 가능한 기구를 지원하는 프로토콜을 정의합니다.
+</p>
+<ul class="pBullet1"><a name="wp916329"> </a> <div class="pBullet1"><li>JavaBean 가 그 수명 (JavaBeans 의 계층 또는 구조)의 사이, 논리적으로 기능하는 환경 또는 문맥의 추상화를 도입한다</li></div>
+<a name="wp916384"> </a> <div class="pBullet1Plus"><li>JavaBean 환경에의 임의의 서비스의 동적인 추가를 가능하게 한다</li></div>
+<a name="wp916330"> </a> <div class="pBullet1Plus"><li>단일의 서비스 발견 기구를 제공한다.  JavaBeans 는 이 기구를 이용해 환경을 조사해, 특정의 서비스가 이용 가능한가 어떤가를 확인해, 가능한 경우에는 실제로 이용한다</li></div>
+<a name="wp916383"> </a> <div class="pBullet1Plus"><li>환경을 JavaBean 에 전반하기 위한 단순한 기구를 제공한다</li></div>
+<a name="wp916385"> </a> <div class="pBullet1Last"><li>애플릿이기도 한 JavaBeans 에의 보다 좋은 지원를 제공한다</li></div>
+</ul>
+<img src="images/beancontext.gif" align="center" alt="이전의 리스트 포인트의 그래픽 표시">
+<p>
+<a name="wp919929"> </a> <h2 class="pHeading1">
+2.0 API 의 스펙
+</h2>
+<a name="wp916410"> </a> <h3 class="pHeading2">
+2.1 java.beans.beancontext.BeanContext 인터페이스
+</h3>
+<a name="wp918560"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 의 계층 구조 및 그 일반적인 기능은, 다음과 같이 제공됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface		java.beans.beancontext.BeanContext<a name="wp916433"> </a> 
+	   extends	 	java.beans.beancontext.BeanContextChild,<a name="wp916424"> </a> 
+		      java.util.Collection,<a name="wp919360"> </a> 
+			 java.beans.DesignMode,<a name="wp920705"> </a> 
+		 	 java.beans.Visibility {<a name="wp920706"> </a> 
+<a name="wp919236"> </a> 
+	Object instantiateChild(String beanName)<a name="wp917986"> </a> 
+		  throws IOException, ClassNotFoundException;<a name="wp918017"> </a> 
+<a name="wp918565"> </a> 
+	public InputStream<a name="wp919565"> </a> 
+		getResourceAsStream(String           name,<a name="wp919700"> </a> 
+		                    BeanContextChild requestor<a name="wp919701"> </a> 
+		);<a name="wp919702"> </a> 
+<a name="wp919567"> </a> 
+	public java.net.URL<a name="wp919569"> </a> 
+		getResource(String           name,<a name="wp919704"> </a> 
+		            BeanContextChild requestor<a name="wp919705"> </a> 
+		);<a name="wp919706"> </a> 
+<a name="wp919707"> </a> 
+	void addBeanContextMembershipListener(<a name="wp919784"> </a> 
+		   BeanContextMembershipListener bcml<a name="wp920859"> </a> 
+          );<a name="wp920860"> </a> 
+<a name="wp919383"> </a> 
+	void removeBeanContextMembershipListener{<a name="wp919380"> </a> 
+		    BeanContextMembershipListener bcml<a name="wp919392"> </a> 
+	);<a name="wp920861"> </a> 
+<a name="wp921035"> </a> 
+	public static final Object globalHierarchyLock;<a name="wp921036"> </a> 
+}<a name="wp919563"> </a> 
+</pre></div>
+<a name="wp919880"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 의 멤버쉽내의 변경 통지는, 다음과 같이 모델화 됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextMembershipListener<a name="wp919943"> </a> 
+	  extends   java.util.Listener {<a name="wp919850"> </a> 
+	void childrenAdded(BeanContextMembershipEvent   bcme);<a name="wp919851"> </a> 
+	void childrenRemoved(BeanContextMembershipEvent bcme);<a name="wp919852"> </a> 
+}<a name="wp919853"> </a> 
+<a name="wp919854"> </a> 
+</pre></div>
+<a name="wp920752"> </a> <p class="pBody">
+이벤트 관련의 모든 <em class="cEmphasis">BeanContext</em> 의 base class는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public abstract class BeanContextEvent<a name="wp919856"> </a> 
+	  extends  java.util.EventObject {<a name="wp919857"> </a> 
+	public BeanContext getBeanContext();<a name="wp919858"> </a> 
+<a name="wp919859"> </a> 
+	public synchronized void<a name="wp919860"> </a> 
+		setPropagatedFrom(BeanContext bc);<a name="wp919861"> </a> 
+<a name="wp919862"> </a> 
+	public synchronized BeanContext getPropagatedFrom();<a name="wp919863"> </a> 
+<a name="wp919864"> </a> 
+	public synchronized boolean isPropagated()<a name="wp919865"> </a> 
+}<a name="wp919866"> </a> 
+<a name="wp919867"> </a> 
+</pre></div>
+<a name="wp920753"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextMembershipEvent</em> 는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public class BeanContextMembershipEvent<a name="wp919868"> </a> 
+	  extends BeanContextEvent {<a name="wp919869"> </a> 
+<a name="wp919870"> </a> 
+	public BeanContextMembershipEvent(BeanContext bc,<a name="wp919871"> </a> 
+	                                  Object[]    deltas);<a name="wp919872"> </a> 
+<a name="wp919873"> </a> 
+	public BeanContextMembershipEvent(BeanContext bc,<a name="wp919874"> </a> 
+	                                  Collection	 deltas);<a name="wp919875"> </a> 
+<a name="wp920025"> </a> 
+	public int size();<a name="wp920026"> </a> 
+<a name="wp919948"> </a> 
+	public boolean contains(Object child);<a name="wp919949"> </a> 
+<a name="wp919950"> </a> 
+	public Object[] toArray();<a name="wp919951"> </a> 
+<a name="wp919952"> </a> 
+	public Iterator iterator();<a name="wp919953"> </a> 
+}<a name="wp919876"> </a> 
+</pre></div>
+<a name="wp919733"> </a> <h4 class="pHeading3">
+2.1. 1 상자 구조에 포함되는 BeanContext
+</h4>
+<a name="wp916698"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 의 역할의 1 개에,<em class="cEmphasis">BeanContext</em> 및 JavaBean 인스턴스의 계층적 상자 구조라고 하는 개념의 도입이 있습니다. 이 구조를 모델화하기 위해서(때문에),<em class="cEmphasis">BeanContext</em> 는, 구조 또는 계층내의 관계를 정의하는 API 를 공개할 필요가 있습니다.
+</p>
+<a name="wp916730"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 는, 후술 하도록(듯이) <em class="cEmphasis">java.beans.beancontext.BeanContextChild</em>  인터페이스를 구현하는 것으로써, 그 초고층 건축 구조 시스템을 공개합니다. 이 인터페이스를 이용하면(자),<em class="cEmphasis">BeanContext</em> 의 상자로 된 <em class="cEmphasis">BeanContext</em> 의 검출 및 조작이 가능하게 됩니다.  그 결과,<em class="cEmphasis">BeanContexts</em> 의 계층 작성 기능이 도입됩니다.
+</p>
+<a name="wp916885"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext </em> 는,<em class="cEmphasis">java.util.Collection</em> 인터페이스 시멘틱스에 의해 모델화 된 다수의 인터페이스 메소드를 사용해, 그 토대를 공개합니다.
+</p>
+<a name="wp920020"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContexts</em> 는, 모든 필수 <em class="cEmphasis">Collection</em> API 로,<em class="cEmphasis">add</em>() 및 <em class="cEmphasis">remove</em>() 용의 특정의 시멘틱스를 사용할 때에 필요하게 됩니다.
+</p>
+<a name="wp916737"> </a> <p class="pBody">
+<em class="cEmphasis">add()</em> 메소드는, 신규 객체인 <em class="cEmphasis">BeanContextChild</em> 또는 <em class="cEmphasis">BeanContext</em> 를 타겟의 <em class="cEmphasis">BeanContext</em>내에서 상자로 하기 위해서(때문에) 불려 갑니다. 다음의 시멘틱스에 따르기 위해서(때문에)는, 스펙에 준거해 구현된 <em class="cEmphasis">add()</em> 가 필요합니다.
+</p>
+<ul class="pBullet1"><a name="wp916739"> </a> <div class="pBullet1"><li><em class="cEmphasis">BeanContext.globalHierarchyLock</em> 상에서 동기를 실행합니다. </li></div>
+<a name="wp921039"> </a> <div class="pBullet1Plus"><li>각 자 객체는, 지정된 <em class="cEmphasis">BeanContext</em> 의 아이 세트내에 1 번만 나타납니다. 인스턴스가 이미 <em class="cEmphasis">BeanContext</em> 의 멤버인 경우, 메소드는 false 를 돌려줍니다. </li></div>
+<a name="wp918628"> </a> <div class="pBullet1Plus"><li>유효한 아이 객체는, 각각 지정된 소스 <em class="cEmphasis">BeanContext</em> 의 아이 세트에 추가됩니다.  그 결과,<em class="cEmphasis">remove()</em>,<em class="cEmphasis">removeAll()</em>,<em class="cEmphasis">retainAll()</em>, 또는 <em class="cEmphasis">clear()</em> 가 불려 가, 상자가 된 <em class="cEmphasis">BeanContext</em> 로부터 삭제될 때까지, 아이 객체는 아이 세트에 표시되어<em class="cEmphasis">toArray()</em> 메소드 또는 <em class="cEmphasis">iterator() </em>메소드를 사용해 취득 가능하게 됩니다. </li></div>
+<a name="wp918643"> </a> <div class="pBullet1Plus"><li>아이는 상자로 된 아이 세트에 추가되어 거기서 아이는 <em class="cEmphasis">java.beans.beancontext.BeanContextChild</em> 인터페이스 (또는 <em class="cEmphasis">BeanContextProxy</em>, 자세한 것은 후술)를 구현하기 위해(때문에),<em class="cEmphasis">BeanContext</em> 는, 그 아이에 대해서 스스로를 참조하는 <em class="cEmphasis">setBeanContext</em>() 메소드를 호출합니다. <em class="cEmphasis"></em>불려 가도, 아이가 하등의 이유로써 <em class="cEmphasis">BeanContext</em> 내에서 동작 불가이든가 또는 동작의 준비가 되어 있지 않은 경우, 아이는 <em class="cEmphasis">PropertyVetoException</em> 를 throw 해 상자가 되어 있는 <em class="cEmphasis">BeanContext</em> 를 통지합니다. 아이가 이런 종류의 예외를 throw 하면(자),<em class="cEmphasis">BeanContext</em> 는 상자가 된 아이 세트에의 아이의 추가  ( 및 이 추가 조작의 부작용으로서 생긴, BeanContext 외 부분적인 상태 변경)를 취소해 <em class="cEmphasis">IllegalStateException</em> 를 throw 합니다. </li></div>
+<a name="wp917044"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis">java.beans.Visibility</em> 인터페이스를 구현하는 JavaBeans 는, 적절한 메소드인 <em class="cEmphasis">dontUseGui()</em> 또는 <em class="cEmphasis">okToUseGui()</em> 경유로, GUI 를 draw 하는 현재의 능력을,<em class="cEmphasis">BeanContext</em> 의 정책로 정의된 것으로서 통지됩니다. </li></div>
+<a name="wp918520"> </a> <div class="pBullet1Plus"><li>신규에 추가된 아이가 <em class="cEmphasis">BeanContextChild</em> 를 구현하는 경우,<em class="cEmphasis">BeanContext</em> 는, 그 <em class="cEmphasis">VetoableChangeListener</em> 및 <em class="cEmphasis">PropertyChangeListener</em> 인터페이스의 양쪽 모두의 아이에게 스스로를 등록해, 적어도 <em class="cEmphasis">BeanContextChild</em>&#8217; 의 「beanContext」프로퍼티을 감시합니다. </li></div>
+<a name="wp919523"> </a> <p class="pIndented1">
+이와 같이 해,<em class="cEmphasis">BeanContext</em> 는 그 아이를 감시해, 아이가 서드 파티 (일반적으로은 다른 <em class="cEmphasis">BeanContext</em>)에 의해 삭제되었을 경우에 <em class="cEmphasis">setBeanContext</em>()를 호출해 검출할 수 있게 됩니다. <em class="cEmphasis">BeanContext</em> 는, 그 시점에서 아이가 멤버가 아닌 것을 판별하면(자), 서드 파티에 의한 변경을 거부할 수가 있습니다.  
+</p>
+<a name="wp919769"> </a> <div class="pBullet1Plus"><li>추가된 JavaBean 가 <em class="cEmphasis">BeanContext</em> 를 소스로 하는 <em class="cEmphasis">Listener</em> 인터페이스를 구현하는 경우,<em class="cEmphasis">BeanContext</em> 는 새롭게 추가된 객체를, 상자에 의한 허용 가능한 부작용으로서 적절한 청취자 등록 메소드를 사용해 등록할 수 있습니다. <em class="cEmphasis"></em></li></div>
+<a name="wp920785"> </a> <div class="pBullet1Plus"><li>추가된 JavaBean 가 특정의 <em class="cEmphasis">BeanContext</em> 가 관계하는 이벤트의 이벤트 소스인 경우, 그 <em class="cEmphasis">BeanContext</em> 는, 아이의 추가에 의한 부작용으로서 아이에 대한 청취자를 등록할 수 있습니다. <em class="cEmphasis"></em><em class="cEmphasis">BeanContext</em> 는, 직렬화 가능한 청취자의 사용을 피할 필요가 있습니다. 이것은, 아이가 스스로를 직렬화했을 경우, 그 필요가 없는 구조를 직렬화해 버리는 것을 피하기 (위해)때문에입니다. <em class="cEmphasis"></em><em class="cEmphasis"></em></li></div>
+<a name="wp920898"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis">targetChild</em> 의 처리가 성공하면(자),<em class="cEmphasis">BeanContext</em> 는, 신규 추가된 <em class="cEmphasis">targetChild</em> 에의 참조를 포함한  <em class="cEmphasis">java.beans.beancontext.BeanContextMembershipEvent</em> 를, 현재 등록되어 모든 <em class="cEmphasis">BeanContextMemebrshipListeners</em> 의 <em class="cEmphasis">childrenAdded</em>() 메소드에 대해서 트리거합니다. </li></div>
+<a name="wp919528"> </a> <div class="pBullet1Last"><li>성공하면(자), 메소드는 true 를 돌려줍니다. <em class="cEmphasis"></em></li></div>
+</ul>
+<a name="wp919527"> </a> <p class="pBody">
+<em class="cEmphasis">remove()</em> 메소드는, 기존의 아이 JavaBean 또는 <em class="cEmphasis">BeanContext</em> 를 타겟의 <em class="cEmphasis">BeanContext</em> 로부터 삭제하는 경우에 불려 갑니다. <a name="919527"><!-- --></a> <em>remove()</em> 메소드는, 기존의 아이 JavaBean 또는 다음의 시멘틱스에 따르기 위해서(때문에)는, 스펙에 준거해 구현된 <em class="cEmphasis">remove()</em> 가 필요합니다.
+</p>
+<ul class="pBullet1"><a name="wp918671"> </a> <div class="pBullet1"><li><em class="cEmphasis">BeanContext.globalHierarchyLock</em> 와 동기 합니다. </li></div>
+<a name="wp921044"> </a> <div class="pBullet1Plus"><li>특정의 아이가, 소스인 <em class="cEmphasis">BeanContext</em> 의 아이 세트내에 존재하지 않는 경우, 메소드는 false 를 돌려줍니다. </li></div>
+<a name="wp919531"> </a> <div class="pBullet1Plus"><li>소스인 <em class="cEmphasis">BeanContext</em> 의 아이 세트로부터 유효한 <em class="cEmphasis">targetChild</em> 를 삭제해, 동시에 상자의 부작용으로서 암묵중에 등록된 <em class="cEmphasis">BeanContext</em> 용의 다른 모든 청취자 인터페이스로부터 아이를 삭제합니다. <em class="cEmphasis"></em></li></div>
+<a name="wp918237"> </a> <p class="pIndented1">
+결과적으로,<em class="cEmphasis">targetChild</em> 가 <em class="cEmphasis"> java.beans.beancontext.BeanContextChild </em>인터페이스 (또는 <em class="cEmphasis">BeanContextProxy</em>, 자세한 것은 후술)를 구현하는 경우,<em class="cEmphasis">BeanContext </em>는 <em class="cEmphasis">setBeanContext</em>()를 null<a href="#wp919546"><span class="Footnote">1</span></a>  <em class="cEmphasis">BeanContext</em> 치로 호출해,<em class="cEmphasis">BeanContext</em> 내의 상자는 아니게 된 아이를 통지합니다.
+</p>
+<a name="wp918780"> </a> <p class="pIndented1">
+특정의 <em class="cEmphasis">BeanContextChild</em> 는, 상자가 된 <em class="cEmphasis">BeanContext</em> 로부터 상자 상태를 해제할 수 없는 경우,<em class="cEmphasis">PropertyVetoException</em> 를 throw 합니다.  받은 <em class="cEmphasis">BeanContext </em> 는, 이 인스턴스의 삭제 조작을 호출해,<em class="cEmphasis">IllegalStateException</em> 를 throw 합니다. 무한 회귀를 피하기 (위해)때문에, 아이에게는 그 후의 삭제 통지를 반복해 취소하는 것은 허가되지 않습니다. 실제, 아이는, 상자가 된 현재의 <em>BeanContext</em> 로부터 그 삭제를 무효로 하는 조건 (일시적인 경우)의 해결을 시도할 필요가 있습니다.
+</p>
+<a name="wp918699"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis"> targetChild </em> 가 <em class="cEmphasis"> java.beans.beancontext.BeanContextChild</em> 를 구현하는 경우,<em class="cEmphasis">BeanContext</em> 는, 아이의 <em class="cEmphasis">PropertyChangeListener</em> 및 <em class="cEmphasis">VetoableChangeListener</em> 소스로부터 스스로를 등록 해제합니다. </li></div>
+<a name="wp919770"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis">BeanContext</em> 가, 청취자로서 삭제된 객체를, 이러한 객체를 상자로 할 때의 부작용으로서 <em class="cEmphasis">BeanContext</em> 에 의해 구현된 이벤트 소스상에서 등록되어 있는 경우,<em class="cEmphasis">BeanContext</em> 는, 적절한 청취자 등록 해제 메소드를 사용해, 새롭게 삭제된 객체를, 적용 가능한 소스로부터 등록 해제합니다. <em class="cEmphasis"></em><em class="cEmphasis"></em></li></div>
+<a name="wp920906"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis">BeanContext</em> 가 삭제된 객체의 청취자를 이전에 등록되어 있는 경우,<em class="cEmphasis">BeanContext</em> 는 이러한 청취자를 객체로부터 삭제합니다. <em class="cEmphasis"></em></li></div>
+<a name="wp920908"> </a> <div class="pBullet1Plus"><li><em class="cEmphasis">targetChild</em> 가 아이 세트로부터 삭제되면(자),<em class="cEmphasis">BeanContext</em> 는, 삭제된지 얼마 안된 <em class="cEmphasis">targetChild</em> 에의 참조를 포함한  <em class="cEmphasis">java.beans.beancontext.BeanContextMembershipEvent</em> 를, 현재 등록되어 모든 <em class="cEmphasis">BeanContextMembershipListeners</em> 의 <em class="cEmphasis">childrenRemoved</em>() 메소드에 대해서 트리거합니다. </li></div>
+<a name="wp919575"> </a> <div class="pBullet1Last"><li>조작이 성공하면(자), 메소드는 마지막에 true 를 돌려줍니다. </li></div>
+</ul>
+<a name="wp918703"> </a> <p class="pBody">
+상자가 된 <em class="cEmphasis">BeanContext</em> 의 모든 아이의 수명은, 적어도, 지정된 <em class="cEmphasis">BeanContext</em> 내에서의 아이의 포함 관계의 계속기간이 됩니다. <em class="cEmphasis">BeanContext</em> 내의 포함 관계를 의식하지 않는 단순한 JavaBeans 의 경우, 이것은, 상자가 된 <em class="cEmphasis">BeanContext</em> 의 유효기간중은 적어도 JavaBean 가 존재하는 것을 의미합니다.
+</p>
+<a name="wp920917"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 에서는,<em class="cEmphasis">java.util.Collection API</em> 에 의해 정의된, 옵션의 <em class="cEmphasis">addAll()</em>,<em class="cEmphasis">removeAll</em>(),<em class="cEmphasis">retainAll</em>(), 또는  <em class="cEmphasis">clear()</em> 메소드의 어느쪽이든을 구현하는 필요성은 없습니다만, 구현하는 경우에는, 전술의 <em class="cEmphasis">add</em>()와 <em class="cEmphasis">remove</em>()용으로 정의된 시멘틱스를 객체 마다 구현할 필요가 있습니다. 실패시에는, 이러한 메소드는 부분적으로 적용된 모든 변경을 무효로 해, 복합 조작이 불려 가 실패하기 전 상태에 <em class="cEmphasis">BeanContext</em> 를 되돌립니다.  실패시에는, 상기의 <em class="cEmphasis">add()</em> 및 <em class="cEmphasis">remove()</em> 의 정의에 맞추어,<em class="cEmphasis">BeanContextEvents</em> 는 트리거되지 않습니다.
+</p>
+<a name="wp920924"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextMembershipListeners</em> 의 추가 및 삭제는,<em class="cEmphasis">addBeanContextMembershipListener</em>() 및 <em class="cEmphasis">removeBeanContextMembershipListener</em>()의 호출을 통해 실행됩니다.
+</p>
+<a name="wp920925"> </a> <p class="pBody">
+<em class="cEmphasis">toArray()</em> 메소드는, 현재의 JavaBean 세트의 카피 또는 타겟의 <em class="cEmphasis">BeanContext</em> 내에서 상자가 된 <em class="cEmphasis">BeanContext</em> 의 인스턴스를 돌려줍니다.  또,<em class="cEmphasis">iterator</em>() 메소드는, 아이의 같은 세트에 <em class="cEmphasis">java.util.Iterator </em> 객체를 제공합니다
+</p>
+<a name="wp920926"> </a> <p class="pBody">
+지정된 객체가 현재 <em class="cEmphasis">BeanContext</em> 의 아이인 경우,<em class="cEmphasis">contains()</em> 메소드는 true 를 돌려줍니다.
+</p>
+<a name="wp920927"> </a> <p class="pBody">
+<em class="cEmphasis">size()</em> 메소드는, 상자가 된 현재의 아이의 수를 돌려줍니다.
+</p>
+<a name="wp920928"> </a> <p class="pBody">
+<em class="cEmphasis">isEmpty</em>() 메소드는,<em class="cEmphasis">BeanContext</em> 에 아이가 없는 경우, true 를 돌려줍니다.
+</p>
+<a name="wp920929"> </a> <p class="pBody">
+모든 <em class="cEmphasis">Collection</em> 메소드는, multi-thread 환경에서 올바르게 기능하기 위해서, 지정된 구현에 의한 적절한 동기화를 서로 필요로 합니다.  이것에 의해, 지정된 <em class="cEmphasis">BeanContext</em> 내에서 상자가 된 JavaBeans 세트의 멤버쉽에의 모든 변경이, 불가분으로 확실히 적용됩니다. 모든 구현으로,<em class="cEmphasis">BeanContext.globalHierarchyLock</em> 를 사용해 이러한 메소드의 구현을 동기화할 필요가 있습니다.
+</p>
+<a name="wp920930"> </a> <p class="pBody">
+어느 상황에서는,<em class="cEmphasis">add()</em> 및 <em class="cEmphasis">remove()</em> (또는 그 변화형) 조작이 상자 상태로 행해지는 경우가 있습니다.  그 경우,<em class="cEmphasis">Thread</em> 를 동시에 호출하는 스택상에서 복수의 조작이 동시에 발생합니다.  다음에 예를 나타냅니다. <em class="cEmphasis">BeanContextChild</em> 의 A 가 추가 (또는 삭제)되면(자),<em class="cEmphasis">setBeanContext() </em> 메소드는 다른 <em class="cEmphasis">BeanContextChild</em> 의 B 도 추가 (또는 삭제)합니다.  특정의 <em class="cEmphasis">BeanContext</em> 구현은, 2 개의 <em class="cEmphasis">BeanContextMembershipListener</em> 통지를 발행하는 일이 있습니다.  그 경우, B 의 <em class="cEmphasis">add()</em>/<em class="cEmphasis">remove()</em> 조작에 대해서 1 개 발행해, 그 후 A 의 조작에 대해서 1 개 발행하는 (B 가 A 의 전에 추가되었기 때문에 이 순서가 된다)인가, 또는 A 와 B 의 양쪽 모두를 포함한 1 개의 통지에 정리합니다.  어떠한 이유에서도 A 를 추가 또는 삭제할 수 없는 경우에는, 이 조건을 나타내는 <em class="cEmphasis">PropertyVetoException</em> 를 throw 하기 전에, 부작용으로서 발생하는 B 에 대한 모든 추가 또는 삭제 조작의 실행 또는 취소는 행해지지 않습니다.  즉, 독자적인 멤버쉽 상태에 대한 변경을 거부하기 전에, 부작용으로서 발생하는 멤버쉽의 변경은 피하든가 또는 취소할 필요가 있습니다.
+</p>
+<a name="wp920949"> </a> <p class="pBody">
+<em class="cEmphasis">instantiateChild()</em> 메소드는, 새로운 JavaBean 인스턴스를 목적의 <em class="cEmphasis">BeanContext</em> 의 아이로서 인스턴스 생성할 때에 호출할 수 있는 편리한 메소드입니다. JavaBean 의 구현은,<em class="cEmphasis">beanName </em> 의 열매 파라미터의 값으로부터 이끌려<em class="cEmphasis">java.beans.Beans.instantiate()</em> 메소드에 의해 정의됩니다.
+</p>
+<a name="wp920931"> </a> <p class="pBody">
+일반적으로, 이것은 목적의 <em class="cEmphasis">BeanContext</em> 의 <em class="cEmphasis">ClassLoader</em> 를 사용해, 적절한 <em class="cEmphasis">java.beans.Beans.instantiate() </em> 메소드를 호출하는 것으로 구현됩니다. 다만, 특정의 <em class="cEmphasis">BeanContext</em> 구현은, 이 메소드의 구현내의 인스턴스 생성 조작에 대한 부작용을 일으키는 경우가 있습니다.
+</p>
+<a name="wp920030"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextEvent</em> 는,<em class="cEmphasis">BeanContext</em> 의 정의가 끝난 시멘틱스 상태 변화에 속하는 모든 이벤트에 대한 추상 루트<em class="cEmphasis">EventObject</em> 클래스입니다. 이 추상 루트 클래스는, 통지원인 <em class="cEmphasis">BeanContexts</em> 를 정의해,<em class="cEmphasis">BeanContexts</em> 의 계층을 통해서 <em class="cEmphasis">BeanContextEvent</em> 서브 클래스의 전파를 가능하게 하는 기구를 도입합니다.  <em class="cEmphasis">setPropagatedFrom</em>() 및 <em class="cEmphasis">getPropagatedFrom</em>() 메소드를 사용하면(자),<em class="cEmphasis">BeanContext</em> 는 전파 되는 이벤트의 소스로서 스스로를 식별하기 위해(때문에), 이벤트는 <em class="cEmphasis">BeanContext</em> 에 전파 됩니다.  이것은 일반적인 전파 기구이며, 대규모 계층을 경유해 전파를 하는 경우, 퍼포먼스면에서 중요한 영향이 있기 (위해)때문에, 주의해 사용할 필요가 있습니다. <em class="cEmphasis">setPropagatedFrom</em>() 및 <em class="cEmphasis">getPropagatedFrom</em>() 메소드를 사용하면(자),<em class="cEmphasis">BeanContext</em> 는 전파 되는 이벤트의 소스로서 스스로를 식별하기 위해(때문에), 이벤트는 <em class="cEmphasis">BeanContext</em> 에 전파 됩니다. <em class="cEmphasis"></em>이것은 일반적인 전파 기구이며, 대규모 계층을 경유해 전파를 하는 경우, 퍼포먼스면에서 중요한 영향이 있기 (위해)때문에, 주의해 사용할 필요가 있습니다.
+</p>
+<a name="wp920016"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextMembershipEvent</em> 는, 특정의 <em class="cEmphasis">BeanContext</em> 인스턴스의 멤버쉽내에서 발생하는 변경을 기술합니다. 이 이벤트는, 특정의 <em class="cEmphasis">BeanContext</em> 인스턴스의 멤버쉽 (즉, 멤버쉽 세트내의 델타)에 대해서, 추가 또는 삭제된 아이의 리스트를 캡슐화합니다.
+</p>
+<a name="wp920017"> </a> <p class="pBody">
+특정의 <em class="cEmphasis">BeanContext</em> 인스턴스에 대해서 불려 간 <em class="cEmphasis">add</em>(),<em class="cEmphasis">remove</em>(),<em class="cEmphasis">addAll</em>(),<em class="cEmphasis">retainAll</em>(),<em class="cEmphasis">removeAll</em>(), 또는 <em class="cEmphasis">clear</em>()가 성공하는 경우는 언제라도,<em class="cEmphasis">BeanContextMembershipEvent </em> 가 트리거되어 이 조작에 의한 영향을 받는 아이를 기술합니다.
+</p>
+<a name="wp919576"> </a> <h4 class="pHeading3">
+2.1. 2   자원
+</h4>
+<a name="wp919581"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 는,<em class="cEmphasis">getResourceAsStream</em>() 및 <em class="cEmphasis">getResource</em>()라고 하는 2 개의 메소드를 정의합니다. 이러한 메소드는,<em class="cEmphasis">java.lang.ClassLoader</em> 상의 메소드에 유사하고 있습니다. <em class="cEmphasis">BeanContext</em> 내에서 상자가 된 <em class="cEmphasis">BeanContextChild </em> 인스턴스는, 상자 구조의 <em class="cEmphasis">BeanContext</em> 에 대한 메소드를,<em class="cEmphasis">ClassLoader</em> 의 메소드에 우선해 호출합니다.  이 때문에, 아이와 기본적인 <em class="cEmphasis">ClassLoader</em> 시멘틱스간에 동작을 끼어들게 하는 것으로,<em class="cEmphasis">BeanContext</em> 구현으로부터 시멘틱스를 확장할 수가 있습니다.
+</p>
+<a name="wp918705"> </a> <h4 class="pHeading3">
+2.1. 3   서비스 프로바이더로서의 BeanContext
+</h4>
+<a name="wp919899"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 의 서비스 기능은, 다음과 같이 해 제공됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextServices<a name="wp919900"> </a> 
+	  extends   BeanContext, BeanContextServicesListener {<a name="wp919901"> </a> 
+<a name="wp919902"> </a> 
+	boolean addService(Class           serviceClass, <a name="wp919903"> </a> 
+	                   BeanContextServiceProvider service);<a name="wp919904"> </a> 
+<a name="wp919905"> </a> 
+	boolean revokeService(Class           serviceClass,<a name="wp919906"> </a> 
+	                      BeanContextServiceProvider bcsp,<a name="wp919907"> </a> 
+	                      boolean         revokeNow<a name="wp920698"> </a> 
+	);<a name="wp920697"> </a> 
+<a name="wp920038"> </a> 
+	boolean hasService(Class serviceClass);<a name="wp920036"> </a> 
+<a name="wp920037"> </a> 
+	Object getService(BeanContextChild      bcc,<a name="wp919909"> </a> 
+	                  Object                requestor. <a name="wp920718"> </a> 
+	                  Class                 serviceClass,<a name="wp920717"> </a> 
+	                  Object                serviceSelector,<a name="wp919910"> </a> 
+	                  BeanContextServicesRevokedListener sl<a name="wp920714"> </a> 
+	) throws TooManyListenersException;<a name="wp920009"> </a> 
+<a name="wp920031"> </a> 
+	void releaseService(BeanContextChild bcc,<a name="wp919914"> </a> 
+	                    Object           requestor,<a name="wp920708"> </a> 
+	                    Object           service);<a name="wp920707"> </a> 
+<a name="wp919916"> </a> 
+	Iterator getCurrentServiceClasses();<a name="wp919917"> </a> 
+<a name="wp919918"> </a> 
+	public Iterator getCurrentServiceSelectors(Class sc);<a name="wp919919"> </a> 
+<a name="wp919920"> </a> 
+	addBeanContextServicesListener(<a name="wp919921"> </a> 
+		BeanContextServicesListener bcsl<a name="wp919922"> </a> 
+	);<a name="wp919923"> </a> 
+<a name="wp919924"> </a> 
+	removeBeanContextServicesListener(<a name="wp919925"> </a> 
+		BeanContextServicesListener bcsl<a name="wp919926"> </a> 
+     );<a name="wp919927"> </a> 
+}<a name="wp919928"> </a> 
+</pre></div>
+<a name="wp920757"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceProvider</em> 인터페이스는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextServiceProvider {<a name="wp919957"> </a> 
+	Object getService(BeanContext bc,<a name="wp919973"> </a> 
+	                  Object      requestor,<a name="wp920730"> </a> 
+	                  Class       serviceCls,<a name="wp920729"> </a> 
+	                  Object      serviceSelector);<a name="wp919974"> </a> 
+<a name="wp919980"> </a> 
+	void releaseService(BeanContext bc,<a name="wp920732"> </a> 
+	                    Object      requestor,<a name="wp920733"> </a> 
+	                    Object      service);<a name="wp919981"> </a> 
+<a name="wp919982"> </a> 
+	Iterator getCurrentServiceSelectors(BeanContext bc,<a name="wp919983"> </a> 
+	                                    Class serviceCls);<a name="wp920737"> </a> 
+}<a name="wp919958"> </a> 
+<a name="wp920232"> </a> 
+The <em class="cEmphasis">BeanContextServiceRevokedListener</em> is defined as follows:<a name="wp920759"> </a> 
+<a name="wp920763"> </a> 
+public interface BeanContextServiceRevokedListener<a name="wp920762"> </a> 
+	  extends java.util.EventListener {<a name="wp920238"> </a> 
+	void serviceRevoked(<a name="wp920245"> </a> 
+		BeanContextServiceRevokedEvent bcsre<a name="wp920246"> </a> 
+	);<a name="wp920241"> </a> 
+}<a name="wp920239"> </a> 
+</pre></div>
+<a name="wp920764"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServicesListener</em> 는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextServicesListener<a name="wp919964"> </a> 
+	  extends BeanContextServiceRevokedListener {<a name="wp919965"> </a> 
+	void serviceAvailable(<a name="wp919972"> </a> 
+		BeanContextServiceAvailableEvent bcsae<a name="wp919994"> </a> 
+	);<a name="wp919995"> </a> 
+}<a name="wp919966"> </a> 
+</pre></div>
+<a name="wp919967"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceAvailableEvent</em> 는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public class BeanContextServiceAvailableEvent <a name="wp919968"> </a> 
+	  extends BeanContextEvent {<a name="wp919969"> </a> 
+<a name="wp920058"> </a> 
+	public BeanContextServiceAvailableEvent(<a name="wp920055"> </a> 
+			BeanContextServices        bcs,<a name="wp920059"> </a> 
+			Class                      sc<a name="wp920060"> </a> 
+     );<a name="wp920746"> </a> 
+<a name="wp920065"> </a> 
+	BeanContextServices getSourceAsBeanContextServices();<a name="wp920049"> </a> 
+<a name="wp920054"> </a> 
+	public Class getServiceClass();<a name="wp920051"> </a> 
+<a name="wp920072"> </a> 
+	public boolean isServiceClass(Class serviceClass);<a name="wp920073"> </a> 
+<a name="wp920069"> </a> 
+	public Iterator getCurrentServiceSelectors();<a name="wp920066"> </a> 
+}<a name="wp919970"> </a> 
+</pre></div>
+<a name="wp920749"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceRevokedEvent</em> 는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public class BeanContextServiceRevokedEvent <a name="wp920046"> </a> 
+	  extends BeanContextEvent {<a name="wp920044"> </a> 
+	public BeanContextServiceRevokedEvent(<a name="wp920074"> </a> 
+				BeanContextServices        bcs,<a name="wp920080"> </a> 
+				Class                      sc,<a name="wp920081"> </a> 
+			     boolean                    invalidNow<a name="wp920125"> </a> 
+	);<a name="wp920083"> </a> 
+	public BeanContextServices<a name="wp920085"> </a> 
+			getSourceAsBeanContextServices();<a name="wp920086"> </a> 
+<a name="wp920100"> </a> 
+	public Class getServiceClass();<a name="wp920087"> </a> 
+<a name="wp920089"> </a> 
+	public boolean isServiceClass(Class service);<a name="wp920094"> </a> 
+<a name="wp920126"> </a> 
+	public boolean isCurrentServiceInvalidNow();<a name="wp920127"> </a> 
+}<a name="wp920045"> </a> 
+<a name="wp921603"> </a> 
+</pre></div>
+<a name="wp921604"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceProviderBeanInfo</em> 는, 다음과 같이 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextServicesProviderBeanInfo<a name="wp921605"> </a> 
+       extends   java.beans.BeanInfo {<a name="wp921606"> </a> 
+    java.beans.BeanInfo[] getServicesBeanInfo();<a name="wp921607"> </a> 
+}<a name="wp921608"> </a> 
+<a name="wp920042"> </a> 
+</pre></div>
+<a name="wp920110"> </a> <p class="pBody">
+구조화 된 계층을 제공하는 것을 제외하는,<em class="cEmphasis">BeanContext</em> 의 주요한 역할은, JavaBean 컴퍼넌트가 문맥 고유의 기능 또는 서비스를 환경으로부터 취득하기 위한 표준적인 기구를 제공하는 것입니다.  
+</p>
+<a name="wp920128"> </a> <p class="pBody">
+<em class="cEmphasis">Class</em> 객체에 의해 제공되는 서비스는, 일반적으로, 인터페이스, 또는 public 로서의 인스턴스 생성이 불가능한 구현에의 참조입니다. 이 <em class="cEmphasis">Class</em> 는,<em class="cEmphasis">BeanContextServiceProvider</em>, 서비스의 팩토리, 및 서비스가 등록되어 있는 <em class="cEmphasis">BeanContext</em> 내에서 현재 상자가 되어 있는 <em class="cEmphasis">BeanContextChild </em> 와 관련지을 수 있었던 임의의 객체간의 인터페이스 프로토콜 또는 규약을 정의합니다. 일반적으로, 이런 종류의 프로토콜은,<em class="cEmphasis">BeanContextChild</em> 의 구현을 의존관계(dependencies)로부터 고립시키는, 문맥 고유 또는 문맥 의존의 동작을 캡슐화합니다.  이 때문에, 구현의 단순화, 높은 상호 운용성 및 이식성이 실현됩니다.  
+</p>
+<a name="wp920151"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceProvider</em> 는, 1 개(살) 이상의 서비스의 「팩토리」입니다. 이것은, 서비스가 <em class="cEmphasis">BeanContextServices</em> 에 등록되지 않은 경우,<em class="cEmphasis">adService</em>() 메소드를 개입시켜 스스로를 특정의 <em class="cEmphasis">BeanContextServices</em> 에 등록합니다. <em class="cEmphasis"> BeanContextServices</em> 은, 지정된 서비스를 <em class="cEmphasis">BeanContextServiceProvider</em> 에 관련지어<em class="cEmphasis">serviceAvailable</em>() 메소드 경유로 <em class="cEmphasis">BeanContextServiceAvailableEvent</em> 를 현재 등록되어 있는 <em class="cEmphasis">BeanContextServicesListeners </em> 에 트리거해, 그 후 true 를 돌려줍니다.  그 이외의 경우는 false 를 돌려주어, 서비스가 <em class="cEmphasis">BeanContextServices</em> 에 등록되어 있는 것을 나타냅니다.
+</p>
+<a name="wp920167"> </a> <p class="pBody">
+일단 등록된 서비스는, 삭제될 때까지,<em class="cEmphasis">BeanContextServices</em><em class="cEmphasis">getService</em>() 메소드를 개입시켜 이용 가능하게 됩니다.  
+</p>
+<a name="wp920771"> </a> <p class="pBody">
+<em class="cEmphasis">hasService</em>() 메소드는, 특정의 서비스가 존재할지 어떨지를 테스트하기 위해서 사용 가능합니다.  또,<em class="cEmphasis">getCurrentServices</em>() 메소드는,<em class="cEmphasis">BeanContextServices</em> 로 현재 이용 가능한 서비스에 대해서 반복자를 돌려줍니다.
+</p>
+<a name="wp920196"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 또는 <em class="cEmphasis">BeanContextChild</em> 와 관련지을 수 있었던 임의의 객체는,<em class="cEmphasis">getService</em>() 메소드의 호출을 개입시켜, 상자가 된 <em class="cEmphasis">BeanContextServices</em> 로부터 현재 등록되어 있는 서비스에의 참조를 취득할 수 있습니다. <em class="cEmphasis">getService</em>() 메소드가 지정하는 것은,<em class="cEmphasis">BeanContextChild</em>, 관련지을 수 있었던 요구자, 요구된 서비스의 <em class="cEmphasis">Class</em>, 서비스에 의존한 파라미터 (서비스 셀렉터로서 알려진다), 및 그 후, <em class="cEmphasis">BeanContextServiceProvider</em> 에 의해 삭제된 서비스 클래스를 요구자에게 통지하기 위해서 사용되는 <em class="cEmphasis">BeanContextServicesRevokedListener</em> 입니다. <em class="cEmphasis"></em>청취자는, 요구자 및 서비스 클래스 마다, uni-cast 이벤트 소스에 자동적으로 등록됩니다.  또, 요구자가 지정된 서비스 클래스의 참조 모든 것을 방폐하는지,<em class="cEmphasis">BeanContextServiceProvider</em> 를 제공하는 것으로써 서비스가 강제적으로 삭제되었을 경우에 그 부작용으로서 자동적으로 등록 해제됩니다.
+</p>
+<a name="wp920205"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServices</em> 은, 이 <em class="cEmphasis">getService</em>() 호출을, 관련하는 <em class="cEmphasis">BeanContextServiceProvider</em> (존재하는 경우)에 건네주어, 그 <em class="cEmphasis">getService</em>() 메소드의 호출을 개입시켜 조건이 채워지도록(듯이) 합니다. <em class="cEmphasis">BeanContextServiceProvider</em> 는,<em class="cEmphasis">BeanContext</em>, 제공되는 서비스의 클래스, 서비스에 의존한 서비스 파라미터 (서비스 셀렉터), 및 서비스를 요구하는 객체에의 참조에게 건네집니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp920936"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 에의 참조는,<em class="cEmphasis">BeanContextServiceProvider</em> 에 대해, 복수의 소스로부터의 서비스 요구를 식별 가능하게 하는 것을 목적으로 하고 있습니다. <em class="cEmphasis">BeanContextServiceProvider</em> 에는, 이와 같이 해 취득된 모든 <em class="cEmphasis">BeanContext</em> 에의 약참조를 보관 유지하는 것만이 허가됩니다.
+</p>
+<a name="wp920941"> </a> <p class="pBody">
+서비스 셀렉터의 파라미터는, 서비스의 요구자에 의해 특정의 서비스로 사용되는, 서비스에 의존한 값입니다.  이것에는,<em class="cEmphasis">BeanContextServiceProvider</em> 에 의해 제공되는 서비스를 파라미터화하는 목적이 있습니다. 그 사용예로서는, 서비스 구현 클래스의 생성자 에의 파라미터, 특정의 서비스 프로퍼티의 값, 기존의 구현 맵내에의 키로서의 사용등을 들 수가 있습니다.
+</p>
+<a name="wp920220"> </a> <p class="pBody">
+요구자에게로의 참조에는,<em class="cEmphasis">BeanContextServiceProvider</em> 에 대해서 요구자 상태 조사를 허가해, 서비스의 커스터마이즈 또는 파라미터화를 실시하는 목적이 있습니다.  이 때문에, 이 참조는,<em class="cEmphasis">BeanContextServicesProvider</em> 에 의해 「불변이다」라고 보여집니다. 또,<em class="cEmphasis">getService</em>() 호출로부터의 복귀 후에,<em class="cEmphasis">BeanContextServiceProvider</em> 는, 요구자와 <em class="cEmphasis">BeanContextChild</em> 의 양쪽 모두에의 약하게 불변의 참조만을 보관 유지하는 허가가 주어집니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp920216"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceProvider</em> 는 요구에 응해, 요구된 서비스의 <em class="cEmphasis">Class</em> 인스턴스에의 참조를 돌려주는 (반환되는 참조는,<em class="cEmphasis">&lt;serviceRefence&gt;</em> instanceof <em class="cEmphasis">&lt;serviceClass&gt;</em> 가 true 가 된다)인가, null 를 돌려주는지, 또는 검사되지 않는 예외를 throw 합니다.  
+</p>
+<a name="wp920796"> </a> <p class="pBody">
+상자가 된 <em class="cEmphasis">BeanContextServices</em> 이,<em class="cEmphasis">BeanContextServiceProvider</em> 를 가지지 않는 특정의 서비스에 대해서 요구되는 경우,<em class="cEmphasis">BeanContextServices</em> 는, 요구된 서비스를, 스스로의 상자로 된 <em class="cEmphasis">BeanContextServices</em> 에 위양 해 요구를 채웁니다. 이와 같이 해, 위양 요구는 잎인 <em class="cEmphasis">BeanContextServices</em> 로부터 루트인 <em class="cEmphasis">BeanContextServices</em> 에 전반 가능하게 됩니다.
+</p>
+<a name="wp920221"> </a> <p class="pBody">
+특정의 서비스 클래스가, 상자로 된 <em class="cEmphasis">BeanContextServices.getCurrentServiceSelectors</em>() 메소드를 개입시켜 서비스 클래스의 연산치의 유한 리스트를 구현해, 다음에 <em class="cEmphasis">BeanContextServiceProvider.getCurrentServiceSelectors</em>()를 개입시켜 현재 이용 가능한 서비스 셀렉터 (존재하는 경우)를 취득하는 경우,<em class="cEmphasis">BeanContextChild</em> 는, 특정의 <em class="cEmphasis">BeanContextServices</em> 에 대해서, 현재 이용 가능한 서비스 클래스 및 할당할 수 있던 모든 서비스 셀렉터의 리스트를 (<em class="cEmphasis">getCurrentServiceClasses</em>() 메소드를 개입시켜) 문의합니다.
+</p>
+<a name="wp920224"> </a> <p class="pBody">
+문제의 서비스는, 유효한 서비스 셀렉터 세트의 유한한 연산치 세트를 구현하지 않는 경우, null 를 돌려줍니다.
+</p>
+<a name="wp920874"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 에 의해 <em class="cEmphasis">getService</em>()를 개입시켜 취득된 참조는, 참조가 <em class="cEmphasis">BeanContextChild</em> 에 의해, 상자로 된 <em class="cEmphasis">BeanContextServices</em> 의 <em class="cEmphasis">releaseService</em>() 메소드의 호출을 개입시켜 해제될 때까지 유효합니다.  다만,<em class="cEmphasis">BeanContextServices</em> 가 <em class="cEmphasis">BeanContextServiceRevokedEvent</em> 를 트리거해, 그 이벤트의 <em class="cEmphasis">isCurrentServiceInvalidNow</em>() 메소드가 true 를 돌려주는 경우를 제외합니다.
+</p>
+<a name="wp920227"> </a> <p class="pBody">
+이 경우,<em class="cEmphasis">BeanContextServices</em> 또는 서비스를 제공한 <em class="cEmphasis">BeanContextServiceProvider</em> 는, 현재의 서비스 참조가 즉시 무효로 된, 즉 「강제적으로 삭제되었다」(일반적으로는 이하의 상황으로 발생)이라고 판단 합니다. <em class="cEmphasis">BeanContextChild</em> 인스턴스가 특정의 <em class="cEmphasis">BeanContextServices</em> 인스턴스로부터 삭제되면(자),<em class="cEmphasis">BeanContextChild</em> 인스턴스는, 적절한 <em class="cEmphasis">releaseService</em>()를 호출하는 것으로,<em class="cEmphasis">BeanContextServices </em> 로부터 취득한 서비스에의 참조를 모두 파기합니다.  상자 상태를 해제하는 <em class="cEmphasis">BeanContextChild</em> 도 <em class="cEmphasis">BeanContextServices</em> 인스턴스인 경우, 및 이러한 서비스 참조의 모든 것이, 벌써 정의된 것처럼, 위양 된 <em class="cEmphasis">getService</em>() 요구의 결과로서, 상자 상태를 해제하는 <em class="cEmphasis">BeanContextServices</em> 자신의 멤버에게 공개되고 있는 경우에는,<em class="cEmphasis">BeanContextServiecs</em> 는,<em class="cEmphasis">BeanContextServiceRevokedEvent</em> 를 트리거해, 상자로 된 아이에 대해서 「서비스가 강제적으로 삭제되었다」일을 통지합니다. 상자 상태의 해제시에 위양 된 서비스에의 현재의 참조를 즉시 무효화하는 것으로써, 계층 구조에 의존하는 서비스의 위치가 변화했을 경우에, 요구자에 의해 그 서비스가 사용되는 것을 막을 수가 있습니다.
+</p>
+<a name="wp920877"> </a> <p class="pBody">
+서비스 클래스의 「강제적인 취소해」를 받는 <em class="cEmphasis">BeanContextChild</em> 인스턴스는, 보관 유지할 가능성이 있는 그 종의 참조용의 <em class="cEmphasis">releaseService</em>()를 호출하지 않습니다.  이 경우,<em class="cEmphasis">BeanContextServiceProvider</em> 또는 <em class="cEmphasis">BeanContextChild</em> 에의 서비스 참조를 제공한 <em class="cEmphasis">BeanContextServices</em> 는, 그 서비스에의 참조를 모두 무효로 해 버리고 있기 때문입니다.
+</p>
+<a name="wp920228"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServiceProvider</em> 는,<em class="cEmphasis">revokeService</em>() 메소드를 호출해 <em class="cEmphasis">BeanContextServices</em> 에 등록한 후에 있으면, 언제라도 서비스 클래스를 호출할 수가 있습니다. <em class="cEmphasis">BeanContextServices</em> 가 <em class="cEmphasis">BeanContextServiceRevokedEvent</em> 를 트리거해, 현재 등록된 <em class="cEmphasis">BeanContextServiceRevokedListeners</em> 및 현재 서비스를 이용할 수 없는 <em class="cEmphasis">BeanContextServicesListeners</em> 를 통지하면(자), 그 서비스 클래스가 재차 등록될 때까지, 삭제된 서비스에 대한 새로운 서비스 요구에는 대응할 수 없게 됩니다 삭제되기 전에 <em class="cEmphasis">BeanContextChild</em> 의 요구자에 의해 취득된 서비스에의 참조는, 유효대로 됩니다. 이 때문에, 서비스는, 그 서비스에의 모든 참조가 해제될 때까지 유효대로 되어, 현존 하는 참조를 채웁니다.  다만, 예외적인 상황으로, 서비스의 취소시에 <em class="cEmphasis">BeanContextServiceProvider</em> 또는 <em class="cEmphasis">BeanContextServices</em> 가 현재의 참조 모두에의 서비스를 즉시 종료시키는 경우를 제외합니다. 즉시 취소는,<em class="cEmphasis">BeanContextServices </em>. <em class="cEmphasis">revokeService</em>() 메소드를, 열매 파라미터치 <em class="cEmphasis">revokeNow</em> == true 로 호출하는 것으로 실행됩니다. 현재의 서비스 참조의 즉시 무효화의 실행 후에, 서비스 구현이, 즉시 취소 통지를 무시해 서비스에의 참조를 잘못해 보관 유지하고 있는 서비스의 요구자가 호출하는 서비스를 계속해 사용하려고 하는 시도에 응답해, 서비스 고유의 검사되지 않는 예외를 throw 하는 경우가 있습니다.
+</p>
+<a name="wp920954"> </a> <p class="pBody">
+(서비스 요구의 위양시에) multi-thread 환경에서 올바르게 동작하기 위해서는,<em class="cEmphasis">BeanContextServices</em> 의 구현은,<em class="cEmphasis">addService(), hasService(), getCurrentServiceClasses(), getCurrentServiceSelectors(), getService(), releaseService()</em>, 및 <em class="cEmphasis"> revokeService()</em> 의 구현을,<em class="cEmphasis">BeanContext.globalHierarhyLock</em> 와 동기 시킬 필요가 있습니다.
+</p>
+<a name="wp921613"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextServicesProvider</em> 는,<em class="cEmphasis">BeanContextServicesProviderBeanInfo</em> 를 구현하는 <em class="cEmphasis">BeanInfo</em> 클래스를 제공하는 것으로써, 구현을 제공하는 서비스 클래스에 대해서 <em class="cEmphasis">BeanInfo</em> 를 공개합니다. 이와 같이 해,<em class="cEmphasis">BeanInfo</em> 의 배열을 공개하는 것으로써, 각 서비스 클래스용의 <em class="cEmphasis">BeanInfo</em> 가 지원됩니다. 예를 들어, 개발용 툴은, 이 정보를 이용해 어플리케이션 개발자에 대해, 어플리케이션에 포함되는 서비스 클래스의 팔레트를 제공할 수 있습니다.
+</p>
+<a name="wp920139"> </a> <h4 class="pHeading3">
+2.1. 4   지속성을 가지는 BeanContext 의 역할
+</h4>
+<a name="wp916796"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 의 주된 역할의 1 개는, JavaBean 컴퍼넌트의 논리적인 상자 구조 및 <em class="cEmphasis">BeanContext </em> 의 인스턴스 계층의 표현입니다.  이 때문에, 계층이 지속적인 다양한 시나리오를 기대하는 것은 당연한 일입니다.  계층이 지속적이다는 것은, 즉,<em class="cEmphasis">BeanContext</em> 가 지속성 기구, 특히 <em class="cEmphasis">java.io.Serializable </em> 또는 <em class="cEmphasis">java.io.Externalizable</em> 의 어느 쪽인가에 참가하는 경우를 가리킵니다.  후자의 경우,<em class="cEmphasis">BeanContext</em> 는, 아이의 서브 그래프용의 지속성 컨테이너, 클래스 정보의 encode 및 복호화, 및 직렬화 해제 후의 서브 그래프 상당 기능의 유지 등, 기본적으로 <em class="cEmphasis">ObjectOutputStream</em> 및 <em class="cEmphasis">ObjectInputStream</em> 에 의한 직렬화에 대응한 기능을 제공합니다.
+</p>
+<a name="wp918473"> </a> <p class="pBody">
+특히,<em class="cEmphasis">BeanContext</em> 는, 자신이 지속성이 부여될까 복원되었을 경우, 지속성을 가져, 한편 적절한 지속성 인터페이스를 구현하는 현재의 아이를 복원합니다.
+</p>
+<a name="wp918472"> </a> <p class="pBody">
+상기의 요건의 결과로서, 상자로 된 <em class="cEmphasis">BeanContext</em> 에의 모든 참조, 또는 상자로 된 <em class="cEmphasis">BeanContextServices</em> 경유로 취득된 위양자 모두에의 참조를 지속성이 없는 것으로 하기 위해서(때문에), 지속성을 가지는 <em class="cEmphasis">BeanContextChild</em> 의 구현이 요구됩니다.  
+</p>
+<a name="wp919674"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContexts</em> 는, 지속 상태로부터의 인스턴스를 복원할 때에, 새롭게 인스턴스 생성된 <em class="cEmphasis">BeanContextChild</em> 에의 add()의 호출과 등가인 동작을 실행할 필요가 있습니다.  그 결과, 네스트 한 <em class="cEmphasis">BeanContext</em> 의 새롭게 복원된 인스턴스가 통지되기 (위해)때문에,<em class="cEmphasis">BeanContextChild</em> 는 그 환경에의 의존관계(dependencies)를 충분히 재확립할 수 있게 됩니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp917961"> </a> <p class="pBody">
+또,<em class="cEmphasis">BeanContext</em> 는 <em class="cEmphasis">java.beans.beancontext.BeanContextChild</em> 를 구현하기 위해(때문에), 이 인터페이스의 구현을 취급하려면 , 다음에 정의된 지속성 요건에 준거할 필요가 있게도 유의해 주세요.
+</p>
+<a name="wp919984"> </a> <h4 class="pHeading3">
+2.1. 5   관련지을 수 있었던 프레젠테이션 계층에서의 BeanContext
+</h4>
+<a name="wp919985"> </a> <p class="pBody">
+필수가 아닙니다만, 많은 <em class="cEmphasis">BeanContext</em> 는 <em class="cEmphasis">java.awt.Container</em> 및 <em class="cEmphasis">java.awt.Component</em> 의 표시 계층내에서 관련지을 수가 있습니다. <em class="cEmphasis"> Container</em> 는 <em class="cEmphasis">BeanContext </em> 를 직접 구현할 수 없습니다<a href="#wp920835"><span class="Footnote">2</span></a>  가, 거기에 기술된 <em class="cEmphasis">BeanContextProxy</em> 인터페이스를 구현하는 것으로써 <em class="cEmphasis">BeanContext </em> 에 관련지을 수가 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp920969"> </a> 
+public interface BeanContextProxy {<a name="wp920970"> </a> 
+    BeanContext getBeanContext();<a name="wp920971"> </a> 
+}<a name="wp920972"> </a> 
+</pre></div>
+<a name="wp920973"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 인터페이스를 직접 구현하지 않는 (그 컴퍼넌트나 서브 클래스의 경우는, 구현할 수 없다) 클래스의 인스턴스가, 그 구현의 인스턴스에 관련지을 수 있고 있는 경우, (데리게이션을 개입시켜) 그 인스턴스는 <em class="cEmphasis">BeanContextProxy</em> 인터페이스를 구현하는 것으로써, 이 관련짓고를 공개할 수 있습니다. 이와 같이 해, 구축 툴등의 임의의 서드 파티가, 그 객체와 관련지을 수 있었던 <em class="cEmphasis">BeanContext</em> 의 문의 및 검출을 실시해, 관련지을 수 있었던 <em class="cEmphasis">BeanContext</em> 내에서 상자가 된 객체로부터 멤버쉽 변경을 검출하는지, 또는 그 서비스를 취득하는 것이 가능하게 됩니다.
+</p>
+<a name="wp920974"> </a> <p class="pBody">
+이것에 의해, 복수의 개별의 객체 (컨테이너등)가 1 개의 <em class="cEmphasis">BeanContext</em> 를 공유하는 것이 가능하게 됩니다. <em class="cEmphasis"></em>이 경우, 공유된 <em class="cEmphasis">BeanContext</em> 는 <em class="cEmphasis">BeanContextContainerProxy</em> 를 구현하지 않는 것에 유의해 주세요. 이것은, 단일의 <em class="cEmphasis">BeanContext</em> 와 그 인터페이스를 구현하는 컨테이너간의 피어 투 피어의 관계이기 (위해)때문에입니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp920975"> </a> <p class="pBody">
+<em class="cEmphasis">getBeanContext()</em> 로부터 반환되는 값은, 구현하는 인스턴스의 유효기간중 변화하지 않습니다.  즉,<em class="cEmphasis">BeanContextProxy</em> 와 관련지을 수 있었던 <em class="cEmphasis">BeanContext</em> 의 관계는 정적이기 때문에, 어느 쪽인지가 유효한 사이는 변화하지 않습니다.
+</p>
+<a name="wp920976"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext </em> (또는 <em class="cEmphasis">BeanContextChild</em>)와 <em class="cEmphasis">BeanContextProxy</em> 인터페이스의 양쪽 모두를 구현하는 클래스는 존재하지 않습니다.  이것들을 함께 사용할 수 없습니다.
+</p>
+<a name="wp920990"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextProxy</em> 의 구현 바탕으로야는은,<em class="cEmphasis">Collection</em> 에 근거하는 <em class="cEmphasis">BeanContext</em> 를 유지하는 것에 가세하고 그리고 아마 그것과는 별개에,<em class="cEmphasis">java.util.Collection</em> 또는 다른 하등의 컬렉션을 닮은 API  (<em class="cEmphasis">java.awt.Container</em> 등)를 구현하는 경우가 있습니다.
+</p>
+<a name="wp920991"> </a> <p class="pBody">
+이 경우,<em class="cEmphasis">Collection</em> API 경유로 <em class="cEmphasis">BeanContext</em> 로부터 요소를 추가 또는 삭제하든가, 혹은 컬렉션을 닮은 API (<em class="cEmphasis">public boolean java.awt.Container.add(Component)</em> 등)를 사용해 <em class="cEmphasis">BeanContextProxy</em> 의 구현원으로부터 요소를 추가 또는 삭제하는 것이 가능합니다. <em class="cEmphasis">BeanContext</em> 의 컬렉션 또는 <em class="cEmphasis">BeanContextProxy</em> 의 구현원의 컬렉션에 대해서 추가 또는 삭제된 객체가, 대응하는 객체의 컬렉션에 대해서도 추가 또는 삭제될지 어떨지 (즉,<em class="cEmphasis">Container.add()</em> 는 <em class="cEmphasis">BeanContext.add()</em> 도 추측할지 어떨지, 및 그 역)는, 구현에 의존하고 있습니다. <em class="cEmphasis"></em>그러한 상황에서는, 양자 (<em class="cEmphasis">BeanContextProxy</em> 의 구현원 및 <em class="cEmphasis">BeanContext</em> 자체)가 1) 외와 같은 추가/삭제 시멘틱스를 구현하는 (즉,<em class="cEmphasis">x.add(o)</em> 가 <em class="cEmphasis">x.getBeanContext(). add(o)</em> 의 부작용을 받는 경우,<em class="cEmphasis">x.getBeanContext(). add(o)</em> 도 <em class="cEmphasis">x.add(o)</em> 의 부작용을 받는다), 및 2) 다른 해당 컬렉션에 대해서 추가/삭제 조작을 실행하기 전에, 그 객체가 다른 해당 컬렉션의 멤버일지 어떨지 (동기화를) 테스트할 (양자에게로의 컬렉션 조작으로 무한 재귀가 발생하는 것을 피하기 (위해)때문에) 필요가 있습니다 (즉,<em class="cEmphasis">x.getBeanContext(). contains(o)</em> 가 true 의 경우에 <em class="cEmphasis">x.add(o)</em> 는 <em class="cEmphasis">x.getBeanContext(). add(o)</em> 를 호출하지 않는, 및 그 역).
+</p>
+<a name="wp921595"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextProxy</em> 를 구현하는 객체가 <em class="cEmphasis">BeanContext</em> 에 대해서 추가 또는 삭제되었을 경우, 그 객체에 조작을 실행하는 것에 가세해 같은 조작을 <em class="cEmphasis">BeanContextProxy.getBeanContext()</em> 로부터 반환된 <em class="cEmphasis">BeanContext</em> 에 대해서도 실행할 필요가 있는 것에 유의해 주세요. 즉,<em class="cEmphasis">BeanContextProxy</em> 의 구현원래는, 임의의 상자가 된 <em class="cEmphasis">BeanContext</em> 에 의해, 직접 구현된 <em class="cEmphasis">BeanContext</em> 와 동일 취급을 받을 필요가 있습니다 조작이 <em class="cEmphasis">BeanContext</em> 에 적용되는 경우는, 대응하는 <em class="cEmphasis">BeanContextProxy</em> 에도 적용될 필요가 있습니다.
+</p>
+<a name="wp921598"> </a> <p class="pBody">
+다음의 인터페이스는,<em class="cEmphasis">BeanContext</em> 가, 관련지을 수 있었던 컨테이너에의 참조를 공개해, 그 <em class="cEmphasis">BeanContextChild</em> 멤버가 관련지을 수 있었던 컴퍼넌트 객체의 추가 또는 삭제를 컨테이너에 대해서 실시하는 것, 또는 컨테이너 상태를 검사하는 것을 가능하게 합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextContainerProxy {<a name="wp919988"> </a> 
+	Container getContainer()<a name="wp919989"> </a> 
+}<a name="wp919990"> </a> 
+</pre></div>
+<a name="wp921074"> </a> <p class="pBody">
+관련지을 수 있었던 컴퍼넌트를 가지는 <em class="cEmphasis">BeanContextChild</em> 가, 관련지을 수 있었던 컨테이너를 가지는 <em class="cEmphasis">BeanContext</em> 에 추가되는 경우, 결과적으로, 컨테이너내의 컴퍼넌트의 상자에 관련해 상호작용의 모델이 3 개 존재합니다.
+</p>
+<ol class="pList1"><a name="wp921086"> </a> <div class="pList1"><li> 관련지을 수 있었던 컴퍼넌트가, 관련지을 수 있었던 컨테이너에, 컨테이너 API 경유로 추가되는 경우,<em class="cEmphasis">BeanContext</em> 내의 <em class="cEmphasis">BeanContextChild</em> 의 상자 상태는, 그 부작용으로서 생기는 것이어, 그 이상의 조작은 필요 없습니다. <em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em></li></div>
+<a name="wp921085"> </a> <div class="pList1Plus"><li>컴퍼넌트 및 컨테이너가 상자에되어 있지 않은 경우, 상자 상태의 <em class="cEmphasis">BeanContext</em> 는, 부작용으로서<em class="cEmphasis">BeanContextChild</em> 에 관련지을 수 있었던 컴퍼넌트를, 그 관련지을 수 있었던 컨테이너에 추가합니다. </li></div>
+<a name="wp921091"> </a> <p class="pIndented1">
+또는
+</p>
+<a name="wp921092"> </a> <div class="pList1Last"><li>컴퍼넌트 및 컨테이너가 상자에되어 있지 않은 경우, 상자 상태의 <em class="cEmphasis">BeanContextChild</em> 는, 부작용으로서 그 컴퍼넌트를, 상자로 된 <em class="cEmphasis">BeanContext</em> 에 관련지을 수 있었던 컨테이너에 관련짓습니다. </li></div>
+</ol>
+<a name="wp921084"> </a> <p class="pBody">
+이와 같이 해, 최대의 상호 운용성을 얻기 위해서(때문에),<em class="cEmphasis">BeanContextChild</em> 는 항상, 그 컴퍼넌트의 부모가 <em class="cEmphasis">BeanContext</em> 컨테이너일지 어떨지를 체크해, 부모가 아닌 경우에는, 적절하면 스스로를 추가합니다. 이 때문에,<em class="cEmphasis">BeanContextChild</em> 는 어떤 시나리오의 아래에서도 올바르게 기능합니다.
+</p>
+<a name="wp921096"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 는, 최초로 <em class="cEmphasis">show</em>()의 호출을 개입시켜 스스로를 표시 가능하게 하는 역할을 담당합니다. <em class="cEmphasis"> BeanContextChild</em> 는, 스스로에 대해서 <em class="cEmphasis">hide() </em> 및 <em class="cEmphasis"> show() </em>를 반복 실행 가능합니다.
+</p>
+<a name="wp920295"> </a> <p class="pBody">
+상자로 된 <em class="cEmphasis">BeanContext</em>, 또는 그 관련하는 컨테이너는,<em class="cEmphasis">BeanContextChild</em> 의 컴퍼넌트에 대해서 <em class="cEmphasis">hide</em>() 또는 <em class="cEmphasis">show</em>()를 임의에 실행할 수 있습니다.  다만, 이벤트 통지를 취득하기 위해서 청취자를 등록하는 경우, 또는 다른 컴퍼넌트/컨테이너 고유의 프로토콜이 컨테이너에 대해 그 컴퍼넌트의 내용 상태를 변경하는 것을 허가 또는 요구하는 경우를 제외해, 컴퍼넌트를 모든 면에서 불변으로서 취급하는 것을 강하게 추천합니다. 이런 종류의 허가된 상호작용의 예로서<em class="cEmphasis">background</em> 또는 <em class="cEmphasis">foreground</em> 칼라등의 프로퍼티이 컨테이너로부터 컴퍼넌트에 전달되는 경우를 들 수가 있습니다. <em class="cEmphasis"></em><em class="cEmphasis"></em>
+</p>
+<a name="wp920857"> </a> <p class="pBody">
+일단 <em class="cEmphasis">BeanContextChild</em> 가 <em class="cEmphasis">BeanContext</em> 로부터의 상자 상태가 해제되면(자), 관련하는 컴퍼넌트 (존재하는 경우)는, 삭제 조작의 부작용으로서 그 <em class="cEmphasis">BeanContext</em> 의 컨테이너로부터 삭제됩니다.  이것은,<em class="cEmphasis">BeanContext</em> 의 역할입니다.  일반적으로,<em class="cEmphasis">setBeanContext()</em> 메소드의 호출을 개입시켜 <em class="cEmphasis">BeanContextChild</em> 를 관련지을 수 있었던 컨테이너와 함께 다른 <em class="cEmphasis">BeanContext</em> 에 이동하면(자), 그 컴퍼넌트에는, 그 조작의 부작용으로서 원의 <em class="cEmphasis">BeanContext</em> 가 아이로부터의 <em class="cEmphasis">PropertyChangeEvent</em> 를 개입시켜 변경 통지를 받기 전에, 다시 부모와 자식 관계가 확립됩니다.  다만, 검사를 행해, 그것이 발생하고 있지 않는 경우에는 컴퍼넌트를 삭제할 필요가 있습니다.
+</p>
+<a name="wp920883"> </a> <p class="pBody">
+무한 회귀를 피하기 (위해)때문에, 컨테이너 및 컴퍼넌트의 상자 관계와도 관련지을 수 있었던 <em class="cEmphasis">BeanContext</em> 및 <em class="cEmphasis">BeanContextChild</em> 의 양쪽 모두로, 관계의 상대에 의해 컴퍼넌트에 적용된 모든 변경을 취소하지 않게 할 필요가 있습니다. 일반적으로,<em class="cEmphasis">BeanContext</em> 는,<em class="cEmphasis">BeanContextChild</em> 의 컴퍼넌트의 외관, 가시 설정, 상대 위치를 담당합니다. <em class="cEmphasis"> BeanContextChild</em> 는, 구현하는 어플리케이션 기능에 속하는 컴퍼넌트 상태 및 내용을 담당합니다.
+</p>
+<a name="wp920839"> </a> <p class="pBody">
+<em class="cEmphasis">getContainer() </em> 메소드로부터 반환되는 값은, 구현하는 <em class="cEmphasis">BeanContext</em> 의 유효기간중은 일정입니다.  즉,<em class="cEmphasis">BeanContext</em> 와 컨테이너간의 관계는 양자의 유효기간중은 정적입니다.
+</p>
+<a name="wp920805"> </a> <p class="pBody">
+또, 다음의 인터페이스도 정의됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface BeanContextChildComponentProxy {<a name="wp920806"> </a> 
+    Component getComponent();<a name="wp920811"> </a> 
+}<a name="wp920812"> </a> 
+</pre></div>
+<a name="wp920838"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 또는 <em class="cEmphasis">BeanContextChild</em> 는, 이 인터페이스를 구현해, 관련지을 수 있었던 GUI 컴퍼넌트를 상자가 된 <em class="cEmphasis">BeanContext</em> 에 공개합니다. <em class="cEmphasis">BeanContext</em> 는, 이 메소드를 사용해, 컴퍼넌트의 인스턴스에의 참조와 그것이 인식하는 <em class="cEmphasis">BeanContextChild</em> 에의 참조간의 관계를 확립할 수 있습니다. 그 경우,<em class="cEmphasis">BeanContextChild</em> 및 컴퍼넌트는, 같은 객체 인스턴스에 의해 구현될 것은 없습니다. 즉,<em class="cEmphasis">BeanContextChild</em> 는 그 컴퍼넌트 구현을, 컴퍼넌트로부터 상속하는 것이 아니라, 개별의 객체에 위양 합니다. <em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis">BeanContext</em> 는, 상자가 된 <em class="cEmphasis">BeanContextChild</em> 로부터 취득한 컴퍼넌트 참조를 조사해, 그 상태를 판별합니다. 그 후, 청취자를 특정의 이벤트용으로 등록합니다. 다만, 컴퍼넌트 상태를 변경하지 않기 때문에,<em class="cEmphasis">BeanContext</em> 가 참조를 일반적으로 불변인 것으로 해 처리하는 것을 강하게 추천합니다. <em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em>
+</p>
+<a name="wp920843"> </a> <p class="pBody">
+<em class="cEmphasis">getComponent()</em> 메소드로부터 반환되는 값은,<em class="cEmphasis">BeanContextChild</em> 가 유효한 사이, 일정입니다.
+</p>
+<a name="wp920884"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 가 관련하는 컨테이너를 보관 유지하지만,<em class="cEmphasis">BeanContextContainerProxy</em> 인터페이스를 구현해 컨테이너를 공개하고 싶지 않은 경우, 한편 임의의 <em class="cEmphasis">BeanContextChild</em> 의 관련하는 컴퍼넌트 (<em class="cEmphasis">BeanContextChildComponentProxy</em> 인터페이스를 구현하는지, 컴퍼넌트의 직접적인 서브 클래스로서<em class="cEmphasis">BeanContextChild</em> 에 의해 공개되었다)의 상자 상태를 처리하고 싶은 경우,<em class="cEmphasis">BeanContext</em> 에는 그 컴퍼넌트를 관련하는 컨테이너에 대해서 추가 또는 삭제를 실시하는 권한이 주어집니다.  이 경우,<em class="cEmphasis">BeanContextChild</em> 및 그 관련하는 컴퍼넌트 구현은, 이 액션에 간섭하지 않습니다.  
+</p>
+<a name="wp920858"> </a> <p class="pBody">
+클래스가 <em class="cEmphasis">BeanContextChildComponentProxy</em> 와 <em class="cEmphasis">BeanContextContainerProxy</em> 의 양쪽 모두를 구현하는 경우,<em class="cEmphasis">getComponent()</em> 와 <em class="cEmphasis">getContainer() </em> 의 쌍방이 돌려주는 객체는, 동일한 객체가 됩니다.
+</p>
+<a name="wp916435"> </a> <h3 class="pHeading2">
+2.2 java.beans.beancontext.BeanContextChild 인터페이스<a href="#wp916664"><span class="Footnote">3</span></a> 
+</h3>
+<a name="wp916525"> </a> <p class="pBody">
+환경의 지원 또는 지식을 필요로 하지 않는 단순한 JavaBeans 는, 현재와 같이 장래도 기능합니다. 다만, 포함 하는 <em class="cEmphasis">BeanContext</em> 를 이용하는 JavaBeans 및 상자가 된 <em class="cEmphasis">BeanContext</em> 의 양쪽 모두, 인식하고 있는 JavaBeans 및 상자가 된 <em class="cEmphasis">BeanContext</em> 를 사용해, 내포 하는 <em class="cEmphasis">BeanContext</em> 에의 참조의 전반을 가능하게 하는 기구를 구현할 필요가 있습니다.  제안되고 있는 인터페이스는 다음과 같습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp918583"> </a> 
+public interface java.beans.beancontext.BeanContextChild {<a name="wp918573"> </a> 
+	void        setBeanContext(BeanContext bc)<a name="wp919588"> </a> 
+				throws PropertyVetoException;<a name="wp919589"> </a> 
+<a name="wp919590"> </a> 
+	BeanContext getBeanContext();<a name="wp916442"> </a> 
+<a name="wp919591"> </a> 
+	void addPropertyChangeListener<a name="wp919617"> </a> 
+		(String name, PropertyChangeListener pcl);<a name="wp919637"> </a> 
+ <a name="wp919618"> </a> 
+     void removePropertyChangeListener<a name="wp919623"> </a> 
+		(String name, PropertyChangeListener pcl);<a name="wp919640"> </a> 
+ <a name="wp919624"> </a> 
+	void addVetoableChangeListener<a name="wp919629"> </a> 
+		(String name, VetoableChangeListener pcl);<a name="wp919643"> </a> 
+ <a name="wp919630"> </a> 
+     void removeVetoableChangeListener<a name="wp919635"> </a> 
+		(String name, VetoableChangeListener pcl);<a name="wp919646"> </a> 
+<a name="wp919636"> </a> 
+}<a name="wp916440"> </a> 
+</pre></div>
+<a name="wp918483"> </a> <p class="pBody">
+예상되는 사용법으로서는, 서드 파티가 <em class="cEmphasis">BeanContext</em> 상에서 정의된 적절한 메소드의 1 개를 호출해 (컬렉션으로부터의 상속에 의해), 타겟의 <em class="cEmphasis">BeanContext</em> 의 멤버쉽에 <em class="cEmphasis">BeanContextChild</em> 를 추가하는 경우를 들 수 있습니다. <em class="cEmphasis"></em>그 결과,<em class="cEmphasis">BeanContext</em> 는, 설정용 메소드 <em class="cEmphasis">setBeanContext</em>()를 호출해,<em class="cEmphasis">BeanContextChild</em> 의 「beanContext」프로퍼티을 설정하려고 합니다. <em class="cEmphasis">BeanContextChild</em> 의 <em class="cEmphasis">setBeanContext</em>() 메소드를 호출할 수가 있는 것은,<em class="cEmphasis">BeanContext</em> 뿐입니다.  이 기구는, 새로운 <em class="cEmphasis">BeanContext</em> 치를 보관 유지하는 아이의 통지에 <em class="cEmphasis">BeanContext</em> 가 사용하는 기구이기 (위해)때문에입니다. 이 프로퍼티은, 어플리케이션 구축용 툴을 사용해 사용자가 직접 설정하거나 커스터마이즈 할 수 없습니다.  이 때문에,<em class="cEmphasis">BeanContextChild</em> 용의 <em class="cEmphasis">BeanInfo</em> 는, 구축 툴이 사용자에게 프로퍼티의 커스터마이즈를 제시할리가 없게, 이 프로퍼티을 숨겨진 상태로 설정할 필요가 있습니다.
+</p>
+<a name="wp919993"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 객체는,<em class="cEmphasis">PropertyVetoException</em> 를 throw 해, 상자로 된 <em class="cEmphasis">BeanContext</em> 가, 특정의 <em class="cEmphasis">BeanContext</em> 내에서 기능하지 않는 것, 또는 상자에되어 있지 않은 것을 통지할 수가 있습니다. 그러한 거부 통지는,<em class="cEmphasis">BeanContext</em> 에 의해,<em class="cEmphasis">BeanContextChild</em> 가 그 특정의 <em class="cEmphasis">BeanContext</em> 내에서 기능하지 않는, 즉 파이널이다고 해석됩니다.
+</p>
+<a name="wp918487"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 를 <em class="cEmphasis">BeanContext</em> 에의 상자 상태로부터 해제하고 있는 동안, 그 아이 또는 아이의 <em class="cEmphasis">PropertyVetoEvents</em> 의 「beanContext」프로퍼티에 따르는 서드 파티가,<em class="cEmphasis">PropertyVetoException</em> 을 throw 해, 호출 측에 상자 해제 상태가 아닌 것을 통지할 수 있습니다. 이 교환을 억제하기 위해서,<em class="cEmphasis">BeanContextChild</em> 또는 서드 파티는, 초기 상자 해제 통지를 거부할 수 있습니다.  다만, 그 후의 통지를 거부할 수 없습니다.  그리고, 통지를 받은 후, 스스로의 상태를 통지에 맞추어 수정해, 그 후에 실행되는 상자 해제에 대비할 필요가 있습니다.
+</p>
+<a name="wp918776"> </a> <p class="pBody">
+이 인터페이스를 구현하는 클래스는,<em class="cEmphasis">java.beans.PropertyChangeListener</em> 의 (서브) 인터페이스의 이벤트 소스라고 해도 동작합니다.  이 때문에, 그 상태를 적절히 갱신하고 나서, 적절한 <em class="cEmphasis">java.beans.PropertyChangeEvent</em> 를 트리거할 필요가 있습니다.  그 때,<em class="cEmphasis">propertyName</em> 에는 「beanContext」를,<em class="cEmphasis">oldValue</em> 에는 이전에 상자에서 만난 <em class="cEmphasis">BeanContext</em> 에의 참조를, <em class="cEmphasis">newValue</em> 에는 새롭게 상자로 된 <em class="cEmphasis">BeanContext</em> 에의 참조를 지정해, 상자로 된 <em class="cEmphasis">BeanContext</em> 의 값이 변화한 것을 모든 청취자에게 통지합니다.
+</p>
+<a name="wp917013"> </a> <p class="pBody">
+종료 처리중의 <em class="cEmphasis">BeanContextChild</em> 인스턴스, 또는 상자가 된 <em class="cEmphasis">BeanContext</em> 는, 종료전에 계층으로부터 스스로를 꺼내기 위해서(때문에), 상자가 된 <em class="cEmphasis">BeanContext</em> 에 대해서 <em class="cEmphasis">remove() </em> 메소드를 호출합니다.
+</p>
+<a name="wp917712"> </a> <h4 class="pHeading3">
+2.2. 1   지속성에 관한 고려사항
+</h4>
+<a name="wp917711"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 내에서 상자로 된 <em class="cEmphasis">BeanContextChild</em> 의 인스턴스는, 일반적으로, 상자로 된 <em class="cEmphasis">BeanContext</em> 인스턴스에의 참조를 포함한 필드 또는 인스턴스 변수를, 한층 더 가능하면 <em class="cEmphasis">getService()</em> 메소드를 사용해 <em class="cEmphasis">BeanContextServices</em> 인스턴스로부터 취득한 서비스를, 정의합니다.  
+</p>
+<a name="wp917761"> </a> <p class="pBody">
+그 종의 인스턴스에 지속성을 갖게하는 작업때, 인스턴스가 상자로 된 환경에서 잘못해 객체에 지속성을 갖게해 버리는 것이 없게, 인스턴스가 필드 또는 인스턴스 변수를 일시적인 것으로 해 정의하는지, 그러한 상태가 지속하는 것이 없게 커스텀의 지속성 메소드를 구현할 필요가 있습니다.
+</p>
+<a name="wp917762"> </a> <p class="pBody">
+타겟 객체의 직렬화가, 내부에서 상자로 된 소스 환경의 대부분도 직렬화하는 경우에, 객체의 직렬화를 개입시켜, 클립보드를 사용해 실시하는 객체 인스턴스의 컷 및 페이스트등의 조작은 올바르게 동작하지 않기 때문에, 이 요건은 매우 중요합니다.
+</p>
+<a name="wp917715"> </a> <h2 class="pHeading1">
+3.0 java.beans.instantiate() static 메소드의 overload
+</h2>
+<a name="wp916569"> </a> <p class="pBody">
+<em class="cEmphasis">java.beans.instantiate()</em> 는 JavaBeans 의 (재) 인스턴스 생성을 실행하는 현행의 기구이기 (위해)때문에,<em class="cEmphasis">BeanContext</em> 의 추상화 도입에 대응하기 위해서는, 이 메소드의 구문 및 시멘틱스를 상속 또는 overload 할 필요가 있습니다. 제안되고 있는 확장은, 다음과 같습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public static Object instantiate(ClassLoader cl,<a name="wp916576"> </a> 
+						String	      beanName,<a name="wp916577"> </a> 
+						BeanContext beanContext);<a name="wp916578"> </a> 
+</pre></div>
+<a name="wp916586"> </a> <p class="pBody">
+이 메소드의 기능은, 현재 JavaBeans 스펙으로 정의되고 있습니다만, 이것들 기존의 시멘틱스에 가세해 null 이외의 <em class="cEmphasis">BeanContext</em> 가 지정되었을 경우, 메소드는 <em class="cEmphasis">beanContext</em> 의 열매 파라미터로서 <em class="cEmphasis">targetChild</em> 의 열매 파라미터의 값 (새롭게 인스턴스 생성된 JavaBean 컴퍼넌트에의 참조)을 지정해 <em class="cEmphasis">add() </em> 메소드를 호출합니다. <a href="#wp917026"><span class="Footnote">
+</p>
+<a name="wp916575"> </a> <h2 class="pHeading1">
+4.0 애플릿이기도 한 Bean 의 지원 향상
+</h2>
+<a name="wp916480"> </a> <p class="pBody">
+<em class="cEmphasis">java.beans.instantiate()</em> 의 현행의 구현에는, 애플릿이기도 한 JavaBeans 의 인스턴스를 생성하기 위한 최소한의 지원가 포함되어 있습니다. 특히, 이 메소드는, 새롭게 인스턴스 생성된 JavaBean 용의 <em class="cEmphasis">AppletContext</em> 및 <em class="cEmphasis">AppletStub</em> 를 구축해, 아직 불려 가지 않은 경우에는, 새롭게 인스턴스 생성된 애플릿에 Stub를 설정하고 나서, 애플릿에 대해서 <em class="cEmphasis">init()</em> 를 실행합니다. <em class="cEmphasis"></em><em class="cEmphasis"></em>
+</p>
+<a name="wp916481"> </a> <p class="pBody">
+유감스럽게,<em class="cEmphasis">java.beans.instantiate()</em> 에 의해 작성된 <em class="cEmphasis">AppletContext</em> 및 <em class="cEmphasis">AppletStub</em> 를 조작할 수 없기 때문에, 현행의 구현에서는 대부분의 애플릿이 충분히 기능할 정도의 지원가 제공될 것은 없습니다. 이것은, 기존의 <em class="cEmphasis">Applet</em> API 에 <em class="cEmphasis">AppletContext</em> 및 <em class="cEmphasis">AppletStub</em> 구현의 구축 방법을 규정하는 스펙이 부족하기 위해서(때문에) 생긴 결과입니다.  또, 그러한 스펙이 존재했다고 해도, 나중에 적절히 초기화된 객체의 인스턴스를 생성하려면 , Codebase, Parameters,<em class="cEmphasis">AppletContext</em>, 및 Documentbase 등의 다수의 <em class="cEmphasis">Applet</em> 속성을 <em class="cEmphasis">java.beans.instantiate()</em> 에 전반 하는 API 가 필요합니다.
+</p>
+<a name="wp916596"> </a> <p class="pBody">
+완전하게 기능하는 애플릿을 지원하는 열쇠는, 애플릿에 완전하게 기능하는 <em class="cEmphasis">AppletContext</em> 및 <em class="cEmphasis">AppletStub </em> 의 인스턴스를 제공하는 것이다 모아 두어 설계상의 목표는 <em class="cEmphasis">instantiate()</em> 를 실행해 이 상태를 실현하는 기구를 제공해, 적절한 초기화 및 바인딩<a href="#wp916719"><span class="Footnote">5</span></a> 를 실행할 수 있도록(듯이) 하는 것입니다.  이 때문에, 제안되는 인터페이스는 다음과 같이 됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public static Object <a name="wp916486"> </a> 
+			instantiate(ClassLoader 				cl,<a name="wp919297"> </a> 
+					  String      		beanName,<a name="wp916487"> </a> 
+					  BeanContext 		bCtxt,<a name="wp916488"> </a> 
+					  AppletInitializer															ai<a name="wp916489"> </a> 
+			);<a name="wp919312"> </a> 
+<a name="wp919341"> </a> 
+public interface AppletInitializer {<a name="wp919342"> </a> 
+	void initialize(Applet newApplet, BeanContext bCtxt);<a name="wp919304"> </a> 
+	void activate(Applet newApplet);<a name="wp919339"> </a> 
+}<a name="wp919303"> </a> 
+</pre></div>
+<a name="wp916490"> </a> <p class="pBody">
+새롭게 인스턴스 생성된 JavaBean 컴퍼넌트가 <em class="cEmphasis">java.applet.Applet</em> 의 인스턴스인 경우, 새롭게 구축된 애플릿 (Bean)이 <em class="cEmphasis">initialize()</em> 에의 호출을 개입시켜 <em class="cEmphasis">AppletInitializer</em> 에게 건네집니다.  </em>
+</p>
+<a name="wp919311"> </a> <p class="pBody">
+스펙에 준거한 <em class="cEmphasis">AppletInitializer.initialize()</em> 의 구현은, 다음과 같이 됩니다.
+</p>
+<ol class="pList1"><a name="wp919313"> </a> <div class="pList1"><li>새롭게 인스턴스 생성한 애플릿을, 적절한 <em class="cEmphasis">AppletContext</em> 에 관련짓습니다. <em class="cEmphasis"></em></li></div>
+<a name="wp919314"> </a> <div class="pList1Plus"><li><em class="cEmphasis">AppletStub</em>()의 인스턴스를 생성하고 나서,<em class="cEmphasis">setStub</em>()의 호출을 개입시켜 <em class="cEmphasis">AppletStub</em> 를 애플릿에 관련짓습니다. </li></div>
+<ol class="pList1"><a name="wp919318"> </a> <div class="pList1"><li>an invocation of <em class="cEmphasis">setStub</em>(). </li></div>
+<a name="wp919319"> </a> <div class="pList1Last"><li><em class="cEmphasis">BeanContext</em>파라미터가 null 의 경우,<em class="cEmphasis">add</em>()의 호출을 개입시켜 애플릿을 적절한 컨테이너에 추가하는 것으로써, 애플릿을 그 컨테이너에 관련짓습니다. <em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis"></em><em class="cEmphasis">BeanContext</em> 파라미터가 null 가 아닌 경우, 거기에 계속되는 <em class="cEmphasis">addChildren</em>() 메소드의 호출시에 애플릿을 그 컨테이너에 관련짓는 것은 <em class="cEmphasis">BeanContext</em> 의 역할입니다. <em class="cEmphasis"></em><em class="cEmphasis"></em></li></div>
+</ol>
+<a name="wp919343"> </a> <p class="pBody">
+스펙에 준거한 <em class="cEmphasis">AppletInitializer.activate()</em> 의 구현은, 애플릿에 액티브하다라는 마크부를 실시합니다.  또 옵션으로, 애플릿의 <em class="cEmphasis">start()</em> 메소드를 호출할 수도 있습니다.
+</p>
+<a name="wp919310"> </a> <p class="pBody">
+새롭게 인스턴스 생성된 JavaBean 가, 애플릿의 인스턴스가 아닌 경우는,<em>AppletInitializer</em> 인터페이스는 무시되는 것에 유의해 주세요.
+</p>
+<a name="wp916944"> </a> <h2 class="pHeading1">
+5.0 표준/제창되는 BeanContext 서비스 규약
+</h2>
+<a name="wp916806"> </a> <h4 class="pHeading3">
+5.0. 1   InfoBus 를 지원하는 BeanContext
+</h4>
+<a name="wp919684"> </a> <p class="pBody">
+InfoBus 기술은, 발행과 서명의 추상화에 근거해, 단일의 Java Virtual Machine 내의 JavaBean 컴퍼넌트간으로, 동적인 자기 기술형 데이터의 인식 및 교환을 용이하게 하는 표준 확장 패키지입니다.
+</p>
+<a name="wp919685"> </a> <p class="pBody">
+<em class="cEmphasis">InfoBus</em> 를 상자로 된 <em class="cEmphasis">BeanContextChild</em> 에 공개하는 <em class="cEmphasis">BeanContext</em> 은,<em class="cEmphasis">javax.infobus.InfoBus</em> 형의 <em class="cEmphasis">hasService</em>() 및 <em class="cEmphasis">getService</em>() 메소드를 개입시켜 서비스를 공개하는 것으로써, 그 기능을 실행합니다.  
+</p>
+<a name="wp919734"> </a> <p class="pBody">
+이 때문에,<em class="cEmphasis">BeanContextChild</em> 의 구현은, 이 기구를 사용해 <em class="cEmphasis">InfoBus</em> 의 인스턴스를 인식하는 것으로써, 현행의 <em class="cEmphasis">BeanContext</em> 에 대응한 일반적인 <em class="cEmphasis">InfoBus</em> 의 구현을 검출할 수 있습니다.  
+</p>
+<a name="wp920853"> </a> <p class="pBody">
+Infobus 1.2 의 스펙에서는,<em class="cEmphasis">InfoBus</em> 클래스가 제공하는 편리한 기구가 정의되고 있습니다.
+</p>
+<a name="wp919683"> </a> <h4 class="pHeading3">
+5.0. 2   인쇄를 지원하는 BeanContext
+</h4>
+<a name="wp916925"> </a> <p class="pBody">
+인쇄 기능을 그 하위 구조에 공개하는 <em class="cEmphasis">BeanContext</em> 는,<em class="cEmphasis">java.awt.PrintJob</em> (서브) 타입의 참조를 위양 할 수 있습니다.
+</p>
+<a name="wp920856"> </a> <p class="pBody">
+Java Network Printing Interface 가 발전하는 것에 따라, 보완적인 스펙이 제공되어 서비스 기구를 통해서 그 기능이 공개됩니다.
+</p>
+<a name="wp916934"> </a> <h4 class="pHeading3">
+5.0. 3   BeanContext 설계/실행시 모드의 지원
+</h4>
+<a name="wp916957"> </a> <p class="pBody">
+JavaBeans 는, JavaBeans 가 어플리케이션 개발툴 즉 IDE 로 개발자에 의해 조작 및 변환될 때의 모드인, 「설계」모드를 지원합니다.  또, 그 결과 JavaBeans 가 애플릿, 어플리케이션 또는 추상화 된 다른 실행 가능 프로그램의 일부로서 실행시에 인스턴스 생성될 때의 모드인, 「실행」모드도 지원합니다.
+</p>
+<a name="wp916960"> </a> <p class="pBody">
+스펙의 최초의 버젼에서는, 「모드」또는 상태 (즉 「설계」시 또는 「실행」시)는, JVM 의 글로벌인 속성이었습니다. 그러나, 이것으로는 불충분합니다.  그렇다고 하는 것은, 예를 들어 어플리케이션 개발툴 환경에서는, 「실행」모드로 기능하는 JavaBeans 가 어플리케이션 개발툴 환경의 일부로서 존재합니다.  같이 「설계」모드로 기능하는 JavaBeans 는, 개발자가 어플리케이션 작성에 어플리케이션 개발툴을 사용해 구축합니다.
+</p>
+<a name="wp916961"> </a> <p class="pBody">
+이 때문에, 이 「모드」를 JVM 글로벌 보다 더 세분화해 스코프 하는 능력이 필요하게 됩니다.
+</p>
+<a name="wp916962"> </a> <p class="pBody">
+추상화 된 <em class="cEmphasis">BeanContext </em> 는, 1 개(살) 이상의 JavaBeans 의 「컨테이너」또는 「문맥」으로서, 이 「모드」를 보다 세세하고 스코프하기 위한 적절한 기구를 제공합니다.
+</p>
+<a name="wp916966"> </a> <p class="pBody">
+이 때문에, 이 「모드」를 하위에 공개 및 전달하는 <em class="cEmphasis">BeanContext</em> 는, 다음과 같이 해 <em class="cEmphasis">java.beans.DesignMode</em> 형의 참조를 위양 할 수 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public interface java.beans.DesignMode {<a name="wp916973"> </a> 
+	void    setDesignTime(boolean isDesignTime);<a name="wp917784"> </a> 
+	boolean isDesignTime();<a name="wp916975"> </a> 
+}<a name="wp916974"> </a> 
+</pre></div>
+<a name="wp916977"> </a> <p class="pBody">
+또, 참조를 위양 하는 <em class="cEmphasis">BeanContext</em> 는, propertyName = "designTime" 와 지정해, 모드에 의해 값이 변경되려면 <em class="cEmphasis">oldValue</em> 및 <em class="cEmphasis">newValue</em> 에 적절한 값을 설정해, 적절한 <em class="cEmphasis">java.beans.propertyChangeEvent</em> 를 트리거할 필요가 있습니다.
+</p>
+<a name="wp917788"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContextChild</em> 의 인스턴스가, 내부에서 상자가 된 <em class="cEmphasis">BeanContext </em> 의 인스턴스에 대해서 <em class="cEmphasis">setDesignTime()</em> 를 호출하는 것은, 부정한 동작인 것에 유의해 주세요.
+</p>
+<a name="wp917054"> </a> <h4 class="pHeading3">
+5.0. 4   BeanContext 의 가시성 지원
+</h4>
+<a name="wp917055"> </a> <p class="pBody">
+관련지을 수 있었던 표시 기능, 즉 GUI 를 보관 유지하는 JavaBeans 는, GUI 가 물리적으로 불가능하다 (하드웨어가 존재하지 않는다), 또는 현재의 상황에서는 적절하지 않는 (클라이언트는 아니고 서버 문맥으로 실행중) 것을 나타내는 환경에서 인스턴스 생성이 가능합니다.
+</p>
+<a name="wp917056"> </a> <p class="pBody">
+JavaBeans 스펙의 최초의 버젼에서는, JavaBeans 에 「가시」상태, 즉 GUI 의 draw용의 기구를 제공하기 위해서,<em class="cEmphasis">java.beans.Visibility</em> 인터페이스가 도입되었습니다.
+</p>
+<a name="wp917035"> </a> <p class="pBody">
+아이가 가지는 GUI 의 표시 기능에 관해서, 특정의 정책를 시행하는 <em class="cEmphasis">BeanContext</em> 는,<em class="cEmphasis">java.beans.Visibility</em> 인터페이스를 사용해, 아이를 제어합니다.
+</p>
+<a name="wp917487"> </a> <h4 class="pHeading3">
+5.0. 5   BeanContext 로부터 로케일을 판정한다
+</h4>
+<a name="wp917488"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 는, 상자 구조가 된 JavaBeans 간에 중요한 속성이 관련짓고 및 전달을 실시하기 위해서(때문에), 관련지을 수 있었던 로케일을 보관 유지하는 경우가 있습니다.
+</p>
+<a name="wp918652"> </a> <p class="pBody">
+이 때문에,<em class="cEmphasis">BeanContext</em> 는, propertyName = "locale" 로 해,<em class="cEmphasis">oldValue</em> 에 로케일 위양의 전의 값에의 참조를 설정해,<em class="cEmphasis">newValue</em> 에는 로케일 위양의 새로운 값에의 참조를 지정해, 적절한 <em class="cEmphasis"> java.beans.PropertyChangeEvent</em> 를 트리거할 필요가 있습니다.
+</p>
+<a name="wp917536"> </a> <p class="pBody">
+<em class="cEmphasis">BeanContext</em> 에 대한 로케일치의 설정 및 취득은, 구현에 의존하고 있습니다.
+</p>
+<a name="wp918648"> </a> <h2 class="pHeading1">
+6.0 지원 클래스
+</h2>
+<a name="wp918649"> </a> <p class="pBody">
+이 비교적 복잡한 프로토콜의 구현을 용이하게 하기 위해서, 「헬퍼」클래스인,<em class="cEmphasis">java.beans.beancontext.BeanContextChildSupport</em>,<em class="cEmphasis">java.beans.beancontext.BeanContextSupport</em>, 및 <em class="cEmphasis">java.beans.beancontext.BeanContextServicesSupport</em> 가 제공됩니다 이러한 클래스는, 다른 객체에 의해 암묵적으로 서브 클래스화 또는 위양 되도록(듯이) 설계되고 있습니다. 이러한 클래스는, 다른 객체에 의해 암묵적으로 서브 클래스화 또는 위양 되도록(듯이) 설계되고 있습니다.  또, 여기서 통합하는 프로토콜의 구현에 완전하게 준거 (확장 가능)하고 있습니다.
+</p>
+
+  <a name="wp919546"> </a> <div class="pFootNote">
+<a href="#wp918237"><span class="Footnote">1</span></a> 서드 파티에 의한 setBeanContext()의 호출의 결과로서, BeanContext 가 예기치 않은 PropertyChangeEvent 통지를 받아, 그 결과, remove()가 불려 갔을 경우, 삭제 구현은, remove() 시멘틱스의 일부로서 아이에 대해서 setBeanContext(null)를 호출할 것은 없습니다.  그것은, 호출하는 것으로, 서드 파티에 의해 설정된 값을 덧쓰기해 버리기 (위해)때문에입니다.
+
+</div>
+<a name="wp920835"> </a> <div class="pFootNote">
+<a href="#wp919985"><span class="Footnote">2</span></a> 컴퍼넌트와 컬렉션간에 메소드명이 충돌하기 위해(때문에), 컴퍼넌트는 BeanContext 또는 컬렉션을 직접 구현할 수 없습니다.  이 때문에, 기능을 「? 이다」라고 하는 관계는 아니고 「? (을)를 보관 유지한다」라고 하는 관계로 모델화할 필요가 있습니다.
+
+</div>
+<a name="wp916664"> </a> <div class="pFootNote">
+<a href="#wp916435"><span class="Footnote">3</span></a> 이 이름은 그다지 좋지 않습니다. 좀 더 좋은 다른 이름을 검토중입니다.
+
+</div>
+<a name="wp917026"> </a> <div class="pFootNote">
+<a href="#wp916586"><span class="Footnote">4</span></a> 주:단순한 JavaBeans 는, BeanContext 를 인식하지 않습니다.  그 때문에, 이것들 단순한 JavaBeans 가 스스로를 계층으로부터 없애, 가베지 컬렉트되는 기구는 존재하지 않기 때문에, 이런 종류의 인스턴스를 계층내에 도입하는 것은 추천할 수 없습니다.
+
+</div>
+<a name="wp916719"> </a> <div class="pFootNote">
+<a href="#wp916596"><span class="Footnote">5</span></a> AppletContext 객체는, 안에 포함한 애플릿 객체의 리스트를 공개합니다.  유감스럽지만, 현재의 애플릿 또는 AppletStub API 의 정의에서는, AppletContext 가 AppletStubs 로부터 애플릿을 검출하는 기구, 또 AppletStub 가 AppletContext 에 애플릿에 관한 정보를 제공하는 기구는 제공되지 않습니다. 이 때문에, 이 기구가 java.beans.instantiate() 내에서 충분한 의미를 가지기 위해서(때문에)는, 이 바인딩/검출이 일어날 수 있으면(자) 상정할 필요가 있습니다.
+
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="beancontextTOC.html">목차</a> 
+       </td>
+        <td align="right">
+JavaBeans 버젼 1.0 의 확장 기능 가능 런타임 포함 관계 및 서버 프로토콜
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </ol></body>
+</html>

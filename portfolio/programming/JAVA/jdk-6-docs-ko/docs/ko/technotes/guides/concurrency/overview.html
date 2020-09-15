@@ -1,0 +1,80 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<title>동시성 처리 유틸리티의 개요 - xrath.com 에서 번역됨</title>
+</head>
+
+<body text="#000000" vlink="#000077" alink="#FF0000" link="#0000FF"
+bgcolor="#FFFFFF">
+  <table width="100%" summary="layout" border="0">
+    <tbody>
+      <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"         alt="Java" width="52" height="88" /></td>
+
+        <td>
+          <center>
+<h1>동시성 처리 유틸리티의 개요<br /></h1>
+          </center>
+        </td>
+
+        <td width="60"></td>
+      </tr>
+    </tbody>
+  </table><!-- Body text begins here -->
+
+<h3>처음에</h3>
+  <p>
+Java 2 플랫폼에는, 「동시성 처리 유틸리티」의 새로운 패키지가 포함되어 있습니다. 이것들은 동시성 처리 클래스 또는 어플리케이션의 구축 블록으로서 사용하기 위해서 설계된 클래스입니다. Collections Framework 가, 일반적으로 사용되는 데이터 구조의 구현을 제공하는 것으로써, 메모리내의 데이터의 편성과 조작을 큰폭으로 간소화한 것과 같게, 동시성 처리 유틸리티는, 동시성 처리 설계로 일반적으로 사용되는 구축 블록의 구현을 제공하는 것으로써, 동시성 처리 클래스의 개발을 간소화하는 목적으로 설계되었습니다. 동시성 처리 유틸리티에는, 고성능으로 유연한 thread 풀, 태스크의 비동기인 실행에 대한 시스템, 동시 액세스에 대해서 최적화된 컬렉션 클래스의 호스트, 계수 세마포어-, 원자 변수, 락, 및 조건 변수등의 동기 유틸리티가 포함되어 있습니다.
+  </p>
+
+<p>thread 풀등의 컴퍼넌트를 독자 개발하는 대신에 동시성 처리 유틸리티를 사용하면(자), 다음과 같은 이점이 있습니다. </p>
+
+  <ul>
+<li><strong>프로그래밍의 노력의 경감</strong>:표준 클래스를 사용하면, 스스로 개발하는 것보다 훨씬 간단합니다. </li>
+
+<li><strong>퍼포먼스의 향상</strong>:동시성 처리 유틸리티의 구현은, 동시성 처리 및 퍼포먼스의 전문가에 의해 개발되고 정밀히 조사 되었습니다.  이러한 구현은 스킬을 가지는 개발자가 실시하는 표준적인 구현보다 보다 고속으로  스케이라불이다고 생각됩니다. </li>
+
+<li><strong>신뢰성의 향상</strong>:동시성 처리 클래스의 개발은 곤란합니다.  Java 언어에 의해 제공되는 저레벨의 동시성 처리 프리미티브(primitive) (<code>synchronized</code>,<code>volatile</code>,<code>wait()</code>,<code>notify()</code>, 및 <code>notifyAll()</code>)는 적절히 사용하는 것이 곤란해, 이러한 기능을 사용했을 경우에 발생하는 에러의 검출 및 디버그는 곤란합니다. 표준화 되어 폭넓게 테스트된 병행 구축 블록을 사용하는 것으로써, 데드락, 결핍 상태, 경합 상태, 또는 과도의 콘테키스트스잇치잉등의 thread화의 위험을 일으키는 잠재적인 원인이 제거됩니다. 동시성 처리 유틸리티는 데드락, 결핍 상태, 경합 상태를 주의 깊게 검사했습니다. </li>
+
+<li><strong>보수 용이성의 향상:</strong>표준 라이브러리 클래스를 사용하는 프로그램은, 복잡해 독자적인 클래스에 의존하는 프로그램보다 이해나 관리가 간단합니다. </li>
+
+<li><strong>생산성의 향상</strong>:개발자는 벌써 표준 라이브러리 클래스를 이해하고 있다고 생각되므로, API 및 아드혹크인 동시성 처리 컴퍼넌트의 동작을 배울 필요는 없습니다. 게다가 동시성 처리 어플리케이션은 신뢰성이 높고, 충분히 테스트된 컴퍼넌트 위에서 구축되었을 경우는 디버그가 매우 간단하게 됩니다. </li>
+  </ul>
+
+<p>즉, 병행 어플리케이션의 구현에 동시성 처리 유틸리티를 사용하면(자), 자신의 프로그램을 보다 명확하게, 보다 짧고, 보다 빨리 개발할 수 있습니다.  신뢰성도 높고, 스케이라불로, 쓰는 일도 읽는 일도, 또 관리도 간단합니다. </p>
+
+<p>동시성 처리 유틸리티에는 다음의 항목이 포함됩니다. </p>
+
+  <ul>
+<li><strong>태스크 스케줄링 시스템</strong> - <a href=     "../../../api/java/util/concurrent/Executor.html"><code>Executor</code></a>  프레임은, 표준화 된 호출, 스케줄링, 실행, 일련의 실행 정책에 근거하는 비동기인 태스크의 제한을 행하기 위한 시스템입니다. <a href="../../api/java/util/concurrent/Executors.html#newSingleThreadExecutor()"><a href=     "../../../api/java/util/concurrent/Executors.html#newSingleThreadExecutor()">단일 백그라운드의 thread</a>  (Swing 에서의 이벤트와 같이), 새롭게 작성된 thread, 또는<a href=     "../../../api/java/util/concurrent/Executors.html#newFixedThreadPool(int)">thread 풀</a>내의 요구된 thread로 실행되는 태스크를 허가하는 구현이 채용되어 개발자는 임의의 실행 정책를 지원하는 <a href=     "../../../api/java/util/concurrent/AbstractExecutorService.html">Executor</a>  의 커스터마이즈 한 구현을 작성할 수 있습니다. 편입의 구현은, 큐의 길이 제한 및<a href="../../../api/java/util/concurrent/RejectedExecutionHandler.html">포화 정책</a>등의 설정 가능한 정책를 제공해, 자원의 쓸데없는 소비를 막는 것에 의해 어플리케이션의 안정성을 향상시킵니다. </li>
+
+<li><strong>동시성 처리 컬렉션</strong> - 몇개의 새로운 Collections 클래스가 추가되었습니다. 거기에는 새로운 <a href=     "../../../api/java/util/Queue.html"><code>Queue</code></a> ,<a href=     "../../../api/java/util/concurrent/BlockingQueue.html"><code>BlockingQueue</code></a> ,<a href=     "../../../api/java/util/concurrent/BlockingDeque.html"><code>BlockingDeque</code></a>  인터페이스, 및 고성능의 <code>Map</code>,<code>List</code>, 및 <code>Queue</code> 의 병행 구현이 포함됩니다. 자세한 것은 「<a href="../collections/">Collections Framework Guide</a> 」를 참조해 주세요.
+   </li>
+
+<li><strong>원자 변수</strong> - 기본적으로 조작되는 단일 변수 (원시형 또는 참조), 고성능의 기본 산술 연산과 비교 설정 메소드의 제공을 위한 클래스입니다. <a href=     "../../../api/java/util/concurrent/atomic/package-summary.html#package_description"><code>java.util.concurrent.atomic</code></a>  의 원자 변수의 구현은, 대부분의 플랫폼에 대해, 동기의 사용에 의해 가능하게 되는 퍼포먼스보다 높은 퍼포먼스를 제공해, 고성능의 동시성 처리 알고리즘의 구현과 동시에, 카운터와 순서 번호의 제네레이터를 간편하게 구현합니다. </li>
+
+<li><strong>싱크로나이저</strong> - <a href=     "../../../api/java/util/concurrent/Semaphore.html">세마포어s</a> ,<a href=     "../../../api/java/util/concurrent/Semaphore.html">mutexes</a> ,<a href=     "../../../api/java/util/concurrent/CyclicBarrier.html">barriers</a> ,<a href=     "../../../api/java/util/concurrent/CountDownLatch.html">latches</a> , 및 <a href=     "../../../api/java/util/concurrent/Exchanger.html">exchangers</a>  등의 범용의 동기 클래스입니다.  thread간의 제휴를 용이하게 합니다. </li>
+
+<li><strong>락</strong> - 록킹은<tt>동기 된</tt>키워드를 개입시켜 Java 언어에 짜넣어집니다만, 편입 모니터 락에 대한 많은 비효율적인 제한이 있습니다. <a href=     "../../../api/java/util/concurrent/locks/package-summary.html#package_description"><code>java.util.concurrent.locks</code></a>  패키지는 동기와 같은 메모리세만티크스를 사용하는 고성능의 락 구현을 제공합니다. 그러나, 락, 락 마다의 복수의 조건 변수의 획득, 복수의 락의 상자를 사용하지 않는 (hand-over-hand) 보관 유지를 시도할 때의 타임 아웃의 지정도 지원해, 락을 획득하기 위해서 대기하고 있는 인터럽트 thread를 지원합니다. </li>
+
+<li><strong>나노초단위의 타이밍</strong> - <a href=     "../../../api/java/lang/System.html#nanoTime()"><code>System.nanoTime</code></a>  메소드는, 상대적인 시간을 측정하기 위해서 나노초의 단위로 타임 소스에의 액세스를 받아들입니다. 타임 아웃을 받아들이는 메소드 (예를 들어,<a href=     "../../../api/java/util/concurrent/BlockingQueue.html#offer(E,%20long,%20java.util.concurrent.TimeUnit)"><code>BlockingQueue.offer</code></a> ,<a href=     "../../../api/java/util/concurrent/BlockingQueue.html#poll(long,%20java.util.concurrent.TimeUnit)"><code>BlockingQueue.poll</code></a> ,<a href=     "../../../api/java/util/concurrent/locks/Lock.html#tryLock(long,%20java.util.concurrent.TimeUnit)"><code>Lock.tryLock</code></a> ,<a href=     "../../../api/java/util/concurrent/locks/Condition.html#await(long,%20java.util.concurrent.TimeUnit)"><code>Condition.await</code></a> , 및 <a href=     "../../../api/java/lang/Thread.html#sleep(long,%20int)"><code>Thread.sleep</code></a> )는 타임 아웃치를 나노초단위로 설정할 수 있습니다. System.nanoTime</code> 의 실제의 정밀도는 플랫폼에 의해 다릅니다. </li>
+  </ul><!-- Body text ends here --> <!-- ============================================================== -->
+  <hr size="3" noshade="noshade" />
+
+  <table summary="layout" border="0" width="100%">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../../legal/SMICopyright.html">Copyright &copy;</a>  2004 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p><br /> <br />
+      </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"       alt="Sun" border="0" width="64" height="30" /><br /> <font size="+1"><i> Java Software</i></font></td>
+    </tr>
+  </table>
+</body>
+</html>

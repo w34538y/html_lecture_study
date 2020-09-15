@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML EXPERIMENTAL 970324//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>java.rmi 프로퍼티 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff"><h1><center><code>java.rmi</code> 프로퍼티</center></h1><br><p>
+<hr>
+<p>
+<b>주</b>:명언되지 않는 이상 이러한 프로퍼티의 출력은 모두 <code>System.err</code> 에 송신됩니다.
+<p>
+<hr>
+
+<h2>원격 객체를 export 하는 가상 머신 (VM)의 설정에 유용한 프로퍼티</h2>
+
+<blockquote>
+<dl>
+<dt><b><code>java.rmi.activation.port</code></b></dt>
+	<dd> 이 프로퍼티은, 이 VM 가 <code>rmid</code> 와 통신할 때의 TCP 포트 번호의 설정에 사용됩니다. 디폴트에서는,<code>rmid</code> 는 포트 1098 으로 대기합니다만,<code>rmid</code> 커멘드행으로 <code>-port</code> 옵션을 사용하면(자), 다른 포트로 대기하도록(듯이) 설정할 수 있습니다. 이 프로퍼티의 디폴트 값는 1098 이기 때문에, 이 프로퍼티은, 1098 이외의 포트로 동작하는 <code>rmid</code> 의 인스턴스와 통신할 필요가 있는 VM 에서만 설정할 필요가 있습니다.
+</dd>
+
+<p>
+<a name="leaseValue"></a> 
+<dt><b><code>java.rmi.dgc.leaseValue</code></b></dt> 
+	<dd> 이 프로퍼티의 값은, 이 VM 에 의해 export 된 원격 참조 객체를 보관 유지하는 것 외의 VM 에 허가되는 리스기간 (밀리 세컨드)을 나타냅니다. 일반적으로, 리스의 50% 가 기한 마감이 되면(자), 클라이언트는 리스를 갱신합니다. 이 때문에, 매우 작은 값을 지정하면(자),<code>Unreferenced.unreferenced</code> 의 호출에 의한 대기 시간의 단축과 바꾸어에, 네트워크의 트래픽은 증대해, 코우신이 지각하는 위험이 있습니다. 디폴트 값는 600000 밀리 세컨드 (10 분 )입니다. </dd>
+<p>
+<dt><b><code>java.rmi.server.codebase</code></b></dt>
+	<dd> 이 프로퍼티은, 이 VM 에 의해 공개되는 클래스 (예를 들어, Stub 클래스, 원격 메소드 호출의 선언된 귀가형을 구현하는 커스텀 클래스, 프록시 또는 Stub 클래스가 사용하는 인터페이스)의 다운로드원을 지정합니다. 이 프로퍼티의 값은, URL 형식의 캐릭터 라인 (또는, 스페이스에서 단락지어진 URL 리스트)으로, 이 VM 의 (또 결과적으로 이 VM 에 의해 정렬화 된다) CLASSPATH 로부터 로드 되는 모든 클래스의 코드 베이스 주석이 됩니다.  
+
+	<p><b>주:</b>Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI)를 사용해 클래스 및 인터페이스를 동적으로 다운로드하려면 , 이 프로퍼티을 적절히 설정할 필요가 있습니다. 이 프로퍼티을 적절히 설정하지 않으면 서버 또는 클라이언트의 실행시에 예외가 발생할 가능성이 있습니다. 이 프로퍼티에 대한 자세한 것은,<a 	href="codebase.html">「Java RMI 의 사용에 의한 동적인 코드의 다운로드 (<code>java.rmi.server.codebase</code> 프로퍼티을 사용)」</a>를 참조해 주세요. </dd>
+
+<p>
+<dt><b><code>java.rmi.server.hostname</code></b></dt> 	
+	<dd> 이 프로퍼티의 값은, 원격 객체상의 메소드의 호출을 클라이언트로부터 가능하게 하기 위해서, 로컬에 작성된 원격 객체의 원격 Stub에 관련지을 수 있는 호스트 명문자열을 나타냅니다. 이 프로퍼티의 디폴트 값는 로컬 호스트의 IP 주소 (닷으로 단락지어진 형식)입니다. </dd>
+<p>
+<dt><b><code>java.rmi.server.logCalls</code></b></dt>	
+	<dd>  이 값이 <code>true</code> 의 경우, 착신하는 호출, 및 착신하는 호출에 의해 throw 되는 예외는,<code>System.err</code> 에 기록됩니다. 이 프로퍼티을 <code>true</code> 로 설정하면(자), RMI 프로그램의 디버그에 몹시 도움이 됩니다. <a href="sunrmiproperties.html#et"><code>sun.rmi.server.exceptionTrace</code></a>  도 참조해 주세요. </dd>
+<p>
+<dt><b><code>java.rmi.server.randomIDs</code></b></dt>
+	<dd>  이 값이 <code>true</code> 의 경우, 이 VM 에 의해 export 된 원격 객체의 객체 식별자는, 안전한 암호화가 베풀어진 난수 제네레이터를 사용해 생성됩니다. 디폴트 값는 <code>false</code> 입니다. </dd>
+<p>
+<dt><b><code>java.rmi.server.useCodebaseOnly</code></b></dt>
+	<dd> 이 값이 <code>true</code> 의 경우, 로컬의 CLASSPATH 및 이 VM 로 설정된 <code>java.rmi.server.codebase</code> 프로퍼티을 제외해, 클래스의 자동 로드는 금지됩니다. 이 프로퍼티을 사용하는 것으로써, 클라이언트 VM 가, 다른 코드 베이스로부터 바이트 코드를 동적으로 다운로드하는 것이 없어집니다. 버그이기 때문에, 1.2 및 1.2. 1 의 구현에서는, 이 프로퍼티은 무시됩니다. </dd>
+<p>
+<dt><b><code>java.rmi.server.useLocalHostname</code></b></dt>
+	<dd> <code>java.rmi.server.hostname</code> 프로퍼티이 지정되어 있지 않은 경우, 및 로컬 호스트의 완전 수식된 도메인명을 취득할 수 없는 경우, Java RMI 는 IP 주소를 사용해 로컬 호스트를 식별합니다. Java RMI 가 완전 수식된 도메인명을 디폴트로 사용하도록(듯이) 하려면 , 이 프로퍼티을 <code>true</code> 로 설정할 필요가 있습니다. </dd>
+</dl>
+</blockquote>
+
+<h2>원격 메소드 호출을 실행하는 VM 의 설정에 유용한 프로퍼티</h2>
+<blockquote>
+<dl>
+<dt><b><code>java.rmi.server.codebase</code></b></dt>
+	<dd> 이 프로퍼티은, 이 VM 에 의해 공개되는 클래스 (예를 들어, 원격 메소드 호출의 선언된 파라미터형인 인터페이스를 구현하는 커스텀 클래스)의 다운로드원을 지정합니다. 이 프로퍼티의 값은, URL 형식의 캐릭터 라인 (또는, 1.2 이후에서는 스페이스에서 단락지어진 URL 리스트)으로, 이 VM 의 (또 결과적으로 이 VM 에 의해 정렬화 된다) CLASSPATH 로부터 로드 되는 모든 클래스의 코드 베이스 주석이 됩니다.
+	
+	<p><b>주:</b> 서버의 코드 베이스 및 클라이언트의 CLASSPATH 의 양쪽 모두에 존재하는 클래스는, 서버의 코드 베이스로부터는 아니고, 클라이언트의 CLASSPATH 로부터 로드 됩니다. 이 프로퍼티에 대한 자세한 것은,<a 	href="codebase.html">「Java RMI 의 사용에 의한 동적인 코드의 다운로드 (<code>java.rmi.server.codebase</code> 프로퍼티을 사용)」</a>를 참조해 주세요. </dd>
+<p>
+<a name="disableHttp"></a> 
+<dt><b><code>java.rmi.server.disableHttp</code></b></dt> 
+	<dd> 이 값이 <code>true</code> 의 경우,<code>http.proxyHost</code> 를 설정해도, HTTP 터널링은 무효가 됩니다. 디폴트 값는 <code>false</code> 입니다. 프로그램이 HTTP 터널링을 사용하지 않는 것을 알고 있는 경우에는, HTTP 터널링을 무효로 설정해, 접속 실패시의 타임 아웃의 시간을 단축합니다.  </dd>
+<p>
+<dt><b><code>java.rmi.server.useCodebaseOnly</code></b></dt>
+	<dd> 이 값이 <code>true</code> 의 경우, 로컬의 CLASSPATH 및 이 VM 로 설정된 <code>java.rmi.server.codebase</code> 프로퍼티을 제외해, 클래스의 자동 로드는 금지됩니다. 이 프로퍼티을 사용하는 것으로써, 클라이언트 VM 가, 다른 코드 베이스로부터 바이트 코드를 동적으로 다운로드하는 것이 없어집니다. 버그이기 때문에, 1.2 및 1.2. 1 의 구현에서는, 이 프로퍼티은 무시됩니다. </dd>
+</dl>
+</blockquote>
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

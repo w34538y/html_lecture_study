@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--#config timefmt="%d-%b-%y" -->
+
+<TITLE>애플릿 캐쉬 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+<BODY BGCOLOR="#FFFFFF"  TEXT="#000000">
+
+<center><h1>Java Plug-in 에서의 애플릿 캐싱</h1></center>
+
+<p>
+애플릿 캐싱을 이용하면(자), 사용자가 애플릿을 참조했을 때에, 브라우저에 의해 필요이상으로 다운로드되는 것이 없어집니다. 이전의 버젼의 Java Plug-in 에서도 지원되고 있었습니다만, 다른 Web 문서에서도 사용되고 있는 캐쉬가 사용되고 있었습니다.
+<P>
+일반적으로의 애플릿의 경우는 이 방법에서도 기능합니다만, 큰 애플릿의 경우는, 다른 문서의 영역을 작성하기 위해서 플래시 되는 일이 있습니다. 이것은, 향후의 처리로 그 애플릿 파일이 필요한가 어떤가에 대한 정보가, 브라우저에 없기 때문입니다. 이 결과, 큰 비지니스 애플릿의 경우, 가장 중요한 개소에서 캐쉬가 기능하지 않을 가능성이 있습니다.
+<p>
+이 릴리스에서는, 애플릿 캐싱의 새로운 방식을 도입했습니다. 애플릿을 배포할 경우에, 그 애플릿이 「고정적」화도인가, 즉, 브라우저에 의해 덧쓰기되지 않는 2차 캐쉬내의 디스크에 포함할지 어떨지를 판단합니다. 「고정적」인 애플릿이 2차 캐쉬에 포함되면(자), 그 서버상에서 갱신되었을 때에만 다운로드합니다. 애플릿이 갱신되지 않는 이상 항상 고속으로  읽어들일 수가 있습니다. 코어 비지니스 어플리케이션을 제공하는 애플릿은, 기동 퍼포먼스를 향상시키기 위해서(때문에) 고정하는 것을 추천합니다.
+<p>
+이 신기능을 유효하게 하려면 , Java Plug-in 의 사용법을 지정하는 태그에, 새로운 값 <tt>PARAM NAME="cache_option"</tt> 및 <tt>PARAM NAME="cache_archive"</tt> 를 추가합니다.
+<blockquote><pre>
+&lt;OBJECT ....>
+	 &lt;PARAM NAME="archive" VALUE="...">
+	 ....
+	 &lt;PARAM NAME="cache_option" VALUE="...">
+	 &lt;PARAM NAME="cache_archive" VALUE="...">
+&lt;/OBJECT>
+</pre></blockquote>
+<p>
+<tt>cache_option</tt> 속성에는, 이하의 몇개의 값을 지정할 수 있습니다.
+<blockquote>
+<dl>
+<dt><b>No</b>
+<dd>애플릿의 인스톨을 무효로 한다. 항상 Web 서버로부터 파일을 다운로드한다
+<p>
+<dt><b>Browser</b>
+<dd>브라우저의 캐쉬로부터 애플릿을 실행한다 (디폴트)
+<p>
+<dt><b>Plugin</b>
+<dd>Java Plug-in 의 새로운 캐쉬로부터 애플릿을 실행한다
+</dl>
+</blockquote>
+<p>
+<tt>cache_archive</tt> 속성에는, 캐쉬하는 파일의 리스트를 지정합니다.
+<blockquote><pre>
+&lt;PARAM NAME="cache_archive" VALUE="a.jar, b.jar, c.jar">
+</pre></blockquote>
+<p>
+<tt>APPLET</tt> 태그의 <tt>archive</tt> 속성과 같게,<tt>cache_archive</tt> 속성의 JAR 파일의 리스트에는 완전한 URL 는 지정되고 있지 않습니다만, 항상 <tt>EMBED</tt>/<tt>OBJECT</tt> 태그로 지정되고 있는 <tt>codebase</tt> 로부터 다운로드됩니다.
+<p><tt>cache_archive</tt> 속성 및 <tt>archive</tt> 속성의 JAR 파일의 리스트는 닮습니다만, 같은 JAR 파일을 지정할 수 없는 것에 주의해 주세요. 이하의 2 개의 경우가 있습니다.
+<ol>
+<li>특정의 JAR 파일이 <tt>cache_archive</tt> 속성으로 지정되어<tt>archive</tt> 속성으로 지정되어 있지 않은 경우. 이 경우, JAR 파일은 <tt>cache_option</tt> 의 지정에 따라 캐쉬된다.
+<p>
+<li>특정의 JAR 파일이 <tt>archive</tt> 속성으로 지정되어<tt>cache_archive</tt> 속성으로 지정되어 있지 않은 경우. 이 경우, JAR 파일은, 브라우저의 캐쉬를 사용해 캐쉬된다. 이 방법에서는, 최소한의 캐쉬가 보증된다.
+</ol>
+<tt>cache_option</tt> 및 <tt>cache_archive</tt> 는, 각 <tt>EMBED</tt>/<tt>OBJECT</tt> 태그에 1 회만 지정할 수 있습니다. 또,<tt>cache_archive</tt> 및 <tt>cache_option</tt> 속성은 양쪽 모두 지정하지 않으면 안됩니다. <tt>cache_archive</tt> 또는 <tt>cache_option</tt> 를 지정하지 않았던 경우는, Java Plug-in 에서는 <tt>archive</tt> 속성을 사용해 일반적으로의 애플릿 처리를 합니다.
+<P>
+<b>주:</b>Manifest의 CLASSPATH 변수로 지정되고 있는 JAR 파일을, Java Plug-in 의 캐쉬를 사용해 캐쉬하는 것은 현재 할 수 없습니다.
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:3 - Image I/O 어플리케이션의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm3.html">전의 항목</a>  | <a href="apps.fm5.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="996927"><i>3.4	</i> <code>ImageWriter</code> 클래스</a> </h2>
+
+<blockquote>
+<a name="997001"><!-- --></a>  <code>ImageIO</code> 클래스의 메소드를 사용해 특정의 이미지 형식용의 <code>ImageReader</code> 의 리스트를 취득할 수 있는 것과 같이,<code>ImageWriter</code> 의 리스트도 다음과 같이 해 취득할 수 있습니다. <p>
+</blockquote><blockquote><pre>
+Iterator writers = ImageIO.getImageWritersByFormatName(&#34;png&#34;);
+ImageWriter writer = (ImageWriter) writers.next();
+
+</pre></blockquote><blockquote>
+<a name="997034"><!-- --></a>  <code>ImageWriter</code> 를 취득한 뒤는, 그 출력처를, 다음과 같이 해 <code>ImageOutputStream</code> 로 설정하지 않으면 안됩니다. <p>
+</blockquote><blockquote><pre>
+File f = new File(&#34;c:\images\myimage.png&#34;);
+ImageOutputStream ios = ImageIO.createImageOutputStream(f);
+writer.setOutput(ios);
+
+</pre></blockquote><blockquote>
+<a name="997041"><!-- --></a>  최종적으로, 다음과 같이 해, 이미지를 출력 스트림에 기입할 수가 있습니다. <p>
+</blockquote><blockquote><pre>
+BufferedImage bi;
+writer.write(bi);
+</pre></blockquote>
+<br>
+<h3>
+<a name="997015"><!-- --></a>  <i>3.4. 1	</i> 복수의 이미지의 기입
+</h3>
+
+<blockquote>
+<a name="997103"><!-- --></a>  <code>IIOImage</code> 클래스를 사용하면(자), 1 개의 이미지, 1 개(살) 또는 복수의 썸네일, 및 이미지에 관련하는 메타데이타 (이미지 이외의 데이터)에의 참조를 포함할 수 있습니다. 메타데이타에 대해서는, 나중에 설명하겠습니다. 여기에서는, 메타데이타 관계의 파라미터의 값으로 해서 <code>null</code> 를 건네주는 만큼 해 둡니다. <p>
+<a name="997148"><!-- --></a>  <code>ImageWriter</code> 클래스에는,<code>IIOImage</code> 로부터 새로운 파일을 작성하는 <code>write</code> 메소드와<code>IIOImage</code> 를 기존의 파일에 추가하는 <code>writeInsert</code> 메소드가 있습니다. 다음과 같이, 이 2 개의 메소드를 계속해 호출하는 것으로, 멀티 이미지 파일을 출력할 수 있습니다. <p>
+</blockquote><blockquote><pre>
+BufferedImage first_bi, second_bi;
+IIOImage first_IIOImage = new IIOImage(first_bi, null, null);
+IIOImage second_IIOImage = new IIOImage(second_bi, null, null);
+writer.write(null, first_IIOImage, null);
+if (writer.canInsertImage(1)) {
+	writer.writeInsert(1, second_IIOImage, null);
+} else {
+	System.err.println(&#34;Writer can&#39;t append a second image! &#34;);
+}
+
+</pre></blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm3.html">전의 항목</a>  | <a href="apps.fm5.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher 3.5.0 --> <!-- by Suzette Pelouch --> <!-- Last updated: Fri Apr 27 11:22:59 2001 -->
+ 
+
+
+</body>
+</html>

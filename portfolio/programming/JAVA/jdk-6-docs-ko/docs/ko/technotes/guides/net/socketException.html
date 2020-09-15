@@ -1,0 +1,83 @@
+<HTML><HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<TITLE>
+JDK 1.1 의 새로운 SocketExceptions
+ - xrath.com 에서 번역됨</TITLE></HEAD>
+<!-- Changed by: David Brown, 21-Aug-1996 -->
+<BODY>
+<H2>
+<IMG alt="Duke 아이콘" SRC="images/duke4.gif" ALIGN=CENTER WIDTH=55 HEIGHT=68> JDK 1.1 의 새로운 SocketExceptions
+</H2>
+<P>
+이전에는, Java 의 모든 네트워크 에러는 <B>SocketException</B> 를 발생시키고 있었습니다만, 에러의 원인에 대해서는 충분한 정보를 제공하지 않았습니다. 예를 들어, 원격 컴퓨터가 접속을 거부했는지 (그 포트상에서 아무것도 대기하고 있지 않는 것인지), 또는 호스트에게 도달할 수 없었던 것일까 (접속의 시도가 타임 아웃이 되었는가)라고 하는 원인을 특정할 수 없었습니다. JDK 1.1 은 세련된 에러 리포트를 제공하는 3 개(살)의 새로운 클래스를 추가합니다.
+<UL>
+<LI> <H3>java.net.BindException</H3> 
+	로컬 포트가 사용중, 또는 요구 바인드아드레스가 로컬에 할당하고 할 수 없다
+<pre>
+ 	public class BindException extends SocketException {
+	...
+	}
+</pre>
+
+<LI> <H3>java.net.ConnectException</H3> 
+	접속이 원격 호스트로 거부되었을 때, 예외가 발생한다 (즉, 그 포트를 어느 프로세스도 감시하고 있지 않다)
+
+<pre>
+ 	public class ConnectException extends SocketException {
+	...
+	}
+</pre>
+
+<LI> <H3>java.net.NoRouteToHostException</H3> 
+	접속의 시도가 타임 아웃 했는지, 그렇지 않으면 원격 호스트에게 도달할 수 없다
+
+<pre>
+ 	public class NoRouteToHostException extends SocketException {
+	...
+	}
+</pre>
+</UL>
+<P>
+<H2>간단한 사용예:</H2>
+<UL>
+<LI>클라이언트측:
+<pre>
+import java.net. *;
+	...
+	Socket s = null;
+	try {
+	   s = new Socket("foo.org", 80);
+	} catch (UnknownHostException e) {
+	   // check spelling of hostname
+	} catch (ConnectException e) {
+	   // connection refused - is server down?  Try another port.
+	} catch (NoRouteToHostException e) {
+	   // The connect attempt timed out.   Try connecting through a proxy
+	} catch (IOException e) {
+	   // another error occurred
+	}
+</pre>
+<LI> 서버측:
+<pre>
+import java.net. *;
+ 	...
+	ServerSocket ss = null;
+	try {
+	    /* try to bind to local address 129.144. 175.156 */
+	    InetAddress in = InetAddress.getByName("129.144. 175.156");
+	    int port = 8000;
+	    int backlog = 5;
+	    ss = new ServerSocket(port, backlog, in);
+	} catch (BindException e) {	   	
+	    // port 8000 in use, or can't bind to 129.144. 175.156 as a local address
+	} catch (SocketException e) {
+	    // another error occurred
+	}
+</pre>
+<P>
+<HR>
+<ADDRESS>
+<A HREF="mailto:brown@eng.sun.com">David Brown</A> 
+</ADDRESS>
+</ul></BODY>
+</HTML>

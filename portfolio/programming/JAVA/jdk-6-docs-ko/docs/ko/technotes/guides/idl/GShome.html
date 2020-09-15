@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL 입문 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: desoto, 1/30/98 --> <!-- Last Changed by: carson, 4/2001 --> <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+
+<H1 ALIGN=CENTER>Java<SUP><FONT SIZE =  "-2">TM</FONT></SUP> IDL 입문</H1>
+<HR>
+
+Java <SUP><FONT SIZE = "-2">TM</FONT></SUP> IDL 는 분산 객체, 즉 네트워크상이 다른 플랫폼에서 서로 작용하는 객체를 위한 테크놀러지입니다. Java IDL 를 사용하면(자), Java 프로그램 언어로 쓰여져 있는지, 또는 C, C++, COBOL 등의 언어로 쓰여져 있을까에 관계없이, 객체는 서로 작용할 수가 있습니다.
+<P>
+이것이 가능한 것은, Java IDL 가 업계표준의 분산 객체 모델인 Common Object Request Brokerage Architecture (CORBA)에 근거하고 있기 때문입니다. CORBA 의 중요한 특장은 IDL 에 있습니다. IDL 는 언어에 중립인 인터페이스 정의 언어입니다. CORBA 를 지원하는 언어에는 각각 독자적인 IDL 매핑이 있어, Java IDL 는 이름이 가리키는 대로 Java 의 매핑을 지원하고 있습니다. IDL 와 Java 언어의 매핑에 대해서는,<a  href="mapping/jidlMapping.html">「IDL 와 Java 언어의 매핑」</a>을 참조해 주세요.
+<P>
+다른 프로그램에 있는 객체의 상호작용을 지원하기 위해서, Java IDL 는 Object Request Broker (ORB)를 제공하고 있습니다. ORB 는 Java IDL 어플리케이션과 CORBA 준거의 어플리케이션간에 저레벨의 통신을 행하기 위한 클래스 라이브러리입니다.
+
+<P>
+이 튜토리얼에서는, Java IDL 를 사용해 CORBA 분산 어플리케이션을 구축하기 위한 기본적인 방법을 배웁니다. 분산 어플리케이션으로서 고전적인 「Hello World」프로그램을 구축합니다. Hello World 프로그램에는, 출력되는 캐릭터 라인을 돌려줄 뿐(만큼)의 단일 오퍼레이션이 있습니다.
+<p>
+
+분산 객체의 관계에는 2 개의 측면이 있습니다. 클라이언트와 서버입니다. 서버는 원격 인터페이스를 제공해, 클라이언트는 원격 인터페이스를 호출합니다. 이 관계는 많은 분산 객체 표준에 공통되고 있어서 , Java 원격 메소드 호출 (<a  href="../rmi/index.html">RMI</a> ,<a  href="../rmi-iiop/index.html">RMI-IIOP</a> )이나 <a  href="http://www.omg.org/corba/">CORBA</a>  에도 들어맞읍니다. 여기서, 클라이언트나 서버라는 말은 객체 레벨의 상호작용을 정의해서 , 어플리케이션 레벨의 상호작용을 정의하는 것이 아닙니다. 어느 어플리케이션도, 어느 객체의 서버로도 되면 다른 객체의 클라이언트로도 됩니다. 실제, 어느 1 개의 객체가, 원격 객체로 제공되는 인터페이스의 클라이언트가 되는 것과 동시에, 다른 객체가 원격로 호출하는 인터페이스를 구현할 수도 있습니다.
+<P>
+다음의 그림은, 고전적인 「Hello World」어플리케이션을 구현하기 위해서 단일 메소드의 분산 객체가, CORBA 클라이언트와 서버로 공유되고 있는 상태를 나타낸 것입니다.
+
+<p><center><IMG SRC="images/IDL-1.gif" WIDTH="241" HEIGHT="114"  ALIGN="BOTTOM"  NATURALSIZEFLAG="3" ALT=""></center></p>
+<center>
+<EM><FONT SIZE="-1">CORBA 클라이언트와 서버로 공유되고 있는 단일 메소드의 분산 객체</FONT></EM>
+</center>
+<P>
+클라이언트측에서는, 어플리케이션에 원격 객체의 참조가 포함되어 있습니다. 객체 참조에는 Stub 메소드가 있어, 원격로 불려 가는 메소드 대신에 됩니다. 실제로는 Stub는 ORB 에 접속되고 있기 (위해)때문에, Stub를 호출하면(자) ORB 의 접속 기능이 불려 가 서버에게 전할 수 있습니다.
+<P>
+서버측에서는, ORB 가 스켈리턴 코드를 사용해 원격 호출을 로컬 객체의 메소드 호출로 변환합니다. 스켈리턴은 호출과 파라미터를 구현에 적절한 형식으로 변환해, 기동하는 메소드를 호출합니다. 메소드가 복귀하면(자) 스켈리턴 코드는 결과 또는 에러를 생성해, ORB 를 경유해 클라이언트에 돌려줍니다.
+<P>
+ORB 간의 통신은 공유 프로토콜인 IIOP (Internet Inter-ORB Protocol)로 실행됩니다. IIOP 는 표준의 TCP/IP 인터넷 프로토콜에 근거하는 프로토콜로, CORBA 준거의 ORB 가 정보를 송수신 하는 방법을 정의합니다. CORBA 나 IDL 와 같이, IIOP 표준은 OMG (Object Management Group)에 의해 정의되고 있습니다.
+
+
+<h2>
+Java IDL 의 개발 프로세스와 Hello World 의 튜토리얼
+</h2>
+이 튜토리얼에서는, Java IDL 를 사용해 CORBA 분산 어플리케이션을 구축하는 기본적인 방법을 배웁니다. 분산 어플리케이션으로서 고전적인 「Hello World」프로그램을 구축합니다. 「Hello World」프로그램에는, 출력되는 캐릭터 라인을 돌려줄 뿐(만큼)의 단일 오퍼레이션이 있습니다.  
+
+<P>
+Hello World 프로그램은 단순합니다만, 이 프로그램을 통해, 정적인 호출을 사용하는 대부분의 CORBA 프로그램의 개발에도 필요한 작업 모든 것을 배워, 경험할 수가 있습니다.
+
+Java IDL 를 사용해 분산 객체 어플리케이션을 설계 및 개발할 때의, 일반적인 순서에 대해 설명합니다. 튜토리얼로 링크되고 있는 관련 순서에 따라, 이 샘플 어플리케이션을 작성해 보세요.  
+
+<p>
+<OL>
+<li>원격 인터페이스의 정의
+<p>
+OMG 의 인터페이스 정의 언어 (Interface Definition Langauge, IDL)를 사용하면(자), 원격 객체의 인터페이스를 정의할 수 있습니다. Java 언어 대신에 IDL 를 사용하는 것은,<CODE CLASS="Code">idlj</CODE> 컴파일러가 IDL 로부터 자동적으로 매핑 해 Java 언어의 Stub와 스켈리턴의 원시 파일을 모두 생성해, 한층 더 ORB 에 접속하기 위한 인프라스트럭쳐(infrastructure) 코드도 생성하기 때문입니다. 또 IDL 를 사용하면(자), 개발자는 CORBA 준거의 다른 언어로 클라이언트와 서버를 구현하는 수단을 제공할 수 있습니다.
+<P>
+기존의 CORBA 서비스에 클라이언트를 구현하거나 기존의 클라이언트를 위한 서버를 구현하는 경우, 구현자 즉 서비스 프로바이더나 벤더로부터 IDL 인터페이스를 입수하도록(듯이) 합니다. 그 경우, 이러한 인터페이스에 <CODE CLASS="Code">idlj</CODE> 컴파일러를 실행해, 그 후 이 순서에 따라 주세요.
+<p>
+이 튜토리얼의<B><A href="tutorial/GSIDL.html">「IDL 파일의 기술」</A> </B>에서는, 간단한 「Hello World」의 예로 원격 인터페이스의 정의 방법을 나타냅니다.
+<p>
+
+<li>원격 인터페이스의 컴파일
+<p>
+인터페이스 정의 파일로 <CODE CLASS="Code">idlj</CODE> 컴파일러를 실행하면(자), Java 버젼의 인터페이스가 작성되어 동시에 Stub와 스켈리턴의 클래스 코드 파일도 생성되어 어플리케이션을 ORB 에 접속할 수 있게 됩니다.
+</p>
+<p>이 튜토리얼의<B><A href="tutorial/GSIDL.html#compiling">「Hello.idl 를 Java 에 매핑 한다」</A> </B>에서는, 간단한 「Hello World」의 예로 순서를 나타냅니다.
+<p>
+
+<li>서버의 구현
+<p>
+<code>idlj</code> 컴파일러를 실행하면(자), 생성되는 스켈리턴을 사용해 서버 어플리케이션에 결합할 수 있습니다. 서버 코드에는 원격 인터페이스의 메소드가 구현될 뿐만 아니라, ORB 를 기동해 원격 클라이언트로부터의 호출을 대기하는 기구가 포함됩니다.
+</p>
+<p>
+<B><A href="tutorial/GSserver.html">「Hello World 서버의 개발」</A> </B>에서는, 「Hello World」어플리케이션의 간단한 서버의 기술 방법을 나타냅니다.
+<p>
+
+<li>클라이언트의 구현
+<p>
+같이<CODE CLASS="Code">idlj</CODE> 컴파일러로 생성된 Stub를 클라이언트 어플리케이션의 기초로서 사용합니다. 클라이언트 코드는 Stub상에 구축되어 ORB 의 기동, Java IDL 로 제공되는 네임 서비스를 사용한 서버의 룩 업, 및 원격 객체의 참조의 취득과 그 메소드의 호출을 실시합니다.
+</p>
+<p>
+<B><A href="tutorial/GSapp.html">「클라이언트 어플리케이션의 개발」</A> </B>에서는, 간단한 클라이언트 어플리케이션의 기술 방법을 나타냅니다.
+<p>
+
+<li>어플리케이션의 기동
+<p>
+서버와 클라이언트를 구현하면(자), 네임 서비스를 기동한 후에 서버를 기동해, 한층 더 클라이언트를 기동할 수가 있습니다.
+</p>
+<p>
+<B><A href="tutorial/GScompile.html">「Hello World 어플리케이션의 실행」</A> </B>에서는, 「Hello World」어플리케이션을 구성하는 서버와 클라이언트 프로그램을 실행하는 방법을 배워, 각각을 서로 검출하는 네임 서비스를 실행하는 방법도 배웁니다.
+ 
+</OL>
+<p></p>
+<p>
+<B><A href="tutorial/GSstring.html">「캐릭터 라인화 된 객체 참조의 사용」</A> </B>에서는, 네임 서비스가 없는 경우의 객체 참조의 작성 방법을 나타냅니다.  
+
+<P><STRONG><a href="tutorial/jidl2machines.html">「2 대의 머신으로 실행하는 Hello World 프로그램」</a> </STRONG>에서는, 클라이언트와 서버라고 하는 2 대의 머신으로 간단한 어플리케이션을 분산시키는 방법의 일례를 나타냅니다.
+
+
+
+
+<A name="FYI"></a> 
+<H2>상세 정보</H2>
+
+<P>기본적인 개념은 튜토리얼 중(안)에서 설명되고 있습니다만,<A  href="fund.html">「개념」</a>시에를 참조하면(자)보다 자세하게 알 수 있습니다. 또, 튜토리얼을 통해서, 신규 용어를 클릭하면(자) 그 정의를 볼 수가 있습니다.
+
+<P>현재, Object Management Group 는 이 사이트를 갱신하고 있었습니다만,<A href="http://www.omg.org/gettingstarted">CORBA for Beginnners</A>  의 페이지에는 CORBA 도입을 위한 정보를 제공하는 Web 페이지가 소개되고 있습니다.
+
+
+<P><HR>
+<CENTER><A href="tutorial/GSIDL.html">다음의 레슨:인터페이스 정의의 기술 방법</A> 
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">Java IDL 탑에</A> </TD>
+</TR></TABLE></CENTER>
+
+<HR>
+<FONT SIZE="-2"><A  HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2">2001-2004 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA. 94043-1100 USA., All rights reserved. </FONT><p></P>
+
+</BODY>
+</HTML>
+
+

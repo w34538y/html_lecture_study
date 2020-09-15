@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>java.net 의 그 외의 변경 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body>
+<h1>java.net 의 그 외의 변경:</h1>
+<H2>주목해야 할 버그의 수정:</H2>
+      <UL>
+	<LI><B>InetAddress</B><BR> JDK1. 0.2 에서는 버그가 존재해, 대응하는 호스트명 ( 「java.sun.com」등)이 발견되지 않는 경우, IP 주소 String ( 「206.26. 48.100」등)으로부터  InetAddress 를 생성할 수 없었습니다. 그 결과, UnknownHostException 가 발행되었습니다. 이 버그는 JDK 1.1 에서는 수정되었습니다.  게다가 InetAddress 가 IP 주소로부터 생성될 때, 대응하는 호스트명은 특별히 요구될 때까지 (InetAddress.getHostName() 경유로), 퍼포먼스의 향상을 위해 참조되지 않습니다.
+	<LI><B>ServerSocket/DatagramSocket close()</B><BR> JDK1. 0.2 에서는 버그가 존재해, ServerSocket 및 DatagramSocket 의 <code>close()</code> 메소드는 <code>synchronized</code> 로 여겨졌습니다. 이 결과, 1 개의 thread가 무기한으로 DatagramSocket.receive() 또는 ServerSocket.accept()로 블록 되었을 경우, 다른 thread는 close()를 호출해 블록 하고 있는 thread를 빠져 나갈 수가 없었습니다. 이것은 JDK 1.1 에서는 close() 메소드를 비동기로 하는 것으로, 수정되었습니다.
+	<LI><B>URLConnection</B><BR> JDK1. 0.2 에서는 버그가 존재해, 다음의 URLConnection 의 메소드
+	  <UL>
+	    <LI>setRequestProperty()
+	    <LI>getRequestProperty()
+	    <LI>getHeaderField()
+	    <LI>getHeaderFieldInt()
+	    <LI>getContentLength()
+	    <LI>getDate()
+	  </UL>
+	  등이 기능하지 않았습니다. 이것들은 JDK 1.1 에서는 수정되었습니다.
+      </UL>
+<H2>로컬 포트와 로컬 주소에의 바인딩:</H2>
+      <UL>
+	<LI><B>Socket, ServerSocket, DatagramSocket</B><BR> 이러한 클래스는, 고유의 로컬 주소와 로컬 포트에의 바인딩을 위해서(때문에) 생성자 을 overload 했습니다. 이것은, multi-homed의 컴퓨터로 동작해, 네트워크 인터페이스를 사용하고 있는 것을 특정에 제어할 필요가 있는 프록시 서버-등의 어플리케이션에는 유용하고 필요한 것입니다.
+      </UL>
+<H2>MulticastSocket:</H2>
+      <UL>
+<LI>MulticastSocket 클래스는, 패키지 sun.net 로부터 java.net 의 코어 API 로 이동했습니다.
+      </UL>
+<H2>HttpURLConnection:</H2>
+      <UL>
+	<LI>JDK 1.1 에서는, 새로운 클래스 HttpURLConnection 가 도입되었습니다.  이것은 URLConnection 를 확장해, HTTP 에 고유의 추가 기능을 제공합니다.
+	<LI>모든 요구 메소드를 HTTP/1. 1 과 함께 사용하는 기능을 다음에 나타냅니다.
+	  <UL>
+	    <LI>GET
+	    <LI>POST
+	    <LI>PUT
+	    <LI>HEAD
+	    <LI>TRACE
+	    <LI>DELETE
+	    <LI>옵션
+	  </UL>
+	<LI>이것들은, HTTP 리다이렉트(redirect)에 따를지 어떨지를 제어합니다.
+      </UL>
+      <hr>
+<address><a href="mailto:brown@eng.sun.com">David Brown</a> </address>
+<!-- Created: Thu Dec  5 12:16:31 PST 1996 --> <!-- hhmts start --> 최종 갱신일:12 월 5 일 03:09:54 오후 PST <!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>java.lang.instrument 의 확장 기능 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+  </head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+<TD>
+
+<center>
+<h1>JDK 6<br> <code>java.lang.instrument</code> 의 확장 기능</h1>
+</center>
+
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">목차</a> </font>
+</TD>
+
+</TR>
+</TABLE>
+
+<hr>
+JDK 5.0 의 초기 릴리스로부터 JDK 6 에의 이행에 수반해,<code>java.lang.instrument</code> 패키지에 다음의 기능이 추가되었습니다.
+<UL>
+<LI><B>클래스 파일재변환의 지원</B> - 벌써 로드 되고 있는 클래스의 동적 변환을 편리화하기 (위해)때문에, 다음의 메소드가 추가되었습니다.   
+  <UL>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#retransformClasses(java.lang.Class...)"><code>Instrumentation.retransformClasses(Class...)</code></A> </LI>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#addTransformer(java.lang.instrument.ClassFileTransformer,%20boolean)"><code>Instrumentation.addTransformer(ClassFileTransformer, boolean)</code></A> </LI>
+
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#isModifiableClass(java.lang.Class)"><code>Instrumentation.isModifiableClass(Class)</code></A> </LI>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#isRetransformClassesSupported()"><code>Instrumentation.isRetransformClassesSupported()</code></A> </LI>
+  </UL>
+이러한 메소드는, 벌써 클래스가 로드 되고 있는 메소드에 Instrumentation을 추가하는 것 같은 조작에 적절하고 있습니다. 재변환의 지원에 의해, 로드 된 클래스를 계측 하기 위해서 원의 클래스 파일에 액세스 할 필요가 없어집니다. 이것에 의해, 적용된 재변환의 삭제가 용이하게 되어, 멀티 에이전트 환경에서 기능합니다. <P>
+</LI>
+
+<LI><B>네이티브 메소드의 계측의 지원</B> - 다음의 메소드를 사용하면, JVM 에 대응하는 기구로 네이티브 메소드의 랩핑으로 하는 것으로, 네이티브 메소드를 계측 할 수가 있습니다.
+<UL>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#setNativeMethodPrefix(java.lang.instrument.ClassFileTransformer,%20java.lang.String)"><code>Instrumentation.setNativeMethodPrefix(ClassFileTransformer, String)</code></A> </LI>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#isNativeMethodPrefixSupported()"><code>Instrumentation.isNativeMethodPrefixSupported()</code></A> </LI>
+</LI>
+</UL>
+<p>
+</p>
+
+<LI><B>클래스 로더 검색에의 추가의 지원</B> - 다음의 메소드에 의해, 해당하는 클래스 로더로 Instrumentation사포트크라스를 정의할 수가 있습니다.
+<UL>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#appendToBootstrapClassLoaderSearch(java.util.jar.JarFile)"><code>Instrumentation.appendToBootstrapClassLoaderSearch(JarFile)</code></A> 
+</LI>
+<LI><A HREF="../../../api/java/lang/instrument/Instrumentation.html#appendToSystemClassLoaderSearch(java.util.jar.JarFile)"><code>Instrumentation.appendToSystemClassLoaderSearch(JarFile)</code></A> </LI>
+</LI>
+</UL>
+
+</UL>
+
+
+
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><p></P>
+   <br> <!-- <FONT SIZE="-1"> Please send comments to: </FONT> -->
+
+</TD>
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+  </body>
+

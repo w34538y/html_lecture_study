@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>ActiveX 브릿지 - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+<hr>
+<h1>ActiveX 브릿지 개발자 가이드</h1>
+<h2>SDK/JRE 1.4. 2 이후의 릴리스에 대한 구현</h2>
+<hr>
+<p>이 문서에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#overview">개요</a> </li>
+<li><a href="#supported">지원되는 OS 와 ActiveX 컨테이너</a> </li>
+<li><a href="#packaging">Bean 의 패키지화</a> </li>
+<li><a href="#using">어플리케이션에서의 Bean 의 사용</a> </li>
+<li><a href="#deployment">배치</a> </li>
+<li><a href="#creating">ActiveX 브릿지 환경에서의 Java 객체</a> </li>
+<li><a href="#other">다른 토픽</a>  
+    <ul>
+<li><a href="#methods">메소드</a> </li>
+<li><a href="#properties">프로퍼티</a> </li>
+<li><a href="#ambient_properties">환경의 프로퍼티</a> </li>
+<li><a href="#events">이벤트</a> </li>
+<li><a href="#security">시큐리티</a> </li>
+<li><a href="#configuration">JVM 구성</a> </li>
+    </ul>
+  </li>
+</ul>
+<p> <a href="examples.html">「어플리케이션의 예」</a>  의 장에서는 2 개의 예가 되는 어플리케이션에 대해 설명합니다. </p>
+<h2><a name="overview"></a> 개요</h2>
+<p>ActiveX 브릿지는, JavaBeans(TM) 컴퍼넌트 아키텍쳐(architecture) ( 「Bean」)에 근거하는 컴퍼넌트를, ActiveX 컨트롤로서 효율적으로 패키지 할 수가 있습니다.  그 때문에 ActiveX 컨트롤을 ActiveX 컨테이너내의 기능적인 컴퍼넌트로서 사용할 수 있습니다. </p>
+<p>이 ActiveX 브릿지의 구현은, SDK/JRE 1.1 에서 1.3. 1 까지의 이전의 구현과는 호환성이 없는 것에 주의해 주세요.  이 새로운 브릿지를 사용하려면 , Bean 를 재패키지화할 필요가 있습니다. </p>
+<h2><a name="supported"></a> 지원되는 OS 와 ActiveX 컨테이너</h2>
+<p>개발 목적용으로, 이 구현은 다음의 OS 와 ActiveX 컨테이너를 지원합니다. </p>
+<p>OS:Windows NT, 2000, XP</p>
+<p>ActiveX 컨테이너 :Visual Studio 6.0 (SP3)</p>
+<p>패키지화된 Bean 는, 상기의 플랫폼과 컨테이너 뿐만이 아니라, 모든 Windows 플랫폼과 ActiveX 컨테이너로 가동하는 것에 주의해 주세요. </p>
+<h2><a name="packaging"></a> Bean 의 패키지화</h2>
+<table width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+<td><p><u><strong><font size="+2">설명</font></strong></u></p>
+<p>1.  1.  팍케이쟈 (<code>packager.exe</code>)를 실행하기 위해서는, 사용의 컴퓨터에 다음에 나타내는 것이 인스톨 되고 있을 필요가 있습니다. </p>
+      <ul>
+<li>SDK 1.4. 2 이후</li>
+<li>Microsoft Visual C++ 6.0 (SP3)</li>
+      </ul>
+<p>2.  2.  팍케이쟈를 실행하기 위해서는, 최초로 <code>VCVARS32.BAT</code> 를 실행할 필요가 있습니다.  Microsoft Visual C++ 를 인스톨 한 디렉토리에 있는,<code>/bin</code> 디렉토리에 <code>cd</code> 해,<code>VCVARS32</code> 라고 입력합니다. </p>
+      </td>
+  </tr>
+</table>
+<p><code>packager.exe</code> 를 사용해, Bean 에 대한다 <code>. dll</code> 를 생성합니다. </p>
+<p><code>packager.exe</code> 의 사용 방법을 다음에 나타냅니다. </p>
+<table width="95%" border="1" align="center" cellpadding="5" cellspacing="0" bgcolor="#CCCCCC">
+  <tr>
+<td><h3>팍케이쟈의 사용 방법</h3>
+      <blockquote> 
+<pre>사용 방법: packager [-options] &lt;jar file name&gt; &lt;bean name&gt;<jar file name> <bean name>
+
+다음의 옵션이 있습니다.
+   -clsid&nbsp;&lt;class-id&gt;<class-id> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;패키지화된 Bean 용 CLSID
+   -out &lt;output directory&gt;<output directory>   패키지화된 Bean 의 생성처 디렉토리
+   -reg    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Active-X 컨트롤을 등록하기 위한 동의</pre>
+      </blockquote>
+</td>
+  </tr>
+</table>
+<h3>관련 정보</h3>
+<ul>
+<li><code>. dll</code> 에는, 1 개(살)만 패키지화된 Bean 를 포함할 수가 있다. 따라서, 각 Bean 에 대해서, 개별의<code>. jar</code> 파일이 필요</li>
+<li>1 개(살)의 <code>. jar</code> 파일이 다른 <code>. jar</code> 파일 또는 <code>. class</code> 파일에 의존하고 있는 경우는,<code>CLASSPATH</code> 의 설정이 필요</li>
+<li><code>&lt;jar file name&gt;</code> 에는,<code>. jar</code> 파일에의 패스를 포함할 필요가 있다. 패스는 풀 패스 또는 상대 패스</li>
+<li><code>&lt;bean name&gt;</code> 는,<code>sunw.demo.jelly.JellyBean</code> 와 같이, Bean 의 완전 지정된 패키지명일 필요가 있다</li>
+<li><code>-clsid</code> 옵션이 사용되지 않는 경우, 패키지화된 Bean <code>CLSID</code> 가 랜덤에 생성된다. 이 <code>-clsid</code> 옵션에 의해, 매회 지정된 Bean 에 대한 같은 <code>CLSID</code> 를 지정할 수 있다</li>
+<li>디폴트는,<code>-out</code> 가 지정되지 않는 한,<code>packager.exe</code> 가 실행되는 같은 디렉토리에 <code>. dll</code> 를 생성한다. -out</code> 파라미터를 지정하는 경우, 팍케이쟈는 <code>. dll</code> 파일을 지정한 디렉토리에 포함한다. 예를 들어,<code>. dll</code> 를 어플리케이션을 전개하는 <code>&lt;jre_home&gt;\axbridge\bin</code> 로 불리는 디렉토리에 포함할 수가 있다. <code>&lt;jre_home&gt;</code> 는, 공개 JRE 이며, 비공개는 아닌 것에 주의. Windows 에서의 공개 JRE 는, 일반적으로 <code>C:\Program Files\Java\j2re1. 4.2</code> 에 있다. SDK 와 관련하는 비공개 JRE 는, 일반적으로 <code>C:\j2sdk1. 4.2\jre</code> 에 있다</li>
+<li><code>-out</code> 가 지정되지 않는 경우, 또는 <code>-out</code> 가 <code>&lt;jre_home&gt;\axbridge\bin</code> 를 지정하지 않는 경우,<code>-reg</code> 옵션은 사용할 수 없다</li>
+</ul>
+<h4>례</h4>
+<p>예를 들어,<code>&lt;bean&gt;.jar</code> 가 <code>jelly.jar</code> 로,<code>jelly.jar</code> 는 <code>C:\my_bean_jars</code> 에 놓여져 있어, 완전 수식명은 <code>sunw.demo.jelly.JellyBean</code>, SDK는 <code>j2sdk1. 4.2</code> 로 상정합니다. 이 경우,<code>packager.exe</code> 를 다음의 방법으로 실행할 수 있습니다. </p>
+<blockquote>
+<p><code>C:\j2sdk1. 4.2\bin\packager -clsid</code> <code>{D824B185-AE3C-11D6-ABF5-00B0D07B8581}</code> <code>-out C:\Program Files\Java\j2re1. 4.2\axbridge\bin -reg C:\my_bean_jars\jelly.jar sunw.demo.jelly.JellyBean</code></p>
+</blockquote>
+<p>팍케이쟈는 다음에 나타내는 일을 실시합니다.  </p>
+<ul>
+<li>Bean 명 (<code>JellyBean.dll</code>)을 사용한다 <code> . dll</code> 파일을 생성해,<code>j2re\axbridge\bin </code> 디렉토리에 들어갈 수 있다</li>
+<li><code>j2re1. 4.2\axbridge\lib</code> 디렉토리를 작성해,<code>jelly.jar</code> 를 거기에 둔다</li>
+<li><code>CLSID</code> <code>D824B185-AE3C-11D6-ABF5-00B0D07B8581</code> 를 사용해, Bean <code>. dll</code> 를 등록한다</li>
+</ul>
+<h3>Bean <code>. dll</code> 의 수동 등록</h3>
+<p>상기와 같이,<code>packager.exe</code> 를 사용할 경우에 <code>-reg</code> 옵션을 사용하지 않는 경우,<code>regsvr32.exe</code> 를 사용해,<code>. dll</code> 를 수동으로 등록할 수 있습니다. <code> . dll</code> 파일이 놓여져 있는 디렉토리 (<code>C:\Program Files\Java\j2re1. 4.2\axbridge\bin</code> 등)에 <code>cd</code> 해, 다음을 입력합니다. </p>
+<blockquote>
+<p><code>&lt;path_regsvr32&gt;\regsvr32 &lt;bean name&gt;.dll</code></p>
+</blockquote>
+<p>Windows 2000 이 가동하고 있다고 합니다.  Windows 2000 의 <code>regsvr32.exe</code> 는 <code> C:\winnt\system32</code> 에 있습니다.  이 경우에 <code>JellyBean.dll</code> 를 등록하려면 , 다음과 같이 합니다. </p>
+<blockquote>
+<p><code>C:\Program Files\Java\j2re1. 4.2\axbridge\bin&gt;C:\winnt\system32\regsvr32 JellyBean.dll</code></p>
+</blockquote>
+<p>이것에 의해 이하를 합니다.  </p>
+<ul>
+<li><code>HKEY_CLASSES_ROOT</code> 하에,<code>JellyBean.dll</code> 에 대한 <code>CLSID</code> 레지스트리 엔트리를 작성한다 </li>
+<li><code>j2re1. 4.2\axbridge\lib</code> 디렉토리를 작성해,<code>jelly.jar</code> 를 거기에 둔다</li>
+</ul>
+<h2><a name="using"></a> 어플리케이션에서의 Bean 의 사용</h2>
+<p>Bean 는 ActiveX 컨트롤로서 등록되었으므로, ActiveX 컨테이너에 삽입할 수가 있습니다. Visual Studio 부속의 ActiveX 컨트롤 테스트 컨테이너의 경우, 메인 메뉴로 「<code>Edit</code>」&gt; 「<code>Insert New Control...</code>」에 진행되어, 「bean control」가 표시될 때까지 리스트를 아래에 스크롤 합니다. <code>JellyBean.dll</code>」컨트롤의 경우, 「<code>JellyBean Bean Control</code>」를 표시합니다. 다음에 Visual Studio 테스트 컨테이너에의 삽입을 표시합니다. </p>
+<p align="center"><img src="images/ControlTest-JellyBean-3.gif" width="896" height="725"></p>
+<h2><a name="deployment"></a> 배치</h2>
+<p>어플리케이션의 ActiveX 컨트롤로서 패키지화된 Bean 를 배치하려면 ,<code>. dll</code> 를 인스톨 프로세스의 일부로 하는 등록을 포함할 필요가 있습니다. <code>. dll</code> 는,<code>&lt;jre_home&gt;axbridge\bin</code> 디렉토리에 인스톨 되어<code>regsvr32.exe</code> 를 사용해 등록됩니다. 전술한 것처럼,<code>. dll</code> 가 등록되었을 때에, Bean <code>. jar</code> 는,<code>&lt;jre_home&gt;\axbridge\lib</code> 디렉토리에 포함됩니다. </p>
+<h2><a name="creating"></a> ActiveX 브릿지 환경에서의 Java 객체</h2>
+<p>Java 객체는,<code>IDispatch</code> 인터페이스를 지원하는 래퍼 객체를 개입시켜 액세스 할 수 있습니다. 즉, ActiveX 브릿지를 통해 간접적으로 액세스 됩니다.  예를 들어 Visual Basic (VB)로, 패키지화된 Bean 를 취급해, Java 객체를 Bean 메소드에 인수로서 건네주는 경우, (1) Bean 에 Java 객체의 요구되는 형태를 돌려주는 메소드가 있는 것, 또는 (2) Java 객체가 Bean 프로퍼티으로서 이용 가능하다라고 말하는 어느 쪽인지가 필요합니다. </p>
+<p>예를 들어, 예의 장에 있는, 달력의 예,<a href="examples.html#calendar">JCalendarPanel</a>  를 고려해 주세요. </p>
+<p>이 Bean 를 사용해 Java 를 직접 취급하는 경우,<code>Date</code> 객체를 작성해, 프로퍼티을 설정해, 다음에 <code>JCalendarePanel</code> 의 <code>setSelectedDate()</code> 에 대한 인수로서 건네줍니다. 이것을 ActiveX 브릿지를 사용해 실시하는 방법을 다음에 나타냅니다. </p>
+<p>VB 로 작업하고 있으면(자) 가정해,<code>JCalendarPanel1</code> 로 불리는 <code>JCalendarPanel</code> 의 인스턴스가 있다고 합니다.  VB 에서는 <code>JCalendarPanel1. </code><code>selectedDate</code> 프로퍼티을 사용해 <code>Date</code> 객체를, 다음과 같이 해 얻을 수 있습니다. </p>
+<blockquote>
+<p><code>Set dat = JCalendarPanel1.selectedDate</code></p>
+</blockquote>
+<p>다음에 <code>Date</code> 객체 (<code>dat</code>)의 VB 메소드를 사용해 설정을 실시합니다. 예를 들어, 다음과 같이 합니다. </p>
+<blockquote> 
+<p> <code>dat.setYear (1986 - 1900)<br> dat.setMonth (11 - 1)<br> dat.setDate 24</code></p>
+</blockquote>
+<p> 마지막으로,<code>JCalendarPanel1</code> 의 <code>setSelectedDate</code> 메소드를 사용해 date 를 설정합니다. </p>
+<blockquote> 
+<p> <code>JCalendarPanel1.setSelectedDate dat</code></p>
+</blockquote>
+<h2><a name="other"></a> 다른 고려사항</h2>
+<h3><a name="methods"></a> 메소드와 메소드의 overload</h3>
+<p><code>getMethodDescriptors()</code> 를 개입시키는 <code>BeanInfo</code> 에 의해 제공되는 모든 메소드는, ActiveX 컨테이너로부터 액세스 가능합니다. </p>
+<p>그러나, 메소드가 overload 되었을 경우, 가장 높은 수의 인수를 취하는 메소드만이 이용 가능합니다. 이것은 COM IDL 가 overload를 지원하지 않기 때문입니다. 그러나, 인수와 반환값의 형태는,<code>VARIANT</code> 가 됩니다. 각각의 인수는 옵션입니다. 어느 overload 한 메소드에 대해서도 Bean 문서를 참조해 인수와 형태의 정확한 값을 알 필요가 있습니다. MIDL 키워드와 같은 메소드 또는 프로퍼티명은, 모두 삭제됩니다. </p>
+<h3><a name="properties"></a> 프로퍼티</h3>
+<p>모든 프로퍼티은,<code>PropertyDescriptor</code> 를 통해 <code>BeanInfo</code> 로 정의한 것과 같은 액세스권을 사용하는 브릿지를 통해 액세스 가능합니다. ActiveX 브릿지는 <code>PropertyDescriptor</code> 로 정의한 악 세사 메소드를 호출합니다.  
+</p>
+<p>Bean 프로퍼티이 <code>bound</code> 또는 <code>constrained</code> 의 경우,<code>bindable</code> 또는 <code>requestedit</code> 플래그가 COM 프로퍼티의 속성내로 설정됩니다. 컨테이너는 <code>IPropertyNotifySink</code> 인터페이스를 통해, 프로퍼티의 변경이 통지됩니다. 프로퍼티에 제한이 있어, 컨테이너가 프로퍼티의 변경을 거부했을 경우, Bean <code>PropertyVetoException</code> 가 브릿지에 의해 throw 됩니다.  </p>
+<p>원시형 및 캐릭터 라인, 폰트, 칼라 프로퍼티에 대해서는, Visual Basic 와 같은 ActiveX 컨테이너의 대부분은,<code>PropertySheet</code> 내에서 프로퍼티의 직접적인 조작을 할 수 있습니다. 다른 모든 프로퍼티, 예를 들어 배열이나 객체의 프로퍼티은 <code>PropertySheet</code> 에서는 액세스 할 수 없습니다만, 컨테이너에 관련하는 스크립트 언어를 통해 호출할 수가 있습니다.  </p>
+<p></p>
+<h3><a name="ambient_properties"></a> 환경 프로퍼티</h3>
+<p>브릿지는 4 개의 환경 프로퍼티을 지원합니다.  그것들은, Bean 컴퍼넌트가 그러한 프로퍼티을 구현하는 경우에, Bean 프로퍼티으로 번역됩니다. 이러한 환경 프로퍼티은, 컴퍼넌트가 초기화될 때 Bean 컴퍼넌트에 의해 읽히고 설정되어 환경 프로퍼티에 대한 변경의 통지를 합니다.  </p>
+<blockquote>
+<p><code>DISPID_BACKCOLOR<br> DISPID_FORECOLOR<br> DISPID_FONT<br> DISPID_ENABLED </code></p>
+</blockquote>
+<p>브릿지는, ActiveX 컨테이너의 환경 프로퍼티의 변경을, 설정 프로퍼티을 통해 Bean 에 전송 합니다. </p>
+<h3><a name="events"></a> 이벤트</h3>
+<p><code>BeanInfo</code> 에 의해 반환된 <code>EventSetDescriptor</code> 배열로 디폴트로서 선언된 모든 소스 인터페이스는, ActiveX 의 디폴트의 소스 인터페이스로서 선언된 1 개의 인터페이스에 짜넣어집니다. ActiveX 컨테이너에 의해 디폴트의 소스 인터페이스가 액세스 가능하다라고 하는 것이, ActiveX 의 최저한의 요건입니다.  </p>
+<p><code>EventSetDescriptor</code> 의 <code>getListenerMethodDescriptors</code> API 에 의해 반환되는 각 메소드는, ActiveX 이벤트에 매핑 됩니다. 이벤트명은 메소드명입니다. Bean 의 모든 디폴트 인터페이스는 고유의 인터페이스에 머지 되므로, 같은 메소드명을 포함한 인터페이스는 허가되지 않습니다. </p>
+<p>다음의 <code>java.awt.event.ActionListener</code> 소스 인터페이스에 대한 예를 생각합시다.  </p>
+<blockquote>
+<p><code>public interface ActionListener extends EventListener {</code></p>
+<p><code> &nbsp;&nbsp;public void actionPerformed(ActionEvent e);</code></p>
+  <p><code>}</code></p>
+</blockquote>
+<p>이 인터페이스 정의에 의해 생성되는 ActiveX 이벤트명은,<code>actionPerformed</code> 입니다. 예를 들어 Visual Basic 의 경우, 이벤트시그니챠는 다음과 같이 됩니다. </p>
+<blockquote>
+<p><code>Private Sub Button_actionPerformed (ByVal evt As Object)</code></p>
+<p><code> &nbsp;&nbsp;MsgBox evt.toString </code></p>
+<p><code>End-Sub</code></p>
+</blockquote>
+<p>컨테이너에 제공된 <code>evt</code> 는, 오토메이션 객체로,<code>java.awt.AWTEvent</code> <code>Object</code> 를 나타냅니다. 컨테이너는 <code>AWTEvent</code> 클래스에 의해 지원되는 메소드를 호출하는 것에 의해 이벤트의 정보에 액세스 할 수 있습니다. </p>
+<h3><a name="security"></a> 시큐리티</h3>
+<p>ActiveX 컨트롤로서 패키지화되는 Bean 는 스탠드얼론의 어플리케이션의 일부입니다. 이 때문에, 애플릿의 샌드 박스 시큐리티 모델외에서 실행 가능합니다.  </p>
+<p>Internet Explorer 에서의 Bean 의 스크립트는 안전하지는 않습니다. <code> AllPermission</code> 액세스권이 부여되기 때문입니다. </p>
+<h3><a name="configuration"></a> JVM 구성</h3>
+<p><a href="../../../deployment/deployment-guide/jcp.html">Java Plug-in Control Panel</a>  를 통해 JVM 를 구성할 수 있는 것에 주의해 주세요. 다음의 탭이 ActiveX 브릿지에 관련하고 있습니다. </p>
+<ul>
+<li>Basic</li>
+<li>Advanced</li>
+<li>Proxies</li>
+</ul>
+<p>Bean 를 디버그 하기 위해서 <a href="../../../deployment/deployment-guide/console.html">Java Console</a>  를 사용할 수 있습니다. </p>
+<p>&nbsp;</p>
+</body>
+</html>

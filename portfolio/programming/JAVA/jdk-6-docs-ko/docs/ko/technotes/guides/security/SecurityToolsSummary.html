@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML><HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<TITLE>
+시큐리티 툴의 개요
+
+ - xrath.com 에서 번역됨</TITLE></HEAD>
+<BODY>
+
+<center>
+<H2>
+Java<sup><font size=-2>TM</font></sup> 플랫폼의 시큐리티 툴의 개요
+</H2>
+
+<b>최종 갱신일:<em>2006 년 7 월 28 일</em></b>
+</center>
+
+<P>여기에서는, 다음의 시큐리티 툴의 개요를 설명합니다. 자세한 문서에의 링크도 가리키고 있습니다. <A HREF="#keytool">keytool</A> , <A HREF="#jar">jar</A> , <A HREF="#jarsigner">jarsigner</A> , <A HREF="#policytool">Policy Tool</A> , <A HREF="#kinit">kinit</A> , <A HREF="#klist">klist</A> , and <A HREF="#ktab">ktab</A> . 자세한 문서에의 링크도 가리키고 있습니다. <b> Policy Tool</b> 는 그래피컬 사용자 인터페이스를 사용하고 있습니다만, 그 이외의 툴은 모두 커멘드행 툴입니다.
+
+<H2>툴</H2>
+
+<blockquote>
+
+<A NAME="keytool"></A> 
+<H3><b>keytool</b> (<a href="../../tools/solaris/keytool.html">Solaris 또는 Linux</a> ) (<a href="../../tools/windows/keytool.html">Windows</a> )</H3>
+
+<blockquote>
+
+<p><b>keytool</b> 를 사용해, 키스토어를 관리할 수 있습니다. 예를 들어, 다음의 작업을 실시할 수 있습니다.
+
+<ul>
+<li>공개키와 비공개키의 페어를 작성한다
+<li>증명서 요구를 발행한다 (적절한 증명서 발행국에 송신한다)
+<li>증명서 응답을 임포트 한다 (요구를 송신한 증명서 발행국으로부터 취득한다)
+<li>다른 조직에 속하는 공개키의 신뢰성을 명시한다 
+<li>2 개의 키스토어간의 엔트리를 카피한다
+</ul>
+
+<p>열쇠와 증명서는, Java 어플리케이션과 애플릿에 디지털 서명을 붙일 때 사용합니다 (아래의 <b>jarsigner</b> 를 참조). 키스토어란, 특정의 기업용의 열쇠와 증명서를 보관 유지하는, 보호된 데이타베이스입니다. 키스토어에의 액세스는, 패스워드에 의해 보호됩니다. 키스토어의 패스워드는, 키스토어의 작성시에 작성자가 정의해, 변경할 수 있는 것은, 패스워드가 현재 설정되어 있는 경우에만입니다. 또, 키스토어에 포함되는 비공개키는, 각각의 패스워드에 의해 보호할 수 있습니다.
+
+</blockquote>
+
+
+<A NAME="jar"></A> 
+<H3><b>jar</b> (<a href="../../tools/solaris/jar.html">Solaris 또는 Linux</a> ) (<a href="../../tools/windows/jar.html">Windows</a> )</H3>
+
+<blockquote>
+
+<p>JAR 파일의 작성에는,<b>jar</b> 툴을 사용합니다.  
+
+<p>Java ARchive (JAR) 파일 형식을 사용하면(자), 복수의 파일을 1 개의 archive파일에 통합할 수 있습니다. JAR 파일에는, 주로, 애플릿 및 어플리케이션에 관련한 클래스 파일 및 보조 자원이 포함됩니다. 코드에 「디지털 서명」하는 경우는,<b>jar</b> 툴을 사용해 JAR 파일에 코드를 통합해,<b>jarsigner</b> 툴을 사용해 JAR 파일에 서명합니다 (<b>keytool</b> 를 사용해 적절한 열쇠를 키스토어에 생성 또는 임포트 한 후에 실시한다).
+
+</blockquote>
+
+
+<A NAME="jarsigner"></A> 
+<H3><b>jarsigner</b> (<a href="../../tools/solaris/jarsigner.html">Solaris 또는 Linux</a> ) (<a href="../../tools/windows/jarsigner.html">Windows</a> )</H3>
+
+<blockquote>
+
+<p>JAR 파일에의 서명부와 서명 첨부 JAR 파일의 서명의 검증에는 <b>jarsigner</b> 툴을 사용합니다.   
+
+<p><b>jarsigner</b> 툴은, JAR 파일에 서명을 붙일 때 사용하는 비공개키, 및 거기에 관련하는 증명서 체인을 찾을 필요가 있을 때는,<b>keytool</b> 에 의해 작성되고 관리되는 키스토어에 액세스 합니다. 키스토어와 비공개키에의 액세스는 패스워드로 보호되고 있으므로, 비공개키의 패스워드를 알고 있는 사람만이 비공개키에 액세스 할 수 있어 비공개키를 사용해 JAR 파일에 서명을 붙일 수가 있습니다. 패스워드가 필요한 장면에서는,<b>jarsigner</b> 툴은 패스워드의 입력을 요구합니다.
+
+</blockquote>
+
+
+<A NAME="policytool"></A> 
+<H3><b>Policy tool</b> (<a href="../../tools/solaris/policytool.html">Solaris 또는 Linux</a> ) (<a href="../../tools/windows/policytool.html">Windows</a> )</H3>
+
+<blockquote>
+
+<p>인스톨 한 JDK 의 시큐리티 정책를 정의하는 외부 정책 구성 파일의 작성과 수정에는,<b>Policy Tool</b> (<code>policytool</code> 커멘드를 사용해 기동)를 사용합니다.
+ 
+<p>정책에 대해서는,<a href="spec/security-spec.doc.html"><b>「Java 시큐리티 아키텍쳐(architecture)」</b></a> 로 설명하고 있습니다. <a href="PolicyFiles.html"><b>「디폴트의 Policy 의 구현과 정책 파일의 구문」</b></a> 에서는, 한층 더 자세하게 설명하고 있습니다.
+
+<p>이 툴은 그래피컬 사용자 인터페이스를 갖추고 있기 (위해)때문에, 다른 툴과 같이 커멘드를 입력하는 일 없이 버튼이나 그 외의 옵션을 선택할 수 있습니다. 자세한 것은,<a href="PolicyGuide.html">「Policy Tool 사용자즈 가이드」</a>를 참조해 주세요.  
+
+</blockquote>
+
+<A NAME="kinit"></A>  
+<H3>kinit 
+     
+(<A HREF="../../tools/windows/kinit.html">Windows</A> )</H3>
+  <BLOCKQUOTE>
+<P>kinit 는, Kerberos 티켓 인가 티켓 (Ticket Granting Ticket, TGT)의 취득과 캐쉬에 사용됩니다. 이 툴은, SEAM 및 MIT 레퍼런스 구현등의 다른 Kerberos 구현에 공통되어 사용되고 있는 kinit 툴과 같은 기능이 있습니다. </P>
+<P>kinit 를 실행하기 전에, Key Distribution Center (KDC)를 사용해 사용자를 주체로서 등록할 필요가 있습니다. </P>
+<P><b>Solaris</b> - Solaris 사용자는, Solaris 오퍼레이팅(operating) 환경에 포함되는 kinit 툴을 사용해, 동등의 기능을 이용할 수 있습니다.  <!-- For example, for Solaris 8, see        <a href="http://docs.sun.com/?q=kinit&p=/doc/806-0624/6j9vek58d&a=view">kinit reference page</a> .  --> </P>
+	  
+	  <p><b>Linux</b> - Linux 사용자는, Kerberos 5 인스톨의 kinit 툴을 사용해, 동등의 기능을 이용할 수 있습니다.  </p>
+	  
+
+  </BLOCKQUOTE>
+
+<A NAME="klist"></A> 
+<H3>klist 
+    
+(<A HREF="../../tools/windows/klist.html">Windows</A> )</H3>
+  <BLOCKQUOTE>
+    <P>
+klist 는 커멘드행 툴로, 로컬의 자격 캐쉬 및 키 테이블내의 엔트리를 표시할 수 있습니다. </P>
+<P><b>Solaris</b> - Solaris 사용자는, Solaris 오퍼레이팅(operating) 환경에 포함되는 klist 툴을 사용해, 동등의 기능을 이용할 수 있습니다.  <!--   For example, for Solaris 10, see        <a href="http://docs.sun.com/?q=kinit&p=/doc/806-0624/6j9vek58e&a=view">klist reference page</a> .   	   	  --> </P>
+
+	 <p><b>Linux</b> - Linux 사용자는, Kerberos 5 인스톨의 klist 툴을 사용해, 동등의 기능을 이용할 수 있습니다.  </p>
+	  
+	  
+  </BLOCKQUOTE>
+
+<A NAME="ktab"></A> 
+<H3>ktab 
+     
+(<A HREF="../../tools/windows/ktab.html">Windows</A> )</H3>
+  <BLOCKQUOTE>
+<P>ktab 는 커멘드행 툴로, 로컬 키 테이블에 보존된 주체명 및 서비스 키를 관리할 수 있습니다. 키 탭에 일람표 나타난 주체와 열쇠의 페어를 사용하는 것으로써, 호스트상에서 실행하고 있는 서비스를, Key Distribution Center (KDC)에 인증시킬 수가 있습니다. Kerberos 를 사용할 수 있도록(듯이) 서버를 설정하려면 , 서버를 실행하고 있는 호스트상에서 키 탭을 설정할 필요가 있습니다. <CODE>ktab 를 사용한 키 탭의 갱신은, Kerberos 데이타베이스에 영향을 주지 않습니다. 키 탭내의 열쇠를 변경했을 경우, Kerberos 데이타베이스에도 같은 변경을 더하지 않으면 안됩니다. 커멘드행 옵션은, 대문자와 소문자를 구별하지 않는 것에도 주의해 주세요. </P>
+<P><b>Solaris</b> - Solaris 사용자는, Solaris 오퍼레이팅(operating) 환경에 포함되는 ktutil 툴 또는 kadmin 툴을 사용해, 동등의 기능을 이용할 수 있습니다.
+
+    </P>
+	  
+	  <p><b>Linux</b> - Linux 사용자는, Kerberos 5 인스톨의 ktutil 툴 또는 kinit 툴을 사용해, 동등의 기능을 이용할 수 있습니다.  </p>
+	  
+	  <!-- 	  href="http://web.mit.edu/kerberos/krb5-1.4/krb5-1.4/doc/krb5-admin.html#Keytabs"><span class="diff-new"> 	   	  -->
+
+	  
+  </BLOCKQUOTE>
+
+</blockquote>
+
+
+<H2>툴의 사용예</H2>
+
+<blockquote>
+
+이러한 시큐리티 툴의 사용예에 대해서는,<a href="http://java.sun.com/docs/books/tutorial/"><b>Java 튜토리얼</b></a> 의<a href="http://java.sun.com/docs/books/tutorial/security/index.html"><b>「Java<sup><font size=-2>TM</font></sup> 플랫폼의 시큐리티」</b></a> 를 참조해 주세요.
+
+</blockquote>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+<TD>
+
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1997-2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다. </FONT>
+
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>
+
+
+
+

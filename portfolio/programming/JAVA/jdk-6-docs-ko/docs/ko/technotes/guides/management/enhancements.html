@@ -1,0 +1,139 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java SE 6 감시 및 관리의 확장 기능 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor=white>
+
+<!-- document header is table row with 3 cells-->
+<table summary="layout" border=0 width=100%>
+<tr>
+    <!-- Left cell: Java logo -->
+    <td width=60>
+<img src="../../../images/javalogo52x88.gif" alt="Java (TM)" width=52 height=88>
+
+    </td>
+
+
+    <!-- Center cell: Title -->
+    <td align=center>
+<h1>Java SE 6 감시 및 관리의 확장 기능</h1>
+    </td>
+
+    <!-- Right cell: Up references -->
+    <td align=right valign=top width=60>
+<font size=-1><a href="../../../index.html">문서의 목차</a> </font>
+    </td>
+</tr>
+</table>
+
+<!-- ====================== Body text begins here ====================== -->
+
+
+<h2>감시 및 관리 API 의 확장 기능</h2>
+<blockquote>
+<p>Java Platform, Standard Edition (Java SE)의 패키지 <a href="../../../api/java/lang/management/package-summary.html">java.lang.management</a>  에는, Java 가상 머신 (Java VM)과 다른 어플리케이션의 감시 및 관리를 행하기 위한 API 가 포함되어 있습니다.
+<p>Java SE 6 플랫폼에는, 이 API 의 확장 기능으로서 다음의 것이 포함되어 있습니다.
+
+<ul>
+<li><code>java.util.concurrent</code> 락의 지원가 추가되었습니다.
+<p><code>ThreadMXBean.getThreadInfo</code> 메소드가 확장되어 thread로 취득 대기가 되고 있는 <a href="../../../api/java/util/concurrent/locks/AbstractOwnableSynchronizer.html">java.util.concurrent.locks.AbstractOwnableSynchronizer</a>  를 보고합니다. Java 2 Platform, Standard Edition (J2SE) 5.0 에서는, thread에 의한 취득 개시 또는 취득 대기가 블록 되었다고 하는 객체 모니터를 보고하는 것만으로 했다.
+<p>그 외 ,<a href="../../../api/java/lang/management/ThreadMXBean.html">ThreadMXBean</a>  인터페이스에, 다음의 새로운 메소드가 추가되었습니다. </li>
+	<ul>
+	<li><a href="../../../api/java/lang/management/ThreadMXBean.html#isObjectMonitorUsageSupported()">isObjectMonitorUsageSupported()</a> </li>
+	<li><a href="../../../api/java/lang/management/ThreadMXBean.html#isSynchronizerUsageSupported()">isSynchronizerUsageSupported()</a> </li>
+	<li><a href="../../../api/java/lang/management/ThreadMXBean.html#findDeadlockedThreads()">findDeadlockedThreads()</a> </li>
+	</ul>
+
+<li>thread가 소유하는 락의 리스트를 취득해, 모니터를 잠근 스택 프레임을 보고하기 위한 새로운 클래스와 메소드가,<code>java.lang.management</code> 패키지에 추가되었습니다.
+	<ul>
+	<li>새로운 <a href="../../../api/java/lang/management/LockInfo.html">LockInfo</a>  클래스. </li>
+	<li>새로운 <a href="../../../api/java/lang/management/MonitorInfo.html">MonitorInfo</a>  클래스. </li>
+	<li>새로운 <a href="../../../api/java/lang/management/ThreadInfo.html">ThreadInfo</a>  메소드 <a href="../../../api/java/lang/management/ThreadInfo.html#getLockInfo()">getLockInfo()</a>,<a href="../../../api/java/lang/management/ThreadInfo.html#getLockedMonitors()">getLockedMonitors()</a>, 및 <a href="../../../api/java/lang/management/ThreadInfo.html#getLockedSynchronizers()">getLockedSynchronizers()</a> . </li>
+	<li>새로운 <a href="../../../api/java/lang/management/ThreadMXBean.html">ThreadMXBean</a>  메소드 <a href="../../../api/java/lang/management/ThreadMXBean.html#dumpAllThreads(boolean,%20boolean)">dumpAllThreads()</a>  및 <a href="../../../api/java/lang/management/ThreadMXBean.html#getThreadInfo(long[], boolean, boolean)">getThreadInfo(long[] ids, boolean lockedMonitor, boolean lockedSynchronizers)</a> </li>
+	</ul>
+</li>
+<li>새로운 메소드 <a href="../../../api/java/lang/management/OperatingSystemMXBean.html#getSystemLoadAverage()">getSystemLoadAverage()</a>  가 <a href="../../../api/java/lang/management/OperatingSystemMXBean.html">OperatingSystemMXBean</a>  에 추가되어 시스템의 로드 평균이 돌려주어지게 되었습니다.
+</li>
+</ul>
+
+</blockquote>
+
+
+<a name=jconsole></a> 
+<h2>JConsole 의 확장 기능</h2>
+<blockquote>
+<p>
+Java SE 플랫폼에는, JConsole 로 불리는 감시용 그래피컬 툴이 준비되어 있습니다. JConsole 툴은, Java Management Extensions (JMX) API 를 구현해, Java VM 와 계측 된 어플리케이션의 퍼포먼스 감시를 가능하게 합니다. JConsole 는 J2SE 5.0 으로부터 도입되어 Java SE 6 으로 정식적 지원의 대상이 되었습니다.
+</p>
+<p>
+J2SE 5.0 으로부터 Java SE 6 에의 이행에 수반해, JConsole 툴에 베풀어진 확장 기능의 일부를 다음에 나타냅니다.
+</p>
+<p>
+<ul>
+<li>
+JConsole 플러그 인의 지원: 어플리케이션의 MBean 에 액세스 할 때에 필요한 커스텀 탭을 추가하는 등, JConsole 로 실행되는 독자적인 플러그 인 구축이 가능해집니다.
+</li>
+<li>
+
+동적 접속 기능: 동적 Attach API (이것도 Java SE 6 에 추가되었다)를 지원하는 임의의 어플리케이션에, JConsole 를 접속할 수 있습니다.
+</li>
+<li>
+강화된 사용자 인터페이스: 데이터 액세스를 한층 더 간단하게 합니다.
+</li>
+<li>
+새로운 「개요」탭 및 「VM 의 개요」탭: 사용중의 Java VM 에 관한 전체 정보를 보다 알기 쉽게 표시합니다.
+</li>
+<li>
+HotSpot 진단 MBean: 실행시에 heap 덤프를 요구해, 또 일부의 VM 옵션의 설정 변경을 실시하는 API 가 준비되어 있습니다.
+</li>
+<li>
+강화된 MBean 프레젠테이션: MBean 의 처리나 속성에 대한 액세스를 간단하게 합니다.
+
+</li>
+</ul>
+</blockquote>
+
+
+<h2>아웃 오브 박스의 remote administration의 확장 기능</h2>
+
+<p>
+<blockquote>
+<p>Java VM 에는 Instrumentation이 짜넣어지고 있어 이것에 의해 JMX 테크놀러지를 사용한 감시 및 관리를 실시할 수가 있습니다. 이러한 편입 관리 유틸리티는 일반적으로, Java VM 의 「아웃 오브 박스의」관리툴로 불립니다. 이 릴리스에서는, 아웃 오브 박스의 관리 유틸리티에 다음의 확장이 베풀어졌습니다.
+<ul>
+<li>SSL (secure sockets layer)를 사용하는 것으로, 원격 메소드 호출 (RMI: remote method invocation) 레지스트리의 시큐리티가 확보되었습니다. 새로운 관리 프로퍼티 <code>com.sun.management.jmxremote.registry.ssl</code> 가 추가되었습니다. 이것에 의해, 적절한 SSL 증명서를 가지는 정당한 클라이언트만이 연결기 Stub를 취득할 수 있도록(듯이), SSL 유효화 RMI 레지스트리를 사용하는 것이 가능하게 되었습니다. </li>
+</ul>
+
+</blockquote>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+
+<hr SIZE=3 NOSHADE>
+
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+
+<td>
+<font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> 
+
+All Rights Reserved. </font> <br> <br>
+
+<font SIZE="-1"><A   HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/1.5.0/docs/guide/jmx/index.html&category=j2se&mailsubject=Java%20Management%20Extensions">피드백</A> </font>
+</td>
+
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <br>
+   </td>
+
+</tr>
+
+</table>
+
+
+
+
+
+</font></body>
+</html>

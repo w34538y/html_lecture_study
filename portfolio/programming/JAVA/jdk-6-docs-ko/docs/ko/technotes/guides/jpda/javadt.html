@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>Java Platform Debugger Architecture - xrath.com 에서 번역됨</title>
+<meta name="description" content="Java Debug Interface (JDI) 의 데모로서 간단하고 쉬운 GUI 디버그 툴 javadt 의 원시 코드가 준비되어 있습니다. javadt (은)는 JDI 의 실례를 나타내기 위한 것입니다. 완성된 디버거는 아니고, 실제의 디버그 작업에 불가결한 다수의 기능은 붙어 있지 않습니다. " />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="archiveFlag" content="false"/>
+<meta name="date" content="2003-04-12" />
+</head>
+<body bgcolor="#ffffff">
+<h1>javadt 디버거의 릴리스 노트</h1>
+Java Debug Interface (JDI)의 데모로서 간단하고 쉬운 GUI 디버그 툴 <b>javadt</b> 의 원시 코드가 준비되어 있습니다. javadt 는 JDI 의 실례를 나타내기 위한 것입니다. 완성된 디버거는 아니고, 실제의 디버그 작업에 불가결한 다수의 기능은 붙어 있지 않습니다.
+<p></p>
+<h2>javadt 의 호출</h2>
+<p>
+<b>javadt</b> 는, 다음을 실행하는 것에 의해 실행할 수 있습니다.
+</p>
+<pre>   java gui.GUI &lt;options&gt;.. &lt;class-name&gt;<br></pre>
+<p>
+이 경우, &lt;class-name&gt; 는 일반적으로,<code>java</code> 커멘드행에 배치하는 이름입니다. 주:<tt>gui.GUI</tt> 의 호출해에 사용하는 클래스 패스에는,<a href="examples.html#SETUP">JDI 라이브러리</a>  의 패스와 컴파일 된 <b>javadt</b> 클래스 파일의 패스가 필요합니다. 반드시 Java 2 SDK 의 <tt>lib/tools.jar</tt> 파일을 클래스 패스로 설정해 주세요.
+</p>
+<p>
+예를 들어, 다음과 같이 해 javadt 디버거를 호출할 수가 있습니다.
+</p>
+<pre>   javadt gui.GUI -classpath .  Hello<br></pre>
+주:이 <code>-classpath</code> 옵션에 의해,<code>Hello</code> 어플리케이션의 클래스 패스가 제어됩니다. 윈도우가 표시되면(자), 「run」커멘드를 발행하자 마자 실행할 수 있습니다. 「run」커멘드에 클래스명을 지정할 수도 있습니다. 쉘로부터 디버거를 호출할 때, 클래스명은 생략 해도 상관하지 않습니다.
+<p></p>
+<p>
+클래스 패스는, 디버거 내부로부터, 「classpath」커멘드를 사용해 설정할 수도 있습니다. 현재, 디버거를 최초로 호출하는 경우, 쉘 커멘드행에 VM 외 인수를 지정할 필요가 있습니다. 최근 기술된 클래스 패스, VM 인수, 메인 클래스명, 및 프로그램 인수는, 그 후의 「run」 및 「load」커멘드의 디폴트로서 보관 유지됩니다 (유감스럽지만 현시점에서는, 같은 디버거의 호출로부터 다른 디버그 세션을 다른 디버그 대상 프로세스로 시작하려고 하면(자), 디버거는 크래쉬 하는 경우가 있습니다. 쉘을 종료하고 나서 새로운 디버거 프로세스를 기동해 주세요. )
+</p>
+<h2>javadt 의 사용</h2>
+<p>
+javadt 는 일반적으로, 「현재의 thread」에 관한 문맥을 표시합니다. 현재의 thread란, 최근 breakpoint에 조우한 thread, 캐치 되지 않는 예외를 throw 한 thread, 혹은 사용자가 스텝 실행한 thread입니다. 이러한 3 개의 이벤트의 어느 쪽인가에보다 프로그램 실행이 중단되었을 경우, 현재의 thread는 존재해, javadt 는 다음과 같은 관련 정보를 표시합니다.
+</p>
+<p>
+</p>
+<ul>
+<li>스택 백 트레이스. </li>
+<li>원시 코드가 사용 가능한 경우는, thread의 명령 카운터에 대응하는 행을 둘러싸는 원시 코드. </li>
+</ul>
+<p></p>
+<p>
+또, 탭 첨부 페인으로, 다음에 나타내는 3 개의 추가의 뷰 가운데 어느쪽이든을 표시할 수가 있습니다.
+</p>
+<p>
+</p>
+<ul>
+<li>소스 패스로 사용 가능한 모든 원시 파일의 트리. </li>
+<li>패키지에 의해 계층적으로 편성된, 모든 로드가 끝난 클래스 파일의 트리. </li>
+<li>thread 그룹에 의해 계층적으로 편성된, 모든 액티브한 thread의 트리. </li>
+</ul>
+<p></p>
+<p>
+원시 파일의 이름을 클릭하면(자), 소스뷰를 표시시킬 수가 있습니다. 또, thread를 클릭하면(자), 그 thread가 현재의 thread가 됩니다. 이러한 기능은 일반적으로, 프로그램이 breakpoint등으로 중단되고 있을 때 사용합니다. 예를 들어, thread 재개 후에 다른 breakpoint에 조우하면(자), 현재의 thread는 자동적으로 리셋 되어 표시가 갱신됩니다. javadt 화면이 타일링 표시됩니다. 화면의 크기는 조정할 수 있습니다.
+</p>
+<p>
+javadt 기능은 기본적인 것으로, 커멘드행 interaction 윈도우도 준비되어 있습니다. 이 윈도우로부터 javadt 에서는 아직 개시되어 있지 않은 함수에 액세스 할 수 있습니다. 특히, breakpoint의 설정이나 변수의 검증에는 커멘드행의 사용이 필요하게 됩니다. javadt 디버거 커멘드 interpreter는,<a href="jdb.html">jdb</a>  의 기능의 부분집합을 거의 구현하고 있습니다만, 한층 더 소수의 독자 커멘드도 추가되고 있습니다. 「help」커멘드는, 커멘드의 완전 세트와 그 기능을 일람표 가리킵니다. 가장 일반적인 커멘드 세트의 쇼트 컷은, 화면상의 툴바로 제공됩니다.
+</p>
+<p>
+디버그 하는 프로그램은, 디버거의 아이로서 기동할 수 있습니다. 또, VM 가 접속을 받아들여질 준비가 되어 있으면, 디버거를 기존의 프로세스에 접속할 수도 있습니다. 디버거로 디버그 대상을 아이로서 기동했을 경우, 어플리케이션의 interaction 구획에, 표준 입출력 및 에러 스트림의 행 지향 인터페이스가 표시됩니다.
+</p>
+<p>
+디버거는, 소스 패스로 프로그램의 원시 코드를 검출해, 「use」또는 「sourcepath」커멘드로 설정하도록(듯이) 상정되고 있습니다. 소스 패스가 올바르지 않다고 하는 이유로써 소스가 표시되지 않는 경우, 소스 패스는 언제라도 변경할 수 있습니다. 그 결과, 소스의 표시는 곧바로 갱신됩니다.
+</p>
+<p>
+프로그램의 스텝 실행시에는, 「현재의 thread가 없습니다」라고 하는 메세지가 빈번하게 표시됩니다. 이 메세지는, thread 또는 VM 가 종료되고 있다고 하는 의미는 아니고, 단지 현재의 thread가 미정도리이다고 하는 의미입니다. 이러한 상황은, 스텝 실행중의 프로그램이 입력등으로 대기하고 있을 때, 갑자기 발생하기 쉬워집니다. 스텝 실행에 성공한 후와 같이, VM 가 정지한 것처럼 보입니다만, 이것은 「중단」은 아니고 「실행중」이라고 보입니다. VM 가 중단하면(자), 코만드인타라크션페인의 prompt가, thread명과 프레임 번호를 변경하는 것으로 상태를 알립니다. 프로그램의 실행중은, 「Command:」(이)라고 하는 prompt가 표시됩니다.
+</p>
+<h2>javadt 의 소스</h2>
+<p>
+<b>javadt</b> 의 완전한 원시 코드는,<code>examples.jar</code> 의 <code>com/sun/tools/example/debug</code> 디렉토리에 있습니다. 주:이 디렉토리에는,<a href="jdb.html"><code>jdb</code></a>  의 소스도 들어가 있습니다. 이러한 샘플 어플리케이션의 원시 코드는, 디버거 개발자를 위해서(때문에) 구체적인 예를 나타내기 위한 것입니다. 디버거의 개발자에 의한 코드 예의 사용, 변경, 재배포는, 저작권 표시의 준수를 조건으로서 인정됩니다.
+</p>
+<p>
+<b>javadt</b> 는 다음의 패키지 (<tt>examples.jar</tt> 의 <code>com/sun/tools/example/debug</code> 디렉토리에 있다)를 사용합니다.
+</p>
+<dl>
+<dt><code>gui</code>
+</dt>
+<dd>사용자 인터페이스 코드
+</dd>
+<dt><code>bdi</code>
+</dt>
+<dd>디버거 코어 코드
+</dd>
+<dt><code>events</code>
+</dt>
+<dd>이벤트 세트 코드
+</dd>
+<dt><code>expr</code>
+</dt>
+<dd>식 처리 코드
+</dd>
+</dl>
+<h2>javadt 의 구축</h2>
+<p>
+제공된 <code>debuggers</code> 디렉토리의 원시 파일로부터 <b>javadt</b> 클래스를 구축하는 경우, 필요한 작업은 원시 파일의 컴파일 뿐입니다. 클래스 패스에 <a href="examples.html#SETUP">JDI 라이브러리</a>  를 포함하는 것 이외, 특별한 옵션은 필요 없습니다. 다만, 파일 <code>Expr.jj</code> 의 표현 퍼서를 변경하는 경우는,<a href="https://javacc.dev.java.net/">JavaCC 퍼서 제네레이터</a>  가 필요합니다.
+</p>
+<!-- end main page content -->
+</body>
+</html>

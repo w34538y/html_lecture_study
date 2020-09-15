@@ -1,0 +1,272 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 7 장:파일 컨버터 및 형식 컨버터의 사용</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p>
+<p><a name="117603"> </a> 사운드를 취급하는 대부분의 응용 프로그램으로, 오디오 파일이나 오디오 스트림의 read가 필요하게 됩니다. 프로그램이 읽을 다음에 무엇을 할까 (재생, 믹싱, 처리등)에 관계없이, read라고 하는 기능은 프로그램에 공통되는 기능입니다. 같이 사운드 파일이나 사운드 스트림의 작성도 필요하게 됩니다. 경우에 따라서는, 읽어들인 데이터나 지금부터 기입하는 데이터의 형식을 변환할 필요도 생깁니다.
+</p>
+<p><a name="117604"> </a>  제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>로 간단하게 설명한 것처럼,Java<font size="-1"><sup>TM</sup></font> Sound API 는 어플리케이션 개발자에게 파일의 입/출력 및 형식 변환용의 다양한 기능을 제공합니다. 응용 프로그램으로, 다양한 사운드 파일 형식 및 오디오 데이터 형식의 읽어들여, 기입해, 및 이러한 상호 변환이 가능합니다.  </p>
+<p><a name="114517"> </a> 제 2 장<a href="chapter2.html">「Sampled 패키지의 개요」</a>에서는, 사운드 파일 형식 및 오디오 데이터 형식에 관련하는 주된 클래스를 소개했습니다. 다음에 요약을 나타냅니다.  </p>
+<ul><a name="114884"> </a> 
+<li>오디오 데이터의 스트림은, 파일로부터 읽히는 경우와 파일에 기입해지는 경우가 있습니다만,<code>AudioInputStream</code> 객체로 나타내집니다. (<code>AudioInputStream</code> 는,<code>java.io.InputStream</code> 를 상속하고 있습니다.  <a name="114885"> </a> 
+<li>이 오디오 데이터의 형식은,<code>AudioFormat</code> 객체에 의해 나타내집니다.  <a name="117222"> </a> 
+<P>
+이 오디오 데이터 형식은, 오디오 샘플 자체의 배치 방법을 지정하는 것이어, 샘플이 포함되는 파일의 구조를 지정하는 것이 아닙니다. 즉,<code>AudioFormat</code> 는, 시스템이 프로그램에 건네주는 「raw」오디오 데이터 (마이크로폰 입력으로부터 수중에 넣거나 사운드 파일로부터 해석하거나 한 오디오 데이터)를 기술하는 것입니다. <code>AudioFormat</code> 에는, 인코딩, 바이트순서, 채널수, 샘플링 레이트, 및 샘플 근처의 비트수등의 정보가 포함됩니다.
+<p>
+<a name="114521"> </a> 
+<li>사운드 파일에는, WAV, AIFF, AU 등의 일반적으로 알려져 있는 표준 형식이 몇개인가 있습니다. 사운드 파일의 형식이 다르면(자), 오디오 데이터 및 그 기술 정보를 포함하는 구조가 다릅니다. 사운드 파일 형식은, Java Sound API 에서는 <code>AudioFileFormat</code> 객체에 의해 표현됩니다. <code>AudioFileFormat</code> 에는, 파일에 포함되는 오디오 데이터의 형식을 기술하는 <code>AudioFormat</code> 객체가 포함됩니다. 또, 파일 타입이나 파일내의 데이터 길이등의 정보도 포함됩니다.  <a name="114522"> </a> 
+<p>
+<li><code>AudioSystem</code> 클래스가 제공하는 메소드에는, (1) <code>AudioInputStream</code> 로부터 취득한 오디오 데이터 스트림을 특정 타입의 오디오 파일에 포함하는 (파일의 기입), (2) 오디오 파일로부터 오디오 바이트의 스트림 (<code>AudioInputStream</code>)을 추출하는 (파일의 read), (3) 어느 형식의 오디오 데이터를 다른 형식으로 변환하는 등의 기능이 있습니다. 이 장은 3 개의 마디로 나누어져 있어 각 절로 이러한 기능에 대해 설명합니다.
+<p><a name="114524"> </a> 
+</ul>
+Java Sound API 의 구현에 의해, 오디오의 읽어들여, 기입해, 및 오디오를 다른 데이터 형식 및 파일 형식으로 변환하는 종합적인 기능이 반드시 제공되고 있는 것은 아닙니다. 지원되는 것은, 가장 일반적인 데이터 형식과 파일 형식만이라고 하는 경우도 있습니다. 다만, 제 14 장<a href="chapter14.html">「샘플링 오디오 서비스의 제공」</a>에 나타내도록(듯이), 서비스 프로바이더는, 이 세트를 상속한 변환 서비스의 개발 및 배포가 가능합니다. <code>AudioSystem</code> 클래스가 제공하는 메소드를 사용하는 것으로써, 이용 가능한 변환의 종류를 응용 프로그램으로부터 식별 가능하게 됩니다. 자세한 것은, 이 장의<a href="chapter7.html#114640">「파일 형식 및 데이터 형식의 변환」</a>으로 후술 합니다.  
+<p></p><a name="114527"> </a> 
+<h3> 사운드 파일의 read</h3>
+<p><a name="114529"> </a> <code>AudioSystem</code> 클래스는, 다음의 2 종류의 파일 read 서비스를 제공합니다.  
+</p><ul><a name="114530"> </a> 
+<li>사운드 파일에 포함되는 오디오 데이터의 형식에 관한 정보<a name="114531"> </a> 
+<li>사운드 파일로부터의 read가 가능한, 서식 첨부 오디오 데이터의 스트림 
+<p><a name="118569"> </a> 
+</ul>
+위의 2 개중 최초의 서비스는, 다음에 나타내는 <code>getAudioFileFormat</code> 의 3 개의 형식에 의해 실행됩니다.  
+<blockquote> 
+<p><code>static AudioFileFormat getAudioFileFormat (java.io.File file)<br> static AudioFileFormat getAudioFileFormat(java.io.InputStream stream)<br> static AudioFileFormat getAudioFileFormat (java.net.URL url)</code></p>
+</blockquote>
+<p>벌써 설명한 것처럼, 반환되는 <code>AudioFileFormat</code> 객체로부터, 파일의 종류, 파일내의 데이터 길이, 인코딩, 바이트순서, 채널수, 샘플링 레이트, 및 샘플 근처의 비트수등을 알 수 있습니다.  
+</p>
+<p></p>
+<p><a name="114541"> </a> 2 개중 2 번째의 파일 read 기능은, 다음의 <code>AudioSystem</code> 메소드에 의해 이용 가능하게 됩니다.  
+<blockquote> 
+<p><code>static AudioInputStream getAudioInputStream (java.io.File file) <br> static AudioInputStream getAudioInputStream (java.net.URL url) <br> static AudioInputStream getAudioInputStream (java.io.InputStream stream)</code></p>
+</blockquote>
+<p>이러한 메소드가 제공하는 <code>AudioInputStream</code> 객체를 사용하는 것으로써,<code>AudioInputStream</code> 메소드의 몇개의 메소드를 사용해, 파일내의 오디오 데이터의 read가 가능하게 됩니다. 1 개의 예를 생각해 봅시다.  </p>
+<p></p><p><a name="114549"> </a> 사운드 편집용의 어플리케이션을 작성하다고 합니다. 사용자는 이 어플리케이션을 사용해, 파일로부터의 사운드 데이터의 로드, 대응하는 파형이나 스펙트럼 도표의 표시, 사운드의 편집, 편집한 데이터의 재생, 편집 결과의 신규 파일에의 보존을 실시할 수가 있습니다. 또, 그 프로그램을 사용해, 파일에 포함된 데이터를 읽어들여, 하등의 신호 처리 (피치를 바꾸지 않고 사운드의 페이스를 떨어뜨리는 알고리즘의 적용등)를 실시해, 처리 후의 오디오를 재생하는 일도 생각할 수 있습니다. 어느 쪽의 경우에도, 오디오 파일내의 데이터에 액세스 할 필요가 있습니다. 이 프로그램이, 사용자에게 입력 사운드 파일의 선택 또는 지정을 행하기 위한 하등의 수단을 제공하고 있다고 합시다. 파일로부터 오디오 데이터를 읽어들이려면 , 다음의 3 개의 순서를 실행합니다.
+</p><ol>
+<a name="114551"> </a> 
+<li>파일로부터 <code>AudioInputStream</code> 객체를 취득한다 <a name="114552"> </a> 
+<li>파일로부터 취득한 연속하는 데이터의 체크를 포함하는 바이트 배열을 작성한다 <a name="114553"> </a> 
+<li>오디오 입력 스트림로부터, 배열에 바이트를 읽어들이는 작업을 반복한다. 반복마다, 배열내의 바이트를 사용해 유용한 작업 (재생, 필터 처리, 분석, 표시, 다른 파일에의 기입등)을 실시한다
+<p><a name="114555"> </a> 
+</ol>
+상기의 순서를 실행하는 코드예를 다음에 나타냅니다.
+<p></p>
+<blockquote><pre>
+int totalFramesRead = 0;
+File fileIn = new File(somePathName);
+// somePathName is a pre-existing string whose value was
+// based on a user selection.
+try {
+  AudioInputStream audioInputStream = 
+    AudioSystem.getAudioInputStream(fileIn);
+  int bytesPerFrame = 
+    audioInputStream.getFormat(). getFrameSize();
+  // Set an arbitrary buffer size of 1024 frames.
+  int numBytes = 1024 * bytesPerFrame; 
+  byte[] audioBytes = new byte[numBytes];
+  try {
+    int numBytesRead = 0;
+    int numFramesRead = 0;
+    // Try to read numBytes bytes from the file.
+    while ((numBytesRead = 
+      audioInputStream.read(audioBytes)) ! = -1) {
+      // Calculate the number of frames actually read.
+      numFramesRead = numBytesRead / bytesPerFrame;
+      totalFramesRead += numFramesRead;
+      // Here, do something useful with the audio data that's 
+      // now in the audioBytes array...
+    }
+  } catch (Exception ex) { 
+    // Handle the error...
+  }
+} catch (Exception e) {
+  // Handle the error...
+}
+</pre></blockquote>
+상기의 코드예로, 무엇을 하고 있는지를 봅시다. 우선, 외측의 try 절에서는,<code>AudioSystem.getAudioInputStream(File)</code> 메소드를 호출해 <code>AudioInputStream</code> 객체의 인스턴스를 생성하고 있습니다. 이 메소드는, 지정된 파일이 Java Sound API 가 실제로 지원하는 타입의 사운드 파일인가 어떤가를 판정하기 위해서, 필요한 모든 테스트를 투과적으로 실행합니다. 검사 대상의 파일 (이 예에서는 <code>fileIn</code>)이 사운드 파일이 아닌 경우, 또는 지원되어 있지 않은 타입의 사운드 파일의 경우는,<code>UnsupportedAudioFileException</code> 가 throw 됩니다. 이 동작에 의해, 어플리케이션 프로그래머는 검사 파일의 속성에 골머리를 썩거나 파일의 명명 규칙에 묶어지는 것이 없어집니다. 입력 파일의 타당성 검사에 필요한 저레벨의 해석과 검사는,<code>getAudioInputStream</code> 메소드가 실시합니다.  
+<p></p><p><a name="114595"> </a> 외측의 <code>try</code> 절은, 다음에 임의의 고정장 바이트 배열 <code>audioBytes</code> 를 작성합니다. 이 고정장 (바이트 단위)이, 프레임의 정수치와 동일한 것을 확인합니다. 이것은, read가 프레임의 일부 또는 심할 때에는 샘플의 일부에 대해서 행해진 것만으로 종료해 버리지 않게 하기 (위해)때문에입니다. 이 바이트 배열은, 스트림로부터 읽어들인 오디오 데이터의 체크를 일시적으로 보관 유지하기 위한 버퍼가 됩니다. 매우 짧은 사운드 파일만을 읽어들이는 것을 알 수 있고 있는 경우는,<code>AudioInputStream</code> 의 <code>getFrameLength</code> 메소드가 돌려주는 프레임장으로부터 얻은 바이트장을 사용해, 이 배열을 파일내의 데이터와 같은 길이로 설정할 수 있습니다. 실제로는,<code>Clip</code> 객체를 대신에 사용하는 것이 많은 듯 합니다. 다만, 일반적인 케이스로, 메모리 부족 상태에서의 실행을 피하기 (위해)때문에, 파일을 블록으로 나누어 한 번에 1 개의 버퍼를 읽어들입니다.
+</p><p><a name="114597"> </a> 안쪽의 <code>try</code> 절에 포함되는 <code>while</code> 루프로,<code>AudioInputStream</code> 로부터 오디오 데이터를 바이트 배열에 읽어들입니다. 이 루프내에 코드를 추가해, 프로그램의 요건에 적절한 방법으로 이 배열내의 오디오 데이터를 처리할 필요가 있습니다. 데이터에 대해서 하등의 신호 처리를 실시하는 경우는, 한층 더 <code>AudioInputStream</code> 의 <code>AudioFormat</code> 에도 문의해, 샘플 근처의 비트수등을 확인할 필요가 있습니다.  
+</p>
+<p><a name="114599"> </a> <code>AudioInputStream.read(byte[])</code> 메소드는, 샘플 또는 프레임의 수를 돌려주는 것이 아니라, 읽어낸 「바이트」수를 돌려주는 것에 유의해 주세요. <em></em>읽어내는 데이터가 없어지면(자), 이 메소드는 -1 을 돌려줍니다. -1 하지만 돌려주어지면(자),<code>while</code> 루프로부터 빠집니다.  </p>
+<a name="114602"> </a> 
+<h3> 사운드 파일의 기입</h3>
+<p><a name="114604"> </a> 전의 마디에서는,<code>AudioSystem</code> 및 <code>AudioInputStream</code> 클래스의 특정의 메소드를 사용해 사운드 파일의 읽어들여에 관한 기본 사항을 설명했습니다. 이 마디에서는, 오디오 데이터를 신규 파일에 써내는 방법을 설명합니다.
+</p><p><a name="114606"> </a> 다음의 <code>AudioSystem</code> 의 메소드는, 지정된 파일 타입의 디스크 파일을 작성합니다. 파일에는, 지정된 <code>AudioInputStream</code> 내의 오디오 데이터가 포함됩니다.
+<blockquote><pre>
+static int write(AudioInputStream in, 
+  AudioFileFormat.Type fileType, File out)
+</pre></blockquote>
+2 번째의 인수는, 시스템이 지원하는 파일 타입 (AU, AIFF, WAV 등)의 언젠가가 아니면 안됩니다. 지원외의 경우,<code>write</code> 메소드는 <code>IllegalArgumentException</code> 를 throw 합니다. 이 예외의 throw를 피하기 위해서(때문에), 이하의 <code>AudioSystem</code> 의 메소드를 호출해, 특정의 <code>AudioInputStream</code> 에 특정의 파일 타입으로 기입할 수가 있을지 어떨지를 검사합니다.
+<blockquote><pre>
+static boolean isFileTypeSupported
+  (AudioFileFormat.Type fileType, AudioInputStream stream)
+</pre></blockquote>
+상기의 코드는, 특정의 편성이 지원되고 있는 경우에게만 <code>true</code> 를 돌려줍니다.  
+<p></p><p><a name="114618"> </a> 일반적으로, 다음의 <code>AudioSystem</code> 메소드의 어느쪽이든을 호출하는 것으로, 시스템이 기입해 가능한 파일 타입을 알 수 있습니다.
+<blockquote><pre>
+static AudioFileFormat.Type[] getAudioFileTypes() 
+static AudioFileFormat.Type[]  
+  getAudioFileTypes(AudioInputStream stream) 
+</pre></blockquote>
+최초의 메소드는, 시스템이 기입해 가능한 모든 파일 타입을 돌려줍니다. 2 번째의 메소드는, 시스템이 지정된 오디오 입력 스트림로부터 기입할 수 있는 파일 타입만을 돌려줍니다.
+<p></p><p><a name="119705"> </a> 다음의 인용 코드는, 상기의 <code>write</code> 메소드를 사용해,<code>AudioInputStream</code> 로부터 출력 파일을 작성하는 방법을 나타냅니다.  
+<blockquote><pre>
+File fileOut = new File(someNewPathName);
+AudioFileFormat.Type fileType = fileFormat.getType();
+if (AudioSystem.isFileTypeSupported(fileType, 
+    audioInputStream)) {
+  AudioSystem.write(audioInputStream, fileType, fileOut);
+}
+</pre></blockquote>
+최초의 문장에서는, 사용자 또는 프로그램에 의해 지정된 경로명을 사용해, 신규의 <code>File</code> 객체,<code>fileOut</code> 를 작성합니다. 2 번째의 문장에서는,<code>fileFormat</code> 로 불리는 기존의 <code>AudioFileFormat</code> 객체로부터 파일 타입을 가져옵니다. <code>fileFormat</code> 에는, 다른 사운드 파일 (이 장의<a href="chapter7.html#114527">「사운드 파일의 read」 </a>중(안)에서 읽어낸 사운드 파일등)로부터 취득한 객체를 지정할 수 있습니다. 다른 장소로부터 파일 타입을 취득하는 대신에, 지원되는 임의의 파일 타입을 지정할 수도 있습니다. 예를 들어, 상기의 2 번째의 문장 대신에,<code>AudioFileFormat.Type.WAVE</code> 를 사용해 2 개의 <code>fileType</code> 를 기술하는 일도 가능합니다.  
+<p></p><p><a name="114635"> </a> 3 번째의 문장은, 지정된 타입의 파일로 주어진(given) <code>AudioInputStream</code> 에 기입하는 것이 가능한가 어떤가를 검사합니다. 파일 형식의 경우와 같이, 이 스트림도 벌써 읽어낸 사운드 파일로부터 도출되고 있다고 생각됩니다. 이러한 경우는, 데이터를 하등의 방법으로 처리 또는 변경해 버리고 있습니다. 그렇지 않으면, 파일을 단지 카피하기 위한보다 간단한 방법이 있기 때문입니다. 또, 스트림에는, 마이크로폰 입력으로부터 수중에 넣은지 얼마 안된 바이트가 포함되어 있습니다.  
+</p><p><a name="114637"> </a> 마지막으로, 스트림, 파일 타입, 및 출력 파일이 <code>AudioSystem</code>. <code>write</code> 메소드에게 건네져, 파일의 기입이 완성합니다.
+</p><a name="114640"> </a> 
+<h3> 파일 형식 및 데이터 형식의 변환</h3>
+<p><a name="114642"> </a> 제 2 장<a href="chapter2.html">「Sampled 패키지의 개요」</a>의<a href="chapter2.html#112348">「서식 첨부 오디오 데이터란」</a>에서는,Java Sound API 가 오디오 「파일」형식과 오디오 「데이터」형식을 구별하는 것을 설명했습니다. <em></em><em></em>양자는, 거의 독립한 것입니다. 대략적으로 말해, 데이터 형식은 컴퓨터가 각 raw 데이터 포인트 (샘플)를 표현하는 방법을 가리켜, 파일 형식은 사운드 파일을 디스크에 포함할 때의 편성을 가리킵니다. 각 사운드 파일 형식에는 특정의 구조가 있습니다. 그 구조내에서, 예를 들어 파일의 헤더에 포함되는 정보가 정의됩니다. 경우에 따라서는, 파일 형식에는, 「raw」오디오 샘플 외에, 메타데이타의 몇개의 형식을 포함한 구조도 있습니다. 이 장의 후반으로는, 다양한 파일 형식의 변환과 데이터 형식의 변환을 가능하게 하는 Java Sound API 의 메소드에 대해 고찰합니다.  
+</p>
+<a name="114644"> </a> 
+<h4> 파일 형식의 변환</h4>
+<p><a name="114646"> </a> 이 마디에서는, Java Sound API 로 오디오 파일 타입을 변환하는데 있어서의 기본 사항을 채택합니다. 여기서 한번 더, 가설의 프로그램을 나타냅니다. 이번은, 임의의 입력 파일로부터 오디오 데이터를 읽어들여, AIFF 형식의 파일에 기입을 실행합니다. 물론, 입력 파일의 타입은 시스템이 읽어낼 수 있는 것이 아니면 안됩니다. 또, 출력 파일의 타입은 시스템이 기입할 수 있는 것이 아니면 안됩니다. 이 예에서는, 시스템이 AIFF 파일에 기입할 수가 있는 것으로 합니다. 샘플 프로그램은, 어떠한 데이터 형식의 변환도 실시하지 않습니다. 입력 파일의 데이터 형식을 AIFF 파일로 표현할 수 없는 경우, 프로그램은 사용자에게 그 문제를 통지할 뿐입니다. 한편, 입력 사운드 파일이 AIFF 파일이 되어 있는 경우, 프로그램은 사용자에게 변환의 필요가 없는 것을 통지합니다.
+</p><p><a name="114648"> </a> 다음의 함수는, 여기까지 설명한 논리를 구현합니다.
+</p><blockquote><pre>
+public void ConvertFileToAIFF(String inputPath, 
+  String outputPath) {
+  AudioFileFormat inFileFormat;
+  File inFile;
+  File outFile;
+  try {
+    inFile = new File(inputPath);
+    outFile = new File(outputPath);	
+  } catch (NullPointerException ex) {
+    System.out.println("Error: one of the 
+      ConvertFileToAIFF" +" parameters is null! ");
+    return;
+  }
+  try {
+    // query file type
+    inFileFormat = AudioSystem.getAudioFileFormat(inFile);
+    if (inFileFormat.getType() ! = AudioFileFormat.Type.AIFF) 
+    {
+      // inFile is not AIFF, so let's try to convert it.
+      AudioInputStream inFileAIS = 
+        AudioSystem.getAudioInputStream(inFile);
+      inFileAIS.reset(); // rewind
+      if (AudioSystem.isFileTypeSupported(
+             AudioFileFormat.Type.AIFF, inFileAIS)) {
+         // inFileAIS can be converted to AIFF.  
+         // so write the AudioInputStream to the
+         // output file.
+         AudioSystem.write(inFileAIS,
+           AudioFileFormat.Type.AIFF, outFile);
+         System.out.println("Successfully made AIFF file, "
+           + outFile.getPath() + ", from "
+           + inFileFormat.getType() + " file, " +
+           inFile.getPath() + ". ");
+         inFileAIS.close();
+         return; // All done now
+       } else
+         System.out.println("Warning: AIFF conversion of " 
+           + inFile.getPath()
+           + " is not currently supported by AudioSystem. ");
+    } else
+      System.out.println("Input file " + inFile.getPath() +
+          " is AIFF. " + " Conversion is unnecessary. ");
+  } catch (UnsupportedAudioFileException e) {
+    System.out.println("Error: " + inFile.getPath()
+        + " is not a supported audio file type! ");
+    return;
+  } catch (IOException e) {
+    System.out.println("Error: failure attempting to read " 
+      + inFile.getPath() + "! ");
+    return;
+  }
+}
+</pre></blockquote>
+<p><a name="114706"> </a> 벌써 설명했던 대로, 이 샘플 함수 <code>ConvertFileToAIFF</code> 의 목적은, 입력 파일에의 문의를 실시해 AIFF 사운드 파일인가 어떤가를 판단해, AIFF 가 아닌 경우는 AIFF 에의 변환을 시도해, 2 번째의 인수로 지정된 경로명을 가지는 새로운 카피를 작성하는 것입니다. 연습으로서 이 함수를 보다 범용화해, 항상 AIFF 에 변환하는 대신에, 새로운 함수의 인수로 지정된 파일 타입에 그 함수가 변환하도록(듯이) 바꾸어 보는 것도 좋을 것입니다. 작성된 카피 (신규 파일)의 오디오 데이터 형식은, 원의 입력 파일의 오디오 데이터 형식의 모조인 것에 유의해 주세요.  </p>
+<p><a name="114708"> </a> 함수의 대부분에 대해서는 특히 설명하지 않습니다. 또, Java Sound API 에 고유하지는 않습니다. 다만, 사운드 파일 타입의 변환에 중요한 역할을 완수하는 루틴이 사용하는 Java Sound API 메소드가 몇개인가 존재합니다. 이러한 메소드 호출은, 2 번째의 <code>try</code> 절로 행해지고 있어 이하를 포함하고 있습니다.
+</p><ul><a name="114710"> </a> 
+<li><code>AudioSystem.getAudioFileFormat</code>:입력 파일이 벌써 AIFF 타입일지 어떨지를 판별합니다. AIFF 의 경우, 함수는 곧바로 값을 돌려줍니다. AIFF 가 아닌 경우는 변환이 시도됩니다.  <a name="114712"> </a> 
+<p>
+<li><code>AudioSystem.isFileTypeSupported</code>:지정된 <code>AudioInputStream</code> 로부터 취득한 오디오 데이터를 포함한 지정된 타입의 파일을, 시스템을 기입할 수 있을지 어떨지를 나타냅니다. 이 예에서는, 지정된 오디오 입력 파일을 AIFF 오디오 파일 형식으로 변환할 수 있는 경우, 이 메소드는 <code>true</code> 를 돌려줍니다. <code>AudioFileFormat.Type.AIFF</code> 가 지원되어 있지 않은 경우,<code>ConvertFileToAIFF</code> 는, 입력 파일을 변환할 수 없다고 하는 경고를 발행하고 나서 돌아옵니다.  <a name="114714"> </a> 
+<p>
+<li><code>AudioSystem.write</code>:AudioInputStream <code>inFileAIS</code> 로부터 취득한 오디오 데이터를 출력 파일 <code>outFile</code> 에 기입하기 위해서(때문에) 사용됩니다.
+<p><a name="114716"> </a> 
+</ul>
+3 개중 2 번째의 메소드 <code>isFileTypeSupported</code> 는, 기입해에 앞서, 특정의 입력 사운드 파일을 특정의 출력 사운드 파일 타입으로 변환할 수 있을지 어떨지를 판정합니다. 다음의 마디에서는, 샘플 루틴 <code>ConvertFileToAIFF</code> 에 다소의 변경을 더하는 것으로, 오디오 데이터 형식 및 사운드 파일 타입의 변환이 가능하게 되는 것을 나타냅니다.
+<p></p><a name="114718"> </a> 
+<h4> 다른 데이터 형식간에서의 오디오 변환</h4>
+<p><a name="114720"> </a> 전의 마디에서는, Java Sound API 를 사용해, 있는 「파일」형식의 파일 (특정의 타입의 사운드 파일)을 다른 「파일」형식으로 변환하는 방법을 설명했습니다. <em></em>이 마디에서는, 오디오 「데이터」형식의 변환을 가능하게 하는 몇개의 메소드를 설명합니다. <em></em> 
+</p><p><a name="114722"> </a> 전의 마디에서는, 임의의 타입의 파일을 읽어들여, 그것을 AIFF 파일에 보존했습니다. 그곳에서는, 데이터의 포함에 사용하는 파일 타입은 변경했습니다만, 오디오 데이터 자체의 형식은 변경하지 않았습니다. AIFF 등의, 가장 일반적인 오디오 파일 타입에는, 다양한 형식의 오디오 데이터를 포함할 수가 있습니다. 이 때문에, 원의 파일에 CD 음질의 오디오 데이터 (샘플 사이즈 16 비트, 샘플링 레이트 44.1-kHz, 2 채널)가 포함되고 있는 경우, 출력되는 AIFF 파일도 CD 음질이 됩니다.  
+</p><p><a name="114724"> </a> 여기에서는, 출력 파일의 파일 타입과 함께 「데이터」형식도 지정하는 경우를 생각해 봅시다. 예를 들어, 인터넷상의 공개 목적으로 사이즈의 큰 파일을 다수 보존하고 있어, 이러한 파일이 차지하는 디스크 용량 및 파일의 다운로드에 걸리는 시간이 마음에 걸리고 있다고 합니다. 이것에는, 저음질의 데이터를 포함한, 사이즈의 것보다 작은 AIFF 파일 (샘플 사이즈 8 비트, 샘플링 레이트 8­kHz, 1 채널의 데이터등)을 작성합니다.
+</p><p><a name="114726"> </a> 전술과 같이 세세한 코드화에는 들어가지 않고, 데이터 형식의 변환으로 사용한 메소드의 몇개인가를 조사해<code>ConvertFileToAIFF</code> 함수를 변경해 목적을 달성하는 방법을 생각합시다.
+</p><p><a name="118599"> </a> 오디오 데이터 변환에 이용하는 주요한 메소드는, 전에도 적었던 대로,<code>AudioSystem</code> 클래스내에 존재합니다. 이 메소드는,<code>getAudioInputStream</code> 의 형식에서, 다음과 같이 됩니다.  
+<blockquote><pre>AudioInputStream getAudioInputStream(AudioFormat
+    format, AudioInputStream stream)
+</pre></blockquote>
+이 함수는, 지정된 <code>AudioFormat</code> 인 <code>format</code> 를 사용해,<code>AudioInputStream</code> 인 <code>stream</code> 의 변환 결과인 <code>AudioInputStream</code> 를 돌려줍니다. <code>AudioSystem</code> 가 그 변환을 지원하지 않는 경우, 이 함수는 <code>IllegalArgumentException</code> 를 throw 합니다.
+<p></p><p><a name="114734"> </a> 이 예외를 피하기 위해서(때문에), 우선 이 <code>AudioSystem</code> 메소드를 호출해, 시스템이 필요한 변환을 실행 가능한가 어떤가를 체크합니다.
+<blockquote><pre>boolean isConversionSupported(AudioFormat targetFormat,
+    AudioFormat sourceFormat)
+</pre></blockquote>
+이 경우, 2 번째의 인수로서 <code>stream.getFormat()</code> 를 건네줍니다.
+<p></p><p><a name="119726"> </a> 지정의 <code>AudioFormat</code> 객체를 작성하기 위해서, 다음에 나타내는 2 개의 <code>AudioFormat</code> 생성자 의 어느 쪽인지를 사용합니다.
+<blockquote><pre> AudioFormat(float sampleRate, int sampleSizeInBits,
+    int channels, boolean signed, boolean bigEndian)
+</pre></blockquote>
+이 생성자 은, 선형 PCM 인코딩과 지정된 파라미터를 사용해 <code>AudioFormat</code> 를 구성합니다.
+<blockquote><pre>AudioFormat(AudioFormat.Encoding encoding, 
+    float sampleRate, int sampleSizeInBits, int channels,
+    int frameSize, float frameRate, boolean bigEndian) 
+</pre></blockquote>
+이 생성자 도 <code>AudioFormat</code> 를 구성합니다만, 다른 파라미터에 가세해 인코딩, frame size, frame rate의 지정도 가능합니다.
+<p></p><p><a name="114751"> </a> 이것으로 상기의 메소드가 이용 가능하게 되었기 때문에,<code>ConvertFileToAIFF</code> 함수를 상속해 「저음질」의 오디오 데이터 형식에의 변환을 실시합니다. 우선, 목적의 출력 오디오 데이터 형식에 대해 기술한 <code>AudioFormat</code> 객체를 구성합니다. 다음의 문장으로 충분해서 함수의 선두에 삽입합니다.
+<blockquote><pre>AudioFormat outDataFormat = new AudioFormat((float) 8000.0,
+(int) 8, (int) 1, true, false);
+</pre></blockquote>
+상기의 <code>AudioFormat</code> 생성자 은, 샘플 형식을 8 비트로 하고 있기 (위해)때문에, 생성자 에 건네주는 마지막 파라미터 (샘플이 빅 endian인가, 그렇지 않으면 little endian인지를 지정)는 무시됩니다. 빅 endian인가, little endian인가는, 샘플 사이즈가 1 바이트 이상의 경우에게만 문제가 됩니다.
+<p></p><p><a name="114758"> </a> 다음의 예는, 이 신규 <code>AudioFormat</code> 를 사용해, 입력 파일로부터 작성한 <code>AudioInputStream</code>,<code>inFileAIS</code> 를 변환하는 방법을 나타냅니다.
+<blockquote><pre>
+AudioInputStream lowResAIS;         
+  if (AudioSystem.isConversionSupported(outDataFormat,   
+    inFileAIS.getFormat())) {
+    lowResAIS = AudioSystem.getAudioInputStream
+      (outDataFormat, inFileAIS);
+  }
+</pre></blockquote>
+이 코드를 삽입하는 위치는,<code>inFileAIS</code> 의 구성 다음에 있으면 특히 문제가 되지 않습니다. <code>isConversionSupported</code> 테스트를 실시하지 않는 경우, 요구된 변환이 지원되어 있지 않으면 호출은 실패해,<code>IllegalArgumentException</code> 가 throw 됩니다. 이 경우, 제어는, 함수내의 적절한 <code>catch</code> 절로 옮깁니다.
+<p></p><p><a name="114769"> </a> 이 때문에, 이 처리 단계에서, 원의 입력 파일 (<code>AudioInputStream</code> 형식)을 <code>outDataFormat</code> 로 정의된 저음질의 오디오 데이터 형식으로 변환한 결과적으로, 신규 <code>AudioInputStream</code> 를 구성할 수 있습니다.  
+</p><p><a name="114771"> </a> 목적의 저음질 AIFF 사운드 파일을 작성하는 마지막 순서는,<code>AudioSystem.write</code> 에의 호출해 동안의 <code>AudioInputStream</code> 파라미터 (최초의 파라미터)를, 변환 후의 스트림 <code>lowResAIS</code> 와 옮겨놓는 것입니다. 그방법을 다음에 나타냅니다.  
+<blockquote><pre>
+AudioSystem.write(lowResAIS, AudioFileFormat.Type.AIFF, 
+  outFile);
+</pre></blockquote>
+이와 같이, 전출의 함수 일본의 조금의 변경을 더하는 것으로, 지정된 입력 파일의 오디오 데이터 형식과 파일 형식의 양쪽 모두를 변환할 수 있습니다. 다만, 시스템이 그 변환을 지원하는 것이 전제 조건입니다.
+<p></p><a name="114777"> </a> 
+<h4> 이용 가능한 변환의 식별</h4>
+<p><a name="114779"> </a> 몇개의 <code>AudioSystem</code> 메소드는, 파라미터를 체크해, 시스템이 특정의 데이터 형식의 변환 또는 파일의 기입 조작을 지원할지 어떨지를 판단합니다. 일반적으로, 각 메소드는, 데이터 변환 또는 파일의 기입을 실행하는 다른 메소드와 페어가 되어 있습니다. 샘플 함수 <code>ConvertFileToAIFF</code> 에서는, 시스템이 오디오 데이터를 AIFF 파일에 기입할 수가 있을지 어떨지를 판단하기 위해서(때문에), 이러한 쿼리메소드의 1 개인 <code>AudioSystem.isFileTypeSupported</code> 가 사용되고 있습니다. 관련하는 <code>AudioSystem</code> 메소드인 <code>getAudioFileTypes(AudioInputStream)</code> 는, 지정된 스트림로 지원되는 파일 타입의 완전한 리스트를,<code>AudioFileFormat.Type</code> 인스턴스의 배열로서 돌려줍니다. 또, 다음의 메소드에 주목해 주세요.
+<blockquote> 
+  <pre>
+boolean isConversionSupported(AudioFormat.Encoding encoding, <br>                              AudioFormat format) 
+</pre>
+</blockquote>
+상기는, 지정된 인코딩에서의 오디오 입력 스트림을, 지정된 오디오 형식의 오디오 입력 스트림로부터 취득 가능한가 어떤가를 판정하는 경우에 사용됩니다. 다음의 메소드도 같습니다.
+<blockquote>
+  <pre>
+boolean isConversionSupported(AudioFormat newFormat,
+                              AudioFormat oldFormat) 
+</pre>
+</blockquote>
+<p><a name="114790"> </a> 이 메소드는, 지정된 오디오 형식 <code>newFormat</code> 를 가지는 <code>AudioInputStream</code> 가, 오디오 형식 <code>oldFormat</code> 를 가지는 <code>AudioInputStream</code> 를 변환하는 것으로써 취득 가능한가 어떤가를 판정합니다. 전의 마디의 코드의 인용예에서는, 이 메소드는, 저음질의 오디오 입력 스트림 <code>lowResAIS</code> 를 작성하는 코드로부터 불려 갔습니다.
+</p><p><a name="114792"> </a> 오디오 형식에 관련한 이러한 쿼리는, Java Sound API 를 사용해 형식을 변환할 때의 에러의 발생을 막는데 도움이 됩니다.
+</p>
+<p>&nbsp;</p></body>
+</html>

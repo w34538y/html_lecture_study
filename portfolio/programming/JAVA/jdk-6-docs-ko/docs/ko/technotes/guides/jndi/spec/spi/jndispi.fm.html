@@ -1,0 +1,798 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="spicover.frame.html">[선두의 항목]</a>  <a href="jndispiTOC.fm.html">[전의 항목]</a>  <a href="spi-egs.frame.html">[다음의 항목]</a>  <a href="changes.fm.html">[마지막 항목]</a> 
+<hr><br>
+ 
+<a name="996852"> </a> 
+<h2>	1	 처음에</h2>
+<p><a name="996931"> </a>  JNDI SPI 는, 개발자가 네임 서비스와 디렉토리 서비스의 다양한 「서비스 프로바이더」를 기술해, 그것들에 대응하는 서비스를, JNDI API 를 사용하는 어플리케이션으로부터 액세스 할 수 있도록(듯이) 준비하기 위한 수단입니다. 서비스 프로바이더는, 공동으로 JNDI API 의 요구를 채우는 모듈세트입니다. 또, JNDI 에서는 복수의 이름 공간에 걸치는 이름 (복수)의 사용이 용서되므로, 서비스 프로바이더의 구현으로 1 개의 조작을 실시하기 위해서(때문에), 다른 서비스 프로바이더와의 상호작용이 필요한 경우가 있습니다. SPI 에는, 복수가 다른 프로바이더 구현이 공동으로 클라이언트의 JNDI 조작을 실시할 수 있도록(듯이)하기 위한 메소드가 있습니다.
+</p><p><a name="998977"> </a>  이 문서에서는, SPI 의 컴퍼넌트에 대해 해설해, 개발자가 JNDI 를 위한 서비스 프로바이더를 작성하는 방법에 대해 설명합니다. 독자는 <strong>JNDI API</strong> 문서의 내용에 익숙 하고 있는 것과 가정합니다.
+</p><p><a name="1002116"> </a>  서비스 프로바이더의 개발자는, 반드시 <strong>JNDI API</strong> 문서의 「시큐리티에 대하며」를 읽어 주세요. JNDI 를 사용하는 개발자, 특히 서비스 프로바이더의 개발자가 고려해야 할 중요한 내용이 포함되어 있습니다.
+</p><a name="1002621"> </a> 
+<h3>	1.1	 이 문서의 개요</h3>
+<p><a name="1002623"> </a>  JNDI API 아래에 위치하는 구현에는 복수의 타입이 있습니다. 서비스 프로바이더에는 최저 1 개(살)의 「문맥 구현」이 포함됩니다. 문맥 구현은,<code>Context</code> 인터페이스 또는 그 서브 인터페이스 (<code>DirContext</code>,<code>EventContext</code>,<code>LdapContext</code> 등)를 구현합니다. 구현의 복잡함은, 주로 배후의 서비스의 복잡함에 의존해, 다음에 그 구현이 지원하는 JNDI 의 기능의 수에 의존합니다. <a href="jndispi.fm.html#998980">제 2 장</a>에서는, 문맥 구현의 구축의 상세한 것에 대하여 설명합니다.
+</p><p><a name="1002624"> </a>  문맥 구현에는, 다양한 방법으로 액세스 할 수 있습니다. 무엇보다 일반적인 방법은, 초기 문맥으로부터 액세스 하는 방법입니다. 제 3 장에서는, 초기 문맥으로부터 문맥 구현에 액세스 하는 2 개의 방법을 설명합니다. 초기 문맥 팩토리를 통해서 실시하는 방법과 URL 문맥 팩토리를 통해서 실시하는 방법입니다.
+</p><p><a name="1002645"> </a>  JNDI 아키텍쳐(architecture)는, 문맥 구현의 동작을 강화하기 위해서 사용할 수 있는 컴퍼넌트 또는 구현을 정의합니다. 이것에 의해, 사용자와 어플리케이션은 구현을 커스터마이즈 할 수가 있습니다. 이러한 컴퍼넌트는 「팩토리」를 통해서 지원됩니다. JNDI 에는 3 종류의 팩토리가 정의되어 그것들을 이용하기 위한 SPI 메소드가 있습니다. 이러한 팩토리에 대해서는,<a href="jndispi.fm.html#997589">제 4 장</a>에 설명되고 있습니다.
+</p><ul><a name="1002665"> </a> 
+<li>객체 팩토리 - 네임 서비스 또는 디렉토리 서비스에 보존되고 있는 데이터를, Java 어플리케이션의 본래의 Java 타입의 객체로 변환하기 위한 팩토리 <a name="1002666"> </a>  <a name="1002666"> </a> 
+<li>상태 팩토리 - 프로그램의 본래의 Java 타입의 객체를, 네임 서비스 또는 디렉토리 서비스에의 포함에 적절한 형식으로 변환하기 위한 팩토리 <a name="1002667"> </a> 
+<li>응답 컨트롤 팩토리 - LDAP 서버로부터 받은 LDAP v3 응답 컨트롤을, 보다 사용자 플렌들리인 형태에 네로우 변환하기 위한 팩토리
+</ul><a name="1007434"> </a> 
+<h3>	1.2	 인터페이스의 개요<a href="#1007433"><sup>1</sup></a> </h3>
+<p><a name="1007435"> </a>  JNDI SPI 는 <code>javax.naming.spi</code> 패키지에 포함되어 있습니다. 여기에서는, SPI 의 개요에 대해 설명합니다. SPI 의 자세한 것은, 대응하는 <strong>javadoc</strong> 문서를 참조해 주세요.
+</p><p><a name="1007440"> </a>  <img src="jndispi.fm.anc5.gif" alt="javax.naming.spi 패키지"> 
+<p>
+이 그래픽의 설명은<a href="../../../../../api/javax/naming/spi/package-summary.html">「API 문서」</a>를 참조해 주세요.
+</p><a name="1007441"> </a> 
+<h4>	1.2. 1	 NamingManager 와 DirectoryManager</h4>
+<p><a name="1007442"> </a>  <code>NamingManager</code> 클래스에는 프로바이더 관련의 조작을 실시하는 static 메소드가 포함됩니다. 예를 들어,<code>Reference</code> 를 사용해 객체의 인스턴스를 생성하는 메소드나,<code>java.naming.factory.initial</code> 프로퍼티을 사용해 초기 문맥의 인스턴스를 취득하는 메소드,<code>ObjectFactoryBuilder</code> 와 <code>InitialContextFactoryBuilder</code> 를 인스톨 하는 메소드등이 있습니다. <code>DirectoryManager</code> 클래스에는,<code>DirContext</code> 관련의 조작을 위한 유사한 static 메소드가 포함됩니다.
+</p><a name="1007443"> </a> 
+<h4>	1.2. 2	 초기 문맥</h4>
+<p><a name="1007446"> </a>  <code>InitialContextFactory</code> 는, 초기 문맥의 인스턴스를 생성하기 위한 인터페이스입니다. 자세한 것은,<a href="jndispi.fm.html#1004566">마디 3.1</a>  을 참조해 주세요.
+</p><p><a name="1007448"> </a>  <code>InitialContextFactoryBuilder</code> 는,<code>InitialContextFactory</code> 의 인스턴스를 생성하기 위한 인터페이스입니다. 자세한 것은,<a href="jndispi.fm.html#997025">마디 3.3</a>  을 참조해 주세요.
+</p><a name="1007452"> </a> 
+<h4>	1.2. 3	 객체 팩토리</h4>
+<p><a name="1007453"> </a>  <code>ObjectFactory</code> 는, 이름 공간에 보존되고 있는 정보를 사용한 객체 생성을 지원하기 위한 인터페이스입니다. <code>DirObjectFactory</code> 는 <code>ObjectFactory</code> 의 서브 인터페이스입니다. <code>DirContext</code> 인터페이스를 구현하는 문맥 구현에 의해 사용됩니다. 자세한 것은,<a href="jndispi.fm.html#1007760">마디 4.1</a>  을 참조해 주세요.
+</p><p><a name="1007460"> </a>  <code>ObjectFactoryBuilder</code> 는, 객체 팩토리를 생성하기 위한 인터페이스입니다. 자세한 것은,<a href="jndispi.fm.html#1006464">마디 4.1. 4</a>  를 참조해 주세요.
+</p><a name="1007461"> </a> 
+<h4>	1.2. 4	 상태 팩토리</h4>
+<p><a name="1007462"> </a>  <code>StateFactory</code> 는, 네임 서비스 또는 디렉토리 서비스로 지원되는 보존 가능한 형식에의 객체의 변환을 지원하기 위한 인터페이스입니다. <code>DirStateFactory</code> 는 <code>StateFactory</code> 의 서브 인터페이스로,<code>DirContext</code> 인터페이스를 구현하는 문맥 구현에 의해 사용됩니다. <code>DirStateFactory.Result</code> 는,<code>DirStateFactory.getStateToBind()</code> 로부터 반환되는,<code>java.lang.Object</code> 와 <code>Attributes</code> 의 페어를 보관 유지하기 위한 클래스입니다. 자세한 것은,<a href="jndispi.fm.html#1005973">마디 4.2</a>  를 참조해 주세요.
+</p><a name="1007466"> </a> 
+<h4>	1.2. 5	 연합의 지원</h4>
+<p><a name="1007467"> <code>Resolver</code> 인터페이스는,<code>Context</code> 에의 확장 인터페이스를 지원하기 위한 연합에 참가할 수 있도록(듯이) 프로바이더를 구현하기 위한 메소드를 정의합니다. 자세한 것은,<a href="jndispi.fm.html#1003600">10 페이지의 「문맥의 서브 인터페이스를 통한 해석 처리」</a>를 참조해 주세요.
+</p><p><a name="1007471"> </a>  <code>ResolveResult</code> 는,<code>Resolver.resolveToClass()</code> 의 호출의 반환값입니다. 해석에 성공한 객체와 미해석의 이름이 포함됩니다.
+</p><p><a name="1002622"> </a> 
+
+</p><p><a name="998978"> </a> 
+
+</p><a name="998980"> </a> 
+<h2>	2	 문맥 구현의 구축</h2>
+<p><a name="996974"> </a>  서비스 프로바이더 구축의 기본 작업의 1 개는,<code>Context</code> 인터페이스 또는 그 서브 인터페이스의 어떤 것인지를 구현하는 클래스를 정의하는 것입니다. 이 클래스는 「문맥 구현」이라고 불립니다. 문맥 구현의 개발에는, 다음의 가이드 라인을 참조해 주세요.
+</p><a name="1004470"> </a> 
+<h3>	2.1	 파라미터의 소유권</h3>
+<p><a name="1004471"> </a>  일반적으로,<code>Context</code> 인터페이스 (또는 서브 인터페이스) 내의 메소드 및,<code>NamingManager</code> 또는 <code>DirectoryManager</code> 유틸리티 메소드에 파라미터로서 건네받는 객체는, 호출측이 소유합니다. 많은 경우, 파라미터는 최종적으로 문맥 구현에 도달합니다. 호출측이 객체를 소유하고 있기 (위해)때문에, 문맥 구현이 그 객체를 수정하는 것은 금지되고 있습니다. 게다가 문맥 구현이 그 객체에의 포인터를 보관 유지할 수 있는 것은 조작동안만으로, 그 이후의 포인터의 보관 유지는 허가되지 않습니다. 문맥 구현이 파라미터에 포함되는 정보를 보관 유지할 필요가 있는 경우는, 그 카피를 보관 유지하는 것으로 합니다.
+</p><p><a name="1007867"> </a>  파라미터 소유권의 목적으로부터, 문맥 인스턴스상의 조작은, 「그 조작에 의해 생성되는 모든 조회가 속행하고 있는 동안」, 또는 「열거가 아직 사용되고 있을 때 조작이 <code>NamingEnumeration</code> 를 돌려주었을 경우」는, 아직 종료하고 있지 않다고 보여집니다.
+</p><a name="1007769"> </a> 
+<h3>	2.2	 재입가능성</h3>
+<p><a name="1007770"> </a>  문맥의 인스턴스는 재입 가능한 필요는 없습니다. 같은 문맥 인스턴스를 동시에 액세스 할 필요가 있는 2 개의 thread는, 서로 동기 해 필요한 락을 실시하는 것으로 합니다.  
+</p><p><a name="1007806"> </a>  그러나, 다른 문맥 인스턴스는, 복수 thread의 동시 액세스에 대해서 안전하지 않으면 안됩니다. 즉, 각각의 문맥 인스턴스에 동시에 조작을 실시하는 2 개의 thread는, 서로 액세스를 동기 할 필요가 있어 되지 않습니다. 예를 들어, 2 개의 문맥이 같은 자원 (같은 접속등)을 공유하고 있는 경우에서도, 2 개(살)의 다른 thread가 명시적인 동기를 실시하지 않아도 각각의 문맥에서의 처리가 가능 (한편 안전)이 아니면 안됩니다.
+</p><p><a name="1007907"> </a>  병행성 제어의 목적으로부터, 어느 문맥의 인스턴스상의 조작은, 「그 조작에 의해 생성되는 모든 조회가 속행하고 있는 동안」, 또는 「열거가 아직 사용되고 있을 때 조작이 <code>NamingEnumeration</code> 를 돌려주었을 경우」는, 아직 종료하고 있지 않다고 보여집니다.
+</p><a name="1007828"> </a> 
+<h3>	2.3	 기본 지원 - 문맥 인터페이스의 구현</h3>
+<p><a name="996976"> </a>  문맥 구현은, 그 구현이 지원하는 <code>Context</code> 인터페이스 또는 그 서브 인터페이스내의 개개의 메소드를 위한 구현을 정의합니다.
+</p><p><a name="997775"> </a>  메소드가 지원되어 있지 않은 경우는,<code>OperationNotSupportedException</code> 를 throw 하는 것으로 합니다.
+</p><p><a name="998151"> <code>Context</code> 인터페이스 또는 서브 인터페이스내의 메소드 가운데, 이름의 인수를 (<code>String</code> 또는 <code>Name</code> 로서) 받는 메소드에 대해서, 공백의 이름은 현재의 문맥을 나타냅니다. 예를 들어,<code>lookup()</code> 에 공백의 이름이 주어졌을 경우는, 현재의 문맥의 새로운 인스턴스를 돌려주는 것을 의미합니다. <code>list()</code> 에 공백의 이름이 주어졌을 경우는, 현재의 문맥내의 이름을 열거하는 것을 의미합니다. <code>getAttributes()</code> 에 공백의 이름이 주어졌을 경우는, 그 문맥에 관련지을 수 있었던 속성을 취득하는 것을 의미합니다.
+</p><p><a name="1002973"> </a>  부록 A 에는, 플랫인 메모리 우치묘 마에조라간을 구현하는 문맥 구현의 예가 나타나고 있습니다.
+</p><a name="1002974"> </a> 
+<h3>	2.4	 객체의 지원</h3>
+<p><a name="1002975"> </a>  JNDI 에서는, Java 어플리케이션의 프로그래머에게 있어 자연스럽고 직관적인 <code>Context</code> ( 및 그 서브 인터페이스)의 구현이, 프로바이더에 의해 제공되는 것이 장려됩니다. 예를 들어, 이름 공간상에서 프린터명을 룩 올라갈 때, 프로그래머는 당연, 처리 대상의 프린터 객체가 되돌려지는 것을 예기 합니다.
+</p><blockquote><pre>Context ctx = new InitialContext(); 	
+Printer prt = (Printer) ctx.lookup(somePrinterName); 
+prt.print(someStreamOfData);
+</pre></blockquote>
+<p><a name="1002957"> </a>  같이 어플리케이션의 객체를 배후의 서비스에 보존할 때, 어플리케이션이 배후의 데이터 표현에 대해 알 필요가 없는 경우에는, 자연스럽고 직관적인 구현이 가장 가반성이 있어 편리합니다.  
+</p><p><a name="1002958"> </a>  그러나, 배후의 디렉토리 서비스 또는 네임 서비스에 바인드 되고 있는 것은 일반적으로, Java 프로그램 언어의 객체는 아니고, 실제의 객체를 검출 또는 액세스 하기 위해서 사용할 수 있는 참조 정보입니다. 이 케이스는 많아, 특히 기존의 인스톨이 끝난 머신에 있어서의 서비스를 액세스 및 공유하는 Java 어플리케이션에서는, 매우 일반적입니다. 참조는 사실상, 실제의 객체에의 「포인터」의 역할을 완수합니다. 프린터의 예에서는, 실제로 바인드 되고 있는 것은 프린터에의 액세스 방법에 관한 정보 (프로토콜 타입, 서버 주소등) 등입니다. 어플리케이션의 개발자가 이 편리한 모델을 사용할 수 있도록(듯이) 하려면 , 배후의 서비스로부터 Java 프로그램 언어의 적절한 객체에의 데이터의 변환을 문맥 구현이 실시할 필요가 있습니다.
+</p><p><a name="1003245"> </a>  이 목표를 달성하려면 , 다양한 방법이 있습니다. 어느 문맥 구현이, 1 개의 디렉토리를 돌려줄 수 있는 객체의 모든 구현 클래스에의 액세스를 가지는 경우가 있습니다.  또, 어느 콘테 키스 구현이, 객체의 구현 클래스를 찾기 위한 특별한 클래스 로더를 가지는 경우도 있습니다. JNDI 에는, 참조를 표현하기 위한 표준적인 방법으로서 <code>Reference</code> 클래스가 있습니다. 어플리케이션과 문맥 구현에서는, 독력으로 개별의 기구를 창작하는 것보다도, 이 클래스를 사용하는 것이 장려됩니다. 다만 이것에 의해, 같은 목적을 달성하기 위해서 문맥 구현이 독자적인 기구를 사용할 수 있지 않게 된다고 하는 것은 없습니다.
+</p><p><a name="1003239"> </a>  JNDI 에는, 문맥 구현이 Java 프로그램 언어내의 객체를 배후의 서비스에서의 형식에 의존하지 않는 방법으로 읽어들이거나 보존하거나하기 위한 유틸리티가 있습니다. 여기에서는, 이러한 유틸리티에 대해 설명합니다. 이러한 유틸리티는, 「객체 팩토리」 및 「상태 팩토리」라고 불리는, 실제의 변환을 실시하는 컴퍼넌트와 상호작용 합니다. 이러한 팩토리에 대해서는,<a href="jndispi.fm.html#997589">제 4 장</a>에 설명되고 있습니다.
+</p><a name="1003127"> </a> 
+<h4>	2.4. 1	 객체의 read</h4>
+<p><a name="1003129"> </a>  JNDI 에는, 배후의 서비스로부터 읽어들인 데이터를 Java 프로그램 언어의 객체로 변환하기 위해서(때문에) 문맥 구현이 사용해야 할 , 다음의 메소드가 있습니다.
+</p><blockquote><pre>
+Object NamingManager.getObjectInstance(Object refInfo,
+                                       Name name,
+                                       Context nameCtx, 
+                                       Hashtable env)
+	throws Exception;
+Object DirectoryManager.getObjectInstance(Object refInfo,
+                                          Name name,
+                                          Context nameCtx,
+                                          Hashtable env,
+                                          Attributes attrs)
+	throws Exception;
+<p><a name="1003069"> </a> 
+</pre></blockquote>
+<code>refInfo</code> 는, 기본적인 서비스로부터 읽히는 (객체를 표현한다) 데이터입니다.  <code>name</code> 는 객체의 이름,<code>nameCtx</code> 는 <code>name</code> 가 해석되는 문맥입니다. <code>name</code> 와 <code>nameCtx</code> 를 대로 사용하면(자), 객체에 관한 정보를 <code>refInfo</code> 로부터 얻을 수 있는 것보다도 많이 취득할 수가 있습니다. <code>env</code> 는,<code>getObjectInstance()</code> 의 호출원의 문맥의 환경입니다. <code>attrs</code> 는, 객체에 대해, 디렉토리로부터 읽히는 속성의 컬렉션으로, 일반적으로은 <code>refInfo</code> 를 취득하기 위해서 사용되는 것과 같은 요구입니다. 완전한 컬렉션이 요구되지 않았던 경우는, 속성의 완전한 컬렉션이 아닌 것이 있습니다.
+<p></p><p><a name="1003157"> <code>Context</code> 인터페이스를 구현하는 문맥 구현에서는 <code>NamingManager</code> 클래스내의 메소드를 사용해,<code>DirContext</code> 인터페이스를 구현하는 문맥 구현에서는 <code>DirectoryManager</code> 클래스내의 메소드를 사용하는 것으로 합니다.
+</p><p><a name="1003147"> </a>  다음의 메소드에 돌려주는 객체를 구축할 때는, 문맥 구현은 <code>getObjectInstance()</code> 를 호출하는 것으로 합니다.  또는, 바운드 정보로부터 객체를 생성하는 독자적인 기구를 문맥내에서 사용하고 싶은 경우는, 그 기구를 호출하는 것으로 합니다 (캐릭터 라인의 overload는 나타나지 않는다). 또는, 바운드 정보로부터 객체를 생성하는 독자적인 기구를 문맥내에서 사용하고 싶은 경우는, 그 기구를 호출하는 것으로 합니다 (캐릭터 라인의 overload는 나타나지 않는다).
+</p>
+<pre>
+	javax.naming.Context.lookup(Name name)
+	javax.naming.Context.lookupLink(Name name)
+	javax.naming.Binding.getObject()
+	javax.naming.directory.SearchResult.getObject()
+</pre>
+<p><a name="1003152"> <code>Binding</code> 와 <code>SearchResult</code> 에 대해서는, 문맥 구현은,<code>getObjectInstance()</code> 의 호출 결과의 객체 또는, 거기에 상당하는 것을 생성자 에 건네주는 것으로 합니다.  또는,<code>Binding</code> 와 <code>SearchResult</code> 의 디폴트 구현을 오버라이드(override) 해,<code>getObject()</code> 의 구현이 호출해 원래대로 돌아가기 전에,<code>getObjectInstance()</code> 또는, 거기에 상당하는 것을 호출하도록(듯이) 합니다.
+</p><p><a name="1003143"> </a>  여기에 예를 나타냅니다. 프린터는 <code>Reference</code> 를 사용해 이름 공간내에 표현되고 있습니다.  프린터의 <code>Reference</code> 를 실제의 <code>Printer</code> 객체로 변환하기 위해서(때문에), 문맥 구현은 <code>NamingManager.getObjectInstance()</code> 메소드를 사용합니다. 이 방법에서는, 배후의 서비스는 프린터에 관한 특정의 정보를 알 필요가 없습니다.  
+</p>
+<blockquote><pre>
+Object lookup(Name name) {	
+	...
+	Reference ref = &lt;<em>some printer reference looked up from naming service</em>&gt;; 	
+	return NamingManager.getObjectInstance(ref, name, this, env);
+}
+</pre></blockquote>
+<p><a name="1003174"> </a>  다음의 예에서는, 프린터는 속성의 컬렉션으로서 디렉토리내에 표현되고 있는 것으로 합니다. 프린터의 디렉토리 엔트리를 실제의 <code>Printer</code> 객체로 변환하기 위해서(때문에), 문맥 구현은 <code>DirectoryManager.getObjectInstance()</code> 를 사용합니다.    
+</p><blockquote><pre>
+Object lookup(Name name) {	
+	...
+	Attributes attrs = &lt;<em>read attributes from directory</em>&gt;;
+	Reference ref = &lt;<em>construct reference from attributes</em>&gt;;	
+	return DirectoryManager.getObjectInstance(ref, name, this, 
+		env, attrs);
+}
+</pre></blockquote><a name="1003128"> </a> 
+<h4>	2.4. 2	 객체의 보존</h4>
+<p><a name="1003307"> </a>  JNDI 에는, 객체를 배후의 서비스에 보존하기 전으로 변환하기 위한, 다음의 메소드가 있습니다.
+</p><blockquote><pre>
+Object NamingManager.getStateToBind(
+                                    Object obj,
+                                    Name name,
+                                    Context nameCtx, 
+                                    Hashtable env)
+	throws NamingException;
+DirStateFactory.Result DirectoryManager.getStateToBind(
+                                    Object obj,
+                                    Name name,
+                                    Context nameCtx,
+                                    Hashtable env,
+                                    Attributes attrs)
+	throws NamingException;
+</pre></blockquote><p><a name="1003319"> </a>  <code>obj</code> 는, 기본의 서비스에 보존되는 객체입니다. <code>name</code> 는 객체의 이름,<code>nameCtx</code> 는 <code>name</code> 가 해석되는 문맥입니다. <code>name</code> 와 <code>nameCtx</code> 를 대로 사용하면(자), 객체에 관한 정보를 <code>obj</code> 로부터 얻을 수 있는 것보다도 많이 취득할 수가 있습니다. <code>env</code> 는,<code>getStateToBind()</code> 의 호출원의 문맥의 환경입니다. <code>attrs</code> 는 속성의 컬렉션으로, 객체에 바인드 됩니다. <code>DirStateFactory.Result</code> 는 객체 및 그 속성의 컬렉션을 포함한 클래스입니다.
+</p><p><a name="1003320"> <code>Context</code> 인터페이스를 구현하는 문맥 구현에서는 <code>NamingManager</code> 클래스내의 메소드를 사용해,<code>DirContext</code> 인터페이스를 구현하는 문맥 구현에서는 <code>DirectoryManager</code> 클래스내의 메소드를 사용하는 것으로 합니다.
+</p><p><a name="1003321"> </a>  어플리케이션으로부터 주어진 객체를 보존할 때는, 그 전에 문맥 구현은 <code>getStateToBind()</code> 를 호출하는 것으로 합니다.  또는, 바운드 정보로부터 객체를 생성하는 독자적인 기구를 문맥내에서 사용하고 싶은 경우는, 그 기구를 호출하는 것으로 합니다 (캐릭터 라인의 overload는 나타나지 않는다). 또는, 바운드 정보로부터 객체를 생성하는 독자적인 기구를 문맥내에서 사용하고 싶은 경우는, 그 기구를 호출하는 것으로 합니다 (캐릭터 라인의 overload는 나타나지 않는다).
+</p><blockquote><pre>
+javax.naming.Context.bind(Name name, Object o)
+javax.naming.Context.rebind(Name name, Object o)
+javax.naming.DirContext.bind(Name name, Object o, Attributes attrs)
+javax.naming.DirContext.rebind(Name name, Object o, Attributes attrs)
+</pre></blockquote>
+<p><a name="1003327"> </a>  다음에,<code>Context</code> 구현에 의한 <code>Context.bind</code> 의 지원의 예를 나타냅니다.  
+</p>
+<blockquote><pre>
+// First do transformation
+obj = NamingManager.getStateToBind(obj, name, ctx, env);
+
+// Check for Referenceable
+if (obj instanceof Referenceable) {
+    obj = ((Referenceable) obj). getReference();
+}
+
+if (obj instanceof Reference) {
+	// store as ref
+} else if (obj instanceof Serializable) {
+	// serialize
+} else {
+	... 
+}
+</pre></blockquote>
+<p><a name="1003439"> </a>  다음에,<code>DirContext</code> 구현에 의한 <code>DirContext.bind</code> 의 지원의 예를 나타냅니다.  
+</p>
+<blockquote><pre>
+// First do transformation
+DirStateFactory.Result res = DirectoryManager.getStateToBind(
+	obj, name, ctx, env, inAttrs);
+
+obj = res.getObject();
+Attributes outAttrs = res.getAttributes();
+
+// Check for Referenceable
+if (obj instanceof Referenceable) {
+	obj = ((Referenceable) obj). getReference();
+}
+if (obj instanceof Reference) {
+	// store as ref and add outAttrs
+} else if (obj instanceof Serializable) {
+	// serialize and add outAttrs
+} else if (obj instanceof DirContext) {
+	// grab attributes and merge with outAttrs
+} else {
+	... 
+}
+</pre></blockquote>
+<p><a name="1003675"> </a>  이러한 예로 가리킨 것처럼, 문맥 구현은 다양한 타입의 객체 (<code>Reference</code>,<code>Serializable</code>,<code>DirContext</code>)를 보존할 수 있는 경우가 있습니다. 문맥 구현이 직접 <code>Referenceable</code> 객체를 보존할 수 없지만 <code>getStateToBind()</code> 가 그러한 객체를 돌려줄 때는, 문맥 구현은 대신에 <code>Referenceable.getReference()</code> 를 호출해 결과의 <code>Reference</code> 를 보존하는 것으로 합니다.  
+</p><p><a name="1006767"> </a>  다양한 타입의 객체를 보존할 수 있는 문맥 구현의 경우, 다음의 일반적인 타입에 대해서는, 이 순서에 따르는 것으로 합니다.
+</p><ul><a name="1006768"> </a> 
+<li><code>Reference</code> <a name="1006769"> </a> 
+<li><code>Serializable</code> <a name="1006770"> </a> 
+<li><code>DirContext</code>
+<p><a name="1006773"> </a> 
+</ul>
+이 순서를 추천 하는 이유는,<code>bind()</code>/<code>rebind()</code> 메소드의 호출측의 의도를 가장 적확하게 가리키는 순서라고 생각되기 때문입니다. 예를 들어,<code>Reference</code> 는 <code>Serializable</code> 이므로,<code>Serializable</code> 체크를 최초로 실행하면(자), 어느 <code>Reference</code> 객체도 참조 형식에서는 보존되지 않습니다 (모두 직렬화 된다).  
+<p></p><a name="1003676"> </a> 
+<h3>	2.5	 연합의 지원</h3>
+<a name="1002989"> </a> 
+<h4>	2.5. 1	 이름</h4>
+<p><a name="1002980"> </a>  문맥에 캐릭터 라인의 이름의 인수가 주어졌을 때, 그 이름은 복수의 이름 공간에 걸칠 가능성이 있는 합성명을 나타내는지, 또는, 단일의 이름 공간에 속하는 단일의 복합명 요소 (단일 또는 복수의 기본명으로부터 만들어지고 있다)가 포함됩니다. 문맥 구현은 이름의 어느 부분을 문맥내에서 해석 또는 처리할까를 판단해, 나머지를 다음의 문맥에 건네주지 않으면 안됩니다. 이것은, 구문 분석적으로 이름을 조사해 행해도, 동적으로 이름을 해석해 행해도 괜찮습니다.
+</p><p><a name="1002984"> </a>  문맥은 <code>CompositeName</code> 의 인스턴스의 경우에는,<code>Name</code> 인수가 주어져 이 인수는 합성명으로서 다루어집니다. 그 이외의 경우는,<code>CompoundName</code> 클래스 또는 그 외의 복합 명구현에 의해 구현되는 복합명으로서 다루어집니다.  
+</p><a name="1003557"> </a> 
+<h4>	2.5. 2	 문맥을 통한 해석 처리</h4>
+<p><a name="1003558"> </a> 문맥은, 모든 문맥 조작의 해석 국면을 실행하는 것으로써 연합에 참가합니다. <code>lookup()</code> 메소드는 반드시 지원하지 않으면 안됩니다. 그 외의 메소드의 지원는 임의입니다만, 연합에 참가하는 문맥의 경우는, 모든 조작으로 암묵의 해석 처리를 지원하지 않으면 안됩니다.  
+<p>
+<font size="-1"><b>그림 1:bind()의 실행을 위한, 중간 문맥을 통한 해석의 예</b></font>
+<center>
+<img src="figure_one.gif" alt="bind() 의 실행을 위한, 중간 문맥을 통한 해석의 예"></center><a name="1003600"></a> <center> 
+</center>
+
+</p><p><a name="1003595"> </a>  예를 들어,<code>bind()</code> 조작을 지원하지 않는 문맥을 생각합니다. 이 문맥이 <code>bind()</code> 를 위한 중간 문맥으로서 사용되면(자), 조작을 다음의 문맥에 잇기 위해서(때문에), 이 문맥은 조작의 해석 처리 부분을 실행하지 않으면 안됩니다. 이 문맥이 내부에서의 바인딩의 작성만을 요구되고 있는 경우에는, 단지 <code>OperationNotSupportedException</code> 를 throw 할 뿐입니다. 그림 1 은,<code>bind()</code> 조작을 목적의 문맥으로 실행하기 위해서 중간 문맥을 통해서 건네주는 방법을 나타냅니다.
+
+
+<h4>	2.5. 3	 문맥의 서브 인터페이스를 통한 해석 처리</h4>
+<p><a name="1003601"> <code>DirContext</code> 메소드 (<code>getAttributes()</code> 등)를 호출하기 위해서(때문에), 어플리케이션은 최초로 초기의 <code>DirContext</code> 를 취득해, 다음에 <code>DirContext</code> 상에서 조작을 실행합니다.
+</p><blockquote><pre>DirContext ctx = new InitialDirContext();
+Attributes attrs = ctx.getAttributes(someName);
+<p><a name="1003604"> </a> 
+</pre></blockquote>
+문맥 구현의 시점으로부터 보면(자), 속성을 취득하기 위해서 <code>getAttributes()</code> 가 복수의 네이밍 시스템을 더듬는 것이 필요한 경우가 있습니다. 이러한 네이밍 시스템의 몇개인가는 <code>Context</code> 인터페이스만을 지원해,<code>DirContext</code> 인터페이스를 지원하고 있습니다. 이러한 네이밍 시스템은, 타겟의 문맥을 향한 해석을 위한 중간적 존재로서 사용됩니다. 타겟의 문맥은 <code>DirContext</code> 인터페이스를 지원하지 않으면 안됩니다. 이 예를 그림 2 에 나타냅니다.
+<p>
+<font size="-1"><b>그림 2:DirContext 가 아닌 중간 문맥을 통한 해석 처리</b></font>
+<center>
+<img src="figure_two.gif" alt="DirContext (이)가 아닌 중간 문맥을 통한 해석 처리">
+</center>
+</p><p><a name="1003629"> </a>  중간의 네이밍 시스템이 <code>Context</code> 의 확장에의 연합에 참가하기 위해서는, 그러한 시스템은 <code>Resolver</code> 인터페이스를 구현하지 않으면 안됩니다. <code>Resolver</code> 인터페이스는,<code>Context</code> 의 특정의 서브 인터페이스를 지원하지 않는 중간 문맥을 통해서 해석을 실시하기 위해서(때문에) JNDI 시스템에 의해 사용됩니다. 이 인터페이스는,<code>resolveToClass()</code> 메소드의 2 개의 overload 형식에 의해 구성됩니다. 이 메소드는 이름을 부분적으로 해석하기 위해서 사용되어 요구된 서브 인터페이스의 인스턴스인 최초의 문맥으로 끝납니다. 이 메소드와 <code>Context</code> 인터페이스내의 모든 메소드의 해석 국면의 지원를 제공하는 것으로써, 문맥 구현은,<code>Context</code> 의 확장 기능 (서브 인터페이스)을 위한 중간 문맥으로서 기능합니다.  
+</p><blockquote><pre>public interface Resolver {
+	public ResolveResult resolveToClass(Name name, Class contextType)<br>
+		throws NamingException;
+	public ResolveResult resolveToClass(String name,
+	                                   Class contextType)<br>
+		throws NamingException;
+}
+</pre></blockquote><a name="1003689"> </a> 
+<h4>	2.5. 4	 네이밍 시스템의 경계</h4>
+<p><a name="1003694"> </a>  (복수 요소의) 합성명의 해석은 1 개의 네이밍 시스템으로부터 다음의 네이밍 시스템에 진행되어, 복수의 네이밍 시스템에 걸친 요소의 해석은 일반적으로, 각각의 네이밍 시스템에 대응하는 문맥 구현에 의해 처리됩니다. 문맥 구현의 시점으로부터 보면(자), 문맥 구현은 자신의 책임 범위외의 요소를 다음의 네이밍 시스템 (의 문맥 구현)에 건네줍니다.
+</p><p><a name="1003714"> </a>  다음의 네이밍 시스템을 위한 문맥 구현을 찾는 수단은 몇개인가 있습니다. 「명시적」인 방법으로서 1 개의 네이밍 시스템이 다음의 네이밍 시스템내의 문맥 (또는 문맥에의 <code>Reference</code> )에 결합되는 「접속점」을 사용해 찾는 방법이 있습니다. 예를 들어, 합성명 "cn=fs, ou=eng/lib/xyz.zip" 로, LDAP 명 "cn=fs, ou=eng" 가 해석되어, 1 개의 파일 시스템 문맥에게 건네져 다음에 그 중에 "lib/xyz.zip" 가 해석됩니다.  
+</p><p><a name="1003721"> </a>  다른 방법으로서 다음의 네이밍 시스템을 「암시적」으로 찾을 수도 있습니다. 예를 들어, 문맥 구현은 자신이 해석한 객체의 서비스에 특정의 지식에 근거해, 다음의 네이밍 시스템을 선택할 수가 있습니다. 예를 들어, 합성명 "ldap.wiz.com/cn=fs, ou=eng" 로, DNS 명 <code>ldap.wiz.com</code> 에 의해 DNS 엔트리의 이름이 정해집니다. DNS 의 앞의, 다음의 네이밍 시스템을 찾기 위해서(때문에), DNS 문맥 구현은, 엔트리내에서 발견된 SRV 자원 기록 (이 경우는 LDAP 문맥을 지명한다)을 사용해 문맥을 구축할 수 있습니다.  이 경우에는, 우연히 LDAP 문맥의 이름이 정해집니다. 다음의 네이밍 시스템을 이 방법으로 찾았을 경우는, 1 개의 네이밍 시스템으로부터 다음의 네이밍 시스템에의 경계를 나타내기 위해서(때문에) JNDI 의 합성명 단락 문자가 사용되어 이 단락 문자는 「다음의 네이밍 시스템에의 암시적 포인터」라고 보입니다.
+</p><p><a name="1003728"> </a>  다음의 네이밍 시스템이 발견되어도, 문맥 구현은 다음의 네이밍 시스템에 합성명의 나머지의 미해석 부분을 건네주지 않으면 안됩니다.
+</p><a name="1003693"> </a> 
+<h4>	2.5. 5	 연합내에서의 조작의 속행</h4>
+<p><a name="1003637"> </a>  복수의 이름 공간에 걸치는 이름에 대한 조작을 실행할 때, 중간의 네이밍 시스템의 문맥은 다음의 네이밍 시스템에 조작을 건네줄 필요가 있습니다. 문맥은 이 때문에, 조작이 어디로 나아갔는지를 나타내는 정보를 포함한 <code>CannotProceedException</code> 를 최초로 작성합니다. 이 처리 중(안)에서, 문맥은 예외의 해석이 끝난 객체 (resolved object), 해석이 끝난 명칭 (resolved name), 미해석 명칭 (remaining name), 환경 (environment)의 부분을 설정하는<a href="#1003640"><sup>2</sup></a>  (<code>Context.rename()</code> 메소드의 경우는 해석이 끝난 신명칭 (resolved newname)의 부분도 설정).
+</p><p><a name="1003641"> </a>  다음에 문맥은 <code>CannotProceedException</code> 를 static 메소드 <code>NamingManager</code>. <code>getContinuationContext()</code>에 건네주는 것으로, JNDI 로부터 「계속 문맥」을 가져옵니다.
+</p><blockquote><pre>public class NamingManager {
+	public static Context getContinuationContext(
+		CannotProceedException e) throws NamingException;
+	...
+}
+</pre></blockquote>
+<p><a name="1003647"> </a>  <code>getContinuationContext()</code> 는 예외안의 정보를 사용해, 조작을 속행하기 위한 문맥 인스턴스를 생성합니다.  
+</p><p><a name="1003648"> </a> <code>DirContext</code> 조작의 계속 문맥을 취득하기 위해서,<code>Directory-Manager.getContinuationDirContext()</code> 를 사용합니다.
+</p><blockquote><pre>
+public class DirectoryManager {
+	public static getContinuationDirContext(
+		CannotProceedException e) throws NamingException;
+	...
+}
+</pre></blockquote>
+<p><a name="1003654"> </a>  계속 문맥을 취득하면(자), 이름의 미해석의 남은 부분을 사용해 조작을 속행합니다.
+</p><p><a name="1003655"> </a>  예를 들어,<code>bind()</code> 조작을 속행하려고 하는 경우는, 문맥 구현안의 코드는 다음과 같이 됩니다.
+</p><blockquote><pre>
+public void bind(Name name, Object obj) throws NamingException {
+	... 
+	try {
+		internal_bind(name, obj);
+		...
+	} catch (CannotProceedException e) {
+		Context cctx = 			NamingManager.getContinuationContext(e);
+		cctx.bind(e.getRemainingName(), obj);
+	}	
+}
+</pre></blockquote>
+<p><a name="1003666"> </a>  이 예로 <code>bind()</code> 는, 바인드의 실제의 처리의 실행과 처리가 이 네이밍 시스템을 넘는 것을 알 수 있었을 때의 <code>CannotProceedException</code> 예외의 throw를, 내부 메소드 <code>internal_bind()</code> 에 의존합니다. 다음에, 조작을 속행하기 위해서, 예외는 <code>getContinuationContext()</code> 에게 건네집니다. 조작을 속행할 수 없을 때는, 계속 문맥은 <code>CannotProceedException</code> 를 원의 <code>bind()</code> 조작의 호출 바탕으로 대해 throw 합니다.
+</p><a name="1003761"> </a> 
+<h4>	2.5. 6	 차의 네이밍 시스템의 「동적」인 검출</h4>
+<p><a name="1003898"> </a>  연합의 구성에 따라서는, 1 개의 네이밍 시스템의 해석 결과가 다음의 네이밍 시스템을 나타내지 않는 것이 있습니다. 문맥 구현에 얻을 수 있는 결론은, 「해석은 현재의 네이밍 시스템으로 끝났지만, 다음의 네이밍 시스템에 진행되지 않으면 안 된다」것입니다.  
+</p><p><a name="1003943"> </a>  예를 들어, 합성명 "lib/xyz.zip/part1/abc" 가, ZIP 형식의 파일의 이름을 지정하는 "lib/xyz.zip" 와 ZIP 파일내의 엔트리의 이름을 지정하는 "part1/abc" 의 2 개의 부분으로 구성되어 있다고 합니다. "lib/xyz.zip" 의 해석 결과는 파일 객체입니다만, 필요한 결과는 ZIP 엔트리의 이름을 해석하는 문맥입니다. 같이 어느 합성명이 tar 형식의 파일내의 엔트리의 이름을 지정하고 있는 경우는, 그 합성명의 파일 요소에 필요한 해석 결과는 tar 엔트리를 해석하는 문맥입니다.  
+</p><p><a name="1003770"> </a>  실제로는, 파일의 형식에 따라서는, 파일 시스템의 이름 공간하에서는 어떤 타입의 문맥에서도 연합이 될 가능성이 있습니다. 이러한 관계는 대칭이어야 합니다. 즉, ZIP 파일 문맥과 거기에 유사한 다른 문맥은, 그 외의, 파일 시스템 이외의 이름 공간아래에서 연합이 가능하지 않으면 안됩니다. 게다가 파일 시스템의 문맥 구현의 개발자 및, ZIP 파일, tar 파일, 그 외의 미정도리의 형식을 위한 각 문맥 구현의 개발자가, 독립해 작업할 수 있도록(듯이) 해야 합니다.  
+</p><p><a name="1003788"> </a>  이러한 타입의 연합을 지원하기 위해서, JNDI 에는 「nns 참조」(nns:next naming system)로 불리는 특별한 형태의 <code>Reference</code> 가 정의되고 있습니다. 이 <code>Reference</code> 에는,<code>nns</code> 라고 하는 타입 주소가 있습니다. 이 주소 컨텐츠는 해석 끝난 객체 (위의 예에서는 ZIP 파일)입니다. 파일 시스템의 예에서는, 파일 시스템의 문맥 구현은 다음과 같은 nns 참조를 작성합니다.  
+</p><blockquote><pre> RefAddr addr = new RefAddr("nns") {
+	public Object getContent() {
+ 		return theFile;
+	}
+};
+Reference ref = new Reference("java.io.File", addr);
+</pre></blockquote>
+<p><a name="1003799"> </a>  다음에, 문맥 구현은, nns 참조를 해석이 끝난 객체로서 사용하는 것으로써,<code>CannotProceedException</code> 를 작성해 ( 「접속점」의 경우와 같게), 해석이 끝난 파일명과 공백 요소로부터 완성되는 해석 끝난 이름을 작성합니다. 공백 요소는 다음의 네이밍 시스템에의 암시적인 포인터로서 사용되어 다음의 네이밍 시스템에의 위치까지 해석이 진행된 것을 나타냅니다. 해석 끝난 객체와 해석 끝난 이름의 값이 어떻게 대응할까에 유의해 주세요. 문맥 구현은 다음에,<code>CannotProceedException</code> 를 <code>getContinuationContext()</code> 에 건네줍니다.
+</p><p><a name="1004057"> </a>  <code>CannotProceedException</code> 내의 해석이 끝난 객체 (resolved object)의 경우와 같이,<code>getContinuationContext()</code> 는 이 nns 참조를 받는 문맥 구현을 찾습니다. 예를 들어 ZIP 파일의 문맥 구현은, nns 참조와 파일의 이름 (주어진 문맥에 대한 상대명)등의 정보를 받습니다. 문맥 구현은, 그 파일이 ZIP 파일이다고 판단하면(자), 그 파일내의 이름을 해석하기 위한 문맥을 생성합니다.
+</p><a name="1004102"> </a> 
+<h4>	2.5. 7	 CannotProceedException 의 상세</h4>
+<p><a name="1004152"> </a>  연합을 위한 JNDI SPI 의 시스템의 중심은,<code>CannotProceedException</code> 입니다. <code>CannotProceedException</code> 에는,<code>NamingException</code> 슈퍼 클래스로부터 상속한, 해석 끝난 이름 또는 해석 끝난 객체나 미해석의 이름등의 정보가 포함되어 있습니다. 게다가<code>CannotProceedException</code> 에는 「대체」명과 「대체」명 문맥도 포함됩니다. <code>NamingException</code> 로부터 해석된 이름이 완전한 합성명 (조작의 최초의 문맥에 상대의 이름)인데 대해, 대체명은 대체명 문맥에 상대의 해석이 끝난명입니다. 즉, 대체명은 해석 끝난 이름과 같지 않아도 괜찮습니다. 대체명과 대체명 문맥은 <code>NamingManager</code>/<code>DirectoryManager.getObjectInstance()</code> 에의 인수로서 사용됩니다. 이러한 인수에 의해, 이 메소드가 호출한 팩토리가 해석이 끝난 객체에 관한 상세한 정보를 취득할 수가 있습니다 (예를 들어, 객체에 관한 특별한 속성을 취득하기 위해서 사용하는 등). 이러한 팩토리에 대해서는,<a href="jndispi.fm.html#997589">제 4 장</a>에 설명되고 있습니다.
+</p><a name="1004188"> </a> 
+<h4>	2.5. 8	 문맥상의 정보</h4>
+<p><a name="1004185"> </a>  JNDI SPI 시스템에서는 「전방 검색」이 중시되어 다음의 네이밍 시스템의 검출이 시도됩니다.  그러나, 문맥 구현에 따라서는, 검출된 뒤에 해석의 체인을 「등돌리기에」더듬어 문맥상의 정보를 얻는 것이 필요합니다. 예를 들어, 호스트 네이밍 시스템의 연합으로부터 떼어진 특정의 문맥 구현이, 「그 문맥 구현이 호스트 정보를 찾아내는 유일한 방법은, 자신의 상위 (직접적인 상위가 아닐 가능성이 있다)의 네이밍 시스템에 문의하는 것이다」같은 설계가 되어 있을지도 모릅니다. 그것을 실시하려면 , 그 문맥 구현에는, 해석이 현재점까지 어떻게 진행되어 왔는지에 관한 「문맥상의 정보」가 필요합니다.
+</p><p><a name="1004257"> </a>  연합에 관해서 벌써 설명한 것을 정리하면(자) 다음과 같이 됩니다.  복수의 이름 공간에 걸치는 이름에 조작을 실행할 때는, 문맥 구현은 최초로, 해석이 어디로 나아가고 있는지를 나타내는 정보를 포함한 <code>CannotProceedException</code> 를 생성합니다. 문맥 구현은 다음에,<code>getContinuationContext()</code>를 호출하는 것으로 JNDI 로부터 계속 문맥을 가져옵니다. 문맥상의 정보의 취득을 지원하기 위해서,<code>getContinuationContext()</code> 는 계속 문맥의 환경에 <code>java.naming.spi.CannotProceedException</code> 환경 프로퍼티을 <code>Cannot-ProceedException</code> 인수의 값을 지정해 자동적으로 추가합니다. 이 프로퍼티은 계속 문맥에 의해 상속되어 그 문맥의 구현이 예외의 필드를 조사하기 위해서(때문에) 사용됩니다.
+</p><a name="1002999"> </a> 
+<h3>	2.6	 조회의 지원</h3>
+<p><a name="1003000"> </a>  LDAP 스타일의 디렉토리 서비스에서는, 클라이언트의 요구를 다른 서버에 리다이렉트(redirect)하기 위한 「조회 (referral)」의 개념이 지원되고 있습니다. 조회는, 벌써 설명한 연합 계속의 기구와는 다릅니다.  조회는 JNDI 클라이언트에 나타나 다음에 그것을 추적할지 어떨지는 클라이언트를 결정될 수 있습니다.  이것에 대해,<code>CannotProceedException</code> 가 반환되는 것은, 더 이상 해석을 진행시킬 수가 없는 경우 뿐입니다. 이제(벌써) 1 개의 차이는, 개개의 문맥 구현이, 조회를 사용해 조작을 계속하는 ( 및 그것을 실시하는 기구를 자신으로 결정한다) 능력을 제공하는 점입니다. 연합에서는, 계속의 기구는 개개의 문맥 구현의 범위외에서, 개개의 문맥 구현은, JNDI SPI 시스템가 제공하는 공통의 연합 기구를 이용합니다.  
+</p><p><a name="1003001"> </a>  조회를 지원하는 문맥 구현은,<code>ReferralException</code> 의 서브 클래스를 정의해, 그 추상 메소드에 구현을 제공합니다. <code>getReferralContext()</code> 는 조작을 속행하는 위치에서 문맥을 돌려주어,<code>getReferralInfo()</code> 는 조회처의 정보를, 그 문맥 구현에 적절한 형식에서 돌려줍니다.
+</p><p><a name="1003002"> </a>  환경 프로퍼티 <code>java.naming.referral</code> 는, 문맥 구현이 조회를 처리하는 방법을 지정합니다. 조회에 조우했을 때, 또는 조회의 추적중에 문제에 조우했을 때에 예외를 throw 하도록(듯이) 요구되고 있는 문맥 구현에서는, 어플리케이션에 대해서 <code>ReferralException</code> 를 throw 합니다. 조작을 속행하기 위해서, 어플리케이션은 원의 메소드에게 준 것과 같은 인수를 사용해, 조회 문맥에 대해 메소드를 재차 호출합니다. 다음의 코드예는, 어플리케이션이 <code>ReferralException</code> 를 사용하는 방법을 나타냅니다. <a href="#1003008"><sup>3</sup></a> 
+</p><blockquote><pre>while (true) {
+	try {
+		bindings = ctx.listBindings(name);
+		while (bindings.hasMore()) {
+			b = (Binding) bindings.next();
+			...
+		}
+		break;
+	} catch (ReferralException e) {
+		ctx = e.getReferralContext();
+	}
+}
+</pre></blockquote>
+<p><a name="1003021"> </a>  어플리케이션이, 원의 인수를 사용해 메소드를 다시 호출한다고 하는 이 관습에 따르는 것은 간단합니다. 이 방법에서는, 조작을 속행하기 위한 충분한 정보를 조회 문맥의 구현에게 주기 위해서(때문에),<code>ReferralException</code> 의 구현에 부담이 갑니다. 재차 불려 가는 조작에 인수가 여분으로 건네받는 경우가 있습니다. 조회 문맥의 구현은, 여분의 정보나 불필요한 정보를 무시해도 괜찮습니다.
+</p><p><a name="1003022"> </a>  조작으로부터, 조회에 추가해 다른 결과가 반환되는 경우가 있습니다. 예를 들어, 문맥을 찾고 있을 때, 몇개의 조회에 가세해, 어디서 상세 결과를 얻을 수 있을까에 관한 복수의 결과를 서버가 돌려주는 일이 있습니다. 이러한 결과와 조회는, 프로토콜 레벨로 인타리브 되는 경우가 있습니다. 조회가 사용자의 개입을 필요로 하는 (즉, 자동적으로는 추적되지 않는다) 경우는, 최초로 검색의 열거를 통해서 결과를 돌려주는 것으로 합니다. 결과가 돌려주어지면(자), 조회 예외를 throw 할 수 있습니다. 이것에 의해, 심플한 프로그래밍 모델을 사용해, 조회와 그 결과 세트와의 사이의 명확한 관계를 사용자에게 나타낼 수가 있습니다.
+</p><a name="1003028"> </a> 
+<h3>	2.7	 schema의 지원</h3>
+<p><a name="1003029"> </a>  JNDI 에는, 디렉토리내의 속성을 표현하기 위해서 <code>Attribute</code> 인터페이스가 정의되고 있습니다. 속성은, 1 개의 속성 식별자 (캐릭터 라인)와 1 세트의 속성치에 의해 구성됩니다.  속성치는, Java 프로그램 언어의 임의의 객체입니다. <code>Attribute</code> 에는, 속성의 정의와 구문 정의를 디렉토리의 schema로부터 취득하기 위한 메소드도 정의되고 있습니다.  
+</p><blockquote><pre>public class Attribute {
+	public DirContext getAttributeDefinition() throws NamingException;
+	public DirContext getAttributeSyntaxDefinition()<br>
+		throws NamingException;
+	...
+}
+</pre></blockquote>
+<p><a name="1003035"> </a>  유틸리티 클래스 <code>BasicAttribute</code> 에는, 이러한 메소드의 유용한 구현은 없습니다. 이러한 schema 정보를 지원하는 디렉토리 문맥 구현은, 그 schema 기구에 근거하는 이러한 2 개의 메소드를 구현하는 (아마 <code>BasicAttribute</code> 의 서브 클래스를 작성해, 이러한 2 개의 메소드를 오버라이드(override) 하는 것으로써),<code>Attribute</code> 의 구현을 제공하는 것으로 합니다. 다음에, 문맥 구현은 <code>Attribute</code> 의 인스턴스를 돌려주도록(듯이) 요구되면(자), 이러한 서브 클래스의 인스턴스를 돌려주는 것으로 합니다. 문맥 구현은, 이러한 2 개의 메소드의 의미가 있는 구현을 가지지 않는 <code>Attribute</code> 인스턴스를 받았을 경우는, 그 속성의 정의와 구문을 판단하기 위해서(때문에) 적절한 디폴트를 사용해, 속성치의 클래스명이나 속성의 식별자에 사용되고 있는 규약등의 정보를 사용하는 것으로 합니다.
+</p><p><a name="1003036"> </a> <code>DirContext</code> 인터페이스에는, 다음의 schema 관련 메소드가 있습니다.
+</p><blockquote><pre>public class DirContext {
+	...
+	public DirContext getSchema(Name name) throws NamingException;
+	public DirContext getSchema(String name) throws NamingException;
+
+	public DirContext getSchemaClassDefinition(Name name) 
+		throws NamingException;
+	public DirContext getSchemaClassDefinition(String name) 
+		throws NamingException;
+
+}
+</pre></blockquote>
+<p><a name="1003048"> </a>  <code>getSchema()</code> 는 지명된 객체에의 schema 트리를 돌려주어,<code>getSchemaClassDefinition()</code> 는 지명된 객체의 schema 클래스 정의를 포함한 문맥을 돌려줍니다. 단일의 글로벌인 schema를 가지는 시스템에서는,<code>name</code> 인수의 값에 관계없이, 같은 schema 트리를 돌려줍니다. 치밀한 schema 정의를 지원하는 시스템에서는, 조사되는 문맥에 따라서 다른 schema 트리를 돌려줍니다.
+</p><a name="1005769"> </a> 
+<h3>	2.8	 이벤트의 지원</h3>
+<p><a name="1005770"> </a>  문맥 구현은,<code>EventContext</code>/<code>EventDirContext</code> 인터페이스내의 메소드의 구현을 제공하는 것으로써, 이벤트 통지를 지원합니다. 이러한 인터페이스에 의해 제창되는 이벤트 모델은, multi-thread 모델을 사용해 간단하게 지원할 수 있습니다. 어플리케이션이 <code>addNamingListener()</code> 를 사용해 문맥에 청취자를 등록하면(자), 문맥은 요구를 기록해, 이벤트를 생성하기 위해서 필요한 정보를 모으기 위한 처리를 개시합니다. 문맥은 이벤트를 생성하기 위한 정보를 받으면(자), 그 이벤트를 청취자에게 즉시 건네줍니다. 보통, 등록을 실시하는 thread는 청취자를 실행하는 thread와는 다릅니다. 또 보통, 문맥 구현은 자신이 작성한 thread를 사용해, 청취자 메소드의 실행을 관리합니다. 1 개의 이벤트가 복수의 청취자에게 발송 되었을 경우는, 문맥 구현은 청취자 메소드를 동시에 다른 thread로 실행하는 것을 선택할 수 있습니다 (일반적으로는 이것을 추천).
+</p><p><a name="1005771"> </a> <code>addNamingListener()</code> 메소드는 <code>NamingListener</code> 의 인스턴스를 받습니다. 이 인스턴스에는,<code>NamingListener</code> 의 서브 인터페이스가 1 개 이상 구현되고 있는 일이 있습니다. 청취자가 복수의 서브 인터페이스를 구현하고 있는 경우는, 문맥 구현은, 등록을 채우기 위해서(때문에) 필요한 자원의 보존을 시도하는 것으로 합니다. 예를 들어, 1 개의 구현이 복수의 서브 인터페이스의 요구를 모두 잡는 단일의 요구를 서버에 발행합니다.
+</p><p><a name="1005772"> </a>  문맥이 한층 더 이벤트를 발생시킬 수가 없는 경우에는, 가능하면, 문맥 구현은 청취자에 대해서 <code>NamingExceptionEvent</code> 를 발생시켜, 자동적으로 그 청취자의 등록을 취소할 수가 있는 것으로 합니다. 예를 들어, 서버에의 접속이 청취자의 등록의 후에 절단 되어 이벤트를 건네주기 위한 정보를 이용할 수 없는 경우에는, 문맥은 <code>NamingExceptionEvent</code> 를 청취자에게 즉시 건네줍니다.
+</p><a name="1002895"> </a> 
+<h3>	2.9	 문맥 환경의 지원</h3>
+<p><a name="1002896"> <code>Context</code> (또는 그 서브 인터페이스)의 각 인스턴스에는, 그 문맥이 제공하는 서비스에의 액세스 방법의, 어플리케이션에 의해 표현되는 preference를 포함한 「환경」을 관련지을 수가 있습니다. 환경가운데에 있는 정보의 예에는, 사용자의 자격과 바람직하는 시큐리티 레벨 (<code>none</code>,<code>simple</code>,<code>strong</code>), 구성 정보 (사용하는 서버등)를 지정하는 시큐리티 관련 정보가 있습니다. 환경 프로퍼티의 자세한 것은,<strong>JNDI API</strong> 문서의 제 6 장과 부록 A 를 참조해 주세요.  
+</p><p><a name="1002897"> </a>  일반적으로 환경 프로퍼티은 최대한의 가반성을 보증하기 위해서 정의됩니다. 개개의 서비스 프로바이더는 이러한 총칭 프로퍼티을, 그 서비스에 적응한 특성에 맵 합니다. 프로바이더에 관계가 없는 프로퍼티은 기록하는 것에 그쳐, 무시합니다. 서비스 프로바이더에 고유의 프로퍼티 또는 preference의, 다른 프로바이더에 걸치는 적용성이 제한되고 있는 경우에는, 그러한 프로퍼티 또는 preference를 보존하기 위해서도 환경을 사용할 수 있습니다.
+</p><a name="1004358"> </a> 
+<h4>	2.9. 1	 프로퍼티의 명명 규약</h4>
+<p><a name="1004359"> </a> <strong>JNDI API</strong> 문서의 마디 6.1 에, 환경 프로퍼티이 어떻게 명명될까의 설명이 있습니다. 서비스 프로바이더에 고유의 프로퍼티에는, 프로바이더에 대한 일의성을 반영하는 접두사를 붙입니다. 서비스 프로바이더의 패키지명을 선두에 붙이는 수법이 자주(잘) 사용됩니다. 예를 들어, Sun 의 LDAP 프로바이더는 주로 <code>com.sun.jndi.ldap</code> 패키지에 포함되므로, Sun 의 LDAP 프로바이더에 고유의 프로퍼티에는, 선두에 「com.sun.jndi.ldap.」(이)가 붙습니다.  
+</p><a name="1002898"> </a> 
+<h4>	2.9. 2	 문맥의 환경의 초기화</h4>
+<p><a name="1004445"> </a>  초기 문맥을 작성할 때 (<code>InitialContext</code> 또는 그 서브 클래스로부터의 생성자 을 사용), 어플리케이션은 환경을 파라미터로서 제공할 수 있습니다. 파라미터는,<code>Hashtable</code> 또는 그 서브 클래스의 어느쪽이든 (<code>Properties</code> 등)으로서 표현됩니다. JNDI 클래스 라이브러리는, 이 파라미터와 다른 소스로부터 데이터를 확장해 (<strong>JNDI API</strong> 문서의 제 6 장을 참조), 이것을 문맥 구현에 건네줍니다.
+</p><p><a name="1004469"> </a>  다른 모든 파라미터와 같게, 문맥 구현이 받은 환경 파라미터는 호출해 옆이 소유하고 있습니다. 문맥 구현은, 받은 환경 파라미터의 카피를 작성하는지, 「호출측이 파라미터에 가세한 변경이 문맥 구현으로부터 보이는 것에 영향을 주지 않는 것, 및 그 역을 보증한다」수단을 취하는 것으로 합니다. 또, 환경 파라미터가 <code>Properties</code> 의 인스턴스인 경우는, 파라미터상에서의 열거와 <code>Hashtable.get()</code> 에서는 최상정도의 프로퍼티만이 조사할 수 있습니다 (상자로 된 디폴트는 조사하지 않는다). 이것은, 예기 되는 동작입니다. 문맥 구현에는,<code>Properties</code> 인스턴스의 상자로 된 디폴트내의 값의 취득 또는 열거는 예기 되지 않습니다.
+</p><p><a name="1004537"> </a>  JNDI 라이브러리는, 다른 소스 (초기 문맥에의 환경 파라미터, resource file, 적용되는 경우, 시스템 프로퍼티과 애플릿 파라미터등)로부터 프로퍼티을 머지 할 책임을 집니다 (JNDI API 문서의 제 6 장을 참조). 문맥 구현은 보통, 주어진 환경으로부터 필요한 프로퍼티만을 읽어들입니다. 문맥 구현이 다른 소스를 참고로 할 필요는 거의 없습니다.  
+</p><a name="1002900"> </a> 
+<h4>	2.9. 3	 상속</h4>
+<p><a name="1002901"> </a>  환경은, 문맥 메소드가 문맥으로부터 다음의 문맥에 진행될 때, 부모로부터 아이에게 상속됩니다. 특정의 문맥에 의해 무시되는 프로퍼티이 환경내에 있을지 어떨지에 관계없이, 문맥 인스턴스의 환경 전체가, 아이 문맥의 인스턴스에 상속됩니다.
+</p><p><a name="1002902"> </a>  이 환경 「상속」특성을 구현하려면 , 문맥 구현은 문맥 인스턴스로부터 다음의 문맥 인스턴스에 환경을 인도하지 않으면 안됩니다. 1 개의 문맥 구현 중(안)에서는,<code>Context</code> 생성자 에의 인수, 또는 <code>Context</code> 인스턴스를 생성하기 위한 <code>NamingManager/DirectoryManager.getObjectInstance()</code> 메소드에의 인수로서 환경을 건네주는 것으로, 이것을 실시할 수가 있습니다.  
+</p><p><a name="1002903"> </a>  연합내의 복수의 문맥 구현에 걸치는 경우는,<code>NamingManager.getContinuationContext() /DirectoryManager.getContinuationDirContext()</code> 의 <code>CannotProceedException</code> 파라미터의 일부로서 환경을 건네주는 것으로, 이것이 지원됩니다.  건네받은 환경은 다음에, 조작을 속행하는 문맥의 인스턴스를 생성할 경우에 사용됩니다.
+</p><p><a name="1002904"> </a>  상속은, 「각각의 문맥이 독자적인 환경의 시야를 가진다」라고 하는 시멘틱스가 유지되고 있는 한은, 어떤 방법으로 구현해도 괜찮습니다. 예를 들어, 절대 필요하게 될 때까지 환경의 카피를 연기하기 위해서, copy-on-write 구현을 사용할 수 있습니다.  
+</p><a name="1002905"> </a> 
+<h4>	2.9. 4	 환경의 갱신</h4>
+<p><a name="1002906"> </a>  문맥의 환경은,<code>Context</code> 인터페이스의 <code>addToEnvironment()</code> 메소드와 <code>removeFromEnvironment()</code> 메소드의 사용을 통해서 갱신할 수 있습니다.
+</p><blockquote><pre>public interface Context {
+	...
+	public Object addToEnvironment(String propName, Object propVal) 
+		throws NamingException;
+
+	public Object removeFromEnvironment(String propName) 
+		throws NamingException;
+}
+</pre></blockquote>
+<p><a name="1002915"> </a>  이러한 메소드는,<code>Context</code> 의 「이」인스턴스의 환경을 갱신합니다. 문맥 구현에 관계하지 않는 환경 프로퍼티은 무시됩니다만, 환경의 일부로서 유지됩니다. 갱신된 환경은 <code>Context</code> 의 이 인스턴스에 영향을 주어, 모든 새로운 아이 <code>Context</code> 인스턴스에 상속됩니다만, 벌써 존재하는 <code>Context</code> 인스턴스에는 영향을 주지 않습니다. <code>Context</code> 상에서 공백명을 룩 올라가면(자), 다른 아이에게 상속된 것과 같은 환경을 가지는 새로운 <code>Context</code> 인스턴스가 돌려주어집니다.
+</p><p><a name="1005730"> </a>  자세한 것은,<strong>JNDI API</strong> 문서의 마디 6.6 을 참조해 주세요.
+</p><a name="1004380"> </a> 
+<h4>	2.9. 5	 프로바이더 resource file</h4>
+<p><a name="1004381"> </a>  서비스 프로바이더에는 각각, 그 프로바이더에 고유의 프로퍼티을 포함한 옵션의 resource file가 있습니다. 이 자원의 이름은 다음과 같이 됩니다.  
+</p><blockquote><pre>[<em>prefix</em>/]jndiprovider.properties 
+<p><a name="1004384"> </a> 
+</pre></blockquote>
+여기서 <em>prefix</em> 는, 프로바이더의 문맥 구현의 패키지명으로, 피리어드 (". ")(은)는 slash("/")에 변환됩니다. 예를 들어, 어느 서비스 프로바이더가 클래스명 <code>com.sun.jndi.ldap.LdapCtx</code> 의 문맥 구현을 정의한다고 합니다. 이 프로바이더를 위한 프로바이더 자원은,<code>com/sun/jndi/ldap/jndiprovider.properties</code> 와 지정됩니다.
+<p></p><p><a name="1004419"> </a>  JNDI 클래스 라이브러리는,<strong>JNDI API</strong> 문서의 마디 6.5. 2 에 설명되고 있도록(듯이), 프로퍼티의 값을 결정할 필요가 있을 때는, 이 파일을 조사합니다.
+</p><p><a name="1004427"> </a>  프로퍼티의 값을 결정할 필요가 있을 때, 서비스 프로바이더는 일반적으로, 환경으로부터 직접치를 가져옵니다. 자신의 프로바이더 resource file에 포함하는 고유의 프로퍼티을, 서비스 프로바이더가 정하는 일도 있습니다. 그 경우는, 그러한 프로퍼티을 자신의 프로퍼티 resource file로부터 읽어들이고 나서,<strong>JNDI API</strong> 문서의 마디 6.5. 2 로 설명하는 알고리즘에 따른 방법으로 머지 하지 않으면 안됩니다.
+</p><a name="1005562"> </a> 
+<h3>	2.10	 접속의 관리</h3>
+<p><a name="1005731"> </a>  클라이언트/서버 프로토콜을 사용하는 문맥 구현에서는, 클라이언트와 서버의 사이의 접속과 문맥의 사이에 1 대 1 의 매핑은 필요하지는 않습니다. JNDI 는, 접속을 직접 취급하지 않는 고레벨 API 입니다. 필요한 접속 관리는 문맥 구현에 의해 행해집니다. 그 때문에, 복수의 인스턴스로 1 개의 접속을 공유하는 일도 있어, 또 문맥 구현은 독자적인 알고리즘을 사용해 접속과 네트워크의 사용법을 보존해도 괜찮습니다. 따라서, 문맥 인스턴스로 메소드가 불려 갈 때, 문맥 구현은 요구된 조작을 실행하는 것 외에 하등의 접속 관리를 실시할 필요가 있을 가능성이 있습니다.
+</p><p><a name="1005756"> <code>Context.close()</code> 메소드와 <code>NamingEnumeration.close()</code> 메소드를 사용해 어플리케이션은, 접속 관련의 자원을 언제 해제할까에 관한 힌트를 문맥 구현에게 줄 수가 있습니다. 문맥 구현은, 가베지 컬렉션과 접속 관련 자원의 보존을 위한 다른 수단을 사용하는 것을 선택할 수 있습니다 (일반적으로는 이것을 추천).
+</p><p><a name="1005763"> </a>  몇개의 환경 프로퍼티은, 문맥의 접속에 영향을 줍니다. 예를 들어, 어플리케이션이 시큐리티 관련의 프로퍼티을 변경하면(자), 문맥 구현이 그러한 갱신된 프로퍼티을 사용해 접속을 수정하거나 새롭게 작성하는 것이 필요하게 되는 경우가 있습니다. 변경전에, 접속이 다른 문맥과 공유되고 있었을 경우는, 프로퍼티이 갱신되어 있지 않은 문맥으로 접속의 변경이 영향을 주어서는 안됩니다.
+</p><a name="1002345"> </a> 
+<h2>	3	 초기 문맥</h2>
+<p><a name="997006"> </a>  모든 네이밍 메소드는 문맥에 관계해 실행되므로, 어플리케이션에는 이러한 메소드를 기동하기 위해서 최초의 문맥이 필요합니다. 이 최초의 문맥을, 「초기 문맥」이라고 부릅니다. 초기 문맥내의 바인딩은 정책 세트에 의해 결정되어 그 후는 초기 문맥 구현에 의해 결정됩니다.  그 결정에는, 아마 글로벌인 기업 전체 규모의 이름 공간의 네이밍을 위한 표준 정책가 사용됩니다. 초기 문맥에는, 예를 들어, 인터넷 DNS 이름 공간에의 바인딩, 기업 전체 규모의 이름 공간에의 바인딩, 어플리케이션을 실행하고 있는 사용자에 속하는 개인 디렉토리에의 바인딩이 1 개씩 포함되어 있는 경우등이 있습니다.
+</p><p><a name="997007"> </a>  어플리케이션은, 다음의 호출을 실시하는 것으로 초기 문맥을 가져옵니다.
+</p><blockquote><pre>Context ctx = new InitialContext();
+<p><a name="997009"> </a> 
+</pre></blockquote>
+대체 생성자 에 의해 환경을 인수로서 건네줄 수가 있습니다. 이것에 의해, 어플리케이션은 초기 문맥의 작성으로 사용되는 preference 또는 시큐리티 정보를 인도할 수가 있습니다.
+<p></p><blockquote><pre>
+Hashtable env = new Hashtable();<a href="#1002114"><sup>4</sup></a> 
+env.put(Context.SECURITY_PRINCIPAL, "jsmith");
+env.put(Context.SECURITY_CREDENTIALS, "xxxxxxx");
+Context ctx = new InitialContext(env);
+</pre></blockquote>
+<p><a name="997010"> </a>  어플리케이션은, 초기 문맥의 취득에 이어,<code>Context</code> 메소드의 호출을 실행할 수 있습니다.
+</p><blockquote><pre>Object obj = ctx.lookup("this/is/a/test");</pre></blockquote>
+<p><a name="997012"> </a> <code>InitialContext</code> 클래스 ( 및 서브 클래스)는, 디폴트의 알고리즘을 사용해 구현을 선택합니다.  이 알고리즘은, 「초기 콘테키스트파크트리빌더」(이 다음에 설명)을 인스톨 하는 것으로써 오버라이드(override) 할 수 있습니다.
+</p><p><a name="997013"> </a>  <code>InitialDirContext</code> 는 <code>InitialContext</code> 의 서브 클래스입니다. 초기 문맥을 사용해 디렉토리 조작을 실시하기 위해서(때문에) 사용됩니다. <code> InitialLdapContext</code> 클래스는 <code>InitialDirContext</code> 의 서브 클래스입니다. 초기 문맥을 사용해 특별한 LDAP v3 조작을 실시하기 위해서(때문에) 사용됩니다. 여기서 설명한 알고리즘과 정책는,<code>InitialDirContext</code> 와 <code>InitialLdapContext</code> 에도 들어맞읍니다. 설명의 <code>Context</code> 를 적당 <code>DirContext</code> 또는 <code>LdapContext</code> 에 옮겨놓아 주세요.
+</p><a name="1004566"> </a> 
+<h3>	3.1	 초기 문맥 팩토리</h3>
+<p><a name="1004567"> </a>  「초기 문맥 팩토리」는,<a href="jndispi12.fm.html#998980">제 2 장</a>으로 개설한 가이드 라인에 따라 구현된 문맥의 인스턴스를 생성하는 클래스입니다. 이 팩토리는,<code>InitialContext</code> 클래스 (또는 서브 클래스)의 생성자 에 의해 사용됩니다.  
+</p><p><a name="1004588"> </a>  환경이 주어지면(자), 팩토리는 <code>Context</code> (또는 그 서브 인터페이스)의 인스턴스를 돌려줍니다.  
+</p><blockquote><pre>public interface InitialContextFactory {
+	public Context getInitialContext(Hashtable env)         <br>
+		throws NamingException;
+}
+</pre></blockquote>
+<p><a name="998189"> </a>  부록 A 에,<code>InitialContextFactory</code> 의 예가 있습니다.
+</p><p><a name="1004591"> </a>  문맥 인스턴스가 생성된 뒤는,<code>InitialContext</code> 상에서 URL 이외의 이름 (아래와 같이 참조)을 사용해 메소드가 불려 가면(자), 그 메소드는 문맥 인스턴스에게 건네져 거기서 불려 갑니다.  
+</p><p><a name="1004603"> </a>  JNDI 는, 사용하는 초기 문맥 구현을 <code>java.naming.factory.initial</code> 프로퍼티을 사용해 선택합니다. 이 프로퍼티에는, 1 개의 초기 문맥 팩토리의 완전 수식 클래스명이 포함되어 있습니다. 이 클래스는 <code>InitialContextFactory</code> 인터페이스를 구현해, 인수를 취하지 않는 public 의 생성자 을 가지지 않으면 안됩니다. JNDI 는 이 초기 문맥 팩토리 클래스를 로드하고 나서, 게다가로 <code>getInitialContext()</code> 를 호출해, 초기 문맥으로서 사용되는 <code>Context</code> 인스턴스를 가져옵니다.  
+</p><p><a name="1004599"> </a>  특별한 초기 문맥을 사용하려고 하는 어플리케이션은,<code>InitialContext</code> (또는 서브 클래스) 생성자 에게 건네진 환경가운데에, 또는 resource file, 시스템 프로퍼티, 애플릿 파라미터의 언젠가를 통해서,<code>java.naming.factory.initial</code> 프로퍼티을 제공하지 않으면 안됩니다.
+</p><a name="1007521"> </a> 
+<h4>	3.1. 1	 예외</h4>
+<p><a name="1004618"> <code>java.naming.factory.initial</code> 프로퍼티이 <code>null</code> 이외의 값으로 설정되어 있을 때는,<code>InitialContext</code> ( 및 서브 클래스) 생성자 은 초기 문맥 팩토리를 로드해 그 인스턴스를 생성하려고 합니다.  다음에, 초기 문맥 팩토리가 문맥 인스턴스를 생성합니다. 인증의 문제등의 원인으로, 팩토리 또는 문맥을 작성할 수 없을 때는, 초기 문맥 팩토리는 예외를 throw 해, 이 문제를 통지할 수가 있습니다. 다만, 환경 프로퍼티 또는 접속에 관한 문제를 확인해 초기 문맥의 사용자에게 통지하는 시기는, 문맥 구현에 맡고 있습니다. 문제의 확인과 통지는, 문맥으로 조작이 실행될 때까지 늦추어도, 문맥이 작성되었을 때에 곧바로 행해도 괜찮습니다.
+</p><p><a name="1004636"> </a>  <code>java.naming.factory.initial</code> 프로퍼티이 설정되어 있지 않은 경우는, 초기 문맥에 대신해 배후의 문맥을 작성하는 처리는 시행되지 않습니다. 초기 문맥은, 예를 들어 다음으로 설명하도록(듯이), URL 명의 처리에 계속 사용할 수가 있습니다.
+</p><a name="1004642"> </a> 
+<h3>	3.2	 URL 의 지원</h3>
+<p><a name="1004685"> </a>  URL<a href="#1004684"><sup>5</sup></a>  캐릭터 라인이 초기 문맥에게 건네졌을 경우는, 대응하는 「URL 문맥 구현」을 사용해 해석됩니다. 이 기능은 <code>InitialContext</code> 클래스 ( 및 서브 클래스)에 의해 지원되어<code>java.naming.factory.initial</code> 환경 프로퍼티의 설정과는 무관계합니다.
+</p><p><a name="1004725"> </a>  이 기능에 의해, 어느 URL 문맥 구현이 이용 가능한 임의의 이름 공간에, 어플리케이션이 초기 문맥을 사용해 도달하는 것이 가능하게 됩니다. 예를 들어, 다음의 코드는 초기 문맥으로부터, 어느 LDAP 이름 공간의 리스트를 작성합니다.
+</p><p><a name="1004734"> </a>  &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32;	<code>new InitialContext(). list("ldap://lserver/ou=eng, o=wiz, c=us");</code>
+</p><a name="1004731"> </a> 
+<h4>	3.2. 1	 URL 문맥</h4>
+<p><a name="1005099"> </a>  URL 캐릭터 라인의 서식은 다음과 같습니다.
+</p><p><a name="1005100"> </a>  &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32;	<em>scheme_id</em>:<em>opaque_string</em>
+</p><p><a name="1004713"> </a>  예를 들어, LDAP URL 캐릭터 라인이 schema ID "ldap" 를 가져, 파일 URL 가 schema ID "file" 를 가진다고 합니다.
+</p><p><a name="1005103"> </a>  URL 문맥 구현은 <code>Context</code> 인터페이스 (와 서브 인터페이스)를 구현하는 클래스에서, 지원하는 schema의 URL 캐릭터 라인인 이름의 인수를 받습니다. 예를 들어, LDAP URL 문맥은 URL 캐릭터 라인 "ldap" 를 받습니다.
+</p><p><a name="1005038"> </a>  URL 캐릭터 라인명이 URL 문맥에게 건네지면(자),<code>String</code> 를 받는 문맥 메소드는, 그 이름을 URL schema에 의해 정의되는 구문을 가지는 URL 명으로서 취급합니다. 최초의 요소가 URL 캐릭터 라인명인 <code>Name</code> 객체가 URL 문맥에게 건네지면(자), 최초의 요소가 URL 캐릭터 라인으로서 취급되어 나머지는 연합에 사용됩니다 (즉, 최초의 요소의 해석에 의해, 나머지의 해석에 사용하는 네이밍 시스템이 나타난다). <code>Name</code> 인스턴스는 <code>CompositeName</code> 여야 하는 것으로, 그 이외의 경우는 <code>InvalidNameException</code> 를 throw 하는 것으로 합니다.
+</p><p><a name="1005032"> </a>  URL 캐릭터 라인 이외의 이름 인수와 올바르지 않은 schema ID 를 가지는 URL 캐릭터 라인은 <code>InvalidNameException</code> 를 throw 해 거부하는 것으로 합니다.
+</p><a name="1005087"> </a> 
+<h4>	3.2. 2	  URL 문맥 팩토리</h4>
+<p><a name="1004691"> </a>  「URL 문맥 팩토리」는, 1 개(살) 이상의 schema의 URL 문맥의 인스턴스를 생성하는 클래스 (실제로는 특별한 타입의 「객체 팩토리」(<a href="jndispi12.fm.html#1007760">「4.1」</a>을 참조))입니다.
+</p><p><a name="1005018"> <code>InitialContext</code> 클래스는 이름 인수로서 URL 캐릭터 라인을 받으면(자), 다음의 알고리즘을 사용해 URL 문맥 팩토리를 찾습니다. 환경 프로퍼티 <code>java.naming.factory.url.pkgs</code> 에는, 구두점으로 단락지어진 패키지 접두사의 리스트가 있습니다. 팩토리의 클래스명은, 프로퍼티의 리스트에 나타나는 각 패키지 접두사에 대해 다음의 규칙을 사용해 구성됩니다.  
+</p><p><a name="1005191"> </a>  <em>package_prefix</em> + ". "+ <em>scheme_id</em> + ". "+ <em>scheme_id</em><code>URLContextFactory</code>
+</p><p><a name="1005192"> </a>   </a>  디폴트의 패키지 접두사 <code>com.sun.jndi.url</code> 가 리스트의 마지막에 붙어 있습니다.
+</p><p><a name="1005236"> </a>  예를 들어, URL 가 "<code>ldap://somehost:389</code>" 으로,<code>java.naming.factory.url.pkgs</code> 에 "<code>com.widget:com.wiz.jndi</code>" 가 포함되어 있는 경우,<code>InitialContext</code> 클래스는, 다음의 클래스를 로드해 몇개의 인스턴스의 생성에 성공할 때까지 시험하는 것으로, 대응하는 팩토리 클래스를 찾습니다.
+</p><blockquote><pre>com.widget.ldap.ldapURLContextFactory
+com.wiz.jndi.ldap.ldapURLContextFactory
+com.sun.jndi.url.ldap.ldapURLContextFactory
+<p><a name="1005198"> </a> 
+</pre></blockquote>
+팩토리 클래스는 <code>ObjectFactory</code> 인터페이스 (<a href="jndispi.fm.html#1000794">31 페이지의 「URL 문맥 팩토리」</a>를 참조)를 구현해, 인수를 취하지 않는 public 의 생성자 을 가집니다. <code>InitialContext</code> 클래스는, 팩토리의 <code>getObjectInstance()</code> 메소드로 해석이 끝난 객체로서 schema ID 를 건네주어, 이 메소드는 그 URL schema를 위한 URL 문맥을 작성합니다. URL 문맥은 다음에, 최초로 <code>InitialContext</code> 에게 줄 수 있었던 URL 로 목적의 <code>Context</code> 또는 <code>DirContext</code> 조작을 실시하기 위해서(때문에) 사용됩니다.
+<p></p><a name="1005286"> </a> 
+<h4>	3.2. 3	 서비스 프로바이더의 책임</h4>
+<p><a name="1005287"> </a>  서비스 프로바이더가 URL 문맥 팩토리와 URL 문맥 구현을 제공해야 한다고 하는 조건은 없습니다. 서비스 프로바이더가 이것들을 제공하는 것은, URL schema를 가지는 URL 캐릭터 라인명을 <code>InitialContext</code> 클래스에 받게 하고 싶은 경우 뿐입니다. 예를 들어, 서비스 프로바이더가, 초기 문맥 팩토리와 그 팩토리를 통해서 액세스 되는 문맥 구현만을 제공해도 괜찮습니다.
+</p><a name="997025"> </a> 
+<h3>	3.3	 디폴트 동작의 오버라이드(override) </h3>
+<p><a name="1005311"> <code>java.naming.factory.initial</code> 환경 프로퍼티을 사용한 초기 문맥 팩토리의 작성과 URL 지원의 정책는,<code>InitialContext</code> 클래스에 짜넣어지고 있습니다. 이 정책의 모두 또는 일부를 어플리케이션이 오버라이드(override) 하는 방법은 2 개 있습니다.
+</p><a name="1005328"> </a> 
+<h4>	3.3. 1	 URL 지원의 제외</h4>
+<p><a name="1005329"> </a>  어플리케이션으로 URL 캐릭터 라인을 취급하고 싶지 않은 경우는,<code>NamingManager.getInitialContext()</code> 메소드를 사용할 수 있습니다.  이 메소드는,<code>java.naming.factory.initial</code> 환경 프로퍼티으로 지정되고 있는 팩토리를 사용해 문맥 인스턴스를 생성합니다.  
+</p><p><a name="1005345"> </a>  이 메소드는, 어플리케이션이 초기 문맥 팩토리가 작성한 문맥에 의해 구현되고 있는 인터페이스에 액세스 할 필요가 있지만, 그 초기 문맥이 <code>Context</code>,<code>DirContext</code>,<code>LdapContext</code> 의 머지않아도 아닌 경우에도 편리합니다. 다음의 코드의 fragment는,<code>NamingManager.getInitialContext()</code> 를 사용해 문맥을 취득해, 그것을 서브 클래스에 캐스트 합니다.
+</p><blockquote><pre>FooContext ctx = (FooContext) NamingManager.getInitialContext(env);
+...
+Object obj = ctx.lookup(name);
+ctx.fooMethod1(...);
+<p><a name="1005350"> </a> 
+</pre></blockquote>
+초기 콘테키스트파크트리빌더 (다음에 설명)를 인스톨 하면(자),<code>NamingManager.getInitialContext()</code> 의 결과에 영향을 줄테니 주의해 주세요.
+<p></p><a name="1005371"> </a> 
+<h4>	3.3. 2	 모든 정책의 제외</h4>
+<p><a name="997026"> </a>  초기 문맥 팩토리 「빌더」는, 초기 문맥 팩토리의 인스턴스를 생성하는 클래스입니다.
+</p><p><a name="1005381"> </a>  어플리케이션은, 초기 문맥 구현을 찾아 구축하는 방법에 대한 독자적인 정책를 정의하기 위해서, 초기 콘테키스트파크트리빌더를 인스톨 할 수가 있습니다. 빌더가 인스톨 되고 있는 경우는, 초기 문맥 팩토리의 작성의 책임을 빌더가 단독으로 집니다. 일반적으로 JNDI 가 사용하는 디폴트의 정책 (<code>java.naming.factory.initial</code> 또는 URL 지원)는 채용되지 않습니다.
+</p><p><a name="997027"> </a>  초기 콘테키스트파크트리빌더의 구현은,<code>InitialContextFactoryBuilder</code> 인터페이스를 구현하지 않으면 안됩니다. 이 인터페이스의 <code>createInitialContextFactory()</code> 메소드는 <code>InitialContextFactory</code> 의 인스턴스를 생성합니다.
+</p><p><a name="997030"> </a>  빌더가 인스톨 된 뒤는, 어플리케이션은 <code>InitialContext</code>,<code>InitialDirContext</code>,<code>InitialLdapContext</code> 의 쳐 몇개의 생성자 을 사용하는지,<code>NamingManager.getInitialContext()</code> 를 사용해 초기 문맥을 취득할 수 있습니다. 몇개의 생성자 을 사용하는 경우는, 그 클래스의 본질은,<code>NamingManager.getInitialContext()</code> 로부터 반환되는 배후의 문맥 구현의 래퍼입니다.
+</p><a name="1002587"> </a> 
+<h3>	3.4	 InitialContext 의 서브 클래스의 구현</h3>
+<p><a name="1001471"> </a>  <code>Context</code>,<code>DirContext</code>,<code>LdapContext</code> 로부터 확장한 인터페이스를 지원하는 초기 문맥을 준비할 필요가 있는 경우는, 서비스 프로바이더는 <code>InitialContext</code>,<code>InitialDirContext</code>,<code>InitialLdapContext</code> 의 쳐 몇개의 서브 클래스를 제공할 필요가 있습니다.  
+</p><a name="1005441"> </a> 
+<h4>	3.4. 1	 URL 의 지원</h4>
+<p><a name="1005440"> </a>  <code>InitialContext</code> 와 <code>InitialDirContext</code> 가 실시하는 것과 같은 방법에서의 URL 의 지원를 추가하려면 , 서브 클래스는 <code>InitialContext</code> 로 이용할 수 있는 protected 메소드를 다음과 같이 사용하는 것으로 합니다. 이것이, 이름의 인수를 받는 메소드를 가지는 인터페이스에 있어 의미가 있는 유일한 방법입니다.
+</p><p><a name="1001558"> </a>  예를 들어,<code>FooContext</code> 가 <code>DirContext</code> 의 서브 인터페이스이다고 합니다. 그 초기 문맥 구현은, 사용하는 실제의 초기 문맥을 취득하는 <code>getURLOrDefaultInitFooCtx()</code> 메소드를 (<code>Name</code> 와 <code>String</code> 파라미터의 양쪽 모두에 대해) 정의합니다.
+</p><blockquote><pre>public class InitialFooContext extends InitialDirContext {
+	...
+	protected FooContext getURLOrDefaultInitFooCtx(Name name)
+		throws NamingException {
+		Context answer = getURLOrDefaultInitCtx(name);
+		if (! (answer instanceof FooContext)) {
+			throw new NoInitialContextException("Not a FooContext");
+		}
+		return (FooContext) answer;
+	}
+	// similar code for getURLOrDefaultInitFooCtx(String name)
+}
+<p><a name="1001493"> </a> 
+</pre></blockquote>
+<code>FooContext</code> 인터페이스내의, 이름의 인수를 받는 새로운 메소드의 구현을 실시할 때는,<code>getURLOrDefaultInitFooCtx()</code> 를 다음과 같이 사용합니다.
+<p></p>
+<pre>
+	public Object FooMethod1(Name name, ...) throws NamingException {
+		return getURLOrDefaultInitFooCtx(name). FooMethod1(name, ...);
+	}
+</pre>
+<a name="1005470"> </a> 
+<h4>	3.4. 2	 새로운 메소드의 지원</h4>
+<p><a name="1001506"> </a>  <code>FooContext</code> 인터페이스내의, 이름의 인수가 없는 메소드 또는 URL 지원가 불필요한 메소드의 구현을 실시하려면 ,<code>InitialContext.getDefaultInitCtx()</code> 를 사용합니다.
+</p><blockquote><pre>protected FooContext getDefaultInitFooCtx() throws NamingException {
+	Context answer = getDefaultInitCtx();
+	if (! (answer instanceof FooContext)) {
+		throw new NoInitialContextException("Not an FooContext");
+	}
+	return (FooContext) answer;
+}
+public Object FooMethod2(Args args) throws NamingException {
+	return getDefaultInitFooCtx(). FooMethod2(args);
+}
+<p><a name="1005784"> </a> 
+
+</p></pre></blockquote><a name="1005483"> </a> 
+<h4>	3.4. 3	 생성자</h4>
+<p><a name="1001563"> </a>  구현에는, 클래스를 위한 적절한 생성자 을 준비하는 것으로 합니다. 생성자 은, 슈퍼 클래스의 적절한 생성자 을 호출합니다. 슈퍼 클래스의 생성자 을 호출하기 전으로 환경을 변경 또는 검사할 필요가 있는 경우는, 초기 문맥의 초기화를 제어하기 위한 boolean 형의 플래그를 받는 protected 생성자 을 사용해, 다음에,<code>init()</code> 메소드를 사용해 문맥을 초기화합니다. 다음에 예를 나타냅니다.
+</p><blockquote><pre>public InitialFooContext(Hashtable environment, Object otherArg) 
+	    throws NamingException {
+	super(true); // don't initialize yet
+
+	// Clone environment and adjust
+	Hashtable env = (environment == null) ?  new Hashtable(11) :
+		(Hashtable) environment.clone();
+	...
+	init(env);
+}
+<p><a name="1001565"> </a> 
+</pre></blockquote>
+이 새로운 초기 문맥을 사용하는 클라이언트 프로그램은, 다음과 같이 됩니다.
+<blockquote><pre>
+<p></p>import com.widget.jndi.InitialFooContext;
+...
+FooContext ctx = new InitialFooContext(env);
+Object obj = ctx.lookup(name);
+ctx.FooMethod1(name, ...);
+</pre></blockquote><a name="997589"> </a> 
+<h2>	4	 문맥 구현의 커스터마이즈</h2>
+<p><a name="1005806"> </a>  JNDI 에서는, 문맥 구현이 네임 서비스 또는 디렉토리 서비스의 객체를 읽어들이거나 기입하거나 하는 방법을, 어플리케이션, 어플리케이션의 개발자 또는 사용자, 혹은 서비스 프로바이더를 커스터마이즈 할 수 있습니다. LDAP v3 컨트롤 클래스의 네로우 변환에 대해서도, 같은 기능을 사용할 수 있습니다.
+</p><p><a name="1006157"> </a>  이러한 기능은, 문맥 구현에 플러그 인 하는 모듈로서 생각할 수가 있습니다.  
+</p><a name="1007760"> </a> 
+<h3>	4.1	 객체의 read:객체 팩토리</h3>
+<p><a name="1000783"> </a>  JNDI 에는 이름 공간에 보존되고 있는 정보를 사용하는, 총칭 객체 (<code>Context</code> 의 인스턴스를 포함한다) 생성 방법이 있습니다. 그 정보의 타입 (<code>java.lang.Object</code>)은 임의입니다. 예를 들어,<code>Reference</code>, URL, 또는 객체를 생성하기 위해서 필요한 다른 데이터 등입니다. 이름 공간에 보존되고 있는 이러한 정보를 객체로 변환하는 처리는, 「객체 팩토리」의 사용을 통해서 지원됩니다. 객체 팩토리는 <code>ObjectFactory</code> 인터페이스 (또는 <code>DirObjectFactory</code> 서브 인터페이스)를 구현하는 클래스입니다.
+</p><blockquote>
+<pre>
+	public interface ObjectFactory {	
+		public Object getObjectInstance(Object refObj, 
+						Name name,
+						Context nameCtx, 
+						Hashtable env)
+			throws Exception;
+	}
+	public interface DirObjectFactory extends ObjectFactory {
+		public Object getObjectInstance(Object refObj, 
+						Name name,
+						Context nameCtx, 
+						Hashtable env,
+						Attributes attrs)
+			throws Exception;
+	}
+</pre>
+<p><a name="1000788"> </a> 
+</blockquote>
+어느 객체에 관한 참조 정보 (<code>refObj</code>), 그 객체의 이름과 바인드 되고 있는 장소에 관한 추가 정보, 및 추가의 환경 정보 (예를 들어, 객체를 생성하는 사용자에 관한 ID 정보나 인증 정보등)가 주어지면(자), 팩토리는 그 참조 정보가 나타내는 객체를 생성하려고 합니다. 예를 들어, 프린터에 관한 참조 정보가 주어지면(자), 프린터 객체 팩토리는 <code>Printer</code> 의 인스턴스를 돌려줍니다. <code> DirContext</code> 의 구현과 함께 사용되는 객체 팩토리의 경우에는, 팩토리에는 객체에 관한 속성도 주어집니다. 팩토리가 한층 더 많은 속성 또는 정보를 필요로 하는 경우는,<code>name</code> 인수 또는 <code>nameCtx</code> 인수를 사용해 네임 서비스 또는 디렉토리 서비스로부터 직접 정보를 취득할 수 있습니다.  
+<p></p><p><a name="1006175"> </a>  주어진 인수를 사용해 객체를 생성할 수 없을 때는, 팩토리는 <code>null</code> 를 돌려주는 것으로 합니다. 예를 들어, 프린터 객체 팩토리에 디스크 드라이버에 관한 데이터가 주어졌을 경우는 <code>null</code> 를 돌려줍니다. 팩토리는, 다른 객체 팩토리를 시도해야 하는 것이 아닌 경우에게만 예외를 throw 하는 것으로 합니다. 그 때문에, 팩토리는 그 구현으로부터 throw 되는 실행시 예외에 유의해야 합니다. 예를 들어, 프린터 객체 팩토리에 프린터의 데이터가 주어졌지만, 그 데이터의 형식이 올바르지 않은 경우에는, 예외를 throw 합니다.
+</p><p><a name="1006192"> </a>  객체 팩토리는 JNDI 의 복수의 장소에서, 기본적으로는 참조 정보를 객체로 변환하기 위해서(때문에) 사용됩니다. 객체 팩토리는, 연합, 초기 문맥에서의 URL 처리, 및 (프린터의 예로 설명한 것처럼) 데이터를 어플리케이션이 기대하는 형식으로 변환하기 위해서(때문에) 사용됩니다.
+</p><a name="1006206"> </a> 
+<h4>	4.1. 1	 구조화 된 참조의 처리</h4>
+<p><a name="1006207"> </a>  <code> Reference</code> 에는, 클래스명과 객체 팩토리의 위치를 돌려주기 위한 메소드가 포함됩니다. 다음의 메소드가 <code>Reference</code> 에 있습니다.
+</p><blockquote><pre>public class Reference {
+	...
+	public String 	getClassName();
+	public String getFactoryClassName();
+	public String getFactoryClassLocation();
+}
+<p><a name="1006214"> </a> 
+</pre></blockquote>
+디렉토리 서비스 또는 네임 서비스로부터 읽어내진 객체가 <code>Reference</code> 또는 <code>Referenceable</code> 의 인스턴스인 경우는, 대응하는 객체 팩토리는,<code>Reference</code> 내의 정보를 사용해 찾을 수가 있습니다. <code>getFactoryClassName()</code> 메소드는 <code>ObjectFactory</code> 인터페이스를 구현하는 팩토리 클래스의 이름을 가져옵니다. 이 팩토리는 <code>ObjectFactory</code> 인터페이스를 구현해, 인수를 취하지 않는 public 의 생성자 을 가지지 않으면 안됩니다.  <code>getFactoryClassLocation()</code> 는, 팩토리의 클래스 구현의 코드 베이스를 가져옵니다.  이것은, 공백 문자로 단락지어진 URL 의 리스트입니다.
+<p></p><p><a name="1006215"> </a>  JNDI 는 <code>ObjectFactory</code> 인스턴스상에서,<code>Reference</code> 와 환경을 인수로서 사용해 <code>getObjectInstance()</code> 를 호출하는 것으로 객체를 생성합니다. 결과는,<code>getClassName()</code> 에 의해 식별되는 클래스의 인스턴스입니다.
+</p><p><a name="1006216"> </a>  어플리케이션에 반환되는 객체의 인스턴스를 생성하기 위해서 필요한 모든 클래스는, JNDI 에 준비되어 있는 기구를 사용해 준비할 수 있습니다. 어플리케이션은, 로컬로 클래스를 인스톨 할 필요는 없습니다.
+<p>
+<font size="-1"><b>그림 3:이름 공간으로부터 참조를 사용해 객체를 되찾는 예</b></font>
+<center>
+<img src="figure_three.gif" alt="이름 공간으로부터 참조를 사용해 객체를 되찾는 예">
+
+</center>
+</p><p><a name="1006267"> </a>  프린터의 예에 돌아와, 어느 프린터를 나타내기 위한 인터페이스가 <code>Printer</code> 로, 그 인터페이스의 구현이 <code>BSDPrinter</code> 클래스이다고 합니다. <code>BSDPrinter</code> 는 <code>Referenceable</code> 인터페이스를 구현해,<code>BSDPrinter</code> 의 인스턴스의 구축 방법에 관한 정보와 프린트 서버-와의 통신을 위한 주소 정보를 <code>Reference</code> 클래스를 사용해 보존합니다. <code>Reference</code> 에는, 객체 ("<code>Printer"</code>)의 클래스명, 프린터 객체 팩토리 ("<code>PrinterFactory</code>")의 클래스명, 및 팩토리의 클래스 구현을 로드하기 위한 URL 가 포함됩니다. 팩토리 클래스명과 구현 위치를 사용해, JNDI 는 최초로 <code>PrinterFactory</code> 의 구현을 로드해,<code>PrinterFactory</code> 의 인스턴스를 생성합니다. 다음에, JNDI 는 팩토리상에서 <code>getObjectInstance()</code> 를 호출해, 참조를 사용해 <code>Printer</code> 의 인스턴스를 생성합니다. 예를 들어, 참조안의 1 개의 주소가 "<code>bsd</code>" 타입의 주소를 가져, 프린트 서버-의 호스트명 ("<code>lobby-printserver</code>")이 포함되어 있다고 합니다. <code>PrinterFactory</code> 인스턴스는 주소 타입 ("<code>bsd</code>")을 사용해 <code>BSDPrinter</code> 인스턴스의 생성을 결정해, 주소 컨텐츠 ("<code>lobby-printserver</code>")를 생성자 에 건네줍니다. 결과의 <code>BSDPrinter</code> 객체는,<code>lookup()</code> 의 결과로서 돌려주어집니다.
+</p><p><a name="1006379"> </a>  문맥 구현의 관점으로부터 보면(자), 이것은 <code>NamingManager</code>/<code>DirectoryManager.getObjectInstance()</code> 를 호출하는 것으로, 모두 자동적으로 행해집니다.
+</p><p><a name="1006268"> </a>  어플리케이션이 <code>lookup()</code> 로부터 반환된 <code>BSDPrinter</code> 인스턴스상에서 <code>print()</code> 를 호출하면(자), 데이터가 인쇄를 위해서(때문에) <code>lobby-printserver</code> 머신상의 프린터 서버에 보내집니다. 어플리케이션은, 이름 공간에 보존되고 있는 <code>Reference</code> 의 상세나, 작업을 실행하기 위해서 사용하는 프로토콜, 및 <code>BSDPrinter</code> 클래스가 로컬로 정의되고 있을까 네트워크를 통해서 로드 되었는지 어떠했는지에 임해서 통지될 필요는 없습니다. 배후의 서비스에 보존되고 있는 정보를,<code>Printer</code> 인터페이스를 구현하는 객체로 변환하는 처리는, 서비스 프로바이더 (프린터명으로부터 프린터 주소 정보에의 바인딩을 보존), 프린터 서비스 프로바이더 (<code>PrinterFactory</code> 클래스와 <code>BSDPrinter</code> 클래스를 제공), JNDI SPI 시스템 (전의 양자를 연결시켜, 어플리케이션이 직접 사용할 수 있는 객체를 돌려준다)가 협동하는 것으로써 투과적으로 행해집니다.
+</p><p><a name="1006526"> </a>  이러한 객체를 위한 서비스 프로바이더는, 다음 일을 실시하지 않으면 안됩니다.
+</p><ol>
+<a name="1006527"> </a> 
+<li><code>Referenceable</code> 를 구현한다, 혹은 <code>Reference</code> 의 서브 클래스인 객체 (<code>BSDPrinter</code> 등)의 클래스를 정의합니다.  <a name="1006528"> </a> 
+<li><code>Reference</code> 와 객체의 참조 주소를 정의합니다.  <a name="1006546"> </a> 
+<li><code>ObjectFactory</code> (<code>PrinterFactory</code> 등)를 구현하는 팩토리 클래스를 정의합니다. 이 클래스의 <code>getObjectInstance()</code> 메소드는, 스텝 2 로 정의된 <code>Reference</code> 가 주어지면(자) 스텝 1 으로 정의된 클래스 (<code>BSDPrinter</code> 등)의 인스턴스를 생성합니다.
+</ol>
+<a name="1006384"> </a> 
+<h4>	4.1. 2	 URL 참조의 취급</h4>
+<p><a name="1006385"> </a> <code>Reference</code> 에, URL 타입의 주소는 포함되지만 팩토리의 클래스명으로 위치는 포함되지 않는 경우, 또는 그 참조가 URL 를 포함한 캐릭터 라인의 배열인 경우는, JNDI 는<a href="jndispi.fm.html#1004642">마디 3.2</a>  로 설명한 URL 문맥 팩토리 지원를 사용해 팩토리를 찾아, 다음에 주소내의 URL 캐릭터 라인을 팩토리의 <code>getObjectInstance()</code> 메소드에 건네줍니다. JNDI 가 예기 하는 URL 문맥 팩토리의 구현의 동작에 대해서는,<a href="jndispi.fm.html#1000794">4.1. 6 절</a>로 설명합니다.
+</p><p><a name="1006557"> </a>  이러한 객체를 위한 서비스 프로바이더는, 다음 일을 실시하지 않으면 안됩니다.
+</p><ol>
+<a name="1006558"> </a> 
+<li>객체 (<code>BSDPrinter</code> 등)의 클래스를 정의합니다.  <a name="1006559"> </a> 
+<li>객체의 URL schema를 정의합니다.  <a name="1006560"> </a> 
+<li><code>ObjectFactory</code> 를 구현하는 URL 문맥 팩토리를 정의합니다. 이 클래스의 <code>getObjectInstance()</code> 메소드는, 스텝 2 로 정의된 URL 가 주어지면(자) 스텝 1 으로 정의된 클래스 (<code>BSDPrinter</code> 등)의 인스턴스를 생성합니다.
+</ol>
+<a name="1006269"> </a> 
+<h4>	4.1. 3	 임의 참조의 취급 :java.naming.factory.object 프로퍼티</h4>
+<p><a name="1006270"> </a>  <code>Reference</code> 로부터의 팩토리 정보의 추출 또는 URL 의 사용에 가세해 JNDI 는 <code>java.naming.factory.object</code> 프로퍼티으로 지정되고 있는 객체 팩토리를 찾을 수도 있습니다.  이 프로퍼티은 환경내 또는 프로바이더 resource file에 있습니다 (<a href="jndispi.fm.html#1004380">마디 2.9. 5</a>  를 참조). 이 프로퍼티에는, 객체 팩토리의 완전 수식 클래스명의 구두점으로 단락지어진 리스트가 있습니다. 각 클래스는 <code>ObjectFactory</code> 인터페이스를 구현해, 인수를 취하지 않는 public 의 생성자 을 가지지 않으면 안됩니다. 리스트내의 각 클래스에 대해, JNDI 는 팩토리 클래스의 로드와 인스턴스 생성을 시도해 주어진 환경 인수와 객체를 사용해 그 인스턴스상에서 <code>ObjectFactory/DirObjectFactory.getObjectInstance()</code> 메소드의 호출을 시도합니다. 생성에 성공하면(자), 결과의 객체가 돌려주어집니다.  실패했을 경우는, JNDI 는 리스트내의 다음의 클래스에 같은 순서를 사용해, 리스트가 끝날까 팩토리가 <code>null</code> 이외의 결과를 돌려줄 때까지 이것을 반복합니다.
+</p>
+<p>
+<font size="-1"><b>그림 4:java.naming.factory.object 를 사용해 이름 공간으로부터 객체를 되찾는 예</b></font>
+<center>
+<img src="figure_four.gif" alt="java.naming.factory.object (을)를 사용해 이름 공간으로부터 객체를 되찾는 예">
+</center>
+<p><a name="1006331"> </a>  프린터의 예에서는, 이름 공간내의 프린터를 표현하기 위해서 <code>Reference</code> 를 사용하는 것이 아니라, 다른 정보가 보존됩니다. 그 정보가 나중에 취득되면(자), 그 정보를 <code>Printer</code>  인스턴스로 변환하는 시도의 다음에,<code>java.naming.factory.object</code> 로 지정된 객체 팩토리가 시도됩니다.
+</p><p><a name="1006332"> </a>  이러한 객체를 위한 서비스 프로바이더는, 다음 일을 실시하지 않으면 안됩니다.
+</p><ol>
+<a name="1006333"> </a> 
+<li>객체 (<code>BSDPrinter</code> 등)의 클래스를 정의합니다.  <a name="1006334"> </a> 
+<li>객체의 참조 정보를 위한 클래스를 정의합니다. 이것은, 이름 공간내에서 바인드 되는 객체입니다. 이것은,<code>Reference</code> 일 필요는 없습니다. 대응하는 객체 팩토리를 이해할 수 있는 것이라면 뭐든지 괜찮습니다 (서버명 "<code>printer type=bsd; host=lobby-printserver</code>" 를 포함한 캐릭터 라인 등).  <a name="1006335"> </a> 
+<li><code>ObjectFactory</code> (<code>PrinterFactory</code> 등)를 구현하는 팩토리 클래스를 정의합니다. 이 클래스의 <code>getObjectInstance()</code> 메소드는, 스텝 2 로 정의된 클래스 ("<code>printer type=bsd; host=lobby-printserver</code>" 등)의 인스턴스가 주어지면(자) 스텝 1 으로 정의된 클래스 (<code>BSDPrinter</code> 등)의 인스턴스를 생성합니다.
+</ol>
+<p><a name="1006336"> </a>  서비스 프로바이더는, 객체를 바인드 또는 룩 올라갈 때, 자동적으로 실제의 객체 (<code>BSDPrinter</code> 등)와 참조 정보 (스텝 2,"<code>printer type=bsd; host=lobby-printserver</code>" 등)의 사이에 변환을 실시하는 것으로 합니다.
+</p><p><a name="1006337"> </a>  어플리케이션으로 객체의 생성에 특별한 팩토리를 사용하고 싶은 경우는, 어플리케이션의 <code>java.naming.factory.object</code> 환경 프로퍼티에 그 팩토리의 클래스명을 넣어 그 팩토리의 클래스와 객체 클래스를 준비하지 않으면 안됩니다.
+</p>
+<a name="1006464"> </a> 
+<h4>	4.1. 4	 디폴트 동작의 오버라이드(override)</h4>
+<p><a name="1006465"> </a>  객체 팩토리 「빌더」는, 객체 팩토리의 인스턴스를 생성하는 클래스입니다.
+</p><p><a name="1006466"> </a>  어플리케이션은, 객체 팩토리의 구현을 찾아 구축하는 방법에 대한 독자적인 정책를 정의하기 위해서, 객체파크트리빌더를 인스톨 할 수가 있습니다. 빌더가 인스톨 되고 있는 경우는, 객체 팩토리의 생성의 책임을 빌더가 단독으로 집니다. 일반적으로 JNDI 가 사용하는 디폴트의 정책 (<code>Reference</code>, URL 캐릭터 라인,<code>java.naming.factory.object</code> 프로퍼티)는 채용되지 않습니다.
+</p><p><a name="1006517"> </a> 
+<p>
+<font size="-1"><b>그림 5:파크트리빌더를 사용해 이름 공간으로부터 객체를 되찾는 예</b></font>
+<p>
+<center>
+<img src="figure_five.gif" alt="객체파크트리빌더를 사용해 이름 공간으로부터 객체를 되찾는 예">
+</center>
+<p>
+객체파크트리빌더를 위한 서비스 프로바이더는, 다음 일을 실시하지 않으면 안됩니다.
+</p><ol>
+<a name="1006518"> </a> 
+<li><code>ObjectFactory</code> 를 구현하는 객체 팩토리를 정의합니다.  <a name="1006519"> </a> 
+<li><code>ObjectFactoryBuilder</code> 를 구현하는 클래스를 정의합니다. 이 클래스의 <code>createObjectFactory()</code> 메소드는, 스텝 1 의 <code>ObjectFactory</code> 클래스를 위한 생성자 을 사용합니다.
+</ol>
+<p><a name="1006520"> </a>  이 파크트리빌더를 사용하는 어플리케이션은, 이것을 인스톨 하지 않으면 안됩니다.
+</p>
+<blockquote><pre>	NamingManager.setObjectFactoryBuilder(builder); 
+</pre></blockquote><a name="1000829"> </a> 
+<h4>	4.1. 5	 문맥 팩토리</h4>
+<p><a name="1000830"> </a>  「문맥 팩토리」는 <code>Context</code> 의 인스턴스를 생성하는 객체 팩토리입니다. 특정의 네임 서비스 또는 디렉토리 서비스를 위한 이러한 문맥의 구현을, 「문맥 구현」이라고 부릅니다. 문맥 구현에 대해서는,<a href="jndispi.fm.html#998980">제 2 장</a>으로 설명했습니다. 다른 객체 팩토리와 같게, 문맥 팩토리는, 벌써 설명한 3 개의 기구 (<code>Reference</code>, URL schema ID, 및 <code>java.naming.factory.object</code> 프로퍼티내의 리스트)의 어떤 것을 사용해도 취득할 수 있습니다.  
+</p><a name="1000794"> </a> 
+<h4>	4.1. 6	 URL 문맥 팩토리</h4>
+<p><a name="1000799"> </a>  URL 문맥 팩토리는, 특수한 문맥 팩토리입니다. 이 팩토리는,<code>ObjectFactory.getObjectInstance()</code> 를 구현할 때, 다음의 규칙에 따릅니다.
+</p><ul><a name="1000800"> </a> 
+<li><code>refObj</code> 가 <code>null</code> 의 경우는, 이 팩토리에 관련지을 수 있고 있는 schema의 URL 를 해석하기 위한 문맥을 작성합니다. 결과의 문맥은 특정의 URL 에 결부되고 있지 않습니다. 예를 들어, 
+</ul><blockquote><pre><code>getObjectInstance(null, null, null, env)</code> 
+</pre></blockquote><ul><a name="1000802"> </a>  (을)를, 어느 "ldap" URL 문맥 팩토리로 호출하면(자), LDAP URL ("<code>ldap://ldap.wiz.com/o=wiz, c=us</code>" 또는 "<code>ldap://ldap.umich.edu/</code>" 등)를 해석할 수 있는 문맥이 돌려주어집니다.  <a name="1000803"> </a> 
+<li><code>refObj</code> 가 URL 캐릭터 라인인 경우는, 그 URL 에 의해 식별되는 객체를 생성합니다. 예를 들어,
+</ul><blockquote><pre>getObjectInstance("ldap://ldap.wiz.com/o=wiz, c=us", null, null, env);
+</pre></blockquote><ul><a name="1000805"> </a>  (을)를, 어느 "ldap" URL 문맥 팩토리로 호출하면(자), LDAP 서버 <code>ldap.wiz.com</code> 상에서 "<code>o=wiz, c=us</code>" 에 의해 지명되는 객체가 돌려주어집니다. 이것이 문맥을 지명하는 경우는, 다음에 (관련한다) LDAP 명 ("<code>cn=Jane Smith</code>" 등)을 해석하기 위해서 사용할 수 있습니다.  <a name="1000806"> </a> 
+<li><code>refObj</code> 가 URL 캐릭터 라인의 배열인 경우는, 그러한 URL 는 참조처의 문맥에 관해서 동일하다고 보여집니다. URL 가 동일한 일, 또는 동일할 필요가 있는 것의 확인은 문맥 팩토리에 맡고 있습니다. URL 의 배열내의 순서는 중요하지는 않습니다. <code>getObjectInstance()</code> 로 반환되는 객체는 단일의 URL 의 경우와 같아, URL 에 의해 지명되는 객체 (일반적으로은 문맥)입니다.  <a name="1006433"> </a> 
+<li><code>refObj</code> 가 그 이외의 타입의 경우는,<code>getObjectInstance()</code> 의 동작은 구현에 의해 정해집니다.
+<p><a name="1000843"> </a>  URL 문맥 팩토리는, URL 로 해석을 위해서(때문에) 건네받았을 때에 <code>InitialContext</code> 클래스에 의해 사용됩니다. URL 문맥 팩토리는, 이름 공간에 보존되고 있는 URL 로부터 Java 프로그램 언어의 객체를 생성하기 위해서도 사용됩니다 (<a href="jndispi.fm.html#1006384">4.1. 2 절</a>을 참조).
+</p></ul><a name="1005973"> </a> 
+<h3>	4.2	 객체의 보존:상태 팩토리</h3>
+<p><a name="1006607"> </a>  JNDI 에는, 기본적인 문맥 구현에 의한 보존이 가능한 형식에 객체를 변환하기 위한 기구가 있습니다. 그 형식은, 기본적인 문맥 구현이 액세스 가능하면 어떤 타입이라도 괜찮습니다. 예를 들어,<code>Reference</code>, URL,<code>Serializable</code> 객체, 속성 세트 등, 기본적인 문맥 구현으로 허용 되는 데이터입니다. 임의의 객체를 이름 공간에 보존할 수 있는 데이터로 변환하는 것은, 「상태 팩토리」의 사용에 의해 지원됩니다. 상태 팩토리는,<code>StateFactory</code> 인터페이스 (또는 <code>DirStateFactory</code> 서브 인터페이스)를 구현하는 클래스입니다.
+</p><blockquote><pre>
+	public interface StateFactory {	
+		public Object getStateToBind(Object obj, 
+					     Name name,
+					     Context nameCtx, 
+					     Hashtable env)
+			throws NamingException;
+	}
+
+	public interface DirStateFactory {
+		public DirStateFactory.Result getStateToBind(Object obj, 
+							     Name name,
+							     Context nameCtx, 
+							     Hashtable env,
+							     Attributes attrs)
+			throws NamingException;
+	}
+</pre>
+<p><a name="1006621"> </a> 
+</blockquote>
+객체 (<code>obj</code>), 객체의 이름과 어디에 바인드 할까에 관한 옵션의 정보, 및 추가의 환경 정보 (예를 들어, 이름 공간을 액세스 하는 사용자에 대한 식별 또는 인증 정보)가 주어지면(자), 팩토리는 바인딩에 적절한 객체의 생성을 시도합니다. 보통, 상태 팩토리는 목적의 네임 서비스 또는 디렉토리 서비스와 문맥 구현의 양쪽 모두 또는 어딘가에 붙은 지식을 가져, 어느 데이터 형식이 허용 되는지를 인식하고 있습니다. <code>DirContext</code> 구현에 사용되는 상태 팩토리의 경우는, 팩토리에는 객체와 함께 보존되고 있는 몇개의 속성도 주어집니다. 팩토리가 객체에 관해서 한층 더 많은 정보를 필요로 하는 경우는,<code>name</code>/<code>nameCtx</code> 인수를 사용해 네임 서비스 또는 디렉토리 서비스로부터 직접 취득할 수가 있습니다. 예를 들어, LDAP 디렉토리를 위한 프린터 상태 팩토리는, 프린터를 나타내는 속성 세트를 돌려줄 수가 있습니다.
+<p></p><p><a name="1006622"> </a>  주어진 인수를 사용해 데이터를 돌려줄 수가 없는 경우는, 팩토리는 <code>null</code> 를 돌려주는 것으로 합니다. 예를 들어, 프린터 상태 팩토리에 디스크 객체가 주어졌을 때는,<code>null</code> 를 돌려줍니다. 다른 상태 팩토리가 시험 받아야 하는 것이 아닌 경우, 그 상태 팩토리는 예외를 throw 할 뿐입니다. 따라서, 팩토리는 그 구현으로부터 throw 되는 예외에 유의해야 합니다. 예를 들어, 프린터 상태 팩토리에 프린터 객체가 주어졌지만 속성이 모순되는 경우에는, 팩토리는 예외를 throw 합니다.
+</p><a name="1006733"> </a> 
+<h4>	4.2. 1	 입출력 옵션</h4>
+<p><a name="1006737"> </a>  최종적으로, 팩토리의 출력 형식은 기본적인 네임 서비스 또는 디렉토리 서비스에 의해 정해집니다. 예를 들어, CORBA Object Services (COS) 네임 서비스를 위한 문맥 구현이 서비스에 보존할 수 있는 것은 CORBA 객체 참조 뿐이어서, LDAP 를 위한 문맥 구현을 보존할 수 있는 것은 속성만입니다.  다만, 이러한 속성내의 정보의 encode에는 많은 유연성이 있습니다.
+</p><p><a name="1006747"> </a>  서비스 프로바이더는 보통, 예기 되는 각 (공통) 타입의 입력에 각각 팩토리를 제공해, 어플리케이션은 그러한 팩토리세트를 자신 상태 팩토리에 확장할 수 있습니다. 예를 들어, COS 네이밍의 서비스 프로바이더에, Java Remote Method Inocation (RMI) 객체를 CORBA 객체 참조로 변환하기 위한 상태 팩토리가 있다고 합니다. 그 프로바이더의 사용자는, Microsoft COM 객체 참조를 CORBA 객체 참조로 변환하기 위한 상태 팩토리를 추가할 수 있습니다.
+</p><a name="1006881"> </a> 
+<h4>	4.2. 2	 상태 팩토리의 검출 :java.naming.factory.state 프로퍼티</h4>
+<p><a name="1006888"> </a>  JNDI 는,<code>java.naming.factory.state</code> 프로퍼티으로 지정된 상태 팩토리를 찾습니다.  이 프로퍼티은 환경 또는 프로바이더 resource file에 있습니다 ( <a href="jndispi.fm.html#1004380">마디 2.9. 5 </a> 를 참조). 이 프로퍼티에는, 상태 팩토리의 완전 수식 클래스명의 구두점으로 단락지어진 리스트가 있습니다. 각 클래스는 <code>StateFactory</code> 인터페이스를 구현해, 인수를 취하지 않는 public 의 생성자 을 가지지 않으면 안됩니다. 리스트내의 각 클래스에 대해, JNDI 는 팩토리 클래스의 로드와 인스턴스 생성을 시도해 주어진 객체, 이름, 문맥, 환경, 속성의 인수를 사용해 <code>StateFactory/DirStateFactory.getStateToBind()</code> 메소드의 호출을 시도합니다. 팩토리로부터 생기는 결과가 <code>null</code> 이외의 경우는, 그 결과가 돌려주어집니다.  그 이외의 경우는, JNDI 는 리스트내의 다음의 클래스에 같은 순서를 사용해, 리스트가 끝날까 팩토리가 <code>null</code> 이외의 결과를 돌려줄 때까지 이것을 반복합니다.
+</p><a name="1006735"> </a> 
+<h3>	4.3	 LDAP v3 컨트롤의 네로우 변환:응답 컨트롤 팩토리</h3>
+<p><a name="1006829"> </a>  LDAP v3 프로토콜을 사용해, 응답 컨트롤에 서버로부터 보내진 응답을 첨부할 수가 있습니다. 컨트롤은, OID 캐릭터 라인 ID와 ASN. 1 BER 로 encode 된 바이트 코드열로부터 됩니다. 외부의 정보 또는 보조가 없는 경우는, 문맥 구현을 돌려줄 수 있는 것은 <code>Control</code> 인터페이스의 간단한 구현만으로, 이것은 OID 와 바이트열을 돌려줍니다.
+</p><p><a name="1006835"> </a>  JNDI 에는, 응답 컨트롤을 취급하기 위한 다음의 abstract 클래스가 있습니다.
+</p><blockquote><pre>
+	public abstract javax.naming.ldap.ControlFactory {
+	...
+	public static Control getControlInstance(Control ctl,
+						Context ctx,
+						Hashtable env)
+		throws NamingException;
+	public abstract Control getControlInstance(Control ctl)
+		throws NamingException;
+}
+<p><a name="1006850"> </a> 
+</pre></blockquote>
+문맥 구현은 응답 컨트롤을 받으면(자), static 의 <code>getControlInstance()</code> 메소드를 호출해, 컨트롤을 보다 사용상의 편리인 액세스 메소드에 네로우 변환할 수 있는 컨트롤 팩토리를 찾습니다. 그러한 컨트롤은, 예를 들어 ASN. 1 BER 의 바이트열을 복호화 해, 정보를 Java 타입으로서 돌려줄 수 있는 메소드에의 액세스를 제공할 수 있습니다. 이러한 컨트롤 팩토리가 발견되지 않는 경우는, 원의 응답 컨트롤이 돌려주어집니다. 다음은, 시각을 복호화 하는 가상의 <code>TimeResponseControl</code> 의 예입니다.  
+<p></p><blockquote><pre>public class TimeResponseControl implements Control {
+	long time;
+	// Constructor used by ControlFactory
+	public TimeResponseControl(String OID, byte[] berVal)
+		throws NamingException {
+		// check validity of OID
+		time = // extract time from berVal
+	};
+
+	// Type-safe and User-friendly method
+	public long getTime() {
+		return time;
+	}
+	// Low-level methods
+	public String getID() {
+		return TIME_OID;
+	}
+	public byte[] getEncodedValue() {
+		return // original berVal
+	}
+	 ...
+}
+<p><a name="1006989"> </a> 
+</pre></blockquote>
+컨트롤 팩토리가 책임을 가지는 컨트롤의 수는 1 개에서도 복수에서도 괜찮습니다. 주어진 인수를 사용해 컨트롤을 돌려줄 수가 없는 경우, 팩토리는 <code>null</code> 를 돌려주는 것으로 합니다. 보통, 컨트롤 팩토리는, 컨트롤의 OID 를 팩토리가 지원하는 OID 의 리스트와 단지 조합할 뿐입니다. 다른 컨트롤 팩토리를 시도해야 하는 것이 아닌 경우에게만, 컨트롤 팩토리는 예외를 throw 하는 것으로 합니다. 따라서, 팩토리는 그 구현으로부터 throw 되는 예외에 유의해야 합니다. 예를 들어, 컨트롤 팩토리에 그 팩토리가 지원하는 OID 가 주어졌지만, 바이트열에 encode의 잘못이 있는 경우에는, 예외를 throw 해야 합니다.
+<p></p><p><a name="1007066"> </a>  다음에 컨트롤 팩토리의 예를 나타냅니다.  
+</p><blockquote><pre>public class VendorXControlFactory extends ControlFactory {
+	public VendorXControlFactory () {
+	}
+	public Control getControlInstance(Control orig) 
+		throws NamingException {
+		if (isOneOfMyControls(orig.getID())) {
+			 ... 
+			// determine which of ours it is and call its constructor
+			return new TimeResponseControl(orig.getID(),
+								orig.getEncodedValue());
+		}
+		return null;  // not one of ours
+	}
+}
+</pre></blockquote><a name="1006932"> </a> 
+<h4>	4.3. 1	 응답 컨트롤 팩토리의 검출 :java.naming.factory.control 프로퍼티</h4>
+<p><a name="1006933"> </a>  JNDI 는,<code>java.naming.factory.control</code>  프로퍼티으로 지정된 응답 컨트롤 팩토리를 찾습니다.  이 팩토리는 환경 또는 프로바이더 resource file에 있습니다 (<a href="jndispi.fm.html#1004380">마디 2.9. 5</a>  를 참조). 이 프로퍼티에는, 컨트롤 팩토리의 완전 수식 클래스명의 구두점으로 단락지어진 리스트가 있습니다. 각 클래스는 <code>ControlFactory</code> 인터페이스를 구현해, 인수를 취하지 않는 public 생성자 을 가지지 않으면 안됩니다. 리스트내의 각 클래스에 대해, JNDI 는 팩토리 클래스의 로드와 인스턴스 생성을 시도해 주어진 컨트롤, 문맥, 환경의 인수를 사용해 <code>ControlFactory.getControlInstance()</code> 인스턴스 메소드의 호출을 시도합니다. 팩토리로부터 생기는 결과가 <code>null</code> 이외의 경우는, 그 결과가 돌려주어집니다.  그 이외의 경우는, JNDI 는 리스트내의 다음의 클래스에 같은 순서를 사용해, 리스트가 끝날까 팩토리가 <code>null</code> 이외의 결과를 돌려줄 때까지 이것을 반복합니다.
+</p><a name="1007937"> </a> 
+<h3>	4.4	 파라미터의 소유권</h3>
+<p><a name="1007938"> </a>  팩토리내의 메소드에 파라미터로서 건네받은 객체는, 모두 호출해 옆이 소유합니다. 따라서 팩토리는, 조작 또는 객체의 수정의 기간을 넘어 객체에의 포인터를 보관 유지하는 것을 금지되고 있습니다. 팩토리가 파라미터에 포함되는 정보를 조작 기간을 넘어 보존할 필요가 있는 경우는, 파라미터의 카피를 독자적으로 보관 유지하는 것으로 합니다.
+</p><a name="1007939"> </a> 
+<h3>	4.5	 재입가능성</h3>
+<p><a name="1007940"> </a>  팩토리의 인스턴스는 재입가능으로 합니다. 즉, 어느 팩토리의 단일의 인스턴스상의 메소드를 복수의 thread가 동시에 호출할 수가 있는 것으로 합니다.
+</p><blockquote><pre>
+<p><a name="1007138"> </a> 
+
+</p></pre></blockquote>
+<hr><br>
+ 
+<a href="spicover.frame.html">[선두의 항목]</a>  <a href="jndispiTOC.fm.html">[전의 항목]</a>  <a href="spi-egs.frame.html">[다음의 항목]</a>  <a href="changes.fm.html">[마지막 항목]</a> 
+<hr><br>
+ 
+<sup>1</sup><a name="1007433"> </a>  클래스의 그림의 범례에 대해서는 부록 B 를 참조해 주세요.
+<p></p><sup>2</sup><a name="1003640"> </a>  <code>CannotProceedException</code> 는, 콘테 키스의 내부 메소드의 1 개가 「처리중의 이름이 그 메소드의 네임 시스템의 범위를 넘고 있는 것」을 검지했을 때에 throw 되고 있는 일이 자주 있습니다. 예외를 throw 하는 프로세스는, 문맥의 구현에 의존하고 있습니다.  
+<p></p><sup>3</sup><a name="1003008"> </a>  이것은 어플리케이션내의 코드인 것에 주의해 주세요. <a href="jndispi12.fm.html#1003693"><a href="jndispi.fm.html#1003693">「연합내에서의 조작의 속행」</a>의 코드예는, 문맥 구현내의 코드입니다.
+<p></p><sup>4</sup><a name="1002114"> </a>  이 목적으로, Hashtable 의 서브 클래스 (Properties 등)를 사용할 수도 있습니다.
+<p></p><sup>5</sup><a name="1004684"> </a>  이 문서로 "URL" 는, RFC 1738 으로 거기에 관련하는 RFC 에 의해 정의되는 URL 캐릭터 라인을 가리킵니다. URL 캐릭터 라인은 RFC 의 구문 규칙에 준거하는 임의의 캐릭터 라인입니다. 대응하는 지원가 <code>java.net.URL</code> 클래스 또는 Web 브라우저에 반드시 있다고는 할 수 없습니다. URL 캐릭터 라인은,<code>String</code> 의 이름 파라미터 또는 <code>Name</code> 파라미터의 최초의 요소로서 건네받습니다.
+<p></p>
+
+<address>
+<a href="mailto:jndi@java.sun.com">jndi@java.sun.com</a> 
+</address>
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+
+</body>
+</html>

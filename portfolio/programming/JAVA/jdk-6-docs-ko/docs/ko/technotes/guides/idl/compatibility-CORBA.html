@@ -1,0 +1,582 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>CORBA 의 호환성 정보 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<table border="0" width="100%">
+<tr>
+<td valign="bottom"><H1>CORBA 의 호환성 정보 - J2SE 5.0</H1></td>
+
+
+</table>
+
+<UL>
+<LI><a href="#api">J2SE 1.4.x 로 J2SE 5.0.x 의 사이에서의 CORBA API 의 변경</a> 
+<LI><a href="#spec">J2SE 5.0.x 에서의 CORBA 지원의 공식 스펙</a> 
+<LI><a href="#other">그 외의 호환성 정보</a> 
+</UL>
+
+<a name="api"></a> 
+<h1>J2SE 1.3 으로 J2SE 5.0 의 사이에서의 CORBA API 의 변경</h1>
+
+이 문서에서는, CORBA 의 기능에 관련해 JDK 1.3 으로 5.0 의 사이에 변경된 모든 API 에 대해 정보를 제공합니다. 이 변경은, JDK 5.0 에 짜넣어지는 CORBA 기술용의 API 를, 다음에 나타내는 OMG 문서에 규정되고 있는 CORBA 2.3 매핑에 준거시키기 위해서(때문에) 행해진 것입니다.
+<ul>
+<LI>CORBA 2.3. 1 (<a href="http://www.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )
+<LI>IDL 로부터 Java 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-08">ptc/00-01-08</a> )
+<LI>Java 로부터 IDL 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-06">ptc/00-01-06</a> )
+<LI>상호 운용 가능한 네임 서비스 (/<a href="http://www.omg.org/cgi-bin/doc?ptc/00-08-07">ptc/00-08-07</a> )
+<LI>포타브르인타세프타 (<a href="http://www.omg.org/cgi-bin/doc?ptc/2001-03-04">ptc/04. 03.01</a> )
+</ul>
+<P>
+<hr>
+<h2>
+<tt>org.omg.COSNaming</tt> 클래스에서의 API 의 변경</h2>
+CORBA 버젼 2.3 스펙으로 규정되고 있는 IDL 로부터 Java 에의 매핑에 준거하기 위해(때문에), 다음에 나타내는 <tt>org.omg.COSNaming</tt> 클래스를, JDK 에 동고 되고 있는 <tt>idlj</tt> 컴파일러로 재생성했습니다. 이 변경 (CCC 4284015)에는, 다음과 같은 API 의 변경이 포함됩니다. 호환성에의 영향:없음
+<P>
+<ol>CORBA V (2.3)의 섹션 1.5. 2 에 있는 모든 Helper 에 관한 스펙 (ptc/00-01-08.pdf)에 준거하기 위해(때문에), Helper 는 모두 abstract public 클래스가 되었습니다. 다음에,<tt>org.omg.CosNaming</tt> 에 속하는 클래스에서 abstract public 클래스로 변경된 모든 Helper 클래스를 나타냅니다.
+<P>
+<ul><tt>
+<LI>BindingHelper.java
+<LI>BindingIteratorHelper.java
+<LI>BindingListHelper.java
+<LI>BindingTypeHelper.java
+<LI>IStringHelper.java
+<LI>NameComponentHelper.java
+<LI>NameHelper.java
+<LI>NamingContextHelper.java
+<LI>AlreadyBoundHelper.java
+<LI>CannotProceedHelper.java
+<LI>InvalidNameHelper.java
+<LI>NotEmptyHelper.java
+<LI>NotFoundHelper.java
+<LI>NotFoundReasonHelper.java</tt>
+</ul>
+<P>섹션 1.7 에 있는 OMG 스펙 (ptc/00-01-08.pdf)의 「Mapping for Enum」에 준거하기 위해(때문에), 다음에 나타내는 Enum 생성자 의 매핑이 protected 로 변경되었습니다.  <br>&nbsp;
+<table BORDER CELLPADDING=2 WIDTH="100%" >
+<tr VALIGN=TOP>
+<th>CLASS</th>
+
+<th>변경전</th>
+
+<th>변경 후</th>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>BindingType.java</tt></td>
+
+<td>private BindingType( int )</td>
+
+<td>protected BindingType( int )</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>NotFoundReason.java</tt></td>
+
+<td>private NotFoundReason( int )</td>
+
+<td>protected NotFoundReason( int )</td>
+</tr>
+</table>
+<P>
+<li>
+CORBA 2.3 스펙 (ptc/00-01-08.pdf)의 「Deletion of constructors in Stub classes」에 준거하기 위해(때문에), 다음에 나타내는 생성자 이 삭제되었습니다. </li>
+<P>
+<table BORDER CELLSPACING=2 CELLPADDING=2 WIDTH="100%" >
+<tr VALIGN=TOP>
+<th>CLASS</th>
+
+<th>변경전</th>
+
+<th>변경 후</th>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>_BindingIteratorStub.java</tt></td>
+
+<td>public _BindingIteratorStub(org.omg.CORBA.portable.Delegate d)</td>
+
+<td>이 생성자 은 삭제</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>_NamingContextStub.java</tt></td>
+
+<td>public _NamingContextStub(org.omg.CORBA.portable.Delegate d)</td>
+
+<td>이 생성자 은 삭제</td>
+</tr>
+</table>
+<P>
+<li>
+CORBA 2.3 스펙 (ptc/00-01-08.pdf)에 준거하기 위해(때문에), 다음에 나타내는 예외가 변경되었습니다. </li>
+<P>
+<table BORDER CELLSPACING=2 CELLPADDING=2 WIDTH="100%" >
+<tr VALIGN=TOP>
+<th>CLASS</th>
+
+<th>변경전</th>
+
+<th>변경 후</th>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>AlreadyBound.java</tt></td>
+
+<td>public final class AlreadyBound 를 확장 org.omg.CORBA.UserException 를 구현 org.omg.CORBA.portable.IDLEntity</td>
+
+<td>public final class AlreadyBound 를 확장 org.omg.CORBA.UserException</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>AlreadyBound.java</tt></td>
+
+<td>디폴트 생성자 만</td>
+
+<td>새로운 생성자 public AlreadyBound (String reason)를 추가</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>CannotProceed.java</tt></td>
+
+<td>public final class CannotProceed 를 확장 org.omg.CORBA.UserException 를 구현 org.omg.CORBA.portable.IDLEntity</td>
+
+<td>public final class CannotProceed 를 확장 org.omg.CORBA.UserException</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>CannotProceed.java</tt></td>
+
+<td>디폴트 생성자 만 &nbsp;</td>
+
+<td>새로운 생성자 public CannotProceed (String reason)를 추가</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>InvalidName.java</tt></td>
+
+<td>public final class InvalidName 를 확장 org.omg.CORBA.UserException 를 구현 org.omg.CORBA.portable.IDLEntity</td>
+
+<td>public final class InvalidName 를 확장 org.omg.CORBA.UserException</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>InvalidName.java</tt></td>
+
+<td>디폴트 생성자 만</td>
+
+<td>새로운 생성자 public InvalidName (String reason)를 추가</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>NotEmpty.java</tt></td>
+
+<td>public final class NotEmpty 를 확장 org.omg.CORBA.UserException 를 구현 org.omg.CORBA.portable.IDLEntity</td>
+
+<td>public final class NotEmpty 를 확장 org.omg.CORBA.UserException</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>NotEmpty.java</tt></td>
+
+<td>디폴트 생성자 만</td>
+
+<td>새로운 생성자 public NotEmpty (String reason)를 추가</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>NotFound.java</tt></td>
+
+<td>public final class NotFound 를 확장 org.omg.CORBA.UserException 를 구현 org.omg.CORBA.portable.IDLEntity</td>
+
+<td>public final class NotFound 를 확장 org.omg.CORBA.UserException</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt>NotFound.java</tt></td>
+
+<td>디폴트 생성자 만</td>
+
+<td>새로운 생성자 public NotFound (String, org.omg.CosNaming.NamingContextPackage.NotFoundReason, org.omg.CosNaming.NameComponent[])를 추가</td>
+</tr>
+</table>
+<P>
+<li>
+CORBA 2.3 스펙에 준거하기 위해(때문에), 다음에 나타내는 클래스가 추가되었습니다. </li>
+<P>
+<ul>
+<li><tt>NamingContextPOA.java</tt>
+<li><tt>BindingIteratorPOA.java</tt>
+</ul>
+<P>
+CORBA 2.3 스펙에 준거하기 위해(때문에), 다음에 나타내는 클래스가 추천 되지 않게 되었습니다. <P>
+<ul>
+<li><tt>_NamingContextImplBase.java</tt>
+<li><tt>_BindingIteratorImplBase.java</tt>
+</ul>
+</ol>
+<P>
+<hr>
+<h2>
+<tt>org.omg.CORBA</tt> 클래스에서의 API 의 변경</h2>
+
+<ul>
+
+<li>OMG 스펙 99-07-57 「IDL to Java mapping」에 준거하기 위해(때문에), 다음에 나타내는 메소드가 변경되었습니다. <P>
+<ul>
+<li>메소드 <tt>org.omg.CORBA.Any.insert_fixed(java.math.BigDecimal, org.omg.CORBA.TypeCode)</tt> 의 시그니챠가, 예외 <tt>org.omg.CORBA.Bad_INV_ORDER</tt> 를 throw 하도록(듯이) 변경되었습니다. 사용자의 코드로 시스템 예외를 선언할 필요는 없습니다. (CCC 4340915)
+<li>메소드 <tt>TypeCode.equivalent</tt> 가 abstract 로서 정의되고 있습니다. 변경 전:예외 <tt>NO_IMPLEMENT</tt> 를 throw 하고 있었습니다. 호환성에의 영향:라이센시(licensee)에게는 최소한의 영향이 있습니다만, 최종 사용자에는 영향이 없습니다. 라이센시(licensee)는, 이 메소드의 더미 구현을 제공할 필요가 있습니다. (CCC 4340932)
+<li>메소드 <tt>TypeCode.get_compact_typecode</tt> 가 abstract 로서 정의되고 있습니다. 변경 전:예외 <tt>NO_IMPLEMENT</tt> 를 throw 하고 있었습니다. 호환성에의 영향:라이센시(licensee)에게는 최소한의 영향이 있습니다만, 최종 사용자에는 영향이 없습니다. 라이센시(licensee)는, 이 메소드의 더미 구현을 제공할 필요가 있습니다. (CCC 4340932)
+<li><tt>org.omg.CORBA.portable.Delegate.java</tt> 의 메소드 <tt>get_interface_def(org.omg.CORBA.Object)</tt> 의 매핑이 abstract 로서 정의되고 있습니다. 호환성에의 영향:있어. 비 abstract 메소드가 abstract 에 변환됩니다. (CCC 4366071)
+<li><tt>org.omg.CORBA.portable.OutputStream.java</tt> 의 메소드 <tt>write_Principal()</tt> 의 매핑이 abstract 는 아니게 되었습니다. 호환성에의 영향:없음. abstract 메소드가 비 abstract 에 변환됩니다. (CCC 4366072)
+<li><tt>org.omg.CORBA.portable.InputStream.java</tt> 의 메소드 <tt>read_Principal()</tt> 의 매핑이 abstract 는 아니게 되었습니다. 호환성에의 영향:없음. abstract 라고 선언되고 있던 메소드가 abstract 가 아니게 되어도, 기존의 바이너리와의 호환성은 영향을 받지 않습니다. (CCC 4366074)</ul>
+
+<P>
+<li>
+CORBA 2.3 스펙에 준거하기 위해(때문에),<tt>org.omg.DomainManagerOperations</tt> 인터페이스는 <tt>org.omg.CORBA.Object</tt> 를 확장한 것은 아니게 되었습니다. 호환성에의 영향:없음. <tt>DomainManagerOperations</tt> 인터페이스를 직접 사용하는 CORBA 프로그램은 없습니다. 프로그램은 <tt>DomainManagerOperations</tt> 인터페이스를 <tt>DomainManager</tt> 인터페이스를 개입시켜 사용할 필요가 있어, 그 인터페이스는 벌써 <tt>org.omg.CORBA.Object</tt> 를 확장한 것이 되고 있습니다. (CCC 4340907)
+
+
+<p>
+<li>다음에 나타내는 클래스는, abstract 로서 선언되고 있어 private 생성자 은 없어졌습니다. (CCC 4372196)
+<p><ul><tt>
+<li>org.omg.CORBA.ServiceDetailHelper
+<li>org.omg.CORBA.ServiceInformationHelper</tt></ul>
+
+<p>
+<li>섹션 1.15. 2 의 「IDL to Java」스펙에 준거하기 위해(때문에), 다음에 나타내는 <tt>org.omg.CORBA</tt> 파일에 있는 디폴트 생성자 의 javadoc 코멘트가 <tt>COMPLETED_MAYBE</tt> 로부터 <tt>COMPLETED_NO</tt> 로 변경되었습니다. 호환성에의 영향:없음(CCC 4363355)
+<P>
+<ul>
+<tt><li>INTERNAL.java
+<li>INVALID_TRANSACTION.java
+<li>INV_OBJREF.java</tt></ul>
+
+<p>
+<li>
+<tt>org.omg.CORBA</tt> 내의 다음의 Helper 클래스는,<tt>public final</tt> 로부터 <tt>public abstract</tt> 로 변경되어 Helper 클래스의 디폴트 생성자 이 삭제되었습니다. 이 변경은, CORBA 2.3. 1 으로 정의되고 있는 ORB 코어 스펙과 ptc/00-01-08 로 정의되고 있는 IDL/Java 언어 매핑에 준거하기 위해서 행해졌습니다. 호환성에의 영향:최소한. OMG IDL/Java 언어 매핑 스펙에 정의되고 있는 대로 Helper 클래스가 「abstract」가 되었기 때문에, Helper 클래스의 인스턴스를 생성하고 있던 이전의 어플리케이션에서는 문제를 일으킵니다. 그러나, Helper 클래스에 포함되어 있는 것은 static 메소드 뿐이므로, 어플리케이션으로 Helper 클래스의 인스턴스를 생성해도 의미가 없습니다. (CCC 4364208)
+
+<p>
+<ul>
+<tt><li>AnySeqHelper.java
+<li>BooleanSeqHelper.java
+<li>CharSeqHelper.java
+<li>DoubleSeqHelper.java
+<li>FloatSeqHelper.java
+<li>LongLongSeqHelper.java
+<li>LongSeqHelper.java
+<li>OctetSeqHelper.java
+<li>ShortSeqHelper.java
+<li>StringValueHelper.java
+<li>ULongLongSeqHelper.java
+<li>ULongSeqHelper.java
+<li>UShortSeqHelper.java
+<li>WCharSeqHelper.java
+<li>WStringValueHelper.java</tt></ul>
+
+<P><li>
+최근 승인된 OMG 문제 3015 (새로운 클래스 <tt>AbstractInterfaceDef</tt> 를 인터페이스 리포지터리(repository) 클래스에 추가한다)에 준거하기 위해(때문에), 다음과 같은 새로운 정수를 <tt>org.omg.CORBA.DefinitionKind</tt> 에 추가했습니다. 호환성에의 영향:없음(CCC 4367601)
+<P>
+<ul>
+<li><tt>_dk_AbstractInterface=24</tt>. 인터페이스 리포지터리(repository) 객체가 abstract 객체를 나타내고 있는 것을 나타내는 정수입니다.
+<li><tt>public static final DefinitionKind dk_AbstractInterface = new DefinitionKind(_dk_AbstractInterface)</tt>. 이것은,<tt>DefinitionKind</tt> 의 static 인스턴스로, 인터페이스 리포지터리(repository) 객체가 abstract 인터페이스를 나타내고 있는 것을 나타냅니다.
+</ul>
+
+<P>
+<li>
+다음에 나타내는 타입 코드용의 <tt>org.omg.CORBA</tt> API 가, OMG 스펙에 준거하도록(듯이) 변경되었습니다. 이러한 클래스는 모두,<tt>org.omg.CORBA</tt> 패키지에 포함되어 있습니다. 호환성에의 영향:할 수 있습니다. 자세한 것은, 아래와 같은 각각의 변경 내용을 참조해 주세요. (CCC 4368800)
+<p><ul>
+<li><tt>Typecode</tt> 의 메소드 <tt>fixed_digits</tt>,<tt>fixed_scale</tt>,<tt>member_visibility</tt>,<tt>type_modified</tt>, 및 <tt>concrete_base_type</tt> 가 concrete 로부터 abstract 로 변경되었습니다. 타입 코드는, 항상 ORB 의 구현자에 의해 구현됩니다.  또, ORB 사용자가 서브 클래스화할 것은 없기 때문에, 이 변경이 사용자에게 영향을 줄 것은 없습니다.
+<li><tt>TCKind.from_int</tt> 는, 체크되지 않는 예외 <tt>BAD_PARAM</tt> 를 throw 하는 것이 없어졌습니다. <tt>BAD_PARAM</tt> 는 체크되지 않는 예외이므로, 이 예외를 삭제해도, 컴파일시에 사용자의 코드에 영향은 없습니다.
+<li><tt>Principal</tt> 는, 메소드가 있는 concrete 클래스로 변경되어 abstract 메소드가 있는 abstract 클래스로부터 <tt>NO_IMPLEMENT</tt> 를 throw 하게 되었습니다. <tt>Principal</tt> 의 사용은 추천 되지 않고, 거의 사용될 것은 없습니다. 어쨌든, 이 클래스를 사용자가 서브 클래스화하는 것은 거의 없고, 일반적으로은 ORB 의 구현자가 완전하게 구현합니다.
+<li><tt>extract_Streamable</tt> 메소드가 <tt>Any</tt> 에 추가되었습니다. 메소드의 추가는 호환성에 영향을 주지 않습니다.
+<li><tt>Any.insert_object( object, Typecode )</tt> 가,<tt>BAD_PARAM</tt> 를 throw 하도록(듯이) 변경되었습니다. <tt>BAD_PARAM</tt> 는 체크되지 않는 예외이므로, 이 예외를 추가해도, 컴파일시에 사용자의 코드에 영향은 없습니다.
+<li><tt>Any</tt> 의 메소드 <tt>insert_Streamable</tt>,<tt>extract_Principal</tt>, 및 <tt>insert_Principal</tt> 가, abstract 는 아니게 되었습니다. <tt>Any</tt> 는 ORB 의 구현자에 의해 완전하게 구현되어 ORB 사용자가 서브 클래스화할 것은 없기 때문에, 이 변경은 사용자에게 영향이 없습니다.
+<li><tt>Any</tt> 의 메소드 <tt>extract_value</tt> 및 <tt>insert_value</tt> 가, abstract 로 변경되었습니다. <tt>Any</tt> 는 ORB 의 구현자에 의해 완전하게 구현되어 ORB 사용자가 서브 클래스화할 것은 없기 때문에, 이 변경은 사용자에게 영향이 없습니다.
+</ul>
+<P>
+<li>
+<tt>Identifier</tt> 필드가 <tt>org.omg.CORBA.Initializer</tt> 에 추가되었습니다. 호환성에의 영향:없음(CCC 4372194)
+<p>
+<li>ptc/00-01-08.pdf 에 준거하기 위해(때문에), 다음의 클래스가 변경되었습니다.
+<ul>
+<p>
+<li><tt>org.omg.CORBA.ORBPackage.InvalidName.java</tt> 는 final 로서 선언되고 있습니다. 호환성에의 영향:할 수 있습니다. InvalidName</tt> 는 final 로서 선언되고 있기 (위해)때문에, 이 클래스를 서브 클래스화하고 있는 원시 코드에 영향이 있습니다. 다만, 이것은 예외의 형태이므로, 그러한 코딩은 상정되고 있지 않습니다. (CCC 4366734)
+<li><tt>org.omg.stub.java.rmi. _Remote_Stub.java</tt> 는,<tt>_type_ids</tt> 의 카피를 돌려줍니다. 그 때문에, 외부의 사용자는 원의 <tt>type_ids_</tt> 배열을 분해할 수 없습니다. (CCC 4366734)
+<li><tt>org.omg.CORBA.SetOverrideType</tt> 내의 <tt>from_int(Int i)</tt> 메소드는, 예외 <tt>BAD_PARAM</tt> 를 throw 하지 않게 되었습니다. 호환성에의 영향:없음. 체크되지 않는 예외의 선언을 삭제했으므로, 호환성의 문제는 일어나지 않습니다. (CCC 4369490)
+<li><tt>org.omg.CORBA.DefinitionKind</tt> 내의 <tt>from_int(Int i)</tt> 메소드는, 예외 <tt>BAD_PARAM</tt> 를 throw 하지 않게 되었습니다. 호환성에의 영향 :No.  (CCC 4370659)
+<li><tt>org.omg.CORBA.DynamicImplementation</tt> 는, Portable Object Adapter (POA)를 위해서(때문에), OMG 에 의해 추천 되지 않게 되었습니다. 디폴트의 호출 본체가 제공됩니다. 호환성에의 영향:없음. 이 클래스의 구현자에게 영향은 없습니다. (CCC 4369490)
+</ul>
+<P>
+<li>
+에러를 수정하기 위해(때문에), 다음의 클래스가 변경되었습니다. 호환성에의 영향 :No.  (CCC 4362556)
+<ul>
+<p. ><li>Helper 및 Holder 클래스가 <tt>UnknownUserException.java</tt> 에 추가되었습니다. 호환성에의 영향은 없습니다.
+<li>Helper 및 Holder 클래스가 <tt>WrongTransaction.java</tt> 에 추가되어 이 클래스는 final 로서 선언되게 되었습니다. 호환성에의 영향은 없습니다.
+<li><tt>CompletionStatus.java</tt> 는 final 로서 선언되게 되었습니다.  또,<tt>IDLEntity</tt> 를 구현하지 않게 되어, private 생성자 으로 변경되었습니다. <tt>BAD_PARAM RuntimeException</tt> 가 <tt>from_int</tt> 에 의해 명시적으로 throw 되는 것이 없어졌습니다. 호환성에의 영향:할 수 있습니다. 새로운 <tt>CompletionStatus.java</tt> 클래스를 사용해 기술하는 신규 코드에서는,<tt>BAD_PARAM</tt> 실행시 예외를 명시적으로 캐치 할 필요가 없습니다. 그 코드를 이전의 버젼의 JDK 로 재컴파일 하면(자), 컴파일시에 에러가 일어납니다. &nbsp;이러한 변경은, JCK 리그렛션 (4375061)을 위해서(때문에) 바탕으로 되돌려졌습니다. &nbsp;대신에, OMG 문제가 등록되었습니다 (http://www.omg.org/issues/java-rtf.html#Issue3946).
+<li><tt>INV_POLICY.java</tt> 가 final 로서 선언되게 되었습니다. 호환성에의 영향은 없습니다.
+</ul>
+<p>
+<li>포타브르인타세프타가 추가되었기 때문에, 기존의 CORBA API 에 새로운 메소드를 추가하는 것으로, IDL 의 typedef 로부터 4 개의 새로운 클래스를 생성하는 것이 필요하게 되었습니다. 호환성에의 영향:없음. 이러한 변경은 모두 추가입니다. (CCC 4379826)
+<P>
+<ul>
+<li>
+<tt>register_initial_reference</tt> 가 <tt>public class org.omg.CORBA.ORB</tt> 에 추가되었습니다. </li>
+
+<li>
+새로운 클래스 <tt>org.omg.CORBA.StringSeqHelper</tt> 가 2 개의 IDL typedef 에 추가되었습니다. </li>
+
+<li>
+새로운 클래스 <tt>org.omg.CORBA.StringSeqHolder</tt> 가 2 개의 IDL typedef 에 추가되었습니다. </li>
+
+<li>
+새로운 클래스 <tt>org.omg.CORBA.WStringSeqHelper</tt> 가 2 개의 IDL typedef 에 추가되었습니다. </li>
+
+<li>
+새로운 클래스 <tt>org.omg.CORBA.WStringSeqHolder</tt> 가 2 개의 IDL typedef 에 추가되었습니다. </li>
+</ul>
+</ul>
+<P>
+<hr>
+<h2>
+javax.rmi.CORBA 클래스에서의 API 의 변경</h2>
+OMG 의 API 스펙에 준거하기 위해(때문에),<tt>javax.rmi.CORBA</tt> 에 다음과 같은 변경을 더했습니다.
+<p>
+<ul>
+<li><tt>javax.rmi.CORBA.Stub</tt> 의 protected 생성자 을 삭제했습니다. 호환성에의 영향:없음(CCC 4366722)
+<li>OMG 스펙 00-01-06. pdf 에 준거하기 위해(때문에),<tt>jaxax.rmi.CORBA.ClassDesc</tt> 생성자 을 삭제했습니다. (CCC 4366734)
+</ul>
+<p>
+<hr>
+<h2>
+API 이외의 변경</h2>
+JDK 5.0 에는, 다음과 같은 API 이외의 변경도 구현되고 있습니다.
+<ul>
+<LI>리포지터리(repository) ID 의 계산이 수정되었습니다. 호환성에의 영향:할 수 있습니다. ORB 의 버젼 관리 지원가 추가되었기 때문에, JDK 1.3 ORB 와의 상호 운용이 가능해, 하위 호환성이 유지되고 있습니다.  또, 다른 벤더의 ORB 와의 상호 운용도 가능합니다. (CCC 4365188)
+<p>
+<LI>최근 승인된 OMG 문제 3015 에 준거하기 위해(때문에), 인터페이스 리포지터리(repository) 관련의 바젼프라그마를 모두,<tt>org.omg.CORBA.ir.idl</tt> 의 밖에 꺼냈습니다. 게다가<tt>org.omg.CORBA</tt> 에 짜넣은 소수의 IR 인터페이스의 리포지터리(repository) ID 치도 변경했습니다.  예를 들어,<tt>IDLTypeHelper</tt> 에서는,
+<P>
+<tt>private static String _id = "IDL:omg.org/CORBA/IDLType:2. 3";</tt> <br>(을)를, 다음과 같이 변경했습니다. <br><tt> private static String _id = "IDL:omg.org/CORBA/IDLType:1. 0";</tt>
+<p>호환성에의 영향:할 수 있습니다. 이 변경은, 기존의 구현과의 상호 운용성에 영향을 주는 일이 있습니다. <tt>COMM_FAILURE</tt> 예외 (또는 유사한 예외)를 받았을 경우는, 어플리케이션 및 IR 를 재기동해 주세요. (CCC 4372718)<P>
+
+<LI>모든 org.omg. * 패키지 파일에 <tt>@serial exclude</tt> 태그가 추가되었습니다.  그 때문에, JAVADOC 는, 직렬화의 스펙에 대해 패키지 전체를 무시하게 됩니다. Object Management Group (OMG)로부터는, 다른 버젼간에서의 직렬화의 호환성에 대해서는 아무것도 요구가 나와 있지 않습니다. 실용상은,<tt>org.omg</tt> 클래스를 1 개의 버젼으로 직렬화한 후, 다른 버젼으로 직렬화 해제한다고 하는 처리는 행해지는 일이 없습니다. 호환성에의 영향:없음(CCC 4394004)<P>
+ 
+<LI>POA 의 지원를 위해,<tt>idlj</tt> 컴파일러의 인수가 변경되었습니다.  POA 는, J2SE 1.4 로 도입된 CORBA 의 신기능입니다. <tt>idlj</tt> 툴의 인수에 대한 변경에는, 다음과 같은 것이 있습니다.
+    <p>
+    <ul>
+<li>문서화되어 있지 않다 <tt>-poa</tt> 플래그가 삭제되었습니다.
+<li>표준의 POA 베이스 스켈리턴의 생성이 디폴트로 유효하게 되게 되었습니다.
+<li>새로운 플래그로서 <tt>-oldImplBase</tt> 가 추가되었습니다.  이것에 의해, 하위 호환성이 있는 스켈리턴 (JDK 1.2 및 1.3 으로 호환성이 있다)을 생성할 수 있습니다.
+    </ul>
+<P>호환성에의 영향:있어. 이 컴파일러를 사용하는 기존의 프로그램에 대해서 <tt>idlj</tt> 를 호출할 때 호환성을 유지하려면 , <tt>-oldImplBase</tt> 플래그를 추가할 필요가 있습니다. (CCC 4407835)
+
+</ul>
+
+<hr>
+<h2>
+신규 API</h2>
+JDK 5.0 에는, 다음과 같은 새로운 API 가 추가되었습니다.
+<ul>
+<li>
+<tt>PortableInterceptor</tt> API 가 추가되었습니다. 테스트 플랜에서는, 잘못한 스펙 ptc/2000-04-05 가 참조되고 있었습니다. 기능 리스트에서는, 다른 잘못한 스펙 orbos/99-12-02 가 참조되고 있었습니다 (ptc/2000-04-05 는, 형식이 변경된 것 이외는 orbos/99-12-02 와 같다). 이 신규 API 의 올바른 스펙 참조는, http://www.omg.org/cgi-gin/doc? ptc/2001-03-04 입니다.  CCC 4307834 에, ptc/2000-04-05 에 대한 변경과 추가의 리스트가 포함되어 있습니다. 호환성에의 영향:없음. 이것은 신기능이므로, 이 API 를 사용하고 있는 기존의 코드는 없습니다. </li>
+<P>
+<li>
+포타브르인타세프타가 추가되었기 때문에, public 인터페이스 <tt>org.omg.PortableServer.POA</tt> 에 새로운 메소드 <tt>id</tt> 가 필요하게 되었습니다. </li>
+</ul>
+<P>
+<HR>
+
+
+<a name="spec"></a> 
+<h1>
+J2SE 5.0 에서의 CORBA 지원의 공식 스펙</h1>
+
+<h2>
+스펙의 참조</h2>
+Java 2 Platform Standard Edition (J2SE) 5.0 ORB 의 컴파일시에 적용되는 스펙은 다음과 같습니다. 아래와 같은 링크로부터 올바른 스펙을 참조할 수 없는 경우는, OMG 가 URL 를 변경한 가능성이 있습니다. <a  href="http://www.omg.org/"> www.omg.org</a>  를 참조해, 올바른 스펙을 검색해 주세요.
+<ul>
+<li>
+CORBA 2.3. 1 (<a href="http://www.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )</li>
+
+<li>
+IDL 로부터 Java 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-08">ptc/00-01-08</a> )</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-11-03">ptc/00-11-03</a> )</li>
+
+<li>
+Java 로부터 IDL 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-06">ptc/00-01-06</a> )</li>
+
+<li>
+Interoperable Naming Service (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-08-07">ptc/00-08-07</a> )</li>
+
+<li>
+포타브르인타세프타 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/2001-08-31">ptc/2001-08-31</a> )</li>
+</ul>
+상기에 기재한 것은, 이 문서로 참조되고 있는 스펙만입니다.
+
+
+<h2>
+지원되고 있는 스펙의 상세</h2>
+J2SE 5.0 의 ORB 에서는, 현재로서는, 상기의 스펙의 모든 것이 구현되고 있는 것은 아닙니다. 지원되고 있는 섹션은 다음과 같습니다.
+<ul>
+<li>
+CORBA 2.3. 1 의 제 1? 3 장 및 제 6? 9 장</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑의 섹션 1.21. 8.2 「<tt>orb.properties</tt> file」</li>
+
+<li>
+CORBA 2.3. 1 의 제 4 장.  다만, 일부의 내용이, 포타브르인타세프타 스펙의 이하의 섹션으로 옮겨놓을 수 있고 있습니다. </li>
+
+	<ul>
+	<li>
+	섹션 4.2. 3.5 「<TT>destroy</TT>」</li>
+
+	<li>
+	섹션 4.5. 2 「<TT>CodeFactory</TT>」 및 「<TT>PICurrent</TT>」가 필요</li>
+
+	<li>
+	섹션 4.5. 3.4. <TT> register_initial_reference</TT> 에 대한 갱신</li>
+	</ul>
+
+<li>
+CORBA 2.3. 1 의 제 5 장.  다만, 포타브르인타세프타 스펙의 이하의 섹션의 갱신이 우선됩니다. </li>
+
+	<ul>
+	<li>
+	5.5. 2 <TT>StringSeq</TT> 및 <TT>WStringSeq</TT> 가 필요합니다. 이것에 의해, 다음의 클래스가 <TT>org.omg.CORBA</TT> 에 추가됩니다. </li>
+
+	<ul>
+	<li>
+	<TT>StringSeqHolder</TT></li>
+
+	<li>
+	<TT>StringSeqHelper</TT></li>
+
+	<li>
+	<TT>WStringSeqHolder</TT></li>
+
+	<li>
+	<TT>WStringSeqHelper</TT></li>
+	</ul>
+</ul>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.6. 1 및 10.6. 2 (리포지터리(repository) ID 에 대해서 지원된다)</li>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.7 (<TT>TypeCode</TT> API 에 대해서)</li>
+
+<li>
+CORBA 2.3. 1 의 제 11 장 「Portable Object Adapter (POA)」.  다만, 포타브르인타세프타 스펙의 이하의 섹션의 갱신이 우선됩니다. </li>
+
+<ul>
+<li>
+섹션 11.3. 7.  POA 는 모든 정책를 보관 유지해야 한다</li>
+
+<li>
+섹션 11.3. 8.2.  POA 는 모든 정책를 보관 유지해야 한다</li>
+
+<li>
+섹션 11.3. 8.26.  POA::id 가 필요</li>
+</ul>
+
+<li>
+CORBA 2.3. 1 의 제 13 장 및 제 15 장 (GIOP 1.0, 1.1, 및 1.2 의 정의). J2SE 5.0 의 ORB 에서는, 모든 버젼의 GIOP 가 완전하게 지원됩니다만, 섹션 15.8 및 15.9 로 정의되고 있는 쌍방향 GIOP 기능은 예외적으로 지원되지 않습니다. </li>
+
+<li>
+Interoperable Naming Service 의 스펙은 모두 지원되고 있습니다. </li>
+
+<li>
+포타브르인타세프타 스펙의 섹션 13.8 (새로운 <TT>Coder</TT> 및 <TT>Decoder</TT> 인터페이스)과 제 21 장 전체 (인타세프타의 스펙)</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑 스펙 (ptc/00-11-03)의 섹션 1.21. 8 은, IDL 로부터 Java 언어에의 매핑 스펙 (ptc/00-01-08)의 내용으로부터 변경되었습니다. </li>
+</ul>
+
+<h2>
+툴</h2>
+
+<ul>
+<li>
+IDL 로부터 Java 에의 컴파일러 (<TT>idlj</TT>)는, 다음의 스펙에 준거하고 있습니다. </li>
+
+<ul>
+<li>
+CORBA 2.3. 1 의 제 3 장 (IDL 의 정의)</li>
+
+<li>
+CORBA 2.3. 1 의 제 5 장 및 제 6 장 (Value 형의 시멘틱스)</li>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.6. 5 (프라그마)</li>
+
+<li>
+IDL 로부터 Java 에의 매핑 스펙</li>
+
+<li>
+개정된 IDL 로부터 Java 에의 매핑 스펙의 섹션 1.12. 1 「local interfaces」</li>
+</ul>
+
+<li>
+Java 로부터 IDL 에의 컴파일러 (rmic 의 IIOP 연구 최종 단계)는, 다음의 스펙에 준거하고 있습니다. </li>
+
+<ul>
+<li>
+CORBA 2.3. 1 의 제 5 장 및 제 6 장 (Value 형)</li>
+
+<li>
+Java 로부터 IDL 언어에의 매핑 스펙. IDL 로부터 Java 언어에의 매핑 스펙의 섹션 1.21 을 암묵적으로 참조하고 있습니다. </li>
+
+<li>
+-idl 플래그를 지정해 생성되는 IDL 는, CORBA 2.3. 1 의 제 3 장에 준거하고 있습니다. </li>
+</ul>
+</ul>
+<br>
+<hr>
+<br> <a name="other"></a> 
+<h1>그 외의 호환성 정보</h1>
+<UL>
+<LI><tt>java.util.Calendar</tt> 클래스는, RMI-IIOP 를 사용하면(자), J2SE 1.3.x 로 J2SE 5.0 의 사이에 상호 운용성이 없습니다. 이 점은 OMG 문제 3151 으로 해결될 예정입니다만, 그것이 구현되는 것은 Java 플랫폼의 장래의 릴리스가 될 전망입니다.
+
+<P>J2SE 5.0 버젼의 <tt>Calendar</tt> 의 <tt>writeObject</tt> 메소드에서는,<tt>ZoneInfo</tt> 객체를 써냅니다. 같이 그 객체를 읽어들이려면 <tt>readObject</tt> 메소드를 호출합니다. 낡은 버젼이라고 대화하고 있는 경우는, 객체가 존재하지 않기 때문에, 스트림은 Java 객체 직렬화 스펙에 근거해 <tt>EOFException</tt> 를 throw 합니다.  스트림의 위치는 바뀌지 않습니다.
+
+<P>
+</UL>
+
+
+
+
+
+<p>
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+<TABLE BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+
+<TD>
+<FONT SIZE="-2">Copyright &#169; 2001-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+
+   <P>
+   </TD>
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+
+</TR>
+</TABLE>
+
+
+</body>
+</html>

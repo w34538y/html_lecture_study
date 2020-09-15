@@ -1,0 +1,583 @@
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--changed by dcarson 6/2001 -->
+<TITLE>Java IDL 및 RMI-IIOP:네임 서비스 - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER>네임 서비스</H1>
+<P>
+<HR>
+
+<P>여기에서는, 이하의 항목에 대해 설명합니다.
+<UL>
+<LI><A href="#nameserver">COS 네임 서비스의 개요</A> 
+<LI><A href="#using">네임 서비스의 사용</A> 
+</UL>
+
+
+
+<!-- *******************************************************--> <A NAME="nameserver">
+<H2>COS 네임 서비스의 개요</H2></A> 
+
+<P>CORBA 의 COS (Common Object Services) 네임 서비스는, 파일 시스템이 파일에 대해서 디렉토리 구조를 제공하고 있는 것과 같이, 객체 참조에 대해서 트리 구조의 디렉토리를 제공합니다. Java IDL 의 네임 서비스는,<a href="ftp://ftp.omg.org/pub/docs/ptc/00-08-07.pdf">COS 네임 서비스의 스펙</a>의 구현입니다. 다음에, 이 문서로부터 발췌한 개요를 나타냅니다.
+
+<BLOCKQUOTE>
+
+<P>이름과 객체가 관련짓고는, 「네임 바인딩」이라고 불립니다. 네임 바인딩은, 항상 「네이밍 문맥」에 대해서 상대적으로 정의됩니다. 네이밍 문맥은, 각각이 고유의 이름을 가지는 일련의 네임 바인딩을 포함한 객체입니다. 복수의 이름을, 동일한 또는 다른 문맥내의 객체에 동시에 바인드 할 수가 있습니다.  
+
+<P>「<a href="#example2">이름의 해결</a>」이란, 특정의 문맥내에서 그 이름에 관련지을 수 있고 있는 객체를 판별하는 것입니다. <em></em>「<a href="#example1">이름의 바인드</a>」란, 특정의 문맥내에서 네임 바인딩을 작성하는 것입니다. <em></em>이름은, 항상 문맥에 대해서 상대적으로 해결되어 절대명은 존재하지 않습니다.  
+
+<P>문맥은 다른 객체와 같게, 문맥 자체도 네이밍 문맥내에서 이름에 바인드 할 수 있습니다. 다른 문맥내에서 문맥을 바인딩 하면(자), 「네이밍 그래프」가 작성됩니다. 네이밍 그래프는, 노드와 라벨이 붙은 경계를 포함한 유향그래프로, 각 문맥이 노드가 됩니다. 네이밍 그래프를 사용하면(자), 복잡한 이름을 사용해 객체를 참조할 수 있게 됩니다. 네이밍 그래프내의 문맥이 지정되었을 경우, 이름의 순서로 객체를 참조할 수 있습니다. 이 이름의 순서 ( 「복합명」이라고 불린다)는, 해결 처리를 안내하기 위한 , 네이밍 그래프내의 패스입니다.  
+
+</BLOCKQUOTE>
+
+<P>다음의 그림에 네이밍 그래프의 예를 나타냅니다. 이름 공간에 이름을 추가하는 방법을 나타내는<a href="#example1">샘플 프로그램</a>에서도 이것과 같은 모델을 사용하고 있습니다.
+
+<center><IMAGE SRC="images/NameClienttree.gif"></center>
+
+
+
+
+<P>어플리케이션으로부터 COS 네임 서비스를 사용하기 위해서는, 그 ORB 는 네임 서비스가 동작하고 있는 호스트의 포트를 알고 있는지, 그 네임 서비스의 캐릭터 라인화 된 초기 네이밍 문맥에 액세스 할 수 없으면 안됩니다. 네임 서비스는, Java&nbsp;IDL 의 네임 서비스에서도 그 외의 COS 준거의 네임 서비스에서도 괜찮습니다.  
+
+
+<a name="persistenttransient"></a> 
+<P>ORBD 는, 클라이언트 또는 서버를 실행하기 전에 기동합니다. ORBD 에는, 지속 네임 서비스 및 일시 네임 서비스가 짜넣어지고 있습니다. 이것들은 어느쪽이나 COS 네임 서비스의 구현입니다.   
+
+<P>
+<UL>
+<LI><strong>「지속」네임 서비스</strong>는, 네이밍 문맥에 대해서 지속성을 제공합니다. 즉, 이 정보는, 서비스의 정지나 기동 후에도 유지되어 서비스에 장해가 발생했을 경우에서도 회복할 수 있습니다. ORBD 를 재기동하면(자), 지속 네임 서비스는 네이밍 문맥의 그래프를 복원해, 모든 클라이언트와 서버의 이름의 바인딩이 보관 유지됩니다.   
+
+<P>
+<LI>하위 호환성이기 때문에, 구버젼의 JDK 에 동고 되고 있던<strong>일시 네임 서비스</strong>가, 이번 릴리스의 J2SE 에도 동고 되고 있습니다. 일시 네임 서비스에서는, 네임 서비스의 실행중에게만 네이밍 문맥이 보관 유지됩니다. 서비스가 중단되면(자), 네이밍 문맥은 없어집니다.    
+
+</UL>
+
+<P>클라이언트와 서버의 양쪽 모두가, 사용하는 루트 네이밍 문맥에 대해 동의 할 필요가 있습니다. 루트 네이밍 문맥을 가져오려면 ,<tt>orb.resolve_initial_references(String <em>name_of_service</em>)</tt> 메소드를 사용합니다. <tt>"NameService"</tt> 에 의해 제공되는 네임 서비스의 핸들을 <em>name_of_service</em> 로서 취득하면(자), 지속 네임 서비스가 취득됩니다. 즉, 그 네이밍 문맥의 그래프는, 서버에 장해가 발생해도 복원됩니다. <tt>「TnameService」</tt> 를 사용해 핸들을 취득하면(자), 일시 네임 서비스가 취득됩니다. 즉, 서비스가 중단되었을 경우는,<tt>orb.resolve_initial_references(String <em>name_of_service</em>)</tt> 를 사용해 루트 네이밍 문맥을 재취득할 필요가 있습니다.
+
+<P>다음에 예를 나타냅니다.  
+<P>
+<pre>
+      // get the root naming context
+      org.omg.CORBA.Object objRef =
+          orb.resolve_initial_references("NameService");
+      NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+</pre>
+
+
+
+<P>캐릭터 라인 「NameService」는, 모든 CORBA ORB 에 대해서 정의되고 있습니다. 이 캐릭터 라인을 건네주면(자), ORB 는, 다음의 네임 서비스의 객체 참조인 네이밍 문맥 객체를 돌려줍니다.
+<P>
+<UL>
+<LI>ORDB 의 일부인 네임 서비스를 사용했을 경우는 지속 네임 서비스 
+<LI><tt>tnameserv</tt> 를 사용했을 경우는 일시 네임 서비스
+</UL>
+
+<P>ORBD 와 함께 일시 네임 서비스를 사용하는 것을 지정하려면 , 캐릭터 라인 「TnameService」를 건네줍니다. 캐릭터 라인 「TnameService」는, 고유의 이름입니다. 이 캐릭터 라인을 건네주면(자), ORB 는, ORBD 의 일시 네임 서비스에의 객체 참조인 네이밍 문맥 객체를 돌려줍니다.
+
+<P>CORBA 목의 객체 참조와도 같이<TT>objRef</TT> 는 범용의 CORBA 객체입니다. 이것을 <TT>NamingContextExt</TT> 객체로서 사용하려면 , 적절한 형태에<a  href="../../../api/org/omg/CosNaming/NamingContextExtHelper.html#narrow(org.omg.CORBA.Object)">네로우 변환</a>할 필요가 있습니다.  
+
+<P><TT>NamingContextExtHelper</TT> 는,<TT>idlj</TT> 에 의해 생성되는 헬퍼 클래스입니다. 이 클래스의 기능은 <TT>HelloHelper</TT> 의 기능에 유사하고 있습니다. 여기서 <TT>ncRef</TT> 객체는 <TT>org.omg.CosNaming.NamingContextExt</TT> 가 되었으므로, 이것을 사용해 네임 서비스에 액세스 해, 서버를 등록할 수가 있습니다.
+
+<P><TT>NamingContextExt</TT> 및 <TT>NamingContextExtHelper</TT> 는, J2SE 의 이 릴리스로 새롭게 추가되었습니다. <tt><a href="../../../api/org/omg/CosNaming/NamingContextExt.html">NamingContextExt</a> </tt> 는,<tt>NamingContext</tt> 를 확장한 것입니다. NamingContextExt 는,<a href="#INS">Interoperable Naming Service</a>  의 일부이며, 각 이름이 고유하게 되어 있는 일련의 네임 바인딩을 포함하고 있습니다. 복수의 이름을, 동일한 또는 다른 문맥내의 객체에 동시에 바인드 할 수가 있습니다. <tt>NamingContextExt</tt> 를 사용하면(자), URL 베이스의 이름을 사용해 바인드와 해결을 실시할 수가 있습니다. <TT>NamingContextExtHelper</TT> 는,<tt>narrow()</tt> 등의, 형태 고유해 비지니스 논리를 처리하지 않는 추가의 헬퍼 메소드를 제공합니다.
+
+
+<a name="INS"><H3>Interoperable Naming Service</H3></a> 
+
+<P>Interoperable Naming Service (INS)는 CORBA 네임 서비스 위에 있는 URL 베이스의 네이밍 시스템으로, 어플리케이션에 공통의 초기 네이밍 문맥을 공유시키는 공통의 bootstrap 기구이기도 합니다.  
+ 
+<P>Interoperable Naming Service (INS)에는 다음의 기능이 있습니다. <P>
+	<UL>
+	<LI><a href="#string">캐릭터 라인화한 이름</a>으로 해결하는 기능 (a/b.c/d 등)
+	<LI>CORBA 객체 참조용 URL (<a href="#corbaloc">corbaloc:</a> 및 <a href="#corbaname">corbaname:</a> 형식)
+	<LI>CosName, URL, 및 String 간의 변환을 위한 <tt>NamingContextExt</tt> 의 표준 API
+	<LI><a href="#bootstrap">bootstrap</a>용의 ORB 인수 (<tt>ORBInitRef</tt> 및 <tt>ORBDefaultInitRef</tt>)
+	</UL>
+	
+	<P>INS 의 사용 방법을 나타내는 어플리케이션의 예에 대해서는,<a href="INStutorial.html"><em>Interoperable Naming Service Example</em></a> 를 참조해 주세요.
+	
+<P>다음의 그림은, INS 가 어떻게 ORBD 에 적합하는지를 나타내고 있습니다.
+ 
+<P>
+<P>
+<center><IMAGE SRC="images/ORBDNS.gif" ALT="ORBD"></center>
+<P><P>
+<BR> <BR><P>
+<P>
+<P>
+객체 참조는, 적어도, 주소, 객체 참조를 작성한 POA 의 이름, 및 객체 ID 라고 하는 3 개의 정보를 포함하고 있습니다.
+
+<a name="string"></a> 
+<P>INS 를 사용하면(자), 캐릭터 라인화 된 IOR 보다 읽기 쉬운, CORBA 객체에 액세스하기 위한 URL 를 제공할 수 있습니다. 다음과 같은 캐릭터 라인화 된 객체 참조 형식을 사용할 수 있습니다.
+ <P>
+ <UL>
+<LI>Interoperable Object References (IOR)
+<P>IOR 는, 객체 참조이며, OMG 에 의해 정의된 GIOP 프로토콜이나 IIOP 프로토콜을 사용해 정보를 교환할 수 있는 ORB 에 의해 인식됩니다. 클라이언트는,<a href="#example3">「이름 공간의 브라우즈」</a>의 예에 나타내도록(듯이),<tt>orb.object_to_string(objRef)</tt> 를 사용해 객체 참조를 취득하는지, 또는 다른 객체 참조의 기동의 결과로서, 객체 참조를 가져옵니다. <em></em>
+ <P>
+<STRONG>주:</STRONG> IOR 가 복수의 프로파일을 포함하고 있는 경우, J2SE v1. 4 이후의 ORB 는, 항상 최초의 프로파일을 사용합니다.
+ <P>
+<LI>인간이 읽을 수 있는 URL 형식의 CORBA 객체 참조
+ <P>
+ 	<UL>
+ 	<a name="corbaloc"></a> 
+	<LI>corbaloc:
+	<P><tt>corbaloc:</tt>형식은, CORBA 클라이언트에 있어 유효한 형식에서, 일반적으로, GIOP 의 <tt>LocateRequest</tt> 메세지 또는 <tt>Request</tt> 메세지를 사용해, 참조를 해결하기 위해서 사용됩니다. 예를 들어,<tt>corbaloc:</tt> 객체 참조는 다음과 같이 지정합니다.
+ 	<pre>
+ 	corbaloc:iiop:1. 2@MyBank.com:2050/TraderService
+ 	</pre>
+	<P>이 예는, 호스트 <tt>myBank.com</tt> 의 포트 <tt>2050</tt> 으로부터 <tt>TraderService</tt> 의 객체 참조를 취득하는 방법을 나타내고 있습니다.
+ 	<P>
+ 	<a name="corbaname"></a> 
+	<LI>corbaname:
+	<P><tt>corbaname:</tt>형식은, 클라이언트가 직접 bootstrap하기 위한 기구를 제공해서 , 일반적으로, 루트 네이밍 문맥의 캐릭터 라인화 된 이름을 해결하기 위해서 사용됩니다. 예를 들어,<tt>corbaname:</tt> 객체 참조는 다음과 같이 지정합니다.
+ 	<pre>
+ 	corbaname::myBank.com:2050#Personal/schedule
+ 	</pre>
+	<P><tt>myBank.com</tt> 는 호스트로,<tt>2050</tt> 은 포트입니다. 해시 마크까지의 부분의 참조 (<tt>corbaname::myBank.com:2050 </tt>)는, 루트 네이밍 문맥을 돌려주는 URL 입니다. 이 예는, a) 네임 서비스를 찾아, b) 네임 서비스의 <tt>Personal/schedule</tt> 라는 이름을 해결하기 위해서 사용되는 URL 를 나타내고 있습니다.
+ 	<P>
+ 	</UL>
+ </UL>
+
+<a name="bootstrap"></a> 
+<H4>ORB 의 bootstrap option</H4>
+<P>INS 는, bootstrap용의 ORB 옵션을 제공합니다. CORBA 시스템을 bootstrap 하려면 , CORBA 시스템에 객체 참조를 건네줄 필요가 있습니다. <tt>ORBInitRef</tt> 또는 <tt>ORBDefaultInitRef</tt> 를 사용해,<tt>resolve_initial_references()</tt> 로부터 커스터마이즈 된 CORBA 서비스의 핸들을 돌려주도록(듯이) ORB 를 구성할 수가 있습니다. 다음에 예를 나타냅니다.
+<P>
+<UL>
+<pre>
+-ORBInitRef TraderService=corbaloc::myBank.com:2050/TraderService
+-ORBDefaultInitRef corbaloc:iiop:1. 2:myBank.com:2050
+</pre>
+</UL>
+
+<P>이러한 옵션을 사용했을 경우, 해결의 차례는 다음과 같이 됩니다.
+<P>
+<OL>
+<LI><tt>register_initial_references</tt> 를 사용해 등록된 객체
+<LI><tt>-ORBInitRef</tt>
+<LI><tt>-ORBDefaultInitRef</tt>
+<LI>독자적인 bootstrap (Sun ORB 마셔)
+</OL>
+
+
+<P>
+	
+<P>INS 의 상세한 것에 대하여는, OMG 스펙 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-08-07">ptc/00-08-07</a> )을 참조해 주세요.
+
+
+
+
+
+
+
+<!--   ************H2 - Using the Naming Service **********-->
+
+<a name="using">
+<H2>네임 서비스의 사용</H2></a> 
+
+<P>네임 서비스를 사용하려면 , 처음에, 이름 공간이나 이름 공간내의 객체를 검출 또는 작성하는 서버와 클라이언트의 코드를 기술할 필요가 있습니다. 클라이언트와 서버를 실행하기 전에,<a href="#startingnameserver">네임 서비스를 기동</a>해, 클라이언트와 서버에 대해서 네임 서비스를 찾는 장소를 지정할 필요가 있습니다. 클라이언트와 서버가 네임 서비스에의 액세스를 시행했을 때에, 실행되는 스텝의 개요를 다음에 나타냅니다.
+ 
+ <P>
+ <UL>
+
+<LI>서버가 <tt>bind</tt> 메소드 또는 <tt>rebind</tt> 메소드를 호출해, 논리명을 객체 참조에 관련짓는다
+<LI>네임 서비스가, 이 객체 참조와 이름의 바인드를 이름 공간 데이타베이스에 추가한다
+<LI>클라이언트 어플리케이션이,<tt>resolve</tt> 메소드를 호출해, 이 이름을 사용해, 객체 참조를 취득한다
+<LI>클라이언트가 객체 참조를 사용해, 목적의 객체에 대한 메소드를 호출한다
+ </UL>
+ 
+<P>여기에서는, 다음의 항목에 대해 설명합니다.
+ <P>
+<ul>
+<LI><A href="#example1">샘플 클라이언트:이름 공간에의 객체의 추가</A> 
+<LI><A href="#example2">샘플 클라이언트:이름 공간으로부터의 객체의 해결</A> 
+<LI><A href="#example3">샘플 클라이언트:이름 공간의 브라우즈</A> 
+<LI><A href="#startingnameserver">네임 서비스의 기동</A> 
+<LI><A href="#stoppingnameserver">네임 서비스의 정지</A> 
+</ul>
+
+<!-- ******** Adding Objects to the Namespace ****** -->
+
+<A name="example1"></a> <H3>샘플 클라이언트:이름 공간에의 객체의 추가</H3>
+<P>
+다음에 나타내는 샘플 프로그램은, 이름을 이름 공간에 추가하는 방법을 나타내는 것입니다. 이 샘플 프로그램은, 이대로의 상태로 완전하게 동작하는 네임 서비스 클라이언트로, 다음과 같은 단순한 트리를 작성하는 것입니다. 네이밍 문맥은<em>이탤릭 폰트</em>로 가리켜, 객체 참조는<code>일반적으로의</code>폰트로 가리킵니다.
+
+<center><IMAGE SRC="images/NameClienttree.gif"></center>
+
+<P>
+이 예로,<strong>plans</strong> 는 객체 참조,<strong>Personal</strong> 는<strong>calendar</strong> 와 <strong>schedule</strong> 의 2 개의 객체 참조가 포함한 네이밍 문맥입니다.
+
+<P>
+
+<OL>
+<P>
+<LI><tt>NameClient.java</tt> 파일을 작성해, 적절한 라이브러리를 임포트 합니다.
+<P>
+<pre>
+import java.util.Properties;
+import org.omg.CORBA. *;
+import org.omg.CosNaming. *;
+
+public class NameClient
+{
+   public static void main(String args[])
+   {
+      try {
+</pre>
+<P>
+<LI>포트와 호스트의 프로퍼티을 설정합니다.
+<P>
+<a href="#startingnameserver">「네임 서비스의 기동」</a>시에에서는, 네임서버-는, 호스트 localhost 의 포트 1050 상에서 기동됩니다. 다음의 코드에 의해, 클라이언트 프로그램에 이 포트 번호와 호스트명을 인식시킵니다.
+<pre>
+        Properties props = new Properties();
+        props.put("org.omg.CORBA.ORBInitialPort", "1050");
+        props.put("org.omg.CORBA.ORBInitialHost", "localhost");
+        ORB orb = ORB.init(args, props);
+</pre>
+<P>
+<LI>초기 네이밍 문맥을 가져옵니다.
+<P>
+다음의 코드에서는, 초기 네이밍 문맥을 취득해, 그것을 <strong>ctx</strong> 에 대입합니다. 2 행 째로는,<strong>ctx</strong> 를 더미의 객체 참조 <strong>objref</strong> 에 카피합니다.  이 <strong>objref</strong> 에는, 나중에 다양한 이름을 할당해 이름 공간에 추가합니다.
+<pre> 
+        NamingContextExt ctx =
+          NamingContextExtHelper.narrow(orb.resolve_initial_references(
+            "NameService"));
+        org.omg.CORBA.Object objref = ctx;
+</pre>
+<P>
+<LI>이름 「plans」를 객체 참조에 바인드 합니다.
+<P>
+다음의 코드에서는, 이름 「plans」를 더미의 객체 참조에 바인드 합니다. 그 후,<code>rebind</code> 를 사용해 초기 네이밍 문맥아래에 객체 참조 「plans」를 추가하고 있습니다. <code>rebind</code> 메소드를 사용하면,<code>bind</code> 를 사용했을 경우에 발생하는 예외를 발생시키지 않고 , 이 프로그램을 몇번이나 반복해 실행할 수 있습니다.
+<pre>
+        NameComponent name1[] = ctx.to_name("plans");
+        ctx.rebind(name1, objref);
+        System.out.println("plans rebind successful! ");
+</pre>
+<P>
+<LI>「Personal」라고 하는 이름의 새로운 네이밍 문맥을 작성합니다.
+<P>
+다음의 코드에서는, 「Personal」라고 하는 이름의 새로운 네이밍 문맥을 작성합니다. 그 결과 얻을 수 있는 객체 참조 <strong>ctx2</strong> 를 이 이름에 바인드 해, 초기 네이밍 문맥에 추가합니다.
+<pre>
+        NameComponent name2[] = ctx.to_name("Personal");
+        NamingContextExt ctx2 = (NamingContextExt) ctx.bind_new_context(name2);
+        System.out.println("New naming context, Personal, added! ");
+</pre>
+<P>
+<LI>「schedule」와「calendar」를 더미의 객체 참조에 바인드 합니다. 「이름의 바인드」란, 특정의 문맥내에서 네임 바인딩을 작성하는 것입니다. 이름은, 항상 문맥에 대해서 상대적으로 해결되어 절대명은 존재하지 않습니다.  
+<P>
+다음의 코드에서는, 더미의 객체 참조를 「schedule」와「calendar」라고 하는 이름으로, 네이밍 문맥 「Personal」(<strong>ctx2</strong>)에 바인드 합니다.
+<pre>
+        NameComponent name3[] = ctx.to_name("schedule");
+        ctx2.rebind(name3, objref);
+        System.out.println("schedule rebind successful! ");
+
+        NameComponent name4[] = ctx.to_name("calendar");
+        ctx2.rebind(name4, objref);
+        System.out.println("calendar rebind successful! ");
+
+
+    } catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+  }  
+}
+</pre>
+<P><LI>NameClient.java 를 보존해, 다음과 같이 그 파일을 컴파일 합니다.
+<P>
+<pre>
+     javac NameClient.java
+</pre>
+<P>속행하기 전에 구문 에러를 수정합니다.
+<P>
+<LI><a href="#startingnameserver">「네임 서비스의 기동」</a>에 나타내는 순서에 따라 Object Request Broker Daemon 를 실행합니다.
+<P>
+<LI>다음과 같이 <tt>NameClient</tt> 를 실행합니다.
+<P>
+<pre>
+     java NameClient -ORBInitialPort 1050
+</pre>
+</OL>
+<P>
+단말 윈도우의 출력은 다음과 같이 됩니다.
+<P>
+<center><IMAGE SRC="images/NameClient.gif"></center>
+<P>
+
+<P>이것으로, 네임 서비스에 대해서 위의 그림과 같이 인식되는 이름 공간을 작성할 수 있었습니다.
+
+
+<!-- ******** Resolving Objects from the Namespace ****** -->
+
+<A name="example2"></a> <H3>샘플 클라이언트:이름 공간으로부터의 객체의 해결</H3>
+<P>
+다음에 나타내는 샘플 프로그램은, 이름을 이름 공간으로부터 해결하는 방법을 나타내는 것입니다. 「이름의 해결」이란, 특정의 문맥내에서 그 이름에 관련지을 수 있고 있는 객체를 판별하는 것입니다. 지속 네임 서비스를 사용하는 경우는, 네임 서비스가 정지했을 때에도, 다시 해결할 필요는 없습니다. 일시 네임 서비스를 사용하는 경우는, 네임 서비스가 정지했을 때에, 다시 해결할 필요가 있습니다.
+
+<P>
+이 예로,<strong>plans</strong> 는 객체 참조,<strong>Personal</strong> 는<strong>calendar</strong> 와 <strong>schedule</strong> 의 2 개의 객체 참조가 포함한 네이밍 문맥입니다.
+
+<P>
+
+<OL>
+<P>
+<LI><tt>NameClientResolve.java</tt> 파일을 작성해, 적절한 라이브러리를 임포트 합니다.
+<P>
+<pre>
+import java.util.Properties;
+import org.omg.CORBA. *;
+import org.omg.CosNaming. *;
+
+public class NameClientResolve
+{
+   public static void main(String args[])
+   {
+      try {
+</pre>
+<P>
+<LI>포트와 호스트의 프로퍼티을 설정합니다.
+<P>
+<a href="#startingnameserver">「네임 서비스의 기동」</a>시에에서는, 네임서버-는, 호스트 localhost 의 포트 1050 상에서 기동됩니다. 다음의 코드에 의해, 클라이언트 프로그램에 이 포트 번호와 호스트명을 인식시킵니다.
+<pre>
+        Properties props = new Properties();
+        props.put("org.omg.CORBA.ORBInitialPort", "1050");
+        props.put("org.omg.CORBA.ORBInitialHost", "localhost");
+        ORB orb = ORB.init(args, props);
+
+</pre>
+<P>
+<LI>초기 네이밍 문맥을 가져옵니다.
+<P>
+다음의 코드에서는, 초기 네이밍 문맥을 취득해, 그것을 <strong>nc</strong> 에 대입합니다.  
+<P>
+<pre> 
+        NamingContextExt nc =
+          NamingContextExtHelper.narrow(orb.resolve_initial_references(
+            "NameService"));
+</pre>
+<P>
+<LI>각 이름 공간을 해결합니다.
+<P>
+다음의 코드에서는, 각 이름 공간을 해결합니다.
+<P>
+<pre>   org.omg.CORBA.Object sched = nc.resolve_str("Personal/schedule");
+        org.omg.CORBA.Object cal = nc.resolve_str("Personal/calendar");
+        org.omg.CORBA.Object plan = nc.resolve_str("plans");
+
+      //finish the try-catch block
+      } catch (Exception e) {
+        e.printStackTrace(System.err);
+        } 
+}
+</pre>
+<P><LI>NameClientResolve.java 를 보존해, 다음과 같이 그 파일을 컴파일 합니다.
+<P>
+<pre>
+     javac NameClientResolve.java
+</pre>
+<P>속행하기 전에 구문 에러를 수정합니다.
+<P>
+<LI>Object Request Broker Daemon 가 실행되어<a href="#example1">「샘플 클라이언트: 이름 공간에의 객체의 추가」</a>로 설명한 클라이언트 어플리케이션이 실행되고 있는 것을 확인합니다. <em></em>
+<P>
+<LI>다음과 같이 <tt>NameClientResolve</tt> 를 실행합니다.
+<P>
+<pre>
+     java NameClientResolve -ORBInitialPort 1050
+</pre>
+
+</OL>
+<P>이 클라이언트 어플리케이션을 실행했을 때에 단말 윈도우에는 아무것도 표시되지 않습니다. 객체 참조가 해결된 것을 확인할 필요가 있는 경우는, 다음과 같은 테스트용의 코드를 추가합니다.
+<P>
+<pre>
+	if (sched == null){
+	  System.out.println("Schedule is null");
+	}
+		
+	if (cal == null){
+	  System.out.println("Calendar is null");
+	}
+	 
+	if (plan == null){
+	  System.out.println("Plans is null");
+	}
+</pre>
+
+
+
+<!--  *********** Example 3 ******************* -->
+
+<A name="example3"></a> <H3>샘플 클라이언트:이름 공간의 브라우즈</H3>
+<P>
+다음의 샘플 프로그램에서는, 이름 공간을 브라우즈 하는 방법을 나타냅니다.  
+
+<P>
+<OL>
+<LI><tt>NameClientList.java</tt> 파일을 작성해, 적절한 라이브러리를 임포트 합니다.
+<P>
+<pre>
+import java.util.Properties;
+import org.omg.CORBA. *;
+import org.omg.CosNaming. *;
+
+public class NameClientList
+{
+   public static void main(String args[])
+   {
+      try {
+</pre>
+<P>
+<LI>
+<P>
+<a href="#startingnameserver">「네임 서비스의 기동」</a>시에에서는, 네임서버-는, 호스트 localhost 의 포트 1050 상에서 기동됩니다. 다음의 코드에 의해, 클라이언트 프로그램에 이 포트 번호와 호스트명을 인식시킵니다.
+<pre>
+
+        Properties props = new Properties();
+        props.put("org.omg.CORBA.ORBInitialPort", "1050");
+        props.put("org.omg.CORBA.ORBInitialHost", "localhost");
+        ORB orb = ORB.init(args, props);
+
+
+</pre>
+<P>
+<LI>초기 네이밍 문맥을 가져옵니다.
+<P>
+<pre>
+        NamingContextExt nc = 
+          NamingContextExtHelper.narrow(orb.resolve_initial_references(
+            "NameService"));
+
+</pre>
+<P>
+<LI>네이밍 문맥내의 모든 바인딩을 일람표 가리킵니다.
+<P>
+<code>list</code> 메소드는, 네이밍 문맥에 추가되고 있는 바인딩을 리스트 합니다. 이 경우, 최대 1000 개까지의 바인딩이 초기 네이밍 문맥으로부터 <code>BindingListHolder</code> 에 돌려주어집니다. 나머지의 바인딩은,<code>BindingIteratorHolder</code> 에 돌려주어집니다.
+<pre> 
+        BindingListHolder bl = new BindingListHolder();
+        BindingIteratorHolder blIt= new BindingIteratorHolder();
+        nc.list(1000, bl, blIt);
+
+</pre>
+<P>
+<LI>바인딩의 배열을 가져옵니다.
+<P>
+다음의 코드에서는, 반환된 BindingListHolder 로부터 바인딩의 배열을 가져옵니다.  
+<pre>
+        Binding bindings[] = bl.value;
+
+
+</pre>
+<P>
+<LI>다음의 코드에서는, 바인딩에 대해서 루프 처리를 실시해, 이름을 출력합니다.
+<pre>
+        for (int i=0; i < bindings.length; i++) {
+
+            int lastIx = bindings[i]. binding_name.length-1;
+
+            // check to see if this is a naming context
+            if (bindings[i]. binding_type == BindingType.ncontext) {
+              System.out.println( "Context: " + 
+                bindings[i]. binding_name[lastIx]. id);
+            } else {
+                System.out.println("Object: " + 
+                  bindings[i]. binding_name[lastIx]. id);
+            }
+        }
+
+       } catch (Exception e) {
+        e.printStackTrace(System.err);
+       } 
+   }
+}
+</pre>
+<P><LI>NameClientList.java 를 보존해, 다음과 같이 그 파일을 컴파일 합니다.
+<P>
+<pre>
+     javac NameClientList.java
+</pre>
+<P>속행하기 전에 구문 에러를 수정합니다.
+<P>
+<LI>Object Request Broker Daemon 가 실행되어<a href="#example1">「샘플 클라이언트: 이름 공간에의 객체의 추가」</a>로 설명한 클라이언트 어플리케이션과<a href="#example2">「샘플 클라이언트: 이름 공간으로부터의 객체의 해결」</a>로 설명한 클라이언트 어플리케이션이 실행되고 있는 것을 확인합니다.
+<P>
+<LI>다음과 같이 <tt>NameClientList</tt> 를 실행합니다.
+<P>
+<pre>
+     java NameClientList -ORBInitialPort 1050
+</pre>
+</OL>
+<P>
+단말 윈도우의 출력은 다음과 같이 됩니다.
+<P>
+<center><IMAGE SRC="images/NameClientList.gif"></center>
+<P>
+
+
+
+<P>
+
+<!--  ************  STARTING AND STOPPING NAMING SERVICE ***** --> <A name="startingnameserver">
+<H3>네임 서비스의 기동</H3></A> 
+
+모든 튜토리얼로, Object Request Broker Daemon (<code>orbd</code>)를 사용합니다. 이것에는, 지속 네임 서비스와 일시 네임 서비스의 양쪽 모두가 짜넣어지고 있어 J2SE 1.4 이후를 다운로드하면 입수할 수 있습니다.    
+
+<P>호출측 (클라이언트, 피어, 또는 클라이언트 어플리케이션)이 원격 객체의 메소드를 호출하려면 , 호출측은 우선 원격 객체에의 참조를 취득할 필요가 있습니다.
+
+	
+<P>원격 객체가 서버에 등록되면(자), 호출측은, 그 객체를 이름에 의해 검색해, 원격 객체에의 참조를 취득할 수 있습니다. 그러면, 그 객체의 메소드를 원격로부터 호출할 수 있습니다.
+
+<P>이것에 의해, 그 객체의 메소드를 원격로부터 호출할 수 있습니다. 네임 서비스의 기동 방법에 대해서는, ORBD 문서의<a href="../../tools/share/orbd.html#starting"><em>「네임 서비스의 기동」</em></a> 을 참조해 주세요.
+
+
+<A name="stoppingnameserver">
+<H3>네임 서비스의 정지</H3></A> 
+
+<P>네임 서비스를 정지하려면 , 적절한  operating system 커멘드를 사용합니다. 예를 들어, Solaris 에서는 <TT>kill</TT> 를 사용해,<tt>orbd</tt> 가 실행되고 있는 DOS 윈도우에서는 <kbd>Ctrl+C</kbd> 키를 사용합니다. 일시 네임 서비스의 경우는, 서비스가 종료되면(자), 네임 서비스에 등록된 이름이 소거되는 경우가 있습니다. Java IDL 네임 서비스는, 명시적으로 정지될 때까지 실행됩니다. </P>
+
+<A name="FAQ"></a> 
+<H2>네임 서비스의 FAQ</H2>
+
+<H3>Sun 의 ORB 로부터 서드 파티제의 네임 서비스에 접속하는 방법을 가르쳐 주세요. </H3>
+
+<BLOCKQUOTE>
+서드 파티제의 네임 서비스가,<a href="INStutorial.html">Interoperable Naming Service (INS)</a>  를 지원하고 있는 경우는, INS 옵션을 사용하는 방법을 추천합니다.
+<P>
+Sun ORB 를 다른 벤더의 네임 서비스와 함께 사용하려면
+   <OL>
+<LI>호스트 및 포트상에서 서드 파티제의 네임서버-를 기동합니다.  <P>
+<LI>다음의 인수를 <tt>ORB.init()</tt> 에 건네줍니다.
+   <pre>
+        -ORBInitRef NameService=corbaloc:iiop:1. 2@<H>:<P>/NameService
+        </pre>
+        <P>
+   </OL>
+<P><tt>orb.resolve_initial_references( "NameService" )</tt> 를 실행하면(자), 서드 파티제의 네임 서비스에 접속할 수 있게 됩니다. 접속할 수 없는 경우는, 이하의 트러블 슈팅에 관한 힌트를 시험해 주세요.
+      <UL>
+<LI>서드 파티제의 네임 서비스가 INS 를 지원하고 있는 것을 확인한다
+<LI>호스트와 포트의 정보가 올바른 것을 확인한다
+<LI>서드 파티제의 네임 서비스가 올바르게 기동되고 있는 것을 확인한다
+<LI>서드 파티제의 네임 서비스가 GIOP 1.2 를 지원하고 있는 것을 확인하는 지원하고 있지 않는 경우는, 네임서버-의 문서를 참조해, 적절한 GIOP 의 버젼을 확인해, 그 버젼에 맞추어 <tt>corbaloc:</tt>URL 를 수정한다
+<LI>서드 파티제의 네임 서비스가 다른 객체 키를 사용해 <tt>NameService</tt> 와 통신하고 있을지 어떨지를 조사한다. 그 경우는, 네임서버-의 문서를 참조한다
+         </UL>
+    
+</BLOCKQUOTE>
+
+<HR>
+<CENTER>
+
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">Java IDL 탑에</A> </TD>
+</TR></TABLE>
+
+<HR>
+<!-- server side include for page footer -->
+
+  <!--#include virtual="/share/include/normal.footer.v4.0.html"-->
+
+<!-- end server side include for footer -->
+
+</CENTER>
+</BODY>
+</HTML>

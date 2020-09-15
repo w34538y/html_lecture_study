@@ -1,0 +1,292 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>inetd 로부터 기동되는 서비스의 설계 - xrath.com 에서 번역됨</title>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+&nbsp;
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"></td>
+
+<td>
+<ul>
+<center>
+<h1>
+<code>inetd</code> 로부터 기동되는 서비스의 설계</h1></center>
+</ul>
+</td>
+
+<td width="15%" align="center" valign="top">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+&nbsp;
+<p>Solaris  operating system (Solaris OS)에서는, 인터넷 서비스 demon의 <code>inetd</code> 가, 시스템 부트시에 서비스를 기동하는 대체 수단이 됩니다. 인터넷의 표준 서비스에 대한 서버 프로세스인 이 demon를, 필요에 따라서 서비스를 기동하도록(듯이) 구성할 수가 있습니다. 인터넷 서비스 demon의 상세한 것에 대하여는, Solaris OS 의 <code>inetd(1M)</code> 의 메뉴얼 페이지를 참조해 주세요.
+
+</p><p><code>inetd</code> 는, Java<SUP><FONT SIZE="-2">TM</FONT></SUP> Remote Method Invocation (Java RMI) 서비스를 필요에 따라서 기동하도록(듯이) 구성할 수가 있습니다. 다만, 어플리케이션과 그 원가요소의 서비스가 <code>inetd</code> 로부터 기동되도록(듯이) 하려면 , 어플리케이션으로 특별한 기법을 사용할 필요가 있습니다. 우선, 서비스 프로그램으로,<code>inetd</code> 로부터 상속되는 I/O 소켓을 사용할 수 있도록(듯이) export 되는, 로컬 레지스트리를 작성할 필요가 있습니다. 다음에, 이 특별히 export 된 레지스트리내에 서비스의 프록시를 바인드 해, 클라이언트가 서비스를 검색할 수 있도록(듯이) 합니다. 이 서비스 프로그램의 작성이 끝나면(자), 클라이언트가 서비스의 로컬 레지스트리에 접속해 이름으로 서비스를 검색할 경우에, 이 프로그램이 기동되도록(듯이),<code>inetd</code> 를 구성할 수 있습니다.
+
+</p><p>이 튜토리얼에서는, 클라이언트가 서비스의 로컬 레지스트리에 접속한 시점에서 <code>inetd</code> 로부터 서비스를 기동할 수 있도록(듯이), 특별히 export 된 로컬 레지스트리를 사용해 서비스 프로그램을 구축하는 방법을 최초로 설명합니다.
+
+</p><p>다음에, 서비스 프로그램을 기동하기 위한 ,<code>inetd</code> 의 구성 방법을 설명합니다. <code>inetd</code> 에 사용되는 <code>/etc/inetd.conf</code> 및 <code>/etc/services</code> 의 2 개의 구성 파일에는, 각각 엔트리를 추가할 필요가 있습니다. 이러한 파일을 편집하려면 , 서비스가 실행되는 머신에의 루트 액세스권이 필요합니다.
+
+</p><p><code>inetd</code> 를 복구 이룬 후에, 올바르게 기능할지 어떨지를 확인하기 위해서 테스트할 필요가 있습니다.
+
+</p><p>이 튜토리얼에서는, 다음의 순서를 실행합니다.
+
+<p>
+
+</p><blockquote>
+<ul>
+<li>
+<a href="#1">서비스 프로그램의 구현</a> </li>
+
+<li>
+<a href="#2"><code>/etc/inetd.conf</code> 의 구성</a> </li>
+
+<li>
+<a href="#3"><code>/etc/services</code> 의 구성</a> </li>
+
+<li>
+<a href="#4"><code>inetd</code> 에 의한 새로운 구성의 read</a> </li>
+
+<li>
+<a href="#5">단순한 클라이언트를 사용한 구성의 테스트</a> </li>
+</ul> <p>
+</blockquote>
+<p></p><hr>
+<h2>
+<a name="1"></a> 서비스 프로그램의 구현</h2>
+<blockquote>
+<p>서버측의 구현에는, 다음의 원시 파일을 사용합니다.
+<ul>
+<li><code><a href="ServiceInterface.java">ServiceInterface.java</a> </code>: 서비스용 원격 인터페이스
+<li><code><a href="InitializeRegistry.java">InitializeRegistry.java</a> </code>: 상속 채널을 사용해 레지스트리를 작성/export 하는 유틸리티
+<li><code><a href="Server.java">Server.java</a> </code>: 서비스 프로그램
+</ul>
+
+<code>ServiceInterface</code> 인터페이스로, 단일의 인수 <code>message</code> 를 취해, 한편 메세지가 수신되었다고 하는 확인 응답을 돌려주도록(듯이) 지정된 단일 메소드 <code>sendMessage</code> 첨부의 원격 인터페이스를 정의합니다.
+
+<p></p><p><code>InitializeRegistry</code> 클래스에서, static 유틸리티 메소드의 <code>initializeWithInheritedChannel</code> 를 정의합니다. 이 메소드는, 레지스트리를 작성해 export 해 (상속 채널이 있는 경우에는 그것을 사용), 클라이언트를 검색할 수 있도록(듯이), 그 레지스트리내에서 원격 서비스의 프록시를 바인드 합니다.
+
+</p><p><code>Server</code> 서비스 프로그램으로,<code>ServiceInterface</code> 인터페이스를 구현해, 서비스의 실행용으로 static 메소드 <code>main</code> 를 정의합니다. static 메소드 <code>main</code> 로, 다음의 조작이 실행됩니다.
+
+<ul>
+<li>서비스 프로그램이 <code>inetd</code> 로부터 기동되었을 경우에 에러 출력이 없어지는 것을 막기 위해서(때문에),<code>System.err</code> 의 출력을 파일에 리다이렉트(redirect) 한다
+<li>로컬 레지스트리의 포트 번호를 나타내는 옵션의 인수를 해석한다
+<li>익명 포트에 서버를 작성해, export 한다
+<li>서비스의 프록시, 레지스트리내의 서비스의 이름, 및 <code>inetd</code> 에서가 아니고 커멘드행으로부터 프로그램을 실행하는 경우에 사용하는 옵션의 포트 번호로,<code>InitializeRegistry.initializeWithInheritedChannel</code> 유틸리티 메소드를 호출한다
+<li><code>ready</code> 메세지를 출력한다
+<li>대기한다
+</ul>
+
+<p></p><p>구현  중에서 가장 흥미로운 부분은,<code>initializeWithInheritedChannel</code> 유틸리티 메소드내에 있습니다. 이 메소드에서는, 가상 머신을 기동한 프로세스로부터 상속된 채널 (예를 들어 <code>java.nio.channels.SocketChannel</code> 또는 <code>java.nio.channels.ServerSocketChannel</code>)을 어플리케이션을 취득할 수 있도록(듯이) 하는,<code>System.inheritedChannel</code> 메소드를 사용합니다. 이 상속 채널은,<code>SocketChannel</code> 의 경우는 단일의 착신 접속을 실시하기 (위해)때문에,<code>ServerSocketChannel</code> 의 경우는 복수의 착신 접속을 받아들이기 위해서(때문에) 사용할 수 있습니다. 이와 같이 해,<code>inetd</code> 에 의해 기동된 어플리케이션은,<code>inetd</code> 로부터 상속된 <code>SocketChannel</code> 또는 <code>ServerSocketChannel</code> 을 취득할 수가 있습니다.
+
+</p><p><code>initializeWithInheritedChannel</code> 유틸리티 메소드는, 상속 채널의 취득을 위해서(때문에) 우선 <code>System.inheritedChannel</code> 메소드를 호출합니다. 상속 채널은,<code>null</code> 또는 <code>ServerSocketChannel</code> 일 필요가 있어, 그 이외의 경우, 이 메소드에 의해 <code>IOException</code> 가 throw 됩니다.
+
+</p><p>상속 채널이 <code>null</code> 의 경우, 상속된 채널이 없는 것을 나타냅니다. 즉, 프로그램은 커멘드행으로부터 실행되었습니다. 이 경우,<code>initializeWithInheritedChannel</code> 메소드는 지정된 포트 (제로 이외)의 레지스트리를 단순하게 export 해, 그 레지스트리내의 지정된 서비스 프록시를 바인드 합니다.
+
+</p><p>상속 채널이 <code>ServerSocketChannel</code> 인스턴스의 경우는, 프로그램이 <code>inetd</code> 로부터 기동되고 있습니다. 이 경우,<code>initializeWithInheritedChannel</code> 메소드는 <code>RMIServerSocketFactory</code> 를 사용해 레지스트리를 export 합니다. <code>RMIServerSocketFactory</code> 의 <code>createServerSocket</code> 메소드는, 지정된 프록시가 레지스트리내에 바인드 될 때까지, 상속된 <code>ServerSocketChannel</code> 로부터의 요구의 수락을 늦추는 <code>ServerSocket</code> 를 돌려줍니다.
+
+</p><p>프로그램이 <code>inetd</code> 로부터 기동되었을 경우는, 서비스의 프록시가 로컬 레지스트리내에 바인드 될 때까지, 레지스트리는, 상속된 <code>ServerSocket</code> 상의 착신 접속을 아무것도 받아들일 수가 없다고 하는 것이 중요한 점입니다. 서비스가 레지스트리내에 바인드 되기 전에 접속이 받아들여졌을 경우, 클라이언트는, 서비스 프록시의 검색을 하려고 해 <code>java.rmi.NotBoundException</code> 를 받는 일이 있습니다.
+
+</p><p>서비스가 레지스트리내에 바인드 될 때까지 요구의 수취를 늦추는 <code>ServerSocket</code> 의 구현 방법의 상세한 것에 대하여는,<code><a href="InitializeRegistry.java">InitializeRegistry</a> </code> 클래스에 정의 끝난 상자로 된, private 클래스 <code>DelayedAcceptServerSocket</code> 를 참조해 주세요.
+
+</p><p>다음과 같이 해, 서비스 프로그램을 컴파일 합니다.
+
+
+<blockquote>
+<pre>
+% javac -d <b><i>classDir</i></b> ServiceInterface.java InitializeRegistry.java Server.java
+</pre>
+</blockquote>
+
+<b>classDir</b> 는, 이 예의 클래스 패스입니다.
+
+<p></p><p>J2SE 5.0 보다 전의 릴리스상에서 실행되는 클라이언트에 서비스가 액세스 할 필요가 있는 경우는,<code>rmic</code> 를 사용해 원격 서비스용의 Stub를 작성할 필요가 있습니다.
+
+</p><p>다음의 3 개의 항으로, 서비스 프로그램을 기동하도록(듯이) <code>inetd</code> 를 설정하는 방법을 설명합니다.
+</blockquote>
+
+<h2>
+<a name="2"></a> <code>/etc/inetd.conf</code> 의 구성</h2>
+<blockquote>
+<p><code>/etc/inetd.conf</code> 구성 파일에는,<code>inetd</code> 가 소켓 경유로 요구를 받아들였을 때에 기동되는 서비스용의 엔트리가 포함되어 있습니다. 이 구성 파일의 형식에 대한 자세한 것은, Solaris OS 의 <code>inetd.conf(4)</code> 의 메뉴얼 페이지를 참조해 주세요.  
+
+</p><p>
+서비스 프로그램을 기동하도록(듯이) <code>inetd</code> 를 구성하려면 , 다음의 엔트리를 <code>/etc/inetd.conf</code> 구성 파일에 추가합니다 (머신에의 루트 액세스권이 필요).
+<blockquote>
+<pre>
+example-server stream tcp wait nobody <i><b>jreHome</b></i>/bin/java  \
+     java -classpath <b><i>classpath</i></b> example.inetd.Server
+</pre>
+</blockquote>
+<b>jreHome</b> 는 인스톨 끝난 JRE 에의 패스,<b>classpath</b> 는 이 예에의 클래스 패스입니다.
+
+<p></p><p><code>nobody</code> 이외의 사용자로서 프로그램을 실행할 필요가 있는 경우는,<code>nobody</code> 를, 프로그램을 실행할 필요가 있는 사용자 ID 에 옮겨놓아 주세요.
+</p>
+</blockquote>
+<h2>
+<a name="3"></a> <code>/etc/services</code> 의 구성</h2>
+<blockquote>
+
+<p>다음에, 서비스를 참조하는 이름의 <code>example-server</code> 를,<code>/etc/services</code> 구성 파일내에 서비스로서 지정할 필요가 있습니다. 이 구성 파일의 형식에 대한 자세한 것은, Solaris OS 의 <code>services(4)</code> 의 메뉴얼 페이지를 참조해 주세요.
+
+</p><p>서비스로서 <code>example-server</code> 를 지정하려면 , 다음의 엔트리를 <code>/etc/services</code> 구성 파일에 추가합니다 (머신에의 루트 액세스권이 필요).
+
+<blockquote>
+<pre>
+example-server        <b><i>port</i></b>/tcp
+</pre>
+</blockquote>
+
+<b>port</b> 는, 서비스의 로컬 레지스트리용의 포트 번호입니다.
+
+<p></p>
+</blockquote>
+<h2>
+<a name="4"></a> <code>inetd</code> 에 의한 새로운 구성의 read</h2>
+
+<blockquote>
+
+<p>여기까지로 구성 파일이 변경되었으므로,<code>inetd</code> 는 새로운 구성을 읽어낼 필요가 있습니다. 그 결과, 구성된 서비스에 대응하는 적절한 포트로 요구를 대기할 수 있게 됩니다.
+
+</p><p>다만 최초로, 서비스 프로그램이 아직 실행되어 있지 않은 것을 확인할 필요가 있습니다. 이것을 실시하려면 , 다음의 커멘드를 실행합니다.
+
+<blockquote>
+<pre>
+% ps -ef | grep example.inetd.Server
+</pre>
+</blockquote>
+상기 커멘드에 의해 서비스 프로그램을 위해서(때문에) 실행되고 있는 <code>java</code> 프로세스에 관한 정보가 표시되지 않는 경우는, 프로그램이 실행되어 있지 않게 됩니다. 정보가 표시되었을 경우는, 작업을 속행하기 전에, 우선 그 프로그램을 종료시킬 필요가 있습니다.
+
+<p></p><p>다음에,<code>inetd</code> 가 새로운 구성을 읽어낼 필요가 있습니다. <code>inetd</code> 에 구성을 재차 읽어내게 하려면 , 실행중의 <code>inetd</code> 프로세스에 행업의 신호를 송신할 필요가 있습니다. 우선, 다음의 커멘드를 실행해, 실행중의 inetd 프로세스의 프로세스 ID 를 조사합니다.
+<blockquote>
+<pre>
+% ps -ef | grep inetd
+</pre>
+</blockquote>
+이 커멘드에 의해, 다음과 같이 표시됩니다.
+<blockquote>
+<pre>
+root   171     1  0   Sep 30 ?         0:02 /usr/sbin/inetd -s
+</pre>
+</blockquote>
+이 예의 <code>inetd</code> 의 프로세스 ID 는,<code>171</code> 입니다. 이것으로, 다음의 커멘드에 프로세스 ID 를 지정해 실행하면(자) (루트 액세스권이 필요),<code>inetd</code> 프로세스에 행업 신호를 송신할 수가 있습니다.
+<blockquote>
+<pre>
+% kill -HUP 171
+</pre>
+</blockquote>
+
+<p></p><p></p>이것으로, 클라이언트가 상기와 같이 구성된 포트에 접속하려고 했을 때에 서비스 프로그램을 기동하기 위한 설정이,<code>inetd</code> 에 대해서 모두 행해졌습니다.
+</blockquote>
+<h2>
+<a name="5"></a> 단순한 클라이언트를 사용한 구성의 테스트</h2>
+
+<blockquote>
+
+<p><code>inetd</code> 가 올바르게 구성된 것을 테스트하기 위해서, 상기와 같이 구성된 포트상의 레지스트리내에서 서비스를 검색해, 그 서비스상에서 메소드를 호출하는 단순한 클라이언트 프로그램을 실행할 수가 있습니다. 구성이 올바른 경우는, 검출한 서비스의 로컬 레지스트리에 접속하려고 하는 것으로,<code>inetd</code> 가 서비스 프로그램을 기동합니다.
+
+</p><p>다음에, 서비스를 검색해 그 서비스상에서 메세지를 송신하는 메소드를 호출하는, 단순한 프로그램을 나타냅니다. 이 프로그램은, 3 개의 커멘드행 인수, 즉 서비스의 로컬 레지스트리의 호스트 및 포트 번호, 서비스에 송신하는 메세지를 취합니다.
+
+<blockquote>
+<pre>
+package example.inetd;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+public class Client {
+
+    public static void main(String[] args) throws Exception {
+
+	int port = 0;
+	String host = "";
+	String message = "";
+	
+	if (args.length > 2) {
+	    host = args[0];
+	    try {
+		port = Integer.parseInt(args[1]);
+		if (port == 0) {
+		    goodbye("nonzero port argument required", null);
+		}
+	    } catch (NumberFormatException e) {
+		goodbye("malformed port argument", e);
+	    }
+	    message = args[2];
+	} else {
+	    usage();
+	}
+
+	Registry registry = LocateRegistry.getRegistry(host, port);
+	ServiceInterface proxy =
+	    (ServiceInterface) registry.lookup("ServiceInterface");
+	System.out.println("sending message: " + message);
+	System.out.println("received message from proxy: " +
+			   proxy.sendMessage(message));
+	
+	System.out.println("done. ");
+    }
+
+    private static void goodbye(String message, Exception e) {
+	System.err.println("Client: " + message + (e ! = null ?  ": " : ""));
+	if (e ! = null) {
+	    e.printStackTrace();
+	}
+	System.exit(1);
+    }
+
+    private static void usage() {
+	System.err.println("Client &LT;host&GT; &LT;port&GT; &LT;message&GT;");
+	System.exit(1);
+    }
+}
+</pre>
+</blockquote>
+<p></p><p>클라이언트용 소스의 모든 것 (코멘트도 포함해)은, 다음과 같습니다.
+<ul>
+<li><code><a href="Client.java">ServiceInterface.java</a> </code>: 서비스용 원격 인터페이스
+<li><code><a href="Client.java">Client.java</a> </code>: 클라이언트 프로그램
+</ul>
+<p></p><p>다음과 같이 해, 이 프로그램을 컴파일 해, 실행합니다.
+<blockquote>
+<pre>
+% javac -d <b><i>classDir</i></b> ServiceInterface.java Client.java
+% java -classpath <b><i>classDir</i></b> example.inetd.Client <b><i>host</i></b> <b><i>port</i></b> "<b><i>message</i></b>"
+</pre>
+</blockquote>
+
+<b>classDir</b> 는 이 예의 클래스 패스,<b>host</b> 는 서비스가 거기서 실행되도록(듯이) 구성된 호스트,<b>port</b> 는 <code>/etc/services</code> 파일내에서<a href="#3">서비스용으로 구성된 </a>포트,<b>message</b> 는 서비스에 송신되는 캐릭터 라인입니다.
+
+<p></p><p>클라이언트 프로그램이 메세지를 송신해, 서비스 프로그램으로부터 메세지를 수신했던 것이 표시되면, 서비스 프로그램이 <code>inetd</code> 로부터 올바르게 기동된 것이  됩니다.
+
+</p><p>클라이언트 프로그램이 행업 할까 예외의 트레이스를 출력했을 경우는, 서비스 프로그램에 의해 작성된 출력 파일을 체크해 주세요. 서비스 프로그램은,<code>System.err</code> 에 써내진 모든 출력을 <code>java.io.tmpdir</code> 프로퍼티으로 지정된 디렉토리내의 파일에 리다이렉트(redirect) 합니다. 일반적으로 이 디렉토리는, Solaris OS 의 <code>/var/tmp</code> 입니다. 이 출력 파일의 접두사는 「example-server-err」, 접미사(suffix)은 「. tmp」입니다. 이 파일명에는, 파일명을 일의로 하기 위한 문자 (일반적으로은 숫자)가 접두사와 접미사(suffix)의 사이에 포함되어 있습니다.
+
+</p><p><code>inetd</code> 구성의 변경을 끝냈을 때에는,<code>inetd</code> 에 행업 신호를 송신해 변경 끝난 구성이 재독 보고 붐비어 되도록 해 주세요.
+
+</p><p>파일이 존재하지 않는 경우는, 「<code>ready</code>」메세지가 파일내에 없는지, 그 외의 에러 출력이 파일내에 존재하므로, 구성을 재체크해 주세요. <code>inetd</code> 구성의 변경을 끝냈을 때에는,<code>inetd</code> 에 행업 신호를 송신해 변경 끝난 구성이 재독 보고 붐비어 되도록 해 주세요. 또, 그 전에 기동된 모든 프로세스를 종료시키는 일도 잊지 말아 주세요.
+
+<br>
+</blockquote>
+<p>
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

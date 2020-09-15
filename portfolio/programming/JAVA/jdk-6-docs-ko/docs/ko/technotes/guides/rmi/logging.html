@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Mozilla/4,02 [en] (X11; U; SunOS 5.6 sun4u) [Netscape]">
+<TITLE>Java RMI 구현 로그 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: Susan Snyder,  10/15/05 -->
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+&nbsp;
+<TABLE BORDER=0 WIDTH="100%" SUMMARY="layout">
+<TR>
+<TD WIDTH="60"><IMG SRC="images/javalogo52x88.gif" ALT="Java" BORDER=0 HEIGHT=88 WIDTH=52>&nbsp;</TD>
+
+<TD>
+<CENTER>
+<H1>
+Java<SUP><FONT SIZE="-2">TM</FONT></SUP> RMI 구현 로그<br> <font size="-1">JDK<sup>TM</sup> 6</font></H1></CENTER>
+</TD>
+
+<TD width=15% ALIGN=center VALIGN=top>
+<font size="-1"><a href="../../../index.html">문서의 목차 </a> </font>
+</TD>
+
+</TR>
+</TABLE>
+<!-- Body text begins here -->
+<p>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> SE Development Kit (JDK) v1. 4 에서는, Sun 의 Java Remote Method Invocation (Java RMI) 구현으로<a href="../logging/index.html">로깅 API</a>  를 사용해, 구현의 로그를 출력합니다.
+
+<a href="../logging/overview.html#1.8">로그 구성 파일 </a>및 프로그램에 의한 API (<a  href="../../../api/java/util/logging/package-summary.html"><code>java.util.logging</code></a> )는, Java RMI 구현 로그의 구성에 사용할 수가 있습니다.
+
+<p>JDK 의 전의 버젼으로 인식되고 있던,<code>java.rmi.server.logCalls</code> 시스템 프로퍼티 및<a href="sunrmiproperties.html">구현 고유의 <code>sun.rmi. *</code> 로그 프로퍼티</a>은 여전히 사용 가능합니다. 이 기능에 의해, 전의 버젼과 같이, Java RMI 구현의 <code>Logger</code> 객체의 디폴트 레벨의 설정, 및 Java RMI 구현 로그의 <code>System.err</code> 에의 출력이 가능합니다.
+
+<p>Java RMI 구현에 의해 사용되는 <code>Logger</code> 객체의 이름, 및 전버젼으로 지원되고 있던 로그 프로퍼티과의 대응에 대해, 다음의 겉(표)에 나타냅니다.
+
+<p>Java RMI 구현은, 로그 기록 카테고리인, 클라이언트측 호출 로그 기록을 지원하고 있는 것에 주목해 주세요. 이것은,<code>java.rmi.server.logCalls</code> 프로퍼티에 의해 기동되는 서버측 호출 로그 기록 과 유사합니다. 클라이언트측 호출 로그 기록은,<code>sun.rmi.client.call</code> 라는 이름의 <code>Logger</code> 에 출력됩니다.
+
+<p>
+<table cellspacing="0" cellpadding="2" border="1"
+	Summary="The table below shows the names of the Logger objects used by the RMI implementation and how
+they correspond to the
+logging properties supported by previous versions.">
+<tr>
+<th id="header1" align="center"><font size="+1">시스템 프로퍼티명</font></th>
+<th id="header2" align="center"><font size="+1"><code>Logger</code> 명</font></th>
+<th id="header3" align="center"><font size="+1">로그 기록되는 정보</font></th>
+<tr>
+<td headers="header1"><code>java.rmi.server.logCalls</code>
+<td headers="header2"><code>sun.rmi.server.call</code>
+<td headers="header3">서버측의 원격 호출 및 예외
+<tr>
+<td headers="header1"><code>sun.rmi.server.logLevel</code>
+<td headers="header2"><code>sun.rmi.server.ref</code>
+<td headers="header3">서버측의 원격 참조 동작
+<tr>
+<td headers="header1"><code>sun.rmi.client.logCalls</code><br>(J2SE 1.4 로 새롭게 도입)
+<td headers="header2"><code>sun.rmi.client.call</code>
+<td headers="header3">클라이언트측의 원격 호출 및 예외
+<tr>
+<td headers="header1"><code>sun.rmi.client.logLevel</code>
+<td headers="header2"><code>sun.rmi.client.ref</code>
+<td headers="header3">클라이언트측의 원격 참조 동작
+<tr>
+<td headers="header1"><code>sun.rmi.dgc.logLevel</code>
+<td headers="header2"><code>sun.rmi.dgc</code>
+<td headers="header3">분산 가베지 컬렉션 동작
+<tr>
+<td headers="header1"><code>sun.rmi.loader.logLevel</code>
+<td headers="header2"><code>sun.rmi.loader</code>
+<td headers="header3">디폴트의 <code>RMIClassLoader</code> 프로바이더의 동작
+<tr>
+<td headers="header1"><code>sun.rmi.transport.logLevel</code>
+<td headers="header2"><code>sun.rmi.transport.misc</code>
+<td headers="header3">트랜스폴트층의 동작
+<tr>
+<td headers="header1"><code>sun.rmi.transport.tcp.logLevel</code>
+<td headers="header2"><code>sun.rmi.transport.tcp</code>
+<td headers="header3">TCP 바인딩 및 접속 동작
+<tr>
+<td headers="header1"><code>sun.rmi.transport.proxy.logLevel</code>
+<td headers="header2"><code>sun.rmi.transport.proxy</code>
+<td headers="header3">HTTP 터널링 동작
+<tr>
+<td headers="header1">(없음)
+<td headers="header2"><code>sun.rmi.runtime</code>
+<td headers="header3">그 외의 런타임 액티버티
+</table>
+
+<p><code>sun.rmi.client.call</code> <code>Logger</code> 및 <code>sun.rmi.server.call</code> <code>Logger</code> 에서는, 원격 호출로부터 throw 된 예외는 <code>Level.FINE</code> 레벨로 로그 기록되어 각 원격 호출은,<code>Level.FINER</code> 레벨로 로그 기록됩니다. <code>java.rmi.server.logCalls</code> 또는 <code>sun.rmi.client.logCalls</code> 시스템 프로퍼티 <code>"true"</code> 치로 설정하면(자), 대응하는 <code>Logger</code> 가 레벨 <code>Level.FINER</code> 로 설정됩니다.
+
+<p>이름의 말미에 <code>". logLevel"</code> 가 붙는 <code>sun.rmi. *</code> 로그 프로퍼티의 경우,<code>"BRIEF"</code> 치로 설정하면(자) 대응하는 <code>Logger</code> 가 레벨 <code>Level.FINE</code> 로 설정되어<code>"VERBOSE"</code> 치로 설정하면(자) 대응하는 <code>Logger</code> 가 레벨 <code>Level.FINER</code> 로 설정됩니다. 로그 기록용의 이러한 <code>sun.rmi. *</code> 시스템 프로퍼티을 사용하는 것보다도, 로그 구성 파일을 사용하는 것을 추천합니다.
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A  HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- GenHTML@14981-->
+<head>
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
+<title>5. &nbsp;&nbsp;SNMP 감시와 관리 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<!--stopindex-->
+<script language="javascript1.2" type="text/javascript" src="css/menucontent.js"></script>
+<script language="javascript1.2" type="text/javascript" src="css/menucode.js"></script>
+</head>
+
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" bgcolor="#ffffff" onload="prepmenus();" class="a0v0">
+<a name="top"></a> 
+
+<!-- BEGIN A1 COMPONENT V.0 -->
+<div class="a1">
+<div class="a1v0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr valign="bottom">
+<td nowrap="nowrap">
+<span class="toolbarlinks"><a href="http://www.sun.com">sun.com</a>  <a href="http://docs.sun.com/" class="dividelink">docs.sun.com</a> </span>
+</td><td align="right" nowrap="nowrap">
+<span class="toolbarlinks"><a href="http://www.sun.com/MySun/">My Sun</a>  <a href="http://www.sun.com/worldwide/" class="dividelink">Worldwide Sites</a> </span>
+</td></tr>
+</table>
+</div>
+</div>
+<!-- END A1 COMPONENT V.0 -->
+
+<!-- BEGIN A2 COMPONENT V.0 -->
+<div class="a2" id="a2v0">
+<div class="cornerTL">
+<div class="cornerTR">
+<div class="cornerBL">
+<div class="cornerBR">
+<div class="a2topiclinks">
+<table cellpadding="1" cellspacing="0" border="0">
+<tr valign="bottom">
+<td><a href="http://www.sun.com/" title="홈 페이지"><img src="css/a.gif" alt="홈 페이지" width="104" height="58" border="0" class="sunlogo"></a> </td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip1"></td>
+<td class="navlinks" id="navlink1">
+<div>
+<a id="glink1" href="http://www.sun.com/products/">제품</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip2"></td>
+<td class="navlinks" id="navlink2">
+<div>
+<a id="glink2" href="http://www.sun.com/downloads/">다운로드</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip3"></td><td class="navlinks" id="navlink3">
+<div>
+<a id="glink3" href="http://www.sun.com/service/">서비스 &amp; 솔루션</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip4"></td><td class="navlinks" id="navlink4">
+<div>
+<a id="glink4" href="http://www.sun.com/support/">테크니컬 지원</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip5"></td><td class="navlinks" id="navlink5">
+<div>
+<a id="glink5" href="http://www.sun.com/training/">트레이닝</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip6"></td><td class="navlinks" id="navlink6">
+<div>
+<a id="glink6" href="http://research.sun.com/">리서치</a> 
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+</div></div></div></div>
+</div>
+<!-- END A2 COMPONENT V.0 -->
+
+<!-- BEGIN BREADCRUMB -->
+<div id="breadcrumb">
+<A href="toc.html">Java SE 감시 및 관리 가이드</A> &nbsp;
+</div><br /> <!-- END BREADCRUMB -->
+
+<!-- BEGIN WRAPPER TABLE, 1 COLUMN, MAIN -->
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<tr><td width="100%" valign="top">
+<!-- BEGIN CENTRAL COLUMN COMPONENTS -->
+
+<!-- BEGIN PAGE CONTROL ROW -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="grey1"><td></td><td align="right"><A HREF="mxbeans.html"><IMG BORDER="0" ALT="전의 항목" SRC="graphics/prev.gif">전의 항목</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="toc.html">목차</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="security-windows.html">다음의 항목<IMG BORDER="0" ALT="다음의 항목" SRC="graphics/next.gif"></A> </td></tr>
+</table>
+<!-- END PAGE CONTROL ROW -->
+
+</td></tr>
+<tr><td width="100%" valign="top">
+<a name="skip2content"> </a> 
+
+<!--startindex-->
+<div class="maincontent">
+<A NAME="snmp"></A> <b>제 5 장</b><h1>SNMP 감시와 관리</h1>
+<p>Simple Network Management Protocol (SNMP)는, 네트워크 관리의 업계표준에 자리매김됩니다. SNMP 로 관리되는 객체는, 관리 정보 베이스 (MIB)에 배치됩니다. SNMP 에이전트는, Java 가상 머신 (Java VM)의 Instrumentation용으로서 표준의 MIB 를 공개하고 있습니다. Java VM 의 감시 및 관리에 사용하는 표준의 MIB 는,<A  HREF="http://java.sun.com/javase/6/docs/jre/api/management/JVM-MANAGEMENT-MIB.mib">http://java.sun.com/javase/6/docs/jre/api/management/JVM-MANAGEMENT-MIB.mib</A>  로부터 다운로드할 수 있습니다. </p>
+<A NAME="toc-130"></A> <h2>SNMP 에이전트의 유효화</h2>
+<p>SNMP 를 사용해 Java VM 를 감시하려면 , Java VM 의 시동시에 우선 SNMP 에이전트를 유효하게 할 필요가 있습니다. 단일 사용자 환경 또는 다중 사용자 환경의 몇개의 SNMP 에이전트를 유효하게 할 수가 있습니다. 이후, Java VM 는 SNMP 준거의 툴을 사용해 감시할 수가 있습니다.  </p>
+<p>Java VM 시동시의 시스템 프로퍼티의 설정에 관한 일반적인 정보에 대해서는,<A HREF="agent.html#agent">제 2 장 「JMX 테크놀러지를 사용하는 감시와 관리」</a>의 「<A HREF="agent.html#gdepe">시스템 프로퍼티의 설정</a>」을 참조해 주세요. 후반으로는, 단일 사용자 환경이나 다중 사용자 환경에 있어 SNMP 에이전트를 유효하는 방법에 대해 설명합니다. 프로세스는, 어느 환경에서도 동일합니다만, 실행하는 액션은 조금 다릅니다. </p>
+<A NAME="gdfak"></A> <h3>액세스 콘트롤 리스트 파일</h3>
+<p>액세스 콘트롤 리스트 (ACL) 템플릿 파일은, Java Platform, Standard Edition (Java SE 플랫폼)와 함께 제공되어<tt><i>JRE_HOME</i>/lib/management/snmp.acl.template</tt> 에 있습니다. 여기서,<tt><i>JRE_HOME</i></tt> 는, Java Runtime Environment (JRE) 구현이 인스톨 되고 있는 디렉토리입니다. 이 파일은, 단일 사용자 환경인가, 다중 사용자 환경인가에 응해 <tt><i>JRE_HOME</i>/lib/management/snmp.acl</tt> 또는 홈 디렉토리의 어느 쪽인가에 카피합니다. 읽기 권한만이 할당할 수 있고 있는 것을 확인해 주세요. 이것은, 이 파일에 암호화되어 있지 않은 SNMP 커뮤니티 캐릭터 라인이 포함되어 있기 (위해)때문에입니다. 시큐리티상의 이유로부터, 시스템에서는, 소유자만이 이 파일에 대한 읽기 권한을 소지하고 있는 것을 확인해, 이 조건이 채워지지 않은 경우는 에러로 시스템이 종료합니다. 따라서, 다중 사용자 환경에서는, 이 파일을 홈 디렉토리등의 비공개의 영역에 보존할 필요가 있습니다. </p>
+<p><A HREF="snmp.html#gdfbd">예 5-1</A>  에서는, ACL 파일에 존재할 가능성이 있는 엔트리의 일부를 나타냅니다. </p>
+<A NAME="gdfbd"></A> <p><b>예 5-1</b> 샘플의 ACL 엔트리</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>#The communities public and private are allowed access from the local host.
+acl = {
+        {
+          communities = public, private
+          access = read-only
+          managers = localhost
+        }
+      }
+# Traps are sent to localhost only
+trap = {
+          {
+            trap-community = public
+            hosts = localhost
+          }
+        }</pre>
+</td></table><br><A NAME="gdfcj"></A> <h3><IMG border="0" alt="순서" src="graphics/procedure.gif">단일 사용자 환경에 있어 SNMP 에이전트를 유효하게 하는 방법</h3>
+<ol><li><p><b>Java VM 의 기동시에, 다음의 시스템 프로퍼티을 설정합니다. </b></p><table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.snmp.port=<i>portNum</i></pre>
+</td></table><br><p>위의 프로퍼티으로,<tt><i>portNum</i></tt> 는, 감시에 사용하는 포트 번호를 나타냅니다. 이 프로퍼티의 설정을 실시하는 것으로, 착신 SNMP 요구의 지정의 포트 번호상에서 대기하는 SNMP 에이전트를 개시합니다. </p>
+</li>
+<li><p><b>ACL 파일을 작성합니다. </b></p><p>ACL 템플릿 파일을 <tt><i>JRE_HOME</i>/lib/management/snmp.acl.template</tt> 로부터 <tt><i>JRE_HOME</i>/lib/management/snmp.acl</tt> 에 카피합니다. </p>
+</li>
+<li><p><b>ACL 파일에 액세스권을 설정합니다. </b></p><p>소유자만이 ACL 파일을 읽어낼 수가 있는 것을 확인해, 필요에 따라서 커뮤니티 캐릭터 라인을 추가합니다. </p>
+</li>
+</ol><A NAME="gdfca"></A> <h3><IMG border="0" alt="순서" src="graphics/procedure.gif">다중 사용자 환경에 있어 SNMP 에이전트를 유효하게 하는 방법</h3>
+<ol><li><p><b>Java VM 의 기동시에, 다음의 시스템 프로퍼티을 설정합니다. </b></p><table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.snmp.port=portNum
+com.sun.management.snmp.acl.file=ACLFilePath</pre>
+</td></table><br><p>여기서 <tt><i>ACLFilePath</i></tt> 는, ACL 파일에의 패스를 나타냅니다. </p>
+</li>
+<li><p><b>ACL 파일을 작성합니다. </b></p><p>ACL 템플릿 파일을 <tt><i>JRE_HOME</i>/lib/management/snmp.acl.template</tt> 로부터 홈 디렉토리내의 <tt>snmp.acl</tt> 라는 이름의 파일에 카피합니다.  </p>
+</li>
+<li><p><b>ACL 파일에 액세스권을 설정합니다. </b></p><p>소유자만이 ACL 파일을 읽어낼 수가 있는 것을 확인해, 필요에 따라서 커뮤니티 캐릭터 라인을 추가합니다. </p>
+</li>
+</ol><A NAME="gdfbs"></A> <h2>SNMP 감시와 관리의 프로퍼티</h2>
+<p>구성 파일 또는 커멘드행의 어느 쪽인가에 두어 SNMP 의 감시 프로퍼티과 관리 프로퍼티의 설정을 실시할 수가 있습니다. 커멘드행으로 지정한 프로퍼티에 의해, 구성 파일내의 프로퍼티을 오버라이드(override) 합니다. 디폴트의 구성 파일은,<tt><i>JRE_HOME</i>/lib/management/management.properties</tt> 입니다. Java VM 에서는, 커멘드행의 프로퍼티 <tt>com.sun.management.snmp.port</tt> 의 설정을 실시하는 경우는 이 구성 파일을 읽어들입니다. </p>
+<p>다음의 커멘드행 옵션으로, 구성 파일의 다른 위치를 지정할 수 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.config.file=<i>ConfigFilePath</i></pre>
+</td></table><br><p>위의 프로퍼티에서는,<tt><i>ConfigFilePath</i></tt> 가 구성 파일에의 패스입니다. </p>
+<p>Java VM 를 시동시키려면 , 모든 시스템 프로퍼티을 지정할 필요가 있습니다. Java VM 가 기동한 뒤는, 시스템 프로퍼티 (예를 들어,<tt>setProperty</tt> 메소드 경유), 패스워드 파일, ACL 파일, 또는 구성 파일에의 어떠한 변경도 반영되지 않습니다. </p>
+<p><A HREF="snmp.html#gdfaw">겉(표) 5-1</A>  에 모든 SNMP 관리 프로퍼티을 나타냅니다. </p>
+<A NAME="gdfaw"></A> <p><b>겉(표) 5-1</b> SNMP 감시와 관리의 프로퍼티</p>
+
+<table cellspacing="5" border="1">
+<tr><th scope="col"><p>프로퍼티의 이름</p></th><th scope="col"><p>설명</p></th><th scope="col"><p>디폴트 설정</p></th></tr>
+<tr><td><p><tt>com.sun.management.snmp.trap</tt></p></td><td><p>SNMP 에이전트가 트랩을 송신하는 원격 포트.  </p></td><td><p>162</p></td></tr>
+<tr><td><p><tt>com.sun.management.snmp.  interface</tt></p></td><td><p>옵션. 로컬 호스트 <tt>InetAddress</tt> 는, 주어진(given) <tt>InetAddress</tt> 에 대한 바인드를 SNMP 에이전트에 강제합니다. 특정의 서스네트워크만을 대기하는 경우, 이것은 multi-homed host용이 됩니다. </p></td><td><p>없음</p></td></tr>
+<tr><td><p><tt>com.sun.management.snmp.acl</tt></p></td><td><p>SNMP ACL 의 체크를 유효 또는 무효로 합니다. </p></td><td><p><tt>true</tt></p></td></tr>
+<tr><td><p><tt>com.sun.management.snmp.  acl.file</tt></p></td><td><p>유효한 ACL 파일에의 패스. Java VM 가 기동한 뒤는, ACL 파일을 수정해도 효과는 얻을 수 있지 않습니다. </p></td><td><p><tt><i>JRE_HOME</i>/lib/management/snmp.acl</tt></p></td></tr>
+</table><A NAME="gdfat"></A> <h3>구성 에러</h3>
+<p>SNMP 에이전트의 기동중에 어떠한 에러가 발생하는 경우, Java VM 는, 예외를 throw 해 종료합니다. 구성 에러에는, 다음과 같은 것이 있습니다. </p>
+<ul><li><p>포트 번호에 대한 바인드의 실패. </p>
+</li>
+<li><p>소유자 이외의 사용자가 패스워드 파일을 읽어낼 수가 있다. </p>
+</li>
+<li><p>무효인 SNMP ACL 파일. </p>
+</li>
+</ul>
+<p>어플리케이션으로 시큐리티 매니저를 실행하는 경우, 시큐리티 액세스권 파일에 추가의 액세스권을 등록할 필요가 있습니다. </p>
+
+</div>
+<!--stopindex-->
+
+<!-- END CENTRAL COLUMN COMPONENTS -->
+</td></tr>
+
+<!-- BEGIN SPACER ROW -->
+<tr><td><img src="css/a.gif" width="780" height="1" border="0" alt="" /></td></tr>
+<!-- END SPACER ROW -->
+
+<tr><td>
+
+<!-- BEGIN PAGE CONTROL ROW -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="suntab"><td></td><td align="right"><A HREF="mxbeans.html"><IMG BORDER="0" ALT="전의 항목" SRC="graphics/prev.gif">전의 항목</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="toc.html">목차</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="security-windows.html">다음의 항목<IMG BORDER="0" ALT="다음의 항목" SRC="graphics/next.gif"></A> </td></tr>
+</table>
+<!-- END PAGE CONTROL ROW -->
+</td></tr>
+
+</table>
+<!-- END WRAPPER TABLE, 1 COLUMN, MAIN -->
+
+
+<!-- BEGIN A5 COMPONENT V.0 -->
+<div class="a5" id="a5v0">
+<span class="footerlinks"><a href="http://www.sun.com/company/">회사 정보</a>  <a href="http://www.sun.com/contact/">연락처</a>  <a href="http://www.sun.com/share/text/termsofuse.html">이용 규약</a>  <a href="http://www.sun.com/privacy/">프라이버시</a> 
+
+<span class="footercopy">Copyright 1994-2006 Sun Microsystems, Inc. </span></span>
+</div>
+<!-- END A5 COMPONENT V.0 -->
+
+<script type="text/javascript">
+printmenus();
+</script>
+
+</body>
+</html>
+

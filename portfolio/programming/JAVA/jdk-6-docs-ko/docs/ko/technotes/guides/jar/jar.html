@@ -1,0 +1,579 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+  
+<meta name="Author" content="Zhenghua Li" />
+
+<title>JAR 파일의 스펙 - xrath.com 에서 번역됨</title>
+</head>
+
+<body text="#000000" vlink="#000077" alink="#FF0000" link="#0000FF"
+bgcolor="#FFFFFF">
+  <table width="100%" summary="layout" border="0">
+    <tbody>
+      <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"         alt="Java" width="52" height="88" /></td>
+
+        <td>
+          <center>
+<h1>JAR 파일의 스펙</h1>
+          </center>
+        </td>
+
+        <td width="60"></td>
+      </tr>
+    </tbody>
+  </table>
+
+<h2><b>목차</b></h2>
+
+  <ul>
+<li><a href="#Intro">처음에</a> </li>
+
+<li><a href="#The%20META-INF%20directory">META-INF&nbsp;디렉토리</a> </li>
+
+<li><a href="#Name-Value%20pairs%20and%20Sections">이름-값페어 및 섹션</a> </li>
+
+<li><a href="#JAR%20Manifest">JAR Manifest</a> </li>
+
+    <li style="list-style: none">
+      <ul>
+<li><a href="#Manifest-Overview">개요</a> </li>
+
+<li><a href="#Manifest%20Specification">Manifest의 스펙</a> </li>
+
+<li><a href="#Main%20Attributes">메인 속성</a> </li>
+
+<li><a href="#Per-Entry%20Attributes">엔트리별 속성</a> </li>
+      </ul>
+    </li>
+
+<li><a href="#Signed%20JAR%20File">서명 첨부 JAR 파일</a> </li>
+
+    <li style="list-style: none">
+      <ul>
+<li><a href="#SignedJar-Overview">개요</a> </li>
+
+<li><a href="#Signature%20File">서명 파일</a> </li>
+
+        <li style="list-style: none">
+          <ul>
+<li><a href="#Signature%20Validation">서명의 검증</a> </li>
+
+<li><a href="#The%20Magic%20Attribute">Magic 속성</a> </li>
+          </ul>
+        </li>
+
+<li><a href="#Digital%20Signatures">디지털 서명</a> </li>
+      </ul>
+    </li>
+
+<li><a href=     "#Notes%20on%20Manifest%20and%20Signature%20Files">Manifest 및 서명 파일에 대해</a> </li>
+
+<li><a href="#JAR%20Index">JAR 인덱스</a> </li>
+
+    <li style="list-style: none">
+      <ul>
+<li><a href="#Overview">개요</a> </li>
+
+<li><a href="#Index%20File%20Specification">인덱스 파일의 스펙</a> </li>
+
+<li><a href="#Backward%20Compatibility">하위 호환성</a> </li>
+      </ul>
+    </li>
+
+<li><a href="#Service%20Provider">서비스 프로바이더</a> </li>
+
+    <li style="list-style: none">
+      <ul>
+<li><a href="#Overview">개요</a> </li>
+
+<li><a href="#Provider%20Configuration%20File">프로바이더 구성 파일</a> </li>
+
+<li><a href="#Example">례</a> </li>
+      </ul>
+    </li>
+
+<li><a href="#API%20Details">API&nbsp;의 상세</a> </li>
+
+<li><a href="#See%20Also">관련 항목</a> </li>
+  </ul>
+
+<h2><a name="Intro" id="Intro"></a> <b>처음에</b></h2>JAR 파일은 보급되어 있는 ZIP 파일 형식에 근거하는 파일 형식에서, 다수의 파일을 1 개로 정리하기 위해서(때문에) 사용됩니다. JAR 파일은, 기본적으로는 옵션의 META-INF 디렉토리를 포함하는 ZIP 파일입니다. JAR 파일은, 커멘드행 <a href=   "../../tools/windows/jar.html">jar</a>  툴인가, Java 플랫폼에서 &nbsp;<tt><a href=   "../../../api/java/util/jar/package-summary.html">java.util.jar</a> </tt> API 를 사용해 작성할 수 있습니다. JAR 파일의 이름에는 제약이 없기 때문에, 각 플랫폼에서 허가되고 있는 파일명을 사용할 수 있습니다.
+
+<p>많은 경우, JAR 파일은, 단순한 Java 의 클래스 파일 또는 자원의 어카이브(archive)가 아닙니다. JAR 파일은, 어플리케이션 및 확장 기능의 구축 블록으로서 사용합니다. META-INF 디렉토리가 존재하는 경우는, 시큐리티, 버젼 관리, 확장 기능, 서비스 등, 패키지 및 확장 기능의 구성 데이터를 포함할 경우에 사용합니다. </p>
+
+<h2><a name="The META-INF directory"></a> META-INF 디렉토리</h2>Java 2 플랫폼에서는, 어플리케이션, 확장 기능, 클래스 로더, 및 서비스가 구성될 때, META-INF 디렉토리로부터 다음의 파일과 디렉토리의 인식 및 해석을 합니다.
+
+  <ul>
+<li><tt>MANIFEST.MF</tt></li>
+</ul>확장 기능 및 패키지 관련의 데이터의 정의에 사용하는 Manifest 파일
+
+  <ul>
+<li><tt>INDEX.LIST</tt></li>
+</ul>이 파일은, jar 툴의 새로운 옵션 「<tt>-i</tt>」에 의해 생성됩니다. 어플리케이션 또는 확장 기능으로 정의된 패키지의 위치 정보가 포함됩니다. &nbsp;JarIndex 구현에 짜넣어지고 있어 클래스의 로드 처리를 빠르게 하기 위해서 클래스 로더에 의해 사용됩니다.
+
+  <ul>
+<li><tt>x.SF</tt></li>
+</ul>JAR 파일의 서명 파일입니다. &nbsp; 「x」는, 베이스 파일명을 나타냅니다.
+
+  <ul>
+<li><tt>x.DSA</tt></li>
+</ul>같은 베이스 파일명을 가지는 서명 파일에 관련지을 수 있었던 서명 블록 파일. 대응하는 서명 파일의 디지털 서명이 포함됩니다.
+
+  <ul>
+<li><tt>services/</tt></li>
+</ul>서비스 프로바이더 구성 파일이 모두 포함됩니다.
+
+<h1><a name="Name-Value pairs and Sections"></a> 이름-값페어 및 섹션</h1>각 구성 파일의 내용을 상세하게 설정하기 전에, 형식의 규칙을 몇개인가 정의할 필요가 있습니다. 대부분의 경우, Manifest 파일 또는 서명 파일에 포함되는 정보는, RFC822 의 규정에 따라, 이른바 「이름:치」페어로서 표현됩니다. &nbsp; 「이름:치」페어는, 헤더 또는 속성이라고도 불립니다.
+
+<p>이름-값페어의 그룹을 「섹션」이라고 부릅니다. 섹션은 다른 섹션과 공백행으로 나눌 수 있습니다. </p>
+
+<p>바이너리 데이터는, 어느 형식이어라 base64 로 나타내집니다. 행의 길이가 72 바이트를 넘는 것 같은 바이너리 데이터에 대해서는 계속이 필요합니다. 바이너리 데이터의 예는 다이제스트 및 서명입니다. </p>
+
+<p>구현에 따라서는, 65535 바이트까지의 헤더치가 지원됩니다. </p>
+
+<p>이 문서의 스펙에는 동일한 문법이 사용되고 있어 끝 기호는 고정폭의 폰트로 나타나 끝 이외의 기호는 이탤릭 서체로 나타나고 있습니다. </p>
+
+<h3><a name="Section-Specification" id=   "Section-Specification"></a> 스펙:</h3>&nbsp; <i>section:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *header +newline</i><br /> <i>&nbsp; nonempty-section:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+header +newline</i><br /> <i>&nbsp; newline:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><tt>CR LF | LF | CR</tt> (<i>not followed by</i> <tt>LF</tt>)<br /> &nbsp; <i>header:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name</i> <tt>:</tt><i>value</i><br /> <i>&nbsp; name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alphanum *headerchar</i><br /> <i>&nbsp; value:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>SPACE *<i>otherchar newline *continuation</i><br /> &nbsp; <i>continuation:</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SPACE <i>*otherchar newline</i><br /> &nbsp; <i>alphanum</i>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<tt>A-Z</tt>} | {<tt>a-z</tt>} | {<tt>0-9</tt>}<br /> &nbsp; <i>headerchar:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alphanum</i> | <tt>-</tt> | <tt>_</tt><br /> &nbsp; <i>otherchar:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;any UTF-8 character except</i> <tt>NUL, CR</tt> <i>and</i> <tt>LF</tt>
+
+<p><i>; Also:To prevent mangling of files sent via straight e-mail, no</i><br /> <i>; header will start with the four letters "From". </i><br /> <BR> &nbsp;</p>
+
+<p>위의 스펙으로 정의되고 있는 끝 이외의 기호는, 이후의 스펙으로 사용되고 있습니다. </p>
+
+<h1><a name="JAR Manifest"></a> JAR Manifest</h1>
+
+<h3><a name="Manifest-Overview" id=   "Manifest-Overview"></a> 개요</h3>JAR 파일 Manifest는, 메인 섹션과 각 JAR 파일 엔트리의 복수의 개별 섹션으로 구성되어 각각 개행 문자로 단락지어지고 있습니다. 메인 섹션 및 개별 섹션은, 벌써 설명한 섹션의 구문에 준거하고 있습니다. 각 섹션에는, 고유의 제약과 규칙이 있습니다.
+
+<p>메인 섹션에는, JAR 파일 자체의 시큐리티와 구성 정보 이외에, 그 JAR 파일이 사용되고 있는 어플리케이션 또는 확장 기능의 시큐리티와 구성 정보를 지정합니다. 또, 각 Manifest 엔트리에 적용되는 메인 속성도 정의합니다. 메인 섹션의 속성에, 「<tt>Name</tt>」와 같은 이름을 붙일 수 없습니다. 메인 섹션은, 공백행으로 끝납니다. </p>
+
+<p>개별 섹션에는, 이 JAR 파일에 포함되고 있는 패키지 또는 파일의 다양한 속성을 정의합니다. 어카이브(archive)내의 모든 파일을 Manifest의 엔트리에 리스트 할 필요는 없습니다만, 서명하는 모든 파일은 리스트 할 필요가 있습니다. Manifest 파일 자체는 리스트 하지 말아 주세요. 각 섹션은,<tt>「Name」</tt>라는 이름의 속성으로 시작될 필요가 있습니다.  이 속성의 값은, 파일을 기점으로 한 상대 패스, 또는 어카이브(archive)의 외부의 데이터를 참조하는 절대 URL 가 아니면 안됩니다. </p>
+
+<p>1 개의 파일 엔트리에 복수의 개별 섹션이 있는 경우는, 이러한 섹션의 속성은 머지 됩니다. 특정의 속성의 값이 섹션에 따라서 다른 경우는, 마지막 섹션의 값이 인식됩니다. </p>
+
+<p>이해할 수 없는 속성은 무시됩니다. 어플리케이션에 의해 사용되는 구현 고유의 정보에, 이해할 수 없는 속성이 포함되어 있는 일이 있습니다. </p>
+
+<h3><a name="Manifest Specification"></a> Manifest의 스펙</h3>&nbsp; <i>manifest-file:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main-section newline *individual-section</i><br /> <i>&nbsp; main-section:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;version-info newline *main-attribute</i><br /> <i>&nbsp; version-info:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><tt>Manifest-Version:</tt> <i>version-number</i><br /> &nbsp; <i>version-number :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digit+{</i><tt>. </tt><i>digit+}*</i><br /> &nbsp; <i>main-attribute:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(any legitimate main attribute) newline</i><br /> <i>&nbsp; individual-section:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><tt>Name :</tt> <i>value</i> <i>newline *perentry-attribute</i><br /> <i>&nbsp; perentry-attribute:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(any legitimate perentry attribute) newline</i><br /> <i>&nbsp; newline :&nbsp;</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt>CR LF | LF | CR</tt> (<i>not followed by</i> <tt>LF</tt>)<br /> &nbsp;&nbsp; <i>digit:</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>{0-9}&nbsp;</tt>
+
+<p>위의 스펙에서는, 메인 섹션으로 지정한 속성은 메인 속성, 개별 섹션으로 지정한 속성은 엔트리별 속성으로서 참조됩니다. 속성에 따라서는, 메인 섹션과 개별 섹션의 양쪽 모두로 지정할 수 있습니다.  이 경우, 그 엔트리에서는, 메인 속성의 값은 엔트리별 속성의 값에 의해 오버라이드(override) 됩니다. 이것들 2 개의 속성은, 다음과 같이 정의됩니다. <br /> &nbsp;</p>
+
+<h3><a name="Main Attributes"></a> 메인 속성</h3>메인 속성은, Manifest의 메인 섹션으로 지정되고 있는 속성입니다. 메인 속성은, 다음의 그룹으로 분류됩니다.
+
+  <ul>
+<li>일반적인 메인 속성</li>
+  </ul>
+
+  <ul>
+    <li style="list-style: none">
+      <ul>
+<li>Manifest-Version:</li>
+      </ul>
+
+      <ul>
+<li style="list-style: none">Manifest 파일의 버젼을 정의한다. 값은, 상기의 스펙에 정의되고 있는 정당한 버젼 번호 <br /> &nbsp;</li>
+
+<li>Created-By:</li>
+
+<li style="list-style: none"><br />이 Manifest 파일이 생성되는 Java 구현의 버젼 및 벤더를 정의한다. 이 속성은,<tt>jar</tt> 툴에 의해 생성되는 <br /> &nbsp;</li>
+
+<li>Signature-Version:</li>
+
+<li style="list-style: none"><br />jar 파일의 서명의 버젼을 정의한다. 값은, 유효한 <i>version-number</i> 캐릭터 라인이 아니면 안되는 <br /> &nbsp;</li>
+
+<li>Class-Path:</li>
+
+<li style="list-style: none"><br />이 속성의 값에는, 이 어플리케이션 또는 확장 기능에 필요한 확장 기능 또는 라이브러리의 상대 URL 를 지정한다. URL 는 1 개 이상의 공백에서 단락짓는다. 어플리케이션 또는 확장 기능의 클래스 로더에서는, 이 속성의 값을 사용해 내부 검색 패스가 구축되는 <br /> &nbsp;</li>
+      </ul>
+    </li>
+
+<li>스탠드얼론 어플리케이션에 대해서 정의하는 속성. </li>
+
+<li style="list-style: none">이 속성은, Java 런타임으로부터 「<tt>java -jar x.jar</tt>」에 의해 직접 불려 간 실행 가능 jar 파일에 포함되는, 스탠드얼론 어플리케이션에 의해 사용된다
+
+      <ul>
+<li>Main-Class:</li>
+
+<li style="list-style: none"><br />이 속성의 값에는, 기동시에 기동 툴에 의해 로드 되는 메인 어플리케이션의 클래스의 상대 패스를 정의한다. 이 값에는, 클래스명에 확장자(extension) 「<TT>. class</TT>」가 붙어 있어서는 안 된다</li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+<li>애플릿에 대해서 정의하는 속성. </li>
+
+<li style="list-style: none">이 속성은, JAR&nbsp;파일에 포함되는 애플릿에 의해 사용됩니다. 이 애플릿에 필요한 확장 기능의 요건, 버젼, 및 위치 정보를 정의하는 (&nbsp;<a href=     "../extensions/versioning.html">「확장 기능의 버젼 관리」</a>를 참조)&nbsp;.
+
+      <ul>
+<li>Extension-List:</li>
+
+<li style="list-style: none"><br />이 속성에는, 이 애플릿에 필요한 확장 기능을 지정한다. 이 속성으로 지정되고 있는 각 확장 기능에는, 애플릿에 필요한 확장 기능의 버젼과 벤더를 지정할 경우에, 그 애플릿으로 사용되는 추가 속성도 지정하는 <br /> &nbsp;</li>
+
+<li>&lt;extension&gt;-Extension-Name :</li>
+
+<li style="list-style: none"><br />이 속성에는, 확장 기능의 고유명을 지정한다. Java Plug-in 에 의해, 인스톨 끝난 확장 기능의 Manifest내의 Extension-Name 속성과 이 속성의 값이 비교되어 그 확장 기능이 인스톨 되고 있는지 어떤지가 확인되는 <br /> &nbsp;</li>
+
+<li>&lt;extension&gt;-Specification-Version</li>
+
+<li style="list-style: none"><br />이 속성에는, 애플릿에 필요한 확장 기능 스펙의 버젼의 최소치를 지정한다. Java Plug-in 에 의해, 인스톨 끝난 확장 기능의 Specification-Version 속성과 이 속성의 값이 비교되어 그 확장 기능이 적절한 버젼일지 어떨지가 확인되는 <br /> &nbsp;</li>
+
+<li>&lt;extension&gt;-Implementation-Version</li>
+
+<li style="list-style: none"><br />이 속성은, 애플릿에 필요한 구현의 버젼 번호의 최소치를 지정한다. Java Plug-in 에서는, 인스톨 되고 있는 확장 기능의 Implementation-Version 속성과 이 속성의 값이 비교되어 새로운 구현을 다운로드할 필요가 있을지 어떨지가 검사되는 <br /> &nbsp;</li>
+
+<li>&lt;extension&gt;-Implementation-Vendor-Id</li>
+
+<li style="list-style: none"><br />애플릿에 특정의 벤더의 구현이 필요한 경우는, 이 속성을 사용해 확장 기능의 구현의 벤더를 식별할 수 있다. Java Plug-in 에 의해, 인스톨 끝난 확장 기능의 Implementation-Vendor-Id 속성과 이 속성의 값이 비교되는 <br /> &nbsp;</li>
+
+<li>&lt;extension&gt;-Implementation-URL</li>
+
+<li style="list-style: none"><br /> 필요한 버젼의 확장 기능이 인스톨되어 있지 않은 경우에, 최신 버젼의 확장 기능을 취득할 경우에 사용되는 URL 를 지정합니다. <br /> &nbsp;</li>
+      </ul>
+    </li>
+
+<li>확장 기능의 식별에 대해서 정의하는 속성. </li>
+
+<li style="list-style: none">이 속성은, 확장 기능의 일의의 식별을 정의할 경우에 확장 기능에 의해 사용된다
+
+      <ul>
+<li>Extension-Name:</li>
+
+<li style="list-style: none">이 속성에는, Jar 파일내에 포함되고 있는 확장 기능의 이름을 지정한다. 이름은, 확장 기능을 구성하는 메인 패키지의 이름 등, 일의의 식별자가 아니면 안된다</li>
+      </ul>&nbsp;
+    </li>
+
+<li>확장 기능 및 패키지의<a href=     "../versioning/index.html">버젼 관리</a>와<a href=     "../extensions/spec.html#sealing">실링 </a>정보에 대해 정의하는 속성</li>
+
+<li style="list-style: none">이 속성에는, JAR 파일이 사용되고 있는 확장 기능의 기능을 정의한다. 속성의 값은 JAR&nbsp;파일내의 모든 패키지에 적용됩니다. 다만, 엔트리별 속성에 의해 오버라이드(override) 되는 일이 있습니다. &nbsp;
+
+      <ul>
+<li>Implementation-Title:</li>
+
+<li style="list-style: none">확장 기능의 구현의 타이틀을 정의하는 캐릭터 라인. &nbsp;</li>
+
+<li>Implementation-Version:</li>
+
+<li style="list-style: none"><br /> 확장 기능의 구현의 버젼을 정의하는 캐릭터 라인. <br /> &nbsp;</li>
+
+<li>Implementation-Vendor:</li>
+
+<li style="list-style: none"><br /> 확장 기능의 구현을 관리하는 벤더를 정의하는 캐릭터 라인. <br /> &nbsp;</li>
+
+<li>Implementation-Vendor-Id:</li>
+
+<li style="list-style: none"><br />확장 기능의 구현을 관리하는 벤더를 일의에 정의하는 캐릭터 라인 ID. <br />&nbsp; &nbsp;</li>
+
+<li>Implementation-URL :</li>
+
+<li style="list-style: none"><br /> 확장 기능의 구현을 다운로드할 수 있는 URL 를 정의합니다. <br /> &nbsp;</li>
+
+<li>&nbsp;Specification-Title :</li>
+
+<li style="list-style: none"><br /> 확장 기능의 스펙의 타이틀을 정의하는 캐릭터 라인. <br /> &nbsp;</li>
+
+<li>Specification-Version:</li>
+
+<li style="list-style: none"><br /> 확장 기능의 스펙의 버젼을 정의하는 캐릭터 라인. <br /> &nbsp;</li>
+
+<li>Specification-Vendor:</li>
+
+<li style="list-style: none"><br />확장 기능의 스펙을 관리하는 벤더를 정의하는 캐릭터 라인</li>
+      </ul>
+    </li>
+  </ul>
+
+  <div style="margin-left: 2em">
+    <ul>
+<li>Sealed:</li>
+
+<li style="list-style: none"><br />이 JAR 파일이 씰 될지 어떨지를 정의한다. 값은 「true」또는 「false」로, 대문자와 소문자는 구별되지 않는다. 「true」로 설정했을 경우는, JAR 파일내의 패키지는, 개별적으로 정의하지 않는 한, 모두 디폴트로 씰 된다</li>
+    </ul>
+  </div>
+
+<h3><a name="Per-Entry Attributes"></a> 엔트리별 속성</h3>엔트리별 속성은, 그 Manifest 엔트리를 관련지을 수 있고 있는 개별의 JAR 파일 엔트리에만 적용됩니다. &nbsp;메인 섹션에 같은 속성이 있는 경우는, 메인 속성의 값은 엔트리별 속성의 값에 의해 오버라이드(override) 됩니다. 예를 들어, JAR 파일 a.jar 에는, 다음의 컨텐츠가 Manifest에 정의되고 있습니다.
+
+  <div style="margin-left: 2em">
+    <tt>Manifest-Version: 1.0</tt><br />
+    <tt>Created-By: 1.2 (Sun Microsystems Inc. )</tt><br />
+    <tt>Sealed: true</tt>
+
+    <p><tt>Name: foo/bar/</tt><br />
+    <tt>Sealed: false</tt></p>
+  </div>이 경우, foo.bar 패키지를 제외해, a.jar 내에 보관되고 있는 패키지가 모두 씰 됩니다.
+
+<p>엔트리별 속성은, 다음의 그룹으로 분류됩니다. </p>
+
+  <ul>
+<li>파일의 컨텐츠에 대해서 정의하는 속성:</li>
+
+    <li style="list-style: none">
+      <ul>
+<li>Content-Type:</li>
+
+<li style="list-style: none"><br />이 속성은, JAR&nbsp;파일의 특정의 파일 엔트리에 대해서, 데이터의 MIME 형식 및 subtype을 지정할 경우에 사용됩니다. 값은 「타입/subtype」의 형식의 캐릭터 라인으로 할 것 같게 합니다. 예를 들어, 「image/bmp」는, subtype이 bmp (비트 맵)의 이미지 형식입니다. 이것은, 이 파일 엔트리가, 비트 맵으로서 포함된 데이터를 가지는 이미지인 것을 나타낸다. MIME 형식의 정의의 설명 및 정의에 대해서는, RFC <a href=         "ftp://www.ietf.org/rfc/rfc1521.txt">1521</a>  및 <a href=         "ftp://www.ietf.org/rfc/rfc1522.txt">1522 </a>  를 참조</li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+<li>패키지의 버젼 관리 및 실링 정보에 대해서 정의하는 속성:</li>
+
+    <li style="list-style: none">
+<p>확장 기능 패키지의 버젼 관리 및 실링 정보를 정의한다. 메인 속성에 정의되고 있는 속성을 참조. 엔트리별 속성으로서 사용하는 경우는, 메인 속성은 오버라이드(override) 된다.  다만, Manifest 엔트리로 지정한 파일에만 적용되는 <br /> &nbsp;</p>
+    </li>
+
+<li>Beans 객체에 대해서 정의하는 속성:</li>
+
+    <li style="list-style: none">
+      <ul>
+<li>Java-Bean:</li>
+
+<li style="list-style: none"><br />특정의 jar 파일 엔트리가, Java <a href=         "http://java.sun.com/products/javabeans/docs/spec.html">Beans</a>  객체인가 어떤가를 정의한다. 값은 「true」또는 「false」로, 대문자와 소문자는 구별되지 않는 <br /> &nbsp;</li>
+      </ul>
+    </li>
+
+<li>서명에 대해서 정의하는 속성:</li>
+
+    <li style="list-style: none">
+<br />이하의 속성은, 서명과 검증의 목적으로 사용된다. 자세한 것은 이하대로
+
+      <ul>
+<li>x-Digest-y:</li>
+
+<li style="list-style: none"><br />이 속성의 이름에는, 대응하는 jar 파일 엔트리의 다이제스트치의 계산에 사용되는 다이제스트 알고리즘의 이름을 지정한다. 이 속성의 값에는, 실제의 다이제스트의 값이 포함된다. 접두사의 「x」로 알고리즘명을 지정해, 옵션의 접미사(suffix) 「y」로 다이제스트치의 검증 기준의 언어를 지정합니다. </li>
+
+<li>Magic:</li>
+
+<li style="list-style: none"><br /> 이것은 옵션의 속성으로, Manifest 엔트리로 지정된 다이제스트치를 검증자가 계산하는 방법을 지정하기 위해서, 어플리케이션으로 사용됩니다. &nbsp; 치에는, 콤마로 단락지어진 문맥 고유의 캐릭터 라인을 지정합니다. 자세한 것은, 이후의 설명을 참조</li>
+      </ul>
+    </li>
+  </ul>
+
+<h1><a name="Signed JAR File"></a> 서명 첨부 JAR 파일</h1>
+
+<h3><a name="SignedJar-Overview" id=   "SignedJar-Overview"></a> 개요</h3>JAR 파일에 서명하려면 , 커멘드행 <a href=   "../security/SecurityToolsSummary.html">jarsigner</a>  툴을 사용하는지,<code>java.security</code> API 를 직접 사용합니다. JAR 파일을 jarsigner 툴로 서명했을 경우는,<code>META-INF</code> 디렉토리내의 서명에 관계하지 않는 파일을 포함해 모든 파일 엔트리가 서명됩니다. 서명에 관계하는 파일은 다음과 같습니다.
+
+  <ul>
+<li><code>META-INF/MANIFEST.MF</code></li>
+
+<li><code>META-INF/*.SF</code></li>
+
+<li><code>META-INF/*.DSA</code></li>
+
+<li><code>META-INF/*.RSA</code></li>
+
+<li><code>META-INF/SIG-*</code></li>
+</ul>서명에 관계하지 않는 파일이 <code>META-INF</code> 서브 디렉토리내에 있어도, 그러한 파일은 서명에 관계하는 파일이라고는 보여지지 않습니다. 상기의 파일명과 대문자와 소문자의 구별이 다른 파일명은 예약이 끝난 상태로, 그러한 파일은 서명되지 않습니다.
+
+<p>JAR 파일의 부분집합을 서명하려면 ,<code>java.security</code> API 를 사용합니다. 서명된 JAR 파일은, 파일의 Manifest가 갱신되고 있는 것으로 <code>META-INF</code> 디렉토리에 서명 파일과 서명 블록 파일이 추가되고 있는 것을 제외하면, 원의 JAR 파일과 완전히 같습니다. jarsigner 를 사용하지 않는 경우, 서명 프로그램은, 서명 파일과 서명 블록 파일의 양쪽 모두를 구축할 필요가 있습니다. </p>
+
+<p>서명 첨부 JAR 파일내에서 서명된 모든 파일 엔트리에 대해, 그 엔트리가 벌써 Manifest내에 존재하고 있지 않는 한, 개별의 Manifest 엔트리가 작성됩니다. 각 Manifest 엔트리에는, 1 개(살) 또는 복수의 다이제스트 속성과 옵션의 <a href=   "#The%20Magic%20Attribute">Magic 속성</a>이 리스트 됩니다. </p>
+
+<h3><a name="Signature File"></a> 서명 파일</h3>각 서명자는, 확장자(extension)가 <code>. SF</code> 의 서명 파일에 의해 나타내집니다. 이 파일의 대부분은, Manifest 파일과 같습니다. 이 파일은, 서명자로부터 제공된 정보가 들어간 메인 섹션으로 구성됩니다.  다만, 이 정보는 특정의 jar 파일 엔트리에 고유의 것이 아닙니다. 메인 섹션의 엔트리 <code>x-Digest-Manifest-Main-Attributes</code> (<code>x</code> 는 다이제스트 알고리즘)에는, Manifest의 메인 속성의 다이제스트값이 들어옵니다.
+
+<p>메인 섹션의 뒤에는, 개개의 엔트리의 리스트가 계속됩니다.  그러한 엔트리의 이름도, Manifest 파일내에 존재할 필요가 있습니다. 각각의 개별 엔트리에는, 적어도 Manifest 파일내의 대응하는 엔트리의 다이제스트가 포함되어 있을 필요가 있습니다. </p>
+
+<p>Manifest 파일에 등장하지만 서명 파일에는 등장하지 않는 패스 또는 URL 는, 계산에 사용되지 않습니다. </p>
+
+<h3><a name="Signature Validation"></a> 서명의 검증</h3>Manifest가 처음으로 해석되는 시점에서, 최초로 서명이 서명 파일에 대해서 검증됩니다. 효율화를 위해서(때문에), 이 검증 결과를 기록해 둘 수가 있습니다. 이 검증에서는, 실제의 archive파일이 아니고, 서명 그 자체만이 검증됩니다.
+
+<p>서명 파일로부터 검증 정보를 입수할 수 있는 경우는, Manifest의 메인 속성도 검증됩니다. 서명 파일에 <code>x-Digest-Manifest-Main-Attributes</code> 엔트리가 존재하면(자), 그 엔트리가, Manifest 파일내의 메인 속성으로부터 계산된 다이제스트에 대해서 비교됩니다. 이 계산에 실패하면(자), jar 의 검증이 실패합니다. 이 판단은, 효율화를 위해서(때문에) 기록해 둘 수가 있습니다. 서명 파일에 <code>x-Digest-Manifest-Main-Attributes</code> 엔트리가 존재하지 않아도, jar 검증에 영향은 없고, Manifest의 메인 속성이 검증되지 않는 것뿐입니다. </p>
+
+<p>파일을 검증하기 위해서는, 서명 파일의 다이제스트치를 Manifest 파일의 대응하는 엔트리로부터 계산한 다이제스트치와 비교합니다. 다음에, Manifest 파일의 다이제스트의 값을, 「<code>Name:</code>」속성으로부터 참조되는 실제의 데이터 (상대 파일 패스 또는 URL)로부터 계산된 다이제스트와 비교합니다. </p>
+
+<p>Manifest 파일의 예:</p>
+
+  <blockquote>
+    <pre>
+Manifest-Version: 1.0
+Created-By: 1.3 (Sun Microsystems, Inc)
+ 
+Name: common/class1.class
+MD5-Digest: (base64 representation of MD5 digest)
+ 
+Name: common/class2.class
+MD5-Digest: (base64 representation of MD5 digest)
+SHA-Digest: (base64 representation of SHA digest)
+</pre>
+</blockquote>대응하는 서명 파일은 다음과 같이 됩니다.
+
+  <blockquote>
+    <pre>
+Signature-Version: 1.0
+MD5-Digest-Manifest-Main-Attributes: (base64 representation of MD5 digest)
+ 
+Name: common/class1.class
+MD5-Digest: (base64 representation of MD5 digest)
+ 
+Name: common/class2.class
+MD5-Digest: (base64 representation of MD5 digest)
+</pre>
+  </blockquote><br />
+
+<h3><a name="The Magic Attribute"></a> Magic 속성</h3>특정의 Manifest 엔트리상에서 서명을 유효화하기 위해서(때문에) 이제(벌써) 1 개(살) 필요한 것은, 그 엔트리의 Manifest 엔트리내의 Magic 키 페어치의 값을 검증자가 이해하는 것입니다.
+
+<p>Magic 속성은 옵션입니다만, 퍼서가 그 엔트리의 서명을 검증하는 경우는, 엔트리의 Magic 키의 값을 이해할 필요가 있습니다. </p>
+
+<p>Magic 속성의 값은, 콤마로 단락지어진 문맥 고유의 캐릭터 라인세트입니다. 콤마의 전후의 공백은 무시됩니다. 대문자 소문자도 무시됩니다. Magic 속성의 정확한 의미는 어플리케이션에 따라서 다릅니다. 이러한 속성은, Manifest 엔트리에 포함되는 해시치의 계산방법을 나타내, 그 때문에 서명의 올바른 검증에는 빼놓을 수 없는 것입니다. 이 키워드는, 동적 또는 묻어 컨텐츠, 다국어 문서용의 복수 해시 등에 사용합니다. </p>
+
+<p>다음에, Manifest 파일에서의 Magic 속성의 사용예를 2 개 가리킵니다. </p>
+
+  <p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>Name: http://www.scripts.com/index#script1</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-Digest:(base64 representation of SHA hash)</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Magic:JavaScript, Dynamic</tt></p>
+
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name:http://www.tourist.com/guide.html</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-Digest:(base64 representation of SHA hash)</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-Digest-French:(base64 representation of SHA hash)</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-Digest-German:(base64 representation of SHA hash)</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Magic:Multilingual</tt></p>
+
+<p>최초의 예에서는, 이것들 Magic 의 값은 http 문의의 결과가 문서 자신은 아니고, 문서에 파묻힌 스크립트이며, 또 그 스크립트가 동적으로 생성된다고 하는 것을 나타냅니다. 이 2 개의 정보는, Manifest의 다이제스트치와 비교해, 유효한 서명과 비교하는 해시치의 계산방법을 나타냅니다. </p>
+
+<p>제 2 의 예에서는, Magic 치는 검색된 문서의 내용은 특정의 언어이다고 하는 합의를 나타내, 검증을 위한 다이제스트의 값은 검색된 문서를 기술하는 언어에 의존하는 것을 나타냅니다. </p>
+
+<h2><a name="Digital Signatures"></a> 디지털 서명</h2>디지털 서명이란, 서명되었다 <code>. SF </code> 서명 파일입니다. 이것들은 바이노리필드이며, 인간이 해석하는 것은 의도되고 있지 않습니다.
+
+<p>디지털 서명 파일은,. SF 파일과 파일명은 같습니다만, 확장자(extension)가 다릅니다. 확장자(extension)는 디지털 서명의 형태에 의해 변화합니다. </p>
+
+  <blockquote>
+    <pre>
+. RSA      (PKCS7 signature, MD5 + RSA)
+. DSA      (PKCS7 signature, DSA)
+</pre>
+</blockquote>위에 나타나지 않은 서명 알고리즘용의 디지털 서명 파일은,<code>META-INF</code> 디렉토리에 두어, 「<code>SIG-</code>」라고 하는 접두사를 붙일 필요가 있습니다. 대응하는 서명 파일 (<code>. SF</code> 파일)에도 같은 접두사를 붙이지 않으면 안됩니다.
+
+<p>외부 서명 데이터를 지원하지 않는 형식에 대해서는, 파일은 <code>. SF</code> 파일의 서명된 카피로 구성되게 됩니다. 따라서, 일부의 데이터가 중복 할 가능성이 있기 (위해)때문에, 검증자는 2 개의 파일을 비교할 필요가 있습니다. </p>
+
+<p>외부 데이터를 지원하는 형식은,<code>. SF</code> 파일을 참조하는지, 암묵적인 참조에 의해 계산을 실행합니다. </p>
+
+<p>각 <code>. SF</code> 파일은 복수의 디지털 서명을 가질 가능성이 있습니다만, 이러한 서명은 같은 정당한 엔티티에 의해 생성될 필요가 있습니다. </p>
+
+<p>파일명의 확장자(extension)에는, 1 ?  3 문자의 영숫자를 사용할 수 있습니다. 인식되지 않는 확장자(extension)는 무시됩니다. </p>
+
+<h1><a name="Notes on Manifest and Signature Files"></a> Manifest 및 서명 파일에 대해</h1>여기에서는, Manifest 및 서명 파일에 적용되는 그 외의 제약 및 규칙에 대해 설명합니다.
+
+  <ul>
+<li>해석하기 전에:</li>
+
+<li style="list-style: none"><br />파일의 마지막 문자가 EOF 문자 (코드 26)의 경우, EOF 는 공백으로서 다루어진다. 2개(살)의 새로운 행이 추가된다 (1 개(살)은 마지막 행의 뒤로 새로운 행을 두지 않는 에디터용으로, 1 개(살)은 문법상 그 후에 공백행을 가지지 않는 마지막 엔트리를, 특별 취급 하지 않게하기 위한의 것이다)</li>
+  </ul>
+
+  <ul>
+<li>속성:</li>
+
+    <li style="list-style: none">
+<br />각 섹션의 모든 케이스로, 이해할 수 없는 속성은 무시된다
+
+<p>속성명은 대문자와 소문자가 구별되지 않는다. 그러나, Manifest 및 서명 파일을 생성하는 프로그램은 이 스펙으로 나타나고 있는 대로 대문자와 소문자를 구사할 필요가 있다</p>
+
+<p>속성명은 섹션내에서 반복해서는 안 된다</p>
+    </li>
+  </ul>
+
+  <ul>
+<li>버젼:</li>
+
+<li style="list-style: none"><br />Manifest-Version 및 Signature-Version 는 최초로 없으면 안되어, 대문자와 소문자의 사용구분을 확실히 지키지 않으면 안 된다 (이렇게 해 이것들을 magic 캐릭터 라인으로서 간단하게 인식할 수 있도록(듯이) 한다). 그 이외는, 메인 섹션내의 속성의 차례는 중요하지 않는 <br /> &nbsp;</li>
+
+<li>차례부:</li>
+
+    <li style="list-style: none">
+<br />각 Manifest 엔트리의 차례는 중요하지 않다
+
+<p>각 서명 엔트리의 차례는, 서명되는 다이제스트가 그 차례로 되는 것을 제외하면 중요하지 않다</p>
+    </li>
+  </ul>
+
+  <ul>
+<li>행의 길이:</li>
+
+<li style="list-style: none"><br />모든 행은 UTF-8 encode 형식에서는, 72 바이트 (문자가 아니다)를 넘을 수 없다. 값에 의해 초기의 행이 더 이상 길어지는 경우, 추가행에 계속할 필요가 있는 (각각의 행은 단일의 「공백」에서 시작된다) <br /> &nbsp;</li>
+
+<li>에러:</li>
+
+<li style="list-style: none"><br /> 파일을 이 스펙에 따라 분해할 수 없는 경우, 경고를 출력해야 하고, 또 어느 서명도 신용되어야 하는 것이 아닌<br /> &nbsp;</li>
+
+<li>제한:</li>
+
+    <li style="list-style: none">
+<br />헤더명은 계속할 수 없기 때문에, 헤더명의 최대 길이은 70 바이트이다 (이름의 후에 구두점과 「공백」이 없으면 안 된다)
+
+<p>NUL, CR, LF 를 헤더치에는 포함할 수 있는 두, NUL, CR, LF, 「:」은 헤더명에 포함할 수 없습니다. </p>
+
+<p>구현에서는, 65535 바이트 (문자는 아니다)의 헤더치, 및 파일 마다 65535 개의 헤더를 지원할 필요가 있다. 이것에 의해 메모리가 부족할지도 모르지만, 이러한 값에 하드 코딩의 제한이 있어서는 안 된다</p>
+    </li>
+  </ul>
+
+  <ul>
+<li>서명자:</li>
+
+<li style="list-style: none"><br />단일의 서명 파일을 공유하기 위해서, 다른 엔티티가 다른 서명 알고리즘을 사용하는 것은 기술적으로 가능하다. 이것은 표준에 따르지 않게 되어, 여분의 서명이 무시된다</li>
+  </ul>
+
+  <ul>
+<li>알고리즘:</li>
+
+<li style="list-style: none"><br />이 스펙은 다이제스트 알고리즘 또는 서명 알고리즘을 요구하는 것은 아니다. 다만, 적어도 MD5 와 SHA  가운데 1 개가 지원되고 있을 필요가 있습니다. </li>
+  </ul>
+
+<h2><a name="JAR Index"></a> JAR 인덱스</h2>
+
+<h3><a name="Overview" id="Overview"></a> 개요</h3>1.3 으로부터, 네트워크 어플리케이션, 특히 애플릿의 클래스 로더에 의한 클래스 검색 처리를 최적화하기 위해서, JarIndex 가 도입되고 있습니다. 애플릿의 클래스 로더의 기본 기능에서는, 단순한 선형 검색 알고리즘에 의해, 내부 검색 패스의 각 요소가 검색됩니다. 내부 검색 패스는, 「ARCHIVE」태그 또는 「Class-Path」메인 속성으로부터 구축됩니다. 클래스 또는 자원이 검출될 때까지, 클래스 로더에 의해 검색 패스의 각 요소가 다운로드되어 열립니다. 클래스 로더에 의해, 존재하지 않는 자원의 검색을 했을 경우, 어플리케이션 또는 애플릿의 jar 파일이 모두 다운로드되게 됩니다. 이 결과, 큰 네트워크 어플리케이션 및 애플릿의 경우는, 기동 및 응답이 늦어져, 네트워크 대역폭이 낭비될 가능성이 있습니다. JarIndex 기구에서는, 애플릿에 정의되고 있는 jar 파일의 컨텐츠가 모두 수집되어 애플릿의 클래스 패스에 있는 최초의 jar 파일의 인덱스 파일에 이 정보가 포함됩니다. 최초의 jar 파일이 다운로드되면(자), 애플릿 클래스 로더에서는, 수집된 컨텐츠 정보를 사용해 효율적으로 jar 파일이 다운로드됩니다.
+
+<p>기존의 <tt>jar</tt> 툴의 기능도 확장되고 있습니다. jar 파일의 리스트가 검사되고 나서, 클래스 및 자원이 속하고 있는 jar 파일에 대한 디렉토리 정보가 생성됩니다. 이 디렉토리 정보는, 루트 jar 파일의 <tt>META-INF</tt> 디렉토리의 <tt>INDEX.LIST</tt> 라는 이름의, 단순한 텍스트 파일내에 포함됩니다. 클래스 로더에 의해, 루트 jar 파일이 로드 되어<tt>INDEX.LIST</tt> 파일이 읽힙니다. 다음에, 그 파일을 사용해, 파일명과 패키지명으로부터 jar 파일명의 리스트에의 매핑을 포함한 해시 테이블이 구축됩니다. 클래스 로더에 의해 클래스 또는 자원이 검색되는 경우, 해시 테이블을 물어 합원이라고, 적절한 jar 파일이 검출되고 나서, 필요에 따라서 다운로드됩니다. </p>
+
+<p>클래스 로더에 의해, 특정의 jar 파일로 <tt>INDEX.LIST</tt> 파일이 검출되면(자), 그 파일에 리스트 된 정보는 항상 신뢰됩니다. 클래스 로더에 의해 특정의 클래스의 매핑이 검출된 후에, 링크를 더듬어도 그 클래스가 검출되지 않았던 경우는, InvalidJarIndexException 가 throw 됩니다. 이 예외가 발생했을 경우는, 어플리케이션 개발자는, 확장 기능에 대해서 <tt>jar</tt> 툴을 다시 실행해 , 인덱스 파일에 올바른 정보를 취득할 필요가 있습니다. </p>
+
+<p>대량의 영역 오버헤드의 발생을 어플리케이션으로 회피해, 메모리내의 해시 테이블을 고속으로  구축하기 위해서, INDEX.LIST 파일의 용량은 할 수 있는 한 작아지도록(듯이) 관리됩니다. 클래스의 패키지명이 null 가 아닌 경우는, 매핑은 패키지 레벨로 기록됩니다. 일반적으로은, 1 개의 패키지가 1 개의 jar 파일에 매핑 됩니다. 어느 특정의 패키지가 1 개 이상의 jar 파일에 걸치는 경우는, 이 패키지는 jar 파일의 리스트에 맵 됩니다. resource file에 디렉토리의 접두사가 있는 경우는, 매핑은 디렉토리 레벨에서도 기록됩니다. &nbsp;패키지명이 null 의 클래스의 경우 및 루트 디렉토리에 resource file가 포함되고 있는 경우에만, 매핑이 파일 레벨로 기록됩니다. </p>
+
+<h3><a name="Index File Specification"></a> 인덱스 파일의 스펙</h3><tt>INDEX.LIST </tt>파일에는, 1 개(살) 이상의 섹션이 포함되어 각각 1 행의 공백행으로 단락지어지고 있습니다. 섹션 마다 1 개의 jar 파일의 컨텐츠가 정의되고 있습니다. 각 섹션에서는, jar 파일의 경로명을 정의하는 헤더의 뒤에, 패키지명 또는 파일명의 리스트가 1 행씩 계속됩니다. &nbsp;모든 jar 파일의 패스는, 루트 jar 파일의 코드 베이스를 기점으로 하는 상대 패스입니다. 이러한 경로명은, 번들형 확장 기능이 현재의 확장 기능 기구에 의해 해석되는 방법과 같은 방법으로 해결됩니다.
+
+<p>인덱스 파일의 파일명 또는 패키지명에, ASCII 이외의 문자가 사용되고 있을 때는, UTF-8 인코딩이 사용됩니다. <br /> &nbsp;</p>
+
+<h4>스펙</h4>&nbsp;&nbsp;&nbsp; <i>index file :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; version-info blankline section*</i><br /> <i>&nbsp;&nbsp;&nbsp; version-info :&nbsp;</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt>JarIndex-Version:</tt> <i>version-number</i><br /> <i>&nbsp;&nbsp;&nbsp; version-number :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digit+{. digit+}*</i><br /> <i>&nbsp;&nbsp;&nbsp; section :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body blankline</i><br /> <i>&nbsp;&nbsp;&nbsp; body :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header name*</i><br /> <i>&nbsp;&nbsp;&nbsp; header :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char+</i><tt>. jar</tt> <i>newline</i><br /> <i>&nbsp;&nbsp;&nbsp; name :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char+ newline</i><br /> <i>&nbsp;&nbsp;&nbsp; char :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;any valid Unicode character except</i> <tt>NULL, CR</tt> <i>and</i><tt>LF</tt><br /> &nbsp;&nbsp;&nbsp; <i>blankline:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newline newline</i><br /> <i>&nbsp;&nbsp;&nbsp; newline :&nbsp;</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt>CR LF | LF | CR</tt> (<i>not followed by</i> <tt>LF</tt>)<br /> &nbsp;&nbsp;&nbsp; <i>digit:&nbsp;</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<tt>0-9</tt>}<br /> &nbsp;<br /><tt>INDEX.LIST</tt> 파일은,<tt>jar -i. </tt> (을)를 실행하는 것에 의해 생성됩니다. 상세한 것에 대하여는 <a href=   "../../tools/windows/jar.html">jar</a>  의 메뉴얼 페이지를 참조해 주세요.
+
+<h3><a name="Backward Compatibility"></a> 하위 호환성</h3>새로운 클래스의 로드 방식은, 현재의 확장 기능 기구를 기본으로 해 개발된 어플리케이션과 완전한 하위 호환성이 있습니다. &nbsp;클래스 로더에 의해 최초의 jar 파일이 로드 되어<tt>META-INF </tt> 디렉토리내에서 <tt>INDEX.LIST </tt> 파일이 검출되었을 때는, 인덱스 해시 테이블이 구축되어 그 확장 기능에 대해서 새로운 로드 방식이 사용됩니다. <tt>INDEX.LIST </TT> 파일이 검출되지 않았을 때는, 클래스 로더에서는 원의 선형 검색 알고리즘이 사용됩니다.
+
+<h2><a name="Service Provider"></a> 서비스 프로바이더</h2>
+
+<h3><a name="Overview" id="Overview"></a> 개요</h3><tt>META-INF/services</tt> 디렉토리내의 파일은, 서비스 프로바이더의 구성 파일입니다. 서비스란, 자주(잘) 사용되는 인터페이스와 클래스 (일반적으로은 abstract)세트입니다. 서비스 프로바이더란, 서비스의 특정의 구현입니다. 일반적으로, 프로바이더의 클래스에 의해, 서비스 자체에 정의되고 있는 클래스의 인터페이스와 서브 클래스가 구현됩니다. 서비스 프로바이더를 Java 플랫폼의 구현에 인스톨 할 때는, 확장 기능의 형식, 즉, 확장 기능의 일반적으로의 디렉토리에 배치되는 jar 파일의 형식에서 행해집니다. 프로바이더를 이용 가능하게 하려면 , 애플릿 또는 어플리케이션의 클래스 패스에 추가하는지, 플랫폼 고유의 방법을 사용합니다.
+
+<p>서비스는, abstract 클래스에 의해 표현됩니다. 특정의 서비스의 프로바이더는, 서비스의 클래스를 상속하고 싶은 구두인가의 구상 클래스로 구성되어 있습니다. 서비스의 클래스에는, 프로바이더 고유의 데이터 및 코드가 포함됩니다. 일반적으로, 프로바이더 클래스에는, 프로바이더 자체가 모두 포함될 것은 없습니다. 요구시에 실제의 프로바이더를 작성할 수 있는 코드와 프로바이더가 특정의 요구를 채울 수가 있을지 어떨지를 식별하기 위해서 필요한 정보로 구성되는 프록시가 되어 있습니다. 프로바이더 클래스의 내용은, 개별의 서비스에 크게 의존합니다. 1 개의 클래스 또는 인터페이스로 프로바이더 클래스를 통합할 수 없습니다. 이 때문에, 이러한 클래스는 정의되고 있지 않습니다. 프로바이더 클래스에는, 룩 업중에 인스턴스를 생성할 수 있도록(듯이), 인수를 취하지 않는 생성자 이 필요합니다. <br /> &nbsp;</p>
+
+<h3><a name=   "Provider Configuration File"></a> 프로바이더 구성 파일</h3>서비스 프로바이더는, 자원 디렉토리 <tt>META-INF/services</tt> 에 프로바이더 구성 파일을 배치하는 것에 의해 식별됩니다. 이 파일의 이름은, 완전 지정된 abstract 서비스 클래스명으로 구성할 필요가 있습니다. 이 파일에는, 개행 문자로 단락지어진, 일의의 구상 프로바이더 클래스명의 리스트를 포함할 필요가 있습니다. 공백, 탭 문자, 및 공백행은 무시됩니다. 코멘트 문자는 「#」(0x23)입니다. 각 행에서는, 최초의 코멘트 문자 이후의 문자는 모두 무시됩니다. 이 파일은, UTF-8 방식에서 encode 할 필요가 있습니다. <br /> &nbsp;
+
+<h3><a name="Example" id="Example"></a> 예</h3>java.io.spi.CharCodec 라는 이름의 서비스 클래스를 상정합니다. 이 클래스에는, 다음의 2 개의 abstract 메소드가 있습니다.
+
+<p>&nbsp;&nbsp;&nbsp; <tt>public abstract CharEncoder getEncoder(String encodingName);</tt><br /> <tt>&nbsp; public abstract CharDecoder getDecoder(String encodingName);</tt></p>
+
+<p>이러한 메소드는, 건네받은 인코딩을 변환할 수 없는 경우, 적절한 객체 또는 null 를 돌려줍니다. 표준의 CharCodec 프로바이더에서는, 복수의 인코딩이 지원되고 있습니다. </p>
+
+<p>sun.io.StandardCodec 가 CharCodec 서비스의 프로바이더의 경우는, jar 파일에 <tt>META-INF/services/java.io.spi.CharCodec</tt> 파일이 포함됩니다. 이 파일에는, 다음의 행이 포함됩니다. </p>
+
+<p>&nbsp;&nbsp; <tt>sun.io.StandardCodec&nbsp;&nbsp;&nbsp; # Standard codecs for the platform</tt></p>
+
+<p>특정의 인코딩명의 엔코더를 검색하려면 , 내부의 I/O 코드에 의해 다음과 같은 처리를 합니다. </p>
+
+<p>&nbsp;&nbsp; <tt>CharEncoder getEncoder(String encodingName) {</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Iterator ps = Service.providers(CharCodec.class);</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while (ps.hasNext()) {</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CharCodec cc = (CharCodec) ps.next();</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CharEncoder ce = cc.getEncoder(encodingName);</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ce ! = null)</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return ce;</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</tt><br /> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return null;</tt><br /> <tt>&nbsp;&nbsp; }</tt><br /> &nbsp;</p>
+
+<p>프로바이더의 룩 업 기구는, 항상 호출해 옆의 시큐리티 문맥으로 실행됩니다. 신뢰할 수 있는 시스템 코드에서는, 일반적으로, 이 클래스의 메소드는 특권 첨부의 시큐리티 문맥으로부터 호출할 필요가 있습니다. </p>
+
+  <p>&nbsp;</p>
+
+<h2><a name="API Details"></a> API 의 상세</h2>패키지 <a href=   "../../../api/java/util/jar/package-summary.html">java.util.jar</a> 
+
+<h2><a name="See Also"></a> 관련 항목</h2>패키지 <a href=   "../../../api/java/security/package-summary.html">java.security</a> <br />
+
+패키지 <a href=   "../../../api/java/util/zip/package-summary.html">java.util.zip</a> <!-- Body text ends here --> <!-- ============================================================== -->
+  <hr size="3" noshade="noshade" />
+
+  <table summary="layout" border="0" width="100%">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../../legal/SMICopyright.html">Copyright &copy;</a>  2003 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+      </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"       alt="Sun" border="0" width="64" /><br /> <font size="+1"><i> Java Software</i></font></td>
+    </tr>
+  </table>
+</body>
+</html>

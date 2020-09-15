@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0055)http://java.sun.com/j2se/1.4.1/networking-relnotes.html -->
+<HTML><HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<TITLE>네트워크 기능 릴리스 노트 - xrath.com 에서 번역됨</TITLE>
+
+<BODY bgColor=#ffffff>
+<TABLE summary="layout" width="100%" border=0>
+  <TBODY>
+  <TR>
+<TD width=60><IMG alt=Java        src="../../../images/javalogo52x88.gif" width=52> </TD>
+    <TD align=middle>
+<H1>네트워크 기능 릴리스 노트</H1></TD>
+      <TD align=right width=60>&nbsp;</TD></TR></TBODY></TABLE>
+<HR noShade SIZE=3>
+Java<SUP><FONT  size=-2>TM</FONT></SUP> 2 SDK, Standard Edition, v1. 4.2 에서의 기존의 버그 및 그 외의 네트워크 기능에 관한 문제를 다음에 나타냅니다.  
+<UL>
+<LI>1.4. 2 보다 전의 릴리스에서는,<code>new URL (&quot;http://www.foo.com:-1/index.html&quot;)</code> 와 같은 무효인 URL 인스턴스를 작성할 수 있었습니다. 포트 번호에 <code>-1</code> 를 지정하는 것은 유효하지는 않습니다. 그러나, 이전의 릴리스에서는, 이러한 URL 를 HTTP 커멘드로 송신할 때에,<code>-1</code> 가 삭제되고 있었습니다. 1.4. 2 에서는,<code>-1</code> 이 URL 에 남기 (위해)때문에, 일부의 HTTP 서버나 프록시로 문제가 될 가능성이 있습니다. 어플리케이션으로 포트 번호가 <code>-1</code> 의 URL 인스턴스를 작성하지 말아 주세요. 이 예에서는,<code>-1</code> 은 디폴트 포트를 참조하면(자) 가정하고 있습니다만, 이 URL 를 작성하려면 ,<code>new URL (&quot;http://www.foo.com/index.html&quot;)</code> 가 올바른 방법입니다. 이 주의는, 단일의 인수에 의한 URL 생성자 에만 적용됩니다.  
+</UL>
+<UL>
+<LI>Microsoft Windows 98/ME 에서는,<TT>Socket.setSoTimeout</TT> 를 사용해 설정한 읽기 타임 아웃이나,<TT>ServerSocket.setSoTimeout</TT> 를 사용해 설정한 수락 타임 아웃에서는, 상정보다 500 ms 후에 타임 아웃 하는 경우가 있습니다. 이 문제는 모든 J2SE 릴리스로 발생합니다만, Microsoft Windows 98/ME 의 버그가 원인입니다. Microsoft Windows 98/ME 용의 패치는, Microsoft Web 사이트의 <A    href="http://support.microsoft.com/default.aspx?scid=KB;EN-US;Q257821&amp;">http://support.microsoft.com/default.aspx? scid=KB;EN-US;Q257821&amp;</A>  로부터 입수할 수 있습니다.
+</UL>
+<UL>
+<LI>J2SE 1.4. 1 보다 전에서는,<TT>java.net.InetAddress.getLocalHost()</TT> 는, 어플리케이션의 세션 전체로, 로컬 머신의 IP 주소의 검색 내용을 캐쉬하고 있었습니다. 이 동작에서는, 다이얼 업 접속으로 인터넷에 접속하고 있는 머신상이나, DHCP 로 주소를 취득한 머신상에서 실행하고 있는 어플리케이션에서는 문제가 발생합니다. 1.4. 1 으로 수정되어 로컬 IP 주소는 캐쉬되지 않게 되었습니다. <TT>InetAddress.getLocalHost()</TT> 로, 다이얼 업 접속이나 DHCP 의 경우의 올바른 IP 주소가 돌려주어집니다. 버그 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4211819.html">4211819</A>  를 참조해 주세요.  
+</UL>
+<UL>
+<LI>J2SE 1.4. 1 보다 전에서는, http/https 프로토콜 핸들러는, http URL 로부터 https URL 에의 (또는 그 역의) 리다이렉트(redirect)를 올바르게 실시하지 않고, 원의 URL 스킴을 사용해 리다이렉트(redirect) 하려고 하고 있었습니다. 1.4. 1 에서는, 그러한 리다이렉트(redirect) (http 로부터 https, 또는 https 로부터 http)에 대한 서버 응답을 어플리케이션에 돌려주는 것으로, 이 문제를 수정했습니다. 그 때문에, 어플리케이션으로, 응답 코드를 확인해, 그 코드가 리다이렉트(redirect)인 것을 식별하지 않으면 안됩니다. Location 헤더 필드치는 리다이렉트(redirect) 정보로서 체크 가능하기 때문에, 어플리케이션은 새로운 프로토콜을 사용해 리다이렉트(redirect)를 실시할지 어떨지를 결정할 필요가 있습니다. 버그 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4620571.html">4620571</A>  을 참조해 주세요.  
+</UL>
+<UL>
+<LI>J2SE 1.4 보다 전,<TT>java.net.URLConnection</TT> 클래스에서는, http 서버로부터의 에러를 일관성 없게 처리하고 있었습니다. 실제로,<TT>getInputStream</TT> 나 그 외의 메소드에서는, http 서버가 400 이상의 응답 코드를 돌려주는 경우로, 한편 요구가 기존의 파일 타입의 자원인 경우는, FileNotFoundException 를 throw 하고 있었습니다.  
+<P>1.4 에서는 수정되어 서버로부터의 http 에러에서는 모두 IOException 가 throw 되어 자원이 발견되지 않을 때 (즉, 응답 코드가 404 또는 410 의 경우)에, 전용의 예외 FileNotFoundExeption 를 throw 합니다. 이 예외는, 파일 타입에 관계없이 throw 됩니다.  
+<P>어플리케이션으로, 서버로부터 http 에러가 돌려주어졌을 때에 예외가 throw 되는 것을 상정하고 있었을 경우, 그러한 어플리케이션은 1.4 에서의 이 변경을 인식할 필요가 있습니다. 버그 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4160499.html">4160499</A>  를 참조해 주세요.  
+<P>이 문제에 관련해, http 에러가 서버로부터 돌려주어졌을 때에 http 서버로부터 에러 페이지를 읽어내기 위해서(때문에),<TT>HttpURLConnection.getErrorStream()</TT> 메소드를 사용할 수 있게 되었습니다. 지금까지의 <TT>getErrorStream()</TT> 는, 항상 <TT>null</TT> 를 돌려주고 있었습니다.  
+</UL>
+<UL>
+<LI>J2SE 1.4 보다 전은,<TT>InetAddress.toString()</TT> 에서는, 호스트명이 지금까지 해결되어 있지 않았던 경우에, 네임 서비스를 개입시켜 검색을 실행하고 있었습니다. 1.4 에서는 변경되어<TT>toString</TT> 는 곧바로 돌아옵니다. 호스트명이 해결되지 않는 경우, 반환되는 캐릭터 라인에는, 닷으로 단락지어진 형식의 IP 주소만이 포함됩니다.  
+<P>어플리케이션으로 <TT>toString()</TT> 가 해결된 호스트명의 캐릭터 라인을 돌려주는 것을 전제로 하고 있는 경우, 1.4 로 이 변경이 이루어졌던 것에 주의해 주세요. 버그 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4239141.html">4239141</A>  을 참조해 주세요.  
+</UL>
+<UL>
+<LI>J2SE 1.4 보다 전에서는,<TT>InetAddress.getByName</TT> 로 네임 서비스에 대한 검색에 실패했을 경우, 가상 머신의 라이프 타임중은, 그 호스트명에 관한 후속의 검색 모든 것이 실패합니다. 이것은, 네가티브 검색이 항상 캐쉬되고 있었기 때문입니다. 1.4 에서는 디폴트로, 검색에 실패했을 경우에서도, 후속의 검색은 성공할 가능성이 있도록(듯이) 변경되었습니다. 이것은, 다이얼 업 환경이나, 네임 서비스의 신뢰성이 낮은 환경에서는 특히 중요합니다.  
+<P>후속의 검색이 항상 실패하는 것을 전제로 한 어플리케이션에서는, 이 문제에 주의할 필요가 있습니다. 버그 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4256129.html">4256129</A>  를 참조해 주세요. 또, 네가티브 검색을 캐쉬할지 어떨지는,<TT>java.security</TT> 파일의 <TT>networkaddress.cache.negative.ttl</TT> 프로퍼티으로 제어할 수 있습니다.  
+</UL>
+<UL>
+<LI>Java 2 Platform, Standard Edition, v1. 4 에서는, 새로운 예외 <A    href="../../../api/java/net/PortUnreachableException.html"><TT>java.net.PortUnreachableException</TT></A>  가 도입되었습니다. 이 예외는<EM></EM>, DatagramSocket 가 접속의 메소드를 개입시켜 접속하고 있어, 한편 원격 어플리케이션이 실행중이 아닌 것을 나타내는 ICMP 포트 도달 불능을 수신했을 경우,<TT>DatagramSocket.send</TT> 또는 <TT>DatagramSocket.receive</TT> 에 의해 throw 될 가능성이 있습니다. PortUnreachableException 는, UDP 베이스 프로토콜의 종류에 따라서는 편리한 표시가 됩니다.  
+<P>PortUnreachableException 에 관한 기존의 문제를 다음에 나타냅니다.  
+    <OL>
+<LI>Solaris 8 에서는 IPv6 가 유효한 경우, IPv4 호스트로부터의 ICMP 포트 도달 불능 패킷은 폐기된 것처럼 보입니다. 이것은 Solaris 8 의 버그이며, 버그 번호 4422658 으로서 확인할 수 있습니다.  
+<LI>일부의 Microsoft Windows 릴리스 (특히 Windows 98 으로 Windows NT)에서는, ICMP 포트 도달 불능 패킷은,  operating system에 의해 부적절하게 파기되어 버리기 (위해)때문에, PortUnreachableException 가 throw 되지 않습니다. 현시점에서는, 이 문제를 수정하기 위한 Windows Sockets 갱신이 Microsoft 로부터 릴리스 된 것을 확인하고 있습니다.  
+<LI>Linux 에서는 UDP 패킷이 루프백 주소에 송신되어 행선지 포트에 바인드 된 UDP 어플리케이션이 없는 경우는, ICMP 포트 도달 불능 통지를 수신하지 않기 때문에, PortUnreachableException 는 throw 되지 않습니다. 이것은 Linux 커넬의 문제이며, 현시점에서는 패치가 제공되고 있는 것을 확인하고 있습니다.  
+      </LI>
+    </OL>
+</UL>
+<UL>
+<LI>많은 Linux 인스톨로,<TT>InetAddress.getLocalHost()</TT> 는 루프백 주소 (127.0. 0.1)을 나타내는 InetAddress 를 돌려줍니다. 이것은, 대부분의 Linux 인스톨로, 호스트명을 루프백 주소에 맵 하도록(듯이) /etc/hosts 를 구성해 있는 것이 원인입니다. 호스트가 정적 IP 주소를 사용하고 있는 경우는, 호스트명을 호스트의 주소에 맵 하도록(듯이),<TT>/etc/hosts</TT> 파일을 수정해 주세요.  
+<P>DHCP 와 동적 DNS 를 병용 하고 있는 경우는, 2 개의 방법이 있습니다.  (i) <TT>/etc/nsswitch.conf</TT> 로 네임 서비스의 검색 순서를 변경해, hosts 파일 (hosts: DNS 파일)의 전에 DNS 를 사용해 주세요. 또는 (ii) 디폴트의 프로바이더 대신에 DNS 네임 서비스 프로바이더를 사용하도록(듯이), InetAddress 를 구성해 주세요 (<TT>-Dsun.net.spi.nameservice.provider. 1=dns, sun</TT>). 이 문제는 <A    href="http://developer.java.sun.com/developer/bugParade/bugs/4665037.html">4665037</A>  으로 확인할 수 있습니다.  
+    </P>
+  </LI>
+</UL>
+<!-- Body text ends here --><!-- ============================================================== -->
+<HR noShade SIZE=3>
+
+<TABLE summary="layout" width="100%" border=0>
+  <TBODY>
+  <TR vAlign=top>
+    <TD>
+<P><FONT size=-2>Copyright &#169; 2002 <A href="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P></TD>
+<TD align=right><IMG alt=Sun        src="../../../images/sunlogo64x30.gif"> </TD>
+    </TR></TBODY></TABLE></BODY></HTML>

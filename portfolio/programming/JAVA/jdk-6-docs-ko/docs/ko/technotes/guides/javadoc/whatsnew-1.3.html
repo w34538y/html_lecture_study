@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Javadoc 1.3 의 신기능 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="white">
+
+
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+
+<TD>
+<center>
+<h1>Javadoc 1.3 의 신기능</h1>
+</center>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Javadoc 에 베풀어진 기능 강화</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<!-- Body text begins here -->
+
+
+이 문서에서는, 버젼 1.2. 2 에서 1.3 에의 이행으로 Javadoc 툴에 대해서 행해진 변경에 대해 설명합니다.  
+
+<h3>신기능</h3>
+
+<blockquote>
+
+<b><a href="../../tools/windows/javadoc.html#%7B@docRoot%7D"><code>{@docRoot}</code></a>  의 추가</b> - 이것은 Javadoc 의 새로운 태그로, 임의의 클래스 페이지로부터, 생성된 문서 계층의 루트 디렉토리에의 패스를 나타냅니다. 이 태그를 사용하는 목적은, 생성된 모든 페이지로부터 단일의 Web 페이지로의 링크 작성 (생성된 전페이지의 풋터로부터 저작권 페이지 또는 기업 로고에의 링크등)을 가능하게 하는 것입니다. (이 태그는 1.3 Beta 에서는 망가져 있었습니다) (요청 #4197510)
+<p>
+<b>MIF 도크 렛. </b> 이것은, FrameMaker 에의 임포트 및 그 결과적으로 PDF, PS, RTF, Word, WordPerfect 에의 변환을 실행하는 목적으로, MIF 의 출력을 생성하는 기능을 추가합니다. <br>중요 - Java 2 SDK 에는 MIF 도크 렛은 포함되어 있지 않습니다. 이하의 페이지로부터 개별적으로 취득할 필요가 있습니다. <a href="http://java.sun.com/j2se/javadoc/mifdoclet/">MIF 도크 렛의 다운로드 페이지</a> </a> 
+
+</blockquote>
+
+<h3>버그의 수정</h3>
+
+<blockquote>
+4260169: 「Overrides」, 「Specified By」, 및 「Tags copied from」에 &lt;code&gt; HTML 태그를 추가했습니다.
+
+<p>
+4276757: 상속되는 package-private 클래스의 public 멤버의 문서를 제공하도록(듯이) Javadoc 를 수정했습니다.
+
+<p>
+4214932: private 필드/메소드가 상속되고 있다고 하여 문서화 되고 있던 버그를 수정했습니다.
+
+<p>
+4216836: 「정의:」슈퍼 인터페이스로부터의 메소드를 구현하는 인터페이스의 메소드에 대해, 「정의:」링크를 추가했습니다.
+<p>
+4227539: 계층 트리를 루트까지 위로 이동해 가는 도중에 검출되는 인터페이스의 리스트 표시가 가능하게 되었습니다. 인터페이스의 경우, 「모든 슈퍼 인터페이스: A, B, C (All Superinterfaces:A, B, C)」가 추가됩니다. A, B, C (All Implemented Interfaces:A, B, C)」가 추가됩니다.
+<p>
+4233601: 내부 클래스의 개요에서는, 잘못해 예외를 인터페이스로서 리스트 해 버리는 버그가 수정되었습니다.
+<p>
+4216434: Javadoc 의 -help 옵션으로 모든 옵션을 출력하지 않는 (-helpfile, -stylesheetfile)라고 하는 버그가 수정되었습니다.
+<p>
+4235271: 버그의 수정에 의해, 인터페이스내의 메소드의 오버라이드(override)가 「Specified By」로서 표시되게 되었습니다.
+<p>
+4231274: 괄호로 둘러싸인 구 「과 같이 (also extends...)」의 전에 공백이 빠져 있었기 때문에, 추가되었습니다.
+<p>
+4285930: 상대 패스를 제공하는 경우에, javadoc 가 실행되고 있는 현재의 디렉토리에 대한 상대 패스가 아니고, 생성처 디렉토리 (<code>-d</code> 로 제공)에 대한 상대 패스로 하도록(듯이),<code>-linkoffline</code> 의 제 2 인수를 변경했습니다.
+</blockquote>
+
+<!-- ======================================================= --> 
+<p>
+
+<a name="future"></a> 
+<h3>장래의 확장 기능</h3>
+1.3 보다 나머지의 릴리스에서는, 이하의 확장을 할 가능성이 있습니다.
+
+<blockquote>
+<dl>
+<dt>     <b>XML 도크 렛</b> - 패키지 세트의 정적 프로그램 정보의 표준화 된 표현입니다. 이것에 의해, 개발자는 개별적으로 Javadoc 를 실행해 단일의 문서를 단계적으로 구축할 수가 있게 됩니다. Javadoc 를 실행할 때마다 중간 형식을 보존해, 이 중간 형식을 머지 해, 정확하게 갱신된 인덱스, 트리, 클래스 계층, 서브 클래스 리스트등을 갖춘 완전한 문서를 생성할 수 있도록(듯이) 합니다.  
+</dl>
+
+</blockquote>
+
+<hr size=3 NOSHADE>
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2001 <A HREF="http://www.sun.com">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+</TR>
+</TABLE>
+
+<P>
+
+
+
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+
+</body>
+</html>

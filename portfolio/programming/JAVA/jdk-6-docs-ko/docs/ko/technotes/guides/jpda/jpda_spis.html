@@ -1,0 +1,283 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="collection" content="참조">
+<title>
+Java(TM) Platform Debugger Architecture - 서비스 프로바이더 인터페이스
+ - xrath.com 에서 번역됨</title>
+</head>
+
+<body BGCOLOR=white LINK=blue VLINK=blue ALINK=red>
+
+<p>  
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif" width="52" height="88" align="bottom" alt="Java" border="0"> </td>
+<td>
+<h1 align="center">
+
+Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture - <br> 서비스 프로바이더 인터페이스
+
+
+</h1>
+
+
+</td>
+<td width="60" align="right" valign="top">
+<p align="right"><a href="../../../index.html"><font size="2">문서의 목차</font></a> 
+</p></td>
+</tr>
+</tbody></table>
+
+
+
+<p>
+J2SE 5.0 에서는, 연결기와 TransportService 의 구현을 개발 및 배치할 수 있도록(듯이), 새로운 서비스 프로바이더 인터페이스가 Java Debug Interface (JDI)에 추가되고 있습니다. TransportService 는, 5.0 의 새로운 클래스입니다. 이 클래스는, 연결기에 의해 사용되는 기반의 트랜스폴트 서비스를 나타내, 디버거와 타겟 VM 간의 접속의 확립, 및 Java Debug Wire Protocol (JDWP) 패킷의 전송에 사용됩니다.   
+
+<p>
+JDI 의 새로운 서비스 프로바이더 인터페이스에 가세해 J2SE 5.0 에는 <a href="jdwpTransport.html">Java<sup><font size="-2">TM</font></sup> Debug Wire Protocol Transport Interface (jdwpTransport)</a>  라고 하는 새로운 트랜스폴트 라이브러리 인터페이스도 포함되어 있습니다. 이것은, 트랜스폴트 라이브러리의 개발 및 배치를 가능하게 하는 네이티브 (C/C++) 인터페이스입니다. 트랜스폴트 라이브러리는, debuggee 측의 JDWP 에이전트에 의해 로드 되어 디버거와의 접속의 확립, 및 디버거와 VM 간의 JDWP 패킷의 트랜스폴트에 사용됩니다.
+
+<p>
+이 페이지에서는, 새로운 인터페이스를 사용하는 경우의 시나리오를 따라가는 개나 설명합니다. 또, 새로운 연결기와 트랜스폴트의 구현의 개발 및 배치에 관련하는 태스크의 개요도 설명합니다.
+
+<ul>
+<li><a href=#Examples>시나리오의 예</a> 
+<li><a href=#ConnectorDev>연결기의 개발</a> 
+<li><a href=#ConnectorDeploy>연결기의 배치</a> 
+<li><a href=#TransportDev>TransportService 의 개발</a> 
+<li><a href=#TransportDeploy>TransportService 의 배치</a> 
+</ul>    
+
+
+<a name="Examples"></a> 
+<p><hr noshade size=3>
+<h3>시나리오의 예</h3>
+
+<p>
+서비스 프로바이더 인터페이스와 네이티브 트랜스폴트 인터페이스는, 다음의 사용자-에 의해 사용되는 것이 상정되고 있습니다.
+
+<ul>
+
+<li>새로운 LaunchingConnector 구현을 개발할 필요가 있다, 또는 Sun 가 제공하는 TCP/IP 및 공용 메모리트란스포트를 넘는 원격 디버그용 트랜스폴트 옵션을 추가하고 싶은 디버거 및 툴의 벤더
+
+<p>
+<li>TCP/IP 이외의 트랜스폴트를 사용한 원격 디버그가 필요한, 편입 디바이스,  operating system, 또는 가상 머신의 벤더
+
+</ul>
+
+<p>
+이러한 사용자-를 고려해, 새로운 인터페이스를 사용하는 경우의 몇개의 시나리오에 대해 이하로 설명합니다.  
+
+<ul>
+
+<li>많은 환경에서는, 특별히 짜넣어 디바이스의 경우, TCP/IP 이외의 트랜스폴트를 사용해 디버거를 타겟 VM 에 접속할 필요가 있습니다. 이 타입의 환경에서는, 다른 트랜스폴트를 개발하거나 다른 트랜스폴트를 개입시킨 디버그를 지원하거나 하기 위해서 새로운 서비스 프로바이더 인터페이스를 사용할 수 있습니다.
+<p>
+debuggee 측에서는, jdwpTransport 인터페이스를 구현하는 것으로써, 새로운 트랜스폴트의 트랜스폴트 라이브러리를 개발할 수 있습니다. 디버거의 경우는, TransportService 구현을 개발할 수 있습니다. TransportService 구현을 배치하면(자), JDI VirtualMachineManager 구현에 의해 자동적으로 AttachingConnector 및 ListeningConnector 가 작성되어 타겟 VM 에 대한 원격 디버그가 가능하게 됩니다.
+
+<p>
+<li>환경에 따라서는, 트랜스폴트 이외의 기구를 사용해 디버거를 타겟 VM 에 접속해야 하는 경우가 있습니다. 예를 들어, 크래쉬 덤프나 헹 프로세스에 접속하기 위해서 디버거를 읽어내 전용으로 사용하는 경우가 있습니다.  
+<p>
+이러한 예의 경우는, AttachingConnector 구현을 개발할 수 있습니다. AttachingConnector 구현은, com.sun.jdi.connect.AttachingConnectors 를 확장합니다.  이 구현을 배치하면(자), VirtualMachineManager 의 attachingConnectors() 메소드에 의해 반환되는 접속 연결기의 리스트에 표시됩니다.  
+
+<p>
+<li>많은 환경에서는, 타겟 VM 는 독자적인 방법으로 기동됩니다. 이러한 환경에서는, Sun 가 제공하는 com.sun.jdi.CommandLineLaunch LaunchingConnector 에 의해 사용되는 연결기 인수 또는 기동 기구가 충분하지 않은 경우가 있습니다. 이 경우,  operating system 또는 가상 머신의 벤더가, 타겟 VM 를 기동할 수 있는 독자적인 LaunchingConnector 를 개발하는 일이 있습니다. 이 새로운 LaunchingConnector 는, 디버그 하는 타겟 VM 의 설정에 사용되는 적절한 연결기 인수를 가집니다. 이것을 배치하면(자), VirtualMachineManager 의 launchingConnectors() 메소드에 의해 반환되는 연결기의 리스트에 표시됩니다.
+
+<p>
+<li>다른 예는, Integrated Development Environment (IDE)의 구현자가 Sun 이외의 트랜스폴트에서의 디버그를 지원하고 싶은 경우의 기업 환경에 있어 발생합니다. 예를 들어, TLS/SSL 를 사용하는 안전한 접속을 개입시킨 디버그의 옵션을 IDE 로 제공하고 싶은 경우가 있습니다.  
+<p>
+이 예에서는, IDE 의 구현자가 jdwpTransport 인터페이스를 사용해 트랜스폴트 라이브러리를 개발합니다. 이 결과, debuggee 에서는 새로운 트랜스폴트의 사용이 가능하게 됩니다. 디버거측에서는, IDE 의 구현자에게 선택사항이 있습니다. 1 개의 옵션은, TransportService 구현을 개발 및 배치하는 것입니다. 이 옵션에서는, 원격 디버그에 새로운 트랜스폴트를 사용할 수 있습니다.
+<p>
+또, IDE 의 구현자가 트랜스폴트를 캡슐화하는 연결기 구현을 작성할 수도 있습니다. 이 옵션은, IDE 의 구현자가 새로운 연결기 인수를 추가하고 싶을 때에 적합합니다. 예를 들어, 보호된 트랜스폴트를 사용하는 경우, IDE 의 구현자는, 안전한 접속을 설정하기 위해서 필요한 키스토어, 패스 프레이즈등의 옵션을 지정하는 연결기 인수를 가지는 연결기를 사용하고 싶은 경우가 있습니다. 새로운 연결기가 적합한 경우, IDE 의 구현자는, debuggee 측의 트랜스폴트 라이브러리와 디버거측의 연결기를 개발합니다. 연결기의 타입은, 구현자가 선택할 수 있습니다.  예를 들어, debuggee 를 기동해, 디버거와 debuggee 간의 안전한 접속을 확립하는 LaunchingConnector 를 선택합니다.
+
+</ul>
+
+<a name="ConnectorDev"></a> 
+<p><hr noshade size=3>
+<h3>연결기의 개발</h3>
+
+연결기의 개발에는, LaunchingConnector, AttachingConnector, 또는 ListeningConnector 의 고정 구현이 포함됩니다.
+<p>
+각 연결기의 구현에는, 모든 연결기 메소드의 구현 외에, public 로 인수 없음의 생성자 이 필요합니다. 생성자 은, 초기화중에 VirtualMachineManager 에 의해 불려 갑니다. 생성자 은 무조작의 경우나, 트랜스폴트 서비스의 로드등의 초기화 태스크를 실행하는 경우가 있습니다. 생성자 은, 체크되는 예외를 throw 하지 않습니다.  이 때문에, 초기화중의 문제는 에러 또는 체크되지 않는 예외로서 throw 됩니다.
+<p>
+연결기로 TransportService 를 사용할 필요는 없습니다. 연결기에 따라서는, 트랜스폴트 이외의 기구를 사용해 타겟 VM 에 접속하는 경우가 있습니다 (<a href="#Examples">시나리오의 예의 </a>섹션에서는, 크래쉬 덤프나 헹 프로세스에 접속하는 AttachingConnectors 의 예를 열거). TransportService 구현을 사용하는 연결기의 경우, 연결기는 TransportService 구현을 직접 참조하는지, 실행시에 구현을 로드할 수가 있습니다. Sun 가 제공하는 트랜스폴트를 이용하는 연결기는, 다음과 같은 코드를 사용해 트랜스폴트 서비스를 로드할 필요가 있습니다.
+
+<blockquote><pre>
+try {
+    Class c = Class.forName("com.sun.tools.jdi.SocketTransportService");
+    ts = (TransportService) c.newInstance();
+} catch (Exception x) {
+    throw new Error(x);
+}
+</pre></blockquote>	
+
+<p>
+Java SE 의 구현에는, Sun 의 소켓 트랜스폴트 서비스 또는 공용 메모리 트랜스폴트 서비스가 포함되어 있을 필요가 없기 때문에, 이 예에서는, 트랜스폴트 서비스가 존재하지 않는 경우, 에러가 throw 됩니다.
+
+<p>
+연결기의 타입이 인식되고 있으면(자) 가정하는 경우, 구현을 개발할 경우에 다음 일에 주의할 필요가 있습니다.
+
+<ul>
+<li> Connector.Arguments 의 리스트를 충분히 고려할 필요가 있습니다. 연결기 구현에 따라서는, 인수의 구축 및 해석이, 구현의 코드의 대부분이 되는 경우가 있습니다.  
+<p>
+<li>연결기가 사용하는 트랜스폴트에 이름을 붙일 필요가 있습니다. 구현으로 기존의 TransportService 를 사용하는 경우, 추천 되는 트랜스폴트명은 기반이 되는 TransportService 의 이름입니다. 즉, 연결기의 transport() 구현은, name() 메소드에 의해 반환되는 트랜스폴트명을 나타내는 java.lang.String 의 트랜스폴트를 돌려줍니다.  
+<p>
+<li>
+대부분의 연결기 구현은, 타겟 VM 와의 접속을 확립합니다. 접속이 확립되면(자), 연결기의 기동, 접속, 또는 수락 메소드는, 디버거에 대해서 VirtualMachine 인스턴스를 돌려줍니다. VirtualMachine 밀러의 작성을 용이하게 하기 위해서, 5.0 의 VirtualMachineManager 에는 VirtualMachine 를 작성하는 새로운 메소드가 추가되고 있습니다. 다음의 코드는, 이 메소드의 사용예를 나타내고 있습니다.
+<blockquote><pre>
+VirtualMachine vm = Bootstrap.virtualMachineManager(). createVirtualMachine(conn);
+</pre></blockquote>
+<p>
+VirtualMachineManager 에는, LaunchingConnectors 로 사용하기 위한 createVirtualMachine 의 다른 형식도 포함되어 있습니다. 다른 형식에서는, LaunchingConnector 로 debuggee 를 나타내는 java.lang.Process 를 지정할 수가 있습니다. 상세한 것에 대하여는, com.sun.jdi.VirtualMachineManager 의 스펙을 참조해 주세요.
+
+</ul>
+
+<p>
+LaunchingConnector 의 예의 원시 코드를 보려면 ,<a href="SimpleLaunchingConnector.java">여기</a>를 클릭해 주세요. 연결기에는, 타겟 VM 로 실행하는 클래스의 클래스명을 지정하는 <emp>class</emp> 라고 하는 1 개의 Connector.Argument 가 있습니다. 이 예에서는, Connector.Argument, 트랜스폴트의 명명, createVirtualMachine 메소드의 사용을 포함한, 전술의 모든 요점을 나타내고 있습니다.  
+
+
+<a name="ConnectorDeploy"></a> 
+<p><hr noshade size=3>
+<h3>연결기의 배치</h3>
+<p>
+연결기를 배치하려면 , 연결기의 완전 수식 클래스명의 리스트를 포함한 서비스 설정 파일과 함께 연결기 구현의 클래스를 jar 파일에 패키지화할 필요가 있습니다. 그 후, jar 파일은 시스템 클래스 로더로부터 가시의 장소에 배치됩니다.
+
+<p>
+META-INF/services/com.sun.jdi.connect.Connector 라고 하는 서비스 설정 파일이 jar 파일에 포함되어 있을 필요가 있습니다.  이 파일에는, jar 파일에 포함되어 있는 연결기의 완전 수식 클래스명의 리스트가 있습니다. 복수의 연결기 구현이 같은 jar 파일에 포함되어 있는 경우가 있습니다.  이 경우, 각 연결기의 클래스명은 다른 행에 기재됩니다.  
+
+<p>
+SimpleLaunchingConnector 라고 하는 기동 연결기를 배치하고 싶으면 가정합니다. 이 연결기를 배치하기 위해서, 다음과 같은 META-INF/services/com.sun.jdi.connect.Connector 파일을 작성합니다.
+
+<blockquote><pre>
+# Our very simple launching connector
+SimpleLaunchingConnector
+</pre></blockquote>
+
+<p>
+이 서비스 설정 파일은, 연결기의 구현을 구성하는 클래스와 함께 jar 파일에 패키지화됩니다.
+
+<blockquote><pre>
+jar cf SimpleLaunchingConnector.jar \
+    META-INF/services/com.sun.jdi.connect.Connector \
+    SimpleLaunchingConnector.class
+</pre></blockquote>
+
+<p>
+다음에, jar 파일은 시스템 클래스 로더로부터 가시의 장소에 카피됩니다.
+<p>
+파일이 배치되면(자), 디버거의 재기동시에 연결기가 배치됩니다. 즉, VirtualMachineManager 의 allConnectors() 메소드에 의해 반환되는 연결기의 리스트에 SimpleLaunchingConnector 가 포함됩니다. 또, 이것은 기동 연결기이기 (위해)때문에, launchingConnectors() 메소드에 의해 반환되는 기동 연결기의 리스트에도 표시됩니다.
+
+
+<a name="TransportDev"></a> 
+<p><hr noshade size=3>
+<h3>TransportService 의 개발</h3>
+
+<p>
+트랜스폴트 서비스를 개발하려면 , 다음의 2 개의 컴퍼넌트를 개발할 필요가 있습니다.
+
+<ul>
+<li>com.sun.jdi.connect.spi.TransportService 의 고정 구현.
+<li>jdwpTransport 인터페이스를 구현하는 debuggee 측 공용 라이브러리.
+</ul>
+
+<p>
+트랜스폴트 서비스의 개발에는, 트랜스폴트와 기반으로 되는 통신 프로토콜에 대한 고도의 지식이 필요합니다. 트랜스폴트 서비스는, JDWP 를 기반이 되는 통신 프로토콜에 바인드 합니다. 제공하는 서비스는 신뢰성이 높고, JDWP 패킷은 디버거와 debuggee 의 사이에 중복 하거나 데이터가 없어지는 일 없이, 교환됩니다. 패킷을 신뢰성의 높은 방법으로 교환해야 하는 것을 생각하면(자), 트랜스폴트 서비스는, 기반이 되는 통신 프로토콜이 제공하는 서비스를 넘는 프로토콜 지원를 제공해야 합니다. 예를 들어, 처리되어 있지 않은 신뢰성의 낮은 시리얼 접속을 개입시킨 디버그가 필요한 경우, 트랜스폴트 서비스의 구현자는, 에러의 검출과 회복을 구현에 짜넣어, 디버거와 debuggee 의 사이에 JDWP 패킷을 신뢰성의 높은 방법으로 전송 할 수 있도록(듯이) 할 필요가 있습니다.
+
+<p>
+트랜스폴트와 기반의 통신 프로토콜의 상세를 이해하면(자), 다음 일을 고려합니다.
+
+<ul>
+<li>TransportService 의 capabilities() 메소드는, 트랜스폴트 서비스의 기능을 나타내는 TransportService.Capabilities 를 돌려줍니다. 따라서, 트랜스폴트 서비스의 구현자는, 다음 일을 고려할 필요가 있습니다.
+<ul>
+<li>트랜스폴트가 1 살의 청취자 주소에의 복수의 동시 접속을 지원할 수 있을지 어떨지
+<li>접속시, 핸드 쉐이크시, 또는 접속의 확립의 대기시에 타임 아웃을 효과적으로 구현할 수 있을지 어떨지
+</ul>
+<p>
+<li>네이티브 트랜스폴트 라이브러리는, 1 개의 JDWP 에이전트에 의해 사용되는 일도 있으면, 복수의 JDWP (또는 다른) 에이전트에 의해 동시에 사용되는 일도 있습니다. 트랜스폴트가 복수의 환경을 지원하는 경우는, jdwpTransport_OnLoad 함수를 호출할 때마다 새로운 환경 포인터가 돌려주어집니다. 트랜스폴트가 1 개의 환경만을 지원하는 경우, jdwpTransport_OnLoad 의 2 번째 이후의 호출은 에러가 돌려주어집니다. 따라서, 트랜스폴트 라이브러리의 구현자는, 라이브러리의 구현이 1 개의 환경을 지원할까 복수의 환경을 지원할지 어떨지를 결정할 필요가 있습니다.
+<p>
+<li>주소 또는 접속 엔드 포인트는 캐릭터 라인으로 표현됩니다. 따라서, 구현자는 주소의 모든 컴퍼넌트를 캐릭터 라인에 encode 할 수 있도록(듯이), 주소 schema를 작성할 필요가 있습니다. 예를 들어, 시리얼 포트의 주소와 설정은, 다음과 같이 encode 됩니다.
+<pre>/dev/ttya;9600, 1</pre>
+<p>
+<li>적절한 ListenKey 구현을 설계합니다. TransportService 는, 복수가 다른 주소로 동시에 대기하기 위해서 사용되는 일이 있으므로, 각 「청취자」를 일의에 식별하기 위해서 대기 키가 사용됩니다.
+<p>
+<li>TransportService 의 적절한 이름과 설명을 결정합니다. 기동시에, VirtualMachineManager 는 접속 연결기와 대기 연결기를 작성해, 트랜스폴트 서비스를 캡슐화합니다. 이러한 연결기의 이름과 설명은, 트랜스폴트 서비스의 이름과 설명이 기준이 됩니다.  예를 들어, TransportService 의 name() 메소드가 「Serial」를 돌려주는 경우, VirtualMachineManager 에 의해 작성되는 연결기는, 「SerialAttach」와「SerialListen」라고 하는 이름이 됩니다.
+</ul>
+
+<p>
+상기의 내용이 해결하면(자), TransportService 의 작성에 의해 com.sun.jdi.connect.spi.TransportService 를 확장해, 구현을 제공합니다. attach 메소드와 accept 메소드는, com.sun.jdi.connect.spi.Connection 의 인스턴스를 돌려줍니다.  이 때문에, Connection 를 구현해, 디버거가 debuggee 와 JDWP 패킷을 교환할 수 있도록(듯이) 할 필요가 있습니다.
+
+<p>
+TransportService 구현의 예로서 Sun 의 소켓 트랜스폴트의 원시 코드를 보려면 ,<a href="SocketTransportService.java">여기</a>를 클릭해 주세요. 이 예는, 참조용으로서 제공되고 있습니다.
+
+<p>
+네이티브 트랜스폴트 라이브러리를 개발하려면 ,<a href="jdwpTransport.html">jdwpTransport</a>  스펙에 기재되어 있는 각 함수를 구현할 필요가 있습니다. 함수의 prototype 및 정의는,<tt>${java_home}/include/jdwpTransport.h</tt> 에 정의되고 있습니다.
+<p>
+트랜스폴트 라이브러리의 구현자는, 다이나믹 라이브러리 (또는 이것에 상당하는 것)에의 함수 구현의 컴파일 및 링크를 실시합니다. 라이브러리는, 트랜스폴트 라이브러리가 로드 될 때 JDWP 에이전트로부터 불려 가는 jdwpTransport_OnLoad 함수를 export 합니다. 일부의 편입 환경은, 동적 링크를 지원하고 있습니다.  그렇게 말한 환경에서는, 트랜스폴트 라이브러리에 정적으로 링크해야 하는 경우가 있습니다. 그 경우, 라이브러리의 로드는 없습니다만, 트랜스폴트 라이브러리를 초기화해, 환경 포인터를 취득하기 위해서, jdwpTransport_OnLoad 함수가 불려 갑니다.
+
+<p>
+jdwpTransport 구현의 예로서 Sun 의 소켓 트랜스폴트 라이브러리 (dt_socket)의 원시 코드를 보려면 ,<a href="socketTransport-example.c">여기</a>를 클릭해 주세요. 이 예는, 어디까지나 참조용으로서 제공되고 있습니다.  
+
+
+<a name="TransportDeploy"></a> 
+<p><hr noshade size=3>
+<h3>TransportService 의 배치</h3>
+
+<p>
+TransportService 는, 연결기와 같은 방법으로 배치됩니다. TransportService 를 배치하려면 , TransportService 의 완전 수식 클래스명의 리스트를 포함한 서비스 설정 파일과 함께 TransportService 구현의 클래스를 jar 파일에 패키지화할 필요가 있습니다. 그 후, jar 파일은 시스템 클래스 로더로부터 가시의 장소에 배치됩니다.
+
+<p>
+META-INF/services/com.sun.jdi.connect.spi.TransportService 라고 하는 서비스 설정 파일이 jar 파일에 포함되어 있을 필요가 있습니다.  연결기의 배치와 같게, jar 파일에 복수의 구현이 포함되어 있는 경우는, 복수의 트랜스폴트 서비스 구현의 클래스명이 설정 파일에 기재되는 일이 있습니다.
+
+<p>
+트랜스폴트 서비스 com.sun.SerialTransportService 의 경우, 서비스 설정 파일은 다음과 같이 됩니다.
+
+<blockquote><pre>
+# Serial line transport
+com.foo.SerialTransportService
+</pre></blockquote>
+
+<p>
+이 서비스 설정 파일은, 구현을 구성하는 클래스와 함께 jar 파일에 패키지화됩니다. 이 예에서는, 구현에 다수의 클래스가 포함되면(자) 가정합니다.
+
+<blockquote><pre>
+jar cf SerialTransportService.jar \
+    META-INF/services/com.sun.jdi.connect.spi.TransportService \
+    com/foo/SerialTransportService.class \
+    com/foo/SerialConnection.class \
+    com/foo/SerialCapabilities.clas \
+    com/foo/SerialIO.class \
+    com/foo/SerialProtocol.class 
+</pre></blockquote>
+
+<p>
+연결기의 배치와 같게, jar 파일은 시스템 클래스 로더로부터 가시의 장소에 카피됩니다.
+
+<p>
+TransportService 는, 네이티브 메소드를 사용하는 경우도 있으면, 네이티브 라이브러리를 필요로 하는 것 외의 API 에 의존하는 경우도 있습니다. 그 경우, 네이티브 라이브러리는, System.loadLibrary 를 사용해 로드할 수 있는 장소에 존재할 필요가 있습니다.
+
+<p>
+네이티브 트랜스폴트 라이브러리는, JDWP 에이전트에 의해 로드 됩니다. 이 때문에, 네이티브 트랜스폴트 라이브러리는,  operating system의 일반적으로의 실행시 라이브러리 검색 패스상에 존재할 필요가 있습니다. 예를 들어, Solaris 또는 Linux 시스템의 경우는, LD_LIBRARY_PATH 환경 변수에 의해 지정된 검색 패스상에 존재할 필요가 있습니다.  
+
+<p>
+
+
+<hr align="center" size="3" noshade="noshade">
+
+<table border="0" width="100%" summary="layout">
+<tbody><tr valign="top">
+<td><font size="1">Copyright c 2004 </font><a href="http://www.sun.com/"><font size="1">Sun Microsystems, Inc. </font></a> <font size="1">All Rights Reserved. </font><br> <br> <font size="2">코멘트의 송부처:</font><A HREF="http://java.sun.com/j2se/mail/debuggingfeedback.html"><font size="2">Debugging Feedback</font></A> </td>
+<td align="right">
+<p align="right"><img src="../../../images/sunlogo64x30.gif" width="64" height="30" align="bottom" alt="Sun" border="0">
+</p></td>
+</tr>
+</tbody></table>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
+	<TITLE>Java Web Start - 자주 있는 질문 (FAQ) - xrath.com 에서 번역됨</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/6.0 (Solaris Sparc)</font>">
+	<META NAME="CREATED" CONTENT="20040716;11033000">
+	<META NAME="CHANGED" CONTENT="20040717;12203700">
+</HEAD>
+<BODY LANG="en-US">
+<DL>
+	<DT STYLE="margin-bottom: 0.5cm"><A NAME="top"></A> <BR><BR>
+	</DT></DL>
+<H1 ALIGN=CENTER>
+Java<SUP><FONT SIZE=2 STYLE="font-size: 50%">TM</FONT></SUP> Web Start version 6</H1>
+<H1 ALIGN=CENTER>FAQ</H1>
+<HR>
+<H2>FAQ 갱신 (2006 년 3 월)</H2>
+<ol>
+<li><a href="#601">2005 년 3 월부터 Web Start 의 채팅 세션의 트랜스 클립트를 어디서 참조할 수 있습니까.  </a> </li>
+<li><a href="#602">Web Start 어플리케이션의 트러블 슈팅에 관한 힌트란 무엇입니까. </a> </li>
+<li><a href="#603">jre 의 자동 다운로드란 무엇입니까.　</a> </li>
+
+<li><a href="#604">CD 의 인스톨 기능은 어떻게 사용합니까. </a> </li>
+<li><a href="#605">새로운 기업용의 구성 기능은 어떻게 사용합니까. </a> <br>
+</li>
+</ol>
+<H2>일반적인 질문</H2>
+<OL>
+	<LI><A HREF="#101">Java Web Start 란 무엇입니까 ? </A>  
+	<LI><A HREF="#102">자세한 정보는 어디서 입수할 수 있습니까 ? </A>  
+	<LI><A HREF="#103">왜 Java Web Start 가 필요합니까 ? </A>  
+	<LI><A HREF="#104">Java Web Start 를 사용해 어플리케이션을 기동하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#105">어플리케이션의 기동 방법에는 의미가 있습니까 ? </A>  
+	<LI><A HREF="#106">Java Web Start 의 시스템 요건은 무엇입니까 ? </A>  
+	<LI><A HREF="#107">Java Web Start 가 동작하는 플랫폼은 무엇입니까 ? </A>  
+	<LI><A HREF="#108">Java Web Start 의 서버 요건은 무엇입니까 ? </A>  
+	<LI><A HREF="#109">Java Web Start 는 표준에 근거하고 있습니까 ? </A>  
+	<LI><A HREF="#110">독자적인 Java Web Start 를 구현할 수 있습니까 ? </A>  
+	<LI><A HREF="#111">지원되는 브라우저는 무엇입니까 ? </A>  
+	<LI><A HREF="#112">Java Web Start 의 종합적인 온라인 자원의 리스트는 있습니까 ? </A>  
+	<LI><A HREF="#113">Java Web Start 를 사용해 어플리케이션을 배치할 수 있습니까 ? </A>  
+	<LI><A HREF="#114">Java Web Start 는, Marimba 나 MS SMS 와 같은 소프트웨어 배포 기구입니까 ? </A>  
+	<LI><A HREF="#115">Java Web Start 는 어플리케이션의 인스톨 프로그램입니까 ? </A>  
+	<LI><A HREF="#116">Java Web Start 가 동작하는 Java 플랫폼의 버젼은 무엇입니까 ? </A>  
+	<LI><A HREF="#117">Java Web Start 는 Java Plug-in 테크놀러지 (애플릿)와 어떻게 관계하고 있습니까? </A> 
+</OL>
+<H2>기술적인 문제</H2>
+<OL>
+	<LI><A HREF="#201">Java Web Start 를 동작시키려면  어플리케이션을 변경할 필요가 있습니까 ? </A>  
+	<LI><A HREF="#202">애플릿으로부터 어플리케이션에의 이행 패스는 있습니까 ? </A>  
+	<LI><A HREF="#203">VM 인수를 Java 실행 환경에 건네주는 방법은 있습니까 ? </A>  
+	<LI><A HREF="#204">서버의 타임 스탬프에 의존하고 싶지는 않습니다. 버젼화 된 JAR 를 지정하기에는  어떻게 하면 좋습니까.  또, JAR 의 증분 갱신을 입수하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#205">JAR 파일은 어플리케이션간에 공유됩니까 ? </A>  
+	<LI><A HREF="#206">독자적인 스플래쉬 화면을 제공하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#207">로컬 시스템으로 어플리케이션 상태를 보존하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#208">나의 어플리케이션에는 특정의 버젼의 JRE 가 필요합니다. 이 JNLP 파일을 지정하기에는  어떻게 하면 좋습니까 ? </A> <LI><A HREF="#209">Manifest 파일의 Class-Path 를 신뢰할 수 있습니까 ? </A>  
+	<LI><A HREF="#210">어플리케이션이 native code에 의존하고 있는지, 그것을 사용하고 있는 경우에서도 Java Web Start 를 사용할 수 있습니까 ? </A>  
+	<LI><A HREF="#211">Class.forName 와 ClassLoader.getSystemClassLoader 를 사용해 어플리케이션 내부에 자원을 로드하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#212">커멘드행으로부터 Java Web Start 를 기동하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#213">다른 증명서에 의해 서명된 복수의 JAR 파일을 사용하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#214">Java Web Start 가 인스톨 되고 있는지 어떤지를 조사하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#215">왜 브라우저에 JNLP 파일이 plaintext로서 표시됩니까 ? </A>  
+	<LI><A HREF="#216">왜 Java Web Start 는 항상 JAR 파일을 IIS 서버로부터 재로드합니까 ? </A>  
+	<LI><A HREF="#217">JnlpDownloadServlet 로 Pack200 압축을 사용할 수 있습니까 ? </A> 
+	<LI><A HREF="#218">어플리케이션의 인스턴스를 1 개만 확실히 실행하는 최선의 방법은 무엇입니까 ? </A> 
+	<LI><A HREF="#219">JNLP 파일내의 프로퍼티은 언제 설정됩니까 ? </A> 
+	<LI><A HREF="#220">다운로드된 JNLP 파일에 대해서 파일이 발견되지 않는다고 하는 메세지가 표시되는 원인은 무엇입니까 ? </A> 
+	<LI><A HREF="#221">다른 목적으로 서명된 서명 첨부 jar (JCE 확장 기능등)를 사용하기에는  어떻게 하면 좋습니까 ? </A> 
+	<LI><A HREF="#222">왜 Gnome 를 채용한 일부의 Linux 플랫폼에서는 관련짓고 기능을 사용할 수 없습니까 ? </A> 
+	<LI><A HREF="#223">JNLP 의 MIME 타입을 전송하도록(듯이) 서버를 설정하기에는  어떻게 하면 좋습니까 ? </A> 
+	<LI><A HREF="#224">JnlpDownloadServlet 를 사용하도록(듯이) 서버를 설정하기에는  어떻게 하면 좋습니까 ? </A> 
+	<LI><A HREF="#225">어플리케이션을 일의에 식별하려면  어떻게 합니까 ? </A> 
+	<LI><A HREF="#226">JNLP 어플리케이션에 관련짓는 복수의 파일 확장자(extension)나 MIME 타입은 어떻게 작성합니까.  </A> 
+	<LI><A HREF="#227">native code로부터 FindClass()를 호출하면(자) 실패하는 일이 있는 것은 왜입니까. </A> 
+
+</OL>
+<H2>시큐리티에 관한 질문</H2>
+<OL>
+	<LI><A HREF="#301">Java Web Start 의 시큐리티 보호는 어떻게 행해지고 있습니까 ? </A>  
+	<LI><A HREF="#302">안전한 샌드 박스 (sandbox)란 무엇입니까 ? </A>  
+	<LI><A HREF="#303">Java Web Start 의 안전한 샌드 박스는 애플릿의 샌드 박스에 비해 어느 정도 유연성이 높습니까 ? </A>  
+	<LI><A HREF="#304">어플리케이션이 시스템에 대한 무제한의 액세스권을 취득할 수 있도록(듯이) 하기에는  어떻게 하면 좋습니까 ? </A>  
+	<LI><A HREF="#305">JAR 파일의 암호화된 다운로드는 지원되고 있습니까 ? </A>  
+	<LI><A HREF="#306">Java Web Start 로 NTLM 인증을 사용할 수 있습니까 ? </A>  <LI><A HREF="#307">Java Web Start 로 HTTPS 프로토콜을 사용할 수 있습니까 ? </A> 
+	<LI><A HREF="#308">시큐리티 툴에 관한 상세 정보를 얻기 위한 온라인 자원은 있습니까 ? </A>  
+</OL>
+<H2>기존의 버그</H2>
+<OL>
+	<LI><A HREF="#401">4825415: 1.4. 2 에서는 Java Web Start 의 데스크탑 통합과 시큐리티의 다이얼로그가 표시되지 않는다</A> 
+	<LI><A HREF="#402">4491398: DLL 자원의 의존에 관한 문제</A>  
+	<LI><A HREF="#403">5008460: 패스에 공백이 포함되어 TraceSecurity 가 온이 되어 있는 경우에 Java Web Start 가 실패한다</A> 
+	<LI><A HREF="#404">5074087: Windows 로 related-content 가 title 를 붙이지 않고 로 지정되었을 경우, 어플리케이션을 기동할 수 없다</A> 
+	<LI><A HREF="#405">5074524: 서명이 없는 확장 기능의 최초의 jar 는 곧바로 다운로드해야 한다</A> 
+	<LI><A HREF="#406">5047548: 패키지가 포함되는 부분의 지연 다운로드가 기능하지 않는다</A> 
+	<LI><A HREF="#407">5074526: 어플리케이션이 서명 첨부의 경우에서도, ExtenededService 파일의 API 에 시큐리티용의 다이얼로그가 표시된다</A> 
+	<LI><A HREF="#408">4925768: Gnome 에서는 시스템 레벨의 쇼트 컷이 지원되어 있지 않다</A> 
+	<LI><A HREF="#409">5072969: 기동 에러에 의해 Java Web Start 가 행업 한 것처럼 보인다</A> 
+	<LI><A HREF="#410">5074530: Java Web Start 가 올바른 JRE 를 선택하고 있지 않는 모든 버젼. </A> 
+</OL>
+
+<h2>2006 년 3 월 갱신</h2>
+
+<p><a name="601"></a> <b>2005 년 3 월부터 Web Start 의 채팅 세션의 트랜스 클립트를 어디서 참조할 수 있습니까. </b><br> <br>채팅 세션의 트랜스 클립트는<a href="http://java.sun.com/developer/community/chat/JavaLive/2005/jl0301.html">여기</a>로부터 참조할 수 있습니다. <br>
+</p>
+<p><a name="602"></a> <b>Web Start 어플리케이션의 트러블 슈팅에 관한 힌트란 무엇입니까. </b>
+
+<br><a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/troubleshooting.03.06.html">여기</a>로부터 트러블 슈팅과 디버그에 관한 설명을 참조해 주세요. <br>
+</p>
+<a href="faq2.html#602"></a> 
+<p><a name="603"></a> <b>jre 의 자동 다운로드란 무엇입니까.　</b> <br><a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/autodl.03.06.html">여기</a>로부터 자동 다운로드에 관한 설명을 참조해 주세요. </p>
+<a name="604"></a> <b>CD 의 인스톨 기능은 어떻게 사용합니까. </b> <br><a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/cdinstall.03.06.html">여기</a>로부터 임포트 기능과 CD 의 인스톨 방법에 관한 설명을 참조해 주세요. <br>
+
+</p>
+<p><a name="605"></a> <b>기업용의 구성 기능은 어떻게 사용합니까. </b> <br><a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/enterprise_config.03.06.html">여기</a>로부터 기업용의 구성 관리에 관한 설명을 참조해 주세요. <br>
+</p>
+<a href="faq2.html#602"></a> 
+
+<H2>일반적인 질문</H2>
+
+<div style="margin-left: 2em;">
+
+<P><A NAME="101"></A> <B>Java Web Start 란 무엇입니까 ? </B> 
+</P>
+<P>Java Web Start 는, 플랫폼에 의존하지 않는 안전하고 강고한 배치용 테크놀러지를 제공합니다. 이것에 의해, 개발자는 풀 기능의 어플리케이션을 표준의 Web 서버로 사용할 수 있도록(듯이) 하는 것으로, 어플리케이션을 최종 사용자에 배치할 수 있습니다. Web 브라우저가 있으면, 최종 사용자는 어플리케이션을 기동하는 것만으로, 항상 최신의 버젼을 안심해 이용할 수 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="102"></A> <B>자세한 정보는 어디서 입수할 수 있습니까 ? </B> 
+</P>
+<P><A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws">Java Web Start</A>  의 온라인 메뉴얼을 참조해 주세요. </P>
+<P>Java Web Start 를 사용해 어플리케이션을 배치하는 방법에 대한 상세한 기술 정보 (개발자전용)는,<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">개발자 가이드</a>를 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="103"></A> <B>왜 Java Web Start 가 필요합니까 ? </B> 
+</P>
+<P>어플리케이션을 Web 로부터 직접 배치하는 간단하고 강고하고 안전한 방법이기 때문입니다. 개발자는, 간단하게 어플리케이션을 Web 경유로 사용할 수 있도록(듯이) 할 수가 있습니다. 또, Java Web Start 에는 Java 실행 환경 (JRE) 관리 기능도 갖춰지고 있기 (위해)때문에, 설정이 간단해, 브라우저에 의존하지 않고, Web 어플리케이션의 솔루션을 효율적으로 배치할 수 있습니다.  
+</P>
+<P>사용자는, 인스톨 순서를 개별적으로 실시하지 않아도, 어플리케이션 (Web 페이지)에 간단하게 액세스 할 수 있습니다. 사용자는, 데스크탑으로부터, Web 페이지로 이용하는 것보다도 풍부로 곧바로 응답하는 사용자-인터페이스를 사용해, Java 어플리케이션에 액세스 해 사용할 수 있습니다. 또, Java Web Start 베이스의 어플리케이션은, 한 번 인스톨 하면(자), 필요한 때에 언제라도 클릭하는 것만으로 실행할 수 있습니다.  
+</P>
+<P>어플리케이션을 기동할 때마다, 사용자에게 의식시키지 않고 Web 로부터 어플리케이션이 갱신되기 (위해)때문에, 사용자는 수동으로 어플리케이션을 갱신할 필요가 없고, 항상 최신 버젼을 사용할 수 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="104"></A> <B>Java Web Start 를 사용해 어플리케이션을 기동하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>우선, Web 페이지로부터 링크를 클릭해, 새로운 어플리케이션을 기동합니다. </P>
+<P>어플리케이션을 빈번하게 사용하는 경우는, Java Web Start 로 데스크탑에 아이콘을 배치할 수 있도록(듯이) 해, 데스크탑 또는 [스타트] 메뉴로부터 쇼트 컷을 작성합니다. Java Web Start 로부터, 쇼트 컷을 작성하는지,[스타트]<BR>메뉴에 항목을 작성할까를 묻는 일이 있습니다. 「네」를 클릭하면(자), 다음번부터 브라우저를 사용하지 말고 어플리케이션을 기동할 수 있습니다.  
+</P>
+<P>또, Java Web Start 에는, Java 컨트롤 패널로부터 기동할 수 있는 어플리케이션 캐쉬 viewer가 준비되어 있습니다. &nbsp;어플리케이션 캐쉬 viewer를 사용하면(자), 다운로드한 어플리케이션을 직접 기동할 수 있습니다.  
+</P>
+<P>게다가 커멘드 prompt로 &ldquo;javaws &lt;jnlp_url&gt;&rdquo;라고 입력해, 어플리케이션을 기동할 수도 있습니다. 여기서 &lt;<jnlp_url> 는 어플리케이션의 JNLP 파일에의 URL 입니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="105"></A> <B>어플리케이션의 기동 방법에는 의미가 있습니까 ? </B>
+</P>
+<P>아니오.  어떠한 방법을 사용해도, 어플리케이션은 똑같이 기동합니다. 즉, Web 페이지, 데스크탑상의 쇼트 컷,[스타트] 메뉴, 또는 Java 어플리케이션 캐쉬 viewer의 어느 방법으로 기동해도 차이는 없습니다.  
+</P>
+<P>Java Web Start 는, 반드시 최신 버젼의 어플리케이션을 사용할 수 있을지 어떨지를 확인해, 사용할 수 있는 경우는 자동적으로 다운로드합니다.  
+</P>
+<P>사용하고 있는 어플리케이션이 디지털 서명되어 있지 않은 경우, Java Web Start 는 그 어플리케이션이 제한된 안전한 실행 환경에서 기동합니다. 서명이 없는 어플리케이션이나 신뢰할 수 없는 어플리케이션이, 로컬 시스템이나 네트워크에 대한 무제한의 액세스권으로 실행될 것은 없습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="106"></A> <B>Java Web Start 의 시스템 요건은 무엇입니까 ? </B> 
+</P>
+<P>Java 버젼 1.2. 2 이상을 지원하는 클라이언트 시스템으로 Java Web Start 를 사용할 수 있습니다. Java Web Start 는 거의 모든 브라우저로 동작합니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="107"></A> <B>Java Web Start 가 동작하는 플랫폼은 무엇입니까 ? </B>
+</P>
+<P>Sun Microsystems 에서는, Windows 98/NT/2000/XP/2003 판, Solaris 오퍼레이팅(operating) 환경 (SPARC 판과 Intel 판), 및 Linux/i486 판을 제공하고 있습니다. <A HREF="http://developer.apple.com/java">Apple</A>  에서는, 그러한 OS X 릴리스판을 제공하고 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="108"></A> <B>Java Web Start 의 서버 요건은 무엇입니까 ? </B> 
+</P>
+<P>Java Web Start 에서는, 클라이언트와 서버와의 통신에 HTTP 를 사용합니다. 표준의 Web 서버를 어플리케이션의 호스트로서 사용할 수 있습니다. 그 외의 서비스 (버젼 베이스의 다운로드, 증분 갱신, 어플리케이션의 pack200 압축등)가 필요한 경우는, Web 서버로 서브 렛이나 Java Server Pages 를 지원할 필요가 있습니다. 이러한 기능을 구현하는 서브 렛의 예가 JDK 의 샘플용의 디렉토리에 넣을 수 있고 있습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="109"></A> <B>Java Web Start 는 표준에 근거하고 있습니까 ? </B> 
+</P>
+<P>할 수 있습니다. Java Web Start 1.5. 0 은, Java Community Process 를 통해서 개발된 Java Network Launching Protocol (JNLP) 테크놀러지의 제품 품질의 레퍼런스 구현입니다. &nbsp;JNLP 는, 스펙 번호 JSR 056 입니다. &nbsp;다른 플랫폼 벤더는, Java Web Start 를 우리들의 플랫폼에 이식하거나 그 스펙을 구현하거나 할 수 있습니다.  
+</P>
+<P>자세한 것은,<A HREF="http://jcp.org/en/jsr/detail?id=56">JNLP 스펙</a>을 참조해 주세요. &nbsp;<BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="110"></A> <B>독자적인 Java Web Start 를 구현할 수 있습니까 ? </B> 
+</P>
+<P>Java Web Start 의 기반이 되는 테크놀러지인 Java Network Launching Protocol and API 는 Java Community Process 를 통해서 개발되고 있으므로, 어느 제품에도 이 프로토콜을 구현할 수 있습니다. 다만, JNLP 테크놀러지를 포함한 JCP 테크놀러지를 구현하는 경우는, 추가의 라이센스와 조항이 채워지지 않으면 안됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="111"></A> <B>지원되는 브라우저는 무엇입니까 ? </B> 
+</P>
+<P>Java Web Start 에서는, 주로 Internet Explorer 4 이상과 Mozilla 를 지원하고 있습니다. 다만, MIME 타입이 관련짓고를 올바르게 설정해 두는 경우는, 어느 브라우저에서도 JNLP 파일을 기동할 수 있습니다. Java Web Start 에서는, 브라우저의 설정을 사용해, 브라우저를 기동해 URL 를 표시하는 일도 있습니다.  이 기능은, 지원되어 있지 않은 브라우저에서는 동작하지 않습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="112"></A> <B>Java Web Start 의 종합적인 온라인 자원의 리스트는 있습니까 ? </B> 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Java Web Start 의 문서 페이지:<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/index.html">http://java.sun.com/j2se/1. 5.0/docs/guide/javaws/index.html</A> 
+		</P>
+	<LI><P STYLE="margin-bottom: 0cm">개발자 가이드:<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">http://java.sun.com/j2se/1. 5.0/docs/guide/javaws/developersguide/contents.html</A> 
+		</P>
+	<LI><P STYLE="margin-bottom: 0cm">Java Web Start 디스커션 포럼:<A HREF="http://forum.java.sun.com/forum.jsp?forum=38">http://forum.java.sun.com/forum.jsp? forum=38</A> 
+		</P>
+	<LI><P>JSR-56:<A HREF="http://jcp.org/en/jsr/detail?id=56">http://jcp.org/en/jsr/detail? id=56</A> 
+		</P>
+</UL>
+<P><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="113"></A> <B>Java Web Start 를 사용해 어플리케이션을 배치할 수 있습니까 ? </B> 
+</P>
+<P>Java Web Start 는, Web 배치되도록(듯이) 작성된 Java 어플리케이션용의 어플리케이션 기동 툴입니다.  
+</P>
+<P>어플리케이션은, 1 조의 JAR 파일과 JAR 파일에 포함하지 않으면 안 되는 모든 어플리케이션 자원 (이미지, 구성 파일, 네이티브 라이브러리등)으로 배포할 필요가 있습니다. 이러한 자원은, 메소드 <TT>ClassLoader.getResource()</TT> 또는 그것과 동등의 메소드를 사용해 검색할 필요가 있습니다. Java Web Start 에서는, JAR 파일을 Web 서버로부터 클라이언트에 전송 할 뿐입니다.  
+</P>
+<P>어플리케이션이 제한된 실행 환경 (샌드 박스)에서 실행되도록(듯이) 작성했을 경우는, 디스크에의 액세스가 허가되지 않고, 어플리케이션은 그것이 상주하고 있는 호스트 밖에 접속할 수 없는 것이 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><B>Java Web Start 는, Marimba 나 MS SMS 와 같은 소프트웨어 배포 기구입니까 ? </B> 
+</P>
+<P>Java Web Start 는, Java 어플리케이션용의 어플리케이션 기동 툴입니다. Java Web Start 를 사용하면(자), 사용자의 조작을 최소한으로 억제해, Java 플랫폼에 근거한 풀 기능의 어플리케이션을 Web 서버로부터 클라이언트 머신에 간단하게 배포할 수 있습니다.  
+</P>
+<P>소프트웨어 배포 테크놀러지는, Java Web Start 의 1 개의 국면에 지나지 않습니다. Java Web Start 는, 시큐리티, 어플리케이션에의 갱신, 최종 사용자에 있어서의 편리한 사용, 개발자가 어플리케이션을 작성할 때의 유연성도 갖추고 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="115"></A> <A NAME="114"></A> <B>Java Web Start 는 어플리케이션의 인스톨 프로그램입니까 ? </B> 
+</P>
+<P>Java Web Start 는, Web 배치되도록(듯이) 작성된 Java 어플리케이션용의 어플리케이션 기동 툴입니다. Java Web Start 는, 로컬로 디스크상의 자원을 캐쉬합니다만, 안전한 실행 환경이나 사용자에게 거의 깨닫아지지 않은 갱신 기능도 어플리케이션에 제공합니다. 어플리케이션은 사용될 때마다 갱신되기 (위해)때문에, 최종 사용자는 수동으로 소프트웨어의 갱신을 실시할 필요가 없습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="116"></A> <B>Java Web Start 가 동작하는 Java 플랫폼의 버젼은 무엇입니까 ? </B> 
+</P>
+<P>Java Web Start 는, 버젼 1.2. 2 이상의 Java 플랫폼용으로 작성된 어플리케이션만을 기동합니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="117"></A> <B>Java Web Start 는 Java Plug-in 테크놀러지 (애플릿)와 어떻게 관계하고 있습니까? </B> 
+</P>
+<P>이러한 2 개의 방법은 매우 자주(잘) 닮았습니다. 주된 차이는, 사용자측의 조작입니다. Java 어플리케이션 또는 애플릿이 Web 페이지와의 교환을 필요로 해, Web 브라우저와 강하게 결부되고 있는 경우는, 애플릿이 솔루션이 되는 일이 있습니다. 한편, 브라우저의 독립성이 중요한 경우는, Java Web Start 가 선택한 배치 플랫폼이 됩니다. 이 밖에도 차이는 몇개인가 있습니다만, 이것이 기본적인 차이점입니다.  
+</P>
+<P>Java Plug-in 테크놀러지를 사용하면(자), 사용자는 브라우저 내부에서 Java 애플릿을 실행할 수 있습니다.  
+</P>
+<P>Java Web Start 를 사용하면(자), 임의의 브라우저로 풀 기능의 어플리케이션을 다운로드할 수 있습니다. 어플리케이션을 한 번 다운로드해 기동하면(자), 어플리케이션을 계속해 동작시키면서, 브라우저를 닫을 수가 있습니다. 어플리케이션은, 브라우저가 열려 있지 않아도 기능할 수 있습니다. 즉, 브라우저를 종료 하거나 다른 Web 페이지로 이동해도, 어플리케이션은 계속해 실행됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </P>
+
+</div>
+<!-- End General QAs section -->
+
+<!-- --------------------------------------------------------------- -->
+
+<!-- Begin Technical QAs section -->
+<H2>기술적인 문제</H2>
+
+<div style="margin-left: 2em;">
+
+<P><A NAME="201"></A> <B>Java Web Start 를 동작시키려면  어플리케이션을 변경할 필요가 있습니까 ? </B> 
+</P>
+<P>어플리케이션을 Java 2 플랫폼에 작성해, 1조의 JAR 파일로서 배포하는 경우는, 어플리케이션을 수정할 필요는 없습니다. &nbsp;Java Web Start 는 <TT>public static void main(String[] args)</TT> 메소드를 호출해 어플리케이션을 기동하기 위해(때문에), 반드시 어플리케이션이 JAR 파일로부터 모든 자원 (이미지나 자원 번들등)을 꺼내도록 해 주세요.  
+</P>
+<P>어플리케이션에 시스템에 대한 무제한의 액세스권 (네트워크나 디스크에의 액세스권)이 필요한 경우는, 코드에 서명할 필요가 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="202"></A> <B>애플릿으로부터 어플리케이션에의 이행 패스는 있습니까 ? </B>&nbsp; 
+</P>
+<P>Java Web Start 는, 주로 어플리케이션의 배치용으로 설계되고 있습니다. 어플리케이션의 요건은 모두 JNLP 파일로 지정해, 사용자는 개입하지 않습니다. Java Web Start 에는, 종래의 AppletViewer 와 거의 같은 방법으로 애플릿을 기동하는 기능이 있습니다. 이 편입형의 AppletViewer 를 사용하면, Java Web Start 를 필요로 하는 기존의 애플릿을 간단하게 이행 할 수 있습니다. 다만, 이 기능은 Java Plug-in 를 완전하게 구현하기 위한의 것이 아닙니다.  Java Plug-in 는, 애플릿의 주요한 기동 수단입니다. Java Web Start 에 포함되는 편입형의 AppletViewer 에는, 클래스 파일을 자원으로서 지정할 수 없는 것이나 정책 파일을 받아들이지 않는등의 제한이 있습니다. &nbsp;<BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="203"></A> <B>VM 인수를 Java 실행 환경에 건네주는 방법은 있습니까 ? </B> 
+</P>
+<P>Java Web Start 에서는, 몇개의 JVM 플래그를 <TT>j2se</TT> 요소의 <CODE>java-vm-args</CODE> 속성으로 설정할 수 있습니다 (<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/syntax.html#resources">개발자 가이드</A>  를 참조). 모든 설정을 가능하게 하면(자), 시큐리티가 위협해질 뿐만 아니라, 플랫폼간이나 구현간의 이식성이 제한될 가능성이 있습니다. j2se 요소의 initial-heap-size 와 max-heap-size 의 각 속성을 사용하면(자), 초기 heap 사이즈와 최대 heap 사이즈를 설정할 수 있습니다.  예를 들어, 다음과 같이 됩니다.  
+</P>
+<P>&lt;j2se version=&quot;...&quot; max-heap-size=&quot;100M&quot;/&gt;</P>
+<P><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="204"></A> <B>서버의 타임 스탬프에 의존하고 싶지는 않습니다. 버젼화 된 JAR 를 지정하기에는  어떻게 하면 좋습니까.  또, JAR 의 증분 갱신을 입수하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>Java Web Start 에서는, 버젼화 된 JAR 와 증분 갱신을 지원하고 있습니다. 갱신을 이용할 수 있을지 어떨지를 조사하는 경우는, 타임 스탬프 정보에 의지하는 것이 아니라, 필요한 JAR 파일의 정확한 버젼을 지정할 수 있습니다. 또, 버젼 ID 를 사용하면(자), 어느 버젼으로부터 다른 버젼에 증분 갱신을 제공할 수 있습니다. 자세한 것은,<A HREF="http://jcp.org/en/jsr/detail?id=56">JNLP 스펙 </a>또는<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">개발자 가이드</a>를 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="205"></A> <B>JAR 파일은 어플리케이션간에 공유됩니까 ? </B>
+</P>
+<P>JNLP 클라이언트 (Java Web Start 등)가 다운로드하는 각 JAR 파일은, URL 에 의해 일의에 식별됩니다. 2 개의 JNLP 파일이 같은 URL 를 사용하는 경우, 자원은 1 번만 다운로드되어 공유됩니다. 이것은, Web 브라우저로 사용되는 캐쉬 구현과 닮아 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="206"></A> <B>독자적인 스플래쉬 화면을 제공하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>최초의 스플래쉬 화면은, Java 의 로드안에 Java Web Start 가 준비할 필요가 있습니다. 그 후의 액세스에서는, 사용자가 다음의 태그를 사용해 스플래쉬 화면에 사용하는 이미지 파일을 JNLP 파일로 지정할 수 있습니다. </P>
+<PRE STYLE="margin-bottom: 0.5cm">&lt;icon href=&quot;mysplash.jpg&quot; kind=&quot;splash&quot;/&gt; </pre><P>
+여기서,<CODE>mysplash.jpg</CODE> 는 사용자의 스플래쉬 화면의 이미지 파일입니다. &nbsp;최초로 어플리케이션이 실행될 때는, 표준의 스플래쉬 화면이 사용됩니다. 그 후는, 지정한 이미지가 사용됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="207"></A> <B>로컬 시스템으로 어플리케이션 상태를 보존하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>샌드 박스내에서 실행되는 어플리케이션은,<TT>PersistenceService</TT> API 를 사용해 상태를 포함할 수 있습니다. 이 API 는, HTML 페이지의 cookie 를 닮아 있습니다. 따라서, 이것은 클라이언트 컴퓨터로 지속적인 정보를 포함하는 안전한 방법입니다. &nbsp;자세한 것은, 다음을 참조해 주세요.  
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://jcp.org/en/jsr/detail?id=56">JNLP 스펙</A>  
+	</P>
+	<LI><P><A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">Java Web Start 개발자 가이드</A>  
+	</P>
+</UL>
+<P><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="208"></A> <B>나의 어플리케이션에는 특정의 버젼의 JRE 가 필요합니다. 이 JNLP 파일을 지정하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>태그 &lt;j2se version=&quot;versionNum&quot;&gt; 는, 플랫폼의 버젼을 나타냅니다. 여기서, versionNum 는 1.2, 1.3, 1.4, 또는 1.5 입니다. </P>
+<P>특정의 제품 버젼을 요구하려면 , href 속성에 벤더의 URL 를 짜넣습니다. Sun 의 JRE 의 경우, URL 는 <A HREF="http://java.sun.com/products/autodl/j2se">http://java.sun.com/products/autodl/j2se</A>  가 됩니다.  예를 들어, 다음의 J2SE 태그는 Sun 1.3. 1 의 구현을 요구하고 있습니다.   
+</P>
+<pre>&lt;j2se version=&quot;1. 3.1*&quot; href=&quot;<A HREF="http://java.sun.com/products/autodl/j2se">http://java.sun.com/products/autodl/j2se</A> &quot;/&gt;
+ </pre><P>
+Java 컨트롤 패널의 [Java] 탭에, 인스톨 되고 있는 JRE 의 모든 버젼이 표시됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="209"></A> <B>Manifest 파일의 Class-Path 를 신뢰할 수 있습니까 ? </B> 
+</P>
+<P>Java Web Start 에서는, Manifest 파일의 Class-Path 엔트리를 지원하고 있습니다. Class-Path 속성은 완전하게 파일 중심인데 대해, Java Web Start 와 JNLP 는 Web 중심 (URL 베이스)입니다. 이 때문에, 2 개의 모델을 1 개로 정리하는 것은 간단하지는 않습니다.  
+</P>
+<P>Class-Path 엔트리에 의지하는 것이 아니라, JNLP 파일에 포함되는 복수의 JAR 파일의 일람을 표시할 수 있습니다.  다음에 예를 나타냅니다.  
+</P>
+<pre>&lt;resources&gt;
+ &lt;jar href=&quot;A.jar&quot;/&gt;
+ &lt;jar href=&quot;B.jar&quot;/&gt;
+&lt;/resources&gt;</pre><P>
+JNLP 파일에서는,<TT>&lt;extension... &gt;</TT> 요소를 사용해, 1조의 JAR 파일과의 의존관계(dependencies)를 다른 JNLP 파일로 나눌 수가 있습니다. 이 때문에, Class-Path 엔트리를 사용했을 경우와 같게 재사용하기 쉽고, 보수도 간단하게 실시할 수 있습니다. 이 기능에 대해서는, JNLP 의 스펙에 설명되고 있습니다.  
+</P>
+<P>JNLP 는, 애플릿과 같게, Just-in-Time 다운로드 기구도 구현합니다. JNLP 파일내의 자원 마다, 어느 부분의 다운로드를 곧바로 실시하는지, 나중에 실시하는지를 지정할 수 있습니다. &nbsp;곧바로 로드하는 자원은 어플리케이션이 기동되기 전에 로드 되어 나중에 로드하는 자원은 당분간 지나고 나서 로드 됩니다. &nbsp;디폴트 설정에서는 어플리케이션이 기동되기 전에 로드 됩니다. 디폴트에서는, 곧바로 다운로드됩니다.  게다가 스펙에는, 어느 자원을 이용할 수 있을까를 프로그램에 의해 Java Web Start 에 문의해 이용할 수 있는 자원을 다운로드하도록(듯이) 요구하기 위한 API 도 포함되어 있습니다. 따라서, 다운로드/네트워크 대응의 어플리케이션을 작성할 수 있습니다. </P>
+<P>자세한 것은,<A HREF="http://jcp.org/en/jsr/detail?id=56">「JNLP 스펙」</a>을 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="210"></A> <B>어플리케이션이 native code에 의존하고 있는지, 그것을 사용하고 있는 경우에서도 Java Web Start 를 사용할 수 있습니까 ? </B> 
+</P>
+<P>Java Web Start 를 사용해, DLL 나 SO 등의 native code에 의존하는 Java 테크놀러지 베이스의 어플리케이션을 배치할 수 있습니다. 필요한 네이티브 라이브러리를 지정하려면 ,<TT>&lt;nativelib ...&gt;</TT> 요소를 사용합니다. 자세한 것은,<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">개발자 가이드</a>를 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="211"></A> <B>Class.forName 와 ClassLoader.getSystemClassLoader 를 사용해 어플리케이션 내부에 자원을 로드하기에는  어떻게 하면 좋습니까 ? </B>
+</P>
+<P>Java Web Start 에서는, 사용자 레벨의 클래스 로더를 사용해, JNLP 파일로 지정된 모든 어플리케이션 자원을 로드합니다. 이 클래스 로더에 의해, JNLP 스펙으로 정의된 시큐리티 모델과 다운로드 모델이 구현됩니다. 이것은, AppletViewer 나 Java Plug-In 의 동작과 서로 다릅니다.  
+</P>
+<P>다만, 이 클래스 로더에게는,<TT>Class.forName</TT> 가 JNLP 파일에 정의되고 있는 자원을 검색하지 않는다고 하는 유감인 부작용이 있습니다. 시스템 클래스 로더 (<TT>ClassLoader.getSystemClassLoader</TT>)를 사용해 자원이나 클래스를 검색하는 경우도 같습니다.  
+</P>
+<P>Java Web Start 로 어플리케이션 자원을 찾아내려면 , 어플리케이션을 로드한 클래스 로더를 사용합니다.  예를 들어, 어플리케이션의 메인 thread내에서 다음의 메소드를 호출합니다.  
+</P>
+<P><TT>this.getClass(). getClassLoader();</TT></P>
+<P>다음의 메소드도 사용할 수 있습니다. </P>
+<P><TT>Thread.getCurrent(). getContextClassLoader();</TT><BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="212"></A> <B>커멘드행으로부터 Java Web Start 를 기동하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>Java Web Start 는, 다음과 같이 커멘드행으로부터 기동할 수 있습니다. </P>
+<PRE STYLE="margin-bottom: 0.5cm">javaws [options] <I>your-app-JNLP-URL</I></pre><P>
+여기서, your-app-JNLP-URL 는 어플리케이션의 JNLP 파일의 위치입니다. &nbsp;예를 나타냅니다.  
+</P>
+<PRE STYLE="margin-bottom: 0.5cm">javaws http://java.sun.com/products/demos/swingset2.jnlp </pre><P>
+커멘드행의 구문의 상세한 것에 대하여는,<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">개발자 가이드</a>를 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="213"></A> <B>다른 증명서에 의해 서명된 복수의 JAR 파일을 사용하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>JNLP 1.0 스펙에서는, 1 개의 JNLP 파일로 사용되는 JAR 파일은 모두 같은 증명서로 서명될 필요가 있습니다. 이 제한에 의해, 사용자는 같은 소스로부터 복수의 증명서를 받을 필요가 없어져, 또 Java Web Start 에서는 사용자가 어플리케이션에 사용된 모든 증명서를 받았는지의 여부를 확인할 수 있습니다.  
+</P>
+<P>다만, Java Web Start 에서는, 컴퍼넌트 확장 기능 기구와 복수의 JNLP 파일을 사용하는 것으로써, 다른 증명서로 서명된 복수의 JAR 파일을 사용할 수 있습니다. &nbsp;그 경우에 필요한 것은, JAR 파일에 다른 패키지의 코드를 포함하는 것 뿐입니다. &nbsp;다음의 예를 참조해 주세요.  
+</P>
+<pre>&lt;jar href=&quot;myjar1.jar&quot;/&gt;
+&lt;jar href=&quot;jh.jar&quot;/&gt; </pre><P>
+다음과 같이 지정합니다.  
+</P>
+<pre>&lt;jar href=&quot;myjar1.jar&quot;/&gt;
+&lt;extension name=&quot;Java Help&quot; href=&quot;help.jnlp&quot;/&gt; </pre><P>
+다음에, 이하의 내용을 포함한 <TT>help.jnlp</TT> 파일을 추가합니다.  
+</P>
+<pre>&lt;? xml version=&quot;1. 0&quot; encoding=&quot;utf-8&quot;? &gt;
+ &lt;jnlp spec=&quot;1. 0+&quot;
+codebase=&quot;http://ws503&quot; href=&quot;Help.jnlp&quot;&gt;
+ &lt;information&gt;
+&lt;title&gt;JavaHelp&lt;/title&gt;
+&lt;vendor&gt;Sun Microsystems, Inc. &lt;/vendor&gt;
+ &lt;/information&gt;
+&lt;resources&gt;
+&lt;jar href=&quot;jh.jar&quot;/&gt;
+&lt;/resources&gt;
+ &lt;component-desc/&gt;
+&lt;/jnlp&gt; </pre><P>
+<A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="214"></A> <B>Java Web Start 가 인스톨 되고 있는지 어떤지를 조사하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>Java Web Start 가 인스톨 되고 있는지 어떤지를 조사하는 경우는, 간단한 JavaScript 또는 VBScript 를 작성할 수 있습니다. 자세한 것은,<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/contents.html">개발자 가이드</a>를 참조해 주세요. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="215"></A> <B>왜 브라우저에 JNLP 파일이 plaintext로서 표시됩니까 ? </B></P>
+<P>이것은, 대부분의 경우, Web 서버가 JNLP 파일의 적절한 MIME 타입을 인식하고 있지 않기 위해(때문에) 발생합니다. Java Web Start 에서는, Web 서버에 1 개만 변경을 더할 필요가 있습니다.  즉, 파일 확장자(extension) (일반적으로은 jnlp)와 MIME 타입 <TT>application/x-java-jnlp-file</TT> 와의 관련짓고를 작성할 필요가 있습니다. 이 때문에의 순서는, 사용하고 있는 Web 서버에 따라서 다릅니다.  
+</P>
+<P>게다가 기업이 프록시 서버-를 사용하고 있는 경우는, 반드시 JNLP 파일의 갱신판이 돌려주어지도록(듯이) 합니다.  이 때문에는, 프록시가 그 캐쉬를 갱신하는 등, Web 서버상의 자원의 타임 스탬프를 갱신합니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="216"></A> <B>왜 Java Web Start 는 항상 JAR 파일을 IIS 서버로부터 재로드합니까 ? </B> 
+</P>
+<P>IIS 서버상의 파일의 타임 스탬프가 미래를 가리키고 있는 경우, IIS 는 현재의 시각을 최종 갱신 시각으로서 돌려줍니다. 이것에 의해, 타임 스탬프가 항상 새로워지므로, Java Web Start 는 JAR 를 재로드합니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="217"></A> <B>JnlpDownloadServlet 로 Pack200 압축을 사용할 수 있습니까 ?  </B>
+</P>
+<P><SPAN STYLE="font-weight: medium">네. JDK 의 샘플용의 디렉토리에서 배포된 JnlpDownloadServlet 는 Pack200 를 지원하게 되었습니다. yourfile.jar 를 </SPAN>yourfile.jar.pack.gz 와 함께 배치했을 경우는, 클라이언트가 Java Web Start 1.5. 0 이상을 실행하고 있을 때 압축된 파일이 다운로드됩니다. <B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="218"></A> <B>어플리케이션의 인스턴스를 1 개만 확실히 실행하는 최선의 방법은 무엇입니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium">어플리케이션이 기동하면(자), 곧바로 SingleInstanceService 를 사용해 유일한 인스턴스 (singleton)로서 등록합니다. 유일한 인스턴스로서 등록하기 전에 어플리케이션을 재차 호출하면(자), 다른 Java VM 가 기동합니다.   </SPAN>
+</P>
+<P><SPAN STYLE="font-weight: medium">프로그램을 종료하기 전에 반드시 등록을 해제해 주세요. </SPAN><B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="219"></A> <B>JNLP 파일내의 프로퍼티은 언제 설정됩니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium">일반적으로, JNLP 파일내의 프로퍼티은, 그 JNLP 파일에 나타나고 있는 최초의 자원이 로드 될 때까지 설정되지 않습니다. 이것에 의해, 프로퍼티은 몇개의 코드가 실행되기 전에 반드시 설정됩니다만, 프로퍼티안에는 다른 패키지가 로드 되기 전으로 설정할 필요가 있는 것도 있습니다. 일부의 프로퍼티은 Java Web Start 에 의해 「안전」이라고 보여 JNLP 메인 파일내에서 발견되면(자), 호출측의 VM 에 인수로서 건네받습니다 (-Dname=value) . </SPAN></P>
+<P><SPAN STYLE="font-weight: medium">이 버젼의 「안전한」프로퍼티의 일람에 대해서는,<A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/syntax.html">개발자 가이드</A> </SPAN>를 참조해 주세요. <B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="220"></A> <B>다운로드된 JNLP 파일에 대해서 파일이 발견되지 않는다고 하는 메세지가 표시되는 원인은 무엇입니까 ? </B></P>
+<P>JNLP 파일을 클릭하면(자), Internet Explorer 에 의해 그 파일이 다운로드되어 Java Web Start 가 기동합니다만, 다음의 메세지가 표시됩니다. &ldquo;Could not load file/URL specified:C:\Documents and Settings\...\application[1]. jnlp&rdquo;. </P>
+<P><SPAN STYLE="font-weight: medium">이 문제는, Internet Explorer 에서만 발생합니다. 이 문제는 캐쉬가 한 잔의 경우나 IE 로 캐쉬를 오프로 했을 경우에 발생하는 일이 있습니다만, 일반적으로은 Web 서버나 프록시 서버-로부터 캐쉬 금지 (no-cache) 지시가 나왔을 경우에 발생합니다. IE 는 이 지시를 받아 JNLP 파일을 디스크에 기입하지 않기 때문에, Java Web Start 는 파일을 찾아낼 수가 없습니다. 이 문제는, Tomcat 베이스의 서버를 업그레이드 할 경우에 빈번하게 발생합니다. 이후의 버젼에서는, web.xml 의 </SPAN>시큐리티 제약의 범위내에 있는 자원에 대해서, 디폴트로 캐쉬 금지 (no-cache) 지시가 설정됩니다. 관련하는 URI 가 web.xml 의 시큐리티 제약을 받지 않게 해 주세요. </A> </SPAN><B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+
+</P>
+<P><A NAME="221"></A> <B>다른 목적으로 서명된 서명 첨부 jar (JCE 확장 기능등)를 사용하기에는  어떻게 하면 좋습니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium">Java Web Start 1.5. 0 이후, jar 에의 서명을 몇배에도 늘려, 코드 서명 증명서를 다른 기존의 증명서 체인에 추가할 수 있습니다. 이전의 버젼에서는, jar 를 완전한 액세스권 (all-permissions)을 가지지 않는 컴퍼넌트 확장 기능으로서 실행하는지, 코드 서명 증명서를 추가하기 전에 기존의 증명서를 삭제할 필요가 있었습니다(많은 경우, 그 패키지는 조작 불능이 되었습니다). </SPAN><B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="222"></A> <B>왜 Gnome 를 채용한 일부의 Linux 플랫폼에서는 관련짓고 기능을 사용할 수 없습니까 ? </B></P>
+<P>관련짓고 기능에는, 특히 libgnomevsf-2.so 가 필요합니다. 이 라이브러리가 없는 경우, 관련짓고는 지원되지 않습니다. <B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="223"></A> <B>JNLP 의 MIME 타입을 전송하도록(듯이) 서버를 설정하기에는  어떻게 하면 좋습니까 ? </B></P>
+<P>MIME 타입을 추가하는 방법은, Web 서버 마다 다릅니다. 예를 들어, Apache Web 서버의 경우,<TT>. mime.types</TT> 설정 파일에 다음의 행을 추가할 필요가 있습니다.  
+</P>
+<P><TT>application/x-java-jnlp-file JNLP</TT> 
+</P>
+<P>사용의 Web 서버의 상세한 것에 대하여는, 부속의 메뉴얼을 참조해 주세요. <B><BR></B><A HREF="#top"><FONT SIZE=2><B><BR></B><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="224"></A> <B>JnlpDownloadServlet 를 사용하도록(듯이) 서버를 설정하기에는  어떻게 하면 좋습니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium"></SPAN><A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/downloadservletguide.html#configuration"><SPAN STYLE="font-weight: medium">개발자 가이드</SPAN></A> <SPAN STYLE="font-weight: medium">의 서브 렛의 설정 방법법에 관한 마디를 참조해 주세요. 어플리케이션을 Web 어카이브(archive)에 패키지화할 필요는 없습니다. </SPAN><B><BR></B><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="225"></A> <B>어플리케이션을 일의에 식별하려면  어떻게 합니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium">어플리케이션은 일반적으로 그 href (그 JNLP 파일에의 URL)에 의해 식별됩니다. JNLP 파일에의 href 가 없는 경우, 어플리케이션은 그 jar 메인 파일에의 href 에 의해 식별됩니다. 복수의 어플리케이션이 같은 jar 메인 파일을 공유하고 있는 경우는, 그러한 어플리케이션에 href 를 1 개만 지정할 필요가 있습니다.  그렇게 하지 않으면 그것들은 같은 어플리케이션으로 간주해집니다. </SPAN></P>
+<P><SPAN STYLE="font-weight: medium">버젼 1.5. 0 이상에서는, Java 어플리케이션 캐쉬 viewer에 모든 어플리케이션 (href 가 지정되어 있지 않은 어플리케이션도 포함한다)이 표시됩니다. 이 viewer에서는, href 가 지정되고 있는 어플리케이션만을 온라인으로 기동할 수 있습니다. href 가 지정되어 있지 않은 어플리케이션은, JNLP 파일의 허가가 있으면 (JNLP 파일에 &lt;offline-allowed&gt; 가 지정되고 있으면), 오프 라인으로 기동할 수 있습니다. </SPAN></P>
+<P><SPAN STYLE="font-weight: medium">이전의 버젼에서는, 어플리케이션 매니저에게 href 가 지정되고 있는 어플리케이션만이 표시됩니다. </SPAN></P>
+<P><SPAN STYLE="font-weight: medium">쇼트 컷을 작성하는 경우도 같습니다. 1.5. 0 에서는, href 가 지정되고 있는 경우에게만 온라인으로 기동하는 쇼트 컷을 작성할 수 있어 &lt;offline-allowed&gt; 가 지정되고 있는 경우에게만 오프 라인의 쇼트 컷을 작성할 수 있습니다. 1.4. 2 에서는, href 가 지정되고 있는 어플리케이션의 쇼트 컷만을 작성할 수 있습니다. <BR></SPAN><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="226"></A> <B>JNLP 어플리케이션에 관련짓는 복수의 파일 확장자(extension)나 MIME 타입은 어떻게 작성합니까. </B></P>
+<P><SPAN STYLE="font-weight: medium">JNLP 어플리케이션에 관련짓는 복수의 파일 확장자(extension)나 MIME 타입을 작성하는 경우, 복수의 관련 태그를 사용하는 것을 추천합니다. 또, 파일 확장자(extension)와 MIME 타입의 양쪽 모두에 각 관련 태그를 지정할 필요가 있습니다. 예를 나타냅니다. </SPAN></P>
+<pre>
+    &lt;association extensions="aaa" mime-type="x-application/aaa"/&gt;
+    &lt;association extensions="bbb" mime-type="x-application/bbb"/&gt;
+</pre><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+
+<P><A NAME="227"></A> <B>native code로부터 FindClass()를 호출하면(자) 실패하는 일이 있는 것은 왜입니까. </B></P>
+<P><SPAN STYLE="font-weight: medium">EventDispatch Thread 로 불려 가는 jni 코드가 findClass()를 호출하는 경우, 실패할 가능성이 있습니다. 자세한 것은,<A HREF= "http://java.sun.com/javase/6/docs/technotes/guides/jni/spec/functions.html#wp16027">JNI 의 문서</A> </SPAN>를 참조해 주세요. </P>
+
+
+</div>
+<!-- End Technical QAs section -->
+
+<!-- --------------------------------------------------------------- -->
+
+<!-- Begin Security QAs section -->
+<H2>시큐리티에 관한 질문</H2>
+
+<div style="margin-left: 2em;">
+
+<P><A NAME="301"></A> <B>Java Web Start 의 시큐리티 보호는 어떻게 행해지고 있습니까 ? </B> 
+</P>
+<P>시큐리티는, Java Web Start 를 설계하는데 있어서 고려해야 할 중요한 포인트의 1 개입니다. &nbsp;Java Web Start 에서는, 모든 어플리케이션이 디폴트로 안전한 「샌드 박스」로 기동됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+<P><A NAME="302"></A> <B>안전한 샌드 박스 (sandbox)란 무엇입니까 ? </B> 
+</P>
+<P>안전한 샌드 박스에 있는 어플리케이션은, 디스크나 네트워크등의 로컬의 컴퓨팅 자원에의 액세스가 제한됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="303"></A> <B>Java Web Start 의 안전한 샌드 박스는 애플릿의 샌드 박스에 비해 어느 정도 유연성이 높습니까 ? </B> 
+</P>
+<P>애플릿의 샌드 박스와 같게, 모든 어플리케이션은 디폴트에서는 샌드 박스 환경에서 실행됩니다. 다만, Java Web Start 에는 안전한 API 가 준비되어 있어 어플리케이션은 그것을 사용해 사용자의 제어하에 있는 로컬 디스크로부터 파일을 임포트 하거나 export 하거나 할 수 있습니다. 이 API 에는, 파일의 보존이나 파일의 오픈이라고 하는 조작용의 다이알로그 박스가 있습니다만, 그러한 다이알로그 박스는 실제로는 어플리케이션 그 자체는 아니고, Java Web Start 에 의해 draw 됩니다.  
+</P>
+<P>이 샌드 박스의 디자인은, HTML 를 사용해 작성할 수 있는 것과 닮아 있습니다. HTML 형식의 파일 입력 필드를 사용하면(자), 로컬 디스크로부터 파일을 꺼내, 이름 (패스를 제외하다)과 컨텐츠를 Web 서버에 송신할 수 있습니다. &nbsp;같이 대부분의 브라우저에서는 「이름을 붙여 보존 (Save as...)」옵션을 지원하고 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="304"></A> <B>어플리케이션이 시스템에 대한 무제한의 액세스권을 취득할 수 있도록(듯이) 하기에는  어떻게 하면 좋습니까 ? </B> 
+</P>
+<P>무제한의 시스템 액세스를 요구하는 어플리케이션에는, 디지털 서명이 필요합니다. 그러한 어플리케이션을 최초로 기동하면(자), 시큐리티용의 다이알로그 박스가 표시됩니다. Java Web Start 에서는, 어플리케이션을 실행하기 전에, 디지털 증명서에 동의 하도록(듯이) 사용자에게 요구합니다. 사용자가 증명서에 동의 하면(자), 그 후의 호출에서는 시큐리티용의 다이알로그 박스는 표시되지 않게 됩니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="305"></A> <B>JAR 파일의 암호화된 다운로드는 지원되고 있습니까 ? </B> 
+</P>
+<P>서버로부터 클라이언트에 전송 되는 데이터의 암호화를 지원하는 것은 매우 중요합니다. 이것은, 향후가 과제로 해 중요한 포인트의 1 개이며, Java Web Start 로 기동되는 어플리케이션으로 HTTPS 라이브러리를 확실히 사용할 수 있도록(듯이) 할 예정입니다. HTTPS 는 옵션 패키지로 지원되는 일이 있어, 그 경우는 어플리케이션이 의존하고 있는 것을 지정할 필요가 있습니다.  
+</P>
+<P>서버로부터 클라이언트에 전송 되는 JAR 파일의 암호화는 필요없을지도 모릅니다. 왜냐하면, 클래스 파일이 회선상에서 암호화되고 있는 경우에서도, 클라이언트측에서 복호화해 디스크에 포함할 필요가 있기 (위해)때문에, JVM 는 그러한 클래스를 로드할 수 있기 때문입니다. 따라서, 크래커가 JAR 파일의 암호화를 빠져나가는 것은 매우 용이한 것일 가능성이 있습니다.  
+</P>
+<P>그 대신에, JAR 파일에 있어 중요한 (일)것은, 파일을 서명 첨부로 해, 상정되고 있는 벤더로부터 어플리케이션이 확실히 입수되도록(듯이) 하는 것입니다. 이것은 벌써 지원되고 있습니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  
+</P>
+<P><A NAME="306"></A> <B>Java Web Start 로 NTLM 인증을 사용할 수 있습니까 ? </B></P>
+<P>NTLM 의 지원는, Windows 플랫폼에서만 Java 1.4. 2 에 추가되었습니다. NTLM 인증은, Java Web Start  1.4. 2 이상으로 사용할 수 있습니다. Java Web Start 1.4. 2 로 NTLM 를 사용하고 있을 때, JAuthenticator 다이얼로그에 잘못한 텍스트가 표시되는 일이 있습니다만, 이것은 Java Web Start 1.5. 0 으로 수정되었습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="307"></A> <B>Java Web Start 로 HTTPS 프로토콜을 사용할 수 있습니까 ? </B></P>
+<P><SPAN STYLE="font-weight: medium">HTTPS 의 지원는, 버젼 1.4 의 Java 에 추가되었습니다. 버젼 1.2 이상으로 HTTPS 프로토콜을 Java Web Start 의 자원에 사용할 수 있습니다만, 몇개의 문제가 발생하는 일이 있습니다.  Java Web Start 1.4. 2 에서는, 이러한 문제가 해결되고 있으므로, HTTPS 프로토콜을 사용하는 경우는, Java Web Start 1.4. 2 이상을 사용하는 것을 추천합니다. </SPAN><BR><A HREF="#top"><FONT SIZE=2>
+</P>
+<P><A NAME="308"></A> <B>시큐리티 툴에 관한 상세 정보를 얻기 위한 온라인 자원은 있습니까 ? </B> 
+</P>
+<P>다음의 사이트를 참조해 주세요. </P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://developer.netscape.com/software/signedobj/jarpack.html">Netscape 의 객체 서명 툴</A>  
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://java.sun.com/docs/books/tutorial/jar/sign/signing.html">Signing JAR Files</A>  
+	</P>
+	<LI><P><A HREF="http://java.sun.com/j2se/1.5.0/docs/guide/deployment/deployment-guide/security.html">「Java Deployment Guide」의 시큐리티의 장</A>  
+	</P>
+</UL>
+<P><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> </FONT></A>  
+</P>
+
+</div>
+<!-- End Security QAs section -->
+
+<!-- --------------------------------------------------------------- -->
+
+<!-- Begin Known Bugs QAs section -->
+<H2>기존의 버그</H2>
+
+<div style="margin-left: 2em;">
+
+<P><A NAME="401"></A> <B>4825415: 1.4. 2 에서는 Java Web Start 의 데스크탑 통합과 시큐리티의 다이얼로그가 표시되지 않는다</B></P>
+<P STYLE="font-weight: medium">버젼 1.4. 2 마셔.  
+</P>
+<P STYLE="font-weight: medium">이 문제는, 데스크탑 통합 다이얼로그가, 어플리케이션에 의해 표시된 모덜 다이얼로그와 포커스를 둘러싸고 경합 하는지, 다른 어플리케이션 윈도우의 배후에서 소실했을 경우에 발생합니다.  
+</P>
+<P><SPAN STYLE="font-weight: medium">이 문제는, 버젼 1.4. 2_06 및 5.0 으로 수정되었습니다. </SPAN><BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="402"></A> <B>4491398: DLL 자원의 의존에 관한 문제</B></P>
+<P STYLE="font-weight: medium">모든 버젼.  
+</P>
+<P>모든 버젼.  <SPAN STYLE="font-weight: medium">복수의 네이티브 라이브러리가 있는 경우는, System.LoadLibrary 로 각 라이브러리를 로드하고 나서, 그것을 참조하는 다른 라이브러리를 로드할 필요가 있습니다. 라이브러리의 의존관계(dependencies)가 순환하고 있는 경우는, 이 조작이 불가능하게 되는 일이 있습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="403"></A> <B>5008460: 패스에 공백이 포함되어 TraceSecurity 가 온이 되어 있는 경우에 Java Web Start 가 실패한다</B></P>
+<P>버젼 1.2 및 1.4. 2.  
+</P>
+<P>TraceSecurity 가 온이 되어 있는 경우, 캐쉬 디렉토리에의 패스에 공백이 포함되어 있으면(자), Windows 플랫폼에서 예외가 발생하는 일이 있습니다. 이 문제가 발생했을 경우는, TraceSecurity 디버그 스윗치 (&lt;property name=&rdquo;javaws.debug. 0&rdquo; name=&rdquo;-TraceSecurity&rdquo; /&gt;)를 오프로 합니다. </P>
+<P>이 문제는, 버젼 5.0 으로 수정되었습니다.  <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="404"></A> <B>5074087: Windows 로 related-content 가 title 를 붙이지 않고 로 지정되었을 경우, 어플리케이션을 기동할 수 없다</B></P>
+<P STYLE="font-weight: medium">버젼 5.0. </P>
+<P>버젼 5.0.  <SPAN STYLE="font-weight: medium">JNLP 파일의 스펙에서는, title 서브 요소를 붙이지 말고 related-content 요소를 지정할 수가 있습니다. 다만, Windows 플랫폼에서 이 조작을 실시했을 경우, 관련 컨텐츠에의 쇼트 컷이 인스톨 되면(자), 예외가 throw 되어, 프로그램을 실행할 수 없습니다. 이 문제를 해결하려면 , related-content 요소의 title 를 반드시 지정하도록(듯이) 합니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="405"></A> <B>5074524: 서명이 없는 확장 기능의 최초의 jar 는 곧바로 다운로드해야 한다</B></P>
+<P STYLE="font-weight: medium">모든 버젼. </P>
+<P>컴퍼넌트 확장 기능을 사용하는 경우는, 거기에 포함되는 최초의 jar 를, 지연의 마크가 뒤따르고 있어도, 곧바로 다운로드할 필요가 있습니다.  <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="406"></A> <B>5047548: 패키지가 포함되는 부분의 지연 다운로드가 기능하지 않는다</B></P>
+<P STYLE="font-weight: medium">모든 버젼. </P>
+<P><SPAN STYLE="font-weight: medium">파츠 및 패키지 기구를 사용해, 어느 jar 파일에 어느 패키지를 포함하는지를 선언했을 경우는, 선언된 어느 패키지에도 존재하지 않는 자원에 액세스 했을 때에, 선언된 지연 jar 의 다운로드를 스킵 할 수 없으면 안됩니다.  이 조작은 기능하지 않습니다. 또, Jar 인덱스가 구현되어 있지 않은 경우는, 모든 jar 가 다운로드되지 않게 하는 방법은 없습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P STYLE="font-weight: medium"><A NAME="407"></A> <B>5074526: 어플리케이션이 서명 첨부의 경우에서도, ExtenededService 파일의 API 에 시큐리티용의 다이얼로그가 표시된다</B>. </P>
+<P STYLE="font-weight: medium">버젼 5.0. </P>
+<P>버젼 5.0.  <SPAN STYLE="font-weight: medium">FileOpen 서비스를 사용하고 있을 때는, 어플리케이션에 파일 액세스권이 없는 경우에게만 시큐리티용의 다이얼로그가 표시됩니다. 다만, 새로운 ExtendedService OpenFile 나 OpenFiles 메소드를 사용하는 경우는 이것이 들어맞지 않고, 시큐리티용의 다이얼로그가 아무래도 표시되어 버립니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="408"></A> <B>4925768: Gnome 에서는 시스템 레벨의 쇼트 컷이 지원되어 있지 않다</B></P>
+<P STYLE="font-weight: medium">버젼 5.0. </P>
+<P><SPAN STYLE="font-weight: medium">어플리케이션을 쇼트 컷 첨부로 시스템 캐쉬에 임포트 하는지, 캐쉬 viewer를 시스템 모드로 실행해 쇼트 컷을 작성하는 경우. 쇼트 컷은, 모든 사용자용으로 작성할 필요가 있습니다. Windows 에서는 이것을 실시할 수 있습니다만, Gnome 를 채용하고 있는 UNIX 에서는 실시할 수 없습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A>  </SPAN>
+</P>
+<P><A NAME="409"></A> <B>5072969: 기동 에러에 의해 Java Web Start 가 행업 한 것처럼 보인다. </B></P>
+<P STYLE="font-weight: medium">모든 버젼. </P>
+<P STYLE="font-weight: medium">모든 버젼.  Java Web Start 에 의해 예외나 다른 Throwable 이 캐치 되지 않는 경우. 메인의 run 메소드가 System.exit()를 호출하지 말고 종료한 가능성이 있습니다. 이것에 의해 어플리케이션이 행업 하고 있는 것처럼 보입니다 (경우에 따라서는, 진행 상황을 나타내지 않는 DownloadProgress 의 윈도우가 표시되는 일이 있습니다). </P>
+<P>1.4. 2 에서는, 어플리케이션 또는 Java Web Start 가 에러 (NoSuchMethodError 등)를 throw 했을 때에 이 문제가 발생하는 일이 있습니다. 파일에의 로깅을 온으로 해, &lt;property name=&rdquo;javaws.debug. 0&rdquo; value=&rdquo;+TraceIgnoredExceptions&rdquo; /&gt; 로 실행해 에러를 확인할 필요가 있습니다. </P>
+<P>5.0 에서는, 어플리케이션의 주요한 클래스내의 정적 코드가 에러 (NoSuchMethodError 등)를 throw 했을 경우에게만 이 문제가 발생합니다. <BR><A HREF="#top"><FONT SIZE=2>탑에 돌아온다</FONT></A> 
+</P>
+<P><A NAME="410"></A> <B>5074530: Java Web Start 가 올바른 JRE 를 선택하고 있지 않는 모든 버젼. </B></P>
+<P STYLE="font-weight: medium">모든 버젼. </P>
+<P STYLE="font-weight: medium">Java Web Start 에서는, JNLP 파일내에 j2se 요소의 버젼 속성의 요건을 채우고 있는 복수의 JRE 를 찾아냈을 경우는, 반드시 일치하는 최신의 버젼을 사용할 필요가 있습니다. </P>
+<P STYLE="font-weight: medium">1.4. 2 에서는 일반적으로, 최초로 발견된 일치하는 버젼을 사용합니다. </P>
+<P><SPAN STYLE="font-weight: medium">5.0 에서는 일반적으로, 최신의 버젼을 사용합니다만, 어느 특정의 환경아래에서는 이전의 버젼을 사용하는 일도 있습니다. <BR><A HREF="#top"><FONT SIZE=2> 탑에 돌아온다</FONT></A> 
+</P>
+
+</div>
+
+<P><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+</P>
+</BODY>
+</HTML>

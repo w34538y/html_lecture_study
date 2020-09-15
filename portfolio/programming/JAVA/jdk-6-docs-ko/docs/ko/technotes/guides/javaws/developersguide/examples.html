@@ -1,0 +1,454 @@
+<html>
+<head>
+<title>JNLP API 의 사용예 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../deployment/css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>JNLP API 의 사용예</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br>이 장에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#Introduction">처음에</a> </li>
+<li><a href="#BasicService"><code>BasicService</code> 서비스의 사용법</a> </li>
+<li><a href="#ClipboardService"><code>ClipboardService</code> 서비스의 사용법</a> </li>
+<li><a href="#DownloadService"><code>DownloadService</code> 서비스의 사용법</a> </li>
+<li><a href="#FileOpenService"><code>FileOpenService</code> 서비스의 사용법</a> </li>
+<li><a href="#FileSaveService"><code>FileSaveService</code> 서비스의 사용법</a> </li>
+<li><a href="#PrintService"><code>PrintService</code> 서비스의 사용법</a> </li>
+<li><a href="#PersistenceService"><code>PersistenceService</code> 서비스의 사용법</a> </li>
+<li><a href="#FileContents"><code>FileContents</code> 의 사용법</a> </li>
+<li><a href="#JNLPRandomAccessFile"><code>JNLPRandomAccessFile</code> 의 사용법</a> 
+<li><a href="#FileOpenService"><code>SingleInstanceService</code> 서비스의 사용법</a>  
+<li><a href="#FileOpenService"><code>ExtendedService</code> 서비스의 사용법</a>  
+  </li>
+</ul>
+<h3><a name="Introduction"></a>  	처음에</h3>
+<p>JNLP API 의 목적은, 표준의 Java(TM) Platform Standard Edition API 경유에서는 입수 불가능한 추가 정보를, 어플리케이션에 대해서 제공하는 것입니다. 다음에 드는 샘플 코드는, 서비스 <tt>BasicService</tt>,<tt>ClipboardService</tt>,<tt>DownloadService</tt>,<tt>FileOpenService</tt>,<tt>FileSaveService</tt>,<tt>PrintService</tt>, 및 <tt>PersistenceService</tt> 의 사용법을 나타낸 것입니다.  
+</p>
+<p>JNLP API 의 공개 클래스와 인터페이스는,<tt>jnlp.jar</tt> 파일내에 넣을 수 있고 있습니다. JNLP API 를 사용하고 있는 원시 파일을 컴파일 하려면 , 이 JAR 파일을 클래스 패스에 포함할 필요가 있습니다. 예를 들어, Windows 상에서는 다음과 같이 합니다.  </p>
+<p><tt>javac -classpath . ;jnlp.jar *. java</tt> </p>
+<p><tt>jnlp.jar</tt> 파일은, JNLP 개발자전용 팩에 포함되어 있습니다.  <br> &nbsp; </p>
+<h3> <a name="BasicService"></a> <code>BasicService</code> 서비스의 사용법</h3>
+<p><a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.BasicService</code></a>  서비스가 제공하는 일련의 메소드를 사용하면, 환경에 대한 문의나 대화를 실시할 수 있습니다.  이러한 메소드는,<tt>AppletContext</tt> 가 Java 애플릿에 대해서 제공하는 메소드를 닮아 있습니다.  </p>
+<p><tt>showURL</tt> 메소드는 JNLP API 를 사용해, 플랫폼상의 디폴트 브라우저에 대해, 지정된 URL 를 표시하도록 지시합니다. 이 메소드는, 요구가 성공했을 경우에는 true 를 돌려주어, 그렇지 않은 경우에는 false 를 돌려줍니다.  </p>
+<p><tt><b>import </b>javax.jnlp. *;</tt> <br> <tt>&nbsp;&nbsp; ...</tt> </p>
+<p><b><tt><font color="#FF0000">&nbsp;&nbsp; // Method to show a URL</font></tt></b> <br> <tt>&nbsp;&nbsp; boolean showURL(URL url) {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>try</b> {</tt> <br> <b><tt><font color="#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Lookup the javax.jnlp.BasicService object</font></tt></b> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");</tt> <br> <b><tt><font color="#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Invoke the showDocument method</font></tt></b> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>return </b>bs.showDocument(url);</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <b>catch</b>(UnavailableServiceException ue) {</tt> <br> <b><tt><font color="#FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Service is not supported</font></tt></b> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>return </b>false;</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</tt> <br> <tt>&nbsp;&nbsp;&nbsp; }</tt> </p>
+<h3> <a name="ClipboardService"></a> <code>ClipboardService</code> 서비스의 사용법</h3>
+<p><tt><a href="../../../../jre/api/javaws/jnlp/index.html">javax.jnlp.ClipboardService</a> </tt> 서비스가 제공하는 메소드를 사용하면, 시스템 전체의 공유 클립보드에 액세스 할 수 있습니다.  이 서비스는, 제한된 런타임내에서 동작중의 어플리케이션으로부터에서도 이용 가능합니다.  </p>
+<p>Java Web Start 는, 클립보드에 포함되고 있는 내용 (기밀 정보가 포함될 가능성도 있다)에의 액세스나, 그러한 내용의 덧쓰기를 신뢰할 수 없는 어플리케이션에 허가되면(자), 시큐리티상의 문제가 발생할 가능성이 있는 것을 사용자에게 경고합니다.  </p>
+<p><tt><b>import</b> javax.jnlp;</tt> <br> <tt>&nbsp;&nbsp;&nbsp; ...</tt> </p>
+<p><tt>&nbsp;&nbsp;&nbsp; <b>private</b> ClipboardService cs;</tt> </p>
+<p><tt>&nbsp;&nbsp;&nbsp; <b>try</b> {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cs = (ClipboardService) ServiceManager.lookup</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ("javax.jnlp.ClipboardService");</tt> <br> <tt>&nbsp;&nbsp;&nbsp; } <b>catch</b> (UnavailableServiceException e) {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cs = null;</tt> <br> <tt>&nbsp;&nbsp;&nbsp; }</tt> </p>
+<p><tt>&nbsp;&nbsp;&nbsp; <b>if</b> (cs ! = null) {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><font color="#FF0000">// set the system clipboard contents to a string selection</font></b></tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StringSelection ss = new StringSelection("Java Web Start! ");</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cs.setContents(ss);</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><font color="#FF0000">// get the contents of the system clipboard and print them</font></b></tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transferable tr = cs.getContents();</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b> (tr.isDataFlavorSupported(DataFlavor.stringFlavor)) {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>try</b> {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String s = (String) tr.getTransferData(DataFlavor.stringFlavor);</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println("Clipboard contents:" + s);</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <b>catch</b> (Exception e) {</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.printStackTrace();</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</tt> <br> <tt>&nbsp;&nbsp;&nbsp; }</tt> </p>
+<h3> <a name="DownloadService"></a> <code>DownloadService</code> 서비스의 사용법</h3>
+<p><a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.DownloadService</code></a>  서비스를 사용하면, 어플리케이션은 자신의 자원을 어떻게 캐쉬하는지를 제어할 수 있습니다.  </p>
+<p>어플리케이션은 이 서비스를 사용하는 것으로, 어느 자원이 캐쉬되고 있을까의 확인, 자원의 강제 캐쉬, 및 캐쉬로부터의 자원의 삭제를 실시할 수 있습니다.  </p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    DownloadService ds; 
+
+    <b>try</b> { 
+        ds = (DownloadService) ServiceManager.lookup("javax.jnlp.DownloadService"); 
+    } <b>catch</b> (UnavailableServiceException e) { 
+        ds = null; 
+    } 
+
+    <b>if</b> (ds ! = null) { 
+
+        <b>try</b> { 
+            <font color="#FF0000"><b>// determine if a particular resource is cached</b></font>
+            URL url = 
+                    new URL("http://java.sun.com/products/javawebstart/lib/draw.jar"); 
+            boolean cached = ds.isResourceCached(url, "1.0"); 
+            <font color="#FF0000"><b>// remove the resource from the cache </b></font>
+            <b>if</b> (cached) { 
+                ds.removeResource(url, "1.0"); 
+            } 
+            <font color="#FF0000"><b>// reload the resource into the cache </b></font>
+            DownloadServiceListener dsl = ds.getDefaultProgressWindow(); 
+            ds.loadResource(url, "1.0", dsl); 
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } <tt>
+</tt>
+</pre>
+<h3> <a name="FileOpenService" id="FileOpenService"></a> <code>FileOpenService</code> 서비스의 사용법</h3>
+<p><a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.FileOpenService</code></a>  서비스가 제공하는 메소드를 사용하면, 로컬 디스크로부터 파일을 임포트 할 수 있습니다.  이 서비스는, 제한된 런타임내에서 동작중의 어플리케이션으로부터에서도 이용 가능합니다.  </p>
+<p>이 인터페이스의 목적은, HTML 사용시에 Web 개발자에 대해서 제공되는 것과 같은 종류의 디스크 액세스 기능을, 신뢰할 수 없을 가능성이 있는 Web 배치 어플리케이션에 대해서 제공하는 것입니다. &nbsp; HTML 폼은, 파일 선택 다이얼로그에 의한 파일의 편입을 지원하고 있습니다.  
+</p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    FileOpenService fos; 
+
+    <b>try</b> { 
+        fos = (FileOpenService) ServiceManager.lookup("javax.jnlp.FileOpenService"); 
+    } <b>catch</b> (UnavailableServiceException e) { 
+        fos = null; 
+    } 
+
+    <b>if</b> (fos ! = null) { 
+        <b>try</b> { 
+            <font color="#FF0000"><b>// ask user to select a file through this service </b></font>
+            FileContents fc = fos.openFileDialog(null, null); 
+            <font color="#FF0000"><b>// ask user to select multiple files through this service </b></font>
+            FileContents[] fcs = fos.openMultiFileDialog(null, null); 
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } <tt>
+</tt>
+</pre>
+<h3> <a name="FileSaveService"></a> <code>FileSaveService</code> 서비스의 사용법</h3>
+<p><a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.FileSaveService</code></a>  서비스가 제공하는 메소드를 사용하면, 파일을 로컬 디스크에 export 할 수 있습니다.  이 서비스는, 제한된 런타임내에서 동작중의 어플리케이션으로부터에서도 이용 가능합니다.  </p>
+<p>이 인터페이스의 목적은, Web 브라우저가 표시중의 내용에 관해서 제공하는 것과 동레벨의 디스크 액세스 기능을, 신뢰할 수 없을 가능성이 있는 Web 배치 어플리케이션에 대해서 제공하는 것입니다. &nbsp; 대부분의 브라우저는, 별명 보존 다이얼로그를 사용자 인터페이스의 일부로서 제공하고 있습니다.  </p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    FileSaveService fss; 
+    FileOpenService fos; 
+
+    <b>try</b> { 
+        fos = (FileOpenService) ServiceManager.lookup("javax.jnlp.FileOpenService"); 
+        fss = (FileSaveService) ServiceManager.lookup 
+                                   ("javax.jnlp.FileSaveService"); 
+    } <b>catch</b> (UnavailableServiceException e) { 
+        fss = null; 
+        fos = null; 
+    } 
+
+    <b>if</b> (fss ! = null && fos ! = null) { 
+        <b>try</b> { 
+            <font color="#FF0000"><b>// get a file with FileOpenService </b></font>
+            FileContents fc = fos.openFileDialog(null, null); 
+            <font color="#FF0000"><b>// one way to save a file </b></font>
+            FileContents newfc = fss.saveFileDialog(null, null, 
+            fc.getInputStream(), "newFileName.txt"); 
+            <font color="#FF0000"><b>// another way to save a file </b></font>
+            FileContents newfc2 = fss.saveAsFileDialog(null, null, fc); 
+
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } <tt>
+</tt>
+</pre>
+<p><a href="#FileContents">「<code>FileContents</code> 의 사용법」</a>도 참조해 주세요.  </p>
+<h3> <a name="PrintService"></a> <code>PrintService</code> 서비스의 사용법</h3>
+<p><a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.PrintService</code></a>  서비스가 제공하는 메소드를 사용하면, 인쇄 기능에 액세스 할 수 있습니다.  이 서비스는, 제한된 런타임내에서 동작중의 어플리케이션으로부터에서도 이용 가능합니다.  </p>
+<p>어플리케이션은 이 서비스를 사용하는 것으로, 인쇄 작업을 발행할 수 있습니다. Java Web Start 는, 그 요구를 사용자에게 표시해, 사용자에 의해 승인되면(자), 그 요구를 프린터의 큐에 추가합니다. </p>
+<p>Java Web Start 5.0 에서는, 직접 Java Printing API 를 사용할 수 있게 되었습니다.  샌드 박스로 어플리케이션이 실행되고 있는 경우, 이 API 를 기동하면(자),<code>PrintPermission</code> 의 부여를 사용자에게 확인하는 시큐리티 다이얼로그가 표시됩니다. JNLP Printing API 를 사용할 필요는 없어졌습니다. 어느 JNLP 어플리케이션에서도, Java Printing API 에 풀 액세스 할 수 있습니다.
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    PrintService ps; 
+
+    <b>try</b> { 
+        ps = (PrintService) ServiceManager.lookup("javax.jnlp.PrintService"); 
+    } <b>catch</b> (UnavailableServiceException e) { 
+        ps = null; 
+    } 
+
+    <b>if</b> (ps ! = null) { 
+        <b>try</b> { 
+             
+            <font color="#FF0000"><b>// get the default PageFormat</b></font>
+            PageFormat pf = ps.getDefaultPage(); 
+
+            <font color="#FF0000"><b>// ask the user to customize the PageFormat</b></font>
+            PageFormat newPf = ps.showPageFormatDialog(pf); 
+
+            <font color="#FF0000"><b>// print the document with the PageFormat above</b></font>
+            ps.print(new DocToPrint()); 
+           
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } 
+
+    <font color="#FF0000"><b>// Code to construct the Printable Document</b></font>
+    <b>class</b> DocToPrint <b>implements</b> Printable {
+        <b>public</b> int print(Graphics g, PageFormat pageformat, int PageIndex){
+            <font color="#FF0000"><b>// code to generate what you want to print</b></font>   
+        }
+    }<tt>
+</tt>
+</pre>
+<h3> <a name="PersistenceService"></a> <code>PersistenceService</code>  서비스의 사용법</h3>
+<p>&nbsp;<a href="../../../../jre/api/javaws/jnlp/index.html"><code>javax.jnlp.PersistenceService</code></a>  서비스가 제공하는 메소드를 사용하면, 로컬의 클라이언트 시스템상에 데이터를 포함할 수 있습니다.  이 서비스는, 제한된 런타임내에서 동작중의 어플리케이션으로부터에서도 이용 가능합니다.  </p>
+<p>이 서비스의 설계는, cookie 기구가 HTML 베이스의 어플리케이션에 제공하는 서비스에 약간 닮았습니다. &nbsp;cookie 를 사용하면(자), 소량의 데이터를 로컬의 클라이언트 시스템에 보존할 수 있습니다. &nbsp;그 데이터는 브라우저에 의해 안전하게 관리되어 같은 URL 의 HTML 페이지를 참조하는 경우에게만 그 보존된 데이터가 사용됩니다.  </p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    PersistenceService ps; 
+    BasicService bs; 
+
+    <b>try</b> { 
+        ps = (PersistenceService) ServiceManager.lookup("javax.jnlp.PersistenceService"); 
+        bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService"); 
+    } <b>catch</b> (UnavailableServiceException e) { 
+        ps = null; 
+        bs = null; 
+    } 
+
+    <b>if</b> (ps ! = null && bs ! = null) { 
+
+        <b>try</b> { 
+            <font color="#FF0000"><b>// find all the muffins for our URL</b></font>
+            URL codebase = bs.getCodeBase(); 
+            String [] muffins = ps.getNames(url); 
+
+            <font color="#FF0000"><b>// get the attributes (tags) for each of these muffins.  
+            // update the server's copy of the data if any muffins 
+            // are dirty </b></font>
+            int [] tags = new int[muffins.length]; 
+            URL [] muffinURLs = new URL[muffins.length]; 
+            <b>for</b> (int i = 0; i < muffins.length; i++) { 
+                muffinURLs[i] = new URL(codebase.toString() + muffins[i]); 
+                tags[i] = ps.getTag(muffinURLs[i]); 
+                <font color="#FF0000"><b>// update the server if anything is tagged DIRTY </b></font>
+                <b>if</b> (tags[i] == PersistenceService.DIRTY) { 
+                    doUpdateServer(muffinURLs[i]); 
+                } 
+            } 
+
+            <font color="#FF0000"><b>// read in the contents of a muffin and then delete it </b></font>
+            FileContents fc = ps.get(muffinURLs[0]); 
+            long maxsize = fc.getMaxLength(); 
+            byte [] buf = new byte[fc.getLength()]; 
+            InputStream is = fc.getInputStream(); 
+            long pos = 0; 
+            <b>while</b>((pos = is.read(buf, pos, buf.length - pos)) > 0) { 
+                <font color="#FF0000"><b>// just loop </b></font>
+            } 
+            is.close(); 
+
+            ps.delete(muffinURLs[0]); 
+
+            <font color="#FF0000"><b>// re-create the muffin and repopulate its data </b></font>
+            ps.create(muffinURLs[0], maxsize); 
+            fc = ps.get(muffinURLs[0]); 
+            <font color="#FF0000"><b>// don't append </b></font>
+            OutputStream os = fc.getOutputStream(false); 
+            os.write(buf); 
+            os.close(); 
+
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } 
+
+   <b>void</b> doUpdateServer(URL url) { 
+        <font color="#FF0000"><b>// update the server's copy of the persistent data 
+        // represented by the given URL </b></font>
+        ... 
+        ps.setTag(url, PersistenceService.CACHED); 
+   } <tt>
+</tt>
+</pre>
+<h3> <a name="FileContents" id="FileContents"></a> <code>FileContents</code> 의 사용법</h3>
+<p><tt><a href="../../../../jre/api/javaws/jnlp/index.html">javax.jnlp.FileContents</a> </tt> 객체는, 파일의 이름과 내용을 캡슐화합니다. &nbsp;이 클래스의 객체는,<tt>FileOpenService</tt>,<tt>FileSaveService</tt>, 및 <tt>PersistenceService</tt> 에 의해 사용됩니다. 다음의 샘플 코드는,<tt>FileContents</tt> 의 인스턴스를 사용해 파일에 대한 읽고 쓰기를 실시하는 방법을 나타낸 것입니다.  </p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    FileOpenService fos; 
+
+    <font color="#FF0000"><b>//Initialize fos (see Using a FileOpenService Service example) </b></font>
+    ... 
+
+    <b>if</b> (fos ! = null) { 
+
+        <b>try</b> { 
+
+            <font color="#FF0000"><b>// get a FileContents object to work with from the 
+            // FileOpenService </b></font>
+            FileContents fc = fos.openFileDialog(null, null); 
+
+            <font color="#FF0000"><b>// get the InputStream from the file and read a few bytes </b></font>
+            byte [] buf = new byte[fc.getLength()]; 
+            InputStream is = fc.getInputStream(); 
+            int pos = 0; 
+            <b>while</b> ((pos = is.read(buf, pos, buf.length - pos)) > 0) { 
+                <font color="#FF0000"><b>// just loop </b></font>
+            } 
+            is.close(); 
+
+            <font color="#FF0000"><b>// get the OutputStream and write the file back out </b></font>
+            <b>if</b> (fc.canWrite()) { 
+               <font color="#FF0000"><b>// don't append </b></font>
+               OutputStream os = fc.getOutputStream(false); 
+               os.write(buf); 
+            } 
+
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } <tt>
+</tt>
+</pre>
+<h3> <a name="JNLPRandomAccessFile"></a> <code>JNLPRandomAccessFile</code> 의 사용법</h3>
+<p><tt><a href="../../../../jre/api/javaws/jnlp/index.html">javax.jnlp.JNLPRandomAccessFile</a> </tt> 의 인스턴스는, 랜덤 억세스 파일에 대한 읽기와 기입의 양쪽 모두를 지원합니다. &nbsp;랜덤 억세스 파일의 동작은, 파일 시스템에 포함된 대규모 바이트 배열의 동작을 닮아 있습니다. &nbsp;다음의 샘플 코드는,<code>JNLPRandomAccessFile</code> 의 인스턴스를 사용해 랜덤 억세스 파일에 대한 기입을 실시하는 방법을 나타낸 것입니다.  </p>
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    FileOpenService fos; 
+
+    <font color="#FF0000"><b>//Initialize fos (see Using a FileOpenService Service example) </b></font>
+    ... 
+
+    <b>if</b> (fos ! = null) { 
+        <b>try</b> { 
+           <font color="#FF0000"><b>// ask the user to choose a file to open </b></font>
+           FileContents fc = fos.openFileDialog(null, null); 
+
+           <font color="#FF0000"><b>// attempt to increase the maximum file length </b></font>
+           long grantedLength = fc.getLength(); 
+           <b>if</b> (grantedLength + 1024 > fc.getMaxLength()) { 
+               <font color="#FF0000"><b>// attempt to increase the maximum file size defined by 
+               // the client </b></font>
+               grantedLength = fc.setMaxLength(grantedLength + 1024); 
+           } 
+
+           <font color="#FF0000"><b>// if we were able to increase the maximum allowable file size, 
+           // get a JNLPRandomAccessFile representation of the file, and 
+           // write to it </b></font>
+           <b>if</b> (fc.getMaxSize() > fc.getLength() && fc.canWrite()) { 
+               JNLPRandomAccessFile raf = fc.getRandomAccessFile("rw"); 
+               raf.seek(raf.length() - 1); 
+               raf.writeUTF("Java Web Start! "); 
+               raf.close(); 
+           } 
+        } <b>catch</b> (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } <tt>
+</tt></pre>
+<h3> <a name="SingleInstanceService"></a> <code>SingleInstanceService</code> 서비스의 사용법</h3>
+<p><tt><a href="../../../../jre/api/javaws/jnlp/index.html">javax.jnlp.SingleInstanceService</a> </tt> 의 제공하는 일련의 메소드를 사용하면, 어플리케이션은 자신을 단독으로 등록할 수가 있습니다.  또, 어플리케이션이 다른 인스턴스로부터 건네받은 인수를 처리하기 위한 청취자를 등록할 수 있습니다.
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    SingleInstanceService sis; 
+
+    ... 
+
+    <b>try</b> { 
+        sis = 
+(SingleInstanceService) ServiceManager.lookup("javax.jnlp.SingleInstanceService");
+    } <b>catch</b> (UnavailableServiceException e) { sis=null; }
+
+    ...
+
+    <font color="#FF0000"><b>
+    // Register the single instance listener at the start of your application
+    </b></font>
+    SISListener sisL = new SISListener();
+    sis.addSingleInstanceListener(sisL);
+
+    ...
+    
+    <font color="#FF0000"><b>
+    // Remember to remove the listener before your application exits
+    </b></font>
+    sis.removeSingleInstanceListener(sisL);
+    System.exit(0);
+
+    <font color="#FF0000"><b>
+    // Implement the SingleInstanceListener for your application
+    </b></font>
+    <b>class</b> SISListener <b>implements</b> SingleInstanceListener {
+        <b>public void</b> newActivation(String[] params) {
+            <font color="#FF0000"><b>
+            // your code to handle the new arguments here
+            </b></font>
+            ...
+        }
+    }
+
+</pre>
+<h3> <a name="ExtendedService"></a> <code>ExtendedService</code> 서비스의 사용법</h3>
+<p><tt><a href="../../../../jre/api/javaws/jnlp/index.html">javax.jnlp.ExtendedService</a> </tt> 는, 현재의 JNLP API 지원를 강화합니다. 이 서비스를 사용하면(자), 클라이언트의 파일 시스템으로, 어플리케이션에 의해 특정의 파일이 열립니다.
+<pre>
+<tt>
+</tt><b>import</b> javax.jnlp. *; 
+    ... 
+
+    ExtendedService es; 
+
+    ... 
+
+    <b>try</b> { 
+        es = 
+(ExtendedService) ServiceManager.lookup("javax.jnlp.ExtendedService");
+    } <b>catch</b> (UnavailableServiceException e) { es=null; }
+
+    ...
+
+    <font color="#FF0000"><b>
+    // Open a specific file in the local machine
+    </b></font>
+    File a = new File("c:\somefile.txt");
+
+    ...
+    
+    <font color="#FF0000"><b>
+    // Java Web Start will pop up a dialog asking the user to grant permission
+    // to read/write the file c:\somefile.txt
+    </b></font>
+    FileContents fc_a = es.openFile(a);
+
+    <font color="#FF0000"><b>
+    // You can now use the FileContents object to read/write the file
+    </b></font>
+    ...
+
+    <font color="#FF0000"><b>
+    // Open a specific set of files in the local machine
+    </b></font>
+    File[2] fArray = new File[2];
+    
+    fArray[0] = a;
+    fArray[1] = new File("c:\anotherFile.txt");
+
+    <font color="#FF0000"><b>
+    // Java Web Start will pop up a dialog asking the user to grant permission
+    // to read/write files in fArray
+    </b></font>
+    FileContents[] fc_Array = es.OpenFiles(fArray);
+
+    <font color="#FF0000"><b>
+    // You can now read/write the set of files in fc_Array using the
+    // FileContents objects
+    </b></font>
+    }
+
+</pre>
+<p><code>javaws</code> 의 사용법의 자세한 것은,<a href="../../../tools/share/javaws.html">「javaws 커멘드행 인터페이스」</a>를 참조해 주세요.
+</body>
+</html>

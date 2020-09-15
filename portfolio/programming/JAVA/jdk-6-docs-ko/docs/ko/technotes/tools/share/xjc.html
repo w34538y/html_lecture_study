@@ -1,0 +1,342 @@
+<HTML>
+  
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+<TITLE>
+JAXB RI 2.0 ea3 -- 바인드콘파이라 (xjc)
+     - xrath.com 에서 번역됨</TITLE>
+    
+<META content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    
+<LINK href="style/default.css" rel="stylesheet" type="text/css" />
+  
+<link href="../../css/tools.css" rel="stylesheet" type="text/css" />
+</HEAD>
+
+  
+<BODY>
+    
+<CENTER>
+    
+<H1 align="left">xjc - XML 바인드를 위한 Java<SUP><FONT size="-2">TM</FONT></SUP> 아키텍쳐(architecture)<BR />바인드콘파이라</H1>
+      
+<B>스펙 버젼:</B> 2.0<BR />
+      
+<B>레퍼런스 구현 (RI) 버젼:</B> 2.0 ea3<BR /> <!--  The contents of this file are subject to the terms  of the Common Development and Distribution License  (the "License").  You may not use this file except  in compliance with the License.    You can obtain a copy of the license at  https://jwsdp.dev.java.net/CDDLv1.0.html  See the License for the specific language governing  permissions and limitations under the License.    When distributing Covered Code, include this CDDL  HEADER in each file and include the License file at  https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,  add the following below this CDDL HEADER, with the  fields enclosed by brackets "[]" replaced with your  own identifying information: Portions Copyright [yyyy]  [name of copyright owner] -->
+</CENTER>
+
+
+    
+<h2>xjc 의 기동</h2>
+<P>바인딩 컴파일러를 기동하려면 , 사용하는 플랫폼에 응한 <CODE>bin</CODE> 디렉토리내의 <CODE>xjc</CODE> 셸 스크립트를 사용합니다. 또, 바인딩 컴파일러를 실행하기 위한 Ant 태스크도 준비되어 있습니다. <a href="https://jaxb.dev.java.net/nonav/2.0.2/docs/xjcTask.html">xjc 를 Ant 와 함께 사용하기 위한 </a>순서를 참조해 주세요.
+</p>
+	
+<BLOCKQUOTE>
+<H4>Solaris/Linux 의 경우</H4>
+  <blockquote>
+    <p>
+      <!--li><tt>% export PATH=&lt;your JWSDP2. 0 installation directory>/jaxb/bin:$JWSDP_HOME/jwsdp-shared/bin:$PATH</tt></li-->
+      
+<TT>% /path/to/jaxb/bin/xjc.sh -help</TT>
+      
+      
+    </p>
+  </blockquote>
+<H4>WindowsNT/2000/XP 의 경우</H4>
+  <blockquote>
+    <p>
+      <!--li><tt>&gt; set PATH=&lt;your JWSDP2. 0 installation directory>\jaxb\bin;%JWSDP_HOME%\jwsdp-shared\bin;%PATH%</tt></li-->
+      
+<TT>&gt; c:\path\to\jaxb\bin\xjc.bat -help</TT>
+      
+    </p>
+  </blockquote>
+</BLOCKQUOTE>
+<!-- XJC_OPTS will not be advertised as it won't be available in XJC in JDK 6 	<blockquote> 	  <h4>Environment Variables</h4> 	    <blockquote> 	      <ul> 	        <li>XJC_OPTS - command-line arguments that should be passed to the JVM.  For  	            example, you can define system properties or set the maximum Java heap  	            size here.   If you are using the <a href="xjcTask.html">xjc ant task</a> , 	            you would specify these options via the ANT_OPTS evironment variable. </li> 	      </ul> 	    </blockquote> 	</blockquote-->
+
+	
+<BLOCKQUOTE>
+	  
+<H4>출력</H4>
+	  
+<BLOCKQUOTE>
+        
+<pre>
+Usage: xjc [-options ...] &lt;schema_file/URL/dir&gt; ... [-b &lt;bindinfo&gt;] ...
+Options:
+ -nv                  : do not perform strict validation of the input schema(s)
+ -extension           : allow vendor extensions - do not strictly follow the
+                        Compatibility Rules and App E. 2 from the JAXB Spec
+ -b &lt;file&gt;            : specify external bindings files (each &lt;file&gt; must have its own -b)
+ -d &lt;dir&gt;             : generated files will go into this directory
+ -p &lt;pkg&gt;             : specifies the target package
+ -httpproxy &lt;proxy&gt;   : set HTTP/HTTPS proxy.  Format is [user[:password]@]proxyHost:proxyPort
+ -httpproxyfile &lt;file&gt;: set the proxy string (same format as above).
+ -classpath &lt;arg&gt;     : specify where to find user class files
+ -catalog &lt;file&gt;      : specify catalog files to resolve external entity references
+                        support TR9401, XCatalog, and OASIS XML Catalog format.
+ -readOnly            : generated files will be in read-only mode
+ -npa                 : suppress generation of package level annotations (**/package-info.java)
+ -xmlschema           : treat input as W3C XML Schema (default)
+ -relaxng             : treat input as RELAX NG (experimental, unsupported)
+ -relaxng-compact     : treat input as RELAX NG compact syntax (experimental, unsupported)
+ -dtd                 : treat input as XML DTD (experimental, unsupported)
+ -wsdl                : treat input as WSDL and compile schemas inside it (experimental, unsupported)
+ -verbose             : be extra verbose
+ -quiet               : suppress compiler output
+ -help                : display this help message
+ -version             : display version information</pre>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+	<!--blockquote> 	  <h4>Non-standard Commandline Options</h4> 	  <blockquote> 	    <p>These options are non-standard and may change without notice.          <pre>
+  -Xlocator          :  enable source location support for generated code
+  -Xsync-methods     :  generate accessor methods with the 'synchronized' keyword
+  -Xinject-code      :  inject specified Java code fragments into the generated code
+	    </pre> 	  </blockquote> 	</blockquote-->
+	  
+    
+<BLOCKQUOTE>
+      
+<H4><CODE>jaxb-xjc.jar</CODE> JAR 파일의 실행</H4>
+      
+<BLOCKQUOTE>
+        
+<P>다른 방법이 모두 실패했을 경우에서도,<CODE>jaxb-xjc.jar</CODE> 파일의 실행은 실시할 수 있을 것입니다.
+    </p><BLOCKQUOTE>
+          
+<DL>
+            
+<DT>Solaris/Linux 의 경우:</DT> 
+            
+<DD>
+<TT>% java -jar $JAXB_HOME/lib/jaxb-xjc.jar -help</TT></DD>
+            
+<DT>Windows 의 경우:</DT>
+            
+<DD>
+<TT>&gt; java -jar %JAXB_HOME%\lib\jaxb-xjc.jar -help</TT></DD>     
+</DL>     
+</BLOCKQUOTE>
+        
+<P>이것은 「xjc.sh」나 「xjc.bat」를 실행하는 것과 같습니다. 또, 이 경우, JVM 파라미터를 설정할 수 있습니다.
+    </P>
+      
+</BLOCKQUOTE>
+	
+</BLOCKQUOTE>
+	
+	
+<A name="switches"></A> 
+	
+<h2> 옵션</h2>
+<BLOCKQUOTE>
+	  
+<DL>
+	    
+<DT>
+<B>-nv</B></DT>
+	    
+<DD>디폴트에서는, XJC 바인딩 컴파일러는, 소스 schema를 처리하기 전에 엄밀한 검증을 실행합니다. 이 옵션을 사용하면(자), 엄밀한 schema 검증을 무효로 합니다. 이것은, 바인딩 컴파일러가 검증을 일절 실행하지 않는다고 하는 것이 아닙니다. 보다 엄밀하지 않은 검증을 실행한다고 하는 것입니다. </DD>
+	    
+<DT>
+<B>-extension</B></DT>
+	    
+<DD>디폴트에서는, XJC 바인딩 컴파일러는, JAXB 스펙의 「Compatibility」의 장으로 설명되고 있는 규칙을 엄밀하게 강제합니다. 부록 E. 2 에는, JAXB v1. 0 으로 완전하게는 지원되어 있지 않은 일련의 W3C XML schema 기능이 정의되고 있습니다. 경우에 따라서는, 이 스윗치로 유효하게 되는 「-extension」모드로 그러한 기능을 사용할 수 있을지도 모릅니다. 또, 디폴트의 엄밀한 모드에서는, 스펙에 정의되고 있는 바인딩 커스터마이즈만을 사용할 수 있습니다. 「-extension」스윗치를 지정하면, JAXB Vendor Extension 를 사용할 수 있습니다. </dd></DT>
+<B>-b &lt;file&gt;</B></DT>
+	    
+<DD>처리하는 외부 바인딩 파일을 1 개 또는 복수 지정합니다. (바인딩 파일 마다 「<TT>-b</TT>」스윗치를 지정할 필요가 있습니다. ) 외부 바인딩 파일의 구문은 매우 유연합니다. 복수의 schema의 커스터마이즈가 포함되는  1 개의 바인딩 파일을 사용하거나 그러한 커스터마이즈를 복수의 바인딩 파일에 분할하거나 할 수 있습니다. 다음에 예를 나타냅니다. <P>
+	        
+</p><BLOCKQUOTE>
+	        	
+<TT>xjc schema1.xsd schema2.xsd schema3.xsd -b bindings123.xjb<BR /> xjc schema1.xsd schema2.xsd schema3.xsd -b bindings1.xjb -b bindings2.xjb -b bindings3.xjb</TT>
+	        
+</BLOCKQUOTE>
+	        또, 커멘드행에 schema 파일과 바인딩 파일을 지정하는 차례는 임의입니다.
+	        <p></P>
+</DD>
+	    
+<DT>
+<B>-d &lt;dir&gt;</B></DT>
+	    
+<DD>디폴트에서는, XJC 바인딩 컴파일러는, Java 컨텐츠 클래스를 현재의 디렉토리에 생성합니다. 이 옵션을 사용하면(자), 대체 출력 디렉토리를 지정할 수 있습니다. 출력 디렉토리는 미리 존재하고 있을 필요가 있습니다. XJC 바인딩 컴파일러는, 이 디렉토리를 자동적으로 작성하지 않습니다. 	        </DD>
+	    
+<DT>
+<B>-p &lt;pkg&gt;</B></DT>
+	    
+<DD>이 커멘드행 옵션 경유로 타겟 패키지를 지정했을 경우, 그 지정 내용은, 패키지명에 대한 모든 바인딩 커스터마이즈나, 스펙으로 규정되고 있는 디폴트의 패키지명 알고리즘보다 우선됩니다. </DD>
+		
+<DT>
+<B>-httpproxy &lt;proxy&gt;</B></DT>
+		
+<DD>HTTP/HTTPS 프록시를 지정합니다. 형식은 [user[:password]@]proxyHost[:proxyPort] 입니다. 종래의 <TT>-host</TT> 및 <TT>-port</TT> 는, 하위 호환성을 위해서(때문에) 레퍼런스 구현에서도 지원되고 있습니다만, 추천 되지 않게 되었습니다. 이 옵션으로 지정된 패스워드는,<tt>top</tt> 커멘드를 사용하는 사용자 등, 다른 사용자가 표시할 수 있는 인수인 것에 주의해 주세요. 시큐리티를 높이려면 , 다음의 <tt>-httpproxyfile</tt> 를 사용해 주세요.  </DD>
+		
+<DT> <B>-httpproxyfile &lt;file&gt;</B> </DT>
+<DD>HTTP/HTTPS 프록시를 파일 경유로 지정합니다. 형식은 상기와 같습니다만, 이 파일내로 지정된 패스워드를 다른 사용자가 표시할 수 없습니다.  </DD>
+<DT><B>-classpath &lt;arg&gt;</B></DT>
+<DD><TT>&lt;jxb:javaType&gt;</TT> 및 <TT>&lt;xjc:superClass&gt;</TT> 커스터마이즈가 사용하는 클라이언트 어플리케이션의 클래스 파일의 검색 장소를 지정합니다. </DD>
+		
+<DT>
+<B>-catalog &lt;file&gt;</B></DT>
+		
+<DD>외부 엔티티 참조를 해결하는 카탈로그 파일을 지정합니다. TR9401, XCatalog, 및 OASIS XML Catalog 형식이 지원됩니다. 자세한 것은, 「XML Entity and URI Resolvers」문서를 참조하는지,<code>카탈로그 리절버</code>의 샘플 어플리케이션을 조사해 주세요. </DD>
+	    
+<DT>
+<B>-readOnly</B></DT>
+	    
+<DD>디폴트에서는, XJC 바인딩 컴파일러는, 생성하는 Java 원시 파일을 기입으로부터 보호하지 않습니다. 이 옵션을 사용하면(자), XJC 바인딩 컴파일러는 생성되는 Java 소스를 강제적으로 읽어내 전용으로 합니다. </DD>
+		
+<DT>
+<B>-npa</B></DT>
+		
+<DD>패키지 레벨의 주석을 **/package-info.java 에 생성하는 것을 억제합니다. 이 스윗치를 사용해 생성하는 코드에서는, 이러한 주석이 다른 생성이 끝난 클래스에 내부화 됩니다. </DD>
+		
+<DT>
+<B>-xmlschema</B></DT>
+		
+<DD>입력 schema를 W3C XML schema (디폴트)라고 봅니다. 이 스윗치를 지정하지 않아도, 입력 schema는 W3C XML schema라고 보여집니다. </DD>
+		
+<DT>
+<B>-relaxng</B></DT>
+		
+<DD>입력 schema를 RELAX NG 로서 취급합니다 (시험적, 미지원). RELAX NG schema의 지원는 JAXB Vendor Extension 로서 제공되고 있습니다. 		    </DD>
+		
+<DT>
+<B>-relaxng-compact</B></DT>
+		
+<DD>입력 schema를 RELAX NG 압축 구문으로서 처리합니다 (시험적, 미지원). RELAX NG schema의 지원는 JAXB Vendor Extension 로서 제공되고 있습니다. 		    </DD>
+		
+<DT>
+<B>-dtd</B></DT>
+		
+<DD>입력 schema를 XML DTD 로서 취급합니다 (시험적, 미지원). RELAX NG schema의 지원는 JAXB Vendor Extension 로서 제공되고 있습니다. </DD>
+		
+<DT>
+<B>-wsdl</B></DT>
+		
+<DD>입력을 WSDL 로서 취급해, 그 내부의 schema를 컴파일 합니다 (시험적, 미지원). </DD>
+		
+<DT>
+<B>-quiet</B></DT>
+		
+<DD>진척이나 경고 등, 컴파일러의 출력을 억제합니다. 		    </DD>
+		
+<DT>
+<B>-verbose</B></DT>
+		
+<DD>정보 메세지를 출력하거나 특정의 에러 발생시에 스택 트레이스를 표시하거나 하는 등, 지극히 장황하게 됩니다. 		    </DD>
+		
+<DT>
+<B>-help</B></DT>
+		
+<DD>컴파일러 스윗치의 개요를 표시합니다. </DD>
+		
+<DT>
+<B>-version</B></DT>
+		
+<DD>컴파일러의 버젼 정보를 표시합니다. </DD>
+	    
+<DT>
+<B>&lt;schema file/URL/dir&gt;</B></DT>
+	    
+<DD>컴파일 대상이 되는 1 개 또는 복수의 schema 파일을 지정합니다. 사용자가 디렉토리를 지정했을 경우, xjc 는 그 디렉토리를 주사 해, 거기서 발견된 모든 schema 파일을 컴파일 합니다. </DD>
+</DL>
+    
+</BLOCKQUOTE>
+
+	<!--h3>Summary of Non-Standard Command Line Options</h3> 	<blockquote> 	  <dl> 	    <dt><b>-Xlocator</b></dt> 	    <dd>This feature causes the generated code to expose SAX Locator information 	        about the source XML in the Java bean instances after unmarshalling. </dd> 	    <dt><b>-Xsync-methods</b></dt> 	    <dd>This feature causes all of the generated method signatures to include the 	        synchronized keyword. </dd> 	    <dt><b>-Xinject-code</b></dt> 	    <dd>This feature causes the schema compiler to inject user code into the generated 	        Java beans. </dd>       </dl>     </blockquote-->
+
+    
+<h3>비추천 커멘드행 옵션 및 삭제된 커멘드행 옵션의 개요</h3>
+ <BLOCKQUOTE>
+      
+<DL>
+        
+<DT>
+<B>-host &amp; -port</B>
+</DT>
+        
+<DD>이러한 옵션은 비추천이 되어,<B>-httpproxy</B> 옵션으로 옮겨놓을 수 있었습니다. 이러한 옵션은, 하위 호환성을 확보하는 목적으로 계속해 지원됩니다만, 문서에는 기재되지 않고, 장래의 릴리스로 삭제될 가능성도 있습니다. </DD>
+        
+<DT>
+<B>-use-runtime</B>
+</DT>
+        
+<DD>JAXB 2.0 스펙으로 이식성이 있는 런타임이 규정되었기 때문에, JAXB RI 가 **/impl/runtime 패키지를 생성할 필요가 없어졌습니다. 이 때문에, 이 스윗치는 불필요해져, 삭제되었습니다. </DD>
+        
+<DT>
+<B>-source</B>
+</DT>
+        
+<DD>-source 호환성 스윗치는, JAXB 2.0 의 최초의 Early Access 판으로 도입되었습니다. 이 스윗치는, JAXB 2.0 의 향후의 릴리스로부터 삭제되게 되었습니다. 1.0.x 코드를 생성할 필요가 있는 경우에는, 1.0.x 코드 베이스의 인스톨을 사용해 주세요. </DD>
+         
+<DT>
+<B>-Xlocator &amp; -Xsync-methods</B>
+</DT>
+         
+<DD>이러한 스윗치는 현시점에서는 무효화되고 있습니다. 이 기능은 장래, 개별의 다운로드로서 제공될 예정입니다. </DD>
+      
+</DL>
+    
+</BLOCKQUOTE>
+
+    
+<A name="restrictions"></A> 
+    
+<H3>컴파일러의 제한</H3>
+    
+<P>일반적으로은, 관련하는 모든 schema를, 같은 바인딩 컴파일러 스윗치를 지정해 1 개의 단위로서 컴파일 하는 것이 가장 안전합니다. </P>
+       
+    
+<P>xjc 를 실행할 때는, 다음에 나타내는 제한으로 주의해 주세요. 이러한 제한의 대부분은, xjc 를 몇번인가 호출해 복수의 schema를 컴파일 하는 경우에게만 적용됩니다. </P>
+      
+<UL>
+        
+<LI>복수의 schema를 동시에 컴파일 하는 경우는, 타겟의 Java 패키지명에 다음의 우선 순위의 규칙이 적용되는 것에 주의해 주세요.
+       
+            <OL>
+              
+<LI>「<TT>-p</TT>」커멘드행 옵션이 가장 우선됩니다. </LI>
+              
+<LI>&lt;<TT>jaxb:package</TT>&gt; 의 커스터마이즈</LI>
+              
+<LI><TT>targetNamespace</TT> 가 선언되고 있는 경우는, 스펙에 정의되고 있는 <TT>targetNamespace</TT> -&gt; Java 패키지명의 알고리즘을 적용합니다. </LI>
+              
+<LI><TT>targetNamespace</TT> 가 선언되어 있지 않은 경우는,"generated" 라는 이름의 하드 코드 된 패키지를 사용합니다. </LI>
+</OL>
+</LI>
+    
+        
+<LI>이름 공간 마다 복수의 &lt;<TT>jaxb:schemaBindings</TT>&gt; 를 가지는 것은 부정합니다. 이 때문에, 1 개의 타겟 이름 공간내의 2 개의 schema를, 다른 Java 패키지에 컴파일 할 수 없습니다. </LI>
+       
+        
+<LI>1 개의 Java 패키지에 컴파일 되는 모든 schema는, XJC 바인딩 컴파일러에 동시에 송신할 필요가 있습니다. 개별적으로 컴파일 하지 못하고, 예기 했던 대로 동작하지 않습니다. </LI>
+        
+<LI>복수의 schema 파일에 걸치는 요소 치환 그룹은, 동시에 컴파일 할 필요가 있습니다. </LI>
+</UL>  
+	
+
+<h2>관련 항목</h2>
+<ul>
+<li> 커멘드행에서의 컨버터의 실행 (XJC): [<a href="https://jaxb.dev.java.net/nonav/2.0.2/docs/xjc.html">커멘드행의 명령</a>,<a href="https://jaxb.dev.java.net/nonav/2.0.2/docs/xjcTask.html">xjc 를 Ant 와 함께 사용한다</a> ]
+</li>
+<li>
+<a href="../../guides/xml/jaxb/index.html">XML 바인드를 위한 JavaTM 아키텍쳐(architecture) (JAXB)</a> 
+</li>
+</ul>
+<table border="0" width="100%" summary="layout">
+        <tbody>
+          <tr valign="top">
+            <td>
+<p><a href=               "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+            </td>
+
+            <td align="right">
+	    <img src="../../../images/sunlogo64x30.gif" alt="Sun"/><br /> <i> Java Software </i></td>
+          </tr>
+        </tbody>
+</table>
+    
+
+</BODY>
+</HTML>

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:3 - Image I/O 어플리케이션의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm6.html">전의 항목</a>  | <a href="apps.fm8.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998282"><i>3.7	</i> 이벤트의 대기</a> </h2>
+
+<blockquote><pre>이미지의 read중 또는 기입해 안에, 플러그 인으로부터 어플리케이션에 최신 정보를 제공할 수가 있습니다.
+어플리케이션에서는,<code>javax.image.event</code> 패키지의 인터페이스를 구현한 1 개(살) 또는 복수의 클래스를 제공할 수 있습니다.
+이러한 클래스의 인스턴스는, 사용되고 있는 <code>ImageReader</code> 또는 <code>ImageWriter</code> 에 추가됩니다. 다음에 예를 나타냅니다.
+
+class MyReadProgressListener implements IIOReadProgressListener {
+
+	public MyReadProgressListener() {}
+
+	public void imageStarted(ImageReader source) {
+		System.out.println(&#34;Started reading! &#34;);
+	}
+
+	// Other methods from IIOReadProgressListener omitted
+}
+
+IIOReadProgressListener listener = new MyReadProgressListener();
+reader.addIIOReadProgressListener(listener);
+</pre></blockquote><blockquote>
+<a name="997179"><!-- --></a>  <code>ImageReader.read</code> 메소드의 처리가 진행되는 것에 따라, 다양한 시점에서 <code>listener</code> 의 메소드가 불려 가, 읽어내진 이미지의 양을 나타냅니다. 이러한 메소드는 <code>ImageReader.read</code> 메소드가 액티브한 동안에 불려 가므로, 그러한 메소드로부터는, 같은 <code>ImageReader</code> 객체에 속하는 대부분의 메소드를 호출하지 말아 주세요. 호출해도 괜찮은 것은,<code>ImageReader.abort()</code> 입니다. 이 메소드는,<code>ImageReader.read</code> 의 실행이 도중까지 밖에 완료하고 있지 않아도, 그 실행을 중지해 메소드로부터 복귀시킵니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997167"><!-- --></a>  <i>3.7. 1	</i> <code>IIOReadProgressListener</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="997182"><!-- --></a>  <code>IIOReadProgressListener</code> 는, read중에 간단한 상태 정보를 제공하기 위해서 사용할 수 있습니다. 이 인터페이스로부터는, 추정의 읽기 완료율이 제공됩니다. 이 정보는, Swing 의 <code>JProgressBar</code> 과소의 다른 진척 인디케이터(indicator)를 갱신하거나 큰 이미지를 읽어들일 때의 남은 시간을 추정하거나 하기 위해서 사용할 수 있습니다. <p>
+<a name="997258"><!-- --></a>  <code>imageStarted</code> 메소드는, read 개시의 시점에서 불려 갑니다. read중은,<code>imageProgress</code> 메소드가 여러 차례에 걸쳐서 불려 갑니다 (불려 갈 때마다,<code>percentageDone</code> 파라미터의 값이 증가하고 있습니다). read가 완료하려고 하고 있는 시점에서,<code>imageComplete</code> 메소드가 불려 갑니다. <p>
+<a name="997183"><!-- --></a>  같이<code>thumbnailStarted</code>,<code>thumbnailProgress</code>, 및 <code>thumbnailComplete</code> 메소드가, 썸네일의 read중에 불려 갑니다. <p>
+<a name="997243"><!-- --></a>  그 외의 메소드로서 <code>ImageReader.readAll</code> 메소드에 의한 일련의 이미지의 읽을 개시와 종료를 나타내는 메소드가 있습니다. 게다가 진행중의 read는 <code>ImageReader.abort</code> 를 사용해 중지시킬 수가 있습니다만, 그 경우에는, 청취자 객체의 <code>readAborted</code> 메소드가 불려 갑니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997193"><!-- --></a>  <i>3.7. 2	</i> <code>IIOReadUpdateListener</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="997263"><!-- --></a>  <code>IIOReadUpdateListener</code> 는, 이미지 읽을 진행 상황에 대해, 게다가 상세한 정보를 제공합니다. 일부의 이미지 형식에서는, interlace 방식의 인코딩, 또는 진보론자 방식의 인코딩이 가능합니다. 그처럼 encode 된 이미지에서는, 픽셀 데이터의 부분집합을 재빠르게 취득할 수 있으므로, 화질의 엉성한 이미지가 곧바로 표시된 후, 나머지의 픽셀 데이터의 수신과 복호화가 속행됩니다. 종래의 방식으로는, 4 행에 대해 1 행씩, 한편 그 행 중(안)에서 4 픽셀에 대해 1 픽셀씩 송신이 시작되므로, 최초의 이미지의 표시에 필요한 것은, 송신되어 와 복호화 되는 데이터의 합계량의 16 분의 1 만이었습니다. 만약 interlace를 사용하지 않았다고 하면(자), 같은 시간내에, 이미지 상단의 16 분의 1 의 부분 밖에 표시되지 않습니다. 따라서, interlace 방식의 이미지를 보는 사람은, 종래 대로왼쪽에서 오른쪽, 위에서 밑으로draw 되는 이미지를 보는 경우보다 훨씬 빨리, 이미지의 내용에 대해 감촉을 잡을 수가 있습니다. <p>
+<a name="997317"><!-- --></a>  <code>IIOReadUpdateListener</code> 인터페이스의 메소드를 구현하는 것으로써, 어플리케이션에서는, 비연속의 가능성이 있는 픽셀 그룹을 표시할 준비를 할 수 있던 시점에서, 통지를 받을 수가 있습니다. 게다가 이 인터페이스의 메소드는, draw 도중의 <code>BufferedImage</code> 에의 참조도 받으므로, 새롭게 복호화 된 픽셀로 표시를 갱신하기 위해서 그것을 이용할 수 있습니다. <p>
+<a name="997288"><!-- --></a>  interlace 방식 또는 진보론자 방식의 이미지의 복호화는, 복수 패스로 나눌 수 있어 진행합니다. 각각의 패스의 개시시점으로써, 청취자 객체의 <code>passStarted</code> 메소드가 불려 가, 그 패스의 처리중에 덧쓰기될 가능성이 있는 픽셀 세트를 나타냅니다. 이것은 소극적으로 추측하고 있기 (위해)때문에, 그 영역내의 모든 픽셀이 그 패스로 반드시 갱신된다고는 할 수 없습니다. 패스가 진행하는 것에 따라,<code>imageUpdate</code> 메소드가, 새로운 값을 받은 픽셀 영역을 나타내는 인수와 함께 불려 갑니다. 이 영역은, 좌상구석의 좌표, 폭과 높이, 그리고 그 패스로 처리되는 픽셀간의 간격 (전술의 예로 말하면, 최초의 패스에 있어서의 이 파라미터는, 종횡 모두 4 입니다)에 의해 기술됩니다. 패스가 완료하면(자),<code>passComplete</code> 메소드가 불려 갑니다. 썸네일 이미지의 read 상황도, 이것들과 같은 메소드를 이용해 추적할 수 있습니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997169"><!-- --></a>  <i>3.7. 3	</i> <code>IIOReadWarningListener</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="997170"><!-- --></a>  <code>IIOReadWarningListener</code> 를 <code>ImageReader</code> 에 부가하면(자), 치명적인 에러에 대한 정보를 받을 수가 있습니다. 예를 들어, read 객체는, 거기에 존재해야할 않는 태그나 데이터를 검출하는 일이 있습니다. read 객체는, 그 에러를 무시해 복호화를 속행할 수도 있습니다만, 입력 소스에 형식상의 실수가 있는 것을 어플리케이션에 통지할 수도 있습니다. 그 사이 차이는, 이미지를 생성한 어플리케이션에 문제가 있는 것을 나타내고 있을 가능성이 있습니다. <p>
+<a name="997338"><!-- --></a>  <code>ImageReader</code> 는, 번역된 경고 메세지의 제공 가능한 <code>Locale</code> 세트를 지정할 수가 있습니다. 이용 가능한 로케일은, read 객체의 <code>getAvailableLocales</code> 메소드로부터 입수할 수 있습니다. 그 후, 필요한 로케일을 설정하려면 ,<code>IIOReadWarningListener</code> 를 부가하기 전에, read 객체의 <code>setLocale</code> 메소드를 호출합니다. 각 청취자가 받는 메세지는, 그 청취자가 읽어들여 객체에 부가되는 시점에서 유효했던 <code>Locale</code> 의 언어가 됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997342"><!-- --></a>  <i>3.7. 4	</i> <code>IIOWriteProgressListener</code> 및 <code>IIOWriteWarningListener</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="997343"><!-- --></a>  <code>IIOWriteProgressListener</code> 및 <code>IIOWriteWarningListener</code> 의 각 인터페이스는, read 객체의 경우의 대응하는 인터페이스와 같게 기능합니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm6.html">전의 항목</a>  | <a href="apps.fm8.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher 3.5.0 --> <!-- by Suzette Pelouch --> <!-- Last updated: Fri Apr 27 11:22:59 2001 -->
+ 
+
+
+</body>
+</html>

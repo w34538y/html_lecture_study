@@ -1,0 +1,119 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Windows Look &amp; Feel 의 키보드 네비게이션의 비표시 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=white>
+
+<h2>키보드 네비게이션의 비표시</h2>
+
+<p>Windows 2000 에 도입된 새로운 기능의 1 개는, 메뉴 항목 또는 다이얼로그 컨트롤의 키보드니모닉크를 Alt 키가 밀릴 때까지 표시하지 않게 한다, 표시의 프로퍼티입니다. 즉, 사용자가 마우스가 아니고 키보드를 사용해 커멘드를 호출하는 것을 나타낼 때까지, Alt 키와 조합해 메뉴나 컨트롤을 호출할 수 있는 것을 나타내는, 모든 밑줄 첨부 문자가 표시되지 않습니다. 이 결과, 마우스로 사용자 인터페이스를 안내하는 것을 선택한 사용자에게, 밑줄 첨부 문자로 시각적인 혼란을 주지 않는 인터페이스가 제공됩니다.
+
+<p>키보드 네비게이션의 비표시 기능은, 어플리케이션으로 Windows Look &amp; Feel 가 사용되어 한편 Windows 2000 의 「화면의 프로퍼티」컨트롤 패널 애플릿내에서 「Alt 키를 누르지 않을 때는 키 보트의 네비게이션 인디케이터(indicator)를 표시하지 않는다」프로퍼티이 유효하게 되었을 경우에, Windows 2000 으로 자동적으로 유효하게 됩니다.  
+
+<h3>구현의 상세</h3>
+
+<p>구현의 자세한 것은, Look &amp; Feel 기능을 확장하고 있는 개발자전용의 것입니다. 키보드 네비게이션의 비표시 기능은, Windows Look&amp; Feel 가 사용되는 Java 어플리케이션이 Windows 2000 으로 실행될 때, 자동적으로 유효하게 됩니다.
+
+<p><code>WindowsLookAndFeel</code> 가 인스턴스화 되고 있으면(자),<code>DesktopProperty</code> 의 「win.menu.keyboardCuesOn」가 읽힙니다. 이 값은 <code>UIManager</code> 에 포함되어 「Button.isMnemonicHidingEnabled」키를 사용해 참조할 수 있습니다.. <code>WindowsLookAndFeel</code> 내의 정적 메소드인 <code>setMnemonicHidden</code> 및 <code>isMnemonicHidden</code> 로, 이 값에 액세스 합니다.
+
+<h4>메뉴내의 니마닉(mnemonic)의 비표시</h4>
+
+<p>기존의 <code>BasicMenuItemUI.paintMenuItem()</code> 메소드는, 메뉴 항목의 백그라운드, 텍스트, 아이콘, 및 니모닉크의 렌더링이 그 역할입니다. 신규 protected 메소드인 <code>paintText()</code> 는,<code>BasicButtonUI</code> 계층내에서의 동일한 메소드에 이름과 시그니챠의 면에서 일관성이 있는 <code>paintMenuItem()</code> 로부터 추출되었습니다.
+
+<p><code>paintText()</code> 메소드는,<code>WindowsMenuItemUI</code> 및 <code>WindowsMenuUI</code> 내에서 overload 됩니다. overload 된 <code>paintText</code> 메소드의 본체는,<code>WindowsLookAndFeel</code> 클래스내의 <code>isMnemonicEnabled</code> 플래그를 체크해, 텍스트를 적절히 draw 하기 위해서 니마닉(mnemonic)를 비표시할 필요가 있을지 어떨지를 판단합니다.
+
+<h4>컨트롤내의 니마닉(mnemonic)의 비표시</h4>
+
+<p><code>BasicButtonUI</code> 에서는, 벌써 protected 메소드의 <code>paintText</code> 가 정의되고 있습니다. <code>WindowsButtonUI</code> 및 유사한 클래스가, 거의 같은 방법으로 이 메소드를 overload 했습니다. 새로운 클래스의 <code>WindowsGraphicsUtils</code> 가 도입되어 모든 <code>paintText</code> 가 통합되었습니다. Windows...UI 클래스가 Basic..UI 클래스와 같은 상속의 계층에 따르지 않기 때문에, 이 통합을 했습니다.
+
+<p><code>WindowsRootPaneUI</code> 로 불리는 신규 <code>RootPaneUI</code> 위양은, Windows Look &amp; Feel 용으로 작성되었습니다. 이 클래스에는, Alt 키가 밀렸을 때에 니모닉크비표시 비트를 리셋 해 UI 를 재draw하기 위한 , 등록을 마친 액션이 있습니다.
+
+<h3>신규 API</h3>
+
+<p>이 신기능의 구현의 결과로서, 이하의 모든 메소드가 추가되었습니다. 이러한 메소드는, Look &amp; Feel 를 확장 또는 작성하고 싶은 개발자에게만 매우 유용합니다.
+
+<h4>BasicMenuItemUI 의 신규 메소드 </h4>
+
+<pre>
+    /**
+     * Renders the text of the current menu item.
+     *
+     * @param g graphics context
+     * @param menuItem menu item to render
+     * @param textRect bounding rectangle for rendering the text
+     * @param text String to render
+     * @since 1.4
+     */
+     protected void paintText(Graphics g, JMenuItem menuItem, Rectangle textRect, String text)
+</pre>
+
+<h4>신규 클래스의 WindowsRootPaneUI </h4>
+
+<pre>
+    /**
+     * Windows implementation of RootPaneUI.  One WindowsRootPaneUI
+     * object is shared between all JRootPane instances.
+     *
+     * @version 1.1 08/16/00
+     * @author Mark Davidson
+     * @since 1.4
+     */
+     public class WindowsRootPaneUI extends BasicRootPaneUI
+</pre>
+
+<h4>신규 클래스의 WindowsGraphicsUtils </h4>
+
+<pre>
+    /**
+     * A collection of static utility methods used for rendering the
+     * Windows look and feel.
+     *
+     * @Version 1.1 08/16/00 
+     * @author Mark Davidson
+     * @since 1.4
+     */
+     public class WindowsGraphicsUtils 
+</pre>
+
+<h4>WindowsLookAndFeel 의 신규 메소드 </h4>
+
+
+<pre>
+    /**
+     * Sets the state of the hide mnemonic flag.  This flag is used by the
+     * component UI delegates to determine if the mnemonic should be rendered.
+     * This method is a non operation if the underlying operating system
+     * does not support the mnemonic hiding feature.
+     *
+     * @param hide true if mnemonics should be hidden
+     * @since 1.4
+     */
+     public static void setMnemonicHidden(boolean hide)
+
+    /**
+     * Gets the state of the hide mnemonic flag.  This only has meaning
+     * if this feature is supported by the underlying OS.
+     *
+     * @return true if mnemonics are hidden, otherwise, false
+     * @see #setMnemonicHidden
+     * @since 1.4
+     */
+     public static Boolean isMnemonicHidden()
+
+    /**
+     * Gets the state of the flag which indicates if the old Windows
+     * look and feel should be rendered.  This flag is used by the
+     * component UI delegates as a hint to determine which style the component
+     * should be rendered.
+     *
+     * @return true if Windows 95 and Windows NT 4 look and feel should
+     *     be rendered
+     * @since 1.4
+     */
+     public static Boolean isClassicWindows()
+</pre>
+
+</body>
+</html>

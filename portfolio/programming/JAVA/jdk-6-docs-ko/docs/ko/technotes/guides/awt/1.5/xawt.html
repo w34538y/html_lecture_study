@@ -1,0 +1,72 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Solaris/Linux 상의 XToolkit - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=white>
+<h1>Solaris/Linux 상의 XToolkit</h1>
+<blockquote>
+ 
+릴리스 J2SE<sup><font size="-2">TM</font></sup> 5.0 으로부터, AWT 가 Solaris 및 Linux 플랫폼상에 재구현되었습니다. 새로운 툴 킷의 구현에는, 다음과 같은 이점이 있습니다.
+ 
+<ul>
+<li>Motif 및 Xt 라이브러리에의 의존의 배제
+<li>다른 GUI 툴 킷과의 상호 운용성의 향상
+<li>퍼포먼스와 품질의 향상
+</ul>
+ 
+<p>
+Linux 에서는, 새로운 툴 킷 (XToolkit)은 릴리스 J2SE 5.0 의 디폴트입니다. Solaris 에서는 MToolkit (Motif 베이스의 Toolkit)가 릴리스 J2SE 5.0 의 디폴트로서 계속해 사용됩니다만, 최종적으로는 XToolkit 로 옮겨집니다.
+ 
+<h2>Toolkit 의 명시적인 설정</h2>
+<p>애플릿이나 어플리케이션용의 툴 킷은, 환경 변수 또는 시스템 프로퍼티을 사용해 명시적으로 설정할 수 있습니다. 환경 변수는 시스템 프로퍼티을 오버라이드(override) 하는 것에 유의해 주세요.
+
+<ul>
+<li>어플리케이션용의 툴 킷을 설정하는 경우
+<p> 
+<ul>
+<li>환경 변수의 사용(VM 를 기동하기 전으로 설정이 필요).
+<pre>
+ csh: 
+ setenv AWT_TOOLKIT XToolkit #selects the XToolkit
+ setenv AWT_TOOLKIT MToolkit #selects the MToolkit
+ 
+ ksh/bash:
+ export AWT_TOOLKIT=XToolkit
+ export AWT_TOOLKIT=MToolkit
+</pre>
+ 
+<p>
+<li>커멘드행에서의 시스템 프로퍼티의 사용
+ 
+<pre>
+ java -Dawt.toolkit=sun.awt.X11.XToolkit <i>MyApp</i>
+ java -Dawt.toolkit=sun.awt.motif.MToolkit <i>MyApp</i>
+</pre>
+</ul>
+
+<li>애플릿용의 툴 킷을 설정하는 경우
+<p>
+<ul>
+<li>환경 변수의 사용 
+<p>브라우저를 단말 윈도우로부터 기동하는 경우는, 브라우저를 기동하기 전에 단말 윈도우로 환경 변수를 설정할 필요가 있습니다. 브라우저를 데스크탑 아이콘 또는 메뉴로부터 기동하는 경우는, 환경 변수를 사용해 애플릿용의 툴 킷을 설정할 수 없습니다. 대신에, Java Plug-in 컨트롤 패널을 사용해 주세요.
+<p>
+<li>Plug-in 컨트롤 패널의 사용
+<p>
+<ul>
+<li>다음과 같이 Java Plug-in 컨트롤 패널을 기동합니다.
+<pre>
+$java_home/bin/ControlPanel
+</pre>
+<p>
+<li>시스템 프로퍼티을 <b>[상세]</b> 탭의 [Java 런타임 파라미터] 필드에 추가합니다.
+<pre>
+-Dawt.toolkit=sun.awt.X11.XToolkit
+-Dawt.toolkit=sun.awt.motif.MToolkit
+</pre>
+</ul>
+</ul>
+</ul>
+</blockquote>
+</html>

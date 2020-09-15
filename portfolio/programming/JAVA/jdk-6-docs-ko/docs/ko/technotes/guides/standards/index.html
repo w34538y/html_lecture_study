@@ -1,0 +1,191 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<title>Java 승인 끝난 표준 오버라이드(override) 기구 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH=60>
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>Java 승인 끝난 표준 오버라이드(override) 기구</h1>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP WIDTH=60>
+
+<font size=-1><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+<!-- Body text begins here -->
+
+
+
+<h3>처음에</h3>
+<blockquote>
+승인이 끝난 표준은,<a href="http://www.jcp.org/">Java Community ProcessSM</a>  (JCP) 이외의 표준화 과정에서 정의된 Java API 입니다. <em></em>승인이 끝난 표준은 JCP 의 외부에서 정의되기 (위해)때문에, Java 2 플랫폼의 릴리스의 사이에 개정될 가능성이 있습니다. 개발자나 소프트웨어 벤더는 승인이 끝난 표준의 오버라이드(override) 기구를 사용해, Sun Microsystems 의 릴리스로 Java 2 플랫폼에 짜넣어지고 있는 것보다 새로운, 개정된 승인이 끝난 표준을 이용할 수 있습니다.  
+</blockquote>
+
+<h3>승인이 끝난 표준의 클래스의 보관 장소</h3>
+<blockquote>
+개정된 승인이 끝난 표준을 구현하는 클래스는, JAR 파일에 보존할 필요가 있습니다. <tt>java.endorsed.dirs</tt> 시스템 프로퍼티을 사용해, Java 실행 환경에 대해, 이러한 JAR 파일의 검색처 디렉토리를 1 개 이상 지정합니다. <tt>java.endorsed.dirs</tt> 로 복수의 디렉토리를 지정하는 경우는, 각 디렉토리의 사이를 <a href="../../../api/java/io/File.html#pathSeparatorChar"><tt>File.pathSeparatorChar</tt></a>  로 단락짓습니다. java.endorsed.dirs</tt> 에 값을 지정하지 않는 경우, Sun Microsystem 에 의한 Java 2 플랫폼의 구현에서는, 다음의 디폴트의 디렉토리에서 JAR 파일이 검색됩니다.
+<blockquote><pre>
+&lt;java-home&gt;\lib\endorsed          [Microsoft Windows]
+&lt;java-home&gt;/lib/endorsed          [Solaris 또는 Linux]
+</pre></blockquote>
+여기서,<tt>&lt;java-home&gt;</tt> 는, 런타임 소프트웨어의 인스톨처 디렉토리 (Java SE Runtime Environment 의 톱 레벨 디렉토리 또는 JDK 의 <tt>jre</tt> 디렉토리)를 가리킵니다.
+      <p>
+Java SE 실행 환경에서는, Sun 의 Java 플랫폼에 짜넣어지고 있는 클래스 대신에, 이러한 JAR 파일에 있는 대응하는 클래스를 사용합니다.
+</blockquote>
+
+<h3>승인이 끝난 표준의 API</h3>
+<blockquote>
+Java SE 의 승인이 끝난 표준은, 아래와 같은 패키지로 정의 떠날 수 있어 모든 클래스와 인터페이스입니다. 아래와 같은 패키지의 서브 패키지로 정의되고 있는 클래스와 인터페이스는, 서브 패키지 자체가 여기 로 거론되고 있는 경우를 제외해, 승인이 끝난 표준이 아닙니다. 승인이 끝난 표준의 오버라이드(override) 기구를 사용해, 아래와 같은 Java SE 플랫폼의 패키지를 오버라이드(override) 할 수 있습니다. 또, 이러한 패키지를 오버라이드(override) 할 수 있는 것은, Sun 의 릴리스 한 Java 플랫폼이 짜넣어지고 있던 것보다 새로운 승인이 끝난 표준에 한정합니다. Java SE 플랫폼의 API 스펙 가운데, 아래와 같이 이외의 패키지는 오버라이드(override) 할 수 없습니다.
+<blockquote><pre>
+javax.rmi.CORBA 
+org.omg.CORBA 
+org.omg.CORBA.DynAnyPackage
+org.omg.CORBA.ORBPackage
+org.omg.CORBA.portable
+org.omg.CORBA.TypeCodePackage
+org.omg.CORBA_2_3 
+org.omg.CORBA_2_3.portable
+org.omg.CosNaming 
+org.omg.CosNaming.NamingContextExtPackage
+org.omg.CosNaming.NamingContextPackage
+org.omg.Dynamic
+org.omg.DynamicAny
+org.omg.DynamicAny.DynAnyFactoryPackage
+org.omg.DynamicAny.DynAnyPackage
+org.omg.IOP
+org.omg.IOP.CodecFactoryPackage
+org.omg.IOP.CodecPackage
+org.omg.Messaging
+org.omg.PortableInterceptor
+org.omg.PortableInterceptor.ORBInitInfoPackage
+org.omg.PortableServer
+org.omg.PortableServer.CurrentPackage
+org.omg.PortableServer.POAManagerPackage
+org.omg.PortableServer.POAPackage
+org.omg.PortableServer.portable
+org.omg.PortableServer.ServantLocatorPackage
+org.omg.SendingContext
+org.omg.stub.java.rmi 
+org.w3c.dom
+org.xml.sax
+org.xml.sax.ext
+org.xml.sax.helpers
+</pre></blockquote>
+
+Sun 의 Java SE 레퍼런스 구현을 사용하는 경우는, 승인이 끝난 표준의 오버라이드(override) 기구를 사용해, Java SE 스펙에 포함되어 있는 상기 패키지 외에, Sun 의 레퍼런스 구현으로 제공되고 있는 <tt>org.w3c.dom</tt> 서브 패키지와 같은 구현 고유의 클래스도 오버라이드(override) 할 수 있습니다. 상세한 것에 대하여는, 해당의 라이센스를 참조해 주세요.
+</blockquote>
+<h3>스탠드얼론 테크놀로지</h3>
+<blockquote>Java SE 의 스탠드얼론 테크놀로지는, 이 섹션에 기재한 테크놀로지에 정의 및 구현되고 있는 클래스 및 인터페이스의 모든 것을 구성합니다. 승인 끝난 표준 오버라이드(override) 기구는 이 일람에 있는 Java 테크놀로지를 오버라이드(override) 하기 위해서 사용되는 경우가 있어, 이러한 테크놀로지는 Java 플랫폼의 원의 구현으로 제공되고 있는 스탠드얼론 테크놀로지의 구현보다 완전하고 새로운 구현을 제공하는 것에 의해서만 오버라이드(override) 됩니다. 이 일람의 테크놀로지와 상기의 「승인이 끝난 표준의 API」에 기재되어 있는 패키지는 예외로, Java SE 플랫폼 API 스펙외의 패키지는 오버라이드(override) 되지 않습니다.
+<br>
+
+</blockquote>
+<blockquote>
+  <blockquote><a href="http://java.sun.com/webservices/jaxp/">Java API
+for XML Processing (JAXP)</a>, version 1.4<br>
+    <a href="http://java.sun.com/webservices/jaxb/">Java Architecture
+for XML Binding (JAXB)</a>, version 2.0<br>
+    <a href="https://jax-ws.dev.java.net/">Java API for XML-Based Web
+Services (JAX-WS)</a>, version 2.0<br>
+    <a href="http://jcp.org/en/jsr/detail?id=199">Java Compiler API</a> ,
+version 1.0<br>
+
+    <a href="http://jcp.org/en/jsr/detail?id=269">Pluggable Annotation
+Processing API</a> , version 1.0<br>
+    <a href="http://jcp.org/en/jsr/detail?id=250">Common Annotations
+for the Java Platform</a> , version 1.0<br>
+    <a href="http://jcp.org/en/jsr/detail?id=223">Scripting for the
+Java Platform</a> , version 1.0<br>
+    <br>
+  </blockquote>
+</blockquote>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH=100%>
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <FONT SIZE="-1">
+
+<a href="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/standards/index.html&category=j2se&mailsubject=Endorsed Standards Override Mechanism">피드백</a> 
+
+   </FONT>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+</TR>
+</TABLE>
+
+</BODY>
+
+</HTML>
+

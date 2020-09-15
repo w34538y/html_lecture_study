@@ -1,0 +1,641 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="callablestatement.html">[전의 항목]</a>  <a href="rowsetImpl.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="996857"> </a> 
+<h2> SQL 와 Java 의 형태의 매핑</h2>
+<p><a name="1055442"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="996858"> </a> 
+<h3>8.1	 매핑의 개요</h3>
+<p><a name="996859"> </a>  SQL 의 데이터형은, Java 프로그램 언어의 데이터형과 동일하지 않기 때문에, Java 의 형태를 사용하는 어플리케이션과 SQL 의 형태를 사용하는 데이타베이스의 사이로, 데이터를 옮겨 환유익의 기구가 필요합니다. (본문중에서 사용되고 있는 「Java 의 형태」라고 하는 표현은, 「Java 프로그램 언어상의 형태」를 나타내고 있습니다)
+</p><p><a name="997736"> </a> Java 프로그램 언어로 기술되고 있는 어플리케이션과 데이타베이스의 사이에 데이터를 바꾸기 위해서(때문에), JDBC API 에서는, 다음의 3 개의 메소드를 제공하고 있습니다.  
+</p><ol>
+<a name="1037967"> </a> 
+<li>SQL <code>SELECT</code> 의 결과를 Java 의 형태로서 취득하기 위한 <code>ResultSet</code> 클래스의 메소드 <a name="1037968"> </a> 
+<li>Java 의 형태를 SQL 문의 파라미터로서 송신하기 위한 <code>PreparedStatement</code> 클래스의 메소드 <a name="1037970"> </a> 
+<li>SQL <code>OUT</code> 파라미터를 Java 의 형태로서 취득하기 위한 <code>CallableStatement</code> 클래스의 메소드
+</ol>
+<p><a name="999832"> </a>  이 마디에서는, 다양한 클래스나 인터페이스에 영향을 주는 데이터형에 대한 정보를 정리해 SQL 의 형태와 Java 의 형태의 사이의 매핑을 나타내는 일람을 참조하기 쉽게 1 개소에 두었습니다. 또, SQL3 의 형태를 포함한, 개개의 총칭 SQL 의 데이터형에 대해서도 설명합니다.
+</p>
+<a name="997737"> </a> 
+<h3>8.2	 SQL 의 형태로부터 Java 의 형태에의 매핑</h3>
+<p><a name="1008021"> </a>  다른 데이타베이스 제품이 지원하는 SQL 의 형태의 사이에는, 상당한 상위가 있습니다. 다른 데이타베이스가 동일한 의미를 가지는 SQL 의 형태를 지원하고 있는 경우에서도, 그러한 형태에 다른 이름을 주고 있는 일이 있습니다. 예를 들어, 주요 데이타베이스의 대부분이 큰 바이너리치에 대한 SQL 의 형태를 지원하고 있습니다만, Oracle 에서는 이 형태를 <code>LONG RAW</code>, Sybase 에서는 <code>IMAGE</code>, Informix 에서는 <code>BYTE</code>, DB2 에서는 <code>LONG VARCHAR FOR BIT DATA</code> 와 각각 부르고 있습니다.
+</p><p><a name="1008004"> </a>  JDBC 프로그래머는, 일반적으로은, 타겟의 데이타베이스가 사용하고 있는 실제의 SQL 의 형명에 신경을 쓸 필요는 없습니다. 많은 경우, JDBC 프로그래머는, 기존의 데이타베이스의 테이블에 대해서 프로그래밍을 해, 그러한 테이블을 작성한 정확한 SQL 의 형명에 주위를 기울일 필요는 없습니다.
+</p><p><a name="1008022"> </a>  JDBC 는, 클래스 <code>java.sql.Types</code> 로 총칭 SQL 의 형태 식별자세트를 정의하고 있습니다. 그 세트의 형태는, 가장 일반적으로 사용되는 SQL 의 형태를 나타내도록(듯이) 설계되고 있습니다. JDBC API 에 의한 프로그래밍에서는, 프로그래머는 일반적으로, 타겟의 데이타베이스가 사용하고 있는 정확한 SQL 의 형명을 의식하는 일 없이, 그 세트의 JDBC 형을 사용해 총칭 SQL 의 형태를 참조할 수가 있습니다. 그러한 JDBC 형은, 다음의 마디로 자세하게 설명합니다.
+</p><p><a name="1008017"> </a>  프로그래머가 SQL 의 형명을 사용할 필요가 있는 것은, 주로 새로운 데이타베이스의 테이블을 작성하는 경우의 SQL <code>CREATE TABLE </code> 문안입니다. 이 경우에는, 프로그래머는, 그 타겟의 데이타베이스가 지원하고 있는 SQL 의 형명을 사용하도록(듯이) 주의할 필요가 있습니다. <a href="mapping.html#table1">「데이타베이스 고유의 SQL 의 형태에 매핑 되는 JDBC 의 형태」</a>의 겉(표)는, 주요한 데이타베이스로 JDBC 의 형태로서 사용되고 있는 적절한 SQL 의 형명에 대한 제안을 제시하고 있습니다. 특정의 데이타베이스에서의 다양한 SQL 의 형태의 동작의 정확한 정의를 필요로 하는 경우에는, 그 데이타베이스의 메뉴얼을 참조하는 것을 추천합니다.
+</p><p><a name="1008018"> </a>  다양한 다른 데이타베이스상에서 테이블을 작성할 수 있는 이식성의 높은 JDBC 프로그램을 작성하고 싶은 경우에는, 2 개(살)의 주된 선택사항이 있습니다. 1 번째는,<code>INTEGER</code>,<code>NUMERIC</code>, 또는 <code>VARCHAR</code> 와 같은 모든 데이타베이스에 대해서 가동할 가능성의 높은, 매우 광범위해 받아들여지고 있는 SQL 의 형명만을 사용하도록(듯이) 제한하는 것입니다. 2 번째의 선택사항은,<code>java.sql.DatabaseMetaData.getTypeInfo</code> 메소드를 사용해, 어느 SQL 의 형태를 그 데이타베이스가 실제로 지원하고 있는지를 발견해, 지정의 JDBC 형에 일치하는 데이타베이스 고유의 SQL 의 형명을 선택하는 것입니다.  
+</p><p><a name="1007987"> </a>  JDBC 는, JDBC 데이타베이스형으로부터 Java 에의 표준적인 매핑을 정의합니다. 예를 들어, JDBC <code>INTEGER</code> 는 일반적으로, Java <code>int</code> 에 매핑 됩니다. 이것은, JDBC 의 값을 단순한 Java 의 형태로서 읽고 쓰기하는 단순한 인터페이스를 지원합니다.
+</p><p><a name="999592"> </a>  Java 의 형태는, SQL 타입과 정확하게 동형일 필요는 없습니다.  파라미터를 정확하게 포함하거나 꺼내거나 해, SQL 문으로부터의 결과를 복구하는데 충분한 형태의 정보로 그것들을 표현할 수 있으면 좋은 것뿐입니다. 예를 들어, Java 의 <code>String</code> 객체는, JDBC <code>CHAR</code> 형의 어느 것에도 엄밀하게는 일치합니다만,<code>CHAR</code>,<code>VARCHAR</code>, 또는 <code>LONGVARCHAR</code> 를 정상적으로 표현하는데 충분한 형태 정보를 줍니다.
+</p><a name="999005"> </a> 
+<h3>8.3	 기본적인 JDBC 의 형태</h3>
+<p><a name="1055112"> </a>  여기에서는, JDBC 1.0 으로 2.0 API 의 양쪽 모두로 지원되고 있는 JDBC 의 데이터형에 대해 설명합니다. 또, 표준의 SQL 의 형태 및 Java 프로그램 언어의 형태와의 관계에 대해서도 설명합니다. JDBC 2.0 코어 API 로 도입된 새로운 JDBC 의 데이터형은,<a href="mapping.html#1042474">8.4 절</a>로 설명합니다.
+</p><a name="1055140"> </a> 
+<h4>8.3. 1	 CHAR, VARCHAR, 및 LONGVARCHAR</h4>
+<p><a name="1055141"> </a>  JDBC 의 형태 <code>CHAR</code>,<code>VARCHAR</code>, 및 <code>LONGVARCHAR</code> 는 밀접하게 관련하고 있습니다. <code>CHAR</code> 는 짧은 고정장의 캐릭터 라인을,<code>VARCHAR</code> 는 짧은 가변 길이의 캐릭터 라인을,<code>LONGVARCHAR</code> 는 긴 가변 길이의 캐릭터 라인을 각각 나타냅니다. <strong>&#32;&#32;</strong>
+</p><p><a name="1007839"> </a>  JDBC <code>CHAR</code> 에 대응하는 SQL <code>CHAR</code> 형은 SQL-92 로 정의되어 모든 주요한 데이타베이스에 의해 지원되고 있습니다. 캐릭터 라인의 길이를 지정하는 파라미터를 취합니다. 따라서,<code>CHAR(12)</code> 는 12 문자장의 캐릭터 라인을 정의합니다. 모든 주요한 데이타베이스는,<code>CHAR</code> 장을 최고 254 문자까지 지원하고 있습니다.
+</p><p><a name="1007735"> </a>  JDBC <code>VARCHAR</code> 에 대응하는 SQL <code>VARCHAR</code> 형은 SQL-92 로 정의되어 모든 주요한 데이타베이스에 의해 지원되고 있습니다. 캐릭터 라인의 최대 길이을 지정하는 파라미터를 취합니다. 따라서,<code>VARCHAR(12)</code> 는 그 길이가 최고 12 문자장의 캐릭터 라인을 정의합니다. 모든 주요한 데이타베이스는,<code>VARCHAR</code> 의 길이를 최고 254 문자까지 지원하고 있습니다. 캐릭터 라인치가 <code>VARCHAR</code> 변수에 할당할 수 있으면(자), 데이타베이스는 할당할 수 있었던 캐릭터 라인의 길이를 기억해, 그것의 <code>SELECT</code> 시에 정확하게 원의 캐릭터 라인을 돌려줍니다.
+</p><p><a name="1007725"> </a>  JDBC <code>LONGVARCHAR</code> 형에는, 일관한 SQL 매핑이 존재하지 않습니다. 모든 주요한 데이타베이스는, 적어도 1G 바이트까지 지원하는, 어떤 종류의 매우 긴 가변 길이의 캐릭터 라인을 지원합니다만, SQL 의 형명은 다릅니다. 예에 대해서는,<a href="mapping.html#table1">「데이타베이스 고유의 SQL 의 형태에 매핑 되는 JDBC 의 형태」</a>의 겉(표)를 참조해 주세요.
+</p><p><a name="1007835"> </a>  Java 의 프로그래머는,<code>CHAR</code>,<code>VARCHAR</code>, 및 <code>LONGVARCHAR</code> 의 JDBC 캐릭터 라인의 3 개의 형태를 구별할 필요가 없습니다. 각각은 Java 의 <code>String</code> 로서 표현할 수가 있어 필요하게 된 정확한 데이터형을 몰라도 SQL 문을 올바르게 읽고 쓰기할 수가 있습니다.
+</p><p><a name="999345"> </a>  <code>CHAR</code>,<code>VARCHAR</code>, 및 <code>LONGVARCHAR</code> 는,<code>String</code> 또는 <code>char[]</code> 의 어느 것으로에서도 매핑 할 수가 있습니다만,<code>String</code> 가 일반적으로의 사용을 위해서(때문에)는 보다 적절합니다. 또,<code>String</code> 클래스에 의해,<code>String</code> 와 <code>char[]</code> 의 사이의 변환이 보다 간단하게 됩니다. <code>String</code> 객체를 <code>char[]</code> 로 변환하는 메소드가 있어, 또 <code>char[]</code> 를 <code>String</code> 객체에 조정하는 생성자 도 있습니다.
+</p><p><a name="999348"> </a>  대처해야 할 문제의 1 개는,<code>CHAR(n)</code> 형의 고정장 SQL 캐릭터 라인을 어떻게 처리할까입니다. 최적인 것은, JDBC 드라이버 (또는 DBMS)가 공백에서 적절한 패딩을 실시하는 것입니다. 따라서 <code>CHAR(n)</code> 필드가 데이타베이스로부터 꺼내졌을 때, 드라이버가 그것을 길이가 <code>n</code> 의 Java 의 <code>String</code> 객체로 변환합니다만, 이것에는 말미에 패딩의 공백이 몇개인가 포함되어 있을 가능성이 있습니다. 이것과는 반대로,<code>String</code> 객체가 <code>CHAR(n)</code> 필드에 송신되면(자), 드라이버 또는 데이타베이스, 혹은 그 양쪽 모두가 필요한 패딩용 공백을 캐릭터 라인의 말미에 추가해, 그 길이를 <code>n</code> 로 합니다.
+</p><p><a name="999351"> </a>  메소드 <code>ResultSet.getString</code> 는, 새로운 <code>String</code> 객체를 할당하거나 돌려주거나 합니다만, 데이터를 <code>CHAR</code>,<code>VARCHAR</code>, 및 <code>LONGVARCHAR</code> 필드로부터 꺼내는 것을 추천합니다. 이것은 일반적으로의 데이타를 뽑기 시작하기에는  적절합니다만, JDBC 의 <code>LONGVARCHAR</code> 형을 사용해 무엇 메가바이트인가의 캐릭터 라인을 보존하는 경우는 취급하기 어려운 일이 있습니다. 이러한 케이스를 처리하기 위해서,<code>ResultSet</code> 인터페이스의 2 개의 메소드에 의해, 프로그래머가 <code>LONGVARCHAR</code> 의 값을 임의의 사이즈의 덩어리로 시퀀셜에 데이터를 읽어낼 수 있는 Java 입력 스트림로서 꺼낼 수가 있도록(듯이) 하고 있습니다. 이러한 메소드는 <code>getAsciiStream</code> 와 <code>getCharacterStream</code> 로,<code>LONGVARCHAR</code> 열에 보존되고 있는 데이터를 ASCII 또는 Unicode 문자의 스트림로서 전달합니다. 메소드 <code>getUnicodeStream</code> 는, 추천 되고 있지 않습니다.
+</p><p><a name="1038144"> <a name="1038144"> 후술 하는 </a>  SQL3 의 <code>CLOB</code> 데이터형을 사용해, 대량의 문자 데이터를 나타낼 수도 있습니다.
+</p><a name="999403"> </a> 
+<h4>8.3. 2	 BINARY, VARBINARY, 및 LONGVARBINARY</h4>
+<p><a name="1007752"> </a>  JDBC 의 형태 <code>BINARY</code>,<code>VARBINARY</code>, 및 <code>LONGVARBINARY</code> 는 밀접하게 관련하고 있습니다. <code>BINARY</code> 는 작은 고정장의 바이너리치를,<code>VARBINARY</code> 는 작은 가변 길이의 바이너리치를,<code>LONGVARBINARY</code> 는 큰 가변 길이의 바이너리치를 각각 나타냅니다. <strong>&#32;&#32;</strong>
+</p><p><a name="1007822"> </a>  이상의 <code>BINARY</code> 형은 표준화 되지 않고, 지원는 주요한 데이타베이스간에 상당히 변동합니다.
+</p><p><a name="1007753"> </a>   JDBC <code>BINARY</code> 에 대응하는 SQL <code>BINARY</code> 형은, 비표준의 SQL 의 확장으로, 일부의 데이타베이스에 구현되고 있는에 지나지 않습니다. 바이너리 바이트의 수를 지정하는 파라미터를 취합니다. 따라서,<code>BINARY(12)</code> 는 12 바이트의 바이너리형을 정의합니다. 일반적으로,<code>BINARY </code>치는 254 바이트로 한정되고 있습니다.
+</p><p><a name="1007754"> </a>  JDBC <code>VARBINARY</code> 에 대응하는 SQL <code>VARBINARY</code> 형은, 비표준의 SQL 의 확장으로, 일부의 데이타베이스에 구현되고 있는에 지나지 않습니다. 바이너리 바이트의 최대수를 지정하는 파라미터를 취합니다. 따라서,<code>VARBINARY(12)</code> 는 그 길이의 최대 길이이 12 바이트인 바이너리형을 정의합니다. 일반적으로,<code>VARBINARY</code> 치는 254 바이트로 한정되고 있습니다. 바이너리치가 <code>VARBINARY</code> 변수에 할당할 수 있으면(자), 데이타베이스는 할당할 수 있었던 값의 길이를 기억해, 그것의 <code>SELECT</code> 시에, 원의 값을 정확하게 돌려줍니다.
+</p><p><a name="1007755"> </a>  JDBC <code>LONGVARBINARY</code> 형에 대응하는 일관한 SQL 의 형태는 존재하지 않습니다. 모든 주요한 데이타베이스는, 적어도 1G 바이트의 데이터를 지원하는, 어떤 종류의 매우 큰 가변 길이의 바이너리형을 지원합니다만, 그 SQL 의 형명은 다릅니다. 예에 대해서는,<a href="mapping.html#table1">「데이타베이스 고유의 SQL 의 형태에 매핑 되는 JDBC 의 형태」</a>의 겉(표)를 참조해 주세요.
+</p><p><a name="999428"> </a>  <code>BINARY</code>,<code>VARBINARY</code>, 및 <code>LONGVARBINARY</code> 는, Java 프로그램 언어에서는 <code>byte </code>배열로서 모두 똑같이 표현할 수 있습니다. 요구되고 있는 <code>BINARY</code> 데이터형을 정확하게 몰라도, SQL 문을 올바르게 읽고 쓰기할 수 있기 (위해)때문에, Java 프로그램 언어로 코드를 기술하는 프로그래머가 그러한 형태를 구별할 필요는 없습니다.
+</p><p><a name="1033868"> </a> <code>BINARY</code> 나 <code>VARBINARY</code> 의 값을 꺼내기 위해서(때문에) 추천 되는 메소드는,<code>ResultSet.getBytes</code> 입니다. JDBC <code>LONGVARBINARY</code> 형의 열이, 무엇 메가바이트장의 바이트 배열을 보존하고 있는 경우에는,<code>getBinaryStream</code> 메소드를 추천합니다. <code>LONGVARCHAR</code> 의 경우와 같게, 이 메소드는 프로그래머가 <code>LONGVARBINARY</code> 치를, 나중에보다 작은 덩어리로 읽을 수 있는 Java 입력 스트림로서 꺼내는 것을 가능하게 합니다.
+</p><p><a name="1055357"> </a>  후술 하는 SQL3 의 <code>BLOB</code> 데이터형을 사용해, 대량의 바이너리 데이터를 나타낼 수도 있습니다.
+</p><a name="1055360"> </a> 
+<h4>8.3. 3	 BIT</h4>
+<p><a name="1055362"> </a>  JDBC 형의 <code>BIT</code> 는, 0 이나 1 을 취할 수 있는 단일의 비트치를 나타냅니다.
+</p><p><a name="1007248"> </a>   SQL-92 는, SQL <code>BIT</code> 형을 정의합니다. 그러나, JDBC <code>BIT</code> 형과는 달라, 이 SQL-92 <code>BIT</code> 형은, 고정장의 바이너리열을 정의하는 파라미터화한 형태로서 사용할 수가 있습니다. SQL-92 는, 단일의 비트를 나타내는데 단순한 비파라미터화 <code>BIT</code> 형의 사용도 허락하고 있습니다.  이 사용은, JDBC <code>BIT</code> 형에 대응하고 있습니다. SQL-92 <code>BIT</code> 형은, 「완전한」 SQL-92 에 대해만 요구되어 현재, 주요한 데이타베이스의 일부 밖에 지원되고 있지 않습니다. 따라서, 이식성을 바라는 코드에서는, 넓게 지원되고 있는 JDBC <code>SMALLINT</code> 형의 (분)편을 사용하는 것을 추천합니다.
+</p><p><a name="1007641"> </a>  JDBC <code>BIT</code> 형에 대해서 추천 되는 Java 매핑은, Java 의 <code>boolean</code> 형으로 하는 것입니다.
+</p><a name="999493"> </a> 
+<h4>8.3. 4	 TINYINT &#32;</h4>
+<p><a name="1007274"> </a>  JDBC 형의 <code>TINYINT</code> 는,<code>0</code> 에서 <code>255</code> 까지의 부호 붙어 또는 부호 없음의 8 비트의 정수치를 나타냅니다.
+</p><p><a name="1007647"> </a>  대응하는 SQL 의 형태의 <code>TINYINT</code> 는 현재, 주요한 데이타베이스의 일부에서 밖에 지원되고 있지 않습니다. 따라서, 이식성을 바라는 코드에서는, 넓게 지원되고 있는 JDBC <code>SMALLINT</code> 형의 (분)편을 사용하는 것을 추천합니다.
+</p><p><a name="1007277"> </a>  JDBC <code>TINYINT</code> 형에 대해서 추천 되고 있는 Java 매핑은, Java <code>byte</code> 나 Java <code>short</code> 의 어느 쪽인지입니다. 8 비트의 Java <code>byte</code> 형은 <code>-128</code> 으로부터 <code>127</code> 까지의 부호 첨0 보다 작은 값을 나타내므로, 보다 큰 <code>TINYINT</code> 치에 대해서 항상 적절히 된다고는 할 수 없습니다.  다만, 16 비트의 Java <code>short</code> 는 항상 모든 <code>TINYINT</code> 치를 보관 유지할 수가 있습니다.
+</p><a name="1007309"> </a> 
+<h4>8.3. 5	 SMALLINT</h4>
+<p><a name="1007311"> </a>  JDBC 형의 <code>SMALLINT</code> 는,-32768 으로부터 32767 까지의 16 비트의 부호 첨부 정수치를 나타냅니다. <strong>&#32;</strong>
+</p><p><a name="1007316"> </a>  대응하는 SQL 의 형태의 <code>SMALLINT</code> 는 SQL-92 로 정의되어 모든 주요가 데이타베이스에 의해 지원되고 있습니다. SQL-92 표준에서는,<code>SMALLINT</code> 의 정밀도를 구현에 맡기고 있습니다만, 실제로는, 모든 주요한 데이타베이스는 적어도 16 비트를 지원하고 있습니다.
+</p><p><a name="1007652"> </a>  JDBC <code>SMALLINT</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>short</code> 로 하는 것입니다.
+</p><a name="1008299"> </a> 
+<h4>8.3. 6	 INTEGER</h4>
+<p><a name="1008300"> </a>  JDBC 형의 <code>INTEGER</code> 는,-2147483648 으로부터 2147483647 까지의 32 비트의 부호 첨부 정수치를 나타냅니다.
+</p><p><a name="1007351"> </a>  대응하는 SQL 의 형태의 <code>INTEGER</code> 는 SQL-92 로 정의되어 모든 주요한 데이타베이스에 의해 넓게 지원되고 있습니다. SQL-92 표준에서는,<code>INTEGER</code> 의 정밀도를 구현에 맡기고 있습니다만, 실제로는, 모든 주요한 데이타베이스는 적어도 32 비트를 지원하고 있습니다.
+</p><p><a name="1007659"> </a>  JDBC <code>INTEGER</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>int</code> 로 하는 것입니다.
+</p><a name="1012177"> </a> 
+<h4>8.3. 7	 BIGINT</h4>
+<p><a name="1012178"> </a>   JDBC 형의 <code>BIGINT</code> 는,&#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; <code>-9223372036854775808</code> 으로부터 <code>9223372036854775807</code> 까지의 64 비트의 부호 첨부 정수치를 나타냅니다.
+</p><p><a name="1007387"> </a>  대응하는 SQL 의 형태의 <code>BIGINT</code> 는, SQL 의 비표준의 확장입니다. 실제, SQL <code>BIGINT</code> 형은, 주요등의 데이타베이스에도 현재 구현되고 있지 않습니다.  따라서, 이식성을 바라는 코드에서는, 사용을 피하는 것을 추천합니다.
+</p><p><a name="1007668"> </a>  JDBC <code>BIGINT</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>long</code> 로 하는 것입니다.
+</p><a name="1007339"> </a> 
+<h4>8.3. 8	 REAL</h4>
+<p><a name="1007395"> </a>  JDBC 형의 <code>REAL</code> 는, 7 자리수의 가수부를 지원하는 「단정밀도」의 부동 소수점수(실수)입니다.
+</p><p><a name="1007400"> </a>  대응하는 SQL 의 형태의 <code>REAL</code> 는 SQL-92 로 정의되어 모든 주요한 데이타베이스에 의해, 일반적이지는 않습니다만, 넓게 지원되고 있습니다. SQL-92 표준에서는,<code>REAL</code> 의 정밀도를 구현에 맡기고 있습니다만, 실제로는,<code>REAL</code> 를 지원하는 모든 주요한 데이타베이스는 적어도 7 자리수의 가수 정밀도를 지원하고 있습니다.
+</p><p><a name="1033873"> </a>  JDBC <code>REAL</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>float</code> 로 하는 것입니다.
+</p><a name="1033874"> </a> 
+<h4>8.3. 9	 DOUBLE</h4>
+<p><a name="1033875"> </a>  JDBC 형의 <code>DOUBLE</code> 는, 15 자리수의 가수부를 지원하는 「배정밀도」의 부동 소수점수(실수)입니다.
+</p><p><a name="1007412"> </a>  대응하는 SQL 의 형태는,<code>DOUBLE</code> <code>PRECISION</code> 이며 SQL-92 로 정의되어 모든 주요한 데이타베이스에 의해, 넓게 지원되고 있습니다. SQL-92 표준에서는,<code>DOUBLE</code> <code>PRECISION</code> 의 정밀도를 구현에 맡기고 있습니다만, 실제로는,<code>DOUBLE</code> <code>PRECISION</code> 의 정밀도를 지원하는 모든 주요한 데이타베이스는 적어도 15 자리수의 가수 정밀도를 지원하고 있습니다.
+</p><p><a name="1055159"> </a>  JDBC <code>DOUBLE</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>double</code> 로 하는 것입니다.
+</p><a name="1055162"> </a> 
+<h4>8.3. 10	 FLOAT</h4>
+<p><a name="1055164"> </a>  JDBC 형의 <code>FLOAT</code> 는, 기본적으로는 JDBC 형의 <code>DOUBLE</code> 와 등가입니다. <code>FLOAT</code> 와 <code>DOUBLE</code> 의 양쪽 모두를 제공한 것은, 이전의 데이타베이스의 API 와의 일관성을 유지하려고 했기 때문에입니다만, 혼란을 일으키는 위험성이 생각됩니다. <code>FLOAT</code> 는, 15 자리수의 가수부를 지원하는 「배정밀도」부동 소수점수(실수)입니다.
+</p><p><a name="1007689"> </a>  대응하는 SQL 의 형태의 <code>FLOAT</code> 는 SQL-92 로 정의되고 있습니다. <code></code>SQL-92 표준에서는,<code>FLOAT</code> 의 정밀도를 구현에 맡기고 있습니다만, 실제로는,<code>FLOAT</code> 를 지원하는 모든 주요한 데이타베이스는 적어도 15 자리수의 가수 정밀도를 지원하고 있습니다.
+</p><p><a name="1055170"> </a>  이 <code>FLOAT</code> 형에 대해서 추천 되는 Java 매핑은, Java <code>double</code> 로 하는 것입니다. 다만, 배정밀도의 SQL <code>FLOAT</code> 와 단정밀도의 Java <code>float</code> 와의 사이의 혼란이 예상되기 (위해)때문에, JDBC 프로그래머는, 일반적으로의 경우에는,<code>FLOAT</code> 보다 JDBC <code>DOUBLE</code> 형을 사용하는 것을 추천합니다.
+</p><a name="1055175"> </a> 
+<h4>8.3. 11	 DECIMAL 와 NUMERIC</h4>
+<p><a name="1055177"> </a>  JDBC 형의 <code>DECIMAL</code> 와 <code>NUMERIC</code> 는 매우 닮았습니다. 양쪽 모두, 고정 정밀도의 10 진수를 나타냅니다. 대응하는 SQL 의 형태 <code>DECIMAL</code> 및 <code>NUMERIC</code> 는, SQL-92 로 정의되고 있어 광범위하게 구현되고 있습니다. 이러한 SQL 의 형태는, 정밀도와 스케일의 파라미터를 취합니다. 정밀도는, 지원되고 있는 10 진수의 총자리수로, 스케일은, 소수점 이하의 자리수입니다. 대부분의 DBMS 에서는, 스케일은 정밀도 이하입니다. 예를 들어, 「12.345」의 정밀도는 5 이며, 스케일은 3 이 됩니다.  「. 11」의 정밀도는 2 이며, 스케일은 2 가 됩니다.  JDBC 는, 모든 <code>DECIMAL</code> 의 형태와 <code>NUMERIC</code> 의 형태가, 적어도 15 자리수의 정밀도와 스케일을 지원하는 것을 요구하고 있습니다.
+</p><p><a name="1007712"> </a> <code>DECIMAL</code> 와 <code>NUMERIC</code> 의 유일한 상위는, SQL-92 스펙이,<code>NUMERIC</code> 형이 정확하게 지정의 정밀도로 표현되는 것을 요구하는 한편으로,<code>DECIMAL</code> 형에서는, 형태의 생성시로 지정된 정밀도를 넘은 정밀도를 추가하는 것을 구현에 허락하고 있는 점에 있습니다. 따라서, 형태의 <code>NUMERIC(12,4)</code> 로 작성된 열은, 항상 정확하게 12 자리수로 나타내져 형태의 <code>DECIMAL(12,4)</code> 로 작성된 열은, 보다 큰 자리수로 나타내지는 일도 있습니다.
+</p><p><a name="1007577"> <code>DECIMAL</code> 형과 <code>NUMERIC</code> 형에 추천 되는 Java 매핑은,<code>java.math.BigDecimal</code> 입니다. <code>java.math.BigDecimal</code> 형은,<code>BigDecimal</code> 형을 다른 <code>BigDecimal</code> 형, 정수형, 및 부동 소수점형과 가감승제 할 수 있는, 산술 계산을 제공하고 있습니다.
+</p><p><a name="1007578"> </a> <code>DECIMAL</code> 와 <code>NUMERIC</code> 의 값을 꺼내기 위해서(때문에) 추천 되는 메소드는,<code>ResultSet.getBigDecimal</code> 입니다. JDBC 는, 단순한 <code>Strings</code> 또는 <code>char</code> 의 배열로서 이러한 SQL 의 형태에의 액세스도 가능하게 합니다. 따라서, Java 프로그래머는,<code>getString</code> 를 사용해 <code>NUMERIC</code> 또는 <code>DECIMAL</code> 의 결과를 받을 수가 있습니다. 다만, 이것에 의해, 어플리케이션의 작성자가 캐릭터 라인상에서 산술 계산을 하는 것이 필요하게 되므로,<code>DECIMAL</code> 또는 <code>NUMERIC</code> 를 통화의 값으로 해서 사용하는 일반적인 경우가, 오히려 취급하기 어려워집니다. 이러한 SQL 의 형태를 Java 의 수치형의 어떤 것일까하고 해 꺼내는 일도 가능합니다.
+</p><p><a name="1053769"> </a> 
+
+</p><a name="1007474"> </a> 
+<h4>8.3. 12	 DATE, TIME, 및 TIMESTAMP</h4>
+<p><a name="999565"> </a>  시간에 관련하는 JDBC 의 형태에는 이하의 3 개가 있습니다.
+</p><ul><a name="1005696"> </a> 
+<li>JDBC <code>DATE</code> 형은 일자, 달, 및 해로 구성된다. 대응하는 SQL <code>DATE</code> 형은 SQL-92 로 정의되고 있지만, 주요한 데이타베이스의 일부 밖에 지원하고 있지 않다. 데이타베이스안에는, 같은 의미를 가지는 대체네의 SQL 의 형태를 제공하는 것도 있다 <a name="1005701"> </a> 
+<li>JDBC <code>TIME</code> 형은, 시각, 분 , 초로 구성된다. 대응하는 SQL <code>TIME </code> 형은 SQL-92 로 정의되고 있지만, 주요한 데이타베이스의 일부 밖에 지원하고 있지 않다. <code>DATE</code> 의 경우와 같이, 데이타베이스안에는, 같은 의미를 가지는 대체네의 SQL 의 형태를 제공하는 것도 있다
+<li>JDBC <code>TIMESTAMP</code> 형은 <code>DATE</code> 와 <code>TIME</code> 와 나노초필드를 나타낸다. 대응하는 SQL <code>TIMESTAMP</code> 형은 SQL-92 로 정의되고 있지만, 매우 소수의 데이타베이스가 구현하는 것만으로 있다
+</ul><p><a name="1005709"> </a>  표준의 Java 클래스 <code>java.util.Date</code> 는, 이것들 3 개의 JDBC 의 형태에 정확하게는 일치하고 있지 않았기 때문에 (표준의 Java 클래스에는 <code>DATE</code> 와 <code>TIME</code> 의 정보는 있지만, 나노초는 없다), JDBC 는 <code>java.util.Date</code> 의 3 개의 서브 클래스를 정의해, SQL 의 형태에 대응하고 있습니다. 이것들은 이하대로입니다.
+</p><ul><a name="1005710"> </a> 
+<li>SQL <code>DATE</code> 정보를 위한 <code>java.sql.Date</code>. <code>java.util.Date</code> base class의 시각, 분, 초, 및 밀리 세컨드 필드에는 제로가 설정될 필요가 있다. java.sql.Date</code> 생성자 에 제공되는 밀리 세컨드가 부의 수의 경우는, 드라이버는 그 일자를 1970 년 1 월 1 일 이전의 밀리 세컨드 수라고 해 계산한다.  부가 아닌 경우는, 그 일자를 1970 년 1 월 1 일 이후의 밀리 세컨드 수라고 해 계산한다
+<p><a name="1054434"> </a> 
+
+</p><a name="1005721"> </a> 
+<li>SQL <code>TIME</code> 정보를 위한 <code>java.sql.Time</code>. java.util.Date</code> base class의 년, 달, 날 필드는, 1970 년 1 월 1 일로 설정된다.  Java 의 달력(일력)으로는 이것이 「제로」일이 된다 
+</ul><ul><a name="1005716"> </a> 
+<li>SQL <code>TIMESTAMP</code> 정보를 위한 <code>java.sql.Timestamp</code>. <code>java.util.Date</code> 클래스의 상속. 나노초필드가 추가되고 있다
+</ul><p><a name="1005728"> </a>  JDBC 의 3 개의 시간 관련의 클래스는 모두 <code>java.util.Date</code> 의 서브 클래스이므로,<code>java.util.Date</code> 가 기대되고 있는 장소에서 사용할 수가 있습니다. 예를 들어, 국제화 메소드는 <code>java.util.Date</code> 객체를 인수로서 취하므로, JDBC 시간 관련 클래스의 어떤 것인가의 인스턴스로서 건네줄 수가 있습니다.
+</p><p><a name="1055300"> </a>  JDBC <code>Timestamp</code> 객체에는, 그 부모의 일자와 시간의 원가요소와 그것과는 별도로 나노초의 원가요소도 있습니다. <code>java.util.Date</code> 객체가 기대되고 있는 개소에서,<code>java.sql.Timestamp</code> 객체를 사용하면(자), 나노초의 원가요소는 없어집니다. 다만,<code>java.util.Date</code> 객체가 1 밀리 세컨드의 정밀도로 보존되고 있으므로,<code>java.sql.Timestamp</code> 객체를 <code>java.util.Date</code> 객체로 변환했을 때에 이 정도의 정밀도를 유지하는 것은 가능합니다. 이것은, 나노초원가요소안의 나노초를 (나노초의 수치를 1,000,000 으로 나누는 것으로 ) 밀리 세컨드로 환산하고 나서, 결과를 <code>java.util.Date</code> 객체에 가산합니다. 999,999 나노초까지는 이 변환에 의해 없어집니다만, 결과적으로 생기는 <code>java.util.Date</code> 객체는 1 밀리 세컨드 이내의 오차의 정밀도를 가집니다.
+</p><p><a name="1055301"> </a>  다음의 부분적인 코드는, 1 밀리 세컨드 이내의 정밀도를 가지는 <code>java.util.Date</code> 객체에 <code>java.sql.Timestamp</code> 객체를 변환하는 예입니다.
+</p><blockquote><pre>
+Timestamp t = new Timestamp(98724573287540L);
+java.util.Date d;
+d = new java.util.Date(t.getTime() + (t.getNanos() / 1000000));
+</pre></blockquote><p><a name="1042478"> </a>  JDBC 2.0 코어 API 의 새로운 메소드를 사용하면(자), 드라이버에 의해 일자, 시각, 또는 타임 스탬프가 계산될 때, 지정된 타임 존이 고려됩니다. 타임 존 정보는,<code>java.util.Calendar</code> 객체에 짜넣어지고 있습니다.  이 객체는,<code>Date</code>,<code>Time</code>, 및 <code>Timestamp</code> 의 값의 취득 및 설정에 사용되는 새로운 버젼의 메소드에게 건네집니다. 타임 존이 지정되어 있지 않은 경우는, 일자, 시각, 및 타임 스탬프의 계산시에 어플리케이션이 동작하고 있는 Virtual Machine 의 타임 존이 사용됩니다.
+</p><a name="1042474"> </a> 
+<h3>8.4	 진보한 JDBC 데이터형</h3>
+<p><a name="1042475"> </a>  ISO (International Organization for Standardization) 및 IEC (International Electrotechnical Commission)는, 일반적으로 SQL3 의 형태로 불리는 새로운 데이터형을 정의하고 있습니다. 이러한 새로운 SQL3 의 데이터형 가운데,<code>BLOB</code>,<code>CLOB</code>,<code>ARRAY</code>, 및 <code>REF</code> 는 미리 정의되고 있는 형태입니다.  이것에 대해, SQL 의 구조화형 및 <code>DISTINCT</code> 형은, 사용자 정의의 형태 (UDT)입니다. 이러한 새로운 형태는,<code>DISTINCT</code> 이외는 JDBC 2.0 코어 API 의 새로운 인터페이스에 매핑 됩니다. 여기에서는, 각 데이터형에 대해 간단하게 설명합니다.  각 형에 대한 자세한 것은, 해당하는 인터페이스의 레퍼런스의 장에 있습니다. <code>DISTINCT</code> 데이터형에 대한 장도 있습니다만,<code>DISTINCT</code> 형은 편입의 형태에 매핑 되기 (위해)때문에, 개개의 인터페이스는 없습니다.
+</p><p><a name="1037814"> </a>  JDBC 2.0 코어 API 의 새로운 데이터형은, RDB로 사용되는 데이터형이 큰폭으로 확장된 것입니다.  이러한 데이터형은, 객체에 의해 한층 닮았습니다. 실제, 새로운 데이터형안의 2 개의 데이터형은 UDT 이므로, Java 프로그램 언어의 클래스에 커스텀 매핑 할 수가 있습니다. 3 번째의 UDT (<code>JAVA_OBJECT</code>)는, Java 프로그램 언어로 정의된 클래스의 인스턴스입니다. JDBC 2.0 코어 API 의 새로운 데이터형은, 고도의 기능을 가지고 있습니다만, 모두 JDBC 1.0 API 의 데이터형과 같이 편리하게 사용할 수가 있습니다. 예를 들어, 이러한 데이터형을 데이타베이스 테이블의 열의 값으로 해서 사용해, 적절한 <code>getXXX</code> 및 <code>setXXX</code> 메소드를 사용해, 꺼내 및 보존을 실시할 수가 있습니다.
+</p><a name="1037648"> </a> 
+<h4>8.4. 1	 BLOB</h4>
+<p><a name="1037649"> </a> JDBC 의 형태 <code>BLOB</code> 는, SQL3 의 <code>BLOB</code> (Binary Large Object)를 나타냅니다.
+</p><p><a name="1037650"> </a> JDBC <code>BLOB</code> 의 값은, Java 프로그램 언어의 <code>Blob</code> 인터페이스의 인스턴스에 매핑 됩니다. 드라이버가 표준적인 구현에 준거하고 있는 경우,<code>Blob</code> 객체는, 객체의 바이너리 데이터를 포함하지 않고, 서버상의 BLOB 치를 논리적으로 가리키므로, 효율이 크게 향상합니다. <code>Blob</code> 인터페이스는, <code>BLOB</code> 데이터를 클라이언트상에 필요시에 실체화하기 위한 메소드를 제공하고 있습니다.
+</p><a name="1037617"> </a> 
+<h4>8.4. 2	 CLOB</h4>
+<p><a name="1037618"> </a>  JDBC 의 형태 <code>CLOB</code> 는, SQL3 의 형태 <code>CLOB</code> (Character Large Object)를 나타냅니다.
+</p><p><a name="1037633"> </a>  JDBC <code>CLOB</code> 의 값은, Java 프로그램 언어의 <code>Clob</code> 인터페이스의 인스턴스에 매핑 됩니다. 드라이버가 표준적인 구현에 준거하고 있는 경우,<code>Clob</code> 객체는, 객체의 문자 데이터를 포함하지 않고, 서버상의 <code>CLOB</code> 치를 논리적으로 가리키므로, 효율이 크게 향상합니다. <code>Clob</code> 인터페이스의 2 개의 메소드에 의해, <code>CLOB</code> 객체의 데이터가 클라이언트상에 실체화됩니다.
+</p><a name="1037699"> </a> 
+<h4>8.4. 3	 ARRAY</h4>
+<p><a name="1037700"> </a>  JDBC 의 형태 <code>ARRAY</code> 는, SQL3 의 형태 <code>ARRAY</code> 를 나타냅니다.
+</p><p><a name="1037713"> </a> <code>ARRAY</code> 의 값은, Java 프로그램 언어의 <code>Array</code> 인터페이스의 인스턴스에 매핑 됩니다. 드라이버가 표준적인 구현에 준거하고 있는 경우는,<code>ARRAY</code> 객체는, 객체의 요소를 포함하지 않고, 서버상의 <code>ARRAY</code> 치를 논리적으로 가리키므로, 효율이 크게 향상합니다. <code>Array</code> 인터페이스에는, 클라이언트상의 <code>ARRAY</code> 객체의 요소를, 배열 또는 <code>ResultSet</code> 객체의 형식에서 실체화하는 메소드가 포함되어 있습니다.
+</p><a name="1037725"> </a> 
+<h4>8.4. 4	 DISTINCT</h4>
+<p><a name="1037726"> </a> JDBC 의 형태 <a ><CB>DISTINCT<Default Para Font><CB><Default Para Font><code>DISTINCT</code> 는, SQL3 의 형태 <code>DISTINCT</code> 를 나타냅니다. </a> </p><a ><p><a name="1037739"> <a name="1037739"> 표준적인 매핑에서는,</a> <code>DISTINCT</code> 형은,<code>DISTINCT</code> 객체의 기저형이 매핑 되는 Java 의 형태에 매핑 됩니다. 예를 들어, 기저형이 <code>CHAR</code> 의 <code>DISTINCT</code> 형은,<code>String</code> 객체에 매핑 됩니다.  기저형이 SQL <code>INTEGER</code> 의 <code>DISTINCT</code> 형은,<code>int</code> 에 매핑 됩니다.
+</p><p><a name="1037764"> </a> <code>DISTINCT</code> 형은, Java 프로그램 언어에 커스텀 매핑 할 수도 있습니다. 커스텀 매핑은,<code>SQLData</code> 인터페이스를 구현하는 클래스, 및, <code>java.util.Map</code> 객체내의 엔트리로 구성됩니다.
+</p><a name="1037756"> </a> </a> <h4><a >8.4. 5	 STRUCT</a> </h4>
+<p><a name="1037757"> </a>  JDBC 의 형태 <code>STRUCT</code> 는, SQL3 의 구조화형을 나타냅니다. SQL 의 구조화형은, 사용자에 의해 <code>CREATE TYPE</code> 문을 사용해 정의되는, 1 개(살) 이상의 속성으로 구성되는 형태입니다. 이러한 속성에는, 짜넣어 끝나 또는 사용자 정의의 임의의 SQL 의 데이터형을 지정할 수 있습니다.
+</p><p><a name="1037773"> <a name="1037773"> 표준적인 매핑에서는,</a> SQL 의 형태 <code>STRUCT</code> 는, Java 프로그램 언어의 <code>Struct</code> 객체에 매핑 됩니다. <code>Struct</code> 객체에는, 객체가 나타내는 <code>STRUCT</code> 치의 각 속성의 값이 포함됩니다.
+</p><p><a name="1037782"> </a> <code>STRUCT</code> 치는, Java 프로그램 언어의 클래스에 커스텀 매핑 할 수 있습니다. <code> STRUCT</code> 내의 각 속성은, 클래스의 필드에 매핑 할 수 있습니다. 커스텀 매핑은,<code>SQLData</code> 인터페이스를 구현하는 클래스, 및, <code>java.util.Map</code> 객체내의 엔트리로 구성됩니다.
+</p><a name="1037806"> </a> 
+<h4>8.4. 6	 REF</h4>
+<p><a name="1037807"> </a> JDBC 의 형태 <code>REF</code> 는, SQL3 의 형태 <code>REF&lt;structured type&gt;</code> 를 나타냅니다. SQL <code>REF</code> 는, SQL 의 구조화형의 인스턴스를 참조, 즉 논리적으로 가리킵니다.  이 인스턴스는,<code>REF</code> 에 의해 지속적 및 일의에 식별됩니다. Java 프로그램 언어에서는,<code>Ref</code> 인터페이스는 SQL <code>REF</code> 를 나타냅니다.
+</p><p><a name="1038312"> </a> 클라이언트상에 실체화한 속성치를 가지지 않게 해, 어플리케이션으로부터 데이타베이스의 SQL 구조화형의 인스턴스를 가리키도록(듯이) 하고 싶은 경우에는, <code>REF&lt;structured type&gt;</code> 형, 즉 SQL 구조화형에의 참조를 사용할 수 있습니다.
+</p><p><a name="1050140"> </a> <code>REF</code> 치는, SQL 구조화형의 특정의 인스턴스에 대해서 특별히 작성된 일의의 식별자입니다. 이 값은, 값이 참조하는 인스턴스와 함께, 서버상의 특정의 테이블에 영속적으로 보존됩니다. 어플리케이션으로부터 그 특별한 테이블의 <code>REF</code> 치를 select 하면, 그 <code>REF</code> 치에 의해 식별되는 구조화형의 인스턴스 대신에 그 <code>REF</code> 치를 사용할 수 있습니다.
+</p><a name="1038181"> </a> 
+<h4>8.4. 7	 JAVA_OBJECT</h4>
+<p><a name="1038182"> </a>  JDBC 2.0 코어 API 에 추가된 JDBC 형의 <code>JAVA_OBJECT</code> 를 사용하면(자), Java 프로그램 언어의 객체를, 데이타베이스의 값으로 해서 간단하게 사용할 수 있습니다. <code>JAVA_OBJECT</code> 는, Java 프로그램 언어로 정의되고 있는 클래스의 인스턴스에 대한 단순한 형태의 코드로, 데이타베이스의 객체로서 보존됩니다. <code>JAVA_OBJECT</code> 형은, Java 객체를 직접 보존할 수 있도록(듯이) 형태 시스템이 확장되고 있는 데이타베이스로 사용됩니다. <code>JAVA_OBJECT</code> 의 값은, 직렬화 된 Java 객체로서 또는 벤더 고유의 형식에서 보존됩니다.
+</p><p><a name="1042348"> </a> <code>JAVA_OBJECT</code> 형은,<code>getTypeInfo</code>,<code>getColumns</code>,<code>getUDTs</code> 등을 포함한, 다양한 <code>DatabaseMetaData</code> 메소드로부터 반환되는 <code>ResultSet</code> 객체내의 <code>DATA_TYPE</code> 열이 취할 수 있는 값의 1 개입니다. 새로운 JDBC 2.0 코어 API 의 일부인 <code>getUDTs</code> 메소드는, 적절한 파라미터가 건네받으면(자), 특정의 schema에 보존되고 있는 Java 객체의 정보를 돌려줍니다. 이 정보를 이용할 수 있으면(자), Java 클래스를 데이타베이스의 형태로서 간단하게 사용할 수 있습니다.
+</p><p><a name="1042357"> </a> <code>JAVA_OBJECT</code>  형의 값이 지원되는 DBMS 의 경우는, 값은 <code>PreparedStatement.setObject</code> 메소드를 사용해 데이타베이스 테이블에 보존됩니다. 이 값은,<code>ResultSet.getObject</code> 또는 <code>CallableStatement.getObject</code> 메소드를 사용해 꺼내,<code>ResultSet.updateObject </code> 메소드를 사용해 갱신합니다.
+</p><p><a name="1042441"> </a> 예를 들어,<code>Engineer</code> 클래스의 인스턴스가 <code>PERSONNEL</code> 테이블의 <code>ENGINEERS</code> 열에 보존되고 있으면(자) 가정하면(자), 다음의 부분적인 코드는, 기술자의 이름이 모두 출력합니다.  stmt 는,<code>Statement</code> 객체입니다.
+</p><blockquote><pre>
+ResultSet rs = stmt.executeQuery("SELECT ENGINEERS FROM PERSONNEL");
+while (rs.next()) {
+	Engineer eng = (Engineer) rs.getObject("ENGINEERS");
+	System.out.println(eng.lastName + ", " + eng.firstName);
+}
+</pre></blockquote><p><a name="1042411"> </a> <code>Engineer</code> 의 모든 인스턴스를 포함한 <code>ResultSet</code> 객체 rs 가 쿼리로부터 돌려주어져<code>getObject</code> 메소드에 의해 각 인스턴스가 차례로 꺼내집니다. <code>getObject</code> 로부터 반환되는 값은 <code>Object</code> 형이므로, 변수 eng 에 대입하기 전에, 상세한 <code>Engineer</code> 형에 네로우 변환할 필요가 있습니다.
+</p><a name="1037611"> </a> 
+<h3>8.5	 매핑의 예</h3>
+<p><a name="1037608"> </a>  Java 프로그램 언어로 기술된 프로그램이 데이터를 데이타베이스로부터 꺼낸다고 하는 상황에서는, 반드시 하등의 형태로 매핑과 데이터 변환이 필요합니다. 대부분의 경우, JDBC API 를 사용하는 프로그래머는, 자신이 대상으로 하고 있는 데이타베이스의 짜에 대한 지식을 가지고 있습니다. 즉, 데이타베이스에 어떠한 테이블이 있어, 그러한 테이블의 각 열의 데이터형이 무엇이지에 대해 알고 있습니다. 따라서,<code>ResultSet</code>,<code>PreparedStatement</code>, 및 <code>CallableStatement</code> 의 인터페이스로 고정적으로 입력한 액세스 메소드를 사용할 수가 있습니다. 이 마디에서는, 3 개(살)이 다른 시나리오를 나타내는 것과 동시에, 각각의 경우에 필요한 데이터의 매핑과 변환에 대해 설명합니다.
+</p><a name="1005254"> </a> 
+<h4>8.5. 1	 간단한 SQL 문</h4>
+<p><a name="1012455"> </a>  무엇보다 일반적인 케이스에서는, 사용자가 간단한 SQL 문을 실행해, 결과를 가지는 <code>ResultSet</code> 객체를 받습니다. 데이타베이스가 돌려주어,<code>ResultSet</code> 열에 보존되는 각 치는, JDBC 의 데이터형을 가지고 있습니다. <code>ResultSet.getXXX</code> 메소드에의 호출은, 그 값을 Java 의 데이터형으로서 꺼냅니다. 예를 들어,<code>ResultSet</code> 열에 JDBC 의 <code>FLOAT</code> 치가 들어가 있는 경우, 메소드 <code>getDouble</code> 는 그 값을 Java 의 <code>double</code> 로서 꺼냅니다. <a href="mapping.html#table2">표 8.6</a>  은, 어느 <code>getXXX</code> 메소드가 어느 JDBC 의 형태를 꺼내기 위해서(때문에) 사용되는지를 나타냅니다. <code>ResultSet</code> 열의 형태를 모르는 사용자는, 메소드 <code>ResultSet.getMetaData</code> 를 호출하고 나서,<code>ResultSetMetaData.getColumnType</code> 를 호출하는 것으로, 그 정보를 취득할 수가 있습니다.  
+</p><a name="1005345"> </a> 
+<h4>8.5. 2	 IN 파라미터가 붙은 SQL 문</h4>
+<p><a name="1008333"> </a>  이제(벌써) 1 개의 시나리오에서는, 사용자가 입력 파라미터를 취하는 SQL 쿼리를 송신합니다. 이 경우, 사용자는 <code>PreparedStatement.setXXX</code> 메소드를 호출해, 각 입력 파라미터에 값을 할당합니다. 예를 들어,<code>PreparedStatement.setLong(1, 2345678)</code> 는, 최초의 파라미터에 <code>2345678</code> 이라고 하는 값을 Java 의 <code>long</code> 로서 할당합니다. 드라이버는, 데이타베이스에 송신하기 위해서,<code>2345678</code> 을 JDBC 의 <code>BIGINT</code> 로 변환합니다. 드라이버가 데이타베이스에 어느 JDBC 의 형태를 송신할까는, Java 의 형태로부터 JDBC 의 형태에의 표준적인 매핑에 의해 결정됩니다.  이 표준적인 매핑은,<a href="mapping.html#1033804">표 8.2</a>  에 나타나고 있습니다.
+</p><a name="999840"> </a> 
+<h4>8.5. 3	 INOUT 파라미터가 붙은 SQL 문</h4>
+<p><a name="1008339"> </a>  한층 더 이제(벌써) 1 개의 시나리오에서는, 사용자가 스트아드프로시쟈를 호출해, 값을 그 <code>INOUT</code> 파라미터에 할당해<code>ResultSet</code> 객체로부터 값을 꺼내, 파라미터로부터 값을 꺼냅니다. 이 케이스는 너무 일반적이지 않고, 일반적으로의 경우보다 복잡합니다만, 매핑과 데이터 변환의 좋은 예가 되겠지요.  
+</p><p><a name="1005634"> </a>  이 시나리오에서는 우선,<code>PreparedStatement.setXXX</code> 메소드를 사용해,<code>INOUT</code> 파라미터에 값을 할당합니다. 더해, 파라미터도 출력에 사용되므로, 프로그래머는 데이타베이스가 돌려주는 값의 JDBC 형과 함께 각 파라미터를 등록할 필요가 있습니다. 이것은, 클래스 <code>Types</code> 에 정의된 JDBC 의 형태의 1 개를 취하는 메소드 <code>CallableStatement.registerOutParameter</code> 를 사용해 실시합니다. 프로그래머는,<code>CallableStatement.getXXX</code> 메소드를 사용해, 출력 파라미터에 보존된 값을 꺼냅니다.
+</p><p><a name="1005633"> </a> <code>CallableStatement</code>. <code>getXXX</code> 로 사용되는 <code>XXX</code> 형은, 그 파라미터에 등록된 JDBC 의 형태에 매핑 할 필요가 있습니다. 예를 들어, 데이타베이스가, JDBC <code>REAL</code> 라고 하는 형태의 출력치를 돌려준다고 기대되고 있는 경우, 파라미터는 <code>java.sql.Types.REAL</code> 로서 등록되어 있을 필요가 있습니다. 다음에 JDBC <code>REAL</code> 치를 꺼내기 위해서(때문에)는, 메소드 <code>CallableStatement.getFloat</code> 를 호출할 필요가 있습니다 (JDBC 의 형태로부터 Java 의 형태에의 매핑은,<a href="mapping.html#1051555">표 8.1</a>  에 나타나고 있습니다). 메소드 <code>getFloat</code> 는, 출력 파라미터에 보존되고 있는 값을 JDBC <code>REAL</code> 로부터 Java <code>float</code> 로 변환하고 나서 돌려줍니다. 다양한 데이타베이스에 대응해, 어플리케이션의 이식성을 높이기 위해서(때문에), 값을 출력 파라미터로부터 꺼내기 전에, 값을 <code>ResultSet</code> 객체로부터 꺼내는 것을 추천합니다.
+</p><p><a name="1008151"> </a>  이하의 코드는 ,함께 <code>INOUT</code> 파라미터가 2 개 붙어 있어, 일반적으로의 JDBC <code>ResultSet</code> 를 돌려주는 <code>getTestData</code> 라는 이름의 스트아드프로시쟈를 호출하는 방법을 나타냅니다. 우선,<code>Connection</code> 객체 con 가,<code>CallableStatement</code> 객체 cstmt 를 생성합니다. 다음에, 메소드 <code>setByte</code> 가 최초의 파라미터에 Java <code>byte</code> 로 <code>25</code> 를 설정합니다. 드라이버는,<code>25</code> 를 JDBC <code>TINYINT</code> 로 변환해, 데이타베이스에 송신합니다. 메소드 <code>setBigDecimal</code> 가, 2 번째의 파라미터를 <code>83.75</code> 라고 하는 입력치로 설정합니다. 드라이버는, 이 Java <code>BigDecimal</code> 객체를 JDBC <code>NUMERIC</code> 의 값으로 변환합니다. 다음에, 2 개의 파라미터가 <code>OUT</code> 파라미터로서 등록되어 최초의 파라미터가 JDBC <code>TINYINT</code>, 2 번째의 파라미터가 소수점 제 2 위까지를 가지는 JDBC <code>NUMERIC</code> 가 됩니다. cstmt 가 실행된 다음에,<code>ResultSet.getXXX</code> 를 사용해 <code>ResultSet</code> 객체로부터 값이 꺼내집니다. 메소드 <code>getString</code> 는 최초의 열의 값을 Java <code>String</code> 객체로서 취득해,<code>getInt</code> 는 2 번째의 열의 값을 Java <code>int</code> 로서 취득해, 2 번째의 <code>getInt</code> 는 3 번째의 열의 값을 Java <code>int</code> 로서 가져옵니다.  
+</p><p><a name="1005450"> </a>  다음에,<code>CallableStatement.getXXX</code> 메소드가, 출력 파라미터에 보존된 값을 꺼냅니다. 메소드 <code>getByte</code> 가 JDBC <code>TINYINT</code> 를 Java <code>byte</code> 로서 꺼내,<code>getBigDecimal</code> 가 소수점 제 2 위까지를 가지는 JDBC <code>NUMERIC</code> 를, Java <code>BigDecimal</code> 객체로서 꺼냅니다. 파라미터가 입출력 파라미터의 경우,<code>setXXX</code> 메소드는 <code>getXXX</code> 와 같은 Java 형의 것을 사용합니다 (<code>setByte</code> 및 <code>getByte</code> 와 같이). <code>registerOutParameter</code> 메소드는, 그것을 Java 의 형태로부터 매핑 되는 JDBC 의 형태에 등록합니다.  Java <code> byte</code> 는,<a href="mapping.html#1033804">표 8.2</a>  로 나타나도록(듯이), JDBC <code>TINYINT</code> 에 매핑 됩니다.  
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+	"{call getTestData(?, ? )}");
+cstmt.setByte(1, 25);
+cstmt.setBigDecimal(2, 83.75);
+// register the first parameter as a JDBC TINYINT and the second
+// as a JDBC NUMERIC with two digits after the decimal point
+cstmt.registerOutParameter(1, java.sql.Types.TINYINT);
+cstmt.registerOutParameter(2, java.sql.Types.NUMERIC, 2);
+ResultSet rs = cstmt.executeQuery();
+// retrieve and print values in result set
+while (rs.next()) { 	
+	String name = rs.getString(1);
+	int score = rs.getInt(2);
+	int percentile = rs.getInt(3);
+	System.out.print("name = " + name + ", score = " + score);
+
+	System.out.println(", percentile = " + percentile);
+}
+// retrieve values in output parameters	
+byte x = cstmt.getByte(1); 
+java.math.BigDecimal n = cstmt.getBigDecimal(2); 
+</pre></blockquote><p><a name="999857"> </a>  일반화하면(자),<code>CallableStatement.getXXX</code> 와 <code>CallableStatement.setXXX</code> 메소드의 <code>XXX</code> 는 Java 의 형태입니다. <code>setXXX</code> 메소드에 대해서는, 데이타베이스에 송신하기 전에, (<a href="mapping.html#1033804">표 8.2</a>  에 나타난 표준적인 매핑을 사용해) 드라이버가 Java 의 형태를 JDBC 의 형태로 변환합니다. <code>getXXX</code> 메소드에 대해서는,<code>getXXX</code> 메소드에 돌려주어지기 전에, 데이타베이스에 의해 반환된 JDBC 의 형태를 드라이버가 (<a href="mapping.html#1051555">표 8.1</a>  에 나타난 표준적인 매핑을 사용해) Java 의 형태로 변환합니다.
+</p><p><a name="999909"> </a>  메소드 <code>registerOutParameter</code> 는 항상, JDBC 의 형태를 인수로서 취해, 메소드 <code>setObject</code> 는 JDBC 의 형태를 인수로서 취합니다.
+</p><p><a name="1053832"> </a>  옵션의 3 번째의 인수에, JDBC 의 형태가 공급되는 경우, 메소드 <code>setObject</code> 에 의해, 파라미터의 값이 Java 의 형태로부터 지정된 JDBC 의 형태에 명시적으로 변환되는 것에 주의해 주세요. 변환 후의 JDBC 의 형태가 <code>setObject</code> 에 공급되어 있지 않은 경우는, 파라미터치는 Java 의 <code>Object</code> 형으로부터의 표준적인 매핑의 JDBC 의 형태에 변환됩니다 (<a href="mapping.html#1034737">표 8.4</a>  를 참조). 드라이버는, 파라미터를 데이타베이스에 송신하기 전에, 명시적 또는 암묵적인 변환을 실시합니다.
+</p><a name="1053842"> </a> 
+<h3>8.6	 커스텀 매핑</h3>
+<p><a name="1038001"> </a> SQL3 의 사용자 정의형 (UDT)인 구조화형 및 <code>DISTINCT</code> 형은, Java 프로그램 언어의 클래스에 커스텀 매핑 할 수 있습니다. 커스텀 매핑이 설정되어 있는 경우, 드라이버는 UDT 에 대해서 JDBC 와 Java 간의 형태 변환을 실시할 때, 표준적인 매핑 대신에 커스텀 매핑을 사용합니다.
+</p><p><a name="1038017"> </a>  UDT 는,<code>ResultSet.getObject</code> 및 <code>CallableStatement.getObject</code> 메소드를 사용해 데이타베이스로부터 꺼내져<code>PreparedStatement.setObject</code> 메소드를 사용해 원의 데이타베이스에 답신됩니다. 어플리케이션이 UDT 를 꺼내기 위해서(때문에) <code>getObject</code> 메소드를 호출하면(자), 드라이버는 접속에 관련지을 수 있고 있는 형태 맵이 그 UDT 의 엔트리를 가지고 있을지 어떨지 검사합니다. 엔트리가 존재하고 있는 경우, 드라이버는 그 형태 맵을 사용해 커스텀 매핑 합니다.  일치하는 엔트리가 존재하지 않는 경우, 드라이버는 표준적인 매핑을 사용합니다.
+</p><p><a name="1042911"> </a> 대부분의 커스텀 매핑은, 접속의 형태 맵을 사용해 행해집니다. 그렇지만, 드라이버에 다른 형태 맵을 사용하게 할 수도 있습니다. 커스텀 매핑이 가능한 메소드는, 2 개의 버젼을 가집니다.  형태 맵을 파라미터로서 취하는 메소드라고 취하지 않는 메소드입니다. 일반적으로은, 형태 맵이 지정되지 않기 때문에, 드라이버는 접속의 형태 맵을 디폴트로 사용합니다. 메소드에 형태 맵이 건네받았을 경우는, 그 형태 맵이 접속의 형태 맵보다 우선되어 드라이버는, 접속에 관련지을 수 있었던 형태 맵 대신에, 이 형태 맵을 사용해 UDT 를 매핑 합니다. 건네받은 형태 맵에 UDT 의 엔트리가 존재하지 않는 경우는, 드라이버는, 표준적인 매핑을 실시합니다.  
+</p><p><a name="1039119"> </a> <code>setObject</code> 메소드는, 파라미터로서 형태 맵을 취하지 않기 때문에, 조금 다른 동작이 됩니다. <code>setObject</code> 에 <code>SQLData</code> 인터페이스를 구현하고 있는 클래스의 인스턴스 (즉 꺼내졌을 때에 커스텀 매핑 되고 있던 객체 )가 건네받았을 경우는, 드라이버에는, 이 객체를 매핑하기 위한 기구가 벌써 설정되어 있습니다. 드라이버는, 데이타베이스에 송신하기 전에, UDT 를 그 SQL 의 형태에 매핑 해, 클래스 인스턴스를 변환합니다. <code>setObject</code> 메소드에 의해 설정되는 파라미터가, 커스텀 매핑되어 있지 않은 경우는, 드라이버는, 데이타베이스에 송신하기 전에, 표준적인 매핑을 사용해 변환합니다.
+</p><p><a name="1055406"> <code>getObject</code> 및 <code>setObject</code> 메소드만이, SQL 구조화형의 꺼내 및 보존에 사용할 수 있다고 하는 사실이 다음 일을 확실히 합니다.  1 개(살)만 있는 경우에 커스텀 매핑이 사용된다. <code>Array</code> 인터페이스의 4 개의 메소드에, 형태 맵을 건네주는 경우도 있어,<code>ARRAY</code> 의 요소가 UDT 의 경우는, 그 요소가 클라이언트상에서 실체화되는 시점에서 커스텀 매핑 시킬 수가 있습니다. <code>Struct</code> 메소드의 <code>getAttributes</code> 에도, 형태 맵을 취하는 버젼이 있습니다.  이 형태 맵은, 클라이언트에의 송신전에 SQL 구조화형의 속성을 커스텀 매핑 하는데 사용됩니다.  
+</p><a name="1055417"> </a> 
+<h3>8.7	 동적 데이터 액세스</h3>
+<p><a name="1008547"> </a>   사용자가 액세스 하고 싶은 것은, 컴파일시에 그 데이터형을 알 수 있고 있는 결과 또는 파라미터인 경우가 대부분입니다. 다만, 총칭 브라우저 또는 쿼리툴등의 어플리케이션은, 액세스 하는 데이타베이스 schema를 모르는 상태로 컴파일 됩니다. 이 때문에, JDBC 에서는 정적 데이터 액세스에 가세해, 완전하게 동적인 데이터 액세스도 지원하고 있습니다.  
+</p><p><a name="999298"> </a>  3 개의 메소드가, 컴파일시에 데이터형이 불명한 값에 액세스 하는 것을 지원합니다.
+</p><ul><a name="999302"> </a> 
+<li> <code>ResultSet.getObject</code> <a name="999318"> </a> 
+<li> <code>PreparedStatement.setObject</code>
+<li> <code>CallableStatement.getObject</code>
+</ul><p><a name="999337"> </a>  예를 들어, 어플리케이션이, 다양한 형태를 <code>ResultSet</code> 객체 중(안)에서 결과적으로 받아들이는 것을 가능하게 하고 싶은 경우에는,<code>ResultSet.getObject</code> 를 사용할 수가 있습니다.
+</p><p><a name="1034382"> </a> <code>ResultSet.getObject</code> 와 <code>CallableStatement.getObject</code> 의 양메소드는 Java <code>Object</code> 로서 값을 꺼냅니다. <code>Object</code> 는, 모든 Java 객체에 대한 base class이므로, 임의의 Java 클래스의 인스턴스는 <code>Object</code> 의 인스턴스로서 꺼내는 것이 가능합니다. 다만, Java 의 형태 <code>boolean</code>,<code>char</code>,<code>byte</code>,<code>short</code>,<code>int</code>,<code>long</code>,<code>float</code>, 및 <code>double</code> 는, 편입형의 「프리미티브(primitive)」형이므로,<code>Object</code> 클래스의 인스턴스로는 되지 않습니다. 결과적으로, 상기의 형태는,<code>getObject</code> 메소드에서는 꺼낼 수가 없습니다. 다만, 그러한 원시형에는, 래퍼로서 가동한다, 각각 대응하는 클래스가 있습니다. 그러한 클래스의 인스턴스는 객체이며, 즉 <code>ResultSet.getObject</code> 와 <code>CallableStatement.getObject</code> 의 양메소드에 의해 꺼내는 것이 가능하게 됩니다. <a href="mapping.html#1004791">표 8.3</a>  은, JDBC 형으로부터 Java <code>Object</code> 형에의 매핑을 나타냅니다. 이 표는, JDBC 형으로부터 Java 형에의 표준적인 매핑과는 달라, 각 프리미티브(primitive)의 Java 형은 그 래퍼 클래스가 잡아 대신합니다.  다만, JDBC <code>TINYINT</code> 와 JDBC <code>SMALLINT</code> 는, Java 클래스의 <code>Integer</code> 에 매핑 됩니다.
+</p><a name="999058"> </a> 
+<h3>8.8	 데이타베이스에의 Java 객체의 보존</h3>
+<p><a name="1038073"> </a> JDBC 2.0 코어 API 에의 기능 추가에 의해, Java 객체를 데이타베이스에 보다 간단하게 보존할 수 있게 되었습니다. JDBC 1.0 API 의 <code>PreparedStatement.setObject</code> 메소드는, Java 프로그램 언어로 정의된 객체의 영속적인 보존을 벌써 지원하고 있습니다. 새로운 데이터형 <code>JAVA_OBJECT</code> 와 새로운 메소드 <code>DatabaseMetaData.getUDTs</code> 에 의해, 데이타베이스내에 보존된 Java 객체의 추적이 보다 간단하게 되었습니다.
+</p><a name="1038075"> </a> 
+<h3>8.9	 형의 매핑 일람</h3>
+<p><a name="1005553"> </a>   이 마디에는, JDBC 와 Java 의 데이터의 형태에 관련하는 이하의 겉(표)를 기재합니다.
+</p><p><a name="1008737"> </a> 
+
+</p><p><a name="1005564"> </a>  <strong>표 8.1-Java 의 형태에 매핑 되는 JDBC 의 형태</strong>
+</p><a name="1050180"> </a> 
+<blockquote>이 표는, JDBC 의 형태와 Java 의 형태의 개념상의 대응을 나타내고 있습니다. 프로그래머는 이 매핑을 명심해, 코드를 기술할 필요가 있습니다. 예를 들어, 데이타베이스내의 값이 <code>SMALLINT</code> 의 경우, JDBC 어플리케이션으로 사용하는 데이터형은,<code>short</code> 가 됩니다. </blockquote>
+<a name="1050187"> </a> 
+<blockquote><code>getObject</code> 이외의 모든 CallableStatement.getXXX 메소드는, 이 매핑을 사용합니다. <code>CallableStatement</code> 및 <code>ResultSet</code> 인터페이스의 <code>getObject</code> 메소드는,<a href="mapping.html#1004791">「Java 의 객체형에 매핑 되는 JDBC 의 형태」</a>의 매핑을 사용합니다. </blockquote>
+<a name="1054437"> </a> 
+<blockquote></blockquote>
+<p><a name="1005566"> </a>  <strong>표 8.2-JDBC 의 형태에 매핑 되는 Java 의 형태</strong>
+</p><a name="1050199"> </a> 
+<blockquote>이 표는, ResultSet.updateXXX 메소드 및 IN 파라미터에 대해서 드라이버가 사용하는 매핑을 나타내고 있습니다. PreparedStatement.setXXX 메소드 및 RowSet.setXXX 메소드는, 이 표를 사용해 Java 의 형태인 IN 파라미터를, 데이타베이스에 송신하기 위한 JDBC 의 형태에 매핑 합니다. 이러한 2 개의 인터페이스의 <code>setObject</code> 메소드는,<a href="mapping.html#1034737">「JDBC 의 형태에 매핑 되는 Java 의 객체형」</a>  의 매핑을 사용합니다. </blockquote>
+<a name="1050225"> </a> 
+<blockquote></blockquote>
+<p><a name="1054438"> </a>  <strong>표 8.3-Java 의 객체형에 매핑 되는 JDBC 의 형태</strong>
+</p><a name="1005572"> </a> 
+<blockquote>이 표는, ResultSet.getObject 및 CallableStatement.getObject 의 표준적인 매핑으로 사용됩니다. </blockquote>
+<a name="1050230"> </a> 
+<blockquote></blockquote>
+<p><a name="1005573"> </a>  <strong>표 8.4-JDBC 의 형태에 매핑 되는 Java 의 객체형</strong>
+</p><a name="1050232"> </a> 
+<blockquote>타겟의 JDBC 의 형태를 나타내는 파라미터가 지정되지 않는 경우는, PreparedStatement.setObject 및 RowSet.setObject 에서는, 이 표의 매핑이 사용됩니다. </blockquote>
+<a name="1050233"> </a> 
+<blockquote></blockquote>
+<p><a name="1005575"> </a>  <strong>표 8.5-setObject 에 의한 Java 의 객체형으로부터 JDBC 의 형태에의 변환</strong>
+</p><a name="1005576"> </a> 
+<blockquote>이 표는, 타겟측의 JDBC 의 형태로서 어느 JDBC 형을, PreparedStatement.setObject 및 RowSet.setObject 메소드로 지정할 수 있을까 가리키고 있습니다. </blockquote>
+<a name="1054433"> </a> 
+<blockquote></blockquote>
+<p><a name="1005577"> </a>  <strong>표 8.6-ResultSet.getXXX 메소드에 의해 지원되고 있는 형태 변환</strong>
+</p><a name="1050293"> </a> 
+<blockquote>이 표는, ResultSet.getXXX 메소드에 의해 반환되는 JDBC 의 형태를 나타내고 있습니다. 굵은 글씨의 <strong>X</strong> 는, JDBC 의 형태의 꺼내에 추천 되는 메소드입니다. 보통 x 는,<code>getXXX</code> 메소드를 사용할 수 있는 JDBC 의 형태를 나타내고 있습니다. </blockquote>
+<a name="1051808"> </a> 
+<blockquote>이 표는, SQLInput.readXXX 메소드로 사용되는 변환 (추천 되고 있는 변환을 사용할 뿐(만큼)의 것은 제외하다 )도 포함하고 있습니다. </blockquote>
+<p><a name="1054430"> </a> 
+
+</p><p><a name="1023608"> </a>  <strong>표 8.7-데이타베이스 고유의 SQL 의 형태에 매핑 되는 JDBC 의 형태</strong>
+</p><a name="1051421"> </a> 
+<blockquote>이 표는, 개개의 데이타베이스에 의해 사용되고 있는, JDBC 의 형태에 가장 가까운 데이터형의 이름을 나타냅니다. </blockquote>
+<a name="1051555"> </a> 
+<h4>8.9. 1	 Java 의 형태에 매핑 되는 JDBC 의 형태 
+<Table Border="3">
+<caption></caption>
+<tr><th><br><p><a name="1051430"> </a> JDBC 의 형태
+</p></th><th><br><p><a name="1051432"> </a>  Java 의 형태
+</p></th></tr>
+<tr><td><br><p><a name="1051435"> </a>  <code>CHAR</code>
+</p></td><td><br><p><a name="1051437"> </a>  <code>String</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051440"> </a>  <code>VARCHAR</code>
+</p></td><td><br><p><a name="1051442"> </a>  <code>String </code>
+</p></td></tr>
+<tr><td><br><p><a name="1051445"> </a>  <code>LONGVARCHAR</code>
+</p></td><td><br><p><a name="1051447"> </a>  <code>String</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051449"> </a>  <code>NUMERIC</code>
+</p></td><td><br><p><a name="1051451"> </a>  <code>java.math.BigDecimal</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051453"> </a>  <code>DECIMAL</code>
+</p></td><td><br><p><a name="1051455"> </a>  <code>java.math.BigDecimal</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051458"> </a>  <code>BIT</code>
+</p></td><td><br><p><a name="1051460"> </a>  <code>boolean</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051463"> </a>  <code>TINYINT</code>
+</p></td><td><br><p><a name="1051465"> </a>  <code>byte</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051468"> </a>  <code>SMALLINT</code>
+</p></td><td><br><p><a name="1051470"> </a>  <code>short</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051473"> </a>  <code>INTEGER</code>
+</p></td><td><br><p><a name="1051475"> </a>  <code>int</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051478"> </a>  <code>BIGINT</code>
+</p></td><td><br><p><a name="1051480"> </a>  <code>long</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051483"> </a>  <code>REAL</code>
+</p></td><td><br><p><a name="1051485"> </a>  <code>float</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051488"> </a>  <code>FLOAT</code>
+</p></td><td><br><p><a name="1051490"> </a>  <code>double</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051493"> </a>  <code>DOUBLE</code>
+</p></td><td><br><p><a name="1051495"> </a>  <code>double</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051498"> </a>  <code>BINARY</code>
+</p></td><td><br><p><a name="1051500"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051503"> </a>  <code>VARBINARY</code>
+</p></td><td><br><p><a name="1051505"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051508"> </a>  <code>LONGVARBINARY</code>
+</p></td><td><br><p><a name="1051510"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051514"> </a>  <code>DATE</code>
+</p></td><td><br><p><a name="1051516"> </a>  <code>java.sql.Date</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051519"> </a>  <code>TIME</code>
+</p></td><td><br><p><a name="1051521"> </a>  <code>java.sql.Time</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051524"> </a>  <code>TIMESTAMP</code>
+</p></td><td><br><p><a name="1051526"> </a>  <code>java.sql.Timestamp</code>
+</p></td></tr>
+<tr><td><br><p><a name="1051528"> </a>  CLOB
+</p></td><td><br><p><a name="1051530"> </a>  Clob
+</p></td></tr>
+<tr><td><br><p><a name="1051532"> </a>  BLOB
+</p></td><td><br><p><a name="1051534"> </a>  Blob
+</p></td></tr>
+<tr><td><br><p><a name="1051536"> </a> ARRAY
+</p></td><td><br><p><a name="1051538"> </a>  Array
+</p></td></tr>
+<tr><td><br><p><a name="1051540"> </a>  DISTINCT
+</p></td><td><br><p><a name="1051542"> </a>  기의 형태의 매핑
+</p></td></tr>
+<tr><td><br><p><a name="1051544"> </a>  STRUCT
+</p></td><td><br><p><a name="1051546"> </a>  Struct
+</p></td></tr>
+<tr><td><br><p><a name="1051548"> </a>  REF
+</p></td><td><br><p><a name="1051550"> </a>  Ref
+</p></td></tr>
+<tr><td><br><p><a name="1051552"> </a>  JAVA_OBJECT
+</p></td><td><br><p><a name="1051554"> </a>  기의 Java 클래스
+</p></td></tr>
+
+</Table>
+
+</h4>
+<p><a name="1051582"> </a>  이 표에는, 2 개의 목적이 있습니다. 우선, 이 표는, Java 프로그램 언어의 형태와 SQL 의 형태와의 사이의 일반적인 대응을 나타내고 있습니다. 또,<code>CallableStatement.getXXX</code> 메소드 및 <code>SQLInput.readXXX </code> 메소드에 의해 사용되는 매핑도 나타내고 있습니다. <code>CallableStatement.getObject</code> 메소드로 사용되는 매핑에 대해서는, 표 8.3 을 참조해 주세요.
+</p><a name="1033804"> </a> 
+<p>
+<br>
+<h4>8.9. 2	 JDBC 의 형태에 매핑 되는 Java 의 형태 
+<Table Border="3">
+<caption></caption>
+<tr><th><br><p><a name="1039196"> </a>  Java 의 형태
+</p></th><th><br><p><a name="1039198"> </a> JDBC 의 형태
+</p></th></tr>
+<tr><td><br><p><a name="1039201"> </a>  <code>String </code>
+</p></td><td><br><p><a name="1039203"> </a>  <code>CHAR</code>,<code>VARCHAR</code>, 또는 <code>LONGVARCHAR</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039210"> </a>  <code>java.math.BigDecimal</code>
+</p></td><td><br><p><a name="1039212"> </a>  <code>NUMERIC</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039215"> </a>  <code>boolean</code>
+</p></td><td><br><p><a name="1039217"> </a>  <code>BIT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039220"> </a>  <code>byte</code>
+</p></td><td><br><p><a name="1039222"> </a>  <code>TINYINT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039225"> </a>  <code>short</code>
+</p></td><td><br><p><a name="1039227"> </a>  <code>SMALLINT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039230"> </a>  <code>int</code>
+</p></td><td><br><p><a name="1039232"> </a>  <code>INTEGER</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039235"> </a>  <code>long</code>
+</p></td><td><br><p><a name="1039237"> </a>  <code>BIGINT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039240"> </a>  <code>float</code>
+</p></td><td><br><p><a name="1039242"> </a>  <code>REAL</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039245"> </a>  <code>double</code>
+</p></td><td><br><p><a name="1039247"> </a>  <code>DOUBLE</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039249"> </a>  <code>byte[]</code>
+</p></td><td><br><p><a name="1039251"> </a>  <code>BINARY, VARBINARY, 또는 LONGVARBINARY</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039257"> </a>  <code>java.sql.Date</code>
+</p></td><td><br><p><a name="1039260"> </a>  <code>DATE</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039262"> </a>  <code>java.sql.Time</code>
+</p></td><td><br><p><a name="1039265"> </a>  <code>TIME</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039267"> </a>  <code>java.sql.Timestamp</code>
+</p></td><td><br><p><a name="1039270"> </a>  <code>TIMESTAMP</code>
+</p></td></tr>
+<tr><td><br><p><a name="1042192"> </a>  Clob
+</p></td><td><br><p><a name="1042194"> </a>  CLOB
+</p></td></tr>
+<tr><td><br><p><a name="1042188"> </a>  Blob
+</p></td><td><br><p><a name="1042190"> </a>  BLOB
+</p></td></tr>
+<tr><td><br><p><a name="1039272"> </a>  Array
+</p></td><td><br><p><a name="1039274"> </a> ARRAY
+</p></td></tr>
+<tr><td><br><p><a name="1039276"> </a>  Struct
+</p></td><td><br><p><a name="1039278"> </a>  STRUCT
+</p></td></tr>
+<tr><td><br><p><a name="1039280"> </a>  Ref
+</p></td><td><br><p><a name="1039282"> </a>  REF
+</p></td></tr>
+<tr><td><br><p><a name="1042198"> </a>  Java 클래스
+</p></td><td><br><p><a name="1042200"> </a>  JAVA_OBJECT
+</p></td></tr>
+
+</Table>
+
+</h4>
+<p><a name="1039287"> 이 표는, IN 파라미터가 DBMS 에 송신되기 전에 사용되는 변환을 나타내고 있습니다.  <code>PreparedStatement.setXXX</code> 및 <code>RowSet.setXXX</code> 메소드에 의해 사용됩니다. 이 변환은,<code>ResultSet.updateXXX</code> 메소드 및 <code>SQLOutput.writeXXX</code> 메소드에서도 사용됩니다. PreparedStatement.setObject</code> 및 <code>RowSet.setObject</code> 메소드는, 표 8.4 의 매핑을 사용합니다.
+</p><p><a name="1039288"> </a> <code>String</code> 에 대한 매핑은 일반적으로 <code>VARCHAR</code> 입니다만, 값이 <code>VARCHAR</code> 치에 대한 드라이버의 한계를 넘고 있는 경우는,<code>LONGVARCHAR</code> 가 됩니다. <code>byte[]</code> 의 경우도 마찬가지로,<code>VARCHAR</code> 치에 대한 드라이버의 한계에 응해,<code>VARBINARY</code> 또는 <code>LONGVARBINARY</code> 치에 매핑 됩니다. 대부분의 경우,<code>CHAR</code> 와 <code>VARCHAR</code> 의 선택은 중요하지는 않습니다. 드라이버에 의해 적절히 선택됩니다. <code>BINARY</code> 와 <code>VARBINARY</code> 의 선택도 같습니다.
+</p><a name="1004791"> </a> 
+<p>
+<br>
+<h4>8.9. 3	  Java 의 객체형에 매핑 되는 JDBC 의 형태&#32;&#32; <a name="table3"></a> 
+<Table Border="3">
+<caption></caption>
+<tr><th><br><p><a name="1005155"> </a> JDBC 의 형태
+</p></th><th><br><p><a name="1005157"> </a>  Java 의 객체형
+</p></th></tr>
+<tr><td><br><p><a name="1005159"> </a>  <code>CHAR</code>
+</p></td><td><br><p><a name="1005161"> </a>  <code>String</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005163"> </a>  <code>VARCHAR</code>
+</p></td><td><br><p><a name="1005165"> </a>  <code>String </code>
+</p></td></tr>
+<tr><td><br><p><a name="1005167"> </a>  <code>LONGVARCHAR</code>
+</p></td><td><br><p><a name="1005169"> </a>  <code>String</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005171"> </a>  <code>NUMERIC</code>
+</p></td><td><br><p><a name="1005173"> </a>  <code>java.math.BigDecimal</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005175"> </a>  <code>DECIMAL</code>
+</p></td><td><br><p><a name="1005177"> </a>  <code>java.math.BigDecimal</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005179"> </a>  <code>BIT</code>
+</p></td><td><br><p><a name="1005181"> </a>  <code>Boolean</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005183"> </a>  <code>TINYINT</code>
+</p></td><td><br><p><a name="1005185"> </a>  <code>Integer</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005187"> </a>  <code>SMALLINT</code>
+</p></td><td><br><p><a name="1005189"> </a>  <code>Integer</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005191"> </a>  <code>INTEGER</code>
+</p></td><td><br><p><a name="1005193"> </a>  <code>Integer</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005195"> </a>  <code>BIGINT</code>
+</p></td><td><br><p><a name="1005197"> </a>  <code>Long</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005199"> </a>  <code>REAL</code>
+</p></td><td><br><p><a name="1005201"> </a>  <code>Float</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005203"> </a>  <code>FLOAT</code>
+</p></td><td><br><p><a name="1005205"> </a>  <code>Double</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005207"> </a>  <code>DOUBLE</code>
+</p></td><td><br><p><a name="1005209"> </a>  <code>Double</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005211"> </a>  <code>BINARY</code>
+</p></td><td><br><p><a name="1005213"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005215"> </a>  <code>VARBINARY</code>
+</p></td><td><br><p><a name="1005217"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005219"> </a>  <code>LONGVARBINARY</code>
+</p></td><td><br><p><a name="1005221"> </a>  <code>byte[]</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005223"> </a>  <code>DATE</code>
+</p></td><td><br><p><a name="1005225"> </a>  <code>java.sql.Date</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005227"> </a>  <code>TIME</code>
+</p></td><td><br><p><a name="1005229"> </a>  <code>java.sql.Time</code>
+</p></td></tr>
+<tr><td><br><p><a name="1005231"> </a>  <code>TIMESTAMP</code>
+</p></td><td><br><p><a name="1005233"> </a>  <code>java.sql.Timestamp</code>
+</p></td></tr>
+<tr><td><br><p><a name="1039349"> </a>  DISTINCT
+</p></td><td><br><p><a name="1039351"> </a>  기의 형태의 객체형
+</p></td></tr>
+<tr><td><br><p><a name="1042180"> </a>  CLOB
+</p></td><td><br><p><a name="1042182"> </a>  Clob
+</p></td></tr>
+<tr><td><br><p><a name="1042176"> </a>  BLOB
+</p></td><td><br><p><a name="1042178"> </a>  Blob
+</p></td></tr>
+<tr><td><br><p><a name="1039315"> </a> ARRAY
+</p></td><td><br><p><a name="1039317"> </a>  Array
+</p></td></tr>
+<tr><td><br><p><a name="1039311"> </a>  STRUCT
+</p></td><td><br><p><a name="1039313"> </a>  Struct 또는 SQLData
+</p></td></tr>
+<tr><td><br><p><a name="1039307"> </a>  REF
+</p></td><td><br><p><a name="1039309"> </a>  Ref
+</p></td></tr>
+<tr><td><br><p><a name="1042184"> </a>  JAVA_OBJECT
+</p></td><td><br><p><a name="1042186"> </a>  기의 Java 클래스
+</p></td></tr>
+
+</Table>
+
+</h4>
+<p><a name="1051614"> </a>  이 표는,<code>ResultSet.getObject</code> 및 <code>CallableStatement.getObject </code> 메소드로 사용되는, JDBC 의 형태로부터 Java 의 객체형에의 매핑을 나타내고 있습니다.  
+</p><a name="1034737"> </a> 
+<p>
+<br>
+<h4>8.9. 4	 JDBC 의 형태에 매핑 되는 Java 의 객체형 
+<Table Border="3">
+<caption></caption>
+<tr><th><br><p><a name="1034740"> </a>  Java 의 객체형
+</p></th><th><br><p><a name="1034742"> </a> JDBC 의 형태
+</p></th></tr>
+<tr><td><br><p><a name="1034744"> </a>  <code>String </code>
+</p></td><td><br><p><a name="1034746"> </a>  <code>CHAR, VARCHAR, 또는 LONGVARCHAR</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034748"> </a>  <code>java.math.BigDecimal</code>
+</p></td><td><br><p><a name="1034750"> </a>  <code>NUMERIC</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034752"> </a>  <code>Boolean</code>
+</p></td><td><br><p><a name="1034754"> </a>  <code>BIT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034756"> </a>  <code>Integer</code>
+</p></td><td><br><p><a name="1034758"> </a>  <code>INTEGER</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034760"> </a>  <code>Long</code>
+</p></td><td><br><p><a name="1034762"> </a>  <code>BIGINT</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034764"> </a>  <code>Float</code>
+</p></td><td><br><p><a name="1034766"> </a>  <code>REAL</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034768"> </a>  <code>Double</code>
+</p></td><td><br><p><a name="1034770"> </a>  <code>DOUBLE</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034772"> </a>  <code>byte[]</code>
+</p></td><td><br><p><a name="1034774"> </a>  <code>BINARY, VARBINARY, 또는 LONGVARBINARY</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034776"> </a>  <code>java.sql.Date</code>
+</p></td><td><br><p><a name="1034778"> </a>  <code>DATE</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034780"> </a>  <code>java.sql.Time</code>
+</p></td><td><br><p><a name="1034782"> </a>  <code>TIME</code>
+</p></td></tr>
+<tr><td><br><p><a name="1034784"> </a>  <code>java.sql.Timestamp</code>
+</p></td><td><br><p><a name="1034786"> </a>  <code>TIMESTAMP</code>
+</p></td></tr>
+<tr><td><br><p><a name="1042166"> </a>  Clob
+</p></td><td><br><p><a name="1042168"> </a>  CLOB
+</p></td></tr>
+<tr><td><br><p><a name="1042162"> </a>  Blob
+</p></td><td><br><p><a name="1042164"> </a>  BLOB
+</p></td></tr>
+<tr><td><br><p><a name="1039345"> </a>  Array
+</p></td><td><br><p><a name="1039347"> </a> ARRAY
+</p></td></tr>
+<tr><td><br><p><a name="1039341"> </a>  Struct
+</p></td><td><br><p><a name="1039343"> </a>  STRUCT
+</p></td></tr>
+<tr><td><br><p><a name="1039337"> </a>  Ref
+</p></td><td><br><p><a name="1039339"> </a>  REF
+</p></td></tr>
+<tr><td><br><p><a name="1042172"> </a>  Java 클래스
+</p></td><td><br><p><a name="1042174"> </a>  JAVA_OBJECT
+</p></td></tr>
+
+</Table>
+
+</h4>
+<p><a name="1034793"> </a>  이 표는, 타겟의 JDBC 의 형태를 나타내는 파라미터가 지정되지 않는 경우에,<code>PreparedStatement.setObject</code> 메소드로 사용되는 매핑입니다. <code>PreparedStatement.setObject</code> 메소드에 대해서 지정할 수 있는 JDBC 의 형태는, 표 8.5 를 참조해 주세요.
+</p><p><a name="1051619"> </a> <code>String</code> 에 대한 매핑은 일반적으로 <code>VARCHAR</code> 입니다만, 값이 <code>VARCHAR</code> 치에 대한 드라이버의 한계를 넘고 있는 경우는,<code>LONGVARCHAR</code> 가 되는 것에 주의해 주세요. <code>byte[]</code> 의 경우도 마찬가지로,<code>VARCHAR</code> 치에 대한 드라이버의 한계에 응해,<code>VARBINARY</code> 또는 <code>LONGVARBINARY</code> 가 됩니다.
+</p><a name="1004845"> </a> 
+<p>
+<br>
+<h4>8.9. 5	 setObject 에 의한 변환</h4> 
+<p>
+<img src="mapping.anc1.gif" alt="setObject 에 의한 변환" longdesc="table8.5.html"><a href="table8.5.html" title="자세한 설명">[D]</a> 
+<p>
+「x」는, 그 Java 의 객체형을 대응하는 JDBC 의 형태로 변환할 수 있는 경우가 있는 것을 나타내고 있습니다. 이 표는, <code>PreparedStatement.setObject</code> 또는 <code>RowSet.setObject</code> 메소드에 건네주는 타겟측의 JDBC 의 형태를 지정하는 파라미터의 가능성을 나타내고 있습니다. 지정한 값이 무효인 경우, 몇개의 변환은 실행시에 실패합니다.
+<p>
+<br>
+<h4>8.9. 6	ResultSet.getXXX 메소드에 의한 변환</h4>
+<p></p><p><a name="1036700"> </a>  <a name="table2"></a>  <img src="mapping.anc2.gif" alt="ResultSet.getXXX 메소드에 의한 변환" longdesc="table8.6.html"><a href="table8.6.html" title="자세한 설명">[D]</a>  <br> <code>SQLInput.readXXX</code> 메소드가 지원하고 있는 것은, 추천 되고 있는 변환만입니다. 「x」는, 그 메소드가 JDBC 의 형태를 「꺼낼 수 있는 것」을 의미합니다. <b>X</b>」는, 그 메소드가 JDBC 의 형태를 취해 출의 것에 「추천 되고 있는 것」을 의미합니다.
+<p>
+<br>
+<h4>8.9. 7	데이타베이스 고유의 SQL 의 형태에 매핑 되는 JDBC 의 형태</h4>
+<a name="table1"></a> 
+<p>
+데이타베이스 마다, 지원되고 있는 SQL 의 형태는 크게 차이가 납니다. 표 8.7 은, 주요한 데이타베이스에 대해, JDBC 의 형태에 가장 가까운 데이타베이스 고유의 SQL 의 형태를 나타내고 있습니다. 데이타베이스 고유의 형태의 이름의 존재는, 「데이타베이스 고유의 형태가 추가의 시멘틱스를 제공하고 있는 경우가 있는 것에도 불구하고, 대응하고 있는 JDBC 의 형태의 시멘틱스를 달성하는데, 그 주어진 형태가 사용됩니다.  」(을)를 나타내고 있습니다.
+<p>
+주의：
+<ol>
+<li>일부의 데이타베이스에서는, 몇개의 정수형 및 부동 소수점형에 대해서 보다 많은 정밀도가 사용됩니다.
+<li>일부의 데이타베이스에서는,<code>DATE</code> 또는 <code>TIME</code>, 혹은 그 양쪽 모두를 포함할 수가 있는 <code>DATE</code> 형 또는 <code>DATETIME</code> 형이 제공됩니다.
+<li><code>VARCHAR</code> 와 <code>VARCHAR2</code> 는, Oracle8 에서는 동의어입니다.
+<li><code>LONGVARCHAR</code> 에 대해서 DB2 는, 2G 바이트의 제한과 함께 「CLOB(n)」도 지원하고 있습니다.
+<li><code>LONGVARBINARY</code> 에 대해서, DB2 는, 2G 바이트의 제한과 함께 「BLOB(n)」도 지원하고 있습니다.
+<li>SQL 문에 있어서의 <code>BINARY</code>,<code>VARBINARY</code>, 및<code>LONGVARBINARY</code> 리터럴의 취급은, 데이타베이스에 의해 크게 다릅니다. 이식 가능한 방법으로 값을 설정하는데, <code>PreparedStatement.setBytes</code> 를 사용하는 것을 추천합니다.
+<li>SQL 문에 있어서의 <code>DATE</code>,<code>TIME</code>, 및 <code>TIMESTAMP</code> 리터럴의 취급은, 데이타베이스에 의해 크게 다릅니다. 이식 가능한 방법으로 <code>Date</code>,<code>Time</code>, 및 <code>Timestamp</code> 의 값을 설정을 설정하는데, JDBC SQL 이스케이프 구문을 사용하는 것을 추천합니다.  <a href="statement.html#999472">「Statement 내의 SQL 이스케이프 구문」</a>을 참조)
+</ol>
+<p>
+<img src="mapping.anc3.gif" alt="데이타베이스 고유의 것 SQL 의 형태에 매핑 되는 형태" longdesc="table8.7.html"><a href="table8.7.html" title="2 개의 새로운 이미지에 대한 자세한 설명">[D]</a> 
+<p>
+<img src="mapping.anc4.gif" alt="전의 이미지의 자세한 설명을 참조">
+</p><p><a name="998993"> </a> 
+
+</p>
+
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="callablestatement.html">[전의 항목]</a>  <a href="rowsetImpl.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

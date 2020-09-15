@@ -1,0 +1,310 @@
+<html>
+
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<body bgcolor=white>
+<h1>API 의 변경점에 대해</h1>
+    <p>
+이 문서에서는, 새로운 포커스 모델을 포함하기 위해서 AWT 와 SWING 에 더해진 API 의 변경에 대해 설명합니다. 변경의 개요에 대해서는, 우선<a 	href="../../../../api/java/awt/doc-files/FocusSpec.html">여기</a>를 읽어 주세요.
+    <p>
+기존 클래스의 변경:
+    <ul>
+<li><a href="#AWTEvent">java.awt.AWTEvent</a> 
+<li><a href="#Component">java.awt.Component</a> 
+<li><a href="#Container">java.awt.Container</a> 
+<li><a href="#Window">java.awt.Window</a> 
+<li><a href="#Frame">java.awt.Frame</a> 
+<li><a href="#Dialog">java.awt.Dialog</a> 
+<li><a href="#FocusEvent">java.awt.FocusEvent</a> 
+<li><a href="#WindowEvent">java.awt.event.WindowEvent</a> 
+<li><a href="#WindowListener">java.awt.event.WindowListener</a> 
+<li><a href="#WindowAdapter">java.awt.event.WindowAdapter</a> 
+<li><a href="#AWTEventMulticaster">java.awt.AWTEventMulticaster</a> 
+
+<li><a href="#FocusManager">javax.swing.FocusManager</a> 
+<li><a href="#DefaultFocusManager">javax.swing.DefaultFocusManager</a> 
+<li><a href="#JComponent">javax.swing.JComponent</a> 
+<li><a href="#JWindow">javax.swing.JWindow</a> 
+<li><a href="#JInternalFrame">javax.swing.JInternalFrame</a> 
+<li><a href="#KeyStroke">javax.swing.KeyStroke</a> 
+<li><a href="#SwingUtilities">javax.swing.SwingUtilities</a> 
+    </ul>
+    <p>
+신규 클래스:
+    </p>
+    <ul>
+<li><a href="../../../../api/java/awt/KeyboardFocusManager.html">java.awt.KeyboardFocusManager</a> 
+<li><a href="../../../../api/java/awt/KeyEventDispatcher.html">java.awt.KeyEventDispatcher</a> 
+<li><a href="../../../../api/java/awt/DefaultKeyboardFocusManager.html">java.awt.DefaultKeyboardFocusManager</a> 
+<li><a href="../../../../api/java/awt/FocusTraversalPolicy.html">java.awt.FocusTraversalPolicy</a> 
+<li><a href="../../../../api/java/awt/ContainerOrderFocusTraversalPolicy.html">java.awt.ContainerOrderFocusTraversalPolicy</a> 
+<li><a href="../../../../api/java/awt/DefaultFocusTraversalPolicy.html">java.awt.DefaultFocusTraversalPolicy</a> 
+<li><a href="../../../../api/java/awt/AWTKeyStroke.html">java.awt.AWTKeyStroke</a> 
+<li><a href="../../../../api/java/awt/event/WindowFocusListener.html">java.awt.event.WindowFocusListener</a> 
+
+<li><a href="../../../../api/javax/swing/SortingFocusTraversalPolicy.html">javax.swing.SortingFocusTraversalPolicy</a> 
+<li><a href="../../../../api/javax/swing/LayoutFocusTraversalPolicy.html">javax.swing.LayoutFocusTraversalPolicy</a> 
+<li><a href="../../../../api/javax/swing/InternalFrameFocusTraversalPolicy.html">javax.swing.InternalFrameFocusTraversalPolicy</a> 
+    </ul>
+
+<h4><a name="AWTEvent"><a href="../../../../api/java/awt/AWTEvent.html"><code>java.awt.AWTEvent</code></a>  에 추가:</a> </h4>
+<pre>
+    public void <a href="../../../../api/java/awt/AWTEvent.html#setSource(java.lang.Object)">setSource(Object newSource)</a> 
+</pre>
+
+<h4><a name="Component"><a href="../../../../api/java/awt/Component.html"><code>java.awt.Component</code></a>  의 변경점:</a> </h4>
+<pre>
+    public boolean <a href="../../../../api/java/awt/Component.html#isFocusTraversable()">isFocusTraversable()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isFocusable()">isFocusable()</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#setFocusable(boolean)">setFocusable(boolean focusable)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#setFocusTraversalKeys(int,%20java.util.Set)">setFocusTraversalKeys(int id, Set keystroke)</a> 
+
+    public Set <a href="../../../../api/java/awt/Component.html#getFocusTraversalKeys(int)">getFocusTraversalKeys(int id)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#setFocusTraversalKeysEnabled(boolean)">setFocusTraversalKeysEnabled(boolean focusTraversalKeysEnabled)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#getFocusTraversalKeysEnabled()">getFocusTraversalKeysEnabled()</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#requestFocus()">requestFocus()</a> 
+
+    protected boolean <a href="../../../../api/java/awt/Component.html#requestFocus(boolean)">requestFocus(boolean temporary)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#requestFocusInWindow()">requestFocusInWindow()</a> 
+
+    protected boolean <a href="../../../../api/java/awt/Component.html#requestFocusInWindow(boolean)">requestFocusInWindow(boolean temporary)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#transferFocus()">transferFocus()</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#transferFocusBackward()">transferFocusBackward()</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#transferFocusUpCycle()">transferFocusUpCycle()</a> 
+
+    public Container <a href="../../../../api/java/awt/Component.html#getFocusCycleRootAncestor()">getFocusCycleRootAncestor()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isFocusCycleRoot(java.awt.Container)">isFocusCycleRoot(Container container)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#hasFocus()">hasFocus()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isFocusOwner()">isFocusOwner()</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#addPropertyChangeListener(java.beans.PropertyChangeListener)">addPropertyChangeListener(PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#removePropertyChangeListener(java.beans.PropertyChangeListener)">removePropertyChangeListener(PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#addPropertyChangeListener(java.lang.String,%20java.beans.PropertyChangeListener)">addPropertyChangeListener(String propertyName, PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#removePropertyChangeListener(java.lang.String,%20java.beans.PropertyChangeListener)">removePropertyChangeListener(String propertyName, PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#firePropertyChange(java.lang.String,%20boolean,%20boolean)">firePropertyChange(String propertyName, boolean oldValue, boolean newValue)</a> 
+
+    public void <a href="../../../../api/java/awt/Component.html#firePropertyChange(java.lang.String,%20int,%20int)">firePropertyChange(String propertyName, int oldValue, int newValue)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isFontSet()">isFontSet()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isBackgroundSet()">isBackgroundSet()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#isForegroundSet()">isForegroundSet()</a> 
+  
+    public boolean <a href="../../../../api/java/awt/Component.html#isCursorSet()">isCursorSet()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Component.html#areFocusTraversalKeysSet(int)">areFocusTraversalKeysSet(int id)</a> 
+    </pre>
+
+<h4><a name="Container"><a href="../../../../api/java/awt/Container.html"><code>java.awt.Container</code></a>  의 변경점:</a> </h4>
+
+<pre>
+    public void <a href="../../../../api/java/awt/Container.html#setFocusTraversalKeys(int,%20java.util.Set)">setFocusTraversalKeys(int id, Set keystroke)</a> 
+
+    public Set <a href="../../../../api/java/awt/Container.html#getFocusTraversalKeys(int)">getFocusTraversalKeys(int id)</a> 
+
+    public void <a href="../../../../api/java/awt/Container.html#setFocusTraversalPolicy(java.awt.FocusTraversalPolicy)">setFocusTraversalPolicy(FocusTraversalPolicy policy)</a> 
+
+    public FocusTraversalPolicy <a href="../../../../api/java/awt/Container.html#getFocusTraversalPolicy()">getFocusTraversalPolicy()</a> 
+
+    public void <a href="../../../../api/java/awt/Container.html#setFocusCycleRoot(boolean)">setFocusCycleRoot(boolean focusCycleRoot)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Container.html#isFocusCycleRoot()">isFocusCycleRoot()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Container.html#isFocusCycleRoot(java.awt.Container)">isFocusCycleRoot(Container container)</a> 
+
+    public void <a href="../../../../api/java/awt/Container.html#transferFocusDownCycle()">transferFocusDownCycle()</a> 
+
+    public void <a href="../../../../api/java/awt/Container.html#addPropertyChangeListener(java.beans.PropertyChangeListener)">addPropertyChangeListener(PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Container.html#addPropertyChangeListener(java.lang.String,%20java.beans.PropertyChangeListener)">addPropertyChangeListener(String propertyName, PropertyChangeListener listener)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Container.html#areFocusTraversalKeysSet(int)">areFocusTraversalKeysSet(int id)</a> 
+
+    public boolean <a href="../../../../api/java/awt/Container.html#isFocusTraversalPolicySet()">isFocusTraversalPolicySet()</a> 
+</pre>
+
+<h4><a name="Window"><a href="../../../../api/java/awt/Window.html"><code>java.awt.Window</code></a>  의 변경점:</a> </h4>
+<pre>
+    public void <a href="../../../../api/java/awt/Window.html#toFront()">toFront()</a> 
+
+    public void <a href="../../../../api/java/awt/Window.html#toBack()">toBack()</a> 
+
+    public Component <a href="../../../../api/java/awt/Window.html#getFocusOwner()">getFocusOwner()</a> 
+
+    public Component <a href="../../../../api/java/awt/Window.html#getMostRecentFocusOwner()">getMostRecentFocusOwner()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Window.html#isActive()">isActive()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Window.html#isFocused()">isFocused()</a> 
+
+    public final void <a href="../../../../api/java/awt/Window.html#setFocusCycleRoot(boolean)">setFocusCycleRoot(boolean focusCycleRoot)</a> 
+
+    public final boolean <a href="../../../../api/java/awt/Window.html#isFocusCycleRoot()">isFocusCycleRoot()</a> 
+
+    public final Container <a href="../../../../api/java/awt/Window.html#getFocusCycleRootAncestor()">getFocusCycleRootAncestor()</a> 
+
+    public boolean <a href="../../../../api/java/awt/Window.html#isFocusableWindow()">isFocusableWindow()</a> 
+
+    public void <a href="../../../../api/java/awt/Window.html#setFocusableWindowState(boolean)">setFocusableWindowState(boolean focusableWindowState)</a> 
+
+    public void <a href="../../../../api/java/awt/Window.html#addPropertyChangeListener(java.beans.PropertyChangeListener)">addPropertyChangeListener(PropertyChangeListener listener)</a> 
+
+    public void <a href="../../../../api/java/awt/Window.html#addPropertyChangeListener(java.lang.String,%20java.beans.PropertyChangeListener)">addPropertyChangeListener(String propertyName, PropertyChangeListener listener)</a> 
+</pre>
+
+<h4>다음의 다큐멘테이션 코멘트를 <a name="Frame"><a href="../../../../api/java/awt/Frame.html"><code>java.awt.Frame</code></a>  의 javadoc 에 추가:</a> </h4>
+<pre>
+/**
+ * Frames are capable of generating the following types of WindowEvents:
+ * WindowOpened, WindowClosing, WindowClosed, WindowIconified,
+ * WindowDeiconified, WindowActivated, WindowDeactivated, WindowGainedFocus,
+ * WindowLostFocus.
+ */
+</pre>
+
+
+<h4>다음의 다큐멘테이션 코멘트를 <a name="Dialog"><a href="../../../../api/java/awt/Dialog.html"><code>java.awt.Dialog</code></a>  의 javadoc 에 추가:</a> </h4>
+<pre>
+/**
+ * Dialogs are capable of generating the following WindowEvents:
+ * WindowOpened, WindowClosing, WindowClosed, WindowActivated,
+ * WindowDeactivated, WindowGainedFocus, WindowLostFocus.
+ */
+</pre>
+
+<h4><a name="FocusEvent"> <a href="../../../../api/java/awt/event/FocusEvent.html"><code>java.awt.event.FocusEvent</code></a> 에 추가:</a> </h4>
+<pre>
+    public <a href="../../../../api/java/awt/event/FocusEvent.html#FocusEvent(java.awt.Component,%20int,%20boolean,%20java.awt.Component)">FocusEvent(Component source, int id, boolean temporary, Component opposite)</a> 
+
+    public Component <a href="../../../../api/java/awt/event/FocusEvent.html#getOppositeComponent()">getOppositeComponent()</a> 
+</pre>
+
+<h4>다음의 다큐멘테이션 코멘트를 <a name="WindowEvent"><a href="../../../../api/java/awt/event/WindowEvent.html"><code>java.awt.event.WindowEvent</code></a>  의 javadoc 에 추가:</a> </h4>
+<pre>
+/**
+ * A low-level event that indicates that a window has changed its status.  This
+ * low-level event is generated by a Window object when it is opened, closed,
+ * activated, deactivated, iconified, or deiconified, or when focus is
+ * transfered into or out of the Window.
+ */
+</pre>
+
+<h4><a href="../../../../api/java/awt/event/WindowEvent.html"><code>java.awt.event.WindowEvent</code></a> 에 추가:</h4>
+<pre>
+    public static final int <a href="../../../../api/java/awt/event/WindowEvent.html#WINDOW_ACTIVATED">WINDOW_ACTIVATED</a> 
+
+    public static final int <a href="../../../../api/java/awt/event/WindowEvent.html#WINDOW_DEACTIVATED">WINDOW_DEACTIVATED</a> 
+
+    public static final int <a href="../../../../api/java/awt/event/WindowEvent.html#WINDOW_GAINED_FOCUS">WINDOW_GAINED_FOCUS</a> 
+
+    public static final int <a href="../../../../api/java/awt/event/WindowEvent.html#WINDOW_LOST_FOCUS">WINDOW_LOST_FOCUS</a> 
+
+    public <a href="../../../../api/java/awt/event/WindowEvent.html#WindowEvent(java.awt.Window,%20int,%20java.awt.Window)">WindowEvent(Window source, int id, Window opposite)</a>  
+
+    public Window <a href="../../../../api/java/awt/event/WindowEvent.html#getOppositeWindow()">getOppositeWindow()</a> 
+</pre>
+
+<h4><a name="WindowListener"> <code><a href="../../../../api/java/awt/event/WindowListener.html">java.awt.event.WindowListener</a> </code>에 추가:</a> </h4>
+<pre>
+    public void <a href="../../../../api/java/awt/event/WindowListener.html#windowActivated(java.awt.event.WindowEvent)">windowActivated(WindowEvent e)</a> 
+
+    public void <a href="../../../../api/java/awt/event/WindowListener.html#windowDeactivated(java.awt.event.WindowEvent)">windowDeactivated(WindowEvent e)</a> 
+</pre>
+
+<h4><a name="WindowAdapter"> <a href="../../../../api/java/awt/event/WindowAdapter.html"><code>java.awt.event.WindowAdapter</code></a> 에 추가:</a> </h4>
+<pre>
+    public void <a href="../../../../api/java/awt/event/WindowAdapter.html#windowGainedFocus(java.awt.event.WindowEvent)">windowGainedFocus(WindowEvent e)</a> 
+
+    public void <a href="../../../../api/java/awt/event/WindowAdapter.html#windowLostFocus(java.awt.event.WindowEvent)">windowLostFocus(WindowEvent e)</a> 
+</pre>
+
+<h4><a name="AWTEventMulticaster"><a href="../../../../api/java/awt/AWTEventMulticaster.html"><code> java.awt.AWTEventMulticaster</code></a>  에 추가:</a> </h4>
+<pre>
+    public void <a href="../../../../api/java/awt/AWTEventMulticaster.html#windowGainedFocus(java.awt.event.WindowEvent)">windowGainedFocus(WindowEvent e)</a> 
+
+    public void <a href="../../../../api/java/awt/AWTEventMulticaster.html#windowLostFocus(java.awt.event.WindowEvent)">windowLostFocus(WindowEvent e)</a> 
+</pre>
+
+<h4><a name="FocusManager"><a href="../../../../api/javax/swing/FocusManager.html"><code>javax.swing.FocusManager</code></a>  의 변경</a> </h4>
+    <p>
+이 클래스는 폐지되었습니다. 새로운 어플리케이션에서는,<a href="../../../../api/java/awt/KeyboardFocusManager.html"><code>java.awt.KeyboardFocusManager</code></a>  마셔 사용해 주세요. 다만, 기존의 어플리케이션에 대한 (애플릿은 제외하다) 하위 호환성은 남아 있어 독자적인 <code>FocusManager</code> 를 정의할 수 있습니다.
+
+    <p>
+Swing <code>FocusManager</code> 는, 새로운 AWT <code>KeyboardFocusManager</code> 의 서브 클래스로 변경되었습니다. <code>FocusManager.setCurrentManager(FocusManager)</code> 및 <code>FocusManager.getCurrentManager()</code> 는, 각각 <code>KeyboardFocusManager.setCurrentKeyboardFocusManager(KeyboardFocusManager)</code> 및 <code>KeyboardFocusManager.getCurrentKeyboardFocusManager()</code> 의 래퍼로 변경되었습니다.
+
+    <p>
+이것에 의해, 호출측 thread에 액세스권 <code>「replaceKeyboardFocusManager」</code> 가 주어지지 않는 경우 <code>KeyboardFocusManager.setCurrentKeyboardFocusManager(KeyboardFocusManager)</code> 가 <code>SecurityException</code> 를 throw 하게 되기 (위해)때문에, 이 변경에 관해서 많은 논의가 일어났습니다. 지금까지의 버젼에서는,<code>FocusManager.setCurrentManager(FocusManager)</code> 는 <code>SecurityException</code> 를 throw 할 것은 없었습니다. 복잡한 클래스를 설계해 이 문제를 피할 수 있었습니다만, 제안되고 있던 설계의 명해 마을 간결함은, 하위 호환성에 관한 몇 안 되는 문제보다 중요하다라고 생각했습니다.
+    <p>
+
+<code>disableSwingFocusManager()</code> 및 <code>isFocusManagerEnabled()</code> 는 사용해야 하는 것이 아닙니다. Swing <code>FocusManager</code> 를 무효로 하는 것으로, 디폴트의 <code>FocusTraversalPolicy</code> 를 <code>javax.swing.LayoutFocusTraversalPolicy</code> 의 Swing 디폴트로부터 <code>java.awt.DefaultFocusTraversalPolicy</code> 의 AWT 디폴트에 되돌리는 시멘틱스를 제공할 수 있게 되었습니다.
+
+<h4><a name="DefaultFocusManager"><a href="../../../../api/javax/swing/DefaultFocusManager.html"><code>javax.swing.DefaultFocusManager</code></a>  의 변경</a> </h4>
+
+    <p>
+이 클래스는 폐지되었습니다. 새로운 어플리케이션에서는,<a href="../../../../api/java/awt/KeyboardFocusManager.html"><code>java.awt.KeyboardFocusManager</code></a>  마셔 사용해 주세요. 다만, 기존의 어플리케이션에 대한 (애플릿은 제외하다) 하위 호환성은 남아 있어 독자적인 <code>DefaultFocusManager</code> 를 정의할 수 있습니다.
+
+    <p>
+클라이언트 코드가 종래의 <code>DefaultFocusManager</code> 를 인스톨 하는 경우, public 이외의 <code>LegacyGlueFocusTraversalPolicy</code> 를 인스톨 하면(자) 하위 호환성이 제공됩니다. 이것에 의해 <code>FocusTraversalPolicy</code> 메소드 호출이 <code>DefaultFocusManager</code> 의 대응하는 메소드에게 건네집니다.
+
+<h4><a name="JComponent"><a href="../../../../api/javax/swing/JComponent.html"><code>javax.swing.JComponent</code></a>  의 변경</a> </h4>
+
+    <p>
+<code>isManagingFocus</code>:이 메소드는 추천 되지 않게 되었습니다. <code>isManagingFocus</code> 는 <code>JComponent</code> 의 포커스 traversal 키를 TAB 및 SHIFT-TAB 로부터 CTRL-TAB 및 CTRL-SHIFT-TAB 로 변경했습니다. 또, 포커스 traversal가 자동적으로 <code>JComponent</code> 가 되지 않게,<code>JComponent</code> 를 마크 했습니다. 이것은 <code>JComponent</code> 를 포커스 사이클 루트로서 지정하는 것으로 닮습니다만, 다른 것입니다. 그 기능은 <a href="../../../../api/java/awt/FocusTraversalPolicy.html"><code>FocusTraversalPolicy</code></a>  클래스, 컴퍼넌트마다의 포커스 traversal 키, 및 컴퍼넌트의 포커스 traversal 키를 정리해 무효로 하는 기능으로 옮겨졌습니다. <code></code><code></code>
+
+    <p>
+<code>setNextFocusableComponent/getNextFocusableComponents</code>:이러한 메소드는 폐지되었습니다. <code>FocusTraversalPolicies</code> 에서는 포커스 traversal의 알고리즘으로 표현할 수 있게 되어, 신뢰성이 높아지고 있습니다. 이러한 메소드는, 어플리케이션이 컴퍼넌트로부터 다른 컴퍼넌트에의 포커스 traversal를 하드 코드 하도록(듯이) 강제합니다.
+
+    <p>
+<code><a href="../../../../api/javax/swing/JComponent.html#setRequestFocusEnabled(boolean)">setRequestFocusEnabled</a> /<a href="../../../../api/javax/swing/JComponent.html#isRequestFocusEnabled()">isRequestFocusEnabled</a> </code> 의 스펙이 변경되어<code>requestFocusEnabled</code> 프로퍼티 스펙은 현재의 Look＆Feel 에 대한 힌트가 됩니다.
+
+    <p>
+<code>requestDefaultFocus</code>:이 메소드는 추천 되지 않게 되었습니다. 이 메소드의 기능은 <a href="../../../../api/java/awt/FocusTraversalPolicy.html#getDefaultComponent(java.awt.Container)"><code>FocusTraversalPolicy.getDefaultComponent(Container). requestFocus()</code></a>  로 옮겨놓을 수 있고 있습니다.
+
+<h4><a name="JWindow"><a href="../../../../api/javax/swing/JWindow.html"><code>javax.swing.JWindow</code></a>  의 변경</a>  </h4>
+
+    <p>
+<code><a href="../../../../api/javax/swing/JWindow.html#setFocusableWindow(boolean)">setFocusableWindow</a> /<a href="../../../../api/javax/swing/JWindow.html#isFocusableWindow()">isFocusableWindow</a> </code>:이러한 메소드는 <code>JWindow</code> 로 final 선언되어 「null」소유자에게 구축된 모든 <code>JWindows</code> 는 non-focusable 이다고 하는 제한이 적용됩니다. Swing 로 <code>JWindows</code> 를 구축해,<code>JWindows</code> 가 사유로 비표시의 <code>Frame</code> 에 소유되기 (위해)때문에, 또, 새로운 포커스 구현에,<code>Window</code> 나 그 자손을 대상으로 한 <code>KeyEvents</code> 가 그 <code>Frame</code> 로 프록시 될 필요가 있기 (위해)때문에, 이러한 제한이 필요하게 됩니다. X11 에서는 포커스를 설정하기 위해서 <code>window</code> 를 맵 할 필요가 있으므로, 「null」소유자를 가지는 <code>JWindow</code> 는 X11 로 <code>KeyEvents</code> 를 받을 수가 없습니다.
+
+<h4><a name="JInternalFrame"><a href="../../../../api/javax/swing/JInternalFrame.html"><code>javax.swing.JInternalFrame</code></a>  의 변경</a> </h4>
+
+    <p>
+<a href="../../../../api/javax/swing/JInternalFrame.html#getMostRecentFocusOwner()"><code>getMostRecentFocusOwner</code></a> :<code>java.awt.Window</code> 와 같이,<code>JInternalFrame</code> 는 <code>java.awt.KeyboardFocusManager</code> 로 포커스 관리를 집중화하기 이전으로부터 <a href="../../../../api/javax/swing/JInternalFrame.html#getFocusOwner()"><code>getFocusOwner()</code></a>  메소드를 남기고 있었습니다. API 를 완성해, Window 에 대해서 일관성을 유지하기 위해서(때문에),<code>getMostRecentFocusOwner()</code> 가 <code>JInternalFrame</code> 에 추가되었습니다. 스펙은 <code>Window</code> 로 대응하는 메소드와 같습니다.
+
+    <p>
+<code><a href="../../../../api/javax/swing/JInternalFrame.html#setFocusCycleRoot(boolean)">setFocusCycleRoot</a> /<a href="../../../../api/javax/swing/JInternalFrame.html#isFocusCycleRoot()">isFocusCycleRoot</a> </code>:이러한 메소드는,<code>JInternalFrames</code> 에 AWT 의 최상정도 <code>Windows</code> 와 같은 시멘틱스를 줍니다. <code>JInternalFrame</code> 는 항상 포커스 사이클 루트일 필요가 있으므로, 이러한 메소드가 오버라이드(override) 되어 final 선언되어 제한이 적용됩니다. 다만 AWT <code>Window</code> 과는 달리,<code>JInternalFrame</code> 에는 <code>JDesktopPane</code> 와 같이 바탕으로 되는 포커스 사이클 루트가 있는 경우가 있습니다. 이 때문에,<code>Component.getFocusCycleRootAncestor()</code> 는 <code>Window</code> 의 경우와 같이 <code>JInternalFrame</code> 로 final 선언되는 일이 없습니다.
+
+
+<h4><a name="KeyStroke"><a href="../../../../api/javax/swing/KeyStroke.html"><code>javax.swing.KeyStroke</code></a>  의 변경</a> </h4>
+
+    <p>
+기존의 <code>KeyStroke</code> 클래스를 사용해 각 <code>Component</code> 에 포커스 traversal 키 API 를 설계할 수가 있었으므로, 이 클래스는 그다지 변경되지 않고 <a href="../../../../api/java/awt/AWTKeyStroke.html"><code>java.awt.AWTKeyStrokejava.awt.AWTKeyStroke</code></a>  로서 AWT 로 변경되었습니다. Swing 클래스가 AWT 클래스의 서브 클래스가 되었습니다.
+
+    <p>
+<code>KeyStroke</code>,<code>getKeyStroke(char, boolean)</code> 로 추천 되지 않는 메소드는 AWT 로 변경되지 않았습니다. 이 때문에, 이 메소드를 표준의 <code>AWTKeyStroke</code> 캐싱 스킴에 간단하게 관여시키는 방법은 없습니다. 이 메소드의 스펙은 변경되어 구현에는 이 메소드로부터 반환된 인스턴스를 캐쉬할 필요가 없는 것이 주의 사항에 추가되었습니다.
+
+
+<h4><a name="SwingUtilities"><a href="../../../../api/javax/swing/SwingUtilities.html"><code>javax.swing.SwingUtilities</code></a>  의 변경</a> </h4>
+
+    <p>
+<code>findFocusOwner:이 메소드는 추천 되지 않게 되었습니다. 이 메소드의 기능은 <a href="../../../../api/java/awt/KeyboardFocusManager.html#getFocusOwner()"><code>KeyboardFocusManager.getFocusOwner()</code></a>  로 옮겨놓을 수 있고 있습니다.
+
+
+</body>
+</html>

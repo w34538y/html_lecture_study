@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Mozilla/4,02 [en] (X11; U; SunOS 5.6 sun4u) [Netscape]">
+   <TITLE>  - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><B>Java<sup><font size=-2>TM</font></sup> RMI 에 팩토리 패턴을 적용한다</B></H1></CENTER>
+
+<p>「팩토리」란 어떠한 것으로, 왜 사용하는 것일까요. 여기서 팩토리란,<A HREF="http://www.awprofessional.com/catalog/product.asp?product_id={E1CD5BE7-E008-481B-8D0C-8E80CE9978F9}">「Design Patterns, Elements of Reusable Object-Oriented Software」</a>로 소개되고 있는 「팩토리」설계 패턴의 1 개를 구현한 소프트웨어를 가리킵니다. 일반적으로 팩토리 구현은, 1 개의 객체에 다른 객체의 작성이나 액세스를 관리시킬 필요가 있는 경우에 편리합니다.  Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI)로 팩토리를 사용하는 것으로, Java RMI 레지스트리에 등록하는 객체의 수를 줄일 수가 있습니다.
+
+<H2>실제사회에서의 팩토리의 예</H2>
+
+<blockquote>
+<H3>은행</H3>
+
+<p>은행에서 예금할 때, 고객은 「금고까지 걸어가 자신의 이름의 인출을 열어, 돈을 입금시켜 인출을 닫아 떠난다」(일)것은 하지 않습니다. 최초로 계좌를 열 때는 어떻게 할까요. 은행에 가 담당자와 이야기해, 서류에 기입합니다. 교환에 통장이나 카드를 받습니다. 그 후는, 이 통장이나 카드를 사용해 계좌에 액세스 할 수가 있습니다.
+
+<P>은행의 담당자는 팩토리의 일례입니다. 그 담당자 또는 담당자의 역할을 하는 ATM (현금 자동 이체/지불기)가, 개개의 계좌의 작성이나 계좌에의 액세스를 관리합니다. <H3> 도서관</H3> 도서관의 선반으로부터 책, CD, 비디오 테잎등을 빌리는 경우에 대해 생각해 봅시다. 책등을 빌리는 경우에는, 그 전에 우선, 도서관의 직원에게 이용자 카드를 발행받을 필요가 있습니다. 이 경우는, 도서관의 직원이 신규의 이용자 카드의 인스턴스를 관리하므로, 도서관의 직원을 이용자 카드의 팩토리라고 생각할 수가 있습니다.
+
+<P>이용자 카드를 받았다고 해, 도서관에 들어가 빌리고 싶은 책을 그대로 꺼낼 수 없습니다. 책을 가져 도서관에서 나오려면 , 책의 대출 수속을 하지 않으면 안됩니다. 즉, 이용자 카드를 직원에게 보이게 합니다.  직원은 그 카드를 사용해 도서관의 데이타베이스에 액세스 해, 그 사람으로부터 반환이 늦는 책이 없는가 조사해 그 책이 그 사람에게 대출해 안인 것을 등록합니다. 이 경우는, 직원이 책에의 이용자의 액세스를 관리하므로, 직원을 책의 팩토리라고 생각할 수가 있습니다.
+</blockquote>
+<H2>RMI 에서의 팩토리의 기능</H2>
+
+<p>다른 Java RMI 프로그램과 같게, 서버, 클라이언트, rmiregistry 의 3 개의 기본적 요소가 있습니다. 서버는, 1 개(살) 또는 복수의 원격 객체를 작성합니다 ( 각 원격 객체는 원격 인터페이스를 구현한다). 클라이언트는, 네임서버- (<code>rmiregistry</code>)에 액세스 해 원격 객체의 1 개에의 참조를 가져옵니다. <code>rmiregistry</code> 는, 클라이언트로부터 서버에의 최초의 연락을 간단하게 합니다.
+
+<P>이하의 그림과 순서에서는, 다음 일을 전제로 합니다.
+<UL>
+	<LI>2 개의 원격 인터페이스 <code>Factory</code> 와 <code>Product</code> 가 있어, 클라이언트는 이것들을 이해하고 있다
+
+	<LI><code>FactoryImpl</code> 는 <code>Factory</code> 인터페이스를 구현해,<code>ProductImpl</code> 는 <code>Product</code> 인터페이스를 구현한다
+
+</UL>
+
+<CENTER><IMG SRC="images/Factory-1.gif" ALT="아래에 올린 6 개의 조작을 도시한다"></CENTER>
+
+<blockquote>
+<OL>
+<BR>
+
+	<LI><code>FactoryImpl</code> 는 <code>rmiregistry</code> 에 등록한다 (또는 등록된다)
+
+	<LI>클라이언트는 <code>Factory</code> 에의 참조를 요구한다
+
+	<LI><code>rmiregistry</code> 는 <code>FactoryImpl</code> 에의 원격 참조를 돌려준다
+
+	<LI>클라이언트는 <code>FactoryImpl</code> 상의 원격 메소드를 호출해,<code>ProductImpl</code> 에의 원격 참조를 취득한다
+
+	<LI><code>FactoryImpl</code> 는, 기존의 <code>ProductImpl</code> 에의 원격 참조, 또는 클라이언트의 요구에 근거해 새롭게 작성한 <code>ProductImpl</code> 에의 원격 참조를 돌려준다
+
+	<LI>클라이언트는 <code>ProductImpl</code> 상의 원격 메소드를 호출한다
+
+
+
+</OL>
+</blockquote>
+
+<BR>&nbsp;
+
+<H2>은행과 도서관의 예를 RMI 로 어떻게 구현할까</H2>
+
+<blockquote>
+
+<H3>은행</H3>
+
+<p>코드에서는,<code>AccountManager</code> (담당 행원)는 원격 인터페이스가 되어, 원격 메소드를 1 개 이상 가집니다. 이러한 메소드는,<code>Account</code> (계좌) 인터페이스를 구현한 객체를 돌려줍니다. <code>Account</code> 는, 계좌의 인스턴스에 대해서 실행할 수 있는 모든 조작 (예입이나 꺼내, 잔고 조회, 기장등)을 선언한 인터페이스가 됩니다.
+
+<P>Java RMI 에서는,<code>Librarian</code> 구현의 인스턴스만이 Java RMI 레지스트리에 등록됩니다. <code>AccountManager</code> 구현은, 예금계좌와 같게 <code>Account</code> 구현에의 원격 참조 (또는 직렬화 된 인스턴스)를 돌려주는 팩토리입니다.
+
+<H3>도서관</H3>
+
+<p>도서관의 예에서는,<code>Librarian</code> (직원)는 원격 인터페이스가 되어,<code>LibraryCard</code> (이용자 카드) 인터페이스를 구현한 객체를 돌려주는 메소드를 1 개 이상 가집니다. 한층 더 <code>Librarian</code> 인터페이스에는 책이나 CD 나 비디오 테잎에의 액세스를 허가하는 메소드가 있어, 책이나 CD 나 비디오 테잎에는 <code>Loanable</code> (대출 가능) 인터페이스가 구현되고 있습니다.
+
+<P>Java RMI 에서는,<code>Librarian</code> 구현의 인스턴스만이 Java RMI 레지스트리에 등록됩니다. <code>Librarian</code> 구현은,<code>LibraryCard</code> 구현 및 <code>Loanable</code> 객체 구현에의 원격 참조 (또는 직렬화 된 인스턴스)를 돌려주는 팩토리입니다.
+
+</blockquote>
+
+<FONT SIZE=-1>여기서 가리킨 은행과 도서관의 예는 완전한 것이 아닙니다만, Java RMI 의 팩토리 패턴을 이해하는데 있어서는 도움이 됩니다. </FONT>
+
+<BR>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td>
+<p><font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JavaScript 로부터 Java 에의 통신 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>JavaScript 로부터 Java 에의 통신 (스크립트 작성)</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#how">애플릿의 스크립트를 기술하는 방법</a> </li>
+<li><a href="#method">스크립트를 사용한 메소드의 호출</a>  </li>
+</ul>
+<h2><a name="how"></a> 애플릿의 스크립트를 기술하는 방법</h2>
+<p>이 장에서는, Java Plug-in 로 필요한 특정의 HTML 태그에 대해 이해할 필요가 있습니다. 이러한 태그의 자세한 것은, Java Plug-in 에서의 <a href="using_tags.html">OBJECT, EMBED, 및 APPLET 태그의 사용</a>을 참조해 주세요. JavaScript 에 대해 정통하고 있을 필요도 있습니다.  </p>
+<p> 스크립트의 사용에 의해, HTML 페이지내로부터 애플릿의 메소드를 호출하는 것이 가능하게 됩니다. 메소드의 호출 외에, 스크립트의 사용에 의해 이하를 실행할 수 있습니다.  
+<ul>
+<li>애플릿의 프로퍼티의 취득 및 설정 </li>
+<li>스크립트 작성용으로 구축된 Java 객체의 실행</li>
+</ul>
+<h2><a name="method"></a> 스크립트를 사용한 메소드의 호출</h2>
+스크립트를 사용해, 애플릿의 메소드를 호출하는 많은 기회가 있습니다. 일례로서 클릭한다고 애니메이션을 개시하는 HTML 버튼을 들 수가 있습니다. 이것은, HTML 태그, HTML 파일내의 스크립트, 및 애플릿 내부에서의 실제의 코드 기술을 조합하는 것으로 실현될 수 있습니다.  
+<p>애플릿의 HTML 페이지에, 이하를 포함할 필요가 있습니다.  <!-- table #29 start; table #25 still open -->
+<ul>
+<li><tt>OBJECT</tt> 태그의 내부에, 애플릿의 이름을 지정하는 ID 파라미터</li>
+<li>특정의 조작과 관련지을 수 있었던 스크립트 언어 및 스크립트 메소드를 지정하는 태그</li>
+<li>조작에 의해 불려 가는 스크립트 메소드용의 SCRIPT 태그</li>
+</ul>
+<p> 이러한 태그에 대해, 이하로 설명합니다.  
+<h4>애플릿의 지정</h4>
+HTML 페이지의 <tt>OBJECT</tt> 태그로,<tt>ID</tt> 파라미터를 지정할 필요가 있습니다. <tt>OBJECT</tt> 태그에는,<tt>classid</tt>,<tt>width</tt>,<tt>height</tt> 등의 파라미터가 포함되는 것을 생각해 내 주세요.  
+<p> <tt>ID</tt> 파라미터는, 애플릿의 기호명입니다. <tt>ID</tt> 파라미터를 사용해 애플릿의 기호명이 확립되면(자), 이후는, 이 이름을 이용해 애플릿을 참조할 수 있습니다.  
+<p> 예를 들어, Fractal 로 불리는 애플릿을 보관 유지하고 있는 경우를 생각합시다. <tt>OBJECT</tt> 태그에 <tt>ID</tt> 파라미터를 추가해,<tt>ID</tt> 를 애플릿의 기호명으로 설정합니다. 다음과 같이 태그를 설정할 수 있습니다.  
+<blockquote>
+  <pre>
+ID="Fractal"
+</pre>
+  <p>&nbsp;</p>
+</blockquote>
+이것으로, 스크립트내에서 <tt>Fractal</tt> 라는 이름을 사용해, Fractal 애플릿을 참조할 수 있습니다.  
+<p> 이 Fractal 애플릿의 예를 사용하는 경우, HTML 페이지에는, 최초로 <tt>FORM</tt> 태그, 다음에 <tt>OBJECT</tt> 태그가 기술됩니다. 다음에, 이러한 태그를 나타냅니다.  
+<blockquote> 
+  <table summary="layout" cellpadding="5">
+    <tr bgcolor="#CCCCCC"> 
+      <td> 
+        <pre>
+&lt;form name="Form1"&gt;
+&lt;OBJECT ID="Fractal" WIDTH=500 HEIGHT=120
+CLASSID="CLSID:8AD9C840-044E-11d1-B3E9-00805F499D93"
+&lt;PARAM NAME="code" value="CLSFractal.class"&gt;
+&lt;PARAM NAME="codebase" value="1.0. 2"&gt;
+&lt;PARAM NAME="level" value="5"&gt;
+...
+&lt;/OBJECT&gt;</pre>
+      </td>
+    </tr>
+  </table>
+  
+</blockquote>
+<p>
+<h4>조작과 스크립트가 관련짓고</h4>
+<p>HTML 페이지로 정의된 컴퍼넌트의 목적은, 사용자에 의해 트리거된 조작을 호출하는 것입니다. 이러한 컴퍼넌트의 정의에는,<tt>INPUT</tt> 태그를 사용합니다. 컴퍼넌트의 <tt>TYPE</tt> 타입 (<tt>button</tt>,<tt>NAME</tt>, 및 <tt>VALUE</tt>)을 지정합니다. 버튼 또는 다른 컴퍼넌트로부터 목적의 조작을 호출하기 위해서(때문에), 이하를 지정하는 태그를 추가할 필요가 있습니다.  </p>
+<ul>
+<li>액션을 트리거하기 위해서 사용자가 실행하는 조작 (사용자가 버튼을 클릭하는 경우의 <tt>onClick</tt> 등) </li>
+<li>지정된 트리거 조작의 발생시에, HTML 페이지가 호출하는 스크립트 메소드의 이름</li>
+<li>스크립트 메소드의 기술에 사용한 언어</li>
+</ul>
+<p> 예를 들어, HTML 페이지에 의해 작성된 버튼을 클릭하면(자), 특정의 애니메이션이 개시되는 경우를 생각해 봅시다. HTML 태그에 의해 버튼이 작성되어 버튼에 이름과 값 (라벨)이 주어집니다.  
+<p> 이것을 실행하려면 , 2 개의 태그를 추가합니다. 1 개의 태그는, 특정의 조작 (<code>onclick</code> 등)의 실행시에, 대응하는 스크립트 메소드가 불려 가는 것을 나타냅니다. 태그는,<tt>onClick="method name"</tt> 라고 하는 형식이 됩니다. 메소드명은, 같은 HTML 페이지내의 스크립트 메소드입니다.  
+<p> 따라서, HTML 페이지에 다음과 같이 기술할 수 있습니다.  
+<blockquote> 
+  <table summary="layout" cellpadding="5">
+    <tr bgcolor="#CCCCCC"> 
+      <td> 
+        <pre>
+&lt;input type="button" name="Button1" value="Start"
+onClick="startJSFractal" language="JavaScript"&gt;</pre>
+      </td>
+    </tr>
+  </table>
+  
+</blockquote>
+<p>
+<p> 이 <tt>INPUT</tt> 태그에 의해 버튼이 작성되어 버튼명이 「Button1」, 값 (버튼상에 표시되는 라벨)이 「Start」로 지정됩니다. 이 태그에 의해, 사용자가 버튼을 클릭하면(자) 불려 가는 스크립트 메소드, 및 스크립트 메소드의 언어도 지정됩니다. 이 예에서는, 스크립트 메소드는 <tt>startJSFractal</tt>, 스크립트 언어는 JavaScript 입니다. 사용자가 이 버튼을 클릭하면(자), HTML 페이지가 확장되어 JavaScript 스크립트로 기술된 스크립트 메소드 <tt>startVBFractal</tt> 가 불려 갑니다.  
+<h4>Script 태그 및 메소드</h4>
+<tt>onClick</tt> 태그로 지정한 메소드 (함수)에는 <tt>SCRIPT</tt> 태그를 포함할 필요가 있습니다. <tt>SCRIPT</tt> 태그에는,<tt>onClick</tt> 태그로 사용되는 이름과 같은 이름을 지정할 필요가 있습니다. 이 태그는, 스크립트 언어를 지정하는 파라미터도 보관 유지합니다. 한층 더 중요한 일로서 스크립트 메소드는, Java 애플릿 메소드를 호출합니다. 이것은, 메소드의 식별로,<tt>ID</tt> 태그로 지정된 애플릿명, 다음에 애플릿 코드내에서 구현된 실제의 메소드를 이름을 사용합니다.  
+<p> 예를 들어, 동일한 HTML 페이지는, 다음의 <tt>SCRIPT</tt> 태그를 보관 유지합니다.
+<blockquote> 
+  <table summary="layout" cellpadding="5">
+    <tr bgcolor="#CCCCCC"> 
+      <td> 
+        <pre>
+&lt;SCRIPT language="JavaScript"&gt;
+function startJSFractal() {
+        document.Form1.Fractal.startFractal()
+}
+&lt;/SCRIPT&gt;</pre>
+      </td>
+    </tr>
+  </table>
+  
+</blockquote>
+<p>
+<p>
+<p> 이 예의 <tt>SCRIPT</tt> 태그에서는, 스크립트 언어가 JavaScript 인 것이 최초로 지정되고 있습니다. 다음에 JavaScript 의 <code>function</code> 문이 계속됩니다. 이 문장에서는, 스크립트 메소드가 최초로 정의되고 있습니다. <code>function</code> 문에서는, 스크립트 메소드의 라벨 또는 이름이 <tt>startJSFractal</tt> 로서 지정되고 있습니다. 이 이름은, 입력 컴퍼넌트의 action 파라미터로 지정된 메소드명으로 일치하고 있을 필요가 있습니다.  
+<p> 이 예에서는,<tt>onClick</tt> 파라미터 및 <tt>function</tt> 문의 양쪽 모두로, 같은 스크립트 메소드가 지정되고 있습니다. 스크립트 메소드 <tt>startJSFractal</tt> 는, 애플릿 코드내에서 구현된 실제의 메소드 <tt>startFractal()</tt> 를 호출할 뿐입니다. 이것은, 메소드명을, 문서 폼명, 애플릿명 (<code>OBJECT</code> <code>ID</code>), 메소드명의 순서에 사용해 수식한 이름입니다.  
+<blockquote>
+  <pre>
+document.Form1.Fractal.startFractal()
+</pre>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>

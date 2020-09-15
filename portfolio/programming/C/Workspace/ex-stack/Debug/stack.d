@@ -1,0 +1,1 @@
+stack.d: ../stack.c

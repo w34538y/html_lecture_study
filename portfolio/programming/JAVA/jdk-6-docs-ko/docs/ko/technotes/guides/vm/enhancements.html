@@ -1,0 +1,90 @@
+<center><h2>J2SE 1.4.x 에서의 가상 머신의 확장 기능</h2></center>
+
+
+<h3>J2SE 1.4. 2 에서의 확장 기능</h3>
+
+<ul>
+
+<a name="runtime"></a> 
+<li><b>실행시의 퍼포먼스</b>
+<p>
+
+1.4. 2 에서의 실행시의 퍼포먼스의 확장점은 이하대로입니다. 문제점에 대해서는,<a href="http://java.sun.com/j2se/1.4.2/ja/relnotes.html#vm">가상 머신의 릴리스 노트</a>를 참조해 주세요.
+
+<ul>
+<li>1.4. 1 의 interpreter 전용의 Itanium 버젼이, 서버 컴파일러를 추가해 확장되었다. 퍼포먼스가 1.4. 1 의 30 배까지 향상
+<p>
+<li>Class.forName 와 관련하는 메소드를 다용하는 어플리케이션의 퍼포먼스가, 큰폭으로 향상
+<p>
+<li>-Xcheck:jni 스윗치를 개입시킨 Java Native Interface 의 사용 체크가 1.4. 1 보다 보다 광범위하고 강력하게 되었다
+<p>
+<li>JVMPI 및 JVMDI 의 사용중에 서드 파티의 메모리 매니저가 정상적으로 동작한다
+</ul>
+<p>
+
+<a name="clienthotspot"></a> 
+<li><b>클라이언트 HotSpot 의 컴파일러</b>
+<p>
+
+1.4. 2 에서의 클라이언트 HotSpot 의 컴파일러의 확장점은 이하대로입니다. 문제점에 대해서는,<a href="http://java.sun.com/j2se/1.4.2/ja/relnotes.html#vm">가상 머신의 릴리스 노트</a>를 참조해 주세요.
+
+<ul>
+<li>컴파일러의 속도와 점유 스페이스의 향상
+</ul>
+<p>
+
+<a name="serverhotspot"></a> 
+<li><b>서버 HotSpot 의 컴파일러</b>
+<p>
+
+1.4. 2 에서의 서버 HotSpot 의 컴파일러의 확장점은 이하대로입니다.  문제점에 대해서는,<a href="http://java.sun.com/j2se/1.4.2/relnotes.html#vm">가상 머신의 릴리스 노트</a>를 참조해 주세요.
+<ul>
+<li>SSE 와 SSE2 가 프로세서와  operating system에 의해 지원되고 있는 경우는, IA32 플랫폼에서 SSE 와 SSE2 의 명령을 사용
+<p>
+<li>정수의 정수 제산의 고속화
+
+<p>
+<li>2 의 누승에 의한 부동 소수점의 제산의 고속화
+<p>
+<li>NullPointerException 처리의 고속화
+</ul>
+
+</ul>
+
+
+<h3>J2SE 1.4. 1 에서의 확장 기능</h3>
+<ul>
+<li>J2SE 1.4. 1 은, Linux Red Hat 7.2 및 Windows XP 64-bit edition 상에서 64 비트 Intel Itanium 프로세서를 지원하는 버젼으로 사용할 수 있습니다. J2SE 1.4. 1 남을 수 있는들의 버젼의 다운로드에 대해서는,<a href="http://java.sun.com/j2se/1.4.1/download.html">다운로드 페이지</a>를 참조해 주세요.  
+<p>
+이 릴리스에서는, 이러한 64 비트의 버젼에 이하의 제한이 있습니다.  
+<ul>
+<li>어플리케이션을 실행할 수 있는 것은 interpreter 모드 뿐입니다. 디폴트에서는, 플랫폼은 interpreter 모드로 동작하기 위해(때문에), 어플리케이션의 기동시에 커멘드행으로 <tt>-Xint</tt> 플래그를 지정할 필요는 없습니다. J2SE 1.4. 1 플랫폼의 64 비트 버젼을 사용하는 경우,<tt>java&nbsp;MyApp</tt> 커멘드가 바이트 코드를 해석하는 것으로써, MyApp 가 기동되고 실행됩니다. 64 비트를 지원하기 위한 Java HotSpot 테크놀러지 베이스의 다이나믹 컴파일러는, Java SE 플랫폼의 향후의 릴리스로 계획되고 있습니다.   
+<li>J2SE 1.4. 1 의 64 비트 버젼에는, Java 플러그 인 및 Java Web Start 제품은 포함되지 않습니다.
+<li>J2SE 1.4. 1 의 64 비트 버젼에, 인스톨 프로그램의 어플리케이션은 포함되어 있지 않습니다. 이러한 버젼을 입수할 수 있는 것은 tar 번들 뿐입니다.
+</ul>
+J2SE 1.4. 1 의 32 비트 버젼은, Intel Itanium 머신에서는 동작하지 않습니다.
+
+<p><li>데드락 검출 유틸리티가 Java HotSpot VM 에 추가되었습니다. 이 유틸리티는, 어플리케이션의 기동중에 커멘드행으로 Ctrl+\ 에 의해 불려 갑니다. 유틸리티는 Java Native Interface (JNI), Java Virtual Machine Profiler Interface (JVMPI), 및 Java Virtual Machine Debug Interface (JVMDI)로 생긴 락을 시작해 Java 의 플랫폼 레벨로 발생한 데드락을 검출합니다.
+<p>
+이 유틸리티는 불려 가면(자), thread 덤프를 표준 출력으로 표시해, 검출하는 모든 Java 플랫폼 레벨의 데드락을 나타냅니다. 이<a href="sample-output.html">출력예</a>를 참조해 주세요. 모니터를 획득하는 사이클로 2 개 이상의 thread가 불려 가 어플리케이션이 데드락 했을 경우는, 그 thread의 리스트와 데드락으로 불려 간 모니터가 표시됩니다. 다만, 이것에 의해, 신호가 발신되지 않는 모니터로 대기하는 thread에 관계하는 데드락을 찾아내는 것은 아닙니다.
+
+</ul>
+<p>
+<h3>J2SE 1.4. 0 에서의 확장 기능</h3>
+<ul>
+<li><b><a href="signal-chaining.html">시그널 연쇄 기능</a> </b>
+<p><li><b><a href="error-handling.html">에러 보고 기구</a> </b> 
+<p><li>새롭다 <tt>-Xloggc:</tt><var>file</var> 옵션은 <tt>-verbose:gc</tt> 와 같게 garbage collection 이벤트가 발생할 때마다 보고합니다만, 그 데이터를 <var>file</var> 에 기록합니다. <tt>-verbose:gc</tt> 에 의해 보고되는 정보 외에, 보고되는 각 이벤트의 선두에, 최초의 가베지 컬렉션 이벤트로부터의 경과시간 (초단위)을 덧붙일 수 있습니다.  
+<p><li>J2SDK 1.4. 0 이후, Classic 가상 머신은 Java 2 SDK 에는 포함되지 않게 되었습니다. (Solaris 플랫폼에서는, Classic VM 는 J2SDK 1.3. 0 으로 삭제되었습니다. )<tt>-classic</tt> 커멘드행 옵션을 사용해 Classic VM 로 어플리케이션을 실행해 왔을 경우, Java HotSpot Client VM (디폴트 또는 <tt>-client</tt> 옵션으로 호출한다) 또는 Java HotSpot Server VM (<tt>-server</tt> 옵션으로 호출한다)의 어느 쪽인지를 사용할 필요가 있습니다. <tt>-classic</tt> 옵션으로 어플리케이션을 기동하려고 하면(자), 다음과 같은 메세지가 표시됩니다. <tt>Error:Classic VM no longer supported</tt>.
+<p>
+<a name="64bit"></a> <li>J2SDK 1.4. 0 의 Solaris<sup><font size="-2">TM</font></sup>-SPARC<sup><font size="-2">TM</font></sup> 플랫폼판에서는, Java HotSpot Server VM 를 사용하면(자), 64 비트 Sparc-v9 플랫폼에서 64 비트의 동작이 지원됩니다. 64 비트의 address 공간이 있으므로, 4 G 바이트 이상의 heap 메모리가 사용 가능합니다. Java HotSpot Server VM 는 32 비트와 64 비트의 양쪽 모두를 지원하고 있습니다. 사용자는 커멘드행 플래그 <tt>-d32</tt> 또는 <tt>-d64</tt> 를 사용해 32 비트 또는 64 비트의 동작을 선택할 수 있습니다.   
+<ul>
+<li><a href="../jni/index.html">Java Native Interface</a>  를 사용하려면 , 코드를 재컴파일 해 64 비트의 VM 로 동작할 수 있도록(듯이) 할 필요가 있습니다.
+<li>Java HotSpot Client VM 는 64 비트를 지원하고 있습니다. Java HotSpot Server VM 만이, 옵션으로 64 비트의 동작을 제공합니다.
+<li>가상 머신을 64 비트 모드로 실행하려면 , 64 비트의 Solaris 지원를 인스톨 할 필요가 있습니다.
+<li>이전의 Sparcv9 시스템에서는, 64 비트 프로그램을 이용할 수 있도록(듯이),<tt>/platform/sun4u/boot.conf</tt> 파일을 변경할 필요가 있습니다. 자세한 것은,<tt>boot.conf</tt> 파일의 텍스트를 참조해 주세요.
+</ul>
+<p><li>새로운 커멘드행 옵션 <tt>-Xcheck:jni</tt> 는, Java Native Interface (JNI) 기능에 대해서 추가 체크를 실시합니다. 구체적으로는, Java 가상 머신은 JNI 요구를 처리하기 전에, JNI 함수에게 건네지는 파라미터와 실행 환경의 데이터를 검증합니다. 무효인 데이터가 발견되었을 경우는, native code에 문제가 있는 것을 나타내고 있기 (위해)때문에, Java 가상 머신은 치명적 에러를 발생해 종료합니다. 이 옵션을 사용하면(자), 퍼포먼스 저하가 예상됩니다.  
+<p><li>J2SE 1.4. 0 플랫폼에서는, 45.3 에서 48.0 의 클래스 파일 버젼을 사용할 수 있습니다.
+</ul>
+

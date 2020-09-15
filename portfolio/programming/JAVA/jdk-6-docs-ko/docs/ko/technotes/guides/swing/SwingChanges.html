@@ -1,0 +1,1024 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Swing 의 변경점 및 신기능 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+<TD>
+
+<center>
+
+<h2>Java<sup><font size=-2>TM</font></sup> 2 SDK, Standard Edition, v 1.4 에서의 Swing 의 변경점 및 신기능</h2>
+
+</center>
+
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="index.html">Swing 프로젝트</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+<!-- Body text begins here -->
+<h2>릴리스 1.4. 1 및 1.4. 2 로 고유의 변경점</h2>
+<p>이 문서에는, 모든 1.4. * 릴리스에 관련하는 정보가 포함되어 있습니다. 1.4. 1 및 1.4. 2 에 고유의 정보에 대해서는,<a href=1.4/Post1.4.html>Java 2 SDK, Standard Edition, v 1.4 로부터의 Swing 의 변경점</a>을 참조해 주세요.
+
+<H2>주요한 변경점</H2>
+<P> Swing 에 큰 영향을 주는 것 같은 각 기능에 대해서는, 일반적으로, 개별의 문서로 나누어 설명합니다. 이하의 링크를 클릭해, 각각의 문서를 참조해 주세요.  </P>
+    <UL>
+<li><a href=1.4/Post1.4.html#xp>Windows XP 의 Look & Feel</a> 
+<li><a href=1.4/Post1.4.html#gtk>GTK+ 의 Look & Feel</a> 
+<LI><A href=1.4/pb.html>불확정 진척 바의 지원</A> </LI>
+<LI><A href=1.4/tabbedPane.html>스크롤 가능한 탭 첨부의<CODE>JTabbedPane</CODE> </A> </LI>
+<LI><A href=1.4/spinner.html><CODE>JSpinner</CODE></A> </LI>
+<LI><A href=1.4/ftf.html><CODE>JFormattedTextField</CODE></A> </LI>
+<LI><A href=1.4/popup.html><CODE>Popup</CODE> 및 <CODE>PopupFactory</CODE></A> </LI>
+<LI><A href="../../../api/java/awt/doc-files/FocusSpec.html">신규 포커스 모델의 스펙 </a>및 <a href="../awt/1.4/focusAPIChanges.html">Javadoc</a> 
+<LI><A href="1.4/windows.html">Windows Look &amp; Feel 의 갱신</A> 
+<LI><A href="1.4/dnd.html">새로운 드래그 &amp; 드롭의 아키텍쳐(architecture)</a> 
+    </UL>
+<H2>미세한 변경점</H2>
+<P> 각 섹션에, 관련하는 클래스세트에 대한 변경점을 설명합니다. 대부분의 섹션에서는,<CODE>JEditorPane</CODE> 나 <CODE>JTable</CODE> 등, Swing 의 단일 컴퍼넌트의 일부인 클래스에 초점을 맞힐 수 있고 있습니다. 각 API 의 변경은,<A href="http://developer.java.sun.com/developer/bugParade">Java Developer Connection (JDC) Bug Parade</A>  에 있는 리포트에의 링크와 관련지을 수 있고 있습니다. 이 사이트에서, 변경의 이유가 된 버그나 RFE (기능확장의 요구)를 참조할 수가 있습니다. 이 문서에는, 각 API 의 변경에 대한 이하의 정보도 포함되어 있습니다.  
+    <UL>
+<LI> 신규 메소드 또는 시멘틱스가 변경된 메소드에 관한 Javadoc 에의 링크 첨부 메소드시그니챠 
+<LI> 변경 전체라고 변경을 이용하는 방법의 간단한 설명. 버그 및 RFE 리포트내의 평가 섹션에도, 이것과 같은 설명이 있다 
+<LI> API 의 변경에 의해 장기간 계속하고 있던 버그가 정정되었는지, 또는 결핍 하고 있던 기능이 제공되었는지의 설명. 전형적인 회피 방법 또는 새로운 기능에의 확장으로 이행하는 방법에 대한 가이드 라인 
+<LI> 버그의 수정도 포함한 거의 모든 변경에 의해, 어떤 종류의 비호환성이 태어난다. 이러한 비호환성을 가능한 한 예측해, 그 회피 방법에 대한 어드바이스가 제공되고 있다 
+    </UL>
+    <P> 
+<H3>섹션</H3>
+    <UL>
+<LI><A href="#Box"><CODE>Box</CODE></A> </LI>
+<LI><A href="#JButton"><CODE>JButton</CODE></A> </LI>
+<LI><A href="#JComboBox"><CODE>JComboBox</CODE></A> </LI>
+<LI><A href="#JFileChooser"><CODE>JFileChooser</CODE></A> </LI>
+<LI><A href="#JInternalFrame"><CODE>JInternalFrame</CODE></A> </LI>
+<LI><A href="#JList"><CODE>JList</CODE></A> </LI>
+<LI><A href="#JOptionPane"><CODE>JOptionPane</CODE></A> </LI>
+<LI><A href="#JPopupMenu"><CODE>JPopupMenu</CODE></A> </LI>
+<LI><A href="#JPanel"><CODE>JPanel</CODE></A> </LI>
+<LI><A href="#JRootPane"><CODE>JRootPane</CODE></A> </LI>
+<LI><A href="#JScrollBar"><CODE>JScrollBar</CODE></A> </LI>
+<LI><A href="#JScrollPane"><CODE>JScrollPane</CODE></A> </LI>
+<LI><A href="#JTabbedPane"><CODE>JTabbedPane</CODE></A> </LI>
+<LI><A href="#JTable"><CODE>JTable</CODE></A> </LI>
+<LI><A href="#JTextComponent"><CODE>JTextComponent</CODE></A> </LI>
+<LI><A href="#JTree"><CODE>JTree</CODE></A> </LI>
+<LI><A href="#RepaintManager"><CODE>RepaintManager</CODE></A> </LI>
+<LI><A href="#SpringLayout"><code>SpringLayout</code></a> </li>
+<LI><A href="#Miscellaneous">그 외</A> </LI>
+<LI><A href="#KnownBugs">기존의 버그</A> </LI>
+    </UL>
+    <HR>
+<H2><A name="Box">Box</A> </H2>
+    <blockquote>
+<H3>Box 가 JComponent 로부터 파생하게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4304100.html">4304100</A> .  </P>
+<P> 종래,<CODE>Box</CODE> 의 슈퍼 클래스는 <CODE>Component</CODE> 였습니다. <CODE>Box</CODE> 가 <CODE>JComponent</CODE> 로부터 파생하지 않았기 때문에, 예를 들어, 경계를 설정하거나<code>revalidate</code> 를 발행하는 등으로, 일반적으로의 Swing 컴퍼넌트와 같이 <CODE>Box</CODE> 를 사용할 수 없었습니다. 이것에 한정하지 않고, 시각적인 변경이나 그 외의 동일한 시각상의 프로퍼티의 변경에서도, 표준적인 Swing 컴퍼넌트는 일반적으로,<code>repaint</code> 또는 <code>revalidate</code> 를 사용해 변경합니다만,<CODE>Box</CODE> 는 이 동작에 적합하지 않았습니다. 이 릴리스로부터,<a href="../../../api/javax/swing/Box.html"><CODE>Box</CODE></a>  및 <a href="../../../api/javax/swing/Box.Filler.html"><CODE>Box.Filler</CODE></a>  가 <CODE>JComponent</CODE> 슈퍼 클래스로부터 파생하므로, 표준 Swing 컴퍼넌트에 의해 가까운 동작을 합니다.  </P>
+      </blockquote>
+
+<H3>BoxLayout 가 오른쪽에서 왼쪽, 및 아래에서 위에의 컴퍼넌트의 방향을 지원하게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4140833.html">4140833</A> .  </P>
+<P> <CODE>BoxLayout</CODE> 에서는, 레이아웃 하는 <CODE>Container</CODE> 의 <CODE>ComponentOrientation</CODE> 가 고려되지 않았습니다. 다른 AWT 레이아웃 매니저는, JDK 1.2 에 <CODE>ComponentOrientation</CODE> 기능이 추가되었을 때에, 컴퍼넌트의 방향을 고려하도록(듯이) 작성되었습니다. 이 기능을 <a href="../../../api/javax/swing/BoxLayout.html"><CODE>BoxLayout</CODE></a>  에 추가하면(자), 중동 로케일을 지원하는 프로그램으로 도움이 됩니다. <CODE>BoxLayout</CODE> 는,<CODE>JOptionPane</CODE>,<CODE>JToolBar</CODE>,<CODE>JMenuBar</CODE> 등의, 그 외의 Swing 컴퍼넌트에도 내부적으로 사용됩니다. 이 기능을 추가하는 것은, 이러한 컴퍼넌트가 <a href="../../../api/java/awt/ComponentOrientation.html"><CODE>ComponentOrientation</CODE></a>  를 지원하기 위해서도 필요합니다.
+<p>이 기능을 지원하기 위해서, 정수의 <a href="../../../api/javax/swing/BoxLayout.html#LINE_AXIS"><code>LINE_AXIS</code></a>  와 <a href="../../../api/javax/swing/BoxLayout.html#PAGE_AXIS"><code>PAGE_AXIS</code></a> , 및 <a href="../../../api/javax/swing/BoxLayout.html#BoxLayout(java.awt.Container,%20int)"><code>BoxLayout(Container, int)</code></a>  생성자 이 <a href="../../../api/javax/swing/BoxLayout.html"><code>BoxLayout</code></a>  에 추가되었습니다.
+<p>게다가<a href="../../../api/javax/swing/SizeRequirements.html"><code>SizeRequirements</code></a>  내의 이하의 메소드도 변경되었습니다.
+       <ul>
+<li><a href="../../../api/javax/swing/SizeRequirements.html#calculateTiledPositions(int,%20javax.swing.SizeRequirements,%20javax.swing.SizeRequirements%5B%5D,%20int%5B%5D,%20int%5B%5D,%20boolean)"><code>calculateTiledPositions(int, SizeRequirements, SizeRequirements[], int[], int[], boolean)</code></a> 
+<li><a href="../../../api/javax/swing/SizeRequirements.html#calculateTiledPositions(int,%20javax.swing.SizeRequirements,%20javax.swing.SizeRequirements%5B%5D,%20int%5B%5D,%20int%5B%5D)"><code>calculateTiledPositions(int, SizeRequirements, SizeRequirements[], int[], int[])</code></a> 
+<li><a href="../../../api/javax/swing/SizeRequirements.html#calculateAlignedPositions(int,%20javax.swing.SizeRequirements,%20javax.swing.SizeRequirements%5B%5D,%20int%5B%5D,%20int%5B%5D,%20boolean)"><code>calculateAlignedPositions(int, SizeRequirements, SizeRequirements[], int[], int[], boolean)</code></a> 
+<li><a href="../../../api/javax/swing/SizeRequirements.html#calculateAlignedPositions(int,%20javax.swing.SizeRequirements,%20javax.swing.SizeRequirements%5B%5D,%20int%5B%5D,%20int%5B%5D)"><code>calculateAlignedPositions(int, SizeRequirements, SizeRequirements[], int[], int[])</code></a> 
+      </ul>
+     </blockquote>
+     </blockquote>
+        
+
+    <HR>
+<H2><A name="JButton">JButton</A> </H2>
+    <blockquote>
+
+<h3><a name=4659800>디폴트 버튼은 Windows LAF 의 포커스에 따른다</a> </h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4659800.html">4659800</A> .  </P>
+<p>1.4. 0 으로 발생하고 있던 이 버그이기 때문에, 디폴트 버튼은 항상 포커스에 따르는 것은 아니었습니다. 이것은 1.4. 1 으로 수정되었습니다.
+    </blockquote>
+
+<H3>강조 표시되는 문자의 신규 컨트롤</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4138746.html">4138746</A> .  </P>
+<P><a href="../../../api/javax/swing/AbstractButton.html"><CODE>AbstractButton</CODE></a>  와 <a href="../../../api/javax/swing/JLabel.html"><CODE>JLabel</CODE></a>  의 양쪽 모두를 사용하는 것으로, 어느 동작을 실행하기 위해서 키보드로부터 입력하는 문자 (니모닉크)를 설정할 수 있습니다. javadoc 에서는 이러한 메소드에 대해, 설정한 문자가 최초로 출현했을 때에 대문자 소문자에 사로 잡히지 않고 강조된다고 설명하고 있습니다. 이 기능은 대부분의 개발자에게 적합합니다만, 같은 문자가 또 출현했을 경우에 그것도 강조 표시할 필요가 있는 경우도, 상당한 정도 있습니다. 예를 나타냅니다. 「메모장」내에서는, 「a」가<B>「이름을 붙여 보존 (Save As)</B>」의 가속기입니다만, 2 번째의 「a」가 강조되는 문자입니다. 개발자에게는, 이것을 지정할 수 있을 방법이 필요합니다.  </P>
+<P> 이 문제는, 신규 메소드의 <a href="../../../api/javax/swing/AbstractButton.html#setDisplayedMnemonicIndex(int)"><CODE>AbstractButton.setDisplayedMnemonicIndex</CODE></a>  및 <a href="../../../api/javax/swing/JLabel.html#setDisplayedMnemonicIndex(int)"><CODE>JLabel.setDisplayedMnemonicIndex</CODE></a>  로 해결할 수 있습니다. <CODE>setMnemonic</CODE> 또는 <CODE>setDisplayedMnemonic</CODE> 메소드로 니모닉크를 지정하면(자),<CODE>setDisplayedMnemonicIndex</CODE> 메소드로, 강조 표시되는 문자를 변경할 수 있습니다. 게다가 새로운 <a href="../../../api/javax/swing/AbstractButton.html#getDisplayedMnemonicIndex()"><code>AbstractButton.getDisplayedMnemonicIndex</code></a>  및 <a href="../../../api/javax/swing/JLabel.html#getDisplayedMnemonicIndex()"><code>JLabel.getDisplayedMnemonicIndex</code></a>  메소드가 있습니다. 또,<a href="../../../api/javax/swing/plaf/basic/BasicGraphicsUtils.html#drawStringUnderlineCharAt(java.awt.Graphics,%20java.lang.String,%20int,%20int,%20int)"><code>drawStringUnderlineCharAt</code></a>  가 <a href="../../../api/javax/swing/plaf/basic/BasicGraphicsUtils.html"><code>javax.swing.plaf.basic.BasicGraphicsUtils</code></a>  에 추가되었습니다. <br><br>
+     </blockquote>
+
+<H3>AbstractButton.configurePropertiesFromAction 로 ACTION_COMMAND_KEY 프로퍼티이 존중되게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4457940.html">4457940</A> .  </P>
+<p>지금까지,<a href="../../../api/javax/swing/AbstractButton.html"><code>AbstractButton</code></a>  의 <a href="../../../api/javax/swing/AbstractButton.html#configurePropertiesFromAction(javax.swing.Action)"><code>configurePropertiesFromAction(Action)</code></a>  메소드 및 <a href="../../../api/javax/swing/AbstractButton.html#configurePropertiesFromAction(javax.swing.Action,%20java.lang.Swing%5B%5D)"><code>configurePropertiesFromAction(Action, String[])</code></a>  메소드에서는,<code>ACTION_COMMAND_KEY</code> 프로퍼티이 존중되지 않았습니다. 이 릴리스에서는, 이 점이 대처되었습니다. 그 때문에, 다음에 나타내는 <code>AbstractButton</code> 의 서브 클래스에서,<code>configurePropertiesFromAction</code> 메소드의 javadoc 가 변경되었습니다.
+     <ul>
+<li><a href="../../../api/javax/swing/JButton.html#configurePropertiesFromAction(javax.swing.Action)"><code>JButton.configurePropertiesFromAction(Action)</code></a> 
+<li><a href="../../../api/javax/swing/JMenu.html#configurePropertiesFromAction(javax.swing.Action)"><code>JMenu.configurePropertiesFromAction(Action)</code></a> 
+<li><a href="../../../api/javax/swing/JCheckBox.html#configurePropertiesFromAction(javax.swing.Action)"><code>JCheckBox.configurePropertiesFromAction(Action)</code></a> 
+<li><a href="../../../api/javax/swing/JRadioButton.html#configurePropertiesFromAction(javax.swing.Action)"><code>JRadioButton.configurePropertiesFromAction(Action)</code></a> 
+     </ul>
+     </blockquote>
+     </blockquote>
+
+    <HR>
+<H2><A name="JComboBox">JComboBox</A> </H2>
+    <blockquote>
+<H3><A name="PopupMenuListener"></A> JComboBox 에의 PopupMenuListener 의 추가 
+    <blockquote>
+    </H3>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4287690.html">4287690</A> .  
+<P> combobox의 드롭 다운 메뉴가 pop-up 되거나 바탕으로 되돌려지거나 삭제되거나 할 경우에 청취자에게 통지되는 기능의 지원를, 많은 개발자가 요구하고 있었습니다. 어플리케이션에서는, 이러한 청취자를 사용해, combobox의 모델을 각 항목과 함께 생성할 수가 있었습니다.  
+<P> 이 기능은, Look &amp; Feel 의 구현의 몇개인가로 제공되지 않을 가능성이 있는 드롭 다운 메뉴 기능용으로 청취자를 지원하는 것에 대하여, 어떠한, 어쩌면 아카데믹한 염려가 있었기 때문에, 초기 버젼의 Swing 에는 제공되지 않았습니다. 그러나, Java 와 함께 출시되는 모든 Look &amp; Feel 와 다른 모든 Look &amp; Feel 에서도, combobox의 모든 항목을 표시하기 위해서 드롭 다운 메뉴가 사용되고 있습니다. 그 때문에, 메뉴 상태의 변경 통지를 취득하기 위해서, 이식성이 없는 핵에 의지하는 개발자도 있었습니다.  
+<P> 이 릴리스에서는,<a href="../../../api/javax/swing/event/PopupMenuListener.html"><CODE>PopupMenuListener</CODE></a>  가 <a href="../../../api/javax/swing/JComboBox.html"><CODE>JComboBox</CODE></a>  에 추가되었습니다. 기반이 되는 Look &amp; Feel 가 항목 메뉴를 지원하고 있는 한, 이 청취자를 사용해, combobox의 메뉴가 표시되는 전후에 액션을 실행할 수 있습니다. 이 기능을 지원하려면 ,<code>JComboBox</code> 의 이하의 신규 메소드가 필요합니다.
+<pre>
+    public void <a href="../../../api/javax/swing/JComboBox.html#addPopupMenuListener(javax.swing.event.PopupMenuListener)">addPopupMenuListener(PopupMenuListener l)</a> 
+    public void <a href="../../../api/javax/swing/JComboBox.html#removePopupMenuListener(javax.swing.event.PopupMenuListener)">removePopupMenuListener(PopupMenuListener l)</a> 
+    public void <a href="../../../api/javax/swing/JComboBox.html#firePopupMenuWillBecomeVisible()">firePopupMenuWillBecomeVisible()</a> 
+    public void <a href="../../../api/javax/swing/JComboBox.html#firePopupMenuWillBecomeInvisible()">firePopupMenuWillBecomeInvisible()</a> 
+    public void <a href="../../../api/javax/swing/JComboBox.html#firePopupMenuCanceled()">firePopupMenuCanceled()</a> 
+</pre>
+      <BR>
+    </blockquote>
+
+<H3>JComboBox 가 리스트용의 prototype의 셀을 지원하게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4231298.html">4231298</A> .  </P>
+<P>지금까지 <a href="../../../api/javax/swing/JComboBox.html"><CODE>JComboBox</CODE></a>  는, 표시하는 각 항목의 렌 다라를 구성해 있었습니다. 리스트가 큰 경우, 이 구성 방법은 시간이 걸립니다. 개발자가 대신에 필요로 하고 있던 것은, 모든 셀에 일치하는 prototype를 지정해, 그 prototype만이 각 셀 대신에 1 회만 체크되는 것 같은 기능이었습니다. 이 릴리스에서는,<a href="../../../api/javax/swing/JComboBox.html#getPrototypeDisplayValue()"><code>getPrototypeDisplayValue</code></a>  와 <a href="../../../api/javax/swing/JComboBox.html#setPrototypeDisplayValue(java.lang.Object)"><code>setPrototypeDisplayValue</code></a>  가 <a href="../../../api/javax/swing/JComboBox.html"><code>JComboBox</code></a>  에 추가되었습니다.  <br><br>
+     </blockquote>
+
+<H3>JComboBox 및 관련 클래스에 대한 Javadoc 문서가 개선되었다</H3>
+     <blockquote>
+<P> 이 변경에 대응하는 버그 추적 리포트는,<A 	  href="http://developer.java.sun.com/developer/bugParade/bugs/4394300.html">4394300</A>  입니다.  
+<P> 지금까지,<CODE>JComboBox</CODE> 의 public API 와 그 UI 위양에는, 그 구현 방법을 상세하게 설명한 javadoc 가 포함되어 있었습니다. 다만, 시간의 경과와 함께 기능의 재고와 버그의 수정을 거쳐, 이 javadoc 는 시대착오가 되었습니다. 구현의 상세하지 않게 메소드의 동작을 설명하도록(듯이), javadoc 의 체크와 개정을 했습니다. 또, 실제로는 비공개여야할 「protected」메소드나 필드에 관해서는, 이러한 메소드의 오버라이드(override)나 호출을 장려하지 않게, javadoc 가 몇개인가 삭제되었습니다.  
+<P>그 때문에,<a href="../../../api/javax/swing/JComboBox.html"><code>JComboBox</code></a> ,<a href="../../../api/javax/swing/ComboBoxModel.html"><code>ComboBoxModel</code></a> ,<a href="../../../api/javax/swing/MutableComboBoxModel.html"><code>MutableComboBoxModel</code></a> ,<a href="../../../api/javax/swing/plaf/basic/BasicComboBoxUI.html"><code>javax.swing.plaf.basic.BasicComboBoxUI</code></a> ,<a href="../../../api/javax/swing/plaf/basic/ComboPopup.html"><code>javax.swing.plaf.basic.ComboPopup</code></a> , 및 <a href="../../../api/javax/swing/plaf/basic/BasicComboPopup.html"><code>javax.swing.plaf.basic.BasicComboPopup</code></a>  의 javadoc 가 변경되었습니다. <br><br>
+      </blockquote>
+      </blockquote>
+
+    <HR>
+<H2><A name="JFileChooser">JFileChooser</A> </H2>
+      <blockquote>
+<H3>Windows Look &amp; Feel 에서의 JFileChooser 의 개선</H3>
+      <blockquote>
+<P> 이 변경에 대응하는 버그 추적 리포트는,<A       href="http://developer.java.sun.com/developer/bugParade/bugs/4290709.html">4290709</A>  입니다.  
+<P> Swing 의 <CODE>JFileChooser</CODE> 는, Windows Look &amp; Feel 에 근거한 Microsoft Windows 의 일반적인 파일의 다이알로그 박스와 닮아 있습니다만, 다소의 결여 부분이 있어, 불만을 받고 있었습니다. 특히, Microsoft Windows 의 외관 가이드에게는, 다음과 같은 기술이 있습니다.  
+<P> 일반적으로이 [여는] 및 [이름을 붙여 보존] 다이알로그 박스를 사용할 수 없는 경우는, 스스로 작성하는 다이알로그 박스에 이하의 기능을 짜넣어, 쉘, Windows 악세사리, 및 그 외의 어플리케이션과 확실히 일관성을 유지하도록 해 주세요.  
+      <UL>
+	<LI>쉘과 같은 이름 공간의 계층을 유지한다. 즉, 데스크탑을 계층 루트로 해,[마이 컴퓨터] 나 [마이 네트워크] 를 포함한 데스크탑상의 모든 폴더와 객체를 다음의 계층으로 한다.  [...] 
+	<LI>쇼트 컷 (쉘 링크)을 지원한다.  [...] 
+	<LI> 대응하는 아이콘 첨부로 파일명을 표시해, 쉘과 같게 파일명 확장자(extension)는 삭제한다.  
+	<LI> 사용자가 네트워크 계층을 직접 참조할 수 있도록(듯이) 한다.  
+	<LI> 독자적으로 작성하는 [여는] 및 [보존] 다이알로그 박스 만이 아니고, 작성하는 모든 다이알로그 박스로, 굵은 글씨 이외의 폰트만을 사용한다.  [...] 
+      </UL>
+<P> 위의 조목별로 나누어 쓴 글의 최초의 4 항목을 Swing 내에서 실현되려면 , AWT 로부터의 추가의 API 지원가 필요합니다. AWT 공통 파일 다이얼로그도, 현재는, 이하의 이유로써 받아들이기 어려운 솔루션이 되었습니다.  
+      <UL>
+	<LI> JFileChooser 와 같은 프레임 또는 다이얼로그에 짜넣을 수 없다.  
+	<LI> 파일명의 필터가 구현되어 있지 않고, 또, Windows 에 구현하는 것은 어렵다.  
+      </UL>
+<P>새로운 기능이, 이하의 public 메소드를 <a href="../../../api/javax/swing/filechooser/FileSystemView.html"><CODE>javax.swing.filechooser.FileSystemView</CODE></a>  클래스에 추가하는 것으로 실행됩니다. 이 클래스에 의해,<code>File</code> 클래스의 적용 범위를 넘어, 파일과 디렉토리의 정보가 제공됩니다.
+<pre>
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isTraversable(java.io.File)">isTraversable(File f)</a> 
+    public String <a href="../../../api/javax/swing/filechooser/FileSystemView.html#getSystemDisplayName(java.io.File)">getSystemDisplayName(File f)</a> 
+    public String <a href="../../../api/javax/swing/filechooser/FileSystemView.html#getSystemTypeDescription(java.io.File)">getSystemTypeDescription</a> 
+    public Icon <a href="../../../api/javax/swing/filechooser/FileSystemView.html#getSystemIcon(java.io.File)">getSystemIcon(File f)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isParent(java.io.File,%20java.io.File)">isParent(File folder, File file)</a> 
+    public File <a href="../../../api/javax/swing/filechooser/FileSystemView.html#getChild(java.io.File,%20java.lang.String)">getChild(File parent, String filename)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isFileSystem(java.io.File)">isFileSystem(File f)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isFileSystemRoot(java.io.File)">isFileSystemRoot(File dir)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isDrive(java.io.File)">isDrive(File dir)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isFloppyDrive(java.io.File)">isFloppyDrive(File dir)</a> 
+    public boolean <a href="../../../api/javax/swing/filechooser/FileSystemView.html#isComputerNode(java.io.File)">isComputerNode(File dir)</a> 
+    public File <a href="../../../api/javax/swing/filechooser/FileSystemView.html#createFileSystemRoot(java.io.File)">createFileSystemRoot(File f)</a> 
+    public File[] <a href="../../../api/javax/swing/filechooser/FileSystemView.html#getRoots()">getRoots()</a> 
+</pre>
+<P> <CODE>isTraversable</CODE> 메소드가 <CODE>javax.swing.plaf.basic.BasicFileChooserUI.BasicFileView</CODE> 로부터 삭제되었으므로, 그 슈퍼 클래스의 구현이 사용됩니다.  
+<P><a href="../../../api/javax/swing/plaf/metal/MetalFileChooserUI.html#createListSelectionListener(javax.swing.JFileChooser)"><code>createListSelectionListener</code></a>  가 <a href="../../../api/javax/swing/plaf/metal/MetalFileChooserUI.html"><code>javax.swing.plaf.metal.MetalFileChooserUI</code></a>  에 추가되었습니다.
+<p>또,<a href="../../../api/javax/swing/plaf/basic/BasicDirectoryModel.html"><code>javax.swing.plaf.basic.BasicDirectoryModel</code></a>  에는 다음의 변경이 있습니다.
+<pre>
+    public void <a href="../../../api/javax/swing/plaf/basic/BasicDirectoryModel.html#intervalAdded(javax.swing.event.ListDataEvent)">intervalAdded(ListDataEvent e)</a> 
+    public void <a href="../../../api/javax/swing/plaf/basic/BasicDirectoryModel.html#intervalRemoved(javax.swing.event.ListDataEvent)">intervalRemoved(ListDataEvent e)</a> 
+    public void <a href="../../../api/javax/swing/plaf/basic/BasicDirectoryModel.html#renameFile(java.io.File,%20java.io.File)">renameFile(File oldFile, File newFile)</a> 
+</pre><br><br>
+     </blockquote>
+
+<H3>JFileChooser 내에서 ［Open Directory］ 버튼의 특징을 지정하는 신기능</H3>
+      <blockquote>
+<P> 이 변경에 대응하는 버그 추적 리포트는,<A       href="http://developer.java.sun.com/developer/bugParade/bugs/4318785.html">4318785</A>  입니다.  
+<P> Look &amp; Feel 에서는,<code>JFileChooser</code> 내에서 디렉토리를 열기 위해서(때문에) 사용하는 버튼의 텍스트, 툴팁의 텍스트, 및 니모닉크를 지정하는 기능이 필요합니다.  </P>
+<P>이 기능을 지원하기 위해서, 다음의 정수와 메소드가 <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html"><code>plaf.basic.BasicFileChooserUI</code></a>  에 추가되었습니다.
+<pre>
+    protected int <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#directoryOpenButtonMnemonic">directoryOpenButtonMnemonic = 0;</a> 
+    protected String <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#directoryOpenButtonText">directoryOpenButtonText = null</a> 
+    protected String <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#directoryOpenButtonToolTipText">directoryOpenButtonToolTipText = null</a> 
+    protected boolean <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#isDirectorySelected()">isDirectorySelected()</a> 
+    protected void <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#setDirectorySelected(boolean)">setDirectorySelected(boolean b)</a> 
+    protected File <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#getDirectory()">getDirectory()</a> 
+    protected void <a href="../../../api/javax/swing/plaf/basic/BasicFileChooserUI.html#setDirectory(java.io.File)">setDirectory(File f)</a> 
+</pre>
+    </blockquote>
+
+<H3><a name=4218431>복수 파일 선택의 지원</a> </H3>
+      <blockquote>
+<P> 이 변경에 대응하는 버그 추적 리포트는,<A       href="http://developer.java.sun.com/developer/bugParade/bugs/4218431.html">4218431</A>  입니다.
+<P>1.4 release 의 <code>JFileChooser</code> 로 복수의 파일을 선택할 수 있게 되었습니다. 다만,<a href="../../../api/javax/swing/JFileChooser.html#setMultiSelectionEnabled(boolean)"><code>setMultiSelectionEnabled</code></a>  의 javadoc 는 1.4. 1 릴리스까지 갱신되고 있지 않습니다.
+
+    </blockquote>
+    </blockquote>
+
+
+    <HR>
+<H2><A name="JInternalFrame">JInternalFrame</A> </H2>
+      <blockquote>
+<H3>JInternalFrame 에서는, 너무 긴 타이틀을 절약하게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 대응하는 버그 추적 리포트는,<A href="http://developer.java.sun.com/developer/bugParade/bugs/4138746.html"> 4134077</A>  입니다.  
+<P> 이전에는, 내부 프레임의 타이틀이 너무 긴 경우에서도, 클립 되지 않았습니다. 또, 타이틀이 아이콘 부분 우에에 겹쳐 표시되어 타이틀이 클립 된 것을 사용자가 시각적으로 검토할 수 없었습니다. 이 문제를 해결하기 위해서,<a href="../../../api/javax/swing/plaf/basic/BasicInternalFrameTitlePane.html#getTitle(java.lang.String,%20java.awt.FontMetrics,%20int)"><CODE>BasicInternalFrameTitlePane.getTitle</CODE></a>  가 추가되었습니다. </P>
+      </blockquote>
+
+<H3>Windows Look &amp; Feel 내의 JInternalFrame 의 타이틀이 그라데이션 첨부로 draw 되게 되었다</H3>
+      <blockquote>
+<P>이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4389209.html">4389209</A> .  
+<P> 이것을 올바르게 구현하려면 ,<CODE>com.sun.java.swing.plaf.windows.WindowsInternalFrameTitlePane</CODE> 클래스를 작성할 필요가 있었습니다. 이 클래스는 <a href="../../../api/javax/swing/plaf/basic/BasicInternalFrameTitlePane.html"><CODE>javax.swing.plaf.basic.BasicInternalFrameTitlePane</CODE></a>  의 확장입니다만, 적절한 경우에 그라데이션을 draw 하기 위해서, 페인트 루틴이 오버라이드(override) 되고 있습니다. 종래의 코드를 재사용하는 가장 적절한 방법은, 백그라운드만을 페인트 하는 부분을 페인트 메소드로부터 분리해,<CODE>WindowsInternalFrameTitlePane</CODE> 내에서 그 부분을 오버라이드(override) 하는 것입니다. <a href="../../../api/javax/swing/plaf/basic/BasicInternalFrameTitlePane.html#paintTitleBackground(java.awt.Graphics)"><code>paintTitleBackground</code></a>  메소드가 <CODE>javax.swing.plaf.basic.BasicInternalFrameTitlePane</CODE> 에 추가되었습니다.
+      </blockquote>
+      </blockquote>
+
+    <HR>
+<H2><A name="JTextComponent">JTextComponent</A> </H2>
+    <blockquote>
+<H3> <A name="JEditorPane.tooltip"></A> JEditorPane 내의 이미지용의 툴팁에 대한 신규 지원</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4252169.html">4252169</A> .  
+<P> 이전의 릴리스에서는,<a href="../../../api/javax/swing/JEditorPane.html"><CODE>JEditorPane</CODE></a>  내에서 이미지를 draw 하는 <code>View</code> 인 <a href="../../../api/javax/swing/text/html/ImageView.html"><CODE>ImageView</CODE></a>  가 툴팁의 텍스트를 표시할 수 없었습니다. <code>View</code> 에는,<a href="../../../api/javax/swing/text/JTextComponent.html"><CODE>JTextComponent</CODE></a>  를 위해서(때문에) 표시되는 툴팁 텍스트에 영향을 주는 수단이 없었기 (위해)때문에입니다. 이번 릴리스에서는,<CODE>JTextComponent</CODE> 에 툴팁가 없는 경우에, 마우스아래의 뷰가 툴팁를 표시하도록(듯이) 요구됩니다. 그 <code>View</code> 가 ALT 속성이 있는 HTML 요소에 대응 붙일 수 있고 있는 경우, 툴팁의 텍스트는, 그 속성의 값이 됩니다.  
+<P><code>View</code> 가 툴팁의 텍스트에 영향을 미칠 수가 있도록(듯이) 하려면 , 다수의 메소드가 필요했습니다. <a href="../../../api/javax/swing/plaf/TextUI.html#getToolTipText(javax.swing.text.JTextComponent,%20java.awt.Point)"><code>getToolTipText</code></a>  가 <a href="../../../api/javax/swing/plaf/TextUI.html"><CODE>javax.swing.plaf.TextUI</CODE></a>  에 추가되었으므로, 특정의 위치에 있는 툴팁의 텍스트를 취득할 수 있게 되었습니다. 이것으로,<a href="../../../api/javax/swing/text/JTextComponent.html"><code>JTextComponent</code></a>  의 <a href="../../../api/javax/swing/text/JTextComponent.html#getToolTipText(java.awt.event.MouseEvent)"><code>getToolTipText</code></a>  메소드는, 툴팁가 <code>JTextComponent</code> 로 설정되어 있지 않으면 간주,<code>TextUI</code> 에 툴팁를 전송 합니다.
+<p>또,<a href="../../../api/javax/swing/text/View.html#getToolTipText(float,%20float,%20java.awt.Shape)"><code>getToolTipText</code></a>  가 <a href="../../../api/javax/swing/text/View.html"><code>javax.swing.text.View</code></a>  에 추가되었습니다. <code>View.getToolTipText</code> 의 디폴트의 구현에서는, 요구가 지정된 위치에 있는 <code>View</code> 의 아이에게 전송 됩니다. 특정의 위치에 있는 아이를 간단하게 판단할 수 있도록(듯이),<a href="../../../api/javax/swing/text/View.html#getViewIndex(float,%20float,%20java.awt.Shape)"><code>getViewIndex</code></a>  가 <code>View</code> 에 추가되었습니다.
+<p><code>View</code> 의 구현에서는,<code>getViewIndex</code> 가 불려 가 다음에 아이의 <code>View</code> 로 <code>getToolTipText</code> 가 불려 갑니다. 다음에 <a href="../../../api/javax/swing/text/html/ImageView.html"><code>ImageView</code></a>  에 의해 <a href="../../../api/javax/swing/text/html/ImageView.html#getToolTipText(float,%20float,%20java.awt.Shape)"><code>getToolTipText</code></a>  가 오버라이드(override) 되어 그 <code>AttributeSet</code> 의 ALT 속성으로부터 값이 돌려주어집니다.
+     </blockquote>
+
+<H3>ImageView 클래스가 public 가 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4233811.html">4233811</A> .  
+<P> 패키지의 비공개 클래스에서 만난 <a href="../../../api/javax/swing/text/html/ImageView.html"><CODE>javax.swing.text.html.ImageView</CODE></a>  가 공개되었으므로, 이 클래스를 확장할 수가 있게 되었습니다.  <br><br>
+     </blockquote>
+
+<H3><A name="JTextComponent.HyperlinkEvent">HyperlinkEvent 의 읽기 전용 신규 프로퍼티 elementOffset</A> </H3>
+     <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4182124.html">4182124</A> .  
+<P> HTML 패키지에서는, 마우스가 링크상을 이동한 것을 <a href="../../../api/javax/swing/event/HyperlinkEvent.html"><CODE>HyperlinkEvent</CODE></a>  및 <a href="../../../api/javax/swing/event/HyperlinkListener.html"><CODE>HyperlinkListener</CODE></a>  클래스 경유로 검출할 방법이, 개발자에게 공개되었습니다. 개발자에게 있어서는,<CODE>HyperlinkListener</CODE> 에 통지되었을 때에 문서로부터 정보를 추출할 방법이 필요한 경우도 있습니다. 종래는,<CODE>HyperlinkEvent</CODE> 가 가리키는 문서내의 위치를, 개발자가 판단하는 방법이 없었습니다. 이 문제를 개선하기 위해서,<a href="../../../api/javax/swing/event/HyperlinkEvent.html#HyperlinkEvent(java.lang.Object,%20javax.swing.event.HyperlinkEvent.EventType,%20java.net.URL,%20java.lang.String,%20javax.swing.text.Element)"><code>HyperlinkEvent(Object, EventType, URL, String, Element)</code></a>  생성자 과 <a href="../../../api/javax/swing/event/HyperlinkEvent.html#getSourceElement()"><code>getSourceElement</code></a>  메소드가 <a href="../../../api/javax/swing/event/HyperlinkEvent.html"><code>HyperlinkEvent</code></a>  에 추가되었습니다.
+<p><code>HTMLFrameHyperlinkEvent</code> 에 의해 <code>HyperlinkEvent</code> 이 확장되어 이것은 벌써 <a href="../../../api/javax/swing/event/HyperlinkEvent.html#getSourceElement()"><code>getSourceElement</code></a>  메소드를 정의하고 있습니다. 현재는 슈퍼 클래스에서 이 메소드를 정의하기 위해(때문에),<code>getSourceElement</code> 의 javadoc 는,<code>HTMLFrameHyperlinkEvent</code> 로부터 삭제되었습니다 (메소드 자체는 상속되고 있다).
+      </blockquote>
+
+
+<H3>HTML 퍼서의 변경 - 공백의 보고</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4241788.html">4241788</A> .  
+<P> HTML 퍼서 (<a href="../../../api/javax/swing/text/html/parser/Parser.html"><CODE>javax.swing.text.html.parser.Parser</CODE></a> )의 시멘틱스가, Netscape<sup><font size="-2">TM</font></sup> 나 Internet Explorer 등의 브라우저에 의해 자주(잘) 적합하도록(듯이) 약간 변경되었습니다. API 로 변경은 없습니다만, 공백의 보고로 다소의 변경이 있습니다. 예를 듭니다. <code>strict</code> (<CODE>javax.swing.text.html.parser.Parser</CODE> 의 인스턴스 변수) == <code>false</code> (디폴트)의 경우는, Netscape 와 Explorer 의 동작을 모방하기 위해서, 인스턴스 변수가 사용됩니다.  
+<P> 다음에, 문제가 있는 시나리오를 나타냅니다.  
+    <pre>
+'&lt;b>blah &lt;i> &lt;strike> foo'
+</pre>
+<P> 이것은, 다음과 같이 처리될 가능성이 있습니다.  
+    <pre>
+'&lt;b>blah &lt;i>&lt;strike>foo'
+</pre>
+<P> 같이 
+    <pre>
+'&lt;p>&lt;a href="xx"> &lt;em>Using&lt;/em>&lt;/a>&lt;/p>'
+</pre>
+<P> 이것은, 다음과 같이 처리될 가능성이 있습니다.  
+    <pre>
+'&lt;p>&lt;a href="xx">&lt;em>Using&lt;/em>&lt;/a>&lt;/p>'
+</pre>
+<P> 태그가 플로우를 분단 하거나 말미의 공백이 검출되면(자), 인스턴스 변수는 true 로 설정됩니다. 그 때문에, 모든 공백이 무시됩니다. 최초로 공백 이외의 문자가 있었을 때에, 인스턴스 변수는 false 로 다시 설정합니다.  
+     </blockquote>
+
+<H3>HTML 폼의 기입에 대한 지원가 개선되었다</H3>
+     <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4200439.html">4200439</A> .  
+<P> J2SE<sup><font size="-2">TM</font></sup> 로 제공된 HTML 지원에서는, 폼의 각 요소의 기입이 올바르게 지원되지 않았습니다. 이 원인의 대부분은, 폼의 모델화의 방법에 있었습니다. 문서 객체의 모델 (<a href="http://www.w3.org">www.w3.org</a>  의 <a href="http://www.w3.org/DOM/">DOM</a>  를 참조)에 한층 더 일치시키기 위해서(때문에), 폼이 내부적으로 모델화 될 방법이 변경되었습니다. 이전에는, 폼의 모든 속성이, 아이의 문자 요소 모든 <CODE>attributeSet</CODE> 에 포함되었습니다. 이 릴리스로부터, HTML 파일 자체에 한층 더 일치하도록(듯이), 폼을 나타내는 요소가 작성됩니다. 이 방법에 의해, 폼이 보다 좋고 모델화 될 뿐만 아니라, 폼을 일관해 써낼 수 있게 됩니다.  
+<P> 이 변경은, 엄밀하지 않은 폼의 처리에 의존하고 있던 개발자에게 있어서는 영향이 있습니다. 예를 들어, 다음과 같은 무효인 HTML 를 처리한다고 합니다.  
+    <pre>
+&lt;table>
+&lt;form>
+&lt;/table>
+&lt;/form>
+</pre>
+<P> 지금까지는, 다음과 같이 보여지고 있었습니다.  
+    <pre>
+&lt;form>
+&lt;table>
+&lt;/table>
+&lt;/form>
+</pre>
+<P> 이 릴리스에서는, 대신에 다음과 같이 처리됩니다.  
+    <pre>
+&lt;table>
+&lt;form>
+&lt;/form>
+&lt;/table>
+</pre>
+    <BR>
+     </blockquote>
+
+<H3><CODE>javax.swing.text.DefaultHighlighter</CODE> 클래스내의 정적인 DefaultPainter 가 <CODE>Final</CODE> 가 되었다</H3>
+     <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4328938.html">4328938</A> .  
+<P> 이 릴리스 이전에는,<a href="../../../api/javax/swing/text/DefaultHighlighter.html"><CODE>javax.swing.text.DefaultHighlighter</CODE></a>  의 static 필드 <a href="../../../api/javax/swing/text/DefaultHighlighter.html#DefaultPainter"><CODE>DefaultPainter</CODE></a>  는 final 가 아니었습니다. 이것에는, 잠재적으로 시큐리티상의 문제가 있었습니다. 이 릴리스에서는, 이것이 <CODE>Final</CODE> 가 되었습니다.  <br><br>
+      </blockquote>
+
+<H3>PlainDocument 생성자 이 공개되었다</H3>
+     <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4220001.html">4220001</A> .  </P>
+<P>이 릴리스 이전에는,<a href="../../../api/javax/swing/text/PlainDocument.html#PlainDocument(javax.swing.text.AbstractDocument.Content)"><CODE>PlainDocument(AbstractDocument.Content)</CODE></a>  생성자 은 보호되고 있었습니다. 즉, 이 생성자 을 사용하려고 하는 개발자는 서브 클래스화할 필요가 있었습니다. 이 생성자 은 원래 공개할 예정으로 작성되어 이 릴리스로 공개되었습니다.
+     </blockquote>
+
+<H3>JEditorPane.scrollToReference 메소드가 공개되었다</H3>
+     <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4304676.html">4304676</A> .  </P>
+<P><a href="../../../api/javax/swing/JEditorPane.html#scrollToReference(java.lang.String)"><CODE>JEditorPane.scrollToReference</CODE></a>  는, 올바르지 않은 이유로써 보호되고 있었습니다. 이 메소드는 서브 클래스화하지 않아도 도움이 되는 것을 목적으로 작성되고 있어 이 릴리스로 공개되었습니다.
+      </blockquote>
+
+<H3>Document.getText 메소드로 부분 반환값이 허가되게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4156650.html">4156650</A> .  
+<P> 텍스트 문서의 내용에 효율적으로 액세스 하려면 ,<a href="../../../api/javax/swing/text/Document.html"><CODE>Document</CODE></a>  로 <a href="../../../api/javax/swing/text/Document.html#getText(int,%20int,%20javax.swing.text.Segment)"><CODE>getText(int, int, Segment)</CODE></a>  메소드를 정의합니다. 유감스럽게, 호출 측에는, 입수자측이 요구를 효율적으로 채울지 어떨지를 판단하는 수단이 없었습니다. 예를 들어 <a href="../../../api/javax/swing/text/GapContent.html"><CODE>GapContent</CODE></a>  는, 요구가 문서의 마지막에 편집된 스포트 (갭)를 넘지 않는 한, 요구를 효율적으로 구현할 수 있었습니다. 내용에의 효율적인 액세스를 촉진하기 위해서,<a href="../../../api/javax/swing/text/Segment.html#setPartialReturn(boolean)"><CODE>setPartialReturn</CODE></a>  및 <a href="../../../api/javax/swing/text/Segment.html#isPartialReturn()"><CODE>isPartialReturn</CODE></a>  메소드가 <a href="../../../api/javax/swing/text/Segment.html"><CODE>Segment</CODE></a>  에 추가되었습니다. <CODE>Document.getText</CODE> 의 시멘틱스가 현재로서는 보관 유지되고 있습니다만, 보다 효율적으로 사용하기 위해서, 호출측이 <CODE>segment.setPartialReturn(true)</CODE> 를 호출해, 언제라도 문서의 일부를 다시 취득할 준비를 해 둘 필요가 있습니다.  <br>
+        </blockquote>
+
+<H3>JEditorPane 로 HTML 의 사용자 보조 기능이 지원되게 되었다</H3>
+       <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4303259.html">4303259</A> .  
+<P> 장해를 가지는 분들에게로의 사용자 보조 기능 (또는 기술)에서는, Accessibility API 를 사용해 <a href="../../../api/javax/swing/JEditorPane.html"><code>JEditorPane</code></a>  의 내용에 프로그램으로 액세스 하는 것이 요구됩니다. 이전의 릴리스에서의 유일한 액세스는, 하이퍼 링크 텍스트에의 액세스였습니다. 이 API 의 변경에 의해, Accessibility API 를 사용해 모든 HTML 컴퍼넌트에 액세스 할 수 있게 되었습니다.  
+<P><a href="../../../api/javax/swing/text/html/HTMLEditorKit.html"><CODE>javax.swing.text.html.HTMLEditorKit</CODE></a>  는,<a href="../../../api/javax/accessibility/Accessible.html"><CODE>javax.accessibility.Accessible</CODE></a>  를 구현하게 되었습니다.  
+<P><code>JEditorPane</code> 은,<a href="../../../api/javax/swing/JEditorPane.html#getAccessibleContext()"><code>getAccessibleContext()</code></a>  를 구현하게 되었습니다. <br><br>
+        </blockquote>
+
+<H3>새로운 AbstractDocument.replace 메소드의 추가 지원</H3>
+       <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4458513.html">4458513</A> .  
+<p><a href="http://developer.java.sun.com/developer/bugParade/bugs/4431047.html">RFE 4431047</a>  의 일부로서<a href="../../../api/javax/swing/text/AbstractDocument.html#replace(int,%20int,%20java.lang.String,%20javax.swing.text.AttributeSet)"><code>replace</code></a>  메소드가 <a href="../../../api/javax/swing/text/AbstractDocument.html"><code>AbstractDocument</code></a>  에 추가되었습니다. 이 메소드로부터 <a href="../../../api/javax/swing/text/AbstractDocument.html#remove(int,%20int)"><code>remove</code></a>  및 <a href="../../../api/javax/swing/text/AbstractDocument.html#insertString(int,%20java.lang.String,%20javax.swing.text.AttributeSet)"><code>insertString</code></a>  (<code>Document</code> 를 변경하기 위한 인터페이스에 정의되고 있는 메소드는 이 2 개(살)만)를 호출할 수가 있도록(듯이),<a href="../../../api/javax/swing/text/AbstractDocument.html#writeLock()"><code>writeLock</code></a>  를 호출하기 위한 제약이 완화되었습니다. 이 때문에,<code>replace</code> 메소드는,<code>remove</code> 와 <code>insertString</code> 를 오버라이드(override) 할 뿐(만큼)의, 낡은 버젼의 <code>AbstractDocument</code> 와도 호환성이 있습니다.
+        </blockquote>
+        </blockquote>
+
+    <HR>
+<H2><A name="JOptionPane">JOptionPane</A> </H2>
+    <blockquote>
+<H3>신규 showInputDialog 메소드</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4226644.html">4226644</A> .  
+<P> 지난 번의 릴리스에서는, 디폴트의 캐릭터 라인 첨부의 텍스트 필드를 포함한 단순한 입력 다이알로그 박스를 표시하려고 하는 경우, 7 개의 파라미터가 필요한, 복잡한 <CODE>JOptionPane.showInputDialog</CODE> 메소드를 호출할 필요가 있었습니다. 새로운 2 개의 <a href="../../../api/javax/swing/JOptionPane.html#showInputDialog(java.lang.Object,%20java.lang.Object)"><code>showInputDialog(Object, Object)</code></a>  및 <a href="../../../api/javax/swing/JOptionPane.html#showInputDialog(java.awt.Component,%20java.lang.Object,%20java.lang.Object)"><code>showInputDialog(Component, Object, Object)</code></a>  메소드에서는, 단순한 입력 다이알로그 박스의 작성과 표시가 보다 편리하게 되었습니다.  
+      </blockquote>
+
+<H3>JOptionPane 로 ComponentOrientation 가 지원되게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4265463.html">4265463</A> .  
+<P><a href="../../../api/javax/swing/JOptionPane.html"><CODE>JOptionPane</CODE></a>  에서는, 오른쪽으로부터 왼쪽향의 레이아웃이 필요했습니다. 이 변경은 버그의 수정이며 실제의 API 는 필요 없습니다만,<a href="../../../api/javax/swing/JOptionPane.html"><code>JOptionPane</code></a>  및 <a href="../../../api/javax/swing/plaf/basic/BasicOptionPaneUI.html"><code>javax.swing.plaf.basic.BasicOptionPane</code></a>  의 클래스 스펙이 갱신되었습니다.
+      </blockquote>
+
+<H3><a name=showConfirmDialog>JOptionPane 로 사이즈 변경할 수 없는 다이얼로그가 사용되게 되었다</a> </H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4829588.html">4829588</A> .  
+<P>릴리스 1.4. 0 으로부터, 사이즈 변경할 수 없는 다이얼로그를 사용하기 위해서 <code>JOptionPane</code> 가 변경되었습니다. 그 결과, 많은 <code>JOptionPane</code> 메소드에 의해 표시되는 다이얼로그가 다소 변화하게 되었습니다. 최초의 2 개의 변경이 필요합니다.
+         <ul>
+<li>다이얼로그는 사이즈 변경할 수 없습니다.
+         <p>
+<li>다이얼로그에 시스템 메뉴 아이콘이 표시되지 않습니다 (이 아이콘은, 일반적으로, 왼쪽에서 오른쪽의 시스템으로 다이얼로그의 좌상구석에 표시됩니다).
+         </ul>
+여분으로 긴 텍스트를 처리할 경우에 이 변경의 부작용이 발생합니다. 이전에는, 다이얼로그의 사이즈는 화면 사이즈에 제한되기 (위해)때문에, 긴 텍스트는 마지막에 「...」(이)가 표시되어 절약할 수 있었습니다. 현재는, 여분으로 긴 텍스트가 원인으로, 모든 텍스트를 거두기 위해서(때문에) 다이얼로그의 사이즈가 화면 사이즈보다 길어지는 일이 있습니다. 버그 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4829588.html">4829588</A>  을 계속적으로 참조해, 이 바람직하지 않은 동작이 해결되었는지의 여부를 확인해 주세요.
+         
+      </blockquote>
+
+      </blockquote>
+
+    <HR>
+<H2><A name="JPopupMenu">JPopupMenu</A> </H2>
+      <blockquote>
+
+<H3><a name=4632782>JPopupMenu 및 포커스</a> </H3>
+      <blockquote>
+<p>이 릴리스로부터,<code>JPopupMenu</code> 를 표시하면(자) 부모의 <code>JRootPane</code> 에 포커스가 이동하게 되었습니다. 이 변경은,<code>JPopupMenu</code> 로 키보드 traversal를 지원하기 위해서 행해졌습니다 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4212563">4212563</a> ). 이것에 의해, 포커스를 잃었는지의 여부를 검증하는 어플리케이션으로 문제가 발생합니다. 이것에 의해 영향을 받는 경우는,<code>focusLost</code> 통지로 <code>FocusEvent</code> 의 일시적인 프로퍼티을 체크해,<code>true</code> 의 경우는 아무것도 실시하지 않는다, 로 하는 것을 추천합니다. <code>JPopupMenu</code> 에 포커스가 이동하는 것이 바람직하지 않은 경우, 현재의 릴리스에서는 이 이동을 무효로 할 수 없습니다. 릴리스 1.4. 1 에서는, 포커스를 이동할지 어떨지의 결정은,<code>JPopupMenu</code> 의 포커스 가능성에 근거하고 있습니다. 자세한 것은, 버그 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4632782.html">4632782</A>  를 참조해 주세요.
+      </blockquote>
+
+<H3>JPopupMenu 로 키 바인드가 지원되게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4212563.html">4212563</A> .  
+<P>이전에는,<a href="../../../api/javax/swing/JPopupMenu.html"><CODE>JPopupMenu</CODE></a>  로 키 바인드는 지원되지 않았습니다. 커서 키, 니모닉크, Enter 키, 및 Esc 키는,<CODE>JPopupMenu</CODE> 가 <CODE>JMenu</CODE> 나 <CODE>JComboBox</CODE> 와 같은 복합 컴퍼넌트의 일부로서 사용되지 않는 이상<CODE>JPopupMenu</CODE> 에는 작용하지 않았습니다.  
+<P> 이 동작은,<CODE>JPopupMenu</CODE> 에는 항상 포커스를 맞힐 수 있는 두, 그 때문에 <CODE>KeyEvents</CODE> 를 취득하지 못하는 것에 원인이 있습니다. 이전의 릴리스에서는, Swing 와 같은 경량의 툴 킷이 포커스를 요구해, 포커스의 변경이 일시적인 것을 나타내는 것은 불가능했습니다. 새로운 포커스의 아키텍쳐(architecture)에 의해 이 문제가 해결되어 Swing 로 일시적인 포커스의 변경을 요구할 수 있게 되었습니다. 이 버그를 수정하려면 ,<CODE>JPopupMenu</CODE> 에 포커스를 취득시켜, 키 바인드가 처리되도록(듯이) 할 필요가 있었습니다. 포커스가 변경되는 것을 지금까지 기대하고 있지 않았던 컨슈머(consumer)는, 코드를 갱신해,<a href="../../../api/java/awt/event/FocusEvent.html"><CODE>FocusEvent</CODE></a>  의 일시적인 프로퍼티을 체크할 필요가 있습니다.  
+      </blockquote>
+
+<H3>JPopupMenu.setVisible(true)가 헷드레스모드로 HeadlessException 를 throw 하게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4401222.html">4401222</A> .  
+<p>헷드레스모드가 신규에 도입되었을 때,<a href="../../../api/javax/swing/JPopupMenu.html#setVisible(boolean)"><code>JPopupMenu.setVisible(true)</code></a>  는 헷드레스모드로 불려 가면(자) <code>NullPointerException</code> 를 throw 하도록(듯이) 구현되었습니다. 이 릴리스로부터는 <code>HeadlessException</code> 를 throw 하도록(듯이) 변경되어 헷드레스모드에서는 실행할 수 없는 조작인 것을 나타내게 되었습니다.
+      </blockquote>
+      </blockquote>
+
+    <HR>
+<H2><A name="JPanel">JPanel</A> </H2>
+      <blockquote>
+<H3>신규의 setUI 및 getUI 메소드</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4226238.html">4226238</A> .  
+<P> <a href="../../../api/javax/swing/JPanel.html#setUI(javax.swing.plaf.PanelUI)"><CODE>setUI</code></a> /<a href="../../../api/javax/swing/JPanel.html#getUI()"><code>getUI</CODE></a>  메소드는, 그 Look &amp; Feel 가 플러그 인 가능한 Look &amp; Feel (plaf)로 정의되는 경우에서도,<a href="../../../api/javax/swing/JPanel.html"><CODE>JPanel</CODE></a>  에 구현되고 있지 않았습니다. 예를 들어,<a href="../../../api/javax/swing/plaf/basic/BasicPanelUI.html"><CODE>javax.swing.plaf.basic.BasicPanelUI.java</CODE></a>  를 참조해 주세요.
+      </blockquote>
+      </blockquote>
+
+    <HR>
+<H2><A name="JTabbedPane">JTabbedPane</A> </H2>
+      <blockquote>
+<H3>JTabbedPane 및 포커스</H3>
+      <blockquote>
+<p>새로운 포커스의 스펙에서는, 표시되어 있지 않은 컴퍼넌트에서의 포커스 요구는 실패합니다. 이것에 의해, 다소의 부작용이 발생합니다. 1 개의 부작용으로서<code>JTabbedPane</code> 에 관련지을 수 있고 있는 <code>ChangeListener</code> 로부터의 포커스 요구가 실패할 가능성이 있습니다. 또, 컴퍼넌트가 현재 표시되어 있지 않기 때문에, 이전의 릴리스에서는 포커스 요구가 기능하고 있던 상황으로 포커스 요구가 실패하는 것이 <code>ChangeListener</code> 에 통지됩니다. <code>JTabbedPane</code> 로 이 상황이 발생했을 경우는, 포커스를 요구하기 전에 컴퍼넌트를 표시하는 것을 추천합니다. 그 외의 상황에서는, 다를 방법이 필요한 경우가 있습니다.
+      </blockquote>
+
+<H3>JTabbedPane 내의 신규 indexAtLocation 메소드</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4241787.html">4241787</A> .  
+<P> 이 변경 이전에는, 클라이언트 프로그램에, 좌표로 가리키는 위치를 탭 첨부 페인내의 특정의 탭에 변환하는 방법이 없었습니다. 이 때문에,<CODE>JTabbedPane</CODE> 로 탭 위에 메뉴를 pop-up 시키는 등의 특수한 이벤트 처리를 구현하는 것이 곤란했습니다.  
+<P><a href="../../../api/javax/swing/JTabbedPane.html#indexAtLocation(int,%20int)">indexAtLocation</a>  메소드가 <a href="../../../api/javax/swing/JTabbedPane.html"><code>JTabbedPane</code></a>  에 추가되었습니다.
+      </blockquote>
+
+<H3>JTabbedPane 내의 탭에 액세스하기 위한 신규 니모닉크사포트</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4284674.html">4284674</A> .  
+<P> <a href="../../../api/javax/swing/JTabbedPane.html"><CODE>JTabbedPane</CODE></a>  의 각 페인에서는, 이전에는 니모닉크를 사용할 수 없었습니다. 이 문제의 해결을 위해서(때문에),<a href="../../../api/javax/swing/JTabbedPane.html#getDisplayedMnemonicIndexAt(int)"><code>getDisplayedMnemonicIndexAt</code></a>  및 <a href="../../../api/javax/swing/JTabbedPane.html#setDisplayedMnemonicIndexAt(int,%20int)"><code>setDisplayedMnemonicIndexAt</code></a>  가 추가되었습니다.
+      </blockquote>
+
+<H3>JTabbedPane 에 throw 되는 예외에 일관성이 생겼다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4287053.html">4287053</A> .  
+<P> <a href="../../../api/javax/swing/JTabbedPane.html"><CODE>JTabbedPane</CODE></a>  클래스는, 많은 메소드를 보유하는 컨테이너이며, 파라미터로서 정수의 인덱스를 취합니다. 이러한 메소드에는, 유감스럽게 예외의 throw에 일관성이 없었습니다 (체크/throw 하는 메소드도 있으면, 하지 않는 메소드도 있다). 게다가 javadoc 에도 잘못이 있어, 기반이 되는 <CODE>Vector</CODE> 에 의해 실제로는 <CODE>ArrayIndexOutOfBoundsException</CODE> 가 throw 되는 경우에,<CODE>IllegalParameterException</CODE> 가 throw 된다고 기술되고 있었습니다.  
+<P> 0 으로부터 「탭수 - 1」까지의 유효한 범위내에 없으면 안 되는 인덱스를 취하는 모든 메소드는, 현재는,<CODE>IndexOutOfBoundsException</CODE> 를 throw 한다고 기술되고 있습니다 (주 - 호환성을 취한다고 하는 이유로부터, 기반의 코드에서는 계속해 <CODE>ArrayIndexOutOfBoundsException</CODE> 가 throw 된다).  
+<P>문서가 다음과 같이 변경되었습니다.
+<pre>
+    * @exception IndexOutOfBoundsException if index is out of range
+    *       (index < 0 || index >= tab count)
+</pre>
+이것은, 다음의 <a href="../../../api/javax/swing/JTabbedPane.html"><code>JTabbedPane</code></a>  메소드에 적용됩니다.
+<pre>
+    public String <a href="../../../api/javax/swing/JTabbedPane.html#getTitleAt(int)">getTitleAt(int index)</a> 
+    public Icon <a href="../../../api/javax/swing/JTabbedPane.html#getIconAt(int)">getIconAt(int index)</a> 
+    public Icon <a href="../../../api/javax/swing/JTabbedPane.html#getDisabledIconAt(int)">getDisabledIconAt(int index)</a> 
+    public String <a href="../../../api/javax/swing/JTabbedPane.html#getToolTipTextAt(int)">getToolTipTextAt(int index)</a> 
+    public Color <a href="../../../api/javax/swing/JTabbedPane.html#getBackgroundAt(int)">getBackgroundAt(int index)</a> 
+    public Color <a href="../../../api/javax/swing/JTabbedPane.html#getForegroundAt(int)">getForegroundAt(int index)</a> 
+    public boolean <a href="../../../api/javax/swing/JTabbedPane.html#isEnabledAt(int)">isEnabledAt(int index)</a> 
+    public Component <a href="../../../api/javax/swing/JTabbedPane.html#getComponentAt(int)">getComponentAt(int index)</a> 
+    public int <a href="../../../api/javax/swing/JTabbedPane.html#getDisplayedMnemonicIndexAt(int)">getDisplayedMnemonicIndexAt(int index)</a> 
+    public Rectangle <a href="../../../api/javax/swing/JTabbedPane.html#getBoundsAt(int)">getBoundsAt(int index)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setTitleAt(int,%20java.lang.String)">setTitleAt(int index, String title)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setIconAt(int,%20javax.swing.Icon)">setIconAt(int index, Icon icon)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setDisabledIconAt(int,%20javax.swing.Icon)">setDisabledIconAt(int index, Icon icon)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setToolTipTextAt(int,%20java.lang.String)">setToolTipTextAt(int index, String toolTipText)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setForegroundAt(int,%20java.awt.Color)">setForegroundAt(int index, Color foreground)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setBackgroundAt(int,%20java.awt.Color)">setBackgroundAt(int index, Color background)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setEnabledAt(int,%20boolean)">setEnabledAt(int index, boolean enabled)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setComponentAt(int,%20java.awt.Component)">setComponentAt(int index, Component component)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setDisplayedMnemonicIndexAt(int,%20int)">setDisplayedMnemonicIndexAt(int tabIndex, int mnemonicIndex)</a> 
+</pre>
+<p>같은 예외 처리가, 이전에는 아무것도 실행하지 않았던 이하의 메소드에 추가되었습니다.
+<pre>
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#setSelectedIndex(int)">setSelectedIndex(int index)</a> 
+    public void <a href="../../../api/javax/swing/JTabbedPane.html#remove(int)">remove(int index)</a> 
+</pre>
+      </blockquote>
+      </blockquote>
+
+    <HR>
+<H2><A name="JTable">JTable</A> </H2>
+      <blockquote>
+<H3>DefaultTableModel.moveRow 의 스펙이 명쾌하게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4144295.html">4144295</A> .  
+<P> JDK 1.3 에서는,<a href="../../../api/javax/swing/table/DefaultTableModel.html"><CODE>DefaultTableModel</CODE></a>  의 <CODE>moveRow</CODE> 메소드가 명쾌하게 설명되고 있지 않았습니다. 즉,<CODE>startIndex</CODE> 의 행 또는 <CODE>endIndex</CODE> 의 행이 <CODE>toIndex</CODE> 로 종료할지 어떨지가, 분명히 정의되고 있지 않았습니다. 예로부터 유추 하면(자), 행을 하부로 이동할 때는 <CODE>startIndex</CODE> 가 <CODE>toIndex</CODE> 로 종료해, 행을 윗쪽에 이동할 때는 <CODE>endIndex</CODE> 가 <CODE>toIndex</CODE> 로 종료하는 것이 명백합니다.  
+<P> 즉,<a href="../../../api/javax/swing/table/DefaultTableModel.html#moveRow(int,%20int,%20int)"><CODE>moveRow</CODE></a>  의 구현에는 버그가 있습니다. 이동하는 행이 복수가 되면(자), 행의 이동 종료의 위치는 부정이며, 이동의 뒤에 행이 연속하지 않는 것마저 있습니다. 버그 4144295 에는, 구현이 스펙에 있는 예마저도 올바르게 실행하지 않으면 있습니다. 실제,<CODE>moveRow(1, 3, 5)</CODE> 의 예는, 이하 상태로 벡터를 남깁니다.  
+    <pre>
+a|C|e|B|D|f|g|h|i|j|k
+</pre>
+새로운 구현에서는, 이 조작은 입력으로부터 계산할 수 있는 경계간의 요소의 단순한 로테이션이라고 간주합니다.  
+<P> 이전의 구현이 작용하지 않았기 (위해)때문에, 지금까지의 정의를 단순화 할 기회가 주어졌습니다. <CODE>startIndex</CODE> 는 항상 <CODE>toIndex</CODE> 로 이동해,<CODE>toIndex</CODE> 이후의 모든 요소는 원 인 채의 순서에 줄선다고 정의되었습니다. 이 정의에 의해, 단일행의 이동이라고 하는, 전의 구현으로 유일 올바르게 작용한 예와 같은 조작이 실행됩니다.  
+<P> 새로운 구현에서는,<CODE>endIndex</CODE> 가 <CODE>startIndex</CODE> 보다 작은 경우에 예외는 throw 되지 않습니다. 그 대신해, 모든 행 <CODE>r</CODE> 를 이동하는 암묵의 규약, 즉 <CODE>startIndex <= r <= endIndex</CODE> 가 채워져도, 아무것도 실행되지 않습니다.  
+      </blockquote>
+
+<H3>JTable 에의 입력으로 포커스가 셀에 전송 되게 되었다</H3>
+      <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4274963.html">4274963</A> .  
+<P> Excel 어플리케이션에서는, 사용자가 영숫자 키를 누르면(자), 포커스가 자동적으로 기반 에디터로 이동합니다. 이것과 같은 동작을 <a href="../../../api/javax/swing/JTable.html"><code>JTable</code></a>  내에서도 구현 해 주었으면 한다고 하는, 200 을 넘는 JDC 요구가 있었습니다. 하위 호환성을 고려한다고 하는 이유로부터 디폴트의 동작을 변경할 수 없습니다만, 이 요구에 대처하기 위해서, 이 릴리스로 새로운 <code>surrendersFocusOnKeystroke</code> 프로퍼티을 추가했습니다. 신규 메소드의 <a href="../../../api/javax/swing/JTable.html#setSurrendersFocusOnKeystroke(boolean)"><code>setSurrendersFocusOnKeystroke</code></a>  및 <a href="../../../api/javax/swing/JTable.html#getSurrendersFocusOnKeystroke()"><code>getSurrendersFocusOnKeystrok</code></a>  로, 이 기능이 지원됩니다. 디폴트의 동작은 변경되고 있지 않습니다.  
+      </blockquote>
+<H3>DefaultTableModel 로 name 인수에 null 도 지정할 수 있게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4474094.html">4474094</A> .  
+<p>지금까지,<a href="../../../api/javax/swing/table/DefaultTableModel.html#addColumn(java.lang.Object)"><code>DefaultTableModel.addColumn(Object)</code></a>  메소드와 <a href="../../../api/javax/swing/table/DefaultTableModel.html#addColumn(java.lang.Object,%20java.util.Vector)"><code>DefaultTableModel.addColumn(Object, Vector)</code></a>  메소드에서는,<code>name</code> 인수에 <code>null</code> 를 지정하지 못하고,<code>IllegalArgumentException</code> 가 throw 되고 있었습니다. 생성자 을 사용하거나 필드를 직접 조작하거나 하는 방법에서는 렬명에 <code>null</code> 를 설정할 수 있기 (위해)때문에,<code>addColumn</code> 메소드에서도 <code>null</code> 치를 지정할 수 있도록(듯이) 변경되었습니다.
+     </blockquote>
+     </blockquote>
+
+    <HR>
+<H2><A name="JTree">JTree</A> </H2>
+    <blockquote>
+<H3>DefaultTreeModel 로 null 의 루트를 사용할 수 있게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4264897.html">4264897</A> .  
+<P><a href="../../../api/javax/swing/tree/DefaultTreeModel.html"><CODE>DefaultTreeModel</CODE></a>  에서는,<a href="../../../api/javax/swing/tree/DefaultTreeModel.html"><CODE>null</CODE> 의 루트 노드를 사용할 수 있게 되었습니다. 이전,<CODE>TreeModel</CODE> 의 javadoc 에는,<CODE>null</CODE> 의 루트는 유효하지만,<CODE>DefaultTreeModel</CODE> 에서는 허가되지 않으면 지정되고 있었습니다. <CODE>DefaultTreeModel</CODE> 에서는 현재,<CODE>null</CODE> 의 루트가, 생성자 내의 <CODE>null</CODE> 의 루트와 같게 설정 가능합니다. <a href="../../../api/javax/swing/tree/DefaultTreeModel.html#setRoot(javax.swing.tree.TreeNode)"><CODE>setRoot</CODE></a>  의 javadoc 는, 이 변경을 반영해 개정되었습니다.  
+    </blockquote>
+
+<H3>머리 글자 네비게이션이 JTree 에 추가되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4284709.html">4284709</A> .  
+<P> 사용자에게 있어서는,<CODE>JTree</CODE> 내에서 영숫자 키를 사용해 셀을 안내하고 싶은 경우가 자주 발생합니다. 그 때문에,<a href="../../../api/javax/swing/JTree.html#getNextMatch(java.lang.String,%20int,%20javax.swing.text.Position.Bias)"><CODE>getNextMatch</CODE></a>  메소드가 <a href="../../../api/javax/swing/JTree.html"><code>JTree</code></a>  에 추가되었습니다. <a href="../../../api/javax/swing/plaf/basic/BasicTreeUI.html"><CODE>BasicTreeUI</CODE></a>  에 의해, 키보드로 키가 입력되었을 때에 이 메소드를 호출하는 <a href="../../../api/javax/swing/plaf/basic/BasicTreeUI.html"><CODE>KeyListener</CODE> 가 인스톨 됩니다.  
+    </blockquote>
+    </blockquote>
+
+	<a name="4308384"></a> 
+    <HR>
+<H2><A name="JList">JList</A> </H2>
+    <blockquote>
+<H3>ListDataEvent.toString 로 유용한 정보가 제공되게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4134085.html">4134085</A> .  
+<P> 개발자는 자주, 유용한 디버그 정보를 요구해 <CODE>toString</CODE> 를 사용합니다. 다만 지금까지는,<a href="../../../api/javax/swing/event/ListDataEvent.html"><CODE>ListDataEvent</CODE></a>  의 <a href="../../../api/javax/swing/event/ListDataEvent.html#toString()"><CODE>toString</CODE></a>  메소드에서는, 실로 유용한 정보가 제공되지 않았습니다. 이 릴리스로, 유용한 정보를 돌려주도록(듯이) 변경되었습니다.
+    </blockquote>
+
+<H3>JList 로 머리 글자 키에 의한 네비게이션이 지원되게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4284709.html">4284709</A> .  
+<P> 사용자에게 있어서는,<a href="../../../api/javax/swing/JList.html"><CODE>JList</CODE></a>  내에서 영숫자 키를 사용해 셀을 안내하고 싶은 경우가 자주 발생합니다. 이 때문에,<a href="../../../api/javax/swing/JList.html#getNextMatch(java.lang.String,%20int,%20javax.swing.text.Position.Bias)"><CODE>getNextMatch</CODE></a>  가 <CODE>JList</CODE> 에 추가되었습니다. <a href="../../../api/javax/swing/plaf/basic/BasicListUI.html"><code>BasicListUI</code></a>  에 의해, 선택 범위를 변경하기 위해서 키가 입력되었을 때에 이 메소드를 호출하는 <a href="../../../api/javax/swing/plaf/basic/BasicListUI.html"><code>KeyListener</code> 가 인스톨 됩니다.
+    </blockquote>
+
+<H3><A name="4460016">JList 의 항목을 수평에 배치할 수 있게 되었다</A> </H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4460016.html">4460016</A> .  
+<P> 지금까지 <CODE>JList</CODE> 에서는, 다음과 같이, 셀을 수직 밖에 레이아웃 할 수 없었습니다.  
+      <pre>
+1
+2
+3
+4
+</pre>
+<P> 많은 사용자가, 다음에 나타내도록(듯이), 리스트를 수평에 레이아웃 할 수 있는 기능을 요구하고 있었습니다.  
+      <pre>
+1  3
+2  4
+</pre>
+또는
+<pre>
+1  2
+3  4
+</pre>
+<P>이 기능을 실현하기 위해서(때문에),<a href="../../../api/javax/swing/JList.html#VERTICAL"><code>VERTICAL</code></a> ,<a href="../../../api/javax/swing/JList.html#VERTICAL_WRAP"><code>VERTICAL_WRAP</code></a> , 및 <a href="../../../api/javax/swing/JList.html#HORIZONTAL_WRAP"><code>HORIZONTAL_WRAP</code></a>  라고 하는 3 개의 정수가 <code>JList</code> 에 추가되었습니다. <a href="../../../api/javax/swing/JList.html#getLayoutOrientation()"><code>getLayoutOrientation</code></a>  메소드와 <a href="../../../api/javax/swing/JList.html#setLayoutOrientation(int)"><code>setLayoutOrientation</code></a>  메소드도 <a href="../../../api/javax/swing/JList.html"><code>JList</code></a>  에 추가되었습니다. <code>JList</code> 의 <a href="../../../api/javax/swing/JList.html#getScrollableTracksViewportHeight()"><code>getScrollableTracksViewportHeight</code></a> ,<a href="../../../api/javax/swing/JList.html#getScrollableTracksViewportWidth()"><code>getScrollableTracksViewportWidth</code></a> ,<a href="../../../api/javax/swing/JList.html#getScrollableBlockIncrement(java.awt.Rectangle,%20int,%20int)"><code>getScrollableBlockIncrement</code></a> , 및 <a href="../../../api/javax/swing/JList.html#getPreferredScrollableViewportSize()"><code>getPreferredScrollableViewportSize</code></a>  의 각 메소드에 대해 javadoc 가 갱신되었습니다. 같이<a href="../../../api/javax/swing/plaf/basic/BasicListUI.html"><code>javax.swing.plaf.basic.BasicListUI</code></a>  내의 <a href="../../../api/javax/swing/plaf/basic/BasicListUI.html#getPreferredSize(javax.swing.JComponent)"><code>getPreferredSize</code></a>  에 대한 javadoc 도 갱신되었습니다.
+
+    </blockquote>
+    </blockquote>
+
+    <HR>
+<H2><A name="Miscellaneous">그 외</A> </H2>
+    <blockquote>
+
+<h3>Metal 의 Look & Feel 의 2 개의 디폴트 설정이 변경되었다</h3>
+    <blockquote>
+<p>Metal 의 Look & Feel 의 2 개의 디폴트 설정이 변경되었습니다.
+    <ul>
+<li><code>JLabel</code> 의 foreground색이 진한 파랑으로부터 흑으로 변경되었습니다.
+    <p>
+<li><code>DefaultListCellRenderer</code> 의 폰트가 표준으로부터 볼드로 변경되었습니다.
+    </ul>
+    </blockquote>
+
+<h3><a name=4759306>JColorChooser.setPreviewPanel 가 낡은 패널을 삭제하지 않는다</a> </h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4759306.html">4759306</A> .
+<p>이 메소드를 호출하면(자), 새로운 패널이 추가됩니다만, 디폴트의 PreviewPanel 가 colorChooser 로부터 삭제되지 않았습니다. 그 결과, 불필요한 산물을 남기고 있었습니다. 이것은 1.4. 2 로 수정되었습니다.
+    </blockquote>
+
+<h3><a name=4668511>JColorChooser 의 데드락이 수정되었습니다</a> </h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4668511.html">4668511</A> .
+<p>1.4. 0 으로 발생한 이 버그에 의해, 어플리케이션 전체가 헹 하는 데드락이 발생했습니다. 이것은 1.4. 1 으로 수정되었습니다.
+    </blockquote>
+
+<h3>JFrame.setDefaultCloseOperation 로 SecurityException 가 throw 되게 되었다</h3>
+    <blockquote>
+<p>릴리스 1.4. 1 으로부터,<code>JFrame</code> 내의 <a href="../../../api/javax/swing/JFrame.html#setDefaultCloseOperation(int)"><code>setDefaultCloseOperation</code></a>  메소드로 <code>SecurityException</code> 를 throw 할 수 있게 되었습니다.
+    </blockquote>
+
+<h3><a name=4668963>Metal 로 Microsoft Windows 의 데스크탑으로부터 font size를 취득할 수 있게 되었다</a> </h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트:<A href="http://developer.java.sun.com/developer/bugParade/bugs/4419964.html"> 4419964</A>  및 <A href="http://developer.java.sun.com/developer/bugParade/bugs/4668963.html"> 4668963</A> 
+<p>이 릴리스보다 전에서는,<code>DefaultMetalTheme</code> 는 Windows 데스크탑의 font size 정보를 무시하고 있었습니다. 릴리스 1.4. 1 으로부터,<code>DefaultMetalTheme</code> 는 Windows 데스크탑으로 지정되고 있는 font size를 사용할 수 있습니다. 이것은, 시스템 프로퍼티 <code>swing.useSystemFontSettings</code> 를 사용해 무효로 할 수 있습니다. 이 버그의 일부로서 Windows Look & Feel 로 몇개의 컴퍼넌트에 대해서 잘못한 폰트가 취득되는 버그가 있었습니다만, 이것은 수정되었습니다.
+    </blockquote>
+
+<h3><a name=4615396>로케일의 일부가 Windows 데스크탑의 font size만을 받아들인다</a> </h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4615396.html">4615396</A> .  </P>
+<p>Microsoft Windows 의 <code>WindowsLookAndFeel</code> 에서는, 특정의 로케일은 데스크탑의 font size만을 받아들입니다. 이것은 1.4. 1 으로 수정되었습니다.
+    </blockquote>
+
+<H3>Look &amp; Feel 를 무시할 수 있는 프로퍼티에 대한 문서</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4420209.html">4420209</A> .  </P>
+<p>Look &amp; Feel 의 구현의 종류에 따라서는, Look &amp; Feel 에 영향을 줄 가능성이 있는 일정한 프로퍼티을 무시할 수가 있습니다. 이 릴리스에서는, 어떤 종류의 Look &amp; Feel 에 무시되는 프로퍼티을 나타내기 위해서(때문에), 일정한 메소드에 대한 문서가 변경되었습니다. 또,<a href="../../../api/javax/swing/UIManager.html"><code>UIManager</code></a>  의 클래스 스펙 및 <a href="../../../api/javax/swing/plaf/metal/package-summary.html"><code>javax.swing.plaf.metal</code></a>  패키지의 문서가, Java Look &amp; Feel 를 디폴트의 Look &amp; Feel 로 지정하기 위해서(때문에) 변경되었습니다. 이 변경은, 문서에만 영향을 줍니다.
+<p>영향을 받는 메소드에는, 다음의 것이 있습니다.
+    <ul>
+<li><a href="../../../api/javax/swing/AbstractButton.html"><code>javax.swing.AbstractButton</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/AbstractButton.html#isFocusPainted()"><code>public boolean isFocusPainted()</code></a> 
+<li><a href="../../../api/javax/swing/AbstractButton.html#setFocusPainted(boolean)"><code>public void setFocusPainted(boolean b)</code></a> 
+<li><a href="../../../api/javax/swing/AbstractButton.html#isRolloverEnabled()"><code>public boolean isRolloverEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/AbstractButton.html#setRolloverEnabled(boolean)"><code>public void setRolloverEnabled(boolean b)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JButton.html"><code>javax.swing.JButton</code></a> 
+     <ul>
+<li><a href="../../../api/javax/swing/JButton.html#isDefaultButton()"><code>public boolean isDefaultButton()</code></a> 
+<li><a href="../../../api/javax/swing/JButton.html#isDefaultCapable()"><code>public boolean isDefaultCapable()</code></a> 
+<li><a href="../../../api/javax/swing/JButton.html#setDefaultCapable(boolean)"><code>public void setDefaultCapable(boolean defaultCapable)</code></a> 
+     </ul>
+<li><a href="../../../api/javax/swing/JCheckBox.html"><code>javax.swing.JCheckBox</code></a> 
+    <ul>
+<li><a href="../../../api/javax/swing/JCheckBox.html#isBorderPaintedFlat()"><code>public boolean isBorderPaintedFlat()</code></a> 
+<li><a href="../../../api/javax/swing/JCheckBox.html#setBorderPaintedFlat(boolean)"><code>public void setBorderPaintedFlat(boolean b)</code></a> 
+    </ul>
+<li><a href="../../../api/javax/swing/JColorChooser.html"><code>javax.swing.JColorChooser</code></a> 
+     <ul>
+<li><a href="../../../api/javax/swing/JColorChooser.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JColorChooser.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+     </ul>
+<li><a href="../../../api/javax/swing/JComboBox.html"><code>javax.swing.JComboBox</code></a> 
+     <ul>
+<li><a href="../../../api/javax/swing/JComboBox.html#isLightWeightPopupEnabled()"><code>public boolean isLightWeightPopupEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JComboBox.html#setLightWeightPopupEnabled(boolean)"><code>public void setLightWeightPopupEnabled(boolean aFlag)</code></a> 
+     </ul>
+<li><a href="../../../api/javax/swing/JFileChooser.html"><code>javax.swing.JFileChooser</code></a> 
+     <ul>
+<li><a href="../../../api/javax/swing/JFileChooser.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JFileChooser.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+<li><a href="../../../api/javax/swing/JFileChooser.html#getControlButtonsAreShown()"><code>public boolean getControlButtonsAreShown()</code></a> 
+<li><a href="../../../api/javax/swing/JFileChooser.html#setControlButtonsAreShown(boolean)"><code>public void setControlButtonsAreShown(boolean b)</code></a> 
+     </ul>
+<li><a href="../../../api/javax/swing/JInternalFrame.html"><code>javax.swing.JInternalFrame</code></a> 
+     <ul>
+<li><a href="../../../api/javax/swing/JInternalFrame.html#isIconifiable()"><code>public boolean isIconifiable()</code></a> 
+<li><a href="../../../api/javax/swing/JInternalFrame.html#setIconifiable(boolean)"><code>public void setIconifiable(boolean b)</code></a> 
+     </ul>
+<li><a href="../../../api/javax/swing/JList.html"><code>javax.swing.JList</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JList.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JList.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JPopupMenu.html"><code>javax.swing.JPopupMenu</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JPopupMenu.html#isLightWeightPopupEnabled()"><code>public boolean isLightWeightPopupEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JPopupMenu.html#setLightWeightPopupEnabled(boolean)"><code>public void setLightWeightPopupEnabled(boolean aFlag)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JProgressBar.html"><code>javax.swing.JProgressBar</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JProgressBar.html#isStringPainted()"><code>public boolean isStringPainted()</code></a> 
+<li><a href="../../../api/javax/swing/JProgressBar.html#setStringPainted(boolean)"><code>public void setStringPainted(boolean b)</code></a> 
+<li><a href="../../../api/javax/swing/JProgressBar.html#isIndeterminate()"><code>public boolean isIndeterminate()</code></a> 
+<li><a href="../../../api/javax/swing/JProgressBar.html#setIndeterminate(boolean)"><code>public void setIndeterminate(boolean newValue)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JSplitPane.html"><code>javax.swing.JSplitPane</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JSplitPane.html#isOneTouchExpandable()"><code>public boolean isOneTouchExpandable()</code></a> 
+<li><a href="../../../api/javax/swing/JSplitPane.html#setOneTouchExpandable(boolean)"><code>public void setOneTouchExpandable(boolean newValue)</code></a> 
+<li><a href="../../../api/javax/swing/JSplitPane.html#isContinuousLayout()"><code>public boolean isContinuousLayout()</code></a> 
+<li><a href="../../../api/javax/swing/JSplitPane.html#setContinuousLayout(boolean)"><code>public void setContinuousLayout(boolean newContinuousLayout)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JTable.html"><code>javax.swing.JTable</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JTable.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JTable.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/text/JTextComponent.html"><code>javax.swing.text.JTextComponent</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/text/JTextComponent.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/text/JTextComponent.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JToolBar.html"><code>javax.swing.JToolBar</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JToolBar.html#isFloatable()"><code>public boolean isFloatable()</code></a> 
+<li><a href="../../../api/javax/swing/JToolBar.html#setFloatable(boolean)"><code>public void setFloatable(boolean b)</code></a> 
+      </ul>
+<li><a href="../../../api/javax/swing/JTree.html"><code>javax.swing.JTree</code></a> 
+      <ul>
+<li><a href="../../../api/javax/swing/JTree.html#getDragEnabled()"><code>public boolean getDragEnabled()</code></a> 
+<li><a href="../../../api/javax/swing/JTree.html#setDragEnabled(boolean)"><code>public void setDragEnabled(boolean b)</code></a> 
+<li><a href="../../../api/javax/swing/JTree.html#getShowsRootHandles()"><code>public boolean getShowsRootHandles()</code></a> 
+<li><a href="../../../api/javax/swing/JTree.html#setShowsRootHandles(boolean)"><code>public void setShowsRootHandles(boolean newValue)</code></a> 
+<li><a href="../../../api/javax/swing/JTree.html#getScrollsOnExpand()"><code>public boolean getScrollsOnExpand()</code></a> 
+<li><a href="../../../api/javax/swing/JTree.html#setScrollsOnExpand(boolean)"><code>public void setScrollsOnExpand(boolean newValue)</code></a> 
+      </ul>
+    </ul>
+    </blockquote>
+
+<H3>SwingConstants 로 NEXT 와 PREVIOUS 를 정의하게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4134085.html">4175466</A> .  </P>
+<P><a href="../../../api/javax/swing/SwingConstants.html"><CODE>SwingConstants</CODE></a>  로, Swing 전체로 사용되는 정수를 정의합니다. 일반적인 UI 조작에, 순서내의 다음과 전의 항목의 위치 지정이 있습니다. 이것은, 현재는 <CODE>SwingConstants</CODE> 로,<a href="../../../api/javax/swing/SwingConstants.html#NEXT"><CODE>NEXT</CODE></a>  및 <a href="../../../api/javax/swing/SwingConstants.html#PREVIOUS"><CODE>PREVIOUS</CODE></a>  의 정수를 정의하는 것으로 지정됩니다.
+    </blockquote>
+
+<H3>Swing 이외의 컴퍼넌트로부터 Swing 컴퍼넌트의 바인드를 처리하는 새로운 방법</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4344900.html">4344900</A> .  </P>
+<P> Swing 에는, 특정의 키스트로크(keystroke)에 관련지을 수 있었던 액션을 지원하는 정교한 인프라스트럭쳐(infrastructure)가 있습니다. 즉, 사용자가 있는 문자를 입력하면(자), 해당하는 액션이 실행됩니다. 이러한 이벤트의 처리는,<a href="../../../api/javax/swing/JComponent.html#processKeyEvent(java.awt.event.KeyEvent)"><CODE>JComponent.processKeyEvent</CODE></a>  내로부터 일으켜집니다 (<CODE>processKeyEvent</CODE> 은 <CODE>java.awt.Component</CODE> 로부터 오버라이드(override) 된다). 이러한 액션의 처리는 <CODE>JComponent</CODE> 내에서 발생하기 위해(때문에), 이전에는 개발자에게 있어, 포커스를 취득하고 있는 <CODE>JComponent</CODE> 이외의 서브 클래스내로부터 바인드를 처리하는 방법이 없었습니다. 이 때문에,<a href="../../../api/javax/swing/SwingUtilities.html#processKeyBindings(java.awt.event.KeyEvent)"><CODE>processKeyBindings</CODE></a>  메소드가 <a href="../../../api/javax/swing/SwingUtilities.html"><CODE>SwingUtilities</CODE></a>  에 추가되었습니다.  
+    </blockquote>
+
+<H3><A name="4290988">Swing 컴퍼넌트의 음성 피드백</A> </H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290988.html">4290988</A> . </P>
+<p><b>주:</b>사운드 패키지에 몇개인가 버그가 있기 (위해)때문에, 디폴트에서는, 사운드는 재생되지 않습니다. 사운드를 유효하게 하려면 , 다음과 같이 합니다.
+<pre>
+    UIManager.put("AuditoryCues.playList",
+        UIManager.get("AuditoryCues.allAuditoryCues"));
+</pre>
+<P>이전의 Swing 컴퍼넌트에서는, 많은 플랫폼에서의 네이티브 컴퍼넌트로서 같은 음성 피드백이 제공되지 않았습니다. Swing 의 PLAF 에의 변경 세트인 MALF2 는, 주로, 출력 전용의 논스피치오디오유자의 피드백 기구로서의 사용을 목적으로 하고 있습니다. MALF2 프로젝트는, Swing/JFC 및, 기반 플랫폼에서의 엄밀한 사용자 인터페이스 통합이라고 하는, Java 플랫폼의 목표의 시점으로부터 중요합니다. MALF2 프로젝트에서는, 네이티브 어플리케이션과 Swing/JFC 어플리케이션에 의한 사용자의 경험이, 음성에 의한 사용자에게로의 피드백에 관해서 동일한 것을 보증합니다. </P>
+<P> 이 구현은, API 를 <a href="../../../api/javax/swing/plaf/basic/BasicLookAndFeel.html"><CODE>BasicLookAndFeel</CODE></a>  에 추가해, 사운드를 재생하는 <CODE>Action</CODE> 를 포함한 <CODE>ActionMap</CODE> 의 로드를 지원하는 것이 목적으로 하고 있습니다. 이것으로, 사운드의 재생에 적절한 때에, 다양한 <CODE><i>Basic</i>ComponentUI</CODE> 의 구현이 <CODE>Action</CODE> 에 대해서 <CODE>actionPerformed</CODE> 를 호출합니다. 예를 들어,<a href="../../../api/javax/swing/plaf/basic/BasicMenuItemUI.html"><code>BasicMenuItemUI</code></a>  에서는,<a href="../../../api/javax/swing/plaf/basic/BasicMenuItemUI.html#doClick(javax.swing.MenuSelectionManager)"><code>doClick</code></a>  를 사용해 액션을 실행합니다. <CODE>BasicLookAndFeel</CODE> 가 Java Sound API 를 사용해 사운드를 재생하고 있는 동안에, 서브 클래스가 대체의 메소드를 사용할 수가 있습니다. 예를 들어,<CODE>WindowsLookAndFeel</CODE> 는 Windows 로 제공되는 사운드와의 통합을 꾀하기 위해서(때문에),<a href="../../../api/java/awt/Toolkit.html#getDesktopProperty(java.lang.String)"><CODE>Toolkit.getDefaultToolkit(). getDesktopProperty()</CODE></a>  경유로 String 를 <CODE>Runnable</CODE> 에 매핑 합니다.  
+<P> 사운드를 포함한 <CODE>ActionMap</CODE> 에는,<a href="../../../api/javax/swing/plaf/basic/BasicLookAndFeel.html#getAudioActionMap()"><CODE>BasicLookAndFeel.getAudioActionMap</CODE></a>  경유로 액세스 할 수 있습니다. <CODE>getAudioActionMap</CODE> 가 최초로 불려 갈 때, 이하의 동작이 실행됩니다.  
+      <OL>
+	<LI>로드하는 사운드의 리스트를 판단하기 위해서(때문에), 디폴트의 엔트리 <CODE>auditoryCues.cueList</CODE> (<CODE>Object[]</CODE>)가 사용된다.  
+	<LI> 배열내의 각 엔트리가 <CODE>createAudioAction</CODE> 에게 건네져 사운드의 재생을 실시하는 <CODE>Action</CODE> 를 취득한다.  
+	<LI> <a href="../../../api/javax/swing/plaf/basic/BasicLookAndFeel.html#createAudioAction(java.lang.Object)"><CODE>BasicLookAndFeel.createAudioAction</CODE></a>  에게 건네진 <CODE>Object</CODE> 가 사용되어, Java Sound 로 로드할 수 있는 디폴트의 테이블에서 사운드 파일에의 패스가 검색된다.  
+	<LI> <CODE>BasicComponentUI</CODE> 클래스의 1 개가 사운드의 재생을 희망했을 때는,<CODE>Action</CODE> 내에서 건네받아 <a href="../../../api/javax/swing/plaf/basic/BasicLookAndFeel.html#playSound(javax.swing.Action)"><CODE>BasicLookAndFeel.playSound</CODE></a>  가 불려 간다.  
+	<LI> <CODE>Action</CODE> 의 이름이 디폴트의 엔트리 <CODE>AuditoryCues.playList</CODE> 에 포함되어 있었을 경우는,<CODE>BasicLookAndFeel.playSound</CODE> 가 <CODE>Action</CODE> 로 <CODE>actionPerformed</CODE> 를 호출한다.  
+      </OL>
+<P> 이 아키텍쳐(architecture)에 의해, 개발자는 재생하는 사운드를 다양한 방법으로 커스터마이즈 할 수 있습니다.  
+      <UL>
+	<LI> 특정의 <CODE>JComponent</CODE> 에 관련지을 수 있었던 사운드는, 예를 들어 다음과 같이,<CODE>JComponent</CODE> 에 관련하는 <CODE>ActionMap</CODE> 내의 <CODE>Action</CODE> 를 변경하는 것으로, 조작할 수가 있다.  
+	  <pre>
+ActionMap map = menuItem.getActionMap();
+map.put("MenuItem.commandSound", differentActionToPlaySound);
+</pre>
+	<LI> 특정의 형태의 <CODE>Component</CODE> 모두에게 사용되는 사운드는, 예를 들어 다음과 같이 해, 디폴트의 테이블을 조작해 변경할 수 있다.  
+	  <pre>
+UIManager.put("MenuItem.commandSound", "pathToNewSoundFild");
+</pre>
+	<LI> 커스텀의 Look &amp; Feel 를 작성중에,<CODE>BasicLookAndFeel</CODE> 메소드의 1 개를 오버라이드(override) 해, 대체의 방법으로 사운드를 로드하는지, 또는 다른 방법으로 사운드를 재생할 수도 있다.  
+      </UL>
+<P> 그것과는 별도로, 재생하는 사운드세트를 디폴트 엔트리의 <CODE>AuditoryCues.playList</CODE> 경유로 조작할 수도 있습니다. 이 <CODE>Object</CODE> 배열에는, 디폴트의 테이블내에서 재생하는 사운드를 나타내는 키가 포함됩니다. <CODE>MetalLookAndFeel</CODE> 에서는, 이것을 다음과 같이 정의합니다.  
+      <pre>
+<CODE>new Object[]  {"OptionPane.errorSound", 
+	  "OptionPane.informationSound",
+	  "OptionPane.questionSound",
+	  "OptionPane.warningSound" }</CODE>
+	</pre>
+이 정의는,<CODE>JOptionPane</CODE> 가 지원하는 사운드만을 유효하게 하는 효과가 있습니다.  
+    </blockquote>
+
+<H3>JMenu 가 포커스의 신규 아키텍쳐(architecture)가 작용하도록(듯이) 갱신되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4371580.html">4371580</A> .  </P>
+<P> 새로운 포커스 아키텍쳐(architecture)는, RFE <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290675.html">4290675</A>  의 요청으로 도입되었습니다. 이것에 의해, 포커스의 일시적인 변경을 개발자가 요구할 수 있게 됩니다. 요구는, 보호된 <a href="../../../api/java/awt/Component.html"><CODE>Component</CODE></a>  의 <a href="../../../api/java/awt/Component.html#requestFocus(boolean)"><CODE>requestFocus(boolean)</CODE></a>  메소드 또는 <a href="../../../api/java/awt/Component.html#requestFocusInWindow(boolean)"><CODE>requestFocusInWindow(boolean)</CODE></a>  메소드를 통해서 행해집니다. 이 2 개의 메소드는, 범용이 아니고 Swing 등의 경량 툴 킷에만 대하는 구현용으로서 보호되고 있습니다. Swing 는, 다양한 패키지내의 코드가 일시적으로 포커스를 요구한다고 하는 방법으로 아키텍쳐(architecture)화 되고 있습니다. 즉, 모든 Swing 컴퍼넌트의 친클래스인 <a href="../../../api/javax/swing/JComponent.html"><CODE>JComponent</CODE></a>  는,<a href="../../../api/javax/swing/JComponent.html#requestFocus(boolean)"><code>requestFocus(boolean)</code></a>  및 <a href="../../../api/javax/swing/JComponent.html#requestFocusInWindow(boolean)"><code>requestFocusInWindow</code></a>  를 public 로서 공개할 필요가 있습니다.  
+    </blockquote>
+
+<H3>컴퍼넌트의 트리내에서 ComponentOrientation 를 변경하는 신규 지원</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4337186.html">4337186</A> .  </P>
+<P> 대량의 Swing 컴퍼넌트를 <a href="../../../api/java/awt/ComponentOrientation.html"><CODE>ComponentOrientation</CODE></a>  프로퍼티에 주위를 기울이면서 취급하는 과정에서, 컴퍼넌트의 계층 전체의 <CODE>ComponentOrientation</CODE> 의 설정을 간단하게 관리할 수 있도록(듯이) 하는 2 개의 기능이 필요하게 됩니다. <a href="../../../api/javax/swing/SwingUtilities.html"><code>SwingUtilities</code></a>  의 신규 메소드인 <a href="../../../api/javax/swing/SwingUtilities.html#applyComponentOrientation(java.awt.Component,%20java.awt.ComponentOrientation)"><code>applyComponentOrientation(Component c, ComponentOrientation o)</code></a>  를 사용하면(자), 컴퍼넌트의 계층 전체에 일관한 <CODE>ComponentOrientation</CODE> 를 설정하는 것이 간단하게 됩니다.
+    </blockquote>
+
+<H3>데스크탑 관련의 프로퍼티에의 신규 액세스</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290973.html">4290973</A> .  </P>
+<P> Windows Look &amp; Feel 의 갱신의 일부로서 메소드가 <a href="../../../api/javax/swing/LookAndFeel.html"><code>LookAndFeel</code></a>  와 <a href="../../../api/javax/swing/LookAndFeel.html#getDesktopPropertyValue(java.lang.String,%20java.lang.Object)"><CODE>getDesktopPropertyValue</CODE></a>  에 추가되어 데스크탑 관련의 프로퍼티에 액세스하기 쉬워졌습니다.  
+    </blockquote>
+
+<H3>컴퍼넌트의 인 세트에 의한 오프셋(offset) 구형에 대한 신규 메소드</H3>
+    <blockquote>
+<P> 이 메소드는, 실제로는 불확정인 상태를 지원하기 위해서,<a href="../../../api/javax/swing/JProgressBar.html"><CODE>JProgressBar</CODE></a>  의 갱신의 일부로서 추가되었습니다. 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290973.html">4290717</A> .  </P>
+<P>새로운 메소드는,<a href="../../../api/javax/swing/SwingUtilities.html"><code>SwingUtilities</code></a>  에 추가된 <a href="../../../api/javax/swing/SwingUtilities.html#calculateInnerArea(javax.swing.JComponent,%20java.awt.Rectangle)"><code>calculateInnerArea(Component, Rectangle)</code></a>  입니다.
+    </blockquote>
+
+<H3><A name="mouseWheel">마우스 휠을 위한 신규 API</A> </H3>
+    <blockquote>
+<P>이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4356268.html">4356268</A> .  </P>
+<P> 마우스의 중앙 버튼으로서 스크롤 휠이 붙은 휠 마우스는, 일반적으로 되고 있습니다. 이 제안에서는, 마우스 휠을 사용해 스크롤 시키는 편입의 Java 지원 외에, 새로운 휠 이벤트 청취자도 제공되므로, 마우스 휠의 동작을 개발자가 커스터마이즈 할 수 있게 됩니다.  
+<P>새로운 클래스인 <a href="../../../api/java/awt/event/MouseWheelListener.html"><code>MouseWheelListener</code></a>  와 새로운 인터페이스인 <a href="../../../api/java/awt/event/MouseWheelEvent.html"><code>MouseWheelEvent</code></a>  가 추가되었습니다. 또, 정수의 <a href="../../../api/java/awt/AWTEvent.html#MOUSE_WHEEL_EVENT_MASK"><code>MOUSE_WHEEL_EVENT_MASK</code></a>  가 <a href="../../../api/java/awt/AWTEvent.html"><code>AWTEvent</code></a>  에 추가되었습니다. <a href="../../../api/java/awt/AWTEventMulticaster.html"><code>AWTEventMulticaster</code></a>  에는,<a href="../../../api/java/awt/AWTEventMulticaster.html#mouseWheelMoved(java.awt.event.MouseWheelEvent)"><code>mouseWheelMoved</code></a> ,<a href="../../../api/java/awt/AWTEventMulticaster.html#add(java.awt.event.MouseWheelListener,%20java.awt.event.MouseWheelListener)"><code>add</code></a> , 및 <a href="../../../api/java/awt/AWTEventMulticaster.html#remove(java.awt.event.MouseWheelListener,%20java.awt.event.MouseWheelListener)"><code>remove</code></a>  의 3 개의 새로운 메소드가 있습니다. <a href="../../../api/java/awt/Component.html"><code>Component</code></a>  에는,<a href="../../../api/java/awt/Component.html#addMouseWheelListener(java.awt.event.MouseWheelListener)"><code>addMouseWheelListener</code></a>  와 <a href="../../../api/java/awt/Component.html#removeMouseWheelListener(java.awt.event.MouseWheelListener)"><code>removeMouseWheelListener</code></a>  의 2 개의 새로운 메소드가 있습니다. <a href="../../../api/java/awt/ScrollPane.html"><code>ScrollPane</code></a>  에도,<a href="../../../api/java/awt/ScrollPane.html#setWheelScrollingEnabled(boolean)"><code>setWheelScrollingEnabled</code></a>  와 <a href="../../../api/java/awt/ScrollPane.html#isWheelScrollingEnabled()"><code>isWheelScrollingEnabled</code></a>  의 2 개의 새로운 메소드가 있습니다. 마지막으로,<a href="../../../api/java/awt/Robot.html"><code>Robot</code></a>  에도 새로운 메소드의 <a href="../../../api/java/awt/Robot.html#mouseWheel(int)"><code>mouseWheel</code></a>  가 있습니다.
+    </blockquote>
+
+<H3>JFrame, JDialog, 및 JApplet 가 processKeyEvent 를 오버라이드(override) 하지 않게 되었다</H3>
+    <blockquote>
+<P>이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4462408.html">4462408</A> .  </P>
+<p>Swing 는,<code>JComponent</code> 에 키 바인딩을 등록하는 옵션을 지원하고 있습니다. 이전의 릴리스에서는, Swing 의 톱 레벨의 컴퍼넌트 (<a href="../../../api/javax/swing/JFrame.html"><code>JFrame</code></a> ,<a href="../../../api/javax/swing/JDialog.html"><code>JDialog</code></a> , 및 <a href="../../../api/javax/swing/JApplet.html"><code>JApplet</code></a> )의 1 개에 포커스가 있는 경우, 키 바인딩을 유효하게 하려면 , 이러한 톱 레벨의 컴퍼넌트로 <code>processKeyEvent</code> (<a href="../../../api/java/awt/Component.html"><code>java.awt.Component</code></a>  로 정의되고 있다)를 오버라이드(override) 할 필요가 있었습니다. <a href="../../../api/java/awt/KeyEventPostProcessor.html"><code>java.awt.KeyEventPostProcessor</code></a>  가 추가되어 Swing 로 이것을 이용하는 것으로써 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4389332.html">RFE 4389332</a> ), Swing 의 톱 레벨의 컴퍼넌트로 이러한 메소드를 오버라이드(override) 할 필요는 없어졌습니다. 이 릴리스에서는, 이러한 메소드는 톱 레벨로부터 삭제되어 상속되게 되었습니다.  
+    </blockquote>
+
+<H3>JWindow 생성자 의 헷드레스 예외에 관한 문서</H3>
+    <blockquote>
+<P>이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4483258.html">4483258</A> .  </P>
+<p>이 릴리스에서는 헷드레스모드가 추가되었습니다만,<a href="../../../api/javax/swing/JWindow.html"><code>JWindow</code></a>  의 2 개의 생성자 으로,<code>HeadlessException</code> 가 throw 될 가능성이 나타나고 있지 않았습니다. <a href="../../../api/javax/swing/JWindow.html#JWindow(java.awt.Window,%20java.awt.GraphicsConfiguration)"><code>Window(Window, GraphicsConfiguration)</code></a>  및 <a href="../../../api/javax/swing/JWindow.html#JWindow(java.awt.GraphicsConfiguration)"><code>JWindow(GraphicsConfiguration)</code></a>  의 javadoc 로, 이 점이 수정되었습니다.
+    </blockquote>
+
+<H3><a name=4532517>입력 검증자의 기존의 버그</a> </H3>
+    <blockquote>
+<P>이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4532517.html">4532517</A> .  </P>
+<p>일부의 사용자에게 문제를 발생시키고 있는 입력 검증자의 버그가 최근 발견되었습니다. 1.4 의 <code>shouldYieldFocus</code> 메소드에서는,<code>OptionPane</code> 를 pop-up 시키는 등의 부작용은 허가되지 않습니다.
+<p>이것에는, 다음과 같은 회피책이 있습니다.
+     <pre>
+    public boolean shouldYieldFocus(JComponent input) {
+      if (verify(input)) {
+        return true;
+      }
+
+      // According to the documentation, should yield focus is allowed to cause
+      // side effects.   So temporarily remove the input verifier on the text
+      // field.
+      input.setInputVerifier(null);
+      System.out.println("Removed input verifier");
+
+      // Pop up the message dialog.
+      String message = "Roll over the 'JButton1' with mouse pointer "
+        + "after closing this dialog. \nIt sometimes behaves correctly "
+        + "for the first time\n but repeating action brings incorrect "
+        + "behaviour of button. ";
+      JOptionPane.showMessageDialog(null, message , "invalid value", 
+        JOptionPane.WARNING_MESSAGE);
+      System.out.println("Showed message. ");
+
+      // Reinstall the input verifier.
+      input.setInputVerifier(this);
+      System.out.println("Reinstalled input verifier");
+
+      // Tell whomever called us that we don't want to yield focus.
+      return false;
+    }
+
+     </pre>
+    </blockquote>
+    </blockquote>
+
+<H2><A name="KnownBugs">기존의 버그</A> </H2>
+    <blockquote>
+<H3><a name=4628933>Windows 와 원격 표시 어플리케이션을 동시에 실행하는 경우의 포커스 버그</a> </H3>
+    <blockquote>
+상황에 따라서는, 포커스 할 수 없는 중량 윈도우를 표시하면(자) 포커스가 없어지는 일이 있습니다. 이것은, 구체적으로는 Windows 의 후레이바와 Reflection-X 등의 원격 표시 어플리케이션을 동시에 실행하는 경우에 발생합니다. 이 버그는 릴리스 1.4 로 보고되었습니다만, 1.4. 1 에서는 수정되었습니다. 자세한 것은, 버그 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4628933.html">4628933</A>  을 참조해 주세요.
+    </blockquote>
+    </blockquote>
+
+
+    <HR>
+<H2><A name="JRootPane">JRootPane</A> </H2>
+    <blockquote>
+<H3>RootPaneUI 의 복수의 신규 구현</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4338458.html">4338458</A> .  </P>
+<P> <CODE>javax.swing.plaf.multi</CODE> 내의 클래스는, 복수의 Look &amp; Feel 를 다중화하기 위해서(때문에) 사용됩니다. 이 클래스는 일반적으로, 청각 정보등의 추가 정보를 제공하기 위한 보조 Look &amp; Feel 를 사용하는 사용자 보조 기능으로서 사용됩니다. 현재로서는, 보조 Look &amp; Feel 의 사용을 불안정하게 하는 <CODE>RootPaneUI</CODE> 의 복수의 구현은 없습니다. </P>
+<p>신규 클래스의 <a href="../../../api/javax/swing/plaf/multi/MultiRootPaneUI.html"><code>javax.swing.plaf.multi.MultiRootPaneUI</code></a>  가 추가되었습니다.
+    </blockquote>
+
+<H3>윈도우 장식을 제공하는 Look &amp; Feel 의 지원</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290471.html">4290471</A> . </P>
+<P> AWT 에서는 최근,<CODE>Window</CODE> 의 장식을 없애는 API 를 제공했습니다. 즉, 비장식으로 설정되어 있는 경우, 윈도우를 닫거나 이동하거나 사이즈를 변경하거나 할 경우에,<a href="../../../api/java/awt/Window.html"><CODE>Window</CODE></a>  는 어떠한 위젯도 draw도 하지 않습니다. 그 의미로, Swing 에서는 Look &amp; Feel 기능이 윈도우의 장식을 draw 할 수 있게 되었습니다.  
+<P>이 기능은 주로 <a href="../../../api/javax/swing/JRootPane.html"><CODE>javax.swing.JRootPane</CODE></a>  로 지원됩니다만,<a href="../../../api/javax/swing/JFrame.html"><CODE>javax.swing.JFrame</CODE></a>  및 <a href="../../../api/javax/swing/JDialog.html"><CODE>javax.swing.JDialog</CODE></a>  로 제공되는 스윗치를 사용하는 것을 추천합니다.  
+<P>다음의 변경이 <a href="../../../api/javax/swing/JRootPane.html"><code>JRootPane</code></a>  에 대해서 행해졌습니다.
+<pre>
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#NONE">NONE</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#FRAME">FRAME</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#PLAIN_DIALOG">PLAIN_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#INFORMATION_DIALOG">INFORMATION_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#ERROR_DIALOG">ERROR_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#COLOR_CHOOSER_DIALOG">COLOR_CHOOSER_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#FILE_CHOOSER_DIALOG">FILE_CHOOSER_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#QUESTION_DIALOG">QUESTION_DIALOG</a> ;
+    public static final int <a href="../../../api/javax/swing/JRootPane.html#WARNING_DIALOG">WARNING_DIALOG</a> ;
+
+    public void <a href="../../../api/javax/swing/JRootPane.html#setWindowDecorationStyle(int)">setWindowDecorationStyle(int style)</a> 
+    public int <a href="../../../api/javax/swing/JRootPane.html#getWindowDecorationStyle()">getWindowDecorationStyle()</a> 
+</pre>
+<p>모든 Look &amp; Feel 가 윈도우의 장식 스타일을 지원하는 것은 아니기 때문에,<a href="../../../api/javax/swing/LookAndFeel.html#getSupportsWindowDecorations()"><code>getSupportsWindowDecorations</code></a>  메소드가 <a href="../../../api/javax/swing/LookAndFeel.html"><code>javax.swing.LookAndFeel</code></a>  에 추가되어, Look &amp; Feel 가 이 동작을 지원할지 어떨지를 나타낼 방법이 제공되었습니다.
+<p><a href="../../../api/javax/swing/JFrame.html#isDefaultLookAndFeelDecorated()"><code>isDefaultLookAndFeelDecorated()</code></a>  및 <a href="../../../api/javax/swing/JFrame.html#setDefaultLookAndFeelDecorated(boolean)">setDefaultLookAndFeelDecorated</a>  메소드가 <a href="../../../api/javax/swing/JFrame.html"><code>JFrame</code></a>  에 추가되었습니다.
+<p>또,<a href="../../../api/javax/swing/JDialog.html#isDefaultLookAndFeelDecorated()"><code>isDefaultLookAndFeelDecorated()</code></a>  및 <a href="../../../api/javax/swing/JDialog.html#setDefaultLookAndFeelDecorated(boolean)">setDefaultLookAndFeelDecorated</a>  메소드가 <a href="../../../api/javax/swing/JDialog.html"><code>JDialog</code></a>  에 추가되었습니다.
+    </blockquote>
+    </blockquote>
+
+
+    <HR>
+<H2><A name="JScrollBar">JScrollBar</A> </H2>
+    <blockquote>
+<H3>JScrollBar 가 setUI 를 오버라이드(override) 하게 되었다</H3> 
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4213298.html">4213298</A> . </P>
+<P><a href="../../../api/javax/swing/JScrollBar.html"><CODE>JScrollBar</CODE></a>  는 이전,<a href="../../../api/javax/swing/JScrollBar.html#setUI(javax.swing.plaf.ScrollBarUI)"><CODE>setUI</CODE></a>  메소드를 오버라이드(override) 하지 않았습니다. 이 릴리스에서는, 오버라이드(override) 하도록(듯이) 변경되었습니다.  
+    </blockquote>
+    </blockquote>
+
+    <HR>
+<H2><A name="JScrollPane">JScrollPane</A> </H2>
+    <blockquote>
+<H3><A name="4356268">JScrollPane 의 신규 MouseWheelListener 의 지원</A> </H3>
+    <blockquote>
+<P>이것은, 마우스 휠의 지원의 일부로서 구현되었습니다. 여기에서는,<CODE>JScrollPane</CODE> 에 대한 변경만을 설명합니다. 그 외의 변경에 관한 자세한 것은, 이<A href="#mouseWheel">섹션</a>을 참조해 주세요. 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4356268.html">4356268</A> .  
+      </P>
+<P><a href="../../../api/javax/swing/JScrollPane.html#isWheelScrollingEnabled()"><code>isWheelScrollingEnabled</code></a>  및 <a href="../../../api/javax/swing/JScrollPane.html#setWheelScrollingEnabled(boolean)"><code>setWheelScrollingEnabled</code></a>  메소드가 <a href="../../../api/javax/swing/JScrollPane.html"><code>JScrollPane</code></a>  에 추가되었습니다.
+<p>새로운 보호된 내부 클래스의 <a href="../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.MouseWheelHandler.html"><code>MouseWheelHandler</code></a>  가 <a href="../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.html"><code>javax.swing.plaf.basic.BasicScrollPaneUI</code></a>  에 추가되었습니다. 이 내부 클래스에 관련하는 메소드는,<a href="../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.MouseWheelHandler.html#mouseWheelMoved(java.awt.event.MouseWheelEvent)"><code>mouseWheelMoved</code></a>  입니다. 또, 새로운 <a href="../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.html#createMouseWheelListener()"><code>createMouseWheelListener</code></a>  메소드가 <code>BasicScrollPaneUI</code> 에 추가되었습니다.
+    </blockquote>
+    </blockquote>
+
+    <HR>
+<H2><A name="RepaintManager">RepaintManager</A> </H2>
+    <blockquote>
+<H3>신규 VolatileImage 의 지원</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4363288.html">4363288</A> .  </P>
+<P> Java 2D 팀에서는,<CODE>Image</CODE> 의 그래픽스와 스크린 조립 조작에 하드웨어 고속화를 이용할 수 있는, 새로운 <a href="../../../api/java/awt/image/VolatileImage.html"><CODE>VolatileImage</CODE></a>  기구를 구현했습니다.  </P>
+<P> 특히 지정하지 않는 한, Swing 는 더블 버퍼를 사용해 GUI 컴퍼넌트의 내용을 그립니다. 이것은, 오프 스크린 이미지에 draw 해, 그 후 그 이미지를 스크린에 카피하는 것으로 행해집니다. 이 과정이, 새로운 <CODE>VolatileImage</CODE> 지원를 이용하기 위해서 변경되었습니다.  </P>
+<P> 페인트를 실행하기 위해서 Swing 가 사용하는 더블 버퍼는,<a href="../../../api/javax/swing/RepaintManager.html#getOffscreenBuffer(java.awt.Component,%20int,%20int)"><CODE>getOffscreenBuffer</CODE></a>  메소드를 사용해 <a href="../../../api/javax/swing/RepaintManager.html"><CODE>RepaintManager</CODE></a>  로부터 가져옵니다. <CODE>VolatileImage</CODE> 객체에는 실패 조건을 테스트하기 위한 특수한 조작이 필요하기 때문에,<CODE>VolatileImage</CODE> 를 돌려주는 이 메소드를 간단하게 변경할 수 없었습니다. 그것은, 이 메소드를 호출하는 기존의 코드가 존재할 가능성이 있어, 이 추가의 처리가 구현되어 있지 않기 때문입니다. 따라서, 특히 <CODE>VolatileImage</CODE> 객체를 돌려주기 위해서(때문에),<a href="../../../api/javax/swing/RepaintManager.html#getVolatileOffscreenBuffer(java.awt.Component,%20int,%20int)"><code>getVolatileOffscreenBuffer</code></a>  메소드가 <CODE>javax.swing.RepaintManager</CODE> 에 추가되었습니다.
+    </blockquote>
+    </blockquote>
+
+    <HR>
+<H2><A name="SpringLayout">SpringLayout</A> </H2>
+    <blockquote>
+<h3>새로운 SpringLayout 클래스</h3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4290203.html">4290203</A> .  </P>
+<p>이 릴리스에서는, 새로운 레이아웃 매니저 <a href="../../../api/javax/swing/SpringLayout.html"><code>SpringLayout</code></a>  가 도입되었습니다.
+<p><code>SpringLayout</code> 의 사용예에 대해서는, Java 튜토리얼의<a href="http://java.sun.com/docs/books/tutorial/uiswing/layout/spring.html">「How to Use SpringLayout」</a>을 참조해 주세요.
+    </blockquote>
+
+    </blockquote>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <FONT SIZE="-1">
+
+코멘트의 송부처:<a href="mailto:swing-feedback@java.sun.com">swing-feedback@java.sun.com</a> . 이것은 구독 리스트가 아닙니다. </FONT>
+</TD>
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>
+
+
+

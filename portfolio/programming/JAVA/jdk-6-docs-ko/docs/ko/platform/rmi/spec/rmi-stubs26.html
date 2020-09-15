@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:8 - Stub 인터페이스와 스켈리턴 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs25.html">전의 항목</a>  | <a href="rmi-stubs27.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">8.5	<code>Skeleton</code> 인터페이스</a> </h2>
+
+<blockquote>
+<a name="5795"><!-- --></a> <code>Skeleton</code> 인터페이스는,<code>rmic</code> 컴파일러에 의해 작성된 스켈리턴의 구현 에 의해서만 사용됩니다. 원격 객체에 대한 스켈리턴이란, 실제의 원격 객체의 구현에 호출을 발송 하는, 서버측의 엔티티입니다. <p>
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="6832">주 - </a> </b><code>Skeleton</code> 인터페이스는, Java 2 SDK, Standard Edition, v1. 2 에서는 추천 되지 않습니다. <code>rmic</code> Stub 컴파일러에 의해 생성된 1.1 의 각 스켈리턴 클래스 ( 및 디폴트의 <code>rmic -vcompat</code> 를 사용해 JDK 1.2 로 생성된, JDK 1.1 호환의 스켈리턴)는, 이 인터페이스를 구현하고 있습니다. Java 2 SDK, Standard Edition, v1. 2 호환의 버젼에서는, 원격 메소드 호출의 발송에, 스켈리턴이 필요없게 되었습니다. 1.2 이후의 버젼과 호환성이 있는 Stub를 생성하려면 , 커멘드 <code>rmic</code> 로 옵션 <em>-</em><code>v</code><em>1.2</em> 를 지정해 주세요.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<blockquote><pre>package java.rmi.server;
+
+public interface Skeleton {
+    void dispatch(Remote obj, RemoteCall call, int opnum, long hash)
+		throws Exception;
+    Operation[] getOperations();
+}
+
+
+</pre></blockquote><blockquote>
+<a name="6595"><!-- --></a> <code>dispatch</code> 메소드는,<em>call</em> 객체로 취득한 입력 스트림의 모든 인수를 비정렬화해, 실제의 원격 객체의 구현인 <em>obj</em> 상의 메소드 (조작 번호 <em>opnum</em> 로 나타난다)를 호출합니다.  그리고 반환값을 스트림에 흘리기 (위해)때문에 정렬화하는지, 또는 호출해 안에 예외가 발생했을 경우에는 예외를 throw 합니다. <p>
+<a name="6596"><!-- --></a> <code>getOperations</code> 메소드는, 원격 객체의 메소드에 대한 조작 기술자가 쓰여진 배열을 돌려줍니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs25.html">전의 항목</a>  | <a href="rmi-stubs27.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

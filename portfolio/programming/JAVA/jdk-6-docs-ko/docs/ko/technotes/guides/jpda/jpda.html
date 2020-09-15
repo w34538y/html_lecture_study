@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JPDA 의 개요 - xrath.com 에서 번역됨</title>
+  </head>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+&nbsp;
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR>
+<TD WIDTH="60"><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+<TD><CENTER><H1>Java Platform Debugger Architecture</H1></CENTER></TD>
+<TD ALIGN="RIGHT" VALIGN="TOP"><P ALIGN="RIGHT"><A HREF="index.html"><FONT SIZE="2">홈 페이지에 돌아온다</FONT></A> </TD>
+</TR>
+</TABLE>
+<CENTER><H1>개요</H1></CENTER>
+Java Platform Debugger Architecture (JPDA)는, 2 개의 인터페이스 (JVM TI 와 JDI), 1 개의 프로토콜 (JDWP), 및 그러한 컴퍼넌트를 묶어 합하는 2 개의 소프트웨어 컴퍼넌트 (연구 최종 단계와 프론트엔드)로 구성되어 있습니다. JVM TI 는, JVMDI 에 옮겨지는 것으로서 J2SE 5.0 에 도입된 새로운 인터페이스입니다. 그러한 구성에는, 다음과 같은 몇개의 목적이 있습니다.
+<UL>
+<LI>Java 프로그램 언어의 디버그 툴을, 하드웨어,  operating system, 가상 머신의 구현 등, 플랫폼 고유의 상세 사항에 주위를 기울이지 않고 간단하게 작성할 수 있도록(듯이) 하는, 표준적인 인터페이스 (설명을 간결하게 하기 위한(해), JDWP 도 인터페이스라고 부른다)를 제공한다
+<LI>이러한 인터페이스를 구현하는 완전한 아키텍쳐(architecture) (원격 디버그 및 크로스 플랫폼 디버그를 포함한다)를 기술한다
+<LI>이 아키텍쳐(architecture)의 레퍼런스 구현을 제공한다
+<LI>인터페이스의 구현 또는 클라이언트 (혹은 그 양쪽 모두)가 레퍼런스 구현과 달리 도달해, JPDA 컴퍼넌트와 달리 도달해도 상관없는, 고도로 모듈화된 아키텍쳐(architecture)를 제공한다
+</UL>
+<P>
+<H2>배경</H2>
+<A HREF="architecture.html">「Java Platform Debugger Architecture」</a>을 참조해 주세요.
+<P>
+<H2>모듈성</H2>
+여기에서는, JPDA 의 모듈화된 구조의 상세를 설명합니다. 각각의 설명에서는, 표준적인 JPDA 의 사용법을 채택합니다. 또, 레퍼런스 구현에 대해 설명해, 인터페이스의 대체 구현 및 클라이언트에 대해서도 설명합니다.
+<P>
+<a name=modularity>
+<H3>JVM TI 의 모듈성</H3></a>  Java Virtual Machine Tool Interface (JVM TI)에서는, 가상 머신 (VM)으로 동작하는 Java 프로그램 언어의 어플리케이션을 디버그 할 수 있도록(듯이) 하기 위한(해), 그 VM 로부터 제공되는 기능에 대해 기술되고 있습니다. JPDA 에서는, JVM TI 는 VM 에 의해 구현되어 클라이언트는 JPDA 의 연구 최종 단계가 됩니다. JPDA 의 레퍼런스 구현에서는, JVM TI 는 Java HotSpot VM 에 의해 구현되어 클라이언트는 연구 최종 단계의 레퍼런스 구현 (JDK 에 부속의, jdwp.so 나 jdwp.dll 등의 네이티브 공용 라이브러리로서 제공된다)이 됩니다.
+<P>
+Java HotSpot VM 이외가 많은 VM 도, JVM TI 를 구현하고 있습니다. 연구 최종 단계의 레퍼런스 구현은, 다른 몇개의 플랫폼에 이식되었습니다. 게다가 연구 최종 단계 이외에도 JVM TI 의 클라이언트가 있습니다. 가장 유명한 것은, native code와 Java 프로그램 언어 코드의 양쪽 모두의 디버그를 가능하게 하는 어플리케이션 에이전트 (네이티브 레벨의 제어와 정보를 필요로 한다)입니다. 연구 최종 단계의 클린 룸 구현을 의식할 필요는 없습니다. 그러한 연구 최종 단계를 작성하는 일도 가능합니다만, 상당한 노력을 필요로 합니다.
+<P>
+<H3>JDWP 의 모듈성</H3>
+Java Debug Wire Protocol (JDWP)는, debuggee 와 디버거의 사이에 교환되는 디버그 정보 및 요구의 형식을 기술하고 있습니다. JPDA 에서는, 프론트엔드 (디버거의 프로세스내에 있다)와 연구 최종 단계 (debuggee 의 프로세스내에 있다)와의 사이에 통신 채널이 있습니다. 그 채널상을 흐르는 데이터의 형식이, JDWP 에 의해 기술되고 있습니다. JPDA 의 레퍼런스 구현에서는, 연구 최종 단계의 레퍼런스 구현 (전술)이 이 채널의 debuggee 측을 제공해, 프론트엔드의 레퍼런스 구현 (tools.jar 에 있는 JDK 의 Java 프로그램 언어 컴퍼넌트)이 이 채널의 디버거측을 제공합니다.
+<P>
+일부의 VM 에서는, JVM TI 의 구현에 문제가 있습니다. 그러한 VM 에서는, JDWP 가 직접 구현됩니다. 클라이언트측에서는, Java 프로그램 언어로 작성되어 있지 않은 어플리케이션은, JDI 를 사용하는 어플리케이션으로서 부적격인 일이 있습니다. 어플리케이션에 따라서는, JDWP 의 클라이언트로서 구현하는 일도 있습니다.
+<P>
+<H3>JDI 의 모듈성</H3>
+Java Debug Interface (JDI)는, Java 프로그램 언어의 어플리케이션을 디버그하기 위한 pure Java 프로그램 언어 인터페이스를 제공합니다. JPDA 에서는, JDI 는, 디버거의 프로세스로부터 본 debuggee 프로세스의 가상 머신의 원격뷰입니다. JDI 는, 프론트엔드 (전술)에 의해 구현됩니다만, 그 클라이언트가 되는 것은 디버거역의 어플리케이션 (IDE, 디버거, 트레이스 툴, 모니터 툴 등)입니다.
+<P>
+JDI 는, 어플리케이션의 정적인 뷰를 제공하도록(듯이) 시스템에 의해 구현되는 일이 있습니다. 또, JDWP 의 프론트엔드와는 완전히 다른 기구로 정보를 수집하거나 VM 를 제어하거나 하도록(듯이) 구현되는 일도 있습니다.
+<P>
+<a name=walk-through>
+<H2>동작의 개요</H2></a>  지금까지는, 각 인터페이스를 사용하는 다양한 방법에 대해 설명해 왔습니다. 이후에는, 표준적인 JPDA 가 전체적으로 어떻게 동작할까를 보고 갑니다. 설명 중(안)에서는, 개개의 호출이나 코드의 상세한 것에 대하여, 실례를 채택합니다. 그러한 실례는, 이해할 수 없어도 문제 없습니다. 실례를 구체적으로 하기 위해서 소개되어 있을 뿐(만큼)이기 때문입니다.
+<P>
+각 인터페이스를 중개 하는 것은, 요구와 이벤트라고 하는 2 개의 액티버티입니다. 요구는, 디버거측에서 나와서 , 정보의 조회, 원격측의 VM 나 어플리케이션 상태 변경의 설정, 및 디버그 상태의 설정이 포함되어 있습니다. 이벤트는, debuggee 측에서 나와서 , 원격측의 VM 나 어플리케이션 상태 변화를 나타내고 있습니다.  
+<P>
+1 개의 실례를 조사해 봅시다. IDE 의 스택 표시로 사용자가 국소 변수를 클릭해, 그 값을 요구했다고 합니다. IDE 는, JDI 를 사용해 그 값을 가져옵니다. 구체적으로는,<CODE>getValue</CODE> 메소드를 호출합니다. 다음에 예를 나타냅니다.
+<pre>
+    theStackFrame.getValue(theLocalVariable)
+</pre>
+theStackFrame.getValue(theLocalVariable) 여기서,<CODE>theStackFrame</CODE> 는 <a href="../../../jdk/api/jpda/jdi/com/sun/jdi/StackFrame.html"><CODE>com.sun.jdi.StackFrame</CODE></a>  이며,<CODE>theLocalVariable</CODE> 는 <a href="../../../jdk/api/jpda/jdi/com/sun/jdi/LocalVariable.html"><CODE>com.sun.jdi.LocalVariable</CODE></a>  입니다.
+<P>
+다음에, 프론트엔드는, 이 요구를 통신 채널 (예를 들어, 소켓) 경유로, debuggee 프로세스가 동작하고 있는 연구 최종 단계에 보냅니다. 그 때, 프론트엔드는, 그 요구를 JDWP 에 준거한 바이트 스트림의 형식으로 변환합니다. 구체적으로 말하면(자), 프론트엔드는 GetValues 커멘드 (바이트치 1)를 StackFrame 커멘드 세트 (바이트치 16)로 보내, 그 후에 thread ID, 프레임 ID 등이 계속됩니다.
+<P>
+연구 최종 단계는, 그 바이트 스트림을 해석해, JVM TI 를 개입시켜 VM 에 조회를 보냅니다. 구체적으로는, 요구된 값이 정수라고 하면(자), 다음과 같은 JVM TI 함수의 호출을 실행합니다.
+<pre>
+    error = jvmti->GetLocalInt(frame, slot, &amp;intValue);
+</pre>
+연구 최종 단계는, 소켓 경유로 응답 패킷을 반송합니다.  그 패킷에는 <CODE>intValue</CODE> 의 값이 들어오고 있어 JDWP 에 준거한 데이터 형식이 되어 있습니다. 프론트엔드는, 응답 패킷을 해석해, 그 값을 <CODE>getValue</CODE> 메소드 호출의 값으로 해서 돌려줍니다. 마지막으로, IDE 는, 반환된 값을 표시합니다.
+<P>
+디버그 상태를 변경하는 요구도, 같은 방법으로 처리됩니다. 예를 들어, breakpoint를 설정한다고 하는 요구는, 같은 스텝에서 처리됩니다. 물론, 불려 가는 JDI 메소드나, 송신되는 JDWP 커멘드나, 불려 가는 JVM TI 함수는 다릅니다. 게다가 프론트엔드와 연구 최종 단계는, 단지 데이터를 교환하는 이상을 실시합니다. 액티버티를 추적 및 스케줄링 해, 정보를 변환, 필터링, 및 캐쉬합니다. 따라서, breakpoint를 설정하는 요구는, 값을 취득하는 조회와는 꽤 다른 방법으로 처리됩니다만, 통신의 순서는 같습니다.
+<P>
+디버그 하고 있는 어플리케이션이 이 breakpoint에 이르면(자), 무엇이 일어나는 것일까요. 이번은, 이벤트의 차례가 됩니다. 가상 머신은, JVM TI 인터페이스를 개입시켜 이벤트를 보냅니다. 구체적으로는, 가상 머신은, 이벤트 처리 함수를 호출해, breakpoint를 건네줍니다.
+<p>
+연구 최종 단계는, 이벤트 처리 함수를 다음과 같이 설정해 있습니다.
+<p>
+<blockquote>
+<code>static void  Breakpoint(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location) { ...</code>
+</blockquote>
+
+
+
+
+이 연구 최종 단계 함수는, 관심이 있는 이벤트를 필터링 해, 그 이벤트를 큐에 넣어 breakpoint 이벤트용으로 정의된 JDWP 형식의 소켓을 개입시켜 그 이벤트를 송신한다고 하는, 일련의 액티버티를 개시합니다. 프론트엔드는, 그 이벤트를 디코드해 처리해, 최종적으로는 JDI 이벤트를 생성합니다. 구체적으로는, JDI 이벤트는,<a href="../../../jdk/api/jpda/jdi/com/sun/jdi/event/BreakpointEvent.html"><CODE>com.sun.tools.jdi.event.BreakpointEvent</CODE></a>  로서 공개됩니다. 그 후, IDE 는, 그 이벤트를 이벤트 큐로부터 꺼내 가져옵니다.
+<pre>
+    theEventQueue.remove()
+</pre>
+여기서,<CODE>theEventQueue</CODE> 는,<a href="../../../jdk/api/jpda/jdi/com/sun/jdi/event/EventQueue.html"><CODE>com.sun.jdi.event.EventQueue</CODE></a>  입니다. IDE 는, JDI 를 개입시켜 많은 조회 호출을 실행하는 것으로써, 표시를 갱신한다고 예상됩니다.
+<P>
+<a name=porting>
+<H2>이식</H2></a>  가상 머신의 각 구현에는, 각각 독자적인 JVM TI 구현이 필요합니다. JVM TI 의 구현에서는, VM 의 데이터 구조에 깊게 발을 디딜 필요가 있어, 이벤트를 취득하기 위해서 VM 구현안에 훅을 설정할 필요가 있습니다. JVM TI 지원가 없는 VM 에 JVM TI 를 추가하는 것은, 상당한 작업이 됩니다. VM 의 복잡함과 구현하는 JVM TI 의 옵션 기능의 양에 응해, 3 ?  12 개월의 작업이 된다고 생각됩니다. JVM TI 지원가 짜넣어지고 있는 VM 를 새로운 플랫폼에 이식하는 작업은, VM 의 JVM TI 이외의 부분의 이식이 중심이 됩니다. JVM TI 에 걸리는 부가적인 작업은 비교적 소량입니다.
+<P>
+연구 최종 단계의 레퍼런스 구현을 새로운 플랫폼으로 옮기려면 , 많은 경우, 소스 정원않고인가의 변경 (몇 줄기만)을 더하는지, 소스를 전혀 변경하지 않고 , 재컴파일 하는 것만으로 끝납니다. 같은 플랫폼상에서 새로운 VM 를 사용하는 경우는, 연구 최종 단계의 바이너리코드는 많은 경우 그대로 동작합니다. 다만, 그것은 Java 프로그램 언어의 코드는 아니기 때문에, 내용을 이해할 수 없습니다. 이 문서에서는 라이센스의 문제에는 접하지 않기 때문에, 주의해 주세요.  
+<P>
+프론트엔드의 구현은 Java 프로그램 언어로 작성되고 있기 (위해)때문에, 어느 플랫폼 또는 VM 에서도 동작합니다. 다만, 일부의 시스템에서는, 연결기 코드의 기능의 일부를 확장할 필요가 있는 경우도 있습니다. 예를 들어, 프론트엔드의 레퍼런스 구현에 포함되어 있는 기동 툴에서는, 가상 머신이 Java SE 의 규칙을 사용해 기동되는 것을 전제로 하고 있습니다. JDI 의 사용자가 우리들의 희망에 맞추어 기동 툴의 구문을 결정할 수도 있습니다만, 일반적으로, 디버거 어플리케이션에서는, 그 구문이 JDI 구현의 옆에서 결정되어 있으면(자) 상정합니다. 또, 만약 다른 종류의 통신 채널 (예를 들어, 시리얼 접속)이 필요한 경우는, JDK 5.0 으로 도입된 <a href=conninv.html#SPI>Service Provider Interface</a>  를 사용해, 그 기능도 추가할 필요가 있습니다.
+<p>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR VALIGN=TOP>
+<TD><A HREF="../../../legal/SMICopyright.html"><FONT SIZE="1">Copyright &copy;</FONT></A> <FONT SIZE="1"> 2005 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><BR><BR> <FONT SIZE="2"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/jpda/index.html&category=j2se&mailsubject=Java Platform Debugger Architecture">피드백</A> </font></TD>
+
+<TD ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><I><FONT SIZE="+1"> Java Software </FONT></I><FONT SIZE="+1">&nbsp;</FONT>
+</TD>
+</TR>
+</TABLE>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+  </body>
+</html>

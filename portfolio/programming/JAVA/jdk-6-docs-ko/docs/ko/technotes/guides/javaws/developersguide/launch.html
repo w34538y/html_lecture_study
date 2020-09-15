@@ -1,0 +1,190 @@
+<html>
+<head>
+<title>어플리케이션 기동용 Web 페이지의 작성 - xrath.com 에서 번역됨</title>
+<meta name="collection" content="참조">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../deployment/css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>어플리케이션 기동용 Web 페이지의 작성</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<br>이 장에서는, 다음의 토픽에 대해 설명합니다.  
+<ul>
+<li><a href="#intro">처음에</a> </li>
+<li><a href="#netscape">Netscape 상에 Java Web Start 가 인스톨 되고 있는지 어떤지를 확인한다</a> </li>
+<li><a href="#ie">IE 상에 Java Web Start 가 인스톨 되고 있는지 어떤지를 확인해, 인스톨 되고 있는 경우는 그 버젼을 확인한다</a> </li>
+<li><a href="#launching">Java Web Start 가 인스톨 되고 있는 경우는 어플리케이션을 기동해, 그렇지 않은 경우는 자동 인스톨 페이지 또는 범용 다운로드 페이지로의 링크를 표시한다</a> </li>
+<li><a href="#creating">자동 인스톨 페이지를 작성한다</a> </li>
+</ul>
+<h3><a name="intro"></a>  	처음에</h3>
+<p>어느 Web 페이지로부터 JNLP 경유로 어플리케이션을 기동하려면 , 그 페이지내에 JNLP 파일에의 링크가 포함되어 있을 필요가 있습니다. 예를 들어, Web 사이트 <code>http://www.MySite.com</code> 상에 있는 어플리케이션 <code>app.jnlp</code> 를 기동할 수 있도록(듯이) 하려면 , 페이지내에 다음의 링크를 포함할 필요가 있습니다. </p>
+<blockquote> 
+<p><code>&lt;a href=http://www.MySite.com/app.jnlp&gt;Launch the application&lt;/a&gt;</code></p>
+</blockquote>
+<p>다만, 사용자의 컴퓨터에 Java Web Start 가 인스톨되어 있지 않은 경우도 있습니다. 따라서, 페이지내에, 그러한 경우에 대응하기 위한 논리 (스크립트)를 포함할 필요가 있습니다. 실제, 페이지내에 다음과 같은 논리를 포함할 필요가 있습니다. </p>
+<p>Java Web Start 가 인스톨 되고 있는지 어떤지를 확인한다</p>
+<ul>
+<li>인스톨 되고 있는 경우, 어플리케이션을 기동한다</li>
+<li>인스톨되어 있지 않은 경우, 사용자가 Windows 상에서 IE 를 실행하고 있을지 어떨지를 확인한다
+    <ul>
+<li>실행하고 있는 경우, Windows 용 JRE 의 자동 인스톨이 가능한 페이지로의 링크를 표시한다</li>
+<li>그렇지 않은 경우, SDK/JRE 의 범용 다운로드 페이지로의 링크를 표시한다</li>
+    </ul>
+  </li>
+</ul>
+<p>이하로, 스크립트 및 자동 인스톨 페이지의 HTML 에 대해 설명합니다. </p>
+<h3><a name="netscape"></a> Netscape 상에 Java Web Start 가 인스톨 되고 있는지 어떤지를 확인한다</h3>
+<p>JNLP 경유에서의 어플리케이션 기동시에 Web 페이지상에서 최초로 실행할 필요가 있는 스크립트를, 다음에 나타냅니다. </p>
+<blockquote> 
+<pre>&lt;SCRIPT LANGUAGE="JavaScript"&gt; <br>var javawsInstalled = 0;  
+var javaws142Installed=0;<br>var javaws150Installed=0;<br>var javaws160Installed = 0;<br>isIE = "false"; <br>if (navigator.mimeTypes && navigator.mimeTypes.length) { <br>   x = navigator.mimeTypes['application/x-java-jnlp-file']; <br>   if (x) { 
+      javawsInstalled = 1; <br>      javaws142Installed=1;
+      javaws150Installed=1;<br>      javaws160Installed = 1; <br>  } <br>} <br>else { <br>   isIE = "true"; <br>} <br>&lt;/SCRIPT&gt; 
+</pre>
+</blockquote>
+<p>이 스크립트는,<code>navigator.mimeTypes</code> 객체와 그 변수 <code>navigator.mimeTypes.length</code> 를 검색해, 브라우저가 Netscape, IE 의 어디에서 있을까를 판단합니다. <code>length</code> 가 0 이었을 경우, 그 브라우저는 IE 이다고 보입니다.  그렇다고 하는 것도, IE 에서는 <code>navigator.mimeTypes</code> 배열은 정의되고 있습니다만, 그 내용은 항상 빈 상태(empty)이기 때문입니다. length 가 0 이외에서 만났을 경우, 그 브라우저는 Netscape 이다고 보여 한층 더 그 Netscape 상에 있어서의 JNLP MIME 타입의 존재 유무가 체크됩니다. 존재하고 있었을 경우,<code>javawsInstalled</code>,<code>javaws142Installed</code>,<code>javaws150Installed</code>, 및 <code>javaws160Installed</code> 의 모두에게, 1 이 설정됩니다. Netscape 의 경우, 어느 버젼의 Java Web Start 가 인스톨 되고 있을까는 판단할 수  없기 때문에, 4 개의 변수의 모두에게 1 이 설정됩니다. </p>
+<h3><a name="ie"></a> IE 상에 Java Web Start 가 인스톨 되고 있는지 어떤지를 확인해, 인스톨 되고 있는 경우는 그 버젼을 확인한다</h3>
+<p>상기 JavaScript 의 후에, 다음과 같은, Internet Explorer 브라우저 관련의 변수를 설정하는 VBScript 를 기술할 필요가 있습니다.  </p>
+<blockquote> 
+  <pre>
+&lt;SCRIPT LANGUAGE="VBScript"&gt;
+on error resume next
+If isIE = "true" Then
+  If Not(IsObject(CreateObject("JavaWebStart.isInstalled"))) Then
+     javawsInstalled = 0
+  Else
+     javawsInstalled = 1
+  End If
+  If Not(IsObject(CreateObject("JavaWebStart.isInstalled. 1.4. 2.0"))) Then
+     javaws142Installed = 0
+  Else
+     javaws142Installed = 1
+  End If 
+  If Not(IsObject(CreateObject("JavaWebStart.isInstalled. 1.5. 0.0"))) Then
+     javaws150Installed = 0
+  Else
+     javaws150Installed = 1
+  End If  
+  If Not(IsObject(CreateObject("JavaWebStart.isInstalled. 1.6. 0.0"))) Then
+     javaws160Installed = 0
+  Else
+     javaws160Installed = 1
+  End If  
+End If
+&lt;/SCRIPT&gt;
+</pre>
+</blockquote>
+<p>이 VBScript 가 실행되는 것은, 앞의 JavaScript 로 설정된 변수 <tt>isIE</tt> 가 <tt>"true"</tt> 인 경우, 즉, 최종 사용자의 브라우저가 Internet Explorer 인 경우입니다. 이 스크립트는,<tt>JavaWebStart.dll</tt> 내의 <code>isInstalled</code> COM 객체를 인스턴스화해, 이것을 사용해 다음의 4 개를 판단합니다.  </p>
+<ul>
+<li>클라이언트 머신에, Java Web Start 의 몇개의 버젼이 인스톨 되고 있는지 어떤지</li>
+<li>클라이언트 머신에, Java Web Start 1.2 가 인스톨 되고 있는지 어떤지</li>
+<li>클라이언트 머신에, Java Web Start 1.4. 2 가 인스톨 되고 있는지 어떤지</li>
+<li>클라이언트 머신에, Java Web Start 1.5. 0 이 인스톨 되고 있는지 어떤지</li>
+<li>클라이언트 머신에, Java Web Start 1.6. 0 이 인스톨 되고 있는지 어떤지</li>
+</ul>
+<p>상기 2 개의 스크립트의 실행이 완료하면(자), 다음에 나타내도록(듯이), 변수 <tt>javawsInstalled</tt>,<code>javaws142Installed</code>,<code>javawsInstalled150</code>, 및 <code>javawsInstalled160</code> 에 1, 0 중 한쪽이 설정된 상태가 됩니다.  </p>
+<blockquote> 
+  <table summary="layout" border=1>
+    <tr bgcolor="#CCCCCC"> 
+<td width="19%"> <div align="center"><font size="+1">Browser</font> </div>
+<th width="27%"><font size="+1"><code>javawsInstalled</code> </font> 
+<th width="27%"><font size="+1"><code>javaws142Installed</code></font> 
+<th width="27%"><font size="+1"><code>javaws150Installed</code></font>
+<th width="27%"><font size="+1"><code>javaws160Installed</code></font>
+    <tr> 
+<th width="19%">Internet Explorer 
+<td width="27%">임의의 버젼의 Java Web Start 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0 
+<td width="27%">Java Web Start 1.4. 2 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0 
+<td width="27%">Java Web Start 1.5. 0 이 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0
+<td width="27%">Java Web Start 1.6. 0 이 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0.
+    <tr> 
+<th width="19%">Netscape Navigator 
+<td width="27%">임의의 버젼의 Java Web Start 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0 
+<td width="27%">임의의 버젼의 Java Web Start 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0 
+<td width="27%">임의의 버젼의 Java Web Start 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0
+<td width="27%">임의의 버젼의 Java Web Start 가 인스톨 되고 있는 경우는 1, 그렇지 않은 경우는 0
+  </table>
+</blockquote>
+<h3><a name="launching"></a> Java Web Start 가 인스톨 되고 있는 경우는 어플리케이션을 기동해, 그렇지 않은 경우는 자동 인스톨 페이지 또는 범용 다운로드 페이지로의 링크를 표시한다</h3>
+<p>한층 더 다른 JavaScript 를 사용해, 다음의 머지않아를 실행할까를 판단할 수가 있습니다. </p>
+<ul>
+<li> 어플리케이션의 jnlp 파일에의 링크를 표시한다 (Java Web Start 가 인스톨 되고 있는 경우) 
+  </li>
+<li>Java Web Start 가 포함되어 있는 JRE 6.0 의 자동 다운로드를 기동한다 (Java Web Start 가 인스톨 되지 않고, 사용자가 Windows 상에서 IE 를 실행하고 있는 경우) </li>
+<li>6.0 SDK/JRE 의 범용 다운로드 페이지로의 링크를 표시한다 (Java Web Start 가 인스톨 되지 않고, 사용자가 Windows 상에서 IE 를 실행하고 있는 경우) </li>
+</ul>
+<p>이러한 시나리오를 처리하는 JavaScript 를, 다음에 나타냅니다. </p>
+<blockquote> 
+<pre>&lt;script language="JavaScript"&gt;
+/* Note that the logic below always launches the JNLP application<br> *if the browser is Gecko based.  This is because it is not possible<br> *to detect MIME type application/x-java-jnlp-file on Gecko-based browsers.  <br> */
+if (javawsInstalled || (navigator.userAgent.indexOf(&quot;Gecko&quot;) ! =-1)) {
+    document.write("&lt;a href=http://www.MySite.com/app.jnlp&gt;Launch 
+        the application&lt;/a&gt;");
+} else {
+    document.write("Click ");
+    document.write("&lt;a href=http://java.sun.com/PluginBrowserCheck?
+        pass=http://www.MySite.com/download.html&
+        fail=http://java.sun.com/javase/downloads/ea.jsp&gt;here&lt;/a&gt; ");
+    document.write("to download and install JRE 5.0 and 
+        the application. ");
+}
+&lt;/SCRIPT&gt;
+</pre>
+</blockquote>
+<table summary="layout" width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+<td><p><font size="+2"><strong><u>주 -</u></strong></font></p>
+      <ol>
+<li>이 스크립트로 사용되고 있는 것은,<code>javawsInstalled</code> 뿐입니다. <code>javaws142Installed</code>,<code>javaws150Installed</code>,<code>javaws160Installed</code> 는 사용되고 있지 않습니다. </li>
+<li>「<code>? </code>」와「<code>&</code>」의 직후에 있는 개행은, 코드를 읽기 쉽게하기 위해(때문에)인 만큼 삽입되고 있습니다.  실제의 스크립트에서는,<code>href</code> 캐릭터 라인내에 개행을 포함하지 말아 주세요. </li>
+      </ol></td>
+  </tr>
+</table>
+<p> <tt>javawsInstalled</tt> 가 1 인 경우 (Java Web Start 가 벌써 클라이언트상에서 이용 가능하게 되어 있는 경우), 스크립트는, 어플리케이션의 <code>jnlp</code> 파일에의 링크를 표시합니다. Java Web Start 가 클라이언트상에 인스톨되어 있지 않은 경우, 스크립트는 대신에,<code>java.sun.com</code> Web 사이트상의 <code>PluginBrowserCheck</code> 프로그램에의 링크를 표시합니다. <code>PluginBrowserCheck</code> 는, 클라이언트가 Microsoft Windows 플랫폼상에서 Internet Explorer 를 실행하고 있을지 어떨지를 체크합니다. 실행하고 있는 경우,<code>PluginBrowserCheck</code> 는, 자동 인스톨 페이지 <tt>http://www.MySite.com/download.html</tt> 에 사용자를 리다이렉트(redirect) 합니다 (Windows 상에서 동작하는 IE 향해의 자동 인스톨 페이지의 작성 방법에 대해서는, 다음의 섹션<a href="#creating">「자동 인스톨 페이지를 작성한다」</a>를 참조). PluginBrowserCheck</code> 는, 사용자가 Microsoft Windows 상에서 Internet Explorer 를 사용하고 있지 않다고 판단했을 경우,<code>java.sun.com</code> 상의 6.0 JRE 범용 다운로드 페이지에 사용자를 리다이렉트(redirect) 합니다. </p>
+<h3><a name="creating"></a> 자동 인스톨 페이지를 작성한다</h3>
+<table summary="layout" width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+<td><p><font size="+2"><strong><u>주:</u></strong></font></p>
+<p>다음의 <code>codebase</code> 속성으로 지정되었다 <code>. cab</code> 파일이 이용 가능하게 되는 것은, 6.0 SDK/JRE 의 GA 릴리스가 공개후입니다. </p>
+<p>이하의 방법으로 <code>. cab</code> 파일로서 자동 다운로드 가능한 JRE 릴리스의 완전한 일람에 대해서는,<a href="../../deployment/deployment-guide/autodl-files.html">자동 다운로드 파일</a>  (Windows 마셔)을 참조해 주세요.  </p>
+    </td>
+  </tr>
+</table>
+<p><tt>download.html</tt> 파일은, 서버 측에 배치할 필요가 있습니다. 이 파일에 포함되는 특수한 <tt>OBJECT</tt> 태그와 <tt>PARAM</tt> 태그에 의해, JRE 6.0 의 자동 인스톨러가 클라이언트에 다운로드됩니다. <font color="#000000">Java Web Start 에 가세해 ActiveX 컨트롤이, 클라이언트에 다운로드됩니다. ActiveX 컨트롤은, 새롭고 인스톨 된 Java Web Start 를 사용해 어플리케이션을 기동합니다. <tt>download.html</tt> 파일의 샘플을, 다음에 나타냅니다. </font></p>
+<blockquote> 
+  <pre>
+&lt;HTML&gt;
+&lt;BODY&gt;
+&lt;OBJECT codebase="http://java.sun.com/update/1. 6.0/jinstall-1_6-windows-i586.cab#Version=6, 0,0,0" 
+classid="clsid:5852F5ED-8BF4-11D4-A245-0080C6F74284" height=0 width=0&gt;
+&lt;PARAM name="app" value="http://www.MySite.com/app.jnlp"&gt;
+&lt;PARAM name="back" value="true"&gt;
+&lt;! -- Alternate HTML for browsers which cannot instantiate the object --&gt;
+&lt;A href="http://java.sun.com/javase/downloads/ea.jsp"&gt;
+Download Java Web Start&lt;/A&gt;
+&lt;/OBJECT&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</pre>
+<p> <tt>OBJECT</tt> 태그에 의해, JRE 6.0 의 자동 인스톨러를 거둘 수 있었다 <code>. cab</code> 파일이 취득됩니다.  </p>
+	<blockquote>
+	<p><tt>http://java.sun.com/update/1. 6.0/jinstall-1_6-windows-i586.cab</tt> 의 URL 가, Java SE 6 릴리스로 사용할 수 있는 최신판의 릴리스를 돌려줍니다. </p>
+	<p> <tt>Version=6, 0,0,0</tt> 의 캐릭터 라인은, 상기의 CLSID 로 등록된 wsdetect.dll 버젼의 비교에 사용합니다. 로컬 머신에 dll 가 인스톨 되고 있어 그 버젼이 지정의 Version 이상이면, 로컬 머신에 dll 를 로드할 뿐입니다. 그 이외는, 지정의 코드 베이스로부터 Java 를 다운로드해 인스톨 합니다. </p>
+	</blockquote>
+
+<p>클라이언트에의 JRE 의 인스톨 완료 후에 어플리케이션이 자동적으로 기동되도록(듯이), 어플리케이션의 <code>jnlp</code> 파일의 장소가 <tt>PARAM</tt> 태그로 지정되고 있습니다.  </p>
+	<blockquote>
+	<p><code>app</code>:Java Web Start 의 Active X 컨트롤이 인스톨 (또는 로드) 되면(자), Java Web Start 가 불려 가 이 URL 로 지정된 어플리케이션이 기동합니다. </p>
+	<p><code>back</code>:어플리케이션 기동 후의 브라우저의 동작을 제어합니다. 현재의 페이지를 계속할 수도 성과 (이 경우, download.html), 이전의 페이지에 돌아올 수도 있습니다. </p>
+	</blockquote>
+</blockquote>
+<p>어플리케이션 개발에 관련하는 문제의 자세한 것은, 다음의 장,<a href="development.html">「어플리케이션 개발시의 고려점」</a>을 참조해 주세요.
+</body>
+<script language="JavaScript" src="/js/omi/jsc/s_code_remote.js"></script></html>

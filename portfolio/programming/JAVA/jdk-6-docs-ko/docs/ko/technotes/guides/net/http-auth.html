@@ -1,0 +1,318 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>HTTP 인증 - xrath.com 에서 번역됨</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH=60>
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<td>
+<center>
+<h1>HTTP 인증</h1>
+</center>
+</td>
+<TD ALIGN=RIGHT VALIGN=TOP WIDTH=60>
+
+<font size=-1><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+<h2>개요</h2>
+HTTP 프로토콜 핸들러는, 많은 인증 방식을 구현하고 있습니다. Sun 에 의한 Java SE Version 6 의 구현에서는, 다음의 방식이 지원되고 있습니다.
+<ul>
+<li>HTTP 기본 인증 (RFC2617)</li>
+<li>HTTP 다이제스트 인증 (RFC2617)</li>
+<li>NTLM (Microsoft 에 의해 정의)</li>
+<li>다음의 기반이 되는 기구를 가지는 HTTP SPNEGO 협상 (Microsoft 에 의해 정의)
+<ul><li>Kerberos</li><li>NTLM</li></ul></li>
+</ul>
+이러한 각방식의 상세한 것에 대하여는 다음에 설명합니다만, 일반적으로은 어플리케이션 코드에 의해 거의 같은 수법으로 사용됩니다. <a href="../../../api/java/net/Authenticator.html">java.net.Authenticator</a>  클래스에 의해, 인증을 유효하게 해, 개개의 인증 방식으로 사용하는 사용자명과 패스워드가 보존되고 있는 장소에 액세스 할 수 있게 됩니다.
+<p>
+일반적으로, 인증 방식은 모두 프록시와 서버의 양쪽 모두에 의해 기능합니다. 일부의 것 (기본 및 다이제스트)은, 프록시와 서버로 동시에 사용할 수 있습니다. 프록시와 서버의 인증을 구별하는 방법에 대해서는 다음을 참조해 주세요.
+<h2>Authenticator 클래스의 사용 방법</h2>
+Authenticator 란, 어플리케이션으로 확장된 abstract 클래스를 나타내고 있어 한 번 인스톨 되면(자), 인증의 상호작용에 필요한 사용자명과 패스워드를 취득하기 위해서 불려 갑니다.
+<p>
+<h3>java.net.Authenticator 의 확장</h3>
+어플리케이션 코드에 의해,<code>getPasswordAuthentication()</code> 메소드를 오버라이드(override) 할 필요가 있습니다. 덧붙여 이 메소드는 abstract 는 아니고, 디폴트 구현은 처리를 실시하지 않습니다. 다음에 가장 단순한 예를 나타냅니다.
+<p>
+<blockquote><pre>
+    class MyAuthenticator extends Authenticator {
+
+        public PasswordAuthentication getPasswordAuthentication () {
+            return new PasswordAuthentication ("user", "pass1". toCharArray());
+        }
+    }
+</pre></blockquote>
+<p>
+이 예에서는, 각 HTTP 인증의 상호작용에 사용하는 사용자명 「user」라고 패스워드 「pass1」를 돌려줍니다. 한층 더 실천적인 예에서는, java.net.Authenticator 의 다른 메소드를 사용해 인증을 필요로 하는 HTTP 요구에 대해 상세 정보를 가져옵니다. 자격의 요구를 각각 처리하는 방법에 대해 결정하려면 , getPasswordAuthentication()를 구현해, 다음의 메소드의 어느쪽이든을 호출합니다.
+<ul>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingHost()">getRequestingHost()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingPort()">getRequestingPort()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingPrompt()">getRequestingPrompt()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingProtocol()">getRequestingProtocol()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingScheme()">getRequestingScheme()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingURL()">getRequestingURL()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestingSite()">getRequestingSite()</a> </li>
+<li><a href="../../../api/java/net/Authenticator.html#getRequestorType()">getRequestorType()</a> . 요구자가 프록시인지, 또는 서버일까를 돌려줍니다. </li>
+</ul>
+<p>
+<h3>인증의 유효화</h3>
+Authenticator 의 적절한 구현 클래스를 정의해, 다음을 호출하는 것으로 인증을 유효하게 합니다.
+<p>
+<blockquote><pre>
+	Authenticator.setDefault (authinstance);
+</pre></blockquote>
+<p>
+여기서 <code>authinstance</code> 는, 벌써 선언 끝난 구현 클래스의 인스턴스입니다. 이것이 불려 가지 않는 경우, 인증은 무효가 되어, 서버 인증 에러가 IOException 객체 경유로 사용자 코드에 돌려주어집니다. HTTP 구현은, 인스톨 되면(자), 가능한 경우에, 캐쉬된 자격 경유 또는 시스템으로부터 취득 가능한 자격 경유로 자동 인증을 시행합니다. 올바른 자격을 사용할 수 없는 경우는, 사용자의 Authenticator 를 호출해, 이 자격을 취득할 수 있습니다.
+
+<h2>사용되는 인증 방식의 제어</h2>
+서버가 클라이언트의 인증을 필요로 하는 경우, 그 서버는 많은 방식을 클라이언트에 제안해 (예: 다이제스트 및 NTLM), 클라이언트는 그 중에서 방식을 선택할 수 있습니다. 일반적으로, 어플리케이션에서는, 사용하는 방식의 종류는 고려되지 않고, 구현에 있어서도 와도 강력한 (가장 안전한) 프로토콜이 투과적으로 자동 선택됩니다.  
+<p>
+특정의 방식을 반드시 사용할 필요가 있는 경우는, 다음의 시스템 프로퍼티을 설정해 디폴트시의 동작을 수정할 수 있습니다.
+<p>
+<blockquote><pre>
+	-Dhttp.auth.preference="scheme"
+</pre></blockquote>
+<p>
+커멘드행으로 이 프로퍼티의 설정을 실시하는 경우는, -D 를 지정합니다. 「http.auth.preference」는 프로퍼티명이며, 「scheme」는 사용하는 방식명입니다. 제안한 방식의 리스트에 서버가 이 방식을 포함하지 않는 경우는, 디폴트 설정이 유효가 됩니다.
+<p>
+<h2>각 인증 방식의 상세</h2>
+<h3>HTTP 기본 인증</h3>
+기본 인증은, 단순합니다만, RFC 2317 으로 정의되고 있는 안전도가 높다고는 말할 수 없는 인증 방식입니다. 사용자명과 패스워드는 Base 64 로 인코딩 되고 있기 (위해)때문에, 패킷 데이터에 액세스 하는 사용자는 이러한 정보를 간단하게 취득할 수가 있습니다. 기본 인증의 시큐리티는, HTTPS 를 채용해, 요구와 응답을 암호화하는 것에 의해 개선할 수 있습니다.
+<p>
+<a href="../../../api/java/net/Authenticator.html#getRequestingPrompt()">getRequestingPrompt()</a>  메소드는, 서버가 제공하는 것 같은 기본 인증 레룸을 돌려줍니다.
+<h3>HTTP 다이제스트</h3>
+다이제스트는, MD5 해시 알고리즘을 채용해, 사용자명과 패스워드의 암호화 해시에 근거하는 비교적 안전한 방식입니다. 또, 다이제스트에 의해, 서버는, 공유의 비밀 (패스워드)을 인식하는 것을 클라이언트에 증명할 수가 있습니다. 이 기능은, 모든 서버로 지원되고 있는 것은 아니기 때문에, 일반적으로은 무효가 되고 있습니다. 다음의 시스템 프로퍼티으로 변환이 가능합니다.
+<p>
+<blockquote><pre>
+	-Dhttp.auth.digest.validateServer="true"
+	-Dhttp.auth.digest.validateProxy="true"
+</pre></blockquote>
+<p>
+<p>
+<a href="../../../api/java/net/Authenticator.html#getRequestingPrompt()">getRequestingPrompt()</a>  메소드는, 서버가 제공하는 것 같은 다이제스트 인증 레룸을 돌려줍니다.
+<h3>NTLM</h3>
+NTLM 는, Microsoft 에 의해 정의되고 있는 방식입니다. 이 방식은, 기본 인증에 비해 안전성의 높은 것이 되고 있습니다만, 다이제스트 인증(정도)만큼은 아닙니다. NTLM 는, 프록시 또는 서버로 사용할 수 있습니다만, 동시에 사용할 수 없습니다. 프록시로 사용되고 있는 경우, NTLM 는 서버 인증용으로 사용할 수 없습니다. 이것은, 프로토콜이 실제로 개개의 HTTP 상호작용은 아니고 TCP 접속의 인증을 실시하기 때문입니다.
+<p>
+Microsoft Windows 플랫폼에서는, NTLM 인증에 의해, 사용자의 Authenticator 객체를 요구하지 않고 시스템으로부터 사용자 자격의 취득을 시도합니다. 이러한 자격을 서버가 받아들이지 않는 경우는, 사용자의 Authenticator 가 불려 갑니다.
+<p>
+NTLM 를 지원하기 이전에 Authenticator 클래스가 정의되고 있기 (위해)때문에, NTLM 도메인 필드의 API 를 한층 더 지원할 수 없습니다. 도메인을 지정하는 방법에는, 다음의 3 개의 방법이 있습니다.
+<p>
+<ol>
+<li>도메인을 지정하지 않는다. 환경에 따라서는, 도메인을 실제로 필요로 하지 않고, 어플리케이션으로 지정할 필요가 없다</li>
+
+<li>사용자명의 전에 도메인명 + 엔기호 「\」을 붙이는 것으로, 도메인명을 사용자 나우치에 encode 한다. 이 방법에서는, 사용자가 이 표기 방법을 사용해야 한다고 하는 것을 의식하면, Authenticator 클래스를 사용하는 기존의 어플리케이션을 변경할 필요가 없다</li>
+
+<li>도메인명을 방법 2)로 지정하지 않고, 시스템 프로퍼티 http.auth.ntlm.domain 가 정의되고 있는 경우, 이 프로퍼티의 값을 도메인명으로서 사용할 수 있다</li>
+</ol>
+<h3>HTTP 협상 (SPNEGO)</h3>
+HTTP 협상은, 어떠한 GSS 인증 기구도 HTTP 인증 프로토콜로서 사용할 수 있는 방식입니다. 현재, 이 방식으로는 Kerberos 와 NTLM 만이 지원되고 있습니다. NTLM 에 대해서는 벌써 위에서 설명하고 있기 (위해)때문에, 이 마디에서는, HTTP 인증용 Kerberos 의 셋업 방법에 대한 보고 설명합니다.
+
+<h4><a name="Kerberos_5_Configuration"> </a>  Kerberos 5 구성</h4>
+SPNEGO 기구에서는 JGSS 를 호출하기 (위해)때문에, 실제의 처리를 실시할 때는 대신에 Kerberos V5 로그인 모듈을 호출합니다. Kerberos 5 구성이 요구되고 있습니다. 이 구성에는 다음의 것이 포함됩니다.
+<p />
+<ul>
+<li> Kerberos 구성을 제공하기 위한 몇개의 방법. 이것은, Java 시스템 프로퍼티의 <code>java.security.krb5.conf</code> 로 달성됩니다. 예를 나타냅니다.
+</li>
+</ul>
+
+<pre>
+            java -Djava.security.krb5.conf=krb5.conf \
+                 -Djavax.security.auth.useSubjectCredsOnly=false \
+                 ClassName
+</pre>
+<p />
+<ul>
+<li> 사용하는 로그인 모듈을 나타내는 JAAS 구성 파일. HTTP SPNEGO 코드에서는,<code>com.sun.security.jgss.krb5.initiate</code> 라는 이름의 표준 JDK 6 <code>GSS_INITIATE_ENTRY</code> 엔트리의 검색을 실시합니다.
+</li>
+</ul>
+<p />
+예를 들어, 다음과 같이 <code>spnegoLogin.conf</code> 파일을 지정할 수 있습니다.
+
+<pre>
+          com.sun.security.jgss.krb5.initiate {
+              com.sun.security.auth.module.Krb5LoginModule
+                  required useTicketCache=true;
+          };
+</pre>
+또, 다음과 같이 해 Java 를 실행합니다.
+<pre>
+            java -Djava.security.krb5.conf=krb5.conf \
+                 -Djava.security.auth.login.config=spnegoLogin.conf \
+                 -Djavax.security.auth.useSubjectCredsOnly=false \
+                 ClassName
+</pre>
+<p />
+<h4><a name="Username_and_Password_Retrieval"> </a>  사용자명과 패스워드의 취득</h4>
+다른 어떠한 HTTP 인증 방식과 같게, 클라이언트에서는, 커스터마이즈 된 <code>java.net.Authenticator</code> 를 제공해, 사용자명으로 패스워드를 필요로 하는 경우 (즉, 이용 가능한 자격 캐쉬가 존재하지 않는 경우)는 그것들을 HTTP SPNEGO 모듈에 보낼 수가 있습니다. 사용중의 Authenticator 으로 체크가 필요한 유일한 인증 정보는,<code>getRequestingScheme()</code> 를 사용해 취득할 수 있는 방식입니다. 값은 「Negotiate」라고 할 필요가 있습니다.
+
+<p />
+이것은, 사용중의 Authenticator 구현이 다음과 같이 되는 것을 의미합니다.
+<p />
+<pre>
+    class MyAuthenticator extends Authenticator {
+
+        public PasswordAuthentication getPasswordAuthentication () {
+            if (getRequestingScheme(). equalsIgnoreCase("negotiate")) {
+                String krb5user;
+                char[] krb5pass;
+                // get krb5user and krb5pass in your own way
+                ....
+                return (new PasswordAuthentication (krb6user,
+                            krb5pass));
+            } else {
+                ....
+            }
+        }
+    }
+</pre>
+<p />
+<strong>주의</strong>: <code>java.net.Authenticator</code> 의 스펙에 응해 사용자명과 패스워드를 동시에 취득하게 되어 있기 (위해)때문에, JAAS 구성 파일로 <code>principal=xxx</code> 의 지정은 실시하지 말아 주세요.
+
+<p />
+<h4><a name="Scheme_Preference"> </a>  방식의 설정</h4>
+클라이언트에서는 계속해 시스템 프로퍼티 <code>http.auth.preference</code> 를 제공해, 일부의 방식이 서버로부터 요구되는 동안은 항상 그 쪽식이 사용되도록(듯이) 합니다. 이 시스템 프로퍼티에는, 「SPNEGO」또는 「Kerberos」의 어느쪽이든을 사용할 수 있습니다. 「SPNEGO」는, GSS/SPNEGO 기구를 사용해 협상 방식으로 응답하는 경우, 「Kerberos」는, GSS/Kerberos 기구를 사용해 협상 방식으로 응답하는 경우에 선택합니다. 일반적으로, Microsoft 제품의 인증에는, 「SPNEGO」를 사용합니다. 값 「Kerberos」는, Microsoft 서버에도 대응하고 있습니다. 이것은, 협상은 인식하지만 SPNEGO 에 대해서는 대응하고 있지 않는 서버에 조우하는 경우에게만 필요합니다.
+<p />
+<code>http.auth.preference</code> 를 설정하고 있지 않는 경우는, 내부의 차례가 다음과 같이 됩니다.
+<p />
+
+<ul>
+<li> GSS/SPNEGO -&gt; 다이제스트 (Digest) -&gt; NTLM -&gt; 기본 (Basic)
+</li>
+</ul>
+<p />
+협상이 지원되고 있는 경우는, GSS/SPNEGO 가 항상 선택되고 있기 (위해)때문에, Kerberos 는 이 리스트에 표시되지 않습니다.
+<p />
+<h4><a name="Fallback"> </a>  대체</h4>
+
+마지막 마디에 기재된 처리의 순서에 응해, 서버로 복수의 인증 방식 (협상을 포함한다)을 제공하고 있는 경우, Java 에서는, 협상 방식의 검증을 시도합니다. 다만, 프로토콜을 정상적으로 확립할 수 없는 경우 (kerberos 의 설정이 올바르지 않은, 서버의 호스트명이 KDC 주체 DB 에 기록되어 있지 않은, Authenticator 로부터 제공되는 사용자명으로 패스워드가 잘못되어 있는 등), 2 번째에 유력한 방식이 자동적으로 선택됩니다.
+<p />
+<strong>주의</strong>: <code>http.auth.preference</code> 가 SPNEGO 또는 Kerberos 로 설정되어 있는 경우는, 실패해도, 단지 협상 방식을 시행하는 것이 요구되고 있으면(자) 상정됩니다. 다른 어떠한 방식에 대해서도 변환을 실시하지 않고, HTTP 응답으로부터 401 또는 407 의 에러를 받는 것을 나타내는 <code>IOException</code> 가 throw 됩니다.
+<p />
+<h2><a name="Example"> </a> 례 </h2>
+
+<p />
+예를 들어, Active Directory 내의 Windows 서버로 가동중의 IIS 서버가 있다고 합니다. 이 서버상의 Web 페이지는, Windows Integrated Security 로 보호되고 있습니다. 이것은, 서버가 협상 인증과 NTLM 인증의 양쪽 모두를 요구하는 것을 의미합니다.
+<p />
+보호된 파일을 취득하기 위해서, 다음의 파일을 준비할 필요가 있습니다.
+<p />
+<pre>
+/********* RunHttpSpnego.java ***********/
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+
+public class RunHttpSpnego {
+
+    static final String kuser = "dummy"; // your account name
+    static final String kpass = "bogus"; // your password for the account
+
+    static class MyAuthenticator extends Authenticator {
+        public PasswordAuthentication getPasswordAuthentication() {
+            // I haven't checked getRequestingScheme() here, since for NTLM
+            // and Negotiate, the usrname and password are all the same.
+            System.err.println("Feeding username and password for " + getRequestingScheme());
+            return (new PasswordAuthentication(kuser, kpass.toCharArray()));
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Authenticator.setDefault(new MyAuthenticator());
+        URL url = new URL(args[0]);
+        InputStream ins = url.openConnection(). getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+        String str;
+        while((str = reader.readLine()) ! = null)
+            System.out.println(str);
+    }
+}
+
+/********* krb5.conf ***********/
+[libdefaults]
+    default_realm = AD.LOCAL
+[realms]
+    AD.LOCAL = {
+        kdc = kdc.ad.local
+    }
+
+/********* login.conf ***********/
+com.sun.security.jgss.krb5.initiate {
+  com.sun.security.auth.module.Krb5LoginModule required doNotPrompt=false useTicketCache=true;
+};
+</pre>
+<p />
+여기서 <code>RunHttpSpnego.java</code> 를 컴파일 해 다음을 실행합니다.
+<pre>
+java -Djava.security.krb5.conf=krb5.conf \
+    -Djava.security.auth.login.config=login.conf \
+    -Djavax.security.auth.useSubjectCredsOnly=false \
+    RunHttpSpnego \
+    http://www.ad.local/hello/hello.html
+</pre>
+<p />
+
+다음과 같이 출력됩니다.
+<p />
+<pre>
+Feeding username and password for Negotiate
+&lt;h1&gt;Hello, You got me! &lt;/h1&gt;
+</pre>
+<p />
+사실, 도메인 사용자로서 Windows 머신을 가동하고 있는지, 또는 벌써 <code>kinit</code> 커멘드를 발행해 자격 캐쉬를 취득한 Linux 또는 Solaris 머신을 가동하고 있습니다. <code>MyAuthenticator</code> 클래스는 완전하게 무시되어 다음과 같이 심플하게 출력됩니다.
+
+<p />
+<pre>
+&lt;h1&gt;Hello, You got me! &lt;/h1&gt;
+</pre>
+<p />
+사용자명과 패스워드가 참조되지 않는 것을 나타내고 있습니다. 이것은, 이른바 싱글 싸인온입니다.
+<p />
+또, 다음과 같이 실행해,
+<p />
+<pre>
+java RunHttpSpnego \
+    http://www.ad.local/hello/hello.html
+</pre>
+<p />
+대체가 어떻게 실행되는지를 확인할 수 있습니다. 이 경우는, 다음과 같이 표시됩니다.
+
+<p />
+<pre>
+Feeding username and password for ntlm
+&lt;h1&gt;Hello, You got me! &lt;/h1&gt;
+</pre>
+<p />
+<!-- Body text ends here --> <!-- ============================================================== --> 
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER="0" WIDTH=100%>
+  <TR VALIGN=TOP> 
+    <TD> 
+<P><FONT SIZE="-2"> <A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><BR><FONT SIZE=-1><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/net/index.html&category=j2se&mailsubject=Java Networking Features">피드백</A> </FONT></TD>
+        <p></P>
+    
+<TD ALIGN=RIGHT> <IMG SRC="../../../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30> <BR><I><FONT SIZE="+1">Java Software</FONT></I>  </TD>
+  </TR>
+</TABLE>
+
+</b></BODY>
+</HTML>

@@ -1,0 +1,1030 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Java PKCS#11 레퍼런스 가이드 - xrath.com 에서 번역됨</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+</HEAD>
+<BODY bgColor=white>
+<HR>
+
+<CENTER>
+<H1>Java<FONT size=-2><SUP>TM</SUP></FONT> PKCS#11 레퍼런스 가이드</H1>
+</CENTER>
+<HR>
+
+<P><B><FONT size="+1"> 1.0 <A  href="#Intro">처음에</A> </FONT></B> 
+</P><B><FONT size="+1">2.0 <A  href="#P11Provider">Sun PKCS#11 프로바이더</A> </FONT></B> 
+<P></P>
+<DL>
+  <DT>
+<DD><B>2.1 <A href="#Requirements">요건</A> </B>
+
+  <DT>
+<DD><B>2.2 <A href="#Config"><B>구성</B></A> </B> 
+  
+  <DT>
+<DD><B>2.3 <a href="#NSS">Network Security Services (NSS)에의 액세스</A> </B>
+</DL>
+
+
+<B><FONT size="+1">3.0 <A  href="#AppDev">어플리케이션의 개발</A> </FONT></B> 
+<DL>
+  <DT>
+<DD><B>3.1 <A    href="#Login">토큰 로그인</A> </B> 
+  <DT>
+<DD><B>3.2 <A    href="#Keys">토큰열쇠</A> </B> 
+  <DT>
+<DD><B>3.3 <A    href="#DelayedSelect">프로바이더의 지연 선택</A> </B> 
+  <DT>
+<DD><B>3.4 <A    href="#JAAS">JAAS KeyStoreLoginModule</A> </B> 
+  <DT>
+<DD><B>3.5 <A    href="#JSSE">JSSE 키스토어 및 트러스트 스토어로서의 토큰</A> </B></DD></DL><B><FONT size="+1">4.0 <A  href="#Tools">툴</A> </FONT></B> 
+
+<DL>
+  <DT>
+<DD><B>4.1 <A    href="#KeyToolJarSigner">KeyTool 및 JarSigner</A> </B> 
+  <DT>
+<DD><B>4.2 <A    href="#PolicyTool">Policy 툴</A> </B> 
+</DD></DL><B><FONT size="+1">5.0 <A  href="#ProviderDev">프로바이더의 개발</A> </FONT></B> 
+<DL>
+  <DT>
+<DD><B>5.1 <A    href="#Service">프로바이더 서비스</A> </B> 
+  <DL>
+    <DT>
+<DD><B>5.1. 1 <A      href="#NewInstance">엔진 클래스의 인스턴스화</A> </B> 
+    <DT>
+<DD><B>5.1. 2 <A      href="#SupportsParam">파라미터의 지원</A> </B> </DD></DL>
+<P></P></DD></DL><B><FONT size="+1">부록 A <A  href="#ALG">Sun PKCS#11 프로바이더로 지원되는 알고리즘</A> </FONT></B> 
+<P><B><FONT size="+1">부록 B <A  href="#KeyStoreRestrictions">Sun PKCS#11 프로바이더의 KeyStore 요건</A> </FONT></B> 
+<P><B><FONT size="+1">부록 C <A  href="#ExampleProvider">프로바이더의 예</A> </FONT></B> 
+<P>
+<HR>
+<A name=Intro></A> 
+<H2>1.0 처음에</H2>
+<P>Java 플랫폼에서는, 암호화 조작을 실행하기 위한 일련의 프로그래밍 인터페이스를 정의하고 있습니다. 이러한 인터페이스는, 총칭해 Java 암호화 아키텍쳐(architecture) (JCA) 및 Java 암호화 확장 기능 (JCE)으로 불려<A  href="http://java.sun.com/j2se/1.5.0/ja/docs/ja/guide/security/">http://java.sun.com/j2se/1. 5.0/ja/docs/ja/guide/security/</A>  로 지정되고 있습니다.  
+</P>
+<P>암호화 인터페이스는 프로바이더 베이스입니다. 구체적으로는, 어플리케이션은 어플리케이션 프로그래밍 인터페이스 (API)와 교환을 해, 실제의 암호화 조작은, 일련의 서비스 프로바이더 인터페이스 (SPI)에 따른 구성이 끝난 프로바이더내에서 실행됩니다. 이 아키텍쳐(architecture)에서는, 프로바이더의 다양한 구현을 지원하고 있습니다. 소프트웨어로 암호화 조작을 실시하는 프로바이더도 있으면, 스마트 카드 디바이스나 하드웨어 암호화 가속기등의 하드웨어 토큰상에서 암호화 조작을 실시하는 프로바이더도 있습니다.  </P>
+<P>암호화 토큰 인터페이스 표준인 PKCS#11 는, RSA Security 가 책정해, 하드웨어 암호화 가속기나 스마트 카드등의 암호화 토큰에 대한 네이티브 프로그래밍 인터페이스를 정의하고 있습니다. 네이티브 PKCS#11 토큰을 Java 플랫폼에 간단하게 통합하기 위해서, 새로운 암호화 프로바이더인 Sun PKCS#11 프로바이더가 J2SE 5.0 릴리스에 도입되었습니다. 이 새로운 프로바이더에서는, 기존의 JCA 및 JCE API 대응 어플리케이션이 네이티브 PKCS#11 토큰에 액세스 할 수 있습니다. 어플리케이션에의 변경은 필요 없습니다. 프로바이더의 적절한 설정을 Java Runtime 에 실시하는 것만으로 끝납니다.  
+<P><A name=NEWAPIS></A> 어플리케이션은 기존의 API 를 사용해 PKCS#11 기능의 대부분을 이용할 수 있습니다만, 유연성이나 기능성을 한층 더 필요로 하는 어플리케이션도 있습니다. 예를 들어 동적으로 빼고 꽂기 하는 스마트 카드를 어플리케이션에서 좀 더 간단하게 취급할 수 있도록(듯이) 하고 싶은 경우가 있습니다. 또, PKCS#11 토큰으로 열쇠와는 관계없는 일부의 조작을 인증할 필요가 있기 (위해)때문에, 어플리케이션은 키스토어를 사용하지 않고 토큰에 로그인할 수 있도록(듯이) 할 필요가 있습니다. J2SE 5.0 에서는 JCA 가 확장되어 어플리케이션이 다양한 프로바이더를 취급할 때의 유연성이 향상했습니다.  
+<P>이 문서에서는, 네이티브 PKCS#11 토큰을 Java 어플리케이션으로 사용할 수 있도록(듯이), Java 플랫폼에 구성하는 방법을 설명합니다. 또, PKCS#11 프로바이더를 시작해로 하는 각종의 프로바이더를 어플리케이션으로 취급하기 쉽게 하기 위해서, JCA 에 더해진 기능의 향상점에 대해서도 설명합니다.  </P><A  name=P11Provider></A> 
+<H3>2.0 Sun PKCS#11 프로바이더</H3>
+<P>그 외가 많은 프로바이더와는 달라, Sun PKCS#11 프로바이더 자신은 암호화 알고리즘을 구현하고 있습니다. 그 대신에, Java JCA 및 JCE API 와 네이티브 PKCS#11 암호화 API 와의 사이의 브릿지로서 동작해, 이러한 사이의 호출과 규칙을 변환합니다. 즉, 표준 JCA 및 JCE API 를 호출하는 Java 어플리케이션이라면, 어플리케이션을 변경하지 않아도, 기반이 되는 다음과 같은 PKCS#11 구현으로 제공되는 알고리즘을 이용할 수 있다고 하는 것입니다.  
+<UL>
+<LI>암호화 스마트 카드 
+<LI>하드웨어 암호화 가속기 
+<LI>하이 퍼포먼스의 소프트웨어 구현</LI></UL>Java SE 는 네이티브 PKCS#11 구현에 액세스 할 수 있을 뿐입니다만, 그것 자신에게는 네이티브 PKCS#11 구현이 포함되어 있지 않습니다. 다만, 스마트 카드나 하드웨어 가속기등의 암호화 디바이스에는, PKCS#11 구현을 포함한 소프트웨어가 부속되어 있는 것이 일반적이어, 제조원의 지시에 따라 인스톨 해, 구성할 필요가 있습니다.  
+
+<BLOCKQUOTE><A name=Requirements></A> 
+<H3>2.1  요건</H3>Sun PKCS#11 프로바이더는, Solaris (SPARC 와 x86) 및 Linux (x86)의 32 비트와 64 비트의 양쪽 모두의 Java 프로세스로 지원되고 있습니다. 또, 32 비트의 Windows (x86)에서도 지원되고 있습니다만, 적절한 PKCS#11 라이브러리가 제공되어 있지 않기 때문에 64 비트의 Windows 플랫폼에서는 현재 지원되고 있지 않습니다.
+
+<P>Sun PKCS#11 프로바이더에서는, PKCS#11 v2. 0 이후의 구현이 시스템에 인스톨되어 있지 않으면 안됩니다. 이 구현은, 공유 객체 라이브러리 (Solaris 및 Linux 에서의 . so) 또는 동적 링크 라이브러리 (Windows 에서의 . dll)의 형태일 필요가 있습니다. 사용하는 암호화 디바이스에 이러한 PKCS#11 구현이 포함되어 있는지 어떤지를 조사하는 방법, 구현을 구성하는 방법, 및 라이브러리 파일의 파일명에 대해서는, 벤더가 제공하는 메뉴얼을 참조해 주세요.  
+<P>Sun PKCS#11 프로바이더에서는, 기반이 되는 PKCS#11 구현으로 제공되는 한, 많은 알고리즘을 지원하고 있습니다. 알고리즘과 그것들에 대응하는 PKCS#11 기구를,<a href="#ALG">부록 A</a>  의 겉(표)에 리스트 합니다.
+  
+  <A name=Config></A> 
+<H3>2.2 구성</H3>
+Sun PKCS#11 프로바이더는, 메인 클래스 <CODE>sun.security.pkcs11.SunPKCS11</CODE> 로 구현되고 있어 구성 파일의 풀 경로명을 인수로서 사용할 수 있습니다. 프로바이더를 사용하려면 , 미리 <A    href="crypto/CryptoSpec.html#ProviderInstalling">Java 암호화 아키텍쳐(architecture)</A>  (JCA)를 사용해 인스톨 해 둘 필요가 있습니다. 모든 JCA 프로바이더와 같게, Sun PKCS#11 프로바이더의 인스톨은 정적 또는 프로그래밍으로 실행할 수 있습니다. Sun PKCS#11 프로바이더를 정적으로 인스톨 하려면 , Java 시큐리티의 프로퍼티 파일 (<TT>$JAVA_HOME/lib/security/java.security</TT>)에 프로바이더를 추가합니다. 예를 들어 이하는, Sun PKCS#11 프로바이더를 구성 파일 <TT>/opt/bar/cfg/pkcs11.cfg</TT> 와 함께 인스톨 하는 <TT>java.security</TT> 파일의 일부입니다.  
+<BLOCKQUOTE><pre># configuration for security providers 1-6 ommitted
+security.provider. 7=sun.security.pkcs11.SunPKCS11 /opt/bar/cfg/pkcs11.cfg
+</pre></BLOCKQUOTE>Sun PKCS#11 프로바이더를 동적으로 인스톨 하려면 , 적절한 구성 파일명을 사용해 프로바이더의 인스턴스를 작성해, 인스톨 합니다. 다음에 예를 나타냅니다.  
+<BLOCKQUOTE><pre>String configName = "/opt/bar/cfg/pkcs11.cfg";
+Provider p = new sun.security.pkcs11.SunPKCS11(configName);
+Security.addProvider(p);
+</pre></BLOCKQUOTE>
+<P>PKCS#11 구현 근처 복수의 슬롯을 사용하는 경우나, 복수의 PKCS#11 구현을 사용하는 경우는, 적절한 구성 파일로 각각의 인스톨을 반복할 뿐입니다. 이것에 의해, 각각의 PKCS#11 구현의 각 슬롯에 대해서 Sun PKCS#11 프로바이더의 인스턴스가 1 개 작성되게 됩니다.  
+
+<p>
+구성 파일은 텍스트 파일로, 이하의 형식의 엔트리가 포함됩니다.
+<blockquote>
+<em>attribute</em> = <em>value</em>
+</blockquote>
+<em>attribute</em> 와 <em>value</em> 의 유효한 값에 대해서는, 이 섹션의 겉(표)로 설명하고 있습니다. 2 개 있는 필수 속성은,<tt>name</tt> 및 <tt>library</tt> 입니다. 다음에, 구성 파일의 예를 나타냅니다.
+<blockquote>
+<pre>
+name = FooAccelerator
+library = /opt/foo/lib/libpkcs11.so
+</pre>
+</blockquote>
+코멘트는,<tt>#</tt> (샤프) 기호로 시작되는 행에 기술합니다.
+
+<!--<strong> <blockquote> ??? Format questions: 1.  Leading spaces ignored?  2.  Trailing spaces ignored?  3.  Spaces surrounding '=' mandatory or optional?  </blockquote> </strong> -->
+
+<p>
+<a name=ATTRS></a> 
+<table border>
+<tr><th>속성</th><th>Value</th><th>설명</th>
+<tr>
+<td>library</td>
+<td>PKCS#11 구현의 경로명</td>
+<td>
+PKCS#11 구현의 풀 경로명 (확장자(extension) 포함한다).  경로명의 서식은 플랫폼 의존. 예를 들어 Solaris 및 Linux 에서는 PKCS#11 구현의 경로명이 <code>/opt/foo/lib/libpkcs11.so</code> 가 되지만, Windows 에서는 <code>C:\foo\mypkcs11.dll</code> 가 된다
+</td>
+</tr>
+<tr><td>name</td>
+<td>이 프로바이더 인스턴스의 이름접미사(suffix)
+</td>
+<td>
+이 캐릭터 라인은, 접두사 <tt>SunPKCS11-</tt> 와 연결해, 이 프로바이더 인스턴스의 이름 (즉, 프로바이더 인스턴스의 <code>Provider.getName()</code> 메소드로 반환되는 캐릭터 라인)를 생성한다. 예를 들어 <tt>name</tt> 속성이 「<tt>FooAccelerator</tt>」의 경우, 프로바이더 인스턴스의 이름은 「<code>SunPKCS11-FooAccelerator</code>」가 된다
+</td>
+</tr>
+<tr>
+<td>description</td>
+<td>이 프로바이더 인스턴스의 설명
+</td>
+<td>
+이 캐릭터 라인은, 프로바이더 인스턴스의 <code>Provider.getInfo()</code> 메소드로 반환된다. 아무것도 지정되어 있지 않은 경우, 디폴트의 설명이 반환된다
+</td>
+</tr>
+<tr>
+<td>slot</td>
+<td>슬롯의 ID
+</td>
+<td>
+이 프로바이더 인스턴스가 관련짓고 되고 있는 슬롯의 ID. 예를 들어 PKCS#11 로 ID <code>1</code> 의 슬롯에서는,<code>1</code> 이 된다. <tt> slot</tt> 나 <tt>slotListIndex</tt> 의 어느 쪽인지 1 개를 지정하면 좋다. 어느쪽이나 지정하지 않는 경우의 디폴트는, 값 <tt>0</tt> 의 <tt>slotListIndex</tt>
+</td>
+</tr>
+
+<tr>
+<td>slotListIndex</td>
+<td>슬롯의 인덱스</td>
+<td>
+이 프로바이더 인스턴스가 관련짓고 되고 있는 슬롯의 인덱스. PKCS#11 의 함수 <code>C_GetSlotList</code> 로 반환되는 모든 슬롯의 리스트에 있어서의 인덱스이다. 예를 들어 <code>0</code> 은, 리스트의 선두의 슬롯을 나타낸다. <tt>slot</tt> 나 <tt>slotListIndex</tt> 의 어느 쪽인지 1 개를 지정하면 좋다. 어느쪽이나 지정하지 않는 경우의 디폴트는, 값 <tt>0</tt> 의 <tt>slotListIndex</tt>
+</td>
+</tr>
+<tr>
+<td>enabledMechanisms</td>
+<td>유효하게 하는 PKCS#11 기구의 리스트.  공백 문자로 단락지어, 전체를 안이나 와 (   )로 둘러싼다
+</td>
+<Td>
+이 프로바이더 인스턴스가 사용하는 PKCS#11 기구의 리스트.  이러한 기구는, Sun PKCS#11 프로바이더와 PKCS#11 토큰의 양쪽 모두로 지원되고 있을 필요가 있다. 그 외의 기구는 모두 무시된다. 리스트내의 각 엔트리는, PKCS#11 기구의 이름이 된다. 2 개의 PKCS#11 기구로부터 완성되는 리스트의 예를 다음에 나타낸다.
+<blockquote><pre>
+enabledMechanisms = {
+  CKM_RSA_PKCS
+  CKM_RSA_PKCS_KEY_PAIR_GEN
+}
+</pre></blockquote>
+enabledMechanisms</tt> 이나 <tt>disabledMechanisms</tt> 의 어느 쪽인지 1 개를 지정하면 좋다. 어느쪽이나 지정하지 않는 경우, 유효한 기구는,<a href="#ALG">Sun PKCS#11 프로바이더</a>와 PKCS#11 토큰의 양쪽 모두로 지원되고 있는 기구가 된다
+</td>
+</tr>
+<tr>
+<td>disabledMechanisms</td>
+<td>무효로 하는 PKCS#11 기구의 리스트.  공백 문자로 단락지어, 전체를 안이나 와 (   )로 둘러싼다</td>
+<td>
+이 프로바이더 인스턴스가 무시하는 PKCS#11 기구의 리스트. 리스트 된 모든 기구는, 토큰과 Sun PKCS#11 프로바이더로 지원되고 있어도, 프로바이더에 의해 무시된다. <tt>이러한 서비스를 무효로 하기 위해서(때문에) 캐릭터 라인 <code>SecureRandom</code> 및 <code>KeyStore</code> 를 지정할 수 있다.
+
+<p>
+enabledMechanisms</tt> 이나 <tt>disabledMechanisms</tt> 의 어느 쪽인지 1 개를 지정하면 좋다. 어느쪽이나 지정하지 않는 경우, 유효한 기구는,<a href="#ALG">Sun PKCS#11 프로바이더</a>와 PKCS#11 토큰의 양쪽 모두로 지원되고 있는 기구가 된다
+</td></tr>
+
+<tr>
+<td>attributes</td>
+<td>아래와 같이 참조</td>
+<td><tt>attributes</tt> 옵션은, PKCS#11 열쇠 객체의 작성시로 설정되는 추가의 PKCS#11 속성을 지정하기 위해서 사용한다. 이것에 의해, 특정의 속성을 필요로 하는 토큰을 사용할 수 있게 된다. 자세한 것은, 이하의 섹션을 참조
+</tr>
+
+</table>
+
+<H4>attributes 의 구성</h4>
+
+attributes 옵션은, PKCS#11 열쇠 객체의 작성시로 설정되는 추가의 PKCS#11 속성을 지정하기 위해서 사용할 수 있습니다. 디폴트로 Sun PKCS#11 프로바이더에서는, 객체의 작성시에 필수의 PKCS#11 속성을 지정할 뿐입니다. 예를 들어 RSA 공개키에서는, 열쇠 타입 및 알고리즘 (CKA_CLASS 및 CKA_KEY_TYPE)과 RSA 공개키의 열쇠의 값 (CKA_MODULUS 및 CKA_PUBLIC_EXPONENT)을 지정합니다. 사용하고 있는 PKCS#11 라이브러리에서는, 구현 고유의 디폴트 값를 RSA 공개키의 그 외의 속성에 할당합니다.  예를 들어 메세지의 암호화와 검증에 열쇠를 사용할 수 있습니다 (CKA_ENCRYPT 및 CKA_VERIFY = true).
+
+<p>
+<tt>attributes</tt> 옵션은, PKCS#11 구현으로 할당한 디폴트 값를 사용하지 않는 경우나, PKCS#11 구현으로 디폴트 값를 지원하지 않기 위해(때문에), 명시적으로 값을 지정할 필요가 있는 경우에 사용합니다. 사용하고 있는 PKCS#11 구현으로 지원하지 않는 속성이나, 해당의 열쇠 타입에 무효인 속성을 지정하면(자), 실행시에 조작이 실패하는 원인이 됩니다.
+
+<p>
+옵션은 0 회 또는 여러 차례 지정할 수 있습니다.  또, 다음에 설명하도록(듯이), 구성 파일로 지정한 차례로 옵션이 처리됩니다.
+
+<tt>attributes</tt> 옵션은 다음의 서식입니다.
+
+<blockquote>
+<pre>
+attributes(operation, keytype, keyalgorithm) = {
+  name1 = value1
+  [...]
+}
+</pre>
+</blockquote>
+
+<tt>operation</tt> 의 유효한 값은 이하대로입니다.
+<ul>
+
+<li><tt>generate</tt>.  KeyPairGenerator 또는 KeyGenerator 에 의해 생성된 건용
+
+<p>
+<li><tt>import</tt>.  KeyFactory 또는 SecretKeyFactory 에 의해 작성된 건용. 암호화 조작의 초기화 메소드 (<tt>Signature.initSign()</tt> 등)에게 건네질 때 PKCS#11 열쇠 객체에 자동적으로 변환되는 Java Software열쇠에도 적용된다
+
+<p>
+<li><tt>*</tt>.  생성 조작 또는 작성 조작의 어느 쪽인지로 작성된 건용
+
+</ul>
+
+<tt>keytype</tt> 의 유효한 값은,<tt>CKO_PUBLIC_KEY</tt>,<tt>CKO_PRIVATE_KEY</tt>, 및 <tt>CKO_SECRET_KEY</tt> 로, 각각 공개키, 비공개키, 및 비밀열쇠에 대응하고 있습니다.  또, 임의의 열쇠 타입에 일치하는 <tt>*</tt> 도 있습니다.
+
+<p>
+<tt>keyalgorithm</tt> 의 유효한 값은, PKCS#11 스펙에 정의된 <tt>CKK_xxx</tt> 정수의 어떤 것이나 1 개, 또는 임의의 열쇠 알고리즘에 일치하는 <tt>*</tt> 입니다. Sun PKCS#11 프로바이더로 현재 지원하고 있는 알고리즘은, CKK_RSA, CKK_DSA, CKK_DH, CKK_AES, CKK_DES, CKK_DES3, CKK_RC4, CKK_BLOWFISH, 및 CKK_GENERIC 입니다.
+
+<p>
+속성의 이름과 값은, 1 개(살) 또는 복수의 이름 - 치 페어의 리스트로서 지정됩니다.  <tt>name</tt> 는,<tt>CKA_SENSITIVE</tt> 등, PKCS#11 스펙에서의 <tt>CKA_xxx</tt> 정수가 아니면 안됩니다.  <tt>value</tt> 는, 이하의 어느 쪽인가에 됩니다.
+
+<ul>
+<li>불리언 값. <tt> true</tt> 또는 <tt>false</tt>
+<li>정수치.  10 진수 표기 (디폴트) 또는 <tt>0x</tt> 로 시작되는 16 진수 표기
+<li><tt>null</tt>.  이 속성은 객체의 작성시로 지정해서는 안 되는 것을 나타낸다<em></em>
+
+</ul>
+
+<tt>attributes</tt> 옵션을 여러 차례 지정하면(자), 엔트리는, 정리된 속성으로 지정된 순서로, 나머지의 속성이 전의 속성을 오버라이드(override) 해 처리됩니다. 예를 들어, 이하의 구성 파일을 생각해 보겠습니다.
+
+<blockquote>
+<pre>
+attributes(*, CKO_PRIVATE_KEY,*) = {
+  CKA_SIGN = true
+}
+
+attributes(*, CKO_PRIVATE_KEY, CKK_DH) = {
+  CKA_SIGN = null
+}
+
+attributes(*, CKO_PRIVATE_KEY, CKK_RSA) = {
+  CKA_DECRYPT = true
+}
+</pre>
+</blockquote>
+
+1 번째의 엔트리에서는, 모든 비공개키에 대해서 <tt>CKA_SIGN = true</tt> 를 지정하고 있습니다. 2 번째의 옵션에서는, Diffie-Hellman 비공개카기에 도착해 <tt>null</tt> 로 오버라이드(override) 하기 위한(해),<tt>CKA_SIGN</tt> 속성은 Diffie-Hellman 비공개키에 대해서 아무것도 지정되지 않습니다. 마지막으로, 3 번째의 옵션에서는, RSA 비공개키에 대해서 <tt>CKA_DECRYPT = true</tt> 를 지정하고 있습니다. 즉 RSA 비공개키에는,<tt>CKA_SIGN = true</tt> 와 <tt>CKA_DECRYPT = true</tt> 양쪽 모두세트가 있게 됩니다.
+
+<p>
+<tt>attributes</tt> 옵션에는 특수한 형식도 있습니다. 구성 파일에 <tt>attributes = compatibility</tt> 라고 쓸 수가 있습니다. 이것은, 속성 스테이트먼트의 전체적인 세트에 대한 쇼트 컷입니다. 이것은 프로바이더가 기존의 Java 어플리케이션과의 호환성을 최대한으로 유지하는 것을 목적으로 하고 있습니다.  이것에 의해, Java 어플리케이션에서는, 예를 들어 모든 열쇠 컴퍼넌트에 액세스 가능해, 비밀열쇠를 암호화 및 복호화의 양쪽 모두에 사용 가능하다라고 하는 것이 기대됩니다. <tt>compatibility</tt> 속성의 행은, 다른 <tt>attributes</tt> 의 행과 함께 사용할 수 있습니다.  이 경우는 먼저 설명한 것 같은, 같은 편성 및 오버라이드(override)의 규칙이 적용됩니다.
+
+<P>
+
+<A name=NSS></A> 
+<H3>2.3 Network Security Services (NSS)에의 액세스</H3>
+
+<p>
+<a href="http://www.mozilla.org/projects/security/pki/nss/">Network Security Services (NSS)</a>  는, Mozilla/Firefox 브라우저, Sun 의 Java Enterprise System 서버 소프트웨어, 및 그 외가 많은 제품으로 사용되는 open source의 일련의 시큐리티 라이브러리입니다. 암호화 API 는 PKCS#11 에 근거하고 있습니다만, PKCS#11 표준은 아닌 특별한 기능이 포함되어 있습니다. Sun PKCS#11 프로바이더에는, NSS 고유의 기능 (복수의 NSS 고유의 구성 지시등)과 서로 작용하기 위한 코드가 포함되어 있습니다. 이것들에 대해서는 다음으로 설명합니다.
+
+<p>
+최적인 결과를 얻기 위해서(때문에), 사용 가능한 최신 버젼의 NSS 를 사용하는 것을 추천합니다. 적어도 버젼 3.11. 1 이 됩니다.
+
+<p>다음에 설명되고 있는 <code>nss</code> 구성 지시가 사용되고 있는 경우, Sun PKCS#11 프로바이더는 NSS 고유의 코드를 사용합니다. 이 경우, 일반적으로의 구성 커멘드 <code>library</code>,<code>slot</code>, 및 <code>slotListIndex</code> 는 사용할 수 없습니다.
+
+<p>
+<table border>
+<tr><th>속성</th><th>Value</th><th>설명</th>
+<tr>
+<td>nssLibraryDirectory</td>
+<td>NSS 및 NSPR 라이브러리를 포함한 디렉토리
+</td>
+<td>
+NSS 및 <a href="http://www.mozilla.org/projects/nspr/">NSPR</a>  라이브러리를 포함한 디렉토리의 풀 경로명. Java VM 로서 같은 프로세스내에서 실행되고 있는 다른 컴퍼넌트에 의해 NSS 가 벌써 로드 및 초기화되어 있지 않은 한, 이 속성을 지정할 필요가 있습니다.
+<p>
+플랫폼에 응해, 이 디렉토리를 포함하기 위해서(때문에) <code>LD_LIBRARY_PATH</code> 또는 <code>PATH</code> (Windows)를 설정해,  operating system로 의존 라이브러리를 검색할 수 있도록(듯이) 할 필요가 있는 경우가 있습니다.
+</td>
+</tr>
+<tr><td>nssSecmodDirectory</td>
+<td>NSS DB 파일을 포함한 디렉토리
+</td>
+<td>
+NSS 구성 및 열쇠 정보 (<code>secmod.db</code>,<code>key3.db</code>, 및 <code>cert8.db</code>)를 포함한 디렉토리의 풀 경로명. 다른 컴퍼넌트에 의해 NSS 가 벌써 초기화되어 있지 않은지 (상기 참조), 또는 다음에 설명되고 있도록(듯이) 데이타베이스 파일없이 NSS 가 사용되지 않는 한, 이 지시를 지정할 필요가 있습니다.
+</td>
+</tr>
+<tr>
+<td>nssDbMode</td>
+<td><code>readWrite</code>,<code>readOnly</code>, 및 <code>noDb</code>  가운데 언젠가
+</td>
+<td>
+이 지시는, NSS 데이타베이스에의 액세스 방법을 결정합니다. 읽고 쓰기 모드에서는 풀 액세스가 가능합니다만, 데이타베이스에는 한 번에 1 개의 프로세스만이 액세스 할 필요가 있습니다. 읽기 전용 모드에서는, 이 파일의 변경은 허가되지 않습니다.
+
+<p>noDb 모드를 사용하면(자), 데이타베이스 파일없이 순수하게 암호화 프로바이더로서 NSS 를 사용할 수 있습니다. PKCS11 KeyStore 를 사용해 지속적인 열쇠를 작성할 수 없습니다. NSS 에는, 번들 되고 있는 Sun 의 Java 베이스 암호화 프로바이더 (Elliptic Curve Cryptography (ECC)등)에서는 현재 사용할 수 없는 고도로 최적화된 구현 및 알고리즘이 포함되어 있기 (위해)때문에, 이 모드는 유용합니다.
+</td>
+</tr>
+<tr>
+<td>nssModule</td>
+<td><code>keystore</code>,<code>crypto</code>,<code>fips</code>, 및 <code>trustanchors</code>  가운데 언젠가
+</td>
+<td>
+다양한 라이브러리나 슬롯을 사용해 NSS 의 기능을 사용할 수 있게 되어 있습니다. 이 지시는, SunPKCS11 의 인스턴스가 액세스 하는 모듈을 결정합니다.
+
+<p>
+<code>crypto</code> 모듈은,<code>noDb</code> 모드에서의 디폴트입니다. 이 모듈은 로그인을 필요로 하지 않는 암호화 조작을 지원합니다만, 지속적인 열쇠는 지원하지 않습니다.
+
+<p>
+FIPS-140 준거 모드에 대해서 NSS <code>secmod.db</code> 가 설정되어 있는 경우,<code>fips</code> 모듈이 디폴트가 됩니다. 이 모드에서는, NSS 에 의해, 사용 가능한 알고리즘 및 열쇠를 작성하는 경우에 사용하는 PKCS#11 속성이 제한됩니다.
+
+<p>
+<code>keystore</code> 모듈은, 그 외의 구성에서의 디폴트입니다. 이 모듈은, PKCS11 KeyStore 를 사용해 지속적인 열쇠를 지원합니다. 이 열쇠는 NSS DB 파일에 보존됩니다. 이 모듈에서는 로그인이 필요합니다.
+
+<p>
+신뢰할 수 있는 엥커 라이브러리를 포함하도록(듯이) <code>secmod.db</code> 가 구성되어 있는 경우,<code>trustanchors</code> 모듈을 사용하면(자), PKCS11 KeyStore 를 사용해 NSS 의 신뢰할 수 있는 엥커 증명서에 액세스 할 수 있습니다.
+
+</td>
+</tr>
+
+</table>
+
+<p>
+<h4>NSS 의 샘플 SunPKCS11 구성 파일</h4> 
+<dl>
+
+<dt>순수한 암호화 프로바이더로서의 NSS
+<dd><pre>name = NSScrypto
+nssLibraryDirectory = /opt/tests/nss/lib
+nssDbMode = noDb
+attributes = compatibility
+</pre>
+
+<p>
+<dt>FIPS 140 준거의 암호화 토큰으로서의 NSS
+<dd><pre>name = NSSfips
+nssLibraryDirectory = /opt/tests/nss/lib
+nssSecmodDirectory = /opt/tests/nss/fipsdb
+nssModule = fips
+</pre>
+</dl>
+
+</blockquote>
+<A  name=AppDev></A> 
+<H2>3.0 어플리케이션의 개발</H2>
+<P>Java 어플리케이션은, 기존의 JCA 및 JCE API 를 사용해, Sun PKCS#11 프로바이더 경유로 PKCS#11 토큰에 액세스 할 수 있습니다. 많은 어플리케이션에서는 이것으로 충분합니다만, 추출 불가능한 열쇠나 동적으로 변경되는 스마트 카드라고 하는 일부의 PKCS#11 기능을 취급하기에는  어려운 경우가 있습니다. 그 때문에, 일부의 PKCS#11 기능을 사용하는 어플리케이션의 지원를 향상할 수 있도록(듯이), 많은 확장 기능이 API 에 더해졌습니다. 이 섹션에서는, 그러한 확장 기능에 대해 설명합니다.  </P>
+<BLOCKQUOTE><A name=Login></A> 
+<H3>3.1 토큰 로그인</H3>
+<P>비공개키에의 액세스 등 일부의 PKCS#11 조작에서는, 그 조작의 실행전에, PIN (개인 식별 번호)를 사용해 로그인할 필요가 있습니다. 로그인이 필요한 조작에서 가장 많은 것은 토큰상의 열쇠를 취급하는 조작입니다. Java 어플리케이션에서는 그러한 조작으로, 최초로 키스토어를 로드하는 것이 일반적입니다. <TT><TT>java.security.KeyStore</TT> 클래스 경유로 키스토어로서 PKCS#11 토큰에 액세스 할 때는,<A    href="../../../api/java/security/KeyStore.html#load(java.io.InputStream,%20char%5B%5D)">load</A>  메소드에 대해서 패스워드 입력 파라미터로 PIN 를 지정할 수 있습니다. 이것은, J2SE 5.0 보다 전으로 어플리케이션이 키스토어를 초기화하는 방법을 닮아 있습니다. PIN 는, 토큰에 로그인하기 위해서, Sun PKCS#11 프로바이더가 사용합니다. 다음에 예를 나타냅니다.  
+<BLOCKQUOTE><pre>char[] pin = ...; 
+KeyStore ks = KeyStore.getInstance("PKCS11");
+ks.load(null, pin); 
+</pre></BLOCKQUOTE>
+<P>이 예는, 정적인 키스토어로서 PKCS#11 토큰을 취급하는 어플리케이션에 적절하고 있습니다. 빼고 꽂기 되는 스마트 카드와 같이 PKCS#11 토큰을 보다 동적으로 이용하고 싶은 어플리케이션의 경우는, 새로운 <TT>KeyStore.Builder</TT> 클래스를 사용할 수 있습니다. 콜백 핸들러로 PKCS#11 키스토어의 빌더를 초기화하는 방법을 다음의 예에 나타냅니다.  
+<BLOCKQUOTE><pre>KeyStore.Builder builder = new KeyStore.Builder("PKCS11");
+builder.setCallbackHandler(new MyGuiCallbackHandler());
+</pre></BLOCKQUOTE>Sun PKCS#11 프로바이더의 경우, 콜백 핸들러는 <TT>PasswordCallback</TT> 를 채울 수가 없으면 안됩니다. <TT> PasswordCallback</TT> 는, 사용자에게 PIN 를 요구하는 경우에 사용됩니다. 어플리케이션이 키스토어에 액세스 해야 하는 경우는, 빌더를 이하와 같이 사용합니다.  
+<BLOCKQUOTE><pre>KeyStore ks = builder.getKeyStore();
+Key key = ks.get(alias, null);
+</pre></BLOCKQUOTE>빌더는, 먼저 구성된 콜백 핸들러로 사용하는 패스워드를 필요에 따라서 사용자에게 요구합니다. 빌더가 패스워드를 요구하는 것은, 첫회의 액세스시만입니다. 어플리케이션의 사용자가 같은 스마트 카드를 계속 사용하는 경우는, 한번 더 패스워드가 요구될 것은 없습니다. 사용자가 스마트 카드를 뽑아, 다른 스마트 카드를 가렸을 경우는, 새로운 카드에 대한 패스워드가 요구됩니다.  <!--To avoid getting the keystore each time, the application might call <tt>builder.getKeyStore()</tt> only when its attempt to use the existing keystore throws a <tt>KeyStoreException</tt>.   To avoid dependencies on the new APIs, an application can use a similar strategy of catching <tt>KeyStoreException</tt> and then reloading it via <tt>KeyStore.load()</tt> instead.  -->
+<P>PKCS#11 토큰에 따라서는, 키 관련이 아닌 조작에서도 토큰 로그인을 필요로 하는 경우가 있습니다. 그러한 조작을 사용하는 어플리케이션에서는, 새롭게 도입된 <A    href="../../../api/java/security/AuthProvider.html"><TT>java.security.AuthProvider</TT></A>  클래스를 사용할 수 있습니다. AuthProvider</TT> 클래스는,<TT>java.security.Provider</TT> 를 확장해, 프로바이더로 로그인 및 로그아웃 조작을 실시하거나 프로바이더가 사용하는 콜백 핸들러를 설정하거나하기 위한 메소드를 정의하고 있습니다. <!--By using an <tt>AuthProvider</tt>, an application can invoke <tt>login</tt> either directly or indirectly.  For the indirect case, <tt>login</tt> is invoked automatically by the provider when it needs to perform an operation that requires authentication (and authentication has not occurred earlier).  -->Sun PKCS#11 프로바이더의 경우, 콜백 핸들러는 <TT>PasswordCallback</TT> 를 채울 수가 없으면 안됩니다. <TT> PasswordCallback</TT> 는, 사용자에게 PIN 를 확인하는 경우에 사용됩니다.  
+<P>어플리케이션으로 <TT>AuthProvider</TT> 를 사용해 토큰에 로그인하는 방법을, 다음의 예에 나타냅니다.  
+<BLOCKQUOTE><pre>AuthProvider aprov = Security.getProvider("SunPKCS11");
+aprov.login(subject, new MyGuiCallbackHandler());
+</pre></BLOCKQUOTE><!--When <tt>aprov</tt> is used later for an operation that implicitly requires authentication, the provider will use the previously installed callback handler.  If no callback handler has be set explicitly, then the callback handler set by the  <tt>auth.login.defaultCallbackHandler</tt> security property is used.  --><A    name=Keys></A> 
+  <P></P>
+<H3>3.2 토큰열쇠</H3>
+<P>Java 의 <CODE>Key</CODE> 객체에는, 실제의 열쇠 데이터가 포함되는 경우도 포함되지 않는 경우도 있습니다.  
+  </P>
+  <UL>
+<LI>소프트웨어 Key 객체에는, 실제의 열쇠 데이터가 포함되어 그 데이터에 액세스 할 수 있다 
+    <P></P>
+<LI>스마트 카드등의 보호된 토큰상에 있는 추출 불가능한 열쇠는, 실제의 열쇠 데이터를 포함하지 않는 Java Key 객체에 의해 나타내진다. Key 객체에는, 실제의 열쇠에의 참조만이 포함된다 
+  </LI></UL>
+<P>어플리케이션 및 프로바이더에서는, 각종의 Key 객체를 나타내는데 적절한 인터페이스를 사용할 필요가 있습니다. 소프트웨어 Key 객체 (또는 실제의 열쇠 데이터에 액세스 할 수 있는 임의의 Key 객체)에서는,<A    href="../../../api/java/security/interfaces/package-summary.html">java.security.interfaces</A>  및 <A    href="../../../api/javax/crypto/interfaces/package-summary.html">javax.crypto.interfaces</A>  패키지에 인터페이스 (<TT>DSAPrivateKey</TT> 등)를 구현할 필요가 있습니다. 추출 불가능한 토큰열쇠를 나타내는 Key 객체에서는,<A    href="../../../api/java/security/package-summary.html">java.security</A>  및 <A    href="../../../api/javax/crypto/package-summary.html">javax.crypto</A>  패키지에, 관련하는 총칭 인터페이스 (<TT>PrivateKey</TT>,<TT>PublicKey</TT>, 또는 <TT>SecretKey</TT>)만을 구현할 필요가 있습니다. 열쇠 알고리즘의 특정은,<TT>Key.getAlgorithm()</TT> 메소드를 사용해 실행됩니다.  </P>
+<P>어플리케이션에서는, 추출 불가능한 토큰열쇠의 Key 객체는, 그 토큰에 관련짓고 된 프로바이더만을 사용할 수 있는 것에 주의하지 않으면 안됩니다.  <A    name=DelayedSelect></A> </P>
+  
+<H3>3.3 프로바이더의 지연 선택</H3>
+<P>J2SE 5.0 보다 전에서는,<TT>Cipher.getInstance("DES")</TT> 등의 Java 암호화 <TT>getInstance()</TT> 메소드는, 요구된 알고리즘을 구현하고 있는 최초의 프로바이더로부터의 구현을 돌려주고 있었습니다. 이것은, 소프트웨어 Key 객체만을 사용할 수 있는 프로바이더로, 추출 불가능한 토큰열쇠의 <TT>Key</TT> 객체를 어플리케이션이 사용하려고 하는 경우에 문제가 있었습니다. 이러한 경우, 프로바이더는 <TT>InvalidKeyException</TT> 를 throw 합니다. 이것은,<TT>Cipher</TT>,<TT>KeyAgreement</TT>,<TT>Mac</TT>,<TT>Signature</TT> 의 각 클래스의 문제입니다.  </P>
+<P>J2SE 5.0 에서는, 관련하는 초기화 메소드가 불려 갈 때까지 프로바이더의 선택을 늦추는 것으로, 이 문제<A name=Init></A> 에 대응하고 있습니다. 초기화 메소드에서는 <TT>Key</TT> 객체를 받아들여 지정한 <TT>Key</TT> 객체를 받아들여지는 프로바이더를 그 시점에서 판단할 수 있습니다. 이것에 의해, 선택한 프로바이더로, 지정한 <TT>Key</TT> 객체를 사용할 수 있는 것이 보증됩니다. 다음에, 영향이 있는 초기화 메소드를 나타냅니다.  </P><TT>
+  <UL>
+<LI><A      href="../../../api/javax/crypto/Cipher.html">Cipher</A> . init(..., Key key, ...) 
+<LI><A      href="../../../api/javax/crypto/KeyAgreement.html">KeyAgreement</A> . init(Key key, ...) 
+<LI><A      href="../../../api/javax/crypto/Mac.html">Mac</A> . init(Key key, ...) 
+<LI><A      href="../../../api/java/security/Signature.html">Signature</A> . initSign(PrivateKey privateKey)</LI></UL></TT>또, 어플리케이션이 초기화 메소드를 여러 차례 호출하면(자) (매회 다른 열쇠를 사용하는 등), 그 열쇠에 적절한 프로바이더가 매회 선택됩니다. 즉, 초기화가 호출할 것에 다른 프로바이더가 선택될 가능성이 있습니다.
+<P>이 프로바이더 지연 선택은, 어플리케이션으로부터는 인식됩니다만,<TT>Cipher</TT>,<TT>KeyAgreement</TT>,<TT>Mac</TT>, 및 <TT>Signature</TT> 의 <CODE>getProvider()</CODE> 메소드의 동작에 영향을 줍니다. <CODE>getProvider()</CODE> 가 초기화 조작의 발생하기 전 (그 때문에 프로바이더 선택이 일어나기 전)에 불려 갔을 경우는, 요구되는 알고리즘이 지원되고 있는 최초의 프로바이더가 돌려주어집니다. 이 프로바이더는, 초기화 메소드가 불려 간 뒤에 선택된 프로바이더와 같게 안 되는 경우가 있습니다. <CODE>getProvider()</CODE> 가 초기화 조작의 후에 불려 갔을 경우는, 실제로 선택된 프로바이더가 돌려주어집니다. 어플리케이션에서는 관련하는 초기화 메소드를 호출한 뒤에게만,<CODE>getProvider()</CODE> 를 호출하도록 해 주세요.  </P>
+<P><CODE>getProvider()</CODE> 뿐만이 아니라, 이하의 메소드에도 같은 영향이 있습니다. <TT>
+  <UL>
+<LI>Cipher.getBlockSize 
+<LI>Cipher.getExcemptionMechanism 
+<LI>Cipher.getIV 
+<LI>Cipher.getOutputSize 
+<LI>Cipher.getParameters 
+<LI>Mac.getMacLength 
+<LI>Signature.getParameters 
+<LI>Signature.setParameter </LI></UL></TT><A name=JAAS></A> 
+  </P>
+<H3>3.4 JAAS KeyStoreLoginModule</H3>Java SE 에는, JAAS 키스토어로그인모쥬르인 <TT><A    href="../../../jre/api/security/jaas/spec/com/sun/security/auth/module/KeyStoreLoginModule.html">KeyStoreLoginModule</A> </TT> 가 부속되어 있습니다. 이 모듈을 사용하면(자), 어플리케이션으로 특정의 키스토어내의 ID 를 사용해 인증을 실시할 수가 있습니다. 어플리케이션은 인증 후에, 자신의 주체 및 자격의 정보 (증명서 및 비공개키)를 키스토어로부터 가져옵니다. 이 로그인 모듈을 사용해, PKCS#11 토큰을 키스토어로서 사용하도록(듯이) 구성하면(자), 어플리케이션은 이러한 정보를 PKCS#11 토큰으로부터 취득할 수 있게 됩니다.  
+<P>이하의 옵션을 사용해 <TT>KeyStoreLoginModule</TT> 를 구성하면(자), PKCS#11 토큰을 키스토어로서 사용할 수 있습니다.  
+  <UL>
+<LI><TT>keyStoreURL="NONE"</TT> 
+<LI><TT>keyStoreType="PKCS11"</TT> 
+<LI><TT>keyStorePasswordURL=<EM>some_pin_url</EM></TT></LI></UL>여기서 「<EM>some_pin_url</EM>」는 PIN 의 장소입니다. <TT>keyStorePasswordURL</TT> 옵션을 생략 하면(자), 로그인 모듈은 PIN 를 어플리케이션의 콜백 핸들러로부터 취득해,<TT>PasswordCallback</TT> 로 그 PIN 를 지정합니다. PKCS#11 토큰을 키스토어로서 사용하는 구성 파일의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>other {
+    com.sun.security.auth.module.KeyStoreLoginModule required
+        keyStoreURL="NONE"
+  keyStoreType="PKCS11"
+  keyStorePasswordURL=file:/home/joe/scpin;
+};
+</pre></BLOCKQUOTE>
+  <P>
+<P>복수의 Sun PKCS#11 프로바이더를 동적으로 구성했을 경우, 또는 <TT>java.security</TT> 시큐리티 프로퍼티 파일내에서 구성했을 경우는,<TT>keyStoreProvider</TT> 옵션을 사용해, 특정의 프로바이더 인스턴스를 대상으로 합니다. 이 옵션의 인수는, 프로바이더의 이름입니다. Sun PKCS#11 프로바이더의 경우, 프로바이더명은 <TT>SunPKCS11-<I>TokenName</I></TT> 라고 하는 형식이 됩니다.  여기서 「<TT><I>TokenName</I></TT>」는, 프로바이더 인스턴스가 구성된 이름의 접미사(suffix)입니다.  자세한 것은<A    href="#ATTRS">구성 속성의 겉(표)</a>를 참조해 주세요. 예를 들어, 이하의 구성 파일에서는, PKCS#11 프로바이더 인스턴스에 이름접미사(suffix) <TT>SmartCard</TT> 로 이름을 붙이고 있습니다.  
+<BLOCKQUOTE><pre>other {
+    com.sun.security.auth.module.KeyStoreLoginModule required
+        keyStoreURL="NONE"
+  keyStoreType="PKCS11"
+  keyStorePasswordURL=file:/home/joe/scpin
+  keyStoreProvider="SunPKCS11-SmartCard";
+};
+</pre></BLOCKQUOTE>
+<P><EM>protected authentication path</EM> (을) 통한 로그인을 지원하고 있는 PKCS#11 토큰도 있습니다. 예를 들어 스마트 카드에는, PIN 를 입력하기 위한 전용의 PIN 패드가 있는 경우가 있습니다. 생체 측정 기기에도, 인증 정보를 취득하는 전용의 방법이 준비되어 있습니다. PKCS#11 토큰에 보호된 인증 패스가 있는 경우는,<TT>protected=true</TT> 옵션을 사용해,<TT>keyStorePasswordURL</TT> 옵션은 생략 합니다. 그러한 토큰용의 구성 파일의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>other {
+    com.sun.security.auth.module.KeyStoreLoginModule required
+        keyStoreURL="NONE"
+  keyStoreType="PKCS11"
+  protected=true;
+};
+</pre></BLOCKQUOTE><A name=JSSE></A> 
+  <P></P>
+<H3>3.5 JSSE 키스토어 및 트러스트 스토어로서의 토큰</H3>PKCS#11 토큰을 JSSE 키스토어 또는 트러스트 스토어로서 사용할 수 있도록(듯이), JSSE 어플리케이션에서는<A    href="#Login">먼저 설명한</A>  API 를 사용해 <TT>KeyStore</TT> 를 인스턴스화합니다.  이 <TT>KeyStore</TT> 는, PKCS#11 토큰에 의해 되돌려져 키 매니저 및 트러스트 매니저에게 건네집니다. 이렇게 해 JSSE 어플리케이션에서는, 토큰상의 키에 액세스 할 수 있게 됩니다.  
+<P>JSSE 에서는, 시스템 프로퍼티 경유로 키스토어 및 트러스트 스토어를 사용하도록(듯이) 구성할 수 있습니다 ( 「<A    href="jsse/JSSERefGuide.html#Customization">JSSE 레퍼런스 가이드</a>」참조). PKCS#11 토큰을 키스토어 또는 트러스트 스토어로서 사용하려면 ,<TT>javax.net.ssl.keyStoreType</TT> 및 <TT>javax.net.ssl.trustStoreType</TT> 시스템 프로퍼티을 각각 「PKCS11」로 설정해,<TT>javax.net.ssl.keyStore</TT> 및 <TT>javax.net.ssl.trustStore</TT> 시스템 프로퍼티을 각각 「<TT>NONE</TT>」로 설정합니다. 특정의 프로바이더 인스턴스를 사용하도록(듯이) 지정하려면 ,<TT>javax.net.ssl.keyStoreProvider</TT> 및 <TT>javax.net.ssl.trustStoreProvider</TT> 시스템 프로퍼티을 사용합니다 (예: 「SunPKCS11-SmartCard」).  </P></BLOCKQUOTE><A name=Tools></A> 
+<H2>4.0 툴</H2>
+<P>J2SE 5.0 에서는,<A href="../../tools/index.html#security">시큐리티 툴</a>이 갱신되어 새로운 Sun PKCS#11 프로바이더를 사용한 조작이 지원되었습니다. 변경 내용을 다음에 설명합니다.  
+<BLOCKQUOTE><A name=KeyToolJarSigner></A> 
+<H3>4.1 KeyTool 및 JarSigner</H3>
+<P>Sun PKCS#11 프로바이더가 Java 런타임의 <TT>$JAVA_HOME/lib/security</TT> 디렉토리내에 있는 <TT>java.security</TT> 시큐리티 프로퍼티 파일로 구성되어 있는 경우, 이하의 옵션을 사용하는 것으로, PKCS#11 토큰의 조작에 keytool 및 jarsigner 를 사용할 수 있습니다.  
+  <UL>
+<LI>-keystore NONE 
+<LI>-storetype PKCS11</LI></UL>구성이 끝난 PKCS#11 토큰의 내용을 리스트 하는 커멘드의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>keytool -keystore NONE -storetype PKCS11 -list
+</pre></BLOCKQUOTE>PIN 는 -storepass 옵션으로 지정할 수 있습니다. 지정되지 않는 경우, keytool 및 jarsigner 에서는, 토큰 PIN 를 요구합니다. 토큰에 보호된 인증 패스 (전용의 PIN 패드나 생체 읽기기등)가 있는 경우,<TT>-protected</TT> 옵션을 지정할 필요가 있습니다만, 패스워드 옵션을 지정할 필요는 없습니다.  
+<P>복수의 Sun PKCS#11 프로바이더를 <TT>java.security</TT> 시큐리티 프로퍼티 파일내에서 구성했을 경우는,<TT>-providerName</TT> 옵션을 사용해, 특정의 프로바이더 인스턴스를 대상으로 합니다. 이 옵션의 인수는, 프로바이더의 이름입니다.  
+  <UL>
+<LI>-providerName <I>providerName</I></LI></UL>Sun PKCS#11 프로바이더의 경우,<I>providerName</I> 는 <TT>SunPKCS11-<I>TokenName</I></TT> 라고 하는 형식이 됩니다.  여기서 「<TT><I>TokenName</I></TT>」는, 프로바이더 인스턴스가 구성된 이름의 접미사(suffix)입니다.  자세한 것은<A    href="#ATTRS">구성 속성의 겉(표)</a>를 참조해 주세요. 예를 들어, 이하의 커멘드에서는, 이름접미사(suffix) <TT>SmartCard</TT> 의 PKCS#11 키스토어프로바이다인스탄스의 내용을 리스트 합니다.  
+<BLOCKQUOTE><pre>keytool -keystore NONE -storetype PKCS11 \
+        -providerName SunPKCS11-SmartCard \
+        -list
+</pre></BLOCKQUOTE>
+<P>Sun PKCS#11 프로바이더를 <TT>java.security</TT> 시큐리티 프로퍼티 파일내에서 구성하고 있지 않는 경우는, 이하의 옵션을 사용해, 프로바이더를 동적으로 인스톨 하도록(듯이) keytool 및 jarsigner 를 설정합니다.  
+
+  <UL>
+<LI>-providerClass sun.security.pkcs11.SunPKCS11 
+<LI>-providerArg <I><A      href="#Config">ConfigFilePath</A> </I> 
+</LI></UL>여기서 「<I>ConfigFilePath</I>」는, 토큰 구성 파일의 패스입니다. Sun PKCS#11 프로바이더가 <TT>java.security</TT> 파일로 구성되어 있지 않을 때에 PKCS#11 키스토어를 리스트 하는 커멘드를 이하의 예에 나타냅니다.  
+<BLOCKQUOTE><pre>keytool -keystore NONE -storetype PKCS11 \
+        -providerClass sun.security.pkcs11.SunPKCS11 \
+        -providerArg /foo/bar/token.config \
+        -list
+</pre></BLOCKQUOTE><A name=PolicyTool></A> 
+<H3>4.2 Policy 툴</H3>
+<P>J2SE 5.0 보다 전에서는,<A   href="PolicyFiles.html">디폴트의 Policy 의 구현</a>에 있어서의 <I>keystore</I> 엔트리는 이하의 구문을 사용하고 있었습니다.  
+<BLOCKQUOTE><pre>keystore "<EM>some_keystore_url</EM>", "<EM>keystore_type</EM>";
+</pre></BLOCKQUOTE>이 구문은, PKCS#11 키스토어에 액세스 하기에는  불충분했습니다.  그러한 액세스에서는 일반적으로은 PIN 가 필요해, 또 PKCS#11 프로바이더 인스턴스가 다수 있는 경우가 있었기 때문입니다. 이러한 요건을 채우기 위해서(때문에),<I>keystore</I> 엔트리의 구문은 J2SE 5.0 으로 이하와 같이 갱신되었습니다.  
+<BLOCKQUOTE><pre>keystore "<EM>some_keystore_url</EM>", "<EM>keystore_type</EM>", "<EM>keystore_provider</EM>";
+keystorePasswordURL "<EM>some_password_url</EM>";
+</pre></BLOCKQUOTE>여기서 「<I>keystore_provider</I>」는 키스토어프로바이다명 (<TT>SunPKCS11-SmartCard</TT> 등), 「<I>some_password_url</I>」는, 토큰 PIN 의 장소를 가리키는 URL 입니다. <I>keystore_provider</I>」와「<I>keystorePasswordURL</I>」의 행은 어느쪽이나 생략 가능합니다. <I>keystore_provider</I>」가 지정되어 있지 않은 경우, 특정의 키스토어타이프를 지원하는 최초의 구성이 끝난 프로바이더가 사용됩니다. <TT>keystorePasswordURL</TT>」의 행이 지정되어 있지 않은 경우, 패스워드는 사용되지 않습니다.  
+<P>PKCS#11 토큰의 키스토어 Policy 엔트리의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>keystore "NONE", "PKCS11", "SunPKCS11-SmartCard";
+keystorePasswordURL "file:/foo/bar/passwordFile";
+</pre></BLOCKQUOTE></BLOCKQUOTE><A name=ProviderDev></A> 
+
+<H2>5.0 프로바이더의 개발</H2>
+<P>J2SE 5.0 에서는,<A href="../../../api/java/security/Provider.html">java.security.Provider</A>  클래스에 새로운 기능이 도입되어 프로바이더 구현으로 PKCS#11 토큰이나 암호화 서비스 전반을 간단하게 지원할 수 있게 되었습니다. 이러한 신기능을 다음에 설명합니다.  
+<P>새로운 기능을 예시한 간단한 프로바이더에 대해서는,<A  href="#ExampleProvider">부록 C</A>  를 참조해 주세요.  
+<P></P>
+<BLOCKQUOTE><A name=Service></A> 
+<H3>5.1 프로바이더 서비스</H3>
+<P>전술의 프로바이더의 메뉴얼로 설명하고 있는 대로, J2SE 5.0 보다 전에서는, 지원되고 있는 서비스를 기술하는 <TT>java.util.Property</TT> 엔트리를 작성하기 위해서 프로바이더가 필요했습니다. 프로바이더에 의한 서비스 구현 마다, 서비스의 형태 (<TT>Cipher</TT>,<TT>Signature</TT> 등), 피리어드, 및 서비스가 적용되는 알고리즘명으로 구성되는 이름의 프로퍼티이 필요합니다. 프로퍼티의 값에는, 서비스를 구현하는 클래스의 완전 수식명을 지정할 필요가 있습니다. 값 <TT>com.sun.crypto.provider.DHKeyAgreement</TT> 를 가지도록(듯이) <TT>KeyAgreement.DiffieHellman</TT> 프로퍼티을 설정하는 프로바이더의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>put("KeyAgreement.DiffieHellman", 
+      "com.sun.crypto.provider.DHKeyAgreement")
+</pre></BLOCKQUOTE>
+  <P></P>
+<P>J2SE 5.0 에서는, public static 의 상자의 클래스 <TT><A   href="../../../api/java/security/Provider.Service.html">Provider.Service</A> </TT> 가 새롭게 도입되었습니다. 이 클래스를 사용하면(자), 프로바이더 서비스의 프로퍼티 (형태, 속성, 알고리즘명, 알고리즘의 별명등)을 캡슐화하기 쉬워집니다. 프로바이더는 <TT>Provider.putService()</TT> 메소드를 호출하는 것으로,<TT>Provider.Service</TT> 객체를 인스턴스화해 등록합니다. 이것은, J2SE 5.0 보다 전으로 행해지고 있던,<TT>Property</TT> 엔트리를 작성해 <TT>Provider.put()</TT> 메소드를 호출하는 것과 같습니다. <TT>Provider.put</TT> 경유로 등록된 구버젼의 <TT>Property</TT> 엔트리도 계속해 지원되고 있습니다.  
+<P>클래스 <TT>com.sun.crypto.provider.DHKeyAgreement</TT> 에 의해 구현되어<TT>DiffieHellman</TT> 알고리즘을 사용하는,<TT>KeyAgreement</TT> 형의 <TT>Service</TT> 객체를 작성하는 프로바이더의 예를 다음에 나타냅니다.  
+<BLOCKQUOTE><pre>Service s = new Service(this, "KeyAgreement", "DiffieHellman",
+    "com.sun.crypto.provider.DHKeyAgreement", null, null);
+putService(s);
+</pre></BLOCKQUOTE>
+  <P></P>
+<P>구버젼의 <TT>Property</TT> 엔트리 대신에 <TT>Provider.Servicee</TT> 객체를 사용하면(자), 큰 이점이 2 개 있습니다. 1 번째로서<A    href="#NewInstance">엔진 클래스를 인스턴스화할 때</a>, 프로바이더의 유연성이 향상합니다. 2 번째로서 프로바이더로<A    href="#SupportsParam">파라미터의 타당성</a>을 테스트할 수가 있습니다. 다음에, 이러한 특징에 대해 설명합니다.  </P>
+
+  <A name=NewInstance></A> 
+<H3>5.1. 1 엔진 클래스의 인스턴스화</H3>
+<P>J2SE 5.0 보다 전에서는, Java 암호화 시스템가 특정의 서비스의 프로바이더 프로퍼티을 검색해, 그 프로퍼티으로 등록된 엔진 클래스를 직접 인스턴스화하고 있었습니다. J2SE 5.0 에서는, 디폴트로 같은 동작을 합니다만, 프로바이더는 이 동작을 오버라이드(override) 해, 요구된 서비스 자신의 엔진 클래스를 인스턴스화할 수 있습니다.  </P>
+<P>디폴트의 동작을 오버라이드(override) 할 때는, 프로바이더는 커스텀인 동작을 추가하도록(듯이) <TT>Provider.Service.newInstance()</TT> 메소드를 오버라이드(override) 합니다. 예를 들어 프로바이더는 커스텀의 생성자 을 호출하거나 프로바이더의 외부로부터는 액세스 할 수 없는 (프로바이더만이 안다) 정보를 사용해 초기화를 실행하거나 할 수가 있습니다.  <!--<strong>??? How does PKCS11 provider make use of this flexibility</strong>--><A      name=SupportsParam></A> </P>
+<H3>5.1. 2 파라미터의 지원</H3>
+<P>Java 암호화 시스템에서는, 프로바이더의 서비스 구현이 어플리케이션 고유의 파라미터를 사용할 수 있을지 어떨지를 판단하기 위해서(때문에), 민첩한 체크를 시도합니다. 이 체크를 실행하기 위해서, 시스템에서는 <TT>Provider.Service.supportsParameter()</TT> 를 호출합니다.  </P>
+<P>J2SE  5.0 에서는, 시스템는<A     href="#DelayedSelect">프로바이더의 지연 선택</a>중에 이 민첩한 체크를 이용합니다. 어플리케이션이<A      href="#Init">초기화 </a>메소드를 호출해 <TT>Key</TT> 객체를 건네주면(자), 시스템에서는 <TT>Service.supportsParameter()</TT> 메소드를 호출하는 것으로, 부하의 프로바이더에 대해서 그 <TT>Key</TT> 객체를 지원하고 있을지 어떨지를 확인합니다. <CODE>supportsParameter()</CODE> 가 <CODE>false</CODE> 를 돌려주면(자), 시스템는 즉시 그 프로바이더를 대상으로부터 없앱니다. <CODE>supportsParameter()</CODE> 가 <CODE>true</CODE> 를 돌려주면(자), 시스템는 <TT>Key</TT> 객체를 그 프로바이더의 초기화 엔진 클래스 구현에 건네줍니다. 소프트웨어 <TT>Key</TT> 객체를 필요로 하는 프로바이더에서는, 소프트웨어 이외의 열쇠를 건네받았을 때에 <CODE>false</CODE> 를 돌려주도록(듯이), 이 메소드를 오버라이드(override) 할 필요가 있습니다. 같이 추출 불가능한 열쇠가 포함된 PKCS#11 토큰의 프로바이더에서는, 이 프로바이더가 작성한, 즉 각각의 토큰상의 <TT>Key</TT> 에 대응하는 <TT>Key</TT> 객체에 대해서 <CODE>true</CODE> 만을 돌려주도록(듯이) 하지 않으면 안됩니다.  </P>
+<P><CODE>supportsParameter()</CODE> 의 디폴트 구현에서는 <CODE>true</CODE> 를 돌려줍니다. 이것에 의해, 기존의 프로바이더를 변경하지 않고 동작시킬 수가 있습니다. 그러나, 이 완만한 디폴트 구현을 위해서(때문에), 시스템에서는, 초기화 엔진 클래스 구현 내부의 <TT>Key</TT> 객체를 거부하는 프로바이더가 예외를 throw 했을 때에, 그 그 예외를 캐치 할 수 있도록(듯이) 해 둘 필요가 있습니다. 시스템에서는, 이러한 케이스를 <CODE>supportsParameter()</CODE> 가 <CODE>false</CODE> 를 돌려줄 때 것과 같이 취급합니다.  
+</P></BLOCKQUOTE>
+
+<A name=ALG></A> 
+<H2>부록 A:Sun PKCS#11 프로바이더로 지원되는 알고리즘</H2>이하의 겉(표)에서는, Sun PKCS#11 프로바이더로 지원되는 Java 알고리즘과 지원에 필요한 대응하는 PKCS#11 기구에 대해 리스트 합니다. 복수의 기구가 리스트 되고 있는 경우는, 설정되어 있는 차례로 기재하고 있어, 어느쪽이든 1 개(살)을 지정하면 충분합니다. <code>disabledMechanisms</code> 및 <code>enabledMechanisms</code> <a href="#Config">구성 지시</a>를 사용하면(자), 기구를 무시하도록(듯이) SunPKCS11 에 지시할 수 있습니다.
+
+<P>Elliptic Curve 기구에서는, SunPKCS11 는, 파라미터의 인코딩으로서 <code>namedCurve</code> 선택을 사용하는 열쇠만을 사용합니다. 또, 압축되어 있지 않은 형식만이 허가됩니다. Sun PKCS#11 프로바이더에서는, 표준적인 이름을 붙일 수 있던 모든 도메인 파라미터를 토큰이 지원하고 있는 것이 전제가 됩니다.
+
+<P>
+<TABLE border=1>
+  <TBODY>
+  <TR>
+<TH>Java 알고리즘</TH>
+<TH>PKCS#11 기구</TH>
+  <TR>
+<TD>Signature.MD2withRSA</TD>
+<TD>CKM_MD2_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.MD5withRSA</TD>
+<TD>CKM_MD5_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.SHA1withRSA</TD>
+<TD>CKM_SHA1_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.SHA256withRSA</TD>
+<TD>CKM_SHA256_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.SHA384withRSA</TD>
+<TD>CKM_SHA384_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.SHA512withRSA</TD>
+<TD>CKM_SHA512_RSA_PKCS, CKM_RSA_PKCS, CKM_RSA_X_509</TD>
+  <TR>
+<TD>Signature.SHA1withDSA</TD>
+<TD>CKM_DSA_SHA1, CKM_DSA</TD>
+  <TR>
+<TD>Signature.NONEwithDSA</TD>
+<TD>CKM_DSA</TD>
+  <TR>
+<TD>Signature.SHA1withECDSA</TD>
+<TD>CKM_ECDSA_SHA1, CKM_ECDSA</TD>
+  <TR>
+<TD>Signature.SHA256withECDSA</TD>
+<TD>CKM_ECDSA</TD>
+  <TR>
+<TD>Signature.SHA384withECDSA</TD>
+<TD>CKM_ECDSA</TD>
+  <TR>
+<TD>Signature.SHA512withECDSA</TD>
+<TD>CKM_ECDSA</TD>
+  <TR>
+<TD>Signature.NONEwithECDSA</TD>
+<TD>CKM_ECDSA</TD>
+  <TR>
+<TD>Cipher.RSA/ECB/PKCS1Padding</TD>
+<TD>CKM_RSA_PKCS</TD>
+  <TR>
+<TD>Cipher.ARCFOUR</TD>
+<TD>CKM_RC4</TD>
+  <TR>
+<TD>Cipher.DES/CBC/NoPadding</TD>
+<TD>CKM_DES_CBC</TD>
+  <TR>
+<TD>Cipher.DESede/CBC/NoPadding</TD>
+<TD>CKM_DES3_CBC</TD>
+  <TR>
+<TD>Cipher.AES/CBC/NoPadding</TD>
+<TD>CKM_AES_CBC</TD>
+  <TR>
+<TD>Cipher.Blowfish/CBC/NoPadding</TD>
+<TD>CKM_BLOWFISH_CBC</TD>
+  <TR>
+<TD>KeyAgreement.ECDH</TD>
+<TD>CKM_ECDH1_DERIVE</TD>
+  <TR>
+<TD>KeyAgreement.DiffieHellman</TD>
+<TD>CKM_DH_PKCS_DERIVE</TD>
+  <TR>
+<TD>KeyPairGenerator.RSA</TD>
+<TD>CKM_RSA_PKCS_KEY_PAIR_GEN</TD>
+  <TR>
+<TD>KeyPairGenerator.DSA</TD>
+<TD>CKM_DSA_KEY_PAIR_GEN</TD>
+  <TR>
+<TD>KeyPairGenerator.EC</TD>
+<TD>CKM_EC_KEY_PAIR_GEN</TD>
+  <TR>
+<TD>KeyPairGenerator.DiffieHellman</TD>
+<TD>CKM_DH_PKCS_KEY_PAIR_GEN</TD>
+  <TR>
+<TD>KeyGenerator.ARCFOUR</TD>
+<TD>CKM_RC4_KEY_GEN</TD>
+  <TR>
+<TD>KeyGenerator.DES</TD>
+<TD>CKM_DES_KEY_GEN</TD>
+  <TR>
+<TD>KeyGenerator.DESede</TD>
+<TD>CKM_DES3_KEY_GEN</TD>
+  <TR>
+<TD>KeyGenerator.AES</TD>
+<TD>CKM_AES_KEY_GEN</TD>
+  <TR>
+<TD>KeyGenerator.Blowfish</TD>
+<TD>CKM_BLOWFISH_KEY_GEN</TD>
+  <TR>
+<TD>Mac.HmacMD5</TD>
+<TD>CKM_MD5_HMAC</TD>
+  <TR>
+<TD>Mac.HmacSHA1</TD>
+<TD>CKM_SHA_1_HMAC</TD>
+  <TR>
+<TD>Mac.HmacSHA256</TD>
+<TD>CKM_SHA256_HMAC</TD>
+  <TR>
+<TD>Mac.HmacSHA384</TD>
+<TD>CKM_SHA384_HMAC</TD>
+  <TR>
+<TD>Mac.HmacSHA512</TD>
+<TD>CKM_SHA512_HMAC</TD>
+  <TR>
+<TD>MessageDigest.MD2</TD>
+<TD>CKM_MD2</TD>
+  <TR>
+<TD>MessageDigest.MD5</TD>
+<TD>CKM_MD5</TD>
+  <TR>
+<TD>MessageDigest.SHA1</TD>
+<TD>CKM_SHA_1</TD>
+  <TR>
+<TD>MessageDigest.SHA-256</TD>
+<TD>CKM_SHA256</TD>
+  <TR>
+<TD>MessageDigest.SHA-384</TD>
+<TD>CKM_SHA384</TD>
+  <TR>
+<TD>MessageDigest.SHA-512</TD>
+<TD>CKM_SHA512</TD>
+  <TR>
+<TD>KeyFactory.RSA</TD>
+<TD>지원되는 RSA 기구 모두</TD>
+  <TR>
+<TD>KeyFactory.DSA</TD>
+<TD>지원되는 DSA 기구 모두</TD>
+  <TR>
+<TD>KeyFactory.EC</TD>
+<TD>지원되는 EC 기구 모두</TD>
+  <TR>
+<TD>KeyFactory.DiffieHellman</TD>
+<TD>지원되는 Diffie-Hellman 기구 모두</TD>
+  <TR>
+<TD>SecretKeyFactory.ARCFOUR</TD>
+<TD>CKM_RC4</TD>
+  <TR>
+<TD>SecretKeyFactory.DES</TD>
+<TD>CKM_DES_CBC</TD>
+  <TR>
+<TD>SecretKeyFactory.DESede</TD>
+<TD>CKM_DES3_CBC</TD>
+  <TR>
+<TD>SecretKeyFactory.AES</TD>
+<TD>CKM_AES_CBC</TD>
+  <TR>
+<TD>SecretKeyFactory.Blowfish</TD>
+<TD>CKM_BLOWFISH_CBC</TD>
+  <TR>
+<TD>SecureRandom.PKCS11</TD>
+<TD>CK_TOKEN_INFO 에는 CKF_RNG 비트 세트가 있다</TD></TR>
+  <TR>
+<TD>KeyStore.PKCS11</TD>
+<TD>항상 사용 가능</TD></TR>
+</TBODY></TABLE>
+
+<P><A name=KeyStoreRestrictions></A> 
+<H2>부록 B:Sun PKCS#11 프로바이더의 KeyStore 요건</H2>
+
+<p> 여기에서는, Sun PKCS# 프로바이더의 KeyStore 를, 기본이 되는 네이티브의 PKCS#11 라이브러리에 구현하는 경우의 요건을 설명합니다. <b><b>보다 많은 기존의 PKCS#11 라이브러리와의 상호 운용성을 실현하기 (위해)때문에, 장래의 릴리스로 변경이 더해질 가능성이 있습니다. </b></b>
+
+<blockquote>
+<h3>읽기 전용 액세스</h3>
+
+<p> PKCS#11 토큰에 보존된 기존의 객체를 KeyStore 엔트리에 매핑 하기 위한(해), Sun PKCS#11 프로바이더의 KeyStore 구현은 다음의 조작을 실행합니다.
+
+<ol>
+<li> C_FindObjects[Init|Final] 를 호출해, 토큰상의 모든 비공개키 객체를 검색합니다. 검색 템플릿에는, 다음의 속성이 있습니다.
+
+     <p>
+     <ul>
+<li> CKA_TOKEN = true
+<li> CKA_CLASS = CKO_PRIVATE_KEY
+     </ul>
+     <p>
+     
+<li> C_FindObjects[Init|Final] 를 호출해, 토큰상의 모든 증명서 객체를 검색합니다. 검색 템플릿에는, 다음의 속성이 있습니다.
+
+     <p>
+     <ul>
+<li> CKA_TOKEN = true
+<li> CKA_CLASS = CKO_CERTIFICATE
+     </ul>
+     <p>
+     
+<li> 각각의 CKA_ID 속성을 취득하는 것으로, 각 비공개키 객체를 대응하는 증명서와 일치시킵니다. 일치하는 페어는, 같은 일의의 CKA_ID 를 공유할 필요가 있습니다.
+
+<p> 일치하는 페어 마다, 발행자 -> 피인증자 패스에 따라 증명서 체인이 작성됩니다. 엔드엔티티 증명서로부터, 다음의 속성을 가지는 검색 템플릿을 사용한 C_FindObjects[Init|Final] 가 불려 갑니다.
+
+     <p>
+     <ul>
+<li> CKA_TOKEN = true
+<li> CKA_CLASS = CKO_CERTIFICATE
+<li> CKA_SUBJECT = [DN of certificate issuer]
+     </ul>
+     <p>
+
+<p> 이 검색은, 발행자의 증명서가 발견되지 않는가, 자기 서명 증명서가 발견될 때까지 계속합니다. 복수의 증명서가 발견되었을 경우는, 최초의 증명서가 사용됩니다.
+
+<p> 비공개키와 증명서가 일치해 증명서 체인이 작성되면(자), 엔드엔티티 증명서의 CKA_LABEL 의 값을 KeyStore 의 별명으로서 비공개키 엔트리에 정보가 보존됩니다.
+
+<p> 엔드엔티티 증명서에 CKA_LABEL 가 없는 경우는, 별명은 CKA_ID 로부터 작성됩니다.  CKA_ID 가 출력 가능 문자로부터 마셔 구성되는 경우는, CKA_ID 의 바이트를 UTF-8 캐릭터 세트를 사용해 디코드해, String 의 별명을 작성합니다. 또는, 16 진수의 String 별명을, CKA_ID 바이트로부터 작성합니다 (예: 「0 xFFFF」).
+
+<p> 복수의 증명서가 동일한 CKA_LABEL 를 공유하는 경우, 별명은 CKA_LABEL 에 가세해 엔드엔티티 증명서의 발행자 및 시리얼 번호 (예: 「MyCert/CN=foobar/1234」)로부터 작성됩니다.
+
+<li> (엔드엔티티 증명서로서) 비공개키 엔트리의 일부에서는 없는 각 증명서는, 신뢰할 수 있을지 어떨지 체크됩니다. CKA_TRUSTED 속성이 true 의 경우, CKA_LABEL 치를 KeyStore 의 별명으로 하는, KeyStore 의 신뢰할 수 있는 증명서 엔트리가 작성됩니다. 증명서에 CKA_LABEL 가 없는 경우, 또는 복수의 증명서가 같은 CKA_LABEL 를 공유하는 경우, 별명은 위에서 설명한 바와 같이 작성됩니다.
+
+<p> CKA_TRUSTED 속성이 지원되어 있지 않은 경우는, 신뢰할 수 있는 증명서 엔트리는 작성되지 않습니다.
+
+<li> 비공개키 엔트리 또는 신뢰할 수 있는 증명서 엔트리의 일부에서는 없는 비공개키 또는 증명서 객체는, 모두 무시됩니다.
+     <p>
+     
+<li> C_FindObjects[Init|Final] 를 호출해, 토큰상의 모든 비밀열쇠 객체를 검색합니다. 검색 템플릿에는, 다음의 속성이 있습니다.
+
+     <p>
+     <ul>
+<li> CKA_TOKEN = true
+<li> CKA_CLASS = CKO_SECRET_KEY
+     </ul>
+     <p>
+
+<p> 각 비밀열쇠 객체에 대해서, CKA_LABEL 치를 KeyStore 의 별명으로 하는 KeyStore 비밀열쇠 엔트리가 작성됩니다. 각 비밀열쇠 객체에는, 고유의 CKA_LABEL 가 필요합니다.
+</ol>
+
+<h3>기입 액세스</h3>
+
+<p> PKCS#11 토큰에 KeyStore 엔트리에 대한 새로운 KeyStore 엔트리를 작성하기 위해(때문에), Sun PKCS#11 프로바이더의 KeyStore 구현은 다음의 조작을 실행합니다.
+
+<ol>
+<li> KeyStore.setEntry 등을 사용해 KeyStore 엔트리를 작성하려면 , CKA_TOKEN=true 로서 C_CreateObject 를 호출해, 엔트리의 내용 각각 대해 토큰 객체를 작성합니다.
+
+<p> 비공개키 객체는, CKA_PRIVATE=true 로 보존됩니다. KeyStore 의 별명 (UTF8 encode)은, 비공개키와 대응하는 엔드엔티티 증명서의 양쪽 모두로 CKA_ID 로서 설정됩니다. KeyStore 의 별명에서는, 엔드엔티티 증명서 객체에 CKA_LABEL 가 설정됩니다.
+
+<p> 비공개키 엔트리의 체인내의 각 증명서도 보존됩니다. CKA_LABEL 는, CA 증명서에는 설정되지 않습니다. CA 증명서가 토큰내에 있는 경우, 복제는 보존되지 않습니다.
+
+<p> 비밀열쇠 객체는, CKA_PRIVATE=true 로 보존됩니다. KeyStore 의 별명은, CKA_LABEL 로서 설정됩니다.
+
+<li> 세션 객체를 토큰 객체로 변환하려고 하는 경우 (KeyStore.setEntry 가 불려 가 지정된 엔트리의 비공개키 객체가 세션 객체인 경우 등), C_CopyObject 가 CKA_TOKEN=true 로서 불려 갑니다.
+     <p>
+
+<li> 토큰내에 복수의 증명서가 발견되어, 같은 CKA_LABEL 를 공유하는 경우는, 토큰에의 기입해 기능은 무효가 됩니다.
+     <p>
+
+<li> PKCS#11 스펙에서는 일반의 어플리케이션으로 CKA_TRUSTED=true 와 설정하는 것이 허가되지 않기 때문에 (토큰 초기화 어플리케이션만이 가능), 신뢰할 수 있는 증명서 엔트리를 작성할 수 없습니다.
+</ol>
+
+<h3>그 외</h3>
+
+<p> 상기의 검색외, Sun PKCS#11 프로바이더의 KeyStore 구현으로 다음의 검색을 사용해 내부 함수를 실행할 수 있습니다. 특히, 다음의 속성 템플릿의 어떤 것을 사용했을 경우에서도, C_FindObjects[Init|Final] 를 호출할 수가 있습니다.
+
+<ul>
+<li><pre>
+    CKA_TOKEN    true
+    CKA_CLASS    CKO_CERTIFICATE
+    CKA_SUBJECT  [subject DN]
+    </pre>
+<li><pre>
+    CKA_TOKEN    true
+    CKA_CLASS    CKO_SECRET_KEY
+    CKA_LABEL    [label]
+    </pre>
+<li><pre>
+    CKA_TOKEN    true
+    CKA_CLASS    CKO_CERTIFICATE or CKO_PRIVATE_KEY
+    CKA_ID       [cka_id] 
+    </pre>
+</ul>
+</blockquote>
+
+<P><A name=ExampleProvider></A> 
+<H2>부록 C:프로바이더의 예</H2><pre>package com.foo;
+
+import java.io. *;
+import java.lang.reflect. *;
+import java.security. *;
+import javax.crypto. *;
+
+/**
+ * Example provider that demonstrates some of the new API features.
+ *
+ *  .  implement multiple different algorithms in a single class.
+ *    Previously each algorithm needed to be implemented in a separate class
+ *    (e.g.  one for MD5, one for SHA-1, etc. )
+ *
+ *  .  multiple concurrent instances of the provider frontend class each
+ *    associated with a different backend.
+ *
+ *  .  it uses "unextractable" keys and lets the framework know which key
+ *    objects it can and cannot support
+ *
+ * Note that this is only a simple example provider designed to demonstrate
+ * several of the new features.   It is not explicitly designed for efficiency.
+ */
+public final class ExampleProvider extends Provider {
+
+    // reference to the crypto backend that implements all the algorithms
+    final CryptoBackend cryptoBackend;
+
+    public ExampleProvider(String name, CryptoBackend cryptoBackend) {
+        super(name, 1.0, "JCA/JCE provider for " + name);
+        this.cryptoBackend = cryptoBackend;
+        // register the algorithms we support (MD5, SHA1, DES, and AES)
+        putService(new MyService
+            (this, "MessageDigest", "MD5", "com.foo.ExampleProvider$MyMessageDigest"));
+        putService(new MyService
+            (this, "MessageDigest", "SHA1", "com.foo.ExampleProvider$MyMessageDigest"));
+        putService(new MyCipherService
+            (this, "Cipher", "DES", "com.foo.ExampleProvider$MyCipher"));
+        putService(new MyCipherService
+            (this, "Cipher", "AES", "com.foo.ExampleProvider$MyCipher"));
+    }
+
+    // the API of our fictitious crypto backend
+    static abstract class CryptoBackend {
+        abstract byte[] digest(String algorithm, byte[] data);
+        abstract byte[] encrypt(String algorithm, KeyHandle key, byte[] data);
+        abstract byte[] decrypt(String algorithm, KeyHandle key, byte[] data);
+        abstract KeyHandle createKey(String algorithm, byte[] keyData);
+    }
+
+    // the shell of the representation the crypto backend uses for keys
+    private static final class KeyHandle {
+        // fill in code
+    }
+
+    // we have our own ServiceDescription implementation that overrides newInstance()
+    // that calls the (Provider, String) constructor instead of the no-args constructor
+    private static class MyService extends Service {
+
+        private static final Class[] paramTypes = {Provider.class, String.class};
+
+        MyService(Provider provider, String type, String algorithm,
+                String className) {
+            super(provider, type, algorithm, className, null, null);
+        }
+
+        public Object newInstance(Object param) throws NoSuchAlgorithmException {
+	    try {
+		// get the Class object for the implementation class
+		Class clazz;
+		Provider provider = getProvider();
+		ClassLoader loader = provider.getClass(). getClassLoader();
+		if (loader == null) {
+		    clazz = Class.forName(getClassName());
+		} else {
+		    clazz = loader.loadClass(getClassName());
+		}
+		// fetch the (Provider, String) constructor
+		Constructor cons = clazz.getConstructor(paramTypes);
+		// invoke constructor and return the SPI object
+		Object obj = cons.newInstance(new Object[] {provider, getAlgorithm()});
+		return obj;
+	    } catch (Exception e) {
+		throw new NoSuchAlgorithmException("Could not instantiate service", e);
+	    }
+        }
+    }
+
+    // custom ServiceDescription class for Cipher objects.  See supportsParameter() below
+    private static class MyCipherService extends MyService {
+        MyCipherService(Provider provider, String type, String algorithm,
+                String className) {
+            super(provider, type, algorithm, className);
+        }
+        // we override supportsParameter() to let the framework know which
+        // keys we can support.  We support instances of MySecretKey, if they
+        // are stored in our provider backend, plus SecretKeys with a RAW encoding.
+        public boolean supportsParameter(Object obj) {
+            if (obj instanceof SecretKey == false) {
+                return false;
+            }
+            SecretKey key = (SecretKey) obj;
+            if (key.getAlgorithm(). equals(getAlgorithm()) == false) {
+                return false;
+            }
+            if (key instanceof MySecretKey) {
+                MySecretKey myKey = (MySecretKey) key;
+                return myKey.provider == getProvider();
+            } else {
+                return "RAW". equals(key.getFormat());
+            }
+        }
+    }
+
+    // our generic MessageDigest implementation.  It implements all digest
+    // algorithms in a single class.  We only implement the bare minimum
+    // of MessageDigestSpi methods
+    private static final class MyMessageDigest extends MessageDigestSpi {
+        private final ExampleProvider provider;
+        private final String algorithm;
+        private ByteArrayOutputStream buffer;
+        MyMessageDigest(Provider provider, String algorithm) {
+            super();
+            this.provider = (ExampleProvider) provider;
+            this.algorithm = algorithm;
+            engineReset();
+        }
+        protected void engineReset() {
+            buffer = new ByteArrayOutputStream();
+        }
+        protected void engineUpdate(byte b) {
+            buffer.write(b);
+        }
+        protected void engineUpdate(byte[] b, int ofs, int len) {
+            buffer.write(b, ofs, len);
+        }
+        protected byte[] engineDigest() {
+            byte[] data = buffer.toByteArray();
+            byte[] digest = provider.cryptoBackend.digest(algorithm, data);
+            engineReset();
+            return digest;
+        }
+    }
+
+    // our generic Cipher implementation, only partially complete.  It implements
+    // all cipher algorithms in a single class.  We implement only as many of the
+    // CipherSpi methods as required to show how it could work
+    private static abstract class MyCipher extends CipherSpi {
+        private final ExampleProvider provider;
+        private final String algorithm;
+        private int opmode;
+        private MySecretKey myKey;
+        private ByteArrayOutputStream buffer;
+        MyCipher(Provider provider, String algorithm) {
+            super();
+            this.provider = (ExampleProvider) provider;
+            this.algorithm = algorithm;
+        }
+        protected void engineInit(int opmode, Key key, SecureRandom random)
+                throws InvalidKeyException {
+            this.opmode = opmode;
+            myKey = MySecretKey.getKey(provider, algorithm, key);
+            if (myKey == null) {
+                throw new InvalidKeyException();
+            }
+            buffer = new ByteArrayOutputStream();
+        }
+        protected byte[] engineUpdate(byte[] b, int ofs, int len) {
+            buffer.write(b, ofs, len);
+            return new byte[0];
+        }
+        protected int engineUpdate(byte[] b, int ofs, int len, byte[] out, int outOfs) {
+            buffer.write(b, ofs, len);
+            return 0;
+        }
+        protected byte[] engineDoFinal(byte[] b, int ofs, int len) {
+            buffer.write(b, ofs, len);
+            byte[] in = buffer.toByteArray();
+            byte[] out;
+            if (opmode == Cipher.ENCRYPT_MODE) {
+                out = provider.cryptoBackend.encrypt(algorithm, myKey.handle, in);
+            } else {
+                out = provider.cryptoBackend.decrypt(algorithm, myKey.handle, in);
+            }
+            buffer = new ByteArrayOutputStream();
+            return out;
+        }
+        // code for remaining CipherSpi methods goes here
+    }
+
+    // our SecretKey implementation.  All our keys are stored in our crypto
+    // backend, we only have an opaque handle available.  There is no
+    // encoded form of these keys.
+    private static final class MySecretKey implements SecretKey {
+
+        final String algorithm;
+        final Provider provider;
+        final KeyHandle handle;
+
+        MySecretKey(Provider provider, String algorithm, KeyHandle handle) {
+            super();
+            this.provider = provider;
+            this.algorithm = algorithm;
+            this.handle = handle;
+        }
+        public String getAlgorithm() {
+            return algorithm;
+        }
+        public String getFormat() {
+            return null; // this key has no encoded form
+        }
+        public byte[] getEncoded() {
+            return null; // this key has no encoded form
+        }
+        // Convert the given key to a key of the specified provider, if possible
+        static MySecretKey getKey(ExampleProvider provider, String algorithm, Key key) {
+            if (key instanceof SecretKey == false) {
+                return null;
+            }
+            // algorithm name must match
+            if (! key.getAlgorithm(). equals(algorithm)) {
+                return null;
+            }
+            // if key is already an instance of MySecretKey and is stored
+            // on this provider, return it right away
+            if (key instanceof MySecretKey) {
+                MySecretKey myKey = (MySecretKey) key;
+                if (myKey.provider == provider) {
+                    return myKey;
+                }
+            }
+            // otherwise, if the input key has a RAW encoding, convert it
+            if (! "RAW". equals(key.getFormat())) {
+                return null;
+            }
+            byte[] encoded = key.getEncoded();
+            KeyHandle handle = provider.cryptoBackend.createKey(algorithm, encoded);
+            return new MySecretKey(provider, algorithm, handle);
+        }
+    }
+}
+</pre>
+<P>
+<HR>
+
+</BODY></HTML>

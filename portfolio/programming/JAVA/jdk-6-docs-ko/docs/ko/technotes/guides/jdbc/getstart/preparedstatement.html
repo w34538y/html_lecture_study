@@ -1,0 +1,128 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="resultset.html">[전의 항목]</a>  <a href="callablestatement.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="1000039"> </a> 
+<h2> PreparedStatement</h2>
+<p><a name="1007007"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="996870"> </a> 
+<h3>6.1	 PreparedStatement 의 개요 &#32;</h3>
+<p><a name="998913"> </a> <code>PreparedStatement</code> 인터페이스는,<code>Statement</code> 로부터 상속합니다만, 이하의 2 개의 점으로써 다릅니다.
+</p><ol>
+<a name="998914"> </a> 
+<li><code>PreparedStatement</code> 의 인스턴스에는, 컴파일 된 SQL 문이 포함됩니다. 문장이 「prepared」(준비가 끝난 상태)로 불리는 것은 이 때문에입니다.  <a name="998926"> </a> 
+<li><code>PreparedStatement</code> 에 포함하는 SQL 문에는, 1 개(살) 이상의 IN 파라미터를 붙일 수가 있습니다. IN 파라미터는, SQL 문이 만들어진 시점에서는 그 값이 지정되어 있지 않은 파라미터입니다. 그 대신해, 문장에는 IN 파라미터의 플레이스홀더로서 물음표 (<code>? </code>)(을)를 붙입니다. 「?」(은)는, 파라미터 마커로서도 알려져 있습니다. 어플리케이션은,<code>PreparedStatement</code> 를 실행하기 전에,<code>PreparedStatement</code> 내의 각 물음표에 대해서 값을 설정할 필요가 있습니다.  
+</ol>
+<p><a name="997811"> </a> <code>PreparedStatement</code> 객체는 컴파일이 끝난 상태이므로,<code>Statement</code> 객체보다 고속으로 실행할 수가 있습니다. 따라서, 몇번이나 실행되는 SQL 문을 <code>PreparedStatement</code> 객체로서 생성해, 효율을 높이는 일이 자주 있습니다.
+</p><p><a name="998078"> </a> <code>PreparedStatement</code> 는 <code>Statement</code> 의 서브 클래스이기 (위해)때문에,<code>Statement</code> 의 모든 기능을 상속합니다. 게다가 IN 파라미터의 플레이스홀더 대신에 데이타베이스에 송신하는 값을 설정하는데 필요한 메소드세트가 추가되고 있습니다. 또, 3 개의 메소드의 <code>execute</code>,<code>executeQuery</code>, 및 <code>executeUpdate</code> 는, 변경되고 있어 인수를 취하지 않습니다. 이러한 메소드의 <code>Statement</code> 형식 (SQL 문의 파라미터를 취하는 형식)을,<code>PreparedStatement</code> 객체에 대해서 결코 사용하지 말아 주세요.
+</p>
+<a name="997874"> </a> 
+<h4>6.1. 1	 PreparedStatement 객체의 생성</h4>
+<p><a name="997875"> </a>  다음의 코드 (con 는 <code>Connection</code> 객체)는, IN 파라미터를 위한 2 개의 플레이스홀더가 포함되어 있는 SQL 갱신문의 <code>PreparedStatement</code> 객체를 생성합니다.
+</p><blockquote><pre>
+PreparedStatement pstmt = con.prepareStatement(
+	"UPDATE table4 SET m = ?  WHERE x = ? ");
+</pre></blockquote><p><a name="997897"> </a>  이 문장의 실행 후에는, 객체 pstmt 에 <code>"UPDATE table4 SET m = ? WHERE x = ? "</code> 그렇다고 하는 문장이 포함되어 한층 더 DBMS 에 송신되어 실행 준비 끝난 상태가 되어 있습니다.
+</p><p><a name="1002416"> </a> <code>Statement</code> 객체의 경우와 같게, 갱신문은 아니고 쿼리를 포함한 <code>PreparedStatement</code> 객체를 작성할 수가 있습니다.  실제, 빈번하게 실행되는 SQL 문을 효율화하는 목적으로, 이 방법이 자주(잘) 이용됩니다. <code><code>PreparedStatement</code> 객체는, JDBC 2.0 코어 API 내에 포함되는 메소드 <code>prepareStatement</code> 의 새로운 버젼을 사용해, 스크롤과 갱신이 가능한 <code>ResultSet</code> 객체를 생성할 수 있습니다. 예를 들어, 다음의 코드는 <code>PreparedStatement</code> 객체를 생성해, 이 객체는, 코드가 실행될 때마다 스크롤과 갱신이 가능한 <code>ResultSet</code> 객체를 생성합니다.
+</p><blockquote><pre>
+PreparedStatement pstmt2 = con.prepareStatement(
+ &#32; &#32; &#32; &#32; &#32; &#32;"SELECT a, b, c FROM Table1", ResultSet.TYPE_SCROLL_SENSITIVE,
+ &#32; &#32; &#32; &#32; &#32; &#32;ResultSet.CONCUR_UPDATABLE);
+ResultSet rs = pstmt2.executeQuery();
+</pre></blockquote><p><a name="1003592"> </a>  rs 가 나타내는 객체는,<code>Table1</code> 의 <code>a</code>,<code>b</code>, 및 <code>c</code> 열에 모든 값을 포함하는 결과 세트로, rs 는 스크롤 및 갱신이 가능합니다. pstmt2 가 실행될 때마다, 스크롤 및 갱신이 가능한 결과 세트가 작성됩니다.
+</p><a name="997856"> </a> 
+<h4>6.1. 2	 IN 파라미터의 인도</h4>
+<p><a name="997859"> </a> <code>PreparedStatement</code> 객체를 실행하기 전에, 각 <code>? </code> 파라미터에 값을 설정해 둘 필요가 있습니다. 이것은,<code>setXXX</code> 메소드를 호출하는 것에 의해 실시합니다. <code> XXX</code> 는, 파라미터의 적절한 형태입니다. 예를 들어, 파라미터가 Java 프로그램 언어의 <code>long</code> 라고 하는 형태의 경우, 사용하는 메소드는 <code>setLong</code> 입니다. <code>setXXX</code> 메소드의 최초의 인수는, 설정하는 파라미터의 「번호 붙이고 된 위치」에서, 1 으로부터 시작되는 번호입니다.  2 번째의 인수는, 파라미터로 설정하는 「값」입니다. 예를 들어, 이하의 코드는, 최초의 파라미터를 <code>123456789</code> 에, 2 번째의 파라미터를 <code>100000000</code> 으로 설정합니다.
+</p><blockquote><pre>
+pstmt.setLong(1, 123456789);
+pstmt.setLong(2, 100000000);
+
+</pre></blockquote><p><a name="998046"> </a>  일단 그 문장에 파라미터의 값이 설정되면(자), 메소드 <code>clearParameters</code> 에의 호출에 의해 클리어 되는지, 또는 새로운 값이 설정될 때까지, 그 파라미터의 값을 여러 차례의 실행에 대해 사용할 수가 있습니다.
+</p><p><a name="1002472"> </a>  접속의 자동 위탁 모드가 유효한 경우는, 각 문은, 완료하면(자) 자동적으로 위탁됩니다. 데이타베이스 시스템에 따라서는, 위탁을 과가는 PreparedStatement 가 보관 유지되지 않는 것도 있습니다. 그러한 경우는, 각 회의 위탁 후에 드라이버가 PreparedStatement 를 컴파일 다시 할 필요가 있습니다. 즉, 이러한 DBMS 에 관해서 말하면, 많은 회수 실행하는 <code>Statement</code> 객체를 <code>PreparedStatement</code> 객체에 옮겨놓아 사용하면(자), 실제로는보다 효과적이 아니게 되는 경우가 있습니다.
+</p><p><a name="1002474"> </a>  이하의 코드에서는, 위에서 생성한 <code>PreparedStatement</code> 객체인 pstmt 를 사용해, 2 개의 파라미터 플레이스홀더에 값을 설정해, pstmt 를 10 회 실행하는 방법을 나타냅니다. 이 예에서는, 1 번째의 파라미터에 "<code>Hi</code>" 가 설정되어 그 값은 변화하지 않습니다. 2 번째의 파라미터는,<code>0</code> 으로 시작되어,<code>for</code> 루프를 통과할 때마다 다른 값이 설정되어, 최후는 <code>9</code> 로 끝납니다.
+</p><blockquote><pre>
+pstmt.setString(1, "Hi"); 
+for (int i = 0; i &lt; 10; i++) {
+	pstmt.setInt(2, i);
+	int rowCount = pstmt.executeUpdate();
+}
+</pre></blockquote><p><a name="1002467"> </a> JDBC 2.0 API 의 새로운 기능에 의해, 다음의 예에 나타내는 것 같은 SQL3 데이터형의 파라미터 플레이스홀더의 설정이 가능하게 되었습니다.  여기서 statistics 는, SQL <code>BLOB</code> 치를 나타내는 <code>Blob</code> 객체, departments 는 SQL <code>ARRAY</code> 치를 나타내는 <code>Array</code> 객체입니다.
+</p><blockquote><pre>
+PreparedStatement pstmt = con.prepareStatement(
+ &#32; &#32; &#32;"UPDATE Table3 SET Stats = ?  WHERE Depts = ? ");
+pstmt.setBlob(1, statistics);
+pstmt.setArray(2, departments);
+</pre></blockquote><a name="997984"> </a> 
+<h4>6.1. 3	 IN 파라미터에 있어서의 데이터형의 적합성</h4>
+<p><a name="997991"> </a> <code>setXXX</code> 메소드의 <code>XXX</code> 는 Java 프로그램 언어의 형태입니다. 드라이버는, (<a href="mapping.html#1033804">「JDBC 의 형태에 매핑 되는 Java 의 형태」</a>로 지정되고 있는 매핑에 따라) Java 의 형태를 대응하는 JDBC 의 형태에 맵 해, 그 JDBC 의 형태를 데이타베이스에 송신합니다. 따라서, 이 형태는, 암묵적으로 JDBC 의 형태도 지정하고 있습니다. 예를 들어, 이하의 부분적인 코드는,<code>PreparedStatement</code> 객체 pstmt 의 2 번째의 파라미터를 <code>short</code> 라고 하는 Java 의 형태로 <code>44</code> 로 설정합니다.
+</p><blockquote><pre>
+pstmt.setShort(2, 44);
+</pre></blockquote><p><a name="999337"> </a>  드라이버는 <code>44</code> 를, JDBC 의 <code>SMALLINT</code> 로서 데이타베이스에 송신합니다.  이것은, Java 의 <code>short</code> 로부터의 표준 매핑입니다.
+</p><p><a name="997994"> </a>  각 IN 파라미터의 Java 프로그램 언어의 형태를 데이타베이스가 기대하고 있는 JDBC 의 데이터형과 호환성이 있는 JDBC 의 형태에 확실히 매핑 하는 것은, 프로그래머의 책임입니다. 데이타베이스로 JDBC 의 <code>SMALLINT</code> 가 요구되고 있는 경우를 상정해 주세요. 메소드 <code>setByte</code> 가 사용되었을 경우, 드라이버는 JDBC 의 <code>TINYINT</code> 를 데이타베이스에 송신합니다. 많은 데이타베이스 시스템에서는, 1 개의 관련하는 형태로부터 다른 형태로 변환하는 것, 또 일반적으로 <code>TINYINT</code> 는,<code>SMALLINT</code> 가 사용되고 있는 곳은 어디에서라도 사용할 수 있는 것으로부터, 일반적으로 이것은 동작합니다. 그러나, 어플리케이션을 가능한 한 많은 데이타베이스 시스템으로 동작시키기 위해서(때문에)는, 데이타베이스가 기대하고 있는 올바른 JDBC 의 형태에 대응하고 있는 Java 프로그램 언어의 형태를 사용하는 것이 제일 좋은 방법입니다. 요구되는 JDBC 의 형태가 <code>SMALLINT</code> 의 경우에는,<code>setByte</code> 대신에 <code>setShort</code> 를 사용하는 것으로써, 어플리케이션의 이식성을 향상시킬 수가 있습니다. 「SQL 와 Java 의 형태의 매핑」의 장의 겉(표) 「JDBC 의 형태에 매핑 되는 Java 의 형태」를 사용해, 사용하는 <code>setXXX</code> 메소드를 결정할 수 있습니다.
+</p><a name="999407"> </a> 
+<h4>6.1. 4	 setObject 의 사용</h4>
+<p><a name="1003836"> </a>  프로그래머는, 메소드 <code>setObject</code> 를 사용해, 입력 파라미터를 특정의 JDBC 의 형태에 명시적으로 변환할 수 있습니다. 이 메소드는, 대상의 JDBC 의 형태를 지정하기 위한 3 번째의 인수를 취할 수가 있습니다. 드라이버는, Java 프로그램 언어의 <code>Object</code> 를, 지정된 JDBC 의 형태로 변환하고 나서 데이타베이스에 송신합니다.  
+</p><p><a name="1003843"> </a>  JDBC 의 형태가 지정되어 있지 않은 경우, 드라이버는, 단순하게 Java 의 <code>Object</code> 를 그 디폴트의 JDBC 의 형태에 매핑 해, 데이타베이스에 송신합니다. 이 동작은, 일반적으로의 <code>setXXX</code> 의 처리와 닮아 있습니다.  어느 쪽의 경우에서도, 드라이버가 Java 의 형태를 적절한 JDBC 의 형태로 변환하고 나서, 데이타베이스에 송신합니다. 다른 것은,<code>setXXX</code> 메소드가 표준 매핑을 사용하는데 대해,<code>setObject</code> 메소드는 객체형에의 매핑을 사용하는 점입니다.  
+</p><p><a name="1001057"> </a>  메소드 <code>setObject</code> 는 모든 Java 객체를 받아들이는 능력을 가지기 (위해)때문에, 어플리케이션을 총칭화해, 입력 파라미터를 실행시에 받을 수가 있습니다. 이 경우, 어플리케이션의 컴파일 시점에서는 입력의 형태는 모릅니다. <code>setObject</code> 를 사용하는 것에 의해, 어플리케이션은 임의의 Java 의 객체형을 입력으로서 받아, 그것을 데이타베이스가 요구하고 있는 JDBC 의 형태에 변환할 수가 있습니다.
+</p><p><a name="1003463"> </a> JDBC 2.0 코어 API 에는, <code>setObject</code> 메소드의 새로운 구현이 포함되어 있습니다.  이 메소드는, Java 프로그램 언어의 클래스에 커스텀 매핑 한 사용자 정의형 (UDT)에 적용됩니다. SQL UDT 의 커스텀 매핑은,<code>SQLData</code> 인터페이스를 구현하는 클래스에서 지정됩니다. <code>getObject</code> 메소드에 의해 데이타베이스로부터 UDT 인스턴스가 꺼내지면(자), 그 인스턴스에 대한 <code>SQLData</code> 를 구현한 Java 클래스의 인스턴스에 매핑 됩니다. 이 커스텀 매핑 된 인스턴스가 <code>setObject</code> 메소드에게 건네지면(자),<code>setObject</code> 는, 적절한 <code>SQLData</code> 구현내에 정의된 <code>SQLOutput.writeObject</code> 메소드를 호출해, 거기에 따라 Java 클래스의 인스턴스를 원의 SQL UDT 로 변환합니다.
+</p><p><a name="1003871"> </a>  커스텀 매핑의 상세한 것에 대하여는, 사용자로부터 은 되고 있습니다. 어플리케이션이 <code>setObject</code> 메소드를 호출하면(자), 포함 되려고 하고 있는 값에 대한 커스텀 매핑이 존재하고 있는 경우는, 자동적으로 커스텀 매핑이 실행됩니다. 이 때문에,<code>setObject</code> 메소드가 커스텀 매핑을 실시하는 코드는,<code>setObject</code> 가 표준 매핑을 사용하는 코드와 같이 보입니다. UDT 는,<code>setObject</code> 메소드를 사용하는 것으로 밖에 포함할 수 없습니다.  이것은, UDT 가 커스텀 매핑으로 적절히 매핑 되는 것을 보증하기 (위해)때문에입니다.
+</p><p><a name="1003486"> </a>  지금까지의 설명으로,<code>setObject</code> 메소드에 건네준 값은, 원래는 테이블열로부터 꺼내진 SQL 의 데이터형이었습니다. 이 값을 데이타베이스에 되돌리기 전에, 드라이버는 이것을 원의 SQL 의 데이터형으로 변환할 필요가 있습니다. 데이타베이스가 Java 릴레이셔널 DBMS 로 불리는 신형의 Java 대응 DBMS 의 경우는, 이 데이타베이스는, SQL 로 정의된 값과 같게 Java 프로그램 언어로 정의된 클래스의 인스턴스도 포함할 수 있습니다. 클래스 인스턴스는, 직렬화 된 Java 객체로서 또는 DBMS 에 의해 정의되고 있는 그 외의 형식에서 포함할 수 있습니다.
+</p><p><a name="1003512"> </a>  다음의 예에서는,<code>setObject</code> 메소드를 사용해 <code>Employee</code> 클래스의 인스턴스인 emp 를 포함하는 방법에 대해 가리킵니다. emp 의 salary 필드를 50 퍼센트 증가시킨 뒤, emp 를 원의 데이타베이스에 송신합니다. <code>PERSONNEL</code> 테이블의 <code>EMPLOYEE</code> 열은,<code>Employee</code> 의 인스턴스를 포함하고 있습니다.
+</p><blockquote><pre>
+emp.salary = emp.salary * 1.5;
+PreparedStatement pstmt = con.prepareStatement(
+	"UPDATE PERSONNEL SET EMPLOYEE = ?  WHERE EMPLOYEE_NO = 300485");
+pstmt.setObject(1, emp);
+pstmt.executeUpdate();
+</pre></blockquote><p><a name="1003565"> </a>  이 예의 구문은, JDBC 1.0 API 의 구문과 같아, 게다가, 커스텀 매핑 된 UDT 의 인스턴스의 포함으로 사용되는 구문과도 같습니다.
+</p><a name="1003559"> </a> 
+<h4>6.1. 5	 JDBC NULL 의 IN 파라미터로서의 송신</h4>
+<p><a name="1003562"> </a> <code>setNull</code> 메소드에 의해, 프로그래머는, JDBC 의 <code>NULL</code> (총칭 SQL <code>NULL</code>) 치를 IN 파라미터로서 데이타베이스에 송신할 수가 있습니다. 다만, 그런데도 덧붙여 파라미터의 DBC 형을 지정할 필요가 있는 것에 주의해 주세요.
+</p><p><a name="998013"> </a>  Java 의 <code>null</code> 치가 <code>setXXX</code> 메소드에게 건네졌을 경우, JDBC 의 <code>NULL</code> 도 데이타베이스에 송신됩니다 (Java 객체를 인수로서 취하는 경우). 다만, 메소드 <code>setObject</code> 가 <code>null</code> 치를 잡히는 것은, JDBC 의 형태가 지정되고 있는 경우에 한정됩니다.
+</p><a name="997988"> </a> 
+<h4>6.1. 6	 극히 사이즈의 큰 IN 파라미터의 송신</h4>
+<p><a name="998018"> </a>  메소드 <code>setBytes</code> 및 <code>setString</code> 는, 무제한의 양의 데이터를 송신할 수 있습니다. 다만, 가끔, 프로그래머가 대량의 데이터를 작은 덩어리로 건네주고 싶다고 생각하는 일이 있습니다.  이것은, IN 파라미터를 Java 입력 스트림로 설정하는 것에 의해 달성할 수 있습니다. 문장의 실행시에, JDBC 드라이버가 이 입력 스트림을 반복해 호출해, 그 내용을 읽어내, 그것을 실제의 파라미터 데이터로서 전송합니다.
+</p><p><a name="1004626"> </a>  JDBC 1.0 API 에는, IN 파라미터를 입력 스트림로 설정하기 위한 메소드가 2 개 있습니다. 해석되지 않는 바이트가 들어온 스트림을 위한 <code>setBinaryStream</code> 와 ASCII 문자가 들어간 스트림을 위한 <code>setAsciiStream</code> 입니다. 3 번째의 메소드로서 Unicode 문자가 들어간 스트림을 위한 <code>set-UnicodeStream</code> 가 있습니다만, 이것은 추천 되지 않습니다. 그 대신에, 새로운 JDBC 2.0 코어 API 메소드의 <code>setCharacterStream</code> 를 사용합니다. 이러한 스트림 메소드는, 스트림 전체의 길이를 지정할 필요가 있으므로, 다른 <code>setXXX</code> 메소드보다 인수를 1 개 많이 취합니다. 데이타베이스 시스템에 따라서는, 데이터가 보내지기 전에 전전송 사이즈를 알 필요가 있으므로, 이 인수가 필요하게 됩니다.
+</p><p><a name="998033"> </a>  이하의 코드는, 스트림을 사용해, 파일의 내용을 IN 파라미터로서 송신하는 방법을 나타냅니다.
+</p><blockquote><pre>
+java.io.File file = new java.io.File("/tmp/data");
+int fileLength = file.length();
+java.io.InputStream fin = new java.io.FileInputStream(file);
+java.sql.PreparedStatement pstmt = con.prepareStatement(
+	"UPDATE Table5 SET stuff = ?  WHERE index = 4");
+pstmt.setBinaryStream (1, fin, fileLength);
+pstmt.executeUpdate();
+</pre></blockquote><p><a name="998043"> </a>  문장이 실행되면(자), 그 데이터를 전달하기 위해서, 입력 스트림 <code>fin</code> 가 반복해 불려 갑니다.
+</p><p><a name="1005839"> </a>  큰 IN 파라미터를 데이타베이스에 송신하는 이제(벌써) 1 개의 방법으로,<code>BLOB</code>,<code>CLOB</code> 와 같은 SQL3 의 형태를 사용하는 방법이 있습니다. 이것은,<code>BLOB</code> 및 <code>CLOB</code> 치가 원래 데이타베이스로부터 꺼내진 값이다고 하는 점으로써, 스트림을 사용하는 경우와 다릅니다.  이것들은 데이타베이스로 SQL 형으로서 작성된 것입니다. 스트림을 사용하면(자), Java 프로그램 언어로 쓰여진 파일의 내용을 데이타베이스에 송신할 수 있습니다.
+</p><a name="1002532"> </a> 
+<h4>6.1. 7	 배치 갱신에서의 PreparedStatement 객체의 사용</h4>
+<p><a name="1002533"> </a>  JDBC 2.0 코어 API 는, 배치로서 실행하기 위한 복수의 갱신을 데이타베이스에 송신하는 기능을 제공하고 있습니다. <code>Statement</code> 의 <code>addBatch</code> 메소드에는, 1 개의 SQL 갱신문이 파라미터로서 건네받고 있어, 다음의 배치 갱신으로 실행되는 <code>Statement</code> 객체의 커멘드의 리스트에, 그 SQL 문이 추가됩니다. 인터페이스 <code>PreparedStatement</code> 는, 독자적인 버젼의 <code>addBatch</code> 메소드를 가지고 있습니다. 다음의 코드에 나타내도록(듯이), 이 메소드는 배치에 파라미터세트를 추가합니다.
+</p><blockquote><pre>
+PreparedStatement pstmt = con.prepareStatement(
+&#32; &#32; &#32; &#32; &#32;"UPDATE Table4 SET History = ?  WHERE ID = ? ");
+pstmt.setClob(1, clob1);
+pstmt.setLong(2, 350985839);
+pstmt.addBatch();
+
+pstmt.setClob(1, clob2);
+pstmt.setLong(2, 350985840);
+pstmt.addBatch();
+
+int [] updateCounts = pstmt.executeBatch();
+</pre></blockquote><p><a name="1003235"> </a>  pstmt 내의 <code>PreparedStatement</code> 객체의 실행시에는, 1 번째는 파라미터 <code>clob1</code> 및 350985839, 2 번째는 파라미터 <code>clob2</code> 및 350985840 을 사용해 합계 2 회 실행됩니다.  어느 쪽인가의 갱신 커멘드로, 갱신 카운트 이외의 것이 돌려주어졌을 경우는,<code>executeBatch</code> 메소드는 예외를 throw 합니다.
+</p>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="resultset.html">[전의 항목]</a>  <a href="callablestatement.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>네트워크의 개요 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>Java 네트워크의 개요 </h1>
+<hr>
+<p>Java 네트워크 API (<code>java.net</code>)는, 다음의 기능을 실행하기 위한 인터페이스/클래스를 제공합니다. </p>
+<ul>
+<li><a href="#addressing">주소 지정</a> </li>
+<li><a href="#tcp">TCP 접속의 확립</a> </li>
+<li><a href="#udp">UDP 를 사용한 데이터 그램 패킷의 송수신</a> </li>
+<li><a href="#locating">네트워크 자원의 검색과 식별</a> </li>
+<li><a href="#security">시큐리티</a>  
+    <ul>
+<li><a href="#authentication">인증</a> </li>
+<li><a href="#permissions">액세스권</a> </li>
+    </ul>
+  </li>
+</ul>
+<p><b>이 문서의 목적</b>은,<code>java.net</code> 패키지가 제공하는 기능의 고레벨인 개요를 설명하는 것입니다. 인터페이스, 클래스, 및 팩토리의 상세한 것에 대하여는,<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/net/package-summary.html">「Networking API」</a>  를 참조해 주세요. 네트워크의 기본적인 개념에 대해서는, 「Java Tutorial」의<a href="http://java.sun.com/docs/books/tutorial/networking/index.html">「Trail:Custom Networking」</a>를 참조해 주세요. </p>
+<h2><a name="addressing"></a> 주소 지정</h2>
+<p><code>java.net</code> 는, 이하의 주소 관련 클래스를 제공합니다. </p>
+<ul>
+<li><code>InetAddress</code></li>
+<li><code>Inet4Address</code></li>
+<li><code>Inet6Address</code></li>
+<li><code>SocketAddress</code></li>
+<li><code><a></a> InetSocketAddress</code></li>
+</ul>
+<p>IP 주소 지정에는,<code>InetAddress</code>,<code>Inet4Address</code>, 및 <code>Inet6Address</code> 라고 하는 3 개의 클래스가 제공되고 있습니다. <code>InetAddress</code> 는, 32 비트 또는 128 비트의 부호를 붙일 수 있지 않은 수치로, IP 프로토콜에 의해 사용되는 IP 주소를 나타냅니다. IP 프로토콜은, TCP 나 UDP 의 구축 기반이 되는 하위 레벨의 프로토콜입니다. 32 비트의 IPv4 주소를 나타내기 위해서(때문에),<code>Inet4Address</code> 가 제공되고 있습니다. IPv4 주소는,<code>nnn.nnn.nnn.nnn</code> 라고 하는 잘 알려진 형식에서 지정합니다. <code>n</code> 는 정수를 나타내, 예를 들어 <code>129.250. 35.250</code> 과 같이 됩니다. 이 클래스는 <code>InetAddress</code> 의 서브 클래스입니다. 128 비트의 IPv6 주소를 나타내기 위해서(때문에),<code>Inet6Address</code> 가 제공되고 있습니다. 이 클래스도 <code>InetAddress</code> 의 서브 클래스입니다. </p>
+<p align="center"><img src="images/addressing-1.gif" alt="InetAddress (으)로부터 Inet4Address 및 Inet6Address 에의 논리 플로우를 나타낸 플로차트(flow chart)" width="322" height="124"></p>
+<p>소켓 주소 지정에는,<code>SocketAddress</code> 와 <code>InetSocketAddress</code> 라고 하는 2 개의 클래스가 제공되고 있습니다. <code>SocketAddress</code> 는, 특정의 프로토콜에 의존하지 않는<code>추상적인</code>소켓 주소입니다. 이 클래스는, 특정 프로토콜용의 서브 클래스의 작성을 목적으로 하고 있습니다. 다음의 <code>InetSocketAddress</code> 는, 이 서브 클래스의 예입니다. <code>InetSocketAddress</code> 는,<code>SocketAddress</code> 의 서브 클래스에서, IP 소켓 주소를 나타냅니다. 이 주소는, IP 주소 (<code>129.250. 35.250</code> 등)과 포트 (<code>80</code> 등), 호스트명 (<code>coastnews.com</code> 등)과 포트 (<code>1000</code> 등), 또는 포트만 (<code>1010</code> 등)을 포함할 수가 있습니다. 포트만의 경우, 와일드 카드의 IP 주소와 상정됩니다. </p>
+<p align="center"><img src="images/addressing-2.gif" alt="SocketAddress (와)과 InetSocketAddress 의 사이의 논리 플로우를 나타내는 그림" width="187" height="124"></p>
+<h2><a name="tcp"></a> TCP 접속의 확립</h2>
+<p>이하의 클래스는, 일반적으로의 TCP 접속의 확립에 관계하는 클래스입니다. </p>
+<ul>
+<li><code>ServerSocket </code></li>
+<li><code>Socket</code></li>
+</ul>
+<p>클라이언트와 서버간의 단순한 접속의 경우, 일반적으로,<code>ServerSocket</code> 와 <code>Socket</code> 만으로 필요한 기능은 모두 제공됩니다. </p>
+<p><code>ServerSocket</code> 는, 서버상에서 클라이언트로부터의 서비스 요구를 대기하는 소켓을 나타냅니다. <code>Socket</code> 는, 서버와 클라이언트간의 통신의 엔드 포인트를 나타냅니다. 서버는, 서비스의 요구를 받아들이면(자), 클라이언트와의 통신을 위해서(때문에) <code>Socket</code> 를 작성해, 계속 <code>ServerSocket</code> 상에서 다른 요구를 대기합니다. 클라이언트도 서버와의 통신을 위해서(때문에) <code>Socket</code> 를 작성합니다. 이하의 그림에 그 흐름을 나타냅니다. </p>
+<p align="center"><img alt="자세한 설명을 참조" longdesc="overview.txt" src="images/sockets-1a.gif" width="565" height="268"><a href="overview.txt" title="자세한 설명">[D]</a> </p>
+<p align="left">접속의 확립 후에, 소켓간의 통신으로,<code>getInputStream()</code> 와 <code>getOutputSteam()</code> 가 사용되는 경우가 있습니다. </p>
+<h2><a name="udp"></a> UDP 를 사용한 데이터 그램 패킷의 송수신</h2>
+<p>이하는, UDP 를 사용한 데이터 그램 패킷의 송수신에 관계하는 클래스입니다. </p>
+<ul>
+<li><code>DatagramPacket</code></li>
+<li><code>DatagramSocket</code></li>
+</ul>
+<p><code>DatagramPacket</code> 는, 데이터 그램 패킷을 나타냅니다. 데이터 그램 패킷은, 무접속 전달로 사용되어 일반적으로은 행선지의 주소와 포트에 관한 정보가 포함되어 있습니다. <code>DatagramSocket</code> 는, 네트워크상에서 UDP 를 사용해 데이터 그램 패킷을 송수신 하기 위해서 사용되는 소켓을 나타냅니다. DatagramPacket</code> 는,<code>send(DatagramPacket dp)</code>인수와 같이,<code>DatagramSocket</code> 의 <code>send(...)</code> 메소드를 호출해,<code>DatagramPacket</code> 를 건네주는 것에 의해,<code>DatagramSocket</code> 로부터 송신됩니다. <code>DatagramPacket</code> 를 수신하려면 ,<code>receive(DatagramPacket dp)</code> 를 사용합니다. <code><code>MulticastSocket</code> 클래스를 사용하면(자), 멀티 캐스트 그룹에 대한 <code>DatagramPacket</code> 의 송수신을 실시할 수가 있습니다. 이 클래스는, 멀티 캐스팅 기능을 추가하기 위한 <code>DatagramSocket</code> 의 서브 클래스입니다. </p>
+<p align="center"><img alt="자세한 설명을 참조" longdesc="overview2.txt" src="images/datagram-1.gif" width="430" height="201"><a href="overview2.txt" title="자세한 설명">[D]</a> </p>
+<h2><a name="locating"></a> 네트워크 자원의 검색과 식별</h2>
+<p>이하의 클래스는, 네트워크 자원의 검색과 식별에 관계하는 클래스입니다. </p>
+<ul>
+<li><code>URI </code></li>
+<li><code>URL </code></li>
+<li><code>URLClassLoader </code></li>
+<li><code>URLConnection </code></li>
+<li><code>URLStreamHandler</code></li>
+<li><code>HttpURLConnection</code></li>
+<li><code>JarURLConnection</code></li>
+</ul>
+<p>가장 일반적으로 사용되는 클래스는,<code>URI</code>,<code>URL</code>,<code>URLConnection</code>, 및 <code>HttpURLConnection</code> 입니다. </p>
+<p><code>URI</code> 는, 자원용의 URI (Uniform Resource Identifier)를 나타냅니다.  URI 는, 자원의 식별자입니다만, 그 자원의 locator가 될 필요는 없습니다. <code>URL</code> 는, 자원용의 URL (Uniform Resource Locator)를 나타냅니다. URL 는 URI 의 부분집합입니다만,<code>URL</code> 클래스는,<code>URI</code> 클래스의 서브 클래스가 아닙니다. 즉, URL 는 자원에의 액세스 방법을 나타내, URI 는 액세스 방법을 나타내는 경우와 가리키지 않는 경우가 있습니다. Uniform Resource Name (<code>URN</code>)도 <code>URI</code> 의 부분집합입니다. 다만, URN 를 나타내는 Java 클래스는 없습니다. </p>
+<p align="center"><img src="images/resources-1.gif" alt="URI 의 서브 클래스로서의 URL 와 URN 를 나타내는 그림" width="214" height="97"></p>
+<p><code>URLConnection</code> 는, 어플리케이션과<code>URL</code> 에 의해 식별되는 네트워크 자원과의 사이의 접속을 나타내는 추상 슈퍼 클래스입니다. <code>URL</code> 가 지정되어 그것에 의해 프로토콜이 지정되면(자),<code>URL.openConnection()</code> 는, 그 프로토콜의 <code>URLConnection</code> 의 적절한 구현을 돌려줍니다. 프로토콜은,<code>URL</code> 로부터 인식할 수가 있습니다. 이 인스턴스는, 실제로 접속을 열어 <code>URL</code> 에 액세스 하는 <code>URLConnection.connect()</code> 를 제공합니다. </p>
+<p align="center"><img src="images/resources-2.gif" alt="자세한 설명을 참조" longdesc="overview3.txt" width="637" height="313"><a href="overview3.txt" title="자세한 설명">[D]</a> </p>
+<p><code>HttpURLConnection</code> 는, 가장 일반적으로 사용되는 <code>URLConnection</code> 의 구현입니다. 이것은, Web 서버의 컨텐츠에 액세스 하기 위해서 사용되는 <code>http</code> 프로토콜용의 구현입니다. 위의 그림에서는,<code>URL</code> 의 액세스 프로토콜이 <code>http</code> 의 경우,<code>openConnection()</code> 메소드에 의해 <code>HttpURLConnection</code> 의 인스턴스가 돌려주어집니다.  </p>
+<h2><a name="security"></a> 시큐리티</h2>
+<p>시큐리티에 관해서는, 인증과 액세스권에 관계하는 클래스를 사용합니다. 인증은, 사용자의 인증에 관계해, 사용자명과 패스워드의 체크를 포함합니다. 사용자가 URL 에 액세스 하려고 했을 경우 등, 많은 경우, 사용자의 인증이 필요하게 됩니다. 액세스권은, 실행 가능한 처리에 관계합니다. 예를 들어,<code>NetPermission</code> 객체 &quot;<code>setDefaultAuthenticator</code>&quot; 가 존재하지 않는 경우에,<code>Authenticator.setDefault(Authenticator a)</code> 를 불러 출 내면(자), 시큐리티 예외가 발생합니다.  </p>
+<h3><a name="authentication"></a> 인증</h3>
+<p>프록시나 원의 서버의 일부에서는, BASIC 나 DIGEST 등의 인증 방식을 사용한 인증 정보가 필요합니다. 예를 들어 프록시 경유로 http 에 의한 접속을 해, 프록시에서는 인증이 필요한 경우는,<code>Authenticator</code> 클래스를 호출해 사용자명, 패스워드, 및 인증에 필요한 그 외의 항목을 가져옵니다. 인증에 관련하는 클래스는 다음과 같습니다. </p>
+<ul>
+<li><code>Authenticator</code></li>
+<li><code>PasswordAuthentication</code></li>
+</ul>
+<p>사용자 인증 뿐만이 아니라,<code>abstract</code> 클래스인 <code>Authenticator</code> 에는, 요구되고 있는 인증에 대해 쿠에리 하는 메소드도 있습니다 (<code>getRequesting<I>XXX</I>()</code> 참조). 일반적으로 이 클래스는, 서브 클래스화 되어<code>setDefault(Authenticator a)</code> 를 호출하는 것에 의해 서브 클래스의 인스턴스가 시스템에 등록됩니다. 시큐리티 매니저가 존재하는 경우는, 시큐리티 매니저가, 시큐리티 정책에 의해 <code>NetPermission</code> &quot;<code>setDefaultAthenticator</code>&quot; 가 허가될지 어떨지를 체크합니다. 시스템이 인증을 필요로 하는 경우, 시스템은,<code>requestPasswordAuthentication()</code> 등의 메소드를 호출합니다. </p>
+
+
+<p><code>PasswordAuthentication</code> 는, 단순하게 사용자명과 패스워드를 포함하는 데이터 홀더입니다. </p>
+<h3><a name="permissions"></a> 액세스권</h3>
+<ul>
+<li><code>SocketPermission</code></li>
+<li><code>NetPermission</code></li>
+</ul>
+<p><code>SocketPermission</code> 는,<code>접속</code>,<code>수락</code>,<code>대기</code>,<code>해결</code>등의 그 호스트상에서 실행할 수 있는 일련의 처리와 호스트 및 옵션의 포트 범위로 구성됩니다. 이 클래스는, 1 개의 <code>SocketPermission</code> 가, 다른 <code>Permission</code> 와 동일한지 어떤지, 혹은 다른 <code>Permission</code> 를 의미하는지 어떤지를 판단하기 위한 메소드를 포함하고 있습니다. <code>SocketPermission</code> 을 <code>PermissionCollection</code> 에 포함하면(자), 액세스권의 유무를 간단하게 체크할 수 있게 됩니다. </p>
+<p><code>NetPermission</code> 는, 다양한 이름 첨부 네트워크 액세스권을 나타내기 위한 클래스입니다. 현재, 상기의 <code>setDefaultAuthenticator</code>,<code>requestPasswordAuthentication</code>, 및 <code>specifyStreamHandler</code> 의 3 개의 네트워크 액세스권이 있습니다. <code>NetPermission</code> 을 <code>PermissionCollection</code> 에 포함하면(자), 액세스권의 유무를 간단하게 체크할 수 있게 됩니다. </p>
+<p>액세스권의 상세한 것에 대하여는,<a href="../../security/permissions.html">http://java.sun.com/j2se/1. 5.0/ja/docs/ja/guide/security/permissions.html</a>  를 참조해 주세요. </p>
+<p>&nbsp;</p>
+</body>
+</html>
+
+

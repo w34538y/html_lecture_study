@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>java.security.AccessControlException 가 throw 된다 ... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2> <span class="bg2">애플릿으로 <code>java.beans.Introspector.setBeanInfoSearchPath()</code> 를 호출하면(자) <code>java.security.AccessControlException</code> 가 throw 된다</span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote> 
+<p> 애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>AccessControlException</code> 가 <code>Introspector.setBeanInfoSearchPath()</code> 의 실행중에 throw 됩니다.  
+    </p>
+    <blockquote> 
+<p><code>java.security.AccessControlException: access denied (java.util.PropertyPermission * read, write) <br> &nbsp;&nbsp;&nbsp; at java.security.AccessControlContext.checkPermission(Unknown Source) <br> &nbsp;&nbsp;&nbsp; at java.security.AccessController.checkPermission(Unknown Source) <br> &nbsp;&nbsp;&nbsp; at java.lang.SecurityManager.checkPermission(Unknown Source) <br> &nbsp;&nbsp;&nbsp; at java.lang.SecurityManager.checkPropertiesAccess(Unknown Source) <br> &nbsp;&nbsp;&nbsp; at java.beans.Introspector.setBeanInfoSearchPath(Unknown Source) <br> &nbsp;&nbsp;&nbsp; at ....</code></p>
+    </blockquote>
+<p>같은 애플릿이 Microsoft VM 에서는 실행할 수 있습니다.  </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p> <code>Introspector.setBeanInfoSearchPath()</code> 메소드의 호출에서는,<code>BeanInfo</code> 클래스의 검색에 사용되는 패키지명의 일람을 변경할 수 있습니다. 복수의 애플릿이 VM 로 실행중의 경우, 다른 애플릿에 <code>BeanInfo</code> 의 검색을 리다이렉트(redirect) 하기 위해서, 상정외의 패키지로, 신뢰되어 있지 않은 애플릿이 이 메소드를 호출할 가능성이 있습니다. 이것이 시큐리티 홀입니다. </p>
+<p> 시큐리티에 관한 일을 취급하기 (위해)때문에, JRE 에서는 <code>java.util.PropertyPermission</code> 에 대한 시큐리티 체크를 이 메소드에 추가했습니다. 애플릿이 서명되지 않고, 이 메소드에 불려 갔을 경우,<code>AccessControlException</code> 가 throw 됩니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote> 
+<p> 회피책은 다음의 머지않아인가입니다. </p>
+    <ol>
+<li>JDK 의 <code>jarsigner</code> 툴을 사용해 애플릿에 서명한다.  이것으로 애플릿은 신뢰되는 애플릿으로서 실행되어<code>Introspector.setBeanInfoSearchPath()</code> 메소드를 호출하기 위한 액세스권을 얻는다</li>
+<li><code>Introspector.setBeanInfoSearchPath()</code> 를 호출하지 않게 애플릿의 코드를 개변한다. 예를 들어 <code>BeanInfo</code> 검색 패스에 의존하는 대신에, 완전 수식 패키지명을 사용해 <code>BeanInfo</code> 를 검색한다</li>
+    </ol>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/windows/jarsigner.html">「jarsigner - JAR 서명 및 검증 툴」</a>을 참조해 주세요. </p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

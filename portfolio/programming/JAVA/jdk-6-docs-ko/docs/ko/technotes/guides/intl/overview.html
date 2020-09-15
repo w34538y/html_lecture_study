@@ -1,0 +1,397 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>국제화의 개요 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077" LANG="en">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>국제화의 개요</CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<H2>목차</H2>
+
+<UL>
+<LI><A HREF="#introduction">처음에</A> 
+   
+<LI>코어 Java 의 국제화
+   
+   <UL>
+<LI><A HREF="#textrep">텍스트의 표현</A> 
+      
+<LI><A HREF="#locale">로케일의 식별과 로컬라이제이션</A> 
+      
+<LI><A HREF="#time">일자와 시각의 처리</A> 
+      
+<LI><A HREF="#textproc">텍스트 처리</A> 
+      
+<LI><A HREF="#pluggablelocales">로케일에 의존하는 서비스의 SPI</A> 
+
+<LI><A HREF="#conversion">문자 인코딩의 변환</A> 
+   </UL>
+   
+<LI>데스크탑 Java 의 국제화
+   
+   <UL>
+<LI><A HREF="#input">텍스트 입력</A> 
+   </UL>
+</UL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="introduction"></A>  	처음에</H2>
+
+<P>전세계에 펼쳐지는 인터넷에서는, 온 세상 어디에서라도 사용할 수 있는 소프트웨어가 필요하게 됩니다.  즉, 사용자의 나라나 언어를 의식하지 않고 개발할 수 있어 다양한 나라나 지역에 맞추어 로컬라이즈 할 수 있는 소프트웨어입니다. Java 플랫폼에서는, 글로벌 어플리케이션을 개발하기 위한 풍부한 API 군이 제공되고 있습니다. 이러한 국제화를 위한 API 는, Unicode 표준에 근거하고 있어 텍스트, 수치, 일자, 통화, 및 사용자 정의의 객체를 임의의 나라의 관습에 맞추는 기능을 갖추고 있습니다. </P>
+
+<P>이 문서에서는, Java Platform Standard Edition 의 국제화에 관한 API 와 기능의 개요를 설명합니다. 코딩예와 자세한 순서의 설명에 대해서는,<A HREF="http://java.sun.com/docs/books/tutorial/i18n/index.html">「Java 튜토리얼」</a>을 참조해 주세요. API 의 상세한 것에 대하여는,<A HREF="../../../api/index.html">「Java Platform Standard Edition 의 API 스펙」</a>을 참조해 주세요. </P>
+
+<P>한층 더 자세한 정보에 대해서는,<A HREF="http://java.sun.com/j2se/corejava/intl/index.jsp">Java 국제화의 홈 페이지</a>를 참조해 주세요. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="textrep"></A> 텍스트의 표현</H2>
+
+<P>Java 프로그램 언어는 <A HREF="http://unicode.org/standard/standard.html">Unicode</A>  캐릭터 세트를 베이스로 하고 있어 몇개의 라이브러리에서는 Unicode 표준이 구현되고 있습니다. Unicode 는, 세계의 주요한 서기법 모두에 가세해, 기본적인 학술 기호를 지원하고 있습니다. Unicode 스펙에서는 최초, 각 문자를 16 비트 고정장의 실체로서 정의하고 있었습니다만, 그 후, 16 비트보다 긴 표현을 필요로 하는 문자도 취급할 수 있도록(듯이) Unicode 표준이 변경되었습니다. 유효한 코드 포인트의 범위는 현재, U+0000 ?  U+10FFFF 입니다. UTF-16 표준에 의해 정의되는 인코딩에서는, 모든 Unicode 코드 포인트를, 1 개(살) 또는 2 개의 16 비트 단위를 사용해 표현할 수 있습니다. </P>
+
+<P>Java 프로그램 언어의 기본 데이터형 char 는, 부호 없음의 16 비트 정수이므로, U+0000 ?  U+FFFF 의 범위의 Unicode 코드 포인트나, UTF-16 의 코드 단위를 표현할 수 있습니다.  Java 플랫폼에서 문자 순서를 표현하는 각종의 형태 및 클래스는, UTF-16 의 순서입니다. 그러한 형태 및 클래스로서는, char[], java.lang.CharSequence 의 구현 (예를 들어 String 클래스), java.text.CharacterIterator 의 구현등이 있습니다.  대부분의 Java 코드는, 7 비트 문자 인코딩의 ASCII 또는 8 비트 문자 인코딩의 ISO-8859-1 로 기술됩니다만, 처리전에 UTF-16 에 변환됩니다. </P>
+
+<P><A HREF="../../../api/java/lang/Character.html">Character</A>  클래스는, char 원시형의 객체 래퍼로서의 역할을 완수합니다. Character 클래스에는, isLowerCase()나 isDigit() 등, 문자의 프로퍼티을 판별하기 위한 static 메소드도 포함되어 있습니다. J2SE 5.0 으로부터는, 이러한 메소드는, char (U+0000? U+FFFF 의 범위의 Unicode 코드 포인트를 표현할 수 있다) 또는 int (모든 Unicode 코드 포인트를 표현할 수 있다)의 어느쪽이든을 받아들이도록(듯이) overload 되고 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="locale"></A> 로케일의 식별과 로컬라이제이션</H2>
+
+<H3>로케일</H3>
+
+<P>Java 플랫폼에서는, 로케일은, 언어와 지역의 특정의 편성에 대한 단순한 식별자입니다. 로케일 고유의 속성의 집합이 아닙니다. 로케일 고유의 정보는, 로케일의 영향을 받는 클래스가 각각 독자적으로 보관 유지하고 있습니다. 이러한 설계를 위해, 로케일 고유의 자원을 보관 유지하는 방법에 관계되어, 사용자 객체와 시스템 객체로 차이는 없습니다. 어느쪽이나, 표준의 로컬라이제이션 기구를 사용합니다. </P>
+
+<P>Java 프로그램에는, 단일의 글로벌 로케일은 할당할 수 있고 있지 않습니다. 로케일에 의존하는 모든 조작에는, 인수로서 명시적으로 로케일을 건네줄 수가 있습니다. 이것에 의해, 다언어 프로그램이 매우 간단하게 됩니다. 글로벌 로케일이 강제적으로 사용될 것은 없습니다만, 로케일을 명시적으로 관리할 필요가 없는 프로그램에서는, 디폴트의 로케일을 이용할 수 있습니다. 디폴트 로케일을 사용하면(자), 전체적인 표시 형식을 한 번의 선택으로 바꿀 수가 있습니다. </P>
+
+<P>Java 의 로케일은, 다른 객체로부터 나오는, 어느 동작에 대한 요구로서 기능합니다. 예를 들어, 달력 객체에 프랑스어계 캐나다용 로케일을 건네주면(자), 퀘벡주의 관습에 따라 올바르게 동작하도록(듯이) 달력에 요구한 것이  됩니다. 로케일을 받은 객체는, 적절한 처리를 실시하지 않으면 안됩니다. 객체가 특정의 로케일에 대해서 로컬라이즈되어 있지 않은 경우, 객체는, 로컬라이즈 되고 있는 로케일로 자주(잘) 닮은 것을 찾습니다. 예를 들어, 달력 객체가 프랑스어계 캐나다의 로케일용으로 로컬라이즈되어 있지 않아도, 일반적인 프랑스어에 대해서는 로컬라이즈 되고 있는 경우는, 대신에 프랑스어의 로컬라이즈판을 사용합니다. </P>
+
+<H4>Locale 클래스</H4>
+
+<P><A HREF="../../../api/java/util/Locale.html">Locale</A>  객체는, 지리적, 정치적, 또는 문화적으로 특정의 지역을 나타내고 있습니다. 동작하기 위해서 로케일을 필요로 하는 조작을, 로케일 의존 조작이라고 부릅니다. 로케일 의존 조작은, Locale 객체를 사용해, 사용자에게 맞도록(듯이) 정보를 가공합니다. 예를 들어, 수치의 표시는 로케일에 의존하는 조작입니다. 수치의 서식은, 사용자에게 고유의 나라, 지역, 문화등의 관습이나 규칙에 따라 설정할 필요가 있습니다.
+</P>
+
+<H4>지원되고 있는 로케일</H4>
+
+<P>Java 플랫폼에서는, 클래스 마다 독자적인 로컬라이즈판이 보관 유지되므로, 지원되는 로케일의 집합은 1 종류뿐 아니라도 괜찮습니다. 다만, Java 플랫폼의 클래스로서는, 일관성이 있는 로컬라이제이션을 지원하고 있습니다. Java 플랫폼외의 구현에서는, 다른 로케일을 지원하는 경우가 있습니다. Sun 의 Java SE Runtime Environments 가 지원하는 로케일의 일람은,<A HREF="locale.doc.html">「지원되고 있는 로케일」</a>을 참조해 주세요. </P>
+
+<H3>로컬라이즈 된 자원</H3>
+
+<P>모든 로케일 의존 클래스는, 지원하는 로케일용으로 커스터마이즈 된 자원에 액세스 할 수 없으면 안됩니다. 로컬라이제이션의 처리를 용이하게 하려면 , 로케일 마다 자원을 그룹화 해, 프로그램의 로케일에 의존하지 않는 부분으로부터 떼어내는 것이 유용합니다.
+</P>
+
+<H4>ResourceBundle 클래스</H4>
+
+<P><A HREF="../../../api/java/util/ResourceBundle.html">ResourceBundle</A>  클래스는, 자원의 컨테이너를 나타내는 추상 base class입니다. 프로그램에서는, 특정의 로케일을 위한 자원을 포함한 ResourceBundle 의 서브 클래스를 작성합니다. 사용하는 코드를 변경하지 않아도, ResourceBundle 의 인스턴스에 새로운 자원을 추가하거나 ResourceBundle 의 새로운 인스턴스를 시스템에 추가하거나 할 수 있습니다. 자원을 클래스로서 패키지화하는 것으로, Java 의 클래스 로딩 기구를 이용해 자원을 찾을 수가 있습니다. </P>
+
+<P>자원 번들에는, 로케일 고유의 객체가 포함되어 있습니다. String 객체 등, 로케일 고유의 자원이 필요한 경우는, 현재의 사용자의 로케일에 적절한 자원 번들로부터 자원을 로드합니다. 이와 같이 해, 자원의 번들에 포함되어 있는 로케일 고유의 정보의 모두, 또는 적어도 대부분을 떼어내, 사용자의 로케일과의 의존관계(dependencies)가 약한 코드를 작성할 수 있습니다. </P>
+
+<P>그 때문에, 다음과 같은 특징을 갖춘 Java 코드를 작성할 수 있습니다. </P>
+
+<UL>
+<LI>다른 언어에 간단하게 로컬라이즈 즉 번역할 수 있다
+   
+<LI>복수의 로케일을 동시에 취급할 수가 있다
+   
+<LI>나중에 새로운 로케일의 지원를 간단하게 추가할 수 있다
+</UL>
+
+<H5>ResourceBundle.Control Class</H5>
+
+<P><A HREF="../../../api/java/util/ResourceBundle.Control.html">ResourceBundle.Control</A>  는 ResourceBundle 의 상자의 클래스입니다. 이 클래스에서,<A HREF="../../../api/java/util/ResourceBundle.html#getBundle(java.lang.String,%20java.util.Locale,%20java.lang.ClassLoader,%20java.util.ResourceBundle.Control)">ResourceBundle.getBundle</A>  팩토리 메소드로부터 불려 가는 메소드를 정의하면, 자원 번들 로드 처리의 동작을 변경할 수가 있습니다. 예를 들어, XML 등의 어플리케이션 고유의 자원 번들 형식은, 메소드를 오버라이드(override) 하는 것으로 지원 가능하게 됩니다. </P>
+
+<H4>ListResourceBundle 클래스</H4>
+
+<P><A HREF="../../../api/java/util/ListResourceBundle.html">ListResourceBundle</A>  클래스는 ResourceBundle 클래스의 추상 서브 클래스에서, 편리해 사용하기 쉬운 일람을 이용해, 로케일의 자원을 관리합니다. </P>
+
+<H4>PropertyResourceBundle 클래스</H4>
+
+<P><A HREF="../../../api/java/util/PropertyResourceBundle.html">PropertyResourceBundle</A>  클래스는 ResourceBundle 클래스를 구체화한 서브 클래스에서, 프로퍼티 파일로부터 꺼낸 고정 캐릭터 라인군을 이용해, 로케일의 자원을 관리합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="time"></A> 일자와 시각의 처리</H2>
+
+<P>java.util.Date 클래스는, 타임 존이나 로케일과는 관계없이, 시간의 특정의 순간을 밀리 세컨드의 정밀도로 나타냅니다.
+</P>
+
+<P>Date 클래스에는, 일자를 년, 월, 일, 시, 분, 초의 값으로 해서 해석하거나 일자의 캐릭터 라인의 서식 지정이나 구문 분석을 실행하거나 하는 메소드가 몇개인가 짜넣어지고 있습니다. 이러한 메소드는 국제화와 호환성이 없기 때문에, 그 대부분은 사용이 추천 되고 있지 않습니다. 이러한 메소드 대신에, 일자와 시각의 필드간의 변환에는 Calendar 클래스를, 또 일자의 캐릭터 라인의 서식 지정과 구문 분석에는 DateFormat 클래스를, 각각 사용할 필요가 있습니다. </P>
+
+<H4>Calendar 클래스</H4>
+
+<P><A HREF="../../../api/java/util/Calendar.html">Calendar</A>  클래스는 추상 base class로, 내부 시간 (1970 년 1 월 1 일 00:00:00 GMT 로부터의 경과시간을 밀리 세컨드로 나타낸 것)과 년, 달, 주등을 나타내는 정수치의 사이의 변환을 실시할 수가 있습니다. GregorianCalendar 클래스는 Calendar 클래스를 구체화한 서브 클래스에서, 태양력 (태양력)의 규칙에 따라 이 처리를 실시합니다. </P>
+
+<P>Calendar 클래스와 그 서브 클래스는, 시각의 값을 다양한 방법으로 조작할 경우에 편리합니다. Calendar 객체의 필드와 결과적으로 얻을 수 있던 일자에 대해서, 수치 연산을 실시할 수가 있습니다. Calendar 객체에서는, 특정의 언어와 달력의 스타일에 대한 일자와 시각의 서식 지정을 구현하기 위해서 필요한 모든 시각 필드의 값을 생성할 수 있습니다. 자세한 것은<A HREF="calendar.doc.html">「지원되는 달력」</A>  의 문서를 참조해 주세요. </P>
+
+<H4>TimeZone 클래스</H4>
+
+<P>추상 클래스인 <A HREF="../../../api/java/util/TimeZone.html">TimeZone</A>  는, GMT (그리니지 표준시)의 타임 존의 오프셋(offset)와 사용 가능한 섬머 타임의 오프셋(offset)를 캡슐화하고 있습니다. <A HREF="../../../api/java/util/TimeZone.html#getTimeZone(java.lang.String)">TimeZone.getTimeZone</A>  팩토리 메소드를 호출하면, 타임 존 ID 에 대응하는 TimeZone 인스턴스를 얻을 수 있습니다. <A HREF="../../../api/java/util/TimeZone.html#getDefault()">TimeZone.getDefault</A>  팩토리 메소드는, 플랫폼의 타임 존을 자동적으로 검출해, 그 플랫폼에 맞은 TimeZone 인스턴스를 돌려줍니다. </P>
+
+<P>Calendar 클래스와 그 서브 클래스는, TimeZone 클래스를 사용해 현지 시각과 UTC 와의 변환을 실시합니다. UTC 는, Date 객체가 사용하는 내부 표현입니다. 대부분의 프로그램에서는, TimeZone 객체를 직접 취급할 필요는 없습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="textproc"></A> 텍스트 처리</H2>
+
+<H3>서식 지정</H3>
+
+<P>데이터를 출력할 때의 서식 지정에는, 많은 문화적인 관습이 적용됩니다. 수치, 일자, 시각, 및 메세지의 모두에 임해서, 서식을 지정하지 않으면 표시할 수 없는 경우가 있습니다. Java 플랫폼에서는, 유연성이 있는 서식 지정 클래스군이 제공되고 있어 로케일의 표준적인 서식 및 독자적으로 정의된 서식의 양쪽 모두를 취급할 수가 있습니다. 이러한 서식 지정 클래스를 사용하면(자), 서식을 설정된 캐릭터 라인의 구문을 해석해, 구성하는 객체에 되돌릴 수도 있습니다. </P>
+
+<H4>Format 클래스</H4>
+
+<P><A HREF="../../../api/java/text/Format.html">Format</A>  클래스는, 일자, 시각, 메세지, 수치 등, 로케일에 의존하는 정보에 서식을 지정하는 기능을 위한, 추상 base class입니다. 주요한 서브 클래스로서 DateFormat, NumberFormat, 및 MessageFormat 의 3 개가 제공되고 있습니다. 이것들 3 개의 클래스에서는, 각각 독자적인 서브 클래스가 제공되고 있습니다. </P>
+
+<H4>DateFormat 클래스</H4>
+
+<P>일자와 시각은 내부적으로는 로케일에 의존하지 않는 방법으로 포함됩니다만, 로케일을 반영한 형식에서 표시할 수 있도록(듯이) 서식을 지정할 필요가 있습니다. 예를 들어, 다음은 같은 날부에 대한 다른 서식의 예입니다. </P>
+
+<UL>
+<LI>November 3, 1997 (영어)
+   
+<LI>3 novembre 1997 (프랑스어)
+</UL>
+
+<P><A HREF="../../../api/java/text/DateFormat.html">DateFormat</A>  클래스는, 로케일에 의존하지 않는 방법으로 일자와 시각의 값의 서식 지정과 구문 분석을 행하기 위한, 추상 base class입니다. 특정의 로케일에 대할 때 각의 표준 서식을 취득하기 위한 static 팩토리 메소드가 몇개인가 준비되어 있습니다. </P>
+
+<P>DateFormat 객체는, Calendar 객체와 TimeZone 객체를 사용해, 시각의 값을 해석합니다. 디폴트에서는, 특정의 로케일에 대한 DateFormat 객체는, 그 로케일에 대한 적절한 Calendar 객체와 시스템의 디폴트의 TimeZone 객체를 사용합니다. 이러한 설정은, 필요에 따라서 오버라이드(override) 할 수 있습니다. </P>
+
+<H4>SimpleDateFormat 클래스</H4>
+
+<P><A HREF="../../../api/java/text/SimpleDateFormat.html">SimpleDateFormat</A>  클래스는 구상 클래스에서, 로케일에 의존한 방법으로 일자와 시각의 서식 지정과 구문 분석을 실시합니다. 이 클래스를 사용하면(자), 서식 지정 (밀리 세컨드를 텍스트에), 구문 분석 (텍스트를 밀리 세컨드에), 및 정규화를 실시할 수가 있습니다. </P>
+
+<H4>DateFormatSymbols 클래스</H4>
+
+<P><A HREF="../../../api/java/text/DateFormatSymbols.html">DateFormatSymbols</A>  클래스는, 달의 이름, 요일의 이름, 시각, 타임 존의 데이터 등, 일자와 시각의 서식 지정에 관한 로컬라이즈 가능한 데이터를 캡슐화하기 위해서 사용합니다. DateFormat 클래스와 SimpleDateFormat 클래스는 어느쪽이나, DateFormatSymbols 클래스를 사용해 이 정보를 캡슐화합니다. </P>
+
+<P>일반적으로, 프로그램으로 DateFormatSymbols 클래스를 직접 사용할 것은 없습니다. 실제로는, DateFormat 클래스의 팩토리 메소드로, 서식 지정의 기능을 구현합니다. </P>
+
+<H4>NumberFormat 클래스</H4>
+
+<P><A HREF="../../../api/java/text/NumberFormat.html">NumberFormat</A>  클래스는, 수치 데이터의 서식 지정과 구문 분석을 위한 추상 base class입니다. 다른 종류의 로케일 고유의 수치 서식을 취득하기 위해(때문에), static 팩토리 메소드가 몇개인가 준비되어 있습니다. </P>
+
+<P>NumberFormat 클래스는, 임의의 로케일로 수치의 서식 지정과 구문 분석을 실시할 때 도움이 됩니다. 이 클래스를 사용하는 코드는, 소수점, 자리수 단락지어, 사용되고 있는 특정의 10 진수자, 또는 수치의 서식이 10 진수인가 어떤가 등에 대하는 로케일의 규칙으로부터, 완전하게 독립하고 있습니다. 일반적으로의 10 진수, 통화, 퍼센트등으로 수치를 표시할 수도 있습니다. </P>
+
+<UL>
+<LI>1,234.5 (미국 형식에서의 10 진수)
+   
+<LI>$1, 234.50 (미국 형식에서의 미국 통화)
+   
+<LI>1.234, 50 &#8364; (독일 형식에서의 유럽 통화)
+   
+<LI>123.450% (독일 형식에서의 퍼센트)
+</UL>
+
+<H4>DecimalFormat 클래스</H4>
+
+<P>수치는, 내부적으로는 로케일에 의존하지 않는 방법으로 포함되고 있습니다만, 로케일을 반영한 형식에서 표시할 수 있도록(듯이) 서식을 지정할 필요가 있습니다. 예를 들어, 「#,###. 00」(이)라고 하는 패턴을 사용하면(자), 같은 수치에서도 다음과 같이 다른 서식이 되는 경우가 있습니다. </P>
+
+<UL>
+<LI>1.234, 56 (독일어)
+   
+<LI>1,234.56 (영어)
+</UL>
+
+<P><A HREF="../../../api/java/text/DecimalFormat.html">DecimalFormat</A>  클래스는, NumberFormat 클래스의 구상 서브 클래스에서, 10 진수값의 서식 지정을 실시할 수가 있습니다. 일반적으로, 이 클래스의 인스턴스를 직접 생성할 것은 없습니다만, 제공되고 있는 팩토리 메소드는 사용합니다. </P>
+
+<P>DecimalFormat 클래스에는, 수치의 서식 설정의 방법을 지정하는 패턴 캐릭터 라인을 받는 기능이 있습니다. 패턴에서는, 수치의 정밀도, 선두의 0 을 표시할지 어떨지, 사용하는 통화 기호등의 속성을 지정합니다. 프로그램으로 독자적인 서식을 만들 필요가 있는 경우는, 패턴 캐릭터 라인을 변경할 수 있습니다.
+</P>
+
+<H4>DecimalFormatSymbols 클래스</H4>
+
+<P><A HREF="../../../api/java/text/DecimalFormatSymbols.html">DecimalFormatSymbols</A>  클래스는, 수치의 서식을 지정할 경우에 DecimalFormat 가 필요로 하는 기호군 (소수점, 그룹화 단락 문자등)을 나타냅니다. DecimalFormat 클래스는, 그 자체를 위해서(때문에), 로케일 데이터로부터 DecimalFormatSymbols 클래스의 인스턴스를 생성합니다. 이러한 기호의 어떤 것인지를 변경할 필요가 있는 경우는, DecimalFormat 객체로부터 DecimalFormatSymbols 객체를 취득해 수정할 수 있습니다. </P>
+
+<H4>ChoiceFormat 클래스</H4>
+
+<P><A HREF="../../../api/java/text/ChoiceFormat.html">ChoiceFormat</A>  클래스는, NumberFormat 클래스의 구상 서브 클래스입니다. ChoiceFormat 클래스를 사용하면(자), 어느 범위의 수치에 서식을 설정할 수 있습니다. 이 클래스는, 일반적으로, MessageFormat 객체 중(안)에서 복수형을 처리할 경우에 사용됩니다. 상세한 것에 대하여는, 다음의 「MessageFormat 클래스」를 참조해 주세요.
+</P>
+
+<H4>MessageFormat 클래스</H4>
+
+<P>프로그램에서는, 일련의 캐릭터 라인, 수치, 및 다른 데이터로부터 메세지를 만들지 않으면 안 되는 경우가 자주 있습니다. 예를 들어, 디스크 드라이버에 있는 파일의 수를 표시하는 메세지의 텍스트는, 상황에 의해 다음과 같이 바뀝니다. </P>
+
+<UL>
+<LI>The disk C contains 100 files.
+   
+<LI>The disk D contains 1 file.
+   
+<LI>The disk F contains 0 files.
+</UL>
+
+<P>일련의 캐릭터 라인과 수치로부터 조립하는 메세지가 하드 코드 되고 있는 경우는, 다른 언어로 번역할 수 없습니다. 예를 들어, 다음의 예로, 파라미터의 「3」(와)과「G」의 위치가 다른 것에 주의해 주세요. </P>
+
+<UL>
+<LI>The disk G contains 3 files. (일본어)
+   
+<LI>Il y a 3 fichiers sur le disque G.  (프랑스어)
+</UL>
+
+<P><A HREF="../../../api/java/text/MessageFormat.html">MessageFormat</A>   클래스를 사용하면(자), 언어에 의존하지 않는 방법으로, 문자나 숫자를 연결한 메세지를 작성할 수 있습니다. MessageFormat 객체는, 복수의 객체를 받아, 서식을 설정해, 패턴의 적절한 위치에 서식을 설정한 캐릭터 라인을 삽입합니다. </P>
+
+<H4>ParsePosition 클래스</H4>
+
+<P><A HREF="../../../api/java/text/ParsePosition.html">ParsePosition</A>  클래스는, Format 클래스와 그 서브 클래스에 의해 사용되어 구문 분석을 행하고 있는 동안의 현재 위치를 기록합니다. Format 클래스의 parseObject() 메소드에서는, 인수로서 ParsePosition 객체가 필요합니다. </P>
+
+<H4>FieldPosition 클래스</H4>
+
+<P><A HREF="../../../api/java/text/FieldPosition.html">FieldPosition</A>  클래스는, Format 클래스와 그 서브 클래스에 의해 사용되어 서식 지정된 출력의 필드를 식별합니다. Format 클래스의 format() 메소드의 1 개에서는, 인수로서 FieldPosition 객체가 필요합니다. </P>
+
+<H3>로케일에 의존하는 캐릭터 라인의 조작</H3>
+
+<P> 프로그램에서는, 캐릭터 라인의 조작이 빈번하게 필요하게 됩니다. 캐릭터 라인에 대한 공통의 조작으로서 검색과 소트가 있습니다. 캐릭터 라인의 조합이나 텍스트의 다양한 경계의 검출 등, 어떤 종류의 처리는, 정확하게 실시하려고 하면(자) 매우 어렵고, 복수의 언어를 고려할 필요가 있는 경우는 한층 더 곤란하게 됩니다. Java 플랫폼에서는, 이러한 공통의 캐릭터 라인 조작의 대부분을 로케일에 의존한 방법으로 처리하기 위한 클래스군이 제공되고 있습니다. </P>
+
+<H4>Collator 클래스</H4>
+
+<P><A HREF="../../../api/java/text/Collator.html">Collator</A>   클래스에서는, 로케일에 의존한 캐릭터 라인의 비교를 합니다. 자연 언어 텍스트를 위한 검색 루틴 및 알파벳순서 소트 루틴을 만들려면 , 이 클래스를 사용합니다. Collator 는 추상 base class입니다. 서브 클래스에서는, 구체적인 조합 방법이 구현됩니다. 현재, Java 플랫폼에서는 1 개의 서브 클래스 RuleBasedCollator 가 제공되고 있어 광범위한 언어군에게 적용할 수 있습니다. 다른 서브 클래스를 작성해, 게다가 특별한 요구를 취급할 수가 있습니다. </P>
+
+<H4>RuleBasedCollator 클래스</H4>
+
+<P><A HREF="../../../api/java/text/RuleBasedCollator.html">RuleBasedCollator</A>  클래스는, Collator 클래스의 구상 서브 클래스에서, 데이터 구동의 간단한 테이블 조합 기능을 제공합니다. RuleBasedCollator 클래스를 이용해, 목적에 맞추어 커스터마이즈 한 테이블 베이스의 조합 기능을 작성할 수 있습니다. 예를 들어, 대문자, 엑센트, 및 Unicode 복합문자를 무시 (또는 의식)하는 조합 기능을 만들 수가 있습니다. </P>
+
+<H4>CollationElementIterator 클래스</H4>
+
+<P><A HREF="../../../api/java/text/CollationElementIterator.html">CollationElementIterator</A>  클래스는, 다국어 캐릭터 라인의 각 문자를 처리할 때의 반복자로서 사용됩니다. 반복자는, 자리 매김을 하고 된 문자의 순서의 우선 순위를 돌려주기 위해서(때문에) 사용됩니다. 문자의 순서의 우선 순위 즉 키는, 특정의 Collator 객체 중(안)에서 문자를 조합하는 방법을 정의하는 것입니다. CollationElementIterator 클래스는, RuleBasedCollator 클래스의 compare() 메소드로 사용됩니다. </P>
+
+<H4>CollationKey 클래스</H4>
+
+<P><A HREF="../../../api/java/text/CollationKey.html">CollationKey</A>  객체는, 특정의 Collator 객체의 규칙이 적용된 캐릭터 라인을 나타냅니다. 2 개의 CollationKey 객체를 비교하면(자), 그것들이 나타내는 캐릭터 라인의 상대적인 순서가 돌려주어집니다. CollationKey 객체를 사용해 캐릭터 라인을 비교하는 (분)편이, 일반적으로, Collator.compare() 메소드를 사용하는 것보다 고속으로. 따라서, 캐릭터 라인의 일람을 소트 할 때와 같이, 캐릭터 라인을 비교하는 회수가 많은 경우는, CollationKey 객체를 사용하는 (분)편이 효율적입니다. </P>
+
+<H4>BreakIterator 클래스</H4>
+
+<P><A HREF="../../../api/java/text/BreakIterator.html">BreakIterator</A>  클래스는, 텍스트 캐릭터 라인중에서 다음과 같은 종류의 경계의 위치를 찾아내기 위한 메소드를 간접적으로 구현합니다. </P>
+
+<UL>
+<LI>잠재적인 행 브레이크
+   
+<LI>문
+   
+<LI>어
+   
+<LI>문자
+</UL>
+
+<P>행, 문, 어, 및 문자를 단락짓는 장소의 규칙은, 언어의 종류에 의해 다릅니다. BreakIterator 클래스는 로케일에 의존하므로, 텍스트를 조작하는 프로그램으로 사용할 수 있습니다. 예를 들어, 문자의 강조 표시, 말의 잘라내, 다음의 문장에의 커서의 이동, 줄 끝에서의 즉시등이 가능한 워드프로세서 프로그램을 생각합니다. 이 워드프로세서 프로그램은, 브레이크 반복자를 사용해 텍스트의 논리적인 경계를 결정해, 로케일을 의식한 방법으로 텍스트를 조작할 수 있도록(듯이) 합니다. </P>
+
+<H4>StringCharacterIterator 클래스</H4>
+
+<P><A HREF="../../../api/java/text/StringCharacterIterator.html">StringCharacterIterator</A>  클래스는, Unicode 문자의 캐릭터 라인에 대해서 쌍방향의 반복 처리를 실시하는 기능을 제공합니다. 이 클래스는, 커서를 사용해 있는 범위의 텍스트안을 이동해, 개별의 문자 또는 문자의 인덱스치를 돌려줄 수가 있습니다. StringCharacterIterator 클래스는, CharacterIterator 인터페이스의 문자 반복자 기능을 구현하고 있습니다.
+</P>
+
+<H4>CharacterIterator 인터페이스</H4>
+
+<P><A HREF="../../../api/java/text/CharacterIterator.html">CharacterIterator</A>  인터페이스는, Unicode 문자에 대한 쌍방향의 반복 처리를 위한 프로토콜을 정의하고 있습니다. 어느 범위의 텍스트안을 이동해, 개별의 Unicode 문자 또는 그 인덱스치를 돌려주는 클래스의 경우, 이 인터페이스를 구현할 필요가 있습니다. CharacterIterator 는, 문자 검색을 실시할 때 도움이 됩니다. </P>
+
+<H4>Normalizer 클래스</H4>
+
+<P><A HREF="../../../api/java/text/Normalizer.html">Normalizer</A>  클래스는, Unicode 텍스트를 등가의 형식에 변환 혹은 복원하는 메소드를 제공합니다. 이 클래스는, Unicode 표준에 의해 정의된 「Unicode Normalization Form」를 지원합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="pluggablelocales"></A> 로케일에 의존하는 서비스의 SPI</H2>
+
+<P>java.text 및 java.util 패키지내의 클래스가 제공하는, 로케일에 의존하는 서비스는, 「로케일에 의존하는 서비스의 SPI」를 구현하면, Java 런타임이 아직 지원하고 있지 않는 로케일에도 확장할 수가 있습니다. java.util 패키지에 포함되는 <A HREF="../../../api/java/util/Currency.html">Currency</A> ,<A HREF="../../../api/java/util/Locale.html">Locale</A> ,<A HREF="../../../api/java/util/TimeZone.html">TimeZone</A>  의 각 클래스의 로컬라이즈 된 기호나 이름외, java.text 패키지에 포함되는 다음의 클래스의 구현은, SPI 와 함께 플러그 인 할 수가 있습니다. </P>
+
+<UL>
+<LI><A HREF="../../../api/java/text/BreakIterator.html">BreakIterator</A> 
+<LI><A HREF="../../../api/java/text/Collator.html">Collator</A> 
+<LI><A HREF="../../../api/java/text/DateFormat.html">DateFormat</A> 
+<LI><A HREF="../../../api/java/text/DateFormatSymbols.html">DateFormatSymbols</A> 
+<LI><A HREF="../../../api/java/text/DecimalFormatSymbols.html">DecimalFormatSymbols</A> 
+<LI><A HREF="../../../api/java/text/NumberFormat.html">NumberFormat</A> 
+</UL>
+
+
+<P>
+<HR>
+</P>
+
+<H2><A NAME="conversion"></A> 문자 인코딩의 변환</H2>
+
+<P>Java 플랫폼은, 네이티브의 문자 인코딩으로서 Unicode 를 사용하고 있습니다만, Java 프로그램이 많고에서는, 아직, 다른 인코딩의 텍스트 데이터를 취급할 필요가 있습니다. 그 때문에, Java 에서는, 많은 표준적인 문자 인코딩과 Unicode 의 사이의 변환을 실시하는 클래스군이 제공되고 있습니다. Unicode 이외의 텍스트 데이터를 취급할 필요가 있는 Java 프로그램에서는, 데이터를 일단 Unicode 로 변환해, Unicode 로서 데이터를 처리하고 나서, 그 결과를 변환해 외부의 문자 인코딩에 되돌립니다. <A HREF="../../api/java/io/InputStreamReader.html"><A HREF="../../../api/java/io/InputStreamReader.html">InputStreamReader</A>  클래스와 <A HREF="../../../api/java/io/OutputStreamWriter.html">OutputStreamWriter</A>  클래스에서는, 다른 문자 인코딩과 Unicode 의 사이의 변환을 실시하는 메소드가 제공되고 있습니다. </P>
+
+<H4>지원되고 있는 인코딩</H4>
+
+<P>지원되고 있는 인코딩 InputStreamReader, OutputStreamWriter, String 의 각 클래스에서는, Unicode 와<A HREF="encoding.doc.html">「지원되고 있는 인코딩」</a>의 일람에 나타나고 있는 문자 인코딩의 사이에서의 변환이 가능합니다.
+</P>
+
+<H4>스트림 입출력</H4>
+
+<P>Java 플랫폼에서는, 문자 데이터 처리 기능을 향상시키기 (위해)때문에, java.io 패키지에 기능이 추가되고 있습니다. 즉, Reader 클래스와 Writer 클래스의 추가, 및 PrintStream 클래스에 대한 확장입니다. </P>
+
+<H4>Reader 클래스와 Writer 클래스</H4>
+
+<P><A HREF="../../../api/java/io/Reader.html">Reader</A>  클래스와 <A HREF="../../../api/java/io/Writer.html">Writer</A>  클래스의 계층은, 문자 스트림로 입출력 조작을 실시하는 기능을 제공합니다. 이러한 계층은, InputStream 클래스와 OutputStream 클래스의 계층과 병렬이 되어 있습니다만, 바이트의 스트림은 아니고, 문자의 스트림을 처리합니다. 문자 스트림을 사용하면(자), 특정의 문자 인코딩에 의존하지 않는 프로그램을 간단하게 기술할 수 있어 따라, 국제화도 간단하게 됩니다. Reader 클래스와 Writer 클래스에는, Unicode 와 다른 문자 인코딩의 사이의 변환을 실시하는 기능도 있습니다. Reader 클래스와 Writer 클래스의 계층의 상세한 것에 대하여는,<A HREF="../io/io.html">「문자 스트림 (JDK 1.1 으로부터 도입)」</a>를 참조해 주세요. </P>
+
+<H4>PrintStream 클래스</H4>
+
+<P><A HREF="../../../api/java/io/PrintStream.html">PrintStream</A>  클래스는, 시스템의 디폴트의 문자 인코딩과 줄 끝 기호를 사용해 출력을 생성합니다. 이 변경에 의해, System.out.println()등의 메소드는, ASCII 이외의 데이터를 보다 적절히 처리할 수 있습니다. </P>
+
+<H4>charset 패키지</H4>
+
+<P><A HREF="../../../api/java/nio/charset/package-summary.html">java.nio.charset</A>  패키지는, 문자 인코딩 변환을 위한 토대를 제공합니다. 어플리케이션에서는, 이 패키지에 포함되는 클래스를 사용해, 편입의 문자 변환 프로그램의 동작을 미조정할 수 있습니다. 또, java.nio.charset.spi 패키지를 사용하면(자), 편입의 문자 변환 프로그램으로 지원되어 있지 않은 문자 인코딩용의 커스텀 변환 프로그램을 작성할 수도 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="input"></A> 텍스트 입력</H2>
+
+<H4><A NAME="inputmethod"></A>  	입력 메소드</H4>
+
+<P>입력 메소드는, 키보드에 의한 단순 입력 이외 방법으로 텍스트를 입력하기 위한 소프트웨어 컴퍼넌트입니다. 입력 메소드는, 많은 종류의 문자가 필요한 일본어, 중국어, 또는 한국어를, 문자수보다 아득하게 키수가 적은 키보드로부터 입력하는 방식으로서 보급되어 있습니다. Java 플랫폼에서는, 이 3 언어 이외의 입력 메소드도 지원되고 있어 자필이나 음성인식등의 다른 입력 기구에도 사용할 수 있습니다. </P>
+
+<P>또, Windows 또는 Solaris 등의 호스트  operating system로부터 제공되는 네이티브 입력 메소드를 사용할 수 있는 것 외에 Java 프로그램 언어로 기술된 입력 메소드를 구현해 사용할 수도 있습니다. </P>
+
+<P>입력 메소드라고 하는 용어는, Java 프로그램 언어의 클래스 메소드를 가리키고 있는 것은 아닙니다. </P>
+
+<H4>Swing 에서의 입력 메소드의 지원</H4>
+
+<P>Swing 텍스트 컴퍼넌트는, 입력 메소드를 사용한 텍스트 입력을 위한 통합 사용자 인터페이스를 제공합니다. 로케일에 응해, 온더 스포트 또는 야자과 상록교목더 스포트 입력 방식이 사용됩니다. 대부분의 로케일로 사용되고 있는 온더 스포트 (인 라인) 입력의 경우, 입력 메소드는 텍스트를 입력하고 있는 동안 텍스트를 텍스트 컴퍼넌트에 직접 삽입합니다. 중국어권의 로케일로 사용되고 있는 야자과 상록교목더 스포트 텍스트 입력의 경우는, 독립한 변환 윈도우가 사용됩니다. 이 윈도우는, 확정한 텍스트의 삽입 위치의 근처에 자동적으로 배치됩니다. </P>
+
+<P>Swing 텍스트 컴퍼넌트를 사용하는 어플리케이션에서는, 텍스트 컴퍼넌트와 입력 메소드간의 교환을 조정할 필요는 없습니다. 다만, 문서를 보존 또는 인쇄하는 경우 등, 모든 텍스트의 확정이 필요한 경우는,<A HREF="../../../api/java/awt/im/InputContext.html#endComposition()">InputContext.endComposition</A>  를 호출할 필요가 있습니다. </P>
+
+<H4>Input Method Framework</H4>
+
+<P>Input Method Framework 는, 텍스트 편집시에, 텍스트 편집 컴퍼넌트와 입력 메소드간의 공동 작업을 가능하게 합니다. 이 시스템를 사용하는 것은, 텍스트 편집 컴퍼넌트 또는 입력 메소드를 개발하는 프로그래머입니다. 그 외의 어플리케이션 개발자는, 일반적으로은 거의 사용하지 않습니다. 예를 들어, 문서를 보존 또는 인쇄하는 경우 등, 모든 텍스트의 확정이 필요한 경우는,<A HREF="../../../api/java/awt/im/InputContext.html#endComposition()">InputContext.endComposition</A>  를 호출할 필요가 있습니다. </P>
+
+<P><A HREF="../imf/index.html">「Input Method Framework」</a>의 페이지로부터, 스펙 및 API 문서에의 링크를 이용할 수 있습니다. </P>
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2006 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/intl/overview.html&category=api&mailsubject=Internationalization Support">피드백</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I><FONT SIZE="+1"></FONT>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

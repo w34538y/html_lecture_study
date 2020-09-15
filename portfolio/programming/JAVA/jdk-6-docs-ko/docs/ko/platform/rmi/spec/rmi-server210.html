@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:5 - 서버 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-server29.html">전의 항목</a>  | <a href="rmi-server211.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">5.9 <code>RMIFailureHandler</code> 인터페이스</a> </h2>
+
+<blockquote>
+<a name="4413"><!-- --></a> <code>java.rmi.server.RMIFailureHandler</code> 인터페이스는, 서버 소켓의 작성에 실패했을 경우 (객체의 export의 실행중을 제외하다)에, RMI 런타임이 어떻게 대응하면 좋은가를 지정하는 수단을 제공합니다. <p>
+</blockquote><blockquote><pre>package java.rmi.server;
+
+public interface RMIFailureHandler {
+
+	public boolean failure(Exception ex);
+}
+
+
+</pre></blockquote><blockquote>
+<a name="4458"><!-- --></a> <code>failure</code> 메소드는, RMI 런타임이 <code>java.net.ServerSocket</code> 의 작성에 실패했을 때의 예외를 인수로서 불려 갑니다. 런타임이 리트라이 해야 할 경우에 메소드는 <code>true</code> 를 돌려주어, 그렇지 않은 경우에는 <code>false</code> 를 돌려줍니다. <p>
+<a name="6935"><!-- --></a>  이 메소드가 불려 가기 전에, 실패용 핸들러가 <code>RMISocketFactory.setFailureHandler</code> 의 호출에 의해 등록되지 않으면 안됩니다. 실패용 핸들러가 설정되어 있지 않으면, RMI 런타임은 당분간 기다린 뒤에,<code>ServerSocket</code> 를 재차 작성하려고 합니다.  <p>
+<a name="7028"><!-- --></a>  객체의 최초의 export시에 <code>ServerSocket</code> 의 작성에 실패했을 경우는,<code>RMIFailureHandler</code> 는 불려 가지 않습니다. 작성의 실패가 <code>ServerSocket</code> 상에서 받아들여진 후에,<code>ServerSocket</code> 를 작성하려고 하면(자),<code>RMIFailureHandler</code> 가 불려 갑니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-server29.html">전의 항목</a>  | <a href="rmi-server211.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

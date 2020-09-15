@@ -1,0 +1,178 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:2 - 분산 객체 모델
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel4.html">전의 항목</a>  | <a href="rmi-objmodel6.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">2.4	 RMI 인터페이스와 클래스의 개요</a> </h2>
+
+
+<blockquote>
+<a name="3161"><!-- --></a>  RMI 시스템의 원격 동작을 결정하는 인터페이스와 클래스는, java.rmi 패키지의 계층에서 정의됩니다. 다음의 그림은, 이 중 몇개의 인터페이스와 클래스의 관계를 나타냅니다. <p>
+</blockquote><a name="1646"><!-- --></a> 
+<p><center><img src="rmi-objmodela.gif" ALT="몇개의 인터페이스와 클래스의 관계"></center>
+
+
+
+<br>
+<h3>
+<a name="3459"><!-- --></a>  2.4. 1 <code>java.rmi.Remote</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="3480"><!-- --></a>  RMI 에 대해, 원격 인터페이스는, 원격 Java 가상 머신으로부터 불려 갈 가능성이 있는 메소드세트를 선언하는 인터페이스입니다. 원격 인터페이스는, 다음의 요건을 채우고 있을 필요가 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4453"><!-- --></a>  원격 인터페이스가, 적어도 <code>java.rmi.Remote</code> 인터페이스를 직접 또는 간접적으로 상속한다
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="4463"><!-- --></a>  원격 인터페이스내 또는 그 슈퍼 인터페이스의 각 메소드 선언이, 다음의 원격 메소드 선언의 요건을 채우고 있다
+</li>
+<ul>
+
+<a name="4464"><!-- --></a> 
+<LI>원격 메소드 선언의 throws 절에, 어플리케이션 고유의 예외 외에, 예외 <code>java.rmi.RemoteException</code> (또는 <code>java.io.IOException</code> 나 <code>java.lang.Exception</code> 등의 <code>java.rmi.RemoteException</code> 의 슈퍼 클래스의 1 개)가 포함되어 있다.  다만, 어플리케이션 고유의 예외는,<code>java.rmi.RemoteException</code> 를 상속할 필요는 없다
+
+<a name="4469"><!-- --></a> 
+<LI>원격 메소드 선언으로, 파라미터 또는 반환값으로서 선언된 (파라미터 리스트로 직접 선언되었는지, 파라미터의 비원격 객체내에 파묻힌) 원격 객체는, 원격 인터페이스의 구현 클래스로서가 아니고, 원격 인터페이스로서 선언될 필요가 있다
+</UL></UL>
+<blockquote>
+<a name="4454"><!-- --></a> <code>java.rmi.Remote</code> 인터페이스는, 메소드를 정의하지 않는 마커 인터페이스입니다. <p>
+</blockquote><blockquote><pre>public interface Remote {}
+
+</pre></blockquote><blockquote>
+<a name="4496"><!-- --></a>  원격 인터페이스는, 적어도,<code>java.rmi.Remote</code> 인터페이스 (또는 <code>java.rmi.Remote</code> 를 상속하는 다른 원격 인터페이스)를 상속할 필요가 있습니다. 다만, 다음의 조건하에서는, 원격 인터페이스는, 비원격 인터페이스를 상속하는 경우가 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4497"><!-- --></a>  상속하는 인터페이스의 모든 메소드 (존재하는 경우)가 원격 메소드 선언의 요건을 채우고 있는 경우, 원격 인터페이스는, 다른 비원격 인터페이스도 상속할 수 있다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="4437"><!-- --></a>  예를 들어, 다음의 인터페이스 <code>BankAccount</code> 는, 은행 계좌에 액세스하기 위한 원격 인터페이스를 정의하고 있습니다. 여기에는, 계좌에의 예금, 차감 잔고의 취득, 및 계좌로부터의 인출을 행하기 위한 원격 메소드가 포함되어 있습니다. <p>
+</blockquote><blockquote><pre>public interface BankAccount extends java.rmi.Remote {
+	public void deposit(float amount)
+		throws java.rmi.RemoteException;
+	public void withdraw(float amount)
+		throws OverdrawnException, java.rmi.RemoteException;
+	public float getBalance()
+		throws java.rmi.RemoteException;
+}
+
+
+</pre></blockquote><blockquote>
+<a name="4523"><!-- --></a>  다음의 예에서는, 유효한 원격 인터페이스 <code>Beta</code> 는, 원격 메소드 및 <code>java.rmi.Remote</code> 인터페이스를 가지는 비원격 인터페이스 <code>Alpha</code> 를 상속하고 있습니다. <p>
+</blockquote><blockquote><pre>public interface Alpha {
+	public final String okay = &#34;constants are okay too&#34;;
+	public Object foo(Object obj)
+		throws java.rmi.RemoteException;
+	public void bar() throws java.io.IOException;
+	public int baz() throws java.lang.Exception;
+}
+
+
+public interface Beta extends Alpha, java.rmi.Remote {
+	public void ping() throws java.rmi.RemoteException;
+}
+
+
+</pre></blockquote>
+
+<h3>
+<a name="3569"><!-- --></a>  	2.4. 2 <code>RemoteException</code> 클래스
+</h3>
+
+<blockquote>
+<a name="3570"><!-- --></a> <code>java.rmi.RemoteException</code> 클래스는, 원격 메소드 호출동안에 RMI 런타임이 throw 하는 예외의 슈퍼 클래스입니다. RMI 시스템을 사용하는 어플리케이션의 안정성을 유지하기 위해서(때문에), 원격 인터페이스로 선언되는 각 원격 메소드는 throws 절 중(안)에서 <code>java.rmi.RemoteException</code> (또는 <code>java.io.IOException</code> 나 <code>java.lang.Exception</code> 등의 <code>java.rmi.RemoteException</code> 의 슈퍼 클래스)를 지정할 필요가 있습니다. <p>
+<a name="3571"><!-- --></a>  예외 <code>java.rmi.RemoteException</code> 는, 원격 메소드 호출이 하등의 이유로써 실패했을 때에 throw 됩니다. 원격 메소드 호출은, 이하와 같은 이유로써 실패하는 일이 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4581"><!-- --></a>  통신 장해 (원격 서버-에 액세스 할 수 없는지, 원격 서버-가 접속을 거부하고 있다.  서버에 의해 접속이 절단 되었다는 등)
+</li></ul>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4583"><!-- --></a>  파라미터 또는 반환값의 정렬화 또는 비정렬화중의 장해
+</li><p>
+<li>
+<a name="4589"><!-- --></a>  프로토콜 에러
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="4604"><!-- --></a> <code>RemoteException</code> 클래스는, 체크되는 예외 (원격 메소드의 호출측이 처리할 필요가 있어, 컴파일러에 의해 체크되는 예외)로,<code>RuntimeException</code> 가 아닙니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="1800"><!-- --></a>  	2.4. 3 <code>RemoteObject</code> 클래스와 그 서브 클래스
+</h3>
+
+<blockquote>
+<a name="3481"><!-- --></a>  RMI 서버 함수는 <code>java.rmi.server.RemoteObject</code> 와 그 서브 클래스,<code>java.rmi.server.RemoteServer</code> 와 <code>java.rmi.server.UnicastRemoteObject</code>, 및 <code>java.rmi.activation.Activatable</code> 가 제공합니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="1816"><!-- --></a> <code>java.rmi.server.RemoteObject</code> 클래스는, 원격 객체를 취급할 수 있는 <code>java.lang.Object</code> 의 메소드 <code>hashCode</code>,<code>equals</code> 및 <code>toString</code> 의 구현을 제공한다
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="4631"><!-- --></a>  원격 객체를 작성해 export 하는 (원격 클라이언트를 이용할 수 있도록(듯이) 한다) 메소드는,<code>UnicastRemoteObject</code> 클래스 및 <code>Activatable</code> 클래스에 의해 제공된다. 서브 클래스는, 서버가 단순한 원격 객체인지, 또는 기동 가능한 원격 객체 (호출에 의해 실행되는 객체) 나다니고등의, 원격 참조의 시멘틱스를 식별한다
+</li><p>
+<li>
+<a name="4634"><!-- --></a> <code>java.rmi.server.UnicastRemoteObject</code> 클래스는, 서버 프로세스의 활동중에만 참조가 유효한 단일 (uni-cast) 원격 객체를 정의한다
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="4637"><!-- --></a> <code>java.rmi.activation.Activatable</code> 클래스는, 원격 메소드의 호출시에 실행을 개시해, 필요에 따라서 자신을 종료할 수가 있는 <em>activatable</em> 원격 객체를 정의하는 추상 클래스이다
+</li>
+</ul>
+</blockquote>
+</blockquote>
+
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel4.html">전의 항목</a>  | <a href="rmi-objmodel6.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

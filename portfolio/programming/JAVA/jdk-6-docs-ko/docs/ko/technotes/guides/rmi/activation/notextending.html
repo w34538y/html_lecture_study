@@ -1,0 +1,231 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>액티베이션의 사용 :Activatable 를 확장하지 않는다 - xrath.com 에서 번역됨</title>
+<!-- Changed by: Susan Snyder - 10/15/05 -->
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"></td>
+
+<td>
+
+<center>
+<h1>액티베이션의 사용:<code>Activatable</code> 를 확장하지 않는다</h1>
+        </center>
+
+</td>
+
+<td width="15%" align="center">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+
+<P>
+이 튜토리얼에서는, 기동 가능한 원격 객체를 구현하는 방법에 대해 설명합니다만, 원격 객체의 구현으로 <code>java.rmi.activation.Activatable</code> 클래스를 확장하지 않는다고 하는 점으로써,<a href="extending.html">「액티베이션의 사용:<code>Activatable</code> 를 확장한다」</a>튜토리얼과는 다릅니다. 이 구현에서는,<code>Activatable</code> 클래스의 static 메소드를 사용해, 기동 가능한 원격 객체를 export 합니다. 이 튜토리얼에서는,<code>Setup</code> 프로그램 (<a href="setup.html">「액티베이션의 사용:<code>Setup</code> 프로그램」</a>튜토리얼을 참조)을 사용합니다.  이 프로그램은, 기동 가능한 원격 객체에 관한 정보를 Java<sup><font SIZE="-2">TM</font></sup> Remote Method Invocation (Java RMI) 기동 시스템 demon (<code>rmid</code>)에게 등록해,<code>rmiregistry</code> 로 그 원격 객체의 Stub를 바인드 해, 클라이언트를 검색할 수 있도록(듯이) 합니다. 이 튜토리얼의 전에, Setup 프로그램의 튜토리얼을 읽는 것을 추천합니다.  
+</p>
+<p>이 튜토리얼에서는, 다음의 순서를 실행합니다. </p>
+<uL>
+        
+<LI><A HREF="#1">기동 가능한 원격 객체의 구현</A>  </li>
+<LI><A HREF="#2">클라이언트의 구현</A> </li>
+<LI> <A HREF="#3">원시 파일의 컴파일</A> </li>
+		<LI> <A HREF="#4"><code>Setup</code> 프로그램의 실행</A> </LI>
+<LI> <A HREF="#5">클라이언트의 실행</a> </li>
+</uL>
+
+<p>이 튜토리얼의 실행에 필요한 파일은, 다음과 같습니다. </p>
+<UL>
+<LI><A HREF="src/MyRemoteInterface.java"><code>MyRemoteInterface.java</code></A>  - 단순한 원격 인터페이스 </li>
+<LI><A HREF="src/DoesNotExtendActivatable.java"><code>DoesNotExtendActivatable.java</code></A>  - 원격 인터페이스의 「기동 가능한」구현</li>
+<LI><code><A HREF="src/Client.java">Client.java</A> </code> - 원격 인터페이스를 사용하는 클라이언트</li>
+<LI><code><A HREF="src/client.policy">client.policy</A> </code> - 클라이언트의 시큐리티 정책 파일 </li>
+</UL>
+
+<hr>
+<h2> <a name="1"></a> 기동 가능한 원격 객체의 구현</h2>
+<blockquote> 
+  <p>
+기동 가능한 원격 객체를 구현하려면 , 몇개의 기본적인 방법이 있습니다. 이 튜토리얼에서는,<code>java.rmi.activation.Activatable</code> 클래스의 static 메소드를 사용해 기동 가능한 원격 객체를 export 하는 것으로 기동 가능한 원격 객체를 구현하는 방법에 대해 설명합니다.  
+  </p>
+<p>원격 객체는, 클라이언트가 기동 가능한 원격 객체의 Stub로 원격 메소드를 호출할 때 기동됩니다. 기동 가능한 원격 객체의 Stub에는, 원격 객체의 기동 식별자와 그 원격 객체의 Java RMI 기동 시스템 demon (<code>rmid</code>)에게 컨택트 하는 방법에 관한 정보가 포함됩니다. Stub는, 원격 객체의 최신의 주소 (즉, 호스트/포트)에 접속할 수 없는 경우, 원격 객체의 activator (<code>rmid</code>)에 컨택트 해 그 객체를 기동합니다. <code>rmid</code> 는, 기동 요구를 받아들이면(자), 원격 객체의 기동 그룹이 아직 실행되어 있지 않은 경우는, 그 그룹 (또는 컨테이너)의 VM 를 기동합니다.  다음에,<code>rmid</code> 는, 그룹에 그 원격 객체의 인스턴스를 작성하도록(듯이) 요구합니다. 그룹은, 원격 객체를 구축하면(자), 그 원격 객체의 Stub를 <code>rmid</code> 에 돌려줍니다.  다음에,<code>rmid</code> 는 실제의 Stub를 기동 Stub에 돌려주어, 기동 Stub가 장래 그 원격 객체에 컨택트 하는 방법에 대한 정보를 갱신할 수 있도록(듯이) 합니다.  
+	</p>
+<p>이 액티베이션을 실시하기 전에, 어플리케이션에서는, 사용할 필요가 있는 기동 가능한 원격 객체에 관한 정보를 등록할 필요가 있습니다. 다음의 별개의 튜토리얼에서는, 원격 객체의 기동에 필요한 정보와 그 정보를 <code>rmid</code> 에 등록하는 방법에 대해 설명합니다.
+ 	</p>
+  <ul>
+<li><a href="setup.html">액티베이션의 사용:<code>Setup</code> 프로그램</a> </li>
+  </ul>
+  
+<p>이 예에서는, 기동 가능한 원격 객체가 다음의 <code>examples.activation.MyRemoteInterface</code> 원격 인터페이스를 구현합니다.  
+	</p>
+<blockquote> 
+<pre>
+package examples.activation;
+
+import java.rmi. *;
+
+public interface MyRemoteInterface extends Remote {
+    Object remoteMethod(Object obj) throws RemoteException;
+}
+</pre>
+</blockquote> 
+  <p>
+기동 가능한 원격 객체의 <code>examples.activation.DoesNotExtendActivatable</code> 구현 클래스는 다음과 같습니다.  
+  </p>
+<blockquote> 
+<pre>
+package examples.activation; 
+
+import java.rmi. *;
+import java.rmi.activation. *;
+
+public class DoesNotExtendActivatable implements MyRemoteInterface {
+
+    private final ActivationID id;
+    
+    public DoesNotExtendActivatable(ActivationID id, MarshalledObject data) 
+        throws RemoteException
+    {
+        this.id = id;
+        Activatable.exportObject(this, id, 0);
+    }
+
+    public Object remoteMethod(Object obj) {
+        return obj;
+    }
+}
+</pre>
+  </blockquote>
+
+  <p>
+<code>DoesNotExtendActivatable</code> 클래스는,<code>MyRemoteInterface</code> 원격 인터페이스를 구현합니다만, 어느 클래스도 확장하지 않습니다.  
+  </p>
+  <p>
+<code>DoesNotExtendActivatable</code> 클래스는, 기동 그룹이 기동 프로세스중에 인스턴스를 구축하기 위해서 호출하는 특별한 기동 생성자 을 선언합니다. 이 특별한 생성자 은, 다음의 2 개의 파라미터를 취합니다.  
+  </p>	
+	<ul>
+<li>1 번째의 파라미터는 <code>ActivationID</code> 로, 기동 가능한 원격 객체의 식별자입니다. 어플리케이션이 기동 기술자를 <code>rmid</code> 에 등록하면(자),<code>rmid</code> 는 거기에 기동 식별자를 할당해 이 기동 식별자가 기술자에게 관련하는 정보를 참조합니다. 원격 객체가 기동되면(자), 이 같은 기동 식별자 (원격 객체의 Stub에도 포함되어 있다)가 생성자 에게 건네집니다.  </li>
+<li>2 번째의 파라미터는 <code>MarshalledObject</code> 로,<code>rmid</code> 에 미리 등록된 초기화 데이터가 포함되어 있습니다. 이 초기화 데이터에는, 예를 들어, 객체의 지속 상태가 쓰여진 파일명등이 있습니다. 이 예에서는, 원격 객체를 구축하는 초기화 데이터는 필요 없습니다.  </li>
+	</ul>
+  <p>
+생성자 은, private 필드에 기동 식별자를 보존하고 나서 static 메소드 <code>Activatable.exportObject</code> 를 호출해, 구현 자체 (<code>this</code>) , 기동 식별자, 및 포트 번호 <code>0</code> 을 건네주어, 객체를 익명의 TCP 포트로 export 할 필요가 있는 것을 나타냅니다. 이 구현에서는, 보존하고 있는 기동 식별자를 실제로 사용할 것은 없습니다만, 이 예에서는, 기동 가능한 객체의 일반적으로의 구현에서의 조작을 나타내기 위해서(때문에), 기동 식별자를 보존하고 있습니다.  이러한 구현에서는, 예를 들어 객체를 종료하기 위해서, 장래 기동 식별자가 필요하게 되는 일이 있습니다.  
+  </p>
+<p>마지막으로, 클래스는, 원격 인터페이스의 단일 메소드인 <code>remoteMethod</code> 를 구현해, 인수로서 건네받은 객체를 돌려줍니다.
+  </p>
+</blockquote>
+<h2><a name="2"></a> 클라이언트의 구현</h2>
+<blockquote> 
+  <p>
+<code>Client</code> 프로그램은, 옵션의 제 1 인수로서 제공된 호스트의 레지스트리내의 원격 객체의 Stub (원격 인터페이스 <code>MyRemoteInterface</code> 를 구현하는 Stub)를 검색해, 그 Stub의 <code>remoteMethod</code> 메소드를 호출합니다. 클라이언트 프로그램은,<a href="extending.html">「액티베이션의 사용: <code>Activatable</code> 를 확장한다」</a>튜토리얼로 설명되고 있는 것 것과 같습니다. 자세한 것은, 그 튜토리얼의 이하의 섹션을 참조해 주세요.  
+  </p>
+  <ul>
+	<li><a href="extending.html#2">클라이언트의 구현</a> </li>
+  </ul>
+	
+  </blockquote>
+  
+
+<h2><a name="3"></a> 원시 파일의 컴파일</h2>
+<blockquote>
+
+<p>이 예의 원시 파일은, 다음과 같이 해 컴파일 할 수 있습니다.
+    </p>	
+
+<blockquote>
+<pre>
+javac -d <b><i>implDir</i></b> MyRemoteInterface.java DoesNotExtendActivatable.java 
+javac -d <b><i>clientDir</i></b> MyRemoteInterface.java Client.java
+</pre>
+</blockquote>
+
+<p><b>implDir</b> 는 구현의 클래스 파일을 배치하는 생성처 디렉토리에서,<b>clientDir</b> 는 클라이언트의 클래스 파일을 배치하는 생성처 디렉토리입니다.  
+    </p>	
+
+</blockquote>
+
+<h2><a name="4"></a> <code>Setup</code> 프로그램의 실행</h2> 
+<blockquote>
+
+  <p>
+구현 단계가 완료하면(자), 기동 가능한 객체에 관한 정보를 등록해, 클라이언트를 사용할 수 있도록(듯이) 할 필요가 있습니다. <code>Setup</code> 프로그램은,<a href="setup.html">「액티베이션의 사용:<code>Setup</code> 프로그램」</a>튜토리얼로 설명되고 있도록(듯이), 기동 가능한 객체의 기동 기술자를 <code>rmid</code> 에 등록해,<code>rmiregistry</code> 로 원격 객체의 Stub를 바인드 해, 클라이언트를 검색할 수 있도록(듯이) 합니다.  
+  </p>
+	
+<p>이 예의 <code>Setup</code> 프로그램을 실행하려면 , Setup 프로그램의 튜토리얼의<a href="setup.html#3">「<code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램의 기동」</a>을 참조해 주세요.  <code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램 자체의 기동 방법에 대해 설명하고 있습니다.  
+    </p>	
+	
+  <p>
+<code>Setup</code> 튜토리얼의 순서에 따라 <code>rmid</code> 와 <code>rmiregistry</code> 를 실행하면(자),<code>Setup</code> 프로그램을 실행해,<code>examples.activation.DoesNotExtendActivatable</code> 클래스를 구현하는 기동 가능한 객체의 기동 기술자를 등록할 필요가 있습니다. 다음의 커멘드행에서는,<code>Setup</code> 프로그램을 실행해, 사용되는 각 코드 베이스의 적절한 파일 URL 를 제공합니다.  
+  </p>	
+	
+<blockquote>
+    <pre>
+java -cp <i><b>setupDir</b></i>:<i><b>implDir</b></i>                       \
+     -Djava.security.policy=<i><b>setup.policy</b></i>                      \
+     -Djava.rmi.server.codebase=file:/<i><b>implDir</b></i>/                \
+     -Dexamples.activation.setup.codebase=file:/<i><b>setupDir</b></i>/     \
+     -Dexamples.activation.impl.codebase=file:/<i><b>impDir</b></i>/        \
+     -Dexamples.activation.name=examples.activation.MyRemoteInterface       \
+     -Dexamples.activation.policy=<i><b>group.policy</b></i>                \
+     examples.activation.Setup examples.activation.DoesNotExtendActivatable
+</pre>
+</blockquote> 
+
+<p>설명</p>
+  <ul>
+<li><b>setupDir</b> 는,<code>Setup</code> 프로그램의 클래스의 루트 디렉토리</li>
+<li><b>implDir</b> 는, 구현의 클래스의 루트 디렉토리 </li>
+<li><b>setup.policy</b> 는,<code>Setup</code> 프로그램의 시큐리티 정책 파일 </li>
+<li><b>group.policy</b> 는, 기동 그룹의 시큐리티 정책 파일</li>
+  </ul>
+  <p>
+<code>examples.activation.file</code> 시스템 프로퍼티은,<code>DoesNotExtendActivatable</code> 구현 클래스에서는 사용하지 않기 때문에, 지정할 필요는 없습니다. 전술의 각 파일 URL 에는, 필수의 말미의 slash가 있는 것에 주의해 주세요. 이 튜토리얼에 적절한 그룹과 셋업 정책 파일의 예는, 셋업의 튜토리얼에 나타나고 있습니다만, 이하에도 가리켜 둡니다.  
+  </p>
+	<ul>
+	<li><a href="src/setup.policy"><code>setup.policy</code></a> </li>
+	<li><a href="src/group.policy"><code>group.policy</code></a> </li>
+	</ul> 
+<p><code>Setup</code> 프로그램으로부터의 출력은, 다음과 같이 됩니다.
+  </p>
+<blockquote>
+<pre>
+Activation group descriptor registered.
+Activation descriptor registered.
+Stub bound in registry.
+</pre>
+</blockquote>
+</blockquote>
+
+<h2><a name="5"></a> 클라이언트의 실행</h2> 
+<blockquote>
+<p>
+정상적으로 <code>DoesNotExtendActivatable</code> 구현의 기동 기술자를 등록하면(자), 클라이언트 프로그램을 실행할 수 있게 됩니다.  클라이언트 프로그램은, 최초의 실행시에 기동 가능한 객체를 기동합니다.  
+  </p>
+	<p>
+클라이언트 프로그램은,<a href="extending.html">「액티베이션의 사용: <code>Activatable</code> 를 확장한다」</a>튜토리얼로 설명되고 있는 것 것과 같습니다. 자세한 것은, 그 튜토리얼의 이하의 섹션을 참조해 주세요.
+  </p>
+  <ul>
+	<li><a href="extending.html#5">클라이언트의 실행</a> </li>
+  </ul>
+	
+
+</blockquote>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

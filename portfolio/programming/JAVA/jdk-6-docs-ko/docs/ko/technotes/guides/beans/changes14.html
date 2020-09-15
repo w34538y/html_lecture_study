@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>V1. 4 JavaBeans API 의 확장 기능 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+<h1>버젼 1.4 에서의 JavaBeans<sup><font size=-2>TM</font></SUP> Component API 의 API 확장 기능</h1>
+</center>
+
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+
+<font size="-1"><a href="index.html">JavaBeans<sup><font size=-2>TM</font></sup> Component API</a> </font>
+
+
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+<!-- Body text begins here -->
+
+
+<blockquote>
+이 문서에서는, Java 2 Platform, Standard Edition 버젼 1.4 로 <tt>java.beans</tt> 패키지에 더해진 변경점에 대해 설명합니다.
+
+<ul>
+<li> <a href="#ltp">장기 지속성을 지원하는 새로운 API</a> 
+<li> <a href="#othernew">그 외에 추가된 API</a> 
+<li> <a href="#introspector">Introspector 의 변경점</a> 
+<li> <a href="#gc">가베지 컬렉션과 커스텀 속성</a> 
+</ul>
+
+
+
+<br>
+<h3>
+<a name="ltp">장기 지속성을 지원하는 새로운 API</a> 
+</h3>
+
+<p>
+장기적인 지속성 (long-term persistence)을 지원하기 위해서, 다음과 같은 클래스가 추가되었습니다.
+
+<p align=center>
+<table summary="new API for Long-Term Persistance">
+<tr>
+<thead>
+<th>
+<em>클래스</em>
+</th>
+<th>
+<em>설명</em>
+</th>
+
+</tr>
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/Statement.html"><code>Statement</code></a> 
+<td>
+객체의 메소드 호출을 나타내는 객체로, 인수를 수반하는 일이 있다. 예를 나타냅니다. 예를 들면,<code>a.setFoo(b)</code>
+
+<tr valign=top>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp; <a href="../../../api/java/beans/Expression.html"><code>Expression</code></a> 
+<td>
+결과를 돌려주는 문장. 예를 나타냅니다. <code>a.getFoo()</code>.
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/XMLDecoder.html"><code>XMLDecoder</code></a> 
+<td>
+<code>XMLEncoder</code> 를 사용해 작성된 XML 문서를 읽는다
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/Encoder.html"><code>Encoder</code></a> 
+<td>
+지속성 위양을 사용해, 객체의 그래프를, 그것을 재작성할 때에 사용할 수 있는 일련의 <code>Statement</code> 와 <code>Expression</code> 에 분할한다
+
+<tr valign=top>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp; <a href="../../../api/java/beans/XMLEncoder.html"><code>XMLEncoder</code></a> 
+<td>
+XML 인코딩으로 문장과 식을 생성하는 <code>Encoder</code>
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/PersistenceDelegate.html"><code>PersistenceDelegate</code></a> 
+<td>
+그 객체의 클래스의 public 메소드를 사용해, 다른 객체 상태를 나타내는 객체를 정의하는 추상 클래스
+
+<tr valign=top>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/beans/DefaultPersistenceDelegate.html"><code>DefaultPersistenceDelegate</code></a> 
+<td>
+Bean 에 대해서 디폴트로 사용하는 지속성 위양
+</table>
+<p></p>
+<p>
+
+장기적인 지속성에 관한 상세 정보에 대한 링크는 <a href="index.html">JavaBeans Component API</a>  를 참조해 주세요.
+
+
+<br>
+<h3>
+<a name="othernew">그 외에 추가된 API</a> 
+</h3>
+
+<p>
+버젼 1.4 에서는 다음의 클래스도 추가되었습니다.
+
+<p align=center>
+<table summary="other classes added in v1.4">
+<tr>
+<thead>
+<th>
+<em>클래스</em>
+</th>
+<th>
+<em>설명</em>
+</th>
+
+</tr>
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/EventHandler.html"><code>EventHandler</code></a> 
+<td>
+사이즈가 작고, 지속성 스킴으로 자동적으로 보존되는 이벤트 청취자의 동적인 생성을 지원한다
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/ExceptionListener.html"><code>ExceptionListener</code></a> 
+<td>
+예외가 throw 되었다고 통지되지만, 그 후 거기로부터 회복을 하는 청취자를 정의한다. Bean 의 읽고 쓰기중에 객체가 회복 가능한 문제에 직면했을 때에 통지하는 예외 청취자를,<code>XMLEncoder</code> 또는 <code>XMLDecoder</code> 객체에 등록한다
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/PropertyChangeListenerProxy.html"><code>PropertyChangeListenerProxy</code></a> 
+<td>
+<code>PropertyChangeListener</code> 를 구현해, 고유의 프로퍼티을 사용해 그룹에 다른 <code>PropertyChangeListener</code> (실제의 이벤트 핸들러)를 제공하는 프록시. 프록시는 프로퍼티의 변경 이벤트를 실제의 이벤트 핸들러에 건네준다
+
+<tr valign=top>
+<td>
+<a href="../../../api/java/beans/VetoableChangeListenerProxy.html"><code>VetoableChangeListenerProxy</code></a> 
+<td>
+<code>VetoableChangeListener</code> 를 구현해, 고유의 제약 프로퍼티을 사용해 그룹에 다른 <code>VetoableChangeListener</code> (실제의 이벤트 핸들러)를 제공하는 프록시. 프록시는 프로퍼티의 변경 이벤트를 실제의 이벤트 핸들러에 건네준다
+</table>
+
+<p>
+
+다음의 클래스에는 추가 메소드가 있습니다.
+<ul>
+<li> <a href="../../../api/java/beans/PropertyChangeSupport.html"><code>PropertyChangeSupport</code></a>  클래스에는, 등록된 프로퍼티 변경 청취자를 모두 취득하는, 인수가 없는 메소드(<a href="../../../api/java/beans/PropertyChangeSupport.html#getPropertyChangeListeners()"><code>getPropertyChangeListeners</code></a> )가 포함되게 되었습니다.
+<li> 같이<a href="../../../api/java/beans/VetoableChangeSupport.html"><code>VetoableChangeSupport</code></a>  클래스에는, 등록된 거부 가능한 변경 청취자를 모두 취득하는, 인수가 없는 메소드(<a href="../../../api/java/beans/VetoableChangeSupport.html#getVetoableChangeListeners()"><code>getVetoableChangeListeners</code></a> )가 포함되게 되었습니다.
+</ul>
+
+<br>
+<h3>
+<a name="introspector">Introspector 의 변경점</a> 
+</h3>
+<a href="../../../api/java/beans/Introspector.html"><code>Introspector</code></a>  클래스가 재구현되어 퍼포먼스가 개선되었습니다. 새롭게 구현되는 것으로, Introspector 클래스의 동작이 다음과 같이 변경되었습니다.
+
+<ul>
+<li> <code>FeatureDescriptor</code> 는,<code>BeanInfo</code> 가 돌려주어질 때 카피되는 것이 아니라,<code>BeanInfo</code> 마다 공유되게 되었습니다. 이 변경에 의해,<code>getBeanInfo</code> 메소드의 퍼포먼스가 향상합니다. 또,<code>FeatureDescriptor</code> 의 속성/치가 변화하면(자), 그 변화는,<code>BeanInfo</code> 가 가베지 컬렉트될 때까지 <code>getBeanInfo</code> 의 호출동안에서 지속합니다. (<code>BeanInfo</code> 의 가베지 컬렉션에 대해서는,<a href="#gc">「가베지 컬렉션과 커스텀 속성」</a>을 참조해 주세요. )
+
+<p>
+<li> <code>getBeanInfo</code> 메소드는, 요구된 <code>BeanInfo</code> 의 카피를 작성하지 않게 되었습니다. 대신에,<code>BeanInfo</code> 를 캐쉬에 보존하고 나서 돌려줍니다. 필요하면, 반환된 <code>BeanInfo</code> 에 참조를 보존해,<code>flushFromCaches</code> 메소드로 인트로스페크타의 캐쉬로부터 Bean 의 클래스를 플래시 해, 이전의 동작을 얻을 수 있습니다.
+<p>
+<li> <code>instantiate</code> 메소드로, 형제 위젯 또는 bootstrap 클래스 로더를 사용하는 특정의 클래스를 인스턴스화할 수 없는 경우, 현재의 thread의 클래스 로더를 사용하는 클래스를 로드하려고 합니다.
+</ul>
+
+
+<br>
+<h3>
+<a name="gc">가베지 컬렉션과 커스텀 속성</a> 
+</h3>
+
+<p>
+v 1.4 에서는,<code>BeanInfo</code> 가 직접 참조되어 있지 않은 경우에 시스템의 메모리가 부족했을 때는,<code>BeanInfo</code> 를 가베지 컬렉트할 수 있습니다. 이것은,<code>BeanInfo</code> 를 <code>SoftReference</code> 에 랩 하는 것으로 <code>Introspector</code> 에 구현되고 있습니다.
+</p>
+
+<p>
+가베지 컬렉트될 가능성이 있기 (위해)때문에,<code>BeanInfo</code>내에 커스텀 속성을 포함하는 방법도 바뀌어 옵니다.  특정의 <code>BeanInfo</code> 가 가베지 컬렉트되었을 경우, 다음에 <code>Introspector.getBeanInfo</code> 를 호출해 이 <code>BeanInfo</code> 를 취득할 때, 반환되는 객체에 커스텀 속성이 포함되지 않게 됩니다.
+
+<p>
+이 문제를 피하기 위해서(때문에),<code>BeanInfo</code> 내에 커스텀 속성을 포함하는 경우는,<code>BeanInfo</code> 를 취득할 때마다, 반드시 이러한 속성을 설정해 <code>BeanInfo</code> 를 올바르게 초기화하도록 해 주세요. 다음의 샘플 코드는, Bean 기술자의 커스텀 프로퍼티을 설정해 <code>BeanInfo</code> 클래스를 초기화하는 방법을 나타내고 있습니다. 프로퍼티 기술자, 메소드 기술자, 또는 이벤트 세트 기술자의 커스텀 속성에 대해서도, 이 코드와 같게 됩니다.
+
+<blockquote>
+<pre>
+BeanInfo beanInfo = getBeanInfo(SomeBean.class);
+BeanDescriptor beanDescriptor = beanInfo.getBeanDescriptor();
+
+/*
+ * Before using the BeanInfo, check to see if our custom
+ * property has been initialized.   (Even if we initialized
+ * it before, if the BeanInfo has been garbage collected,
+ * then we need to initialize it again. )  Since our custom
+ * property's value could be null, we define another property
+ * to tell us if the custom property is initialized.
+ */
+if (beanDescriptor.getValue("myProperty_init") == null) {
+    beanDescriptor.setValue("myProperty", someValue);
+    beanDescriptor.setValue("myProperty_init", Boolean.TRUE);
+}
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2002
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+</BODY>
+
+</HTML>

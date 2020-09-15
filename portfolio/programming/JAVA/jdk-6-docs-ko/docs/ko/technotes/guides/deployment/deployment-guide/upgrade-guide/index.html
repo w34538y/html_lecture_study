@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Microsoft 로부터 Sun 의 Java 가상 머신에의 업그레이드 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">Java 업그레이드 가이드:<br>Java 의 Microsoft VM<br> (으)로부터 Sun JRE 에의 이행</h1>
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<a href="DevaSearch/search.html"><font size="-1"><b><span id="span21" class="bg3" onMouseOver="document.getElementById('span21').className='bg5';"  onmouseout="document.getElementById('span21').className='bg3';">가이드를 검색</span></b></font></a>  
+<p><br> 이 가이드에서는, Java 의 Microsoft 가상 머신 (VM)으로부터 Sun JRE 에 애플릿을 업그레이드 하는 이유와 방법을 설명합니다. 98% 의 케이스에서는, 애플릿을 변경하지 않고 Sun JRE 로 실행할 수 있습니다. 나머지 2% 를 위해서(때문에), 이행에 관한 힌트를 설명합니다. 업그레이드에 의해, 다양한 이점을 얻을 수 있습니다.  Microsoft VM 는 초기의, 1997 년에 있어서의 버젼 1.1 의 Java 테크놀러지에 근거하고 있기 (위해)때문에입니다. Sun Microsystems 에 의한 최신으로, 표준 호환의 버젼은 1.4. 2 입니다.  2003 년에 릴리스 되어 이전의 버젼에 비해 많은 기능이 확장되고 있습니다. </p>
+<h2>업그레이드 하는 이유</h2>
+<p>Microsoft VM 는 5 년 이상전의 Java 1.1 테크놀러지가 기본으로 되어 있어 시대착오인 것은 명백합니다. 한편, Sun Microsystems 에 의한 VM 는 1.4. 2 Java Runtime Environment (JRE)의 일부로, 완전하게 표준 호환이며, 최신입니다. 이것이, Java 애플릿이나 어플리케이션을 Sun JRE 로 실행하도록(듯이) 업그레이드 하는 큰 이유의 1 개입니다. 이유는 그 밖에도 있습니다. Sun JRE 는 수백만이라고 하는 카피가 벌써 다운로드되어 배치되고 있습니다.  또, Sun JRE 를 탑재한 컴퓨터도 곧 수백만대가 출시될 예정입니다. 지금이 업그레이드 하는 시기입니다. </p>
+<p>이제(벌써) 1 개의 이유로서 2004 년 9 월 이후, Microsoft 에서는 자사의 제품으로 Java 의 구현의 지원 또는 제공을 실시하지 않게 됩니다. 벌써 최신의  operating system의 Internet Explorer Web 브라우저에는 Java 테크놀러지를 탑재하지 않게 되고 있습니다. 이것에 의해, 2 개(살)의 중요한 영향이 예측됩니다. </p>
+<ul>
+<li>Internet Explorer Web 브라우저로 애플릿을 실행하고 있는 사용자는, 대체가 되는 VM 를 다운로드해 인스톨 할 필요가 있다</li>
+<li>매우 보기 드문 케이스이지만, 개발자는, Microsoft VM 독자적인 기능을 사용하고 있는 애플릿이 계속 동작하도록(듯이) , 그 애플릿을 수정할 필요가 있다</li>
+</ul>
+<p><span class="bg0">Microsoft 에서는 Java 애플릿이나 어플리케이션을 J# 또는 C# 로 이행하도록(듯이) 주장하고 있습니다만, 어느 쪽의 방법에도 크로스 플랫폼 대응 기능이 제공되고 있지 않습니다. J# 와 C# 를 실행할 수 있는 것은 Microsoft Windows 플랫폼 뿐입니다.  </span></p>
+<h2>업그레이드 하는 방법</h2>
+<p>Sun JRE 에의 업그레이드의 순서를 나타냅니다. </p>
+<ol>
+<li>Sun JRE 가 인스톨되어 있지 않은 경우는<a href="#install"><span id="span22" class="bg3" onMouseOver="document.getElementById('span22').className='bg5';"  onmouseout="document.getElementById('span22').className='bg3';">인스톨</span></a> 합니다.  </li>
+<li>브라우저로 Sun JRE 를 사용해, 낡은 Microsoft VM 를 사용하고 있지 않는 것을<a href="#check"><span id="span23" class="bg3" onMouseOver="document.getElementById('span23').className='bg5';"  onmouseout="document.getElementById('span23').className='bg3';">확인</span></a> 합니다.  </li>
+<li>애플릿이 Sun JRE 로 올바르게 동작하는지<a href="#test"><span id="span24" class="bg3" onMouseOver="document.getElementById('span24').className='bg5';"  onmouseout="document.getElementById('span24').className='bg3';">테스트</span></a> 합니다. 애플릿이 올바르게 동작하지 않는 경우는,<a href="#possible"><span id="span25" class="bg3" onMouseOver="document.getElementById('span25').className='bg5';"  onmouseout="document.getElementById('span25').className='bg3';">「업그레이드의 잠재적인 문제점」</span></a> 의 일람으로 문제를 찾습니다. 문제를 클릭하면(자), 그 문제에 대한 형식, 증상, 원인, 해결 방법, 상세 정보를 설명한 기사가 표시됩니다. </li>
+</ol>
+<p>대부분의 애플릿은 Sun JRE 로 문제 없게 실행할 수 있습니다만, 테스트하는 것을 항상 추천합니다. 문제가 검출되면(자), 곧바로 해결할 수 있습니다. 애플릿을 업그레이드 하면, Java 플랫폼의 강고해 시큐리티 보호된, 크로스 플랫폼 표준 호환의 버젼상에서 애플릿을 실행할 수 있습니다. </p>
+<p>Sun JRE 로 애플릿이 문제 없게 동작하는 것을 확인하면(자), 사용자에게 Sun JRE 를 배치하는 최적인 방법을 검토합니다. <a href="deployment.html"><span id="span27" class="bg3" onmouseover="document.getElementById('span27').className='bg5';"  onmouseout="document.getElementById('span27').className='bg3';"><a href="deployment.html"><span id="span27" class="bg3" onMouseOver="document.getElementById('span27').className='bg5';"  onmouseout="document.getElementById('span27').className='bg3';">「Sun JRE 의 인터넷/인트라넷 배치」</span></a> 를 참조해 주세요. </p>
+<h2><a name="install"></a> Sun JRE 의 인스톨</h2>
+<p>Sun JRE 를 테스트용 컴퓨터에 인스톨 하고 있지 않는 경우는, 다음의 링크를 클릭해 입수합니다. </p>
+<p align="center"><a href="http://java.com/en/index.jsp"><img src="images/get_java_red_button.gif" width="88" height="31" border="0"></a> </p>
+<h2><a name="check"></a> VM/JRE 의 확인</h2>
+<p>애플릿을 테스트하기 전에, 브라우저로 Sun JRE 를 실행하고 있는 것을 확인할 필요가 있습니다.  </p>
+<p>Windows 의 컨트롤 패널 ([스타트] &gt; [설정] &gt; [컨트롤 패널])을 열어, Java Plug-in 라는 이름의 커피 컵의 아이콘을 더블 클릭 해, Java Plug-in 컨트롤 패널을 기동합니다. 표시되면(자) [브라우저] 탭을 선택합니다. 다음과 같이 됩니다. </p>
+<p align="center"><img src="images/browser-2.gif" width="440" height="479"></p>
+<p align="left">사용하고 있는 브라우저의 체크 박스가 선택되고 있는 것을 확인합니다. </p>
+<p>다음에, 브라우저로 Sun JRE 를 실행하고 있는 것을 확인합니다. 실행하고 있는 경우, 다음과 같이 됩니다. </p>
+<ul>
+<li>Java 아이콘이 시스템 트레이에 표시된다</li>
+<li>최초, 브라우저 윈도우의 회색의 애플릿 로드 박스에 Java 아이콘이 표시된다</li>
+</ul>
+<p align="center"><strong>시스템 트레이의 Java 아이콘</strong></p>
+<p align="center"><img src="images/systray-2.gif" width="164" height="54"></p>
+<p align="center"><strong>회색 박스의 Java 로고</strong></p>
+<p align="center"><img src="images/java-icon-graybox.gif" width="298" height="160" border="0"></p>
+<p align="left"><span class="bg1"><strong>주:</strong></span><a href="http://java.sun.com/j2se/1.4.2/docs/technotes/guides/plugin/developer_guide/control_panel.html#basic"><span id="span28" class="bg3" onMouseOver="document.getElementById('span28').className='bg5';"  onmouseout="document.getElementById('span28').className='bg3';">Java Plug-in 컨트롤 패널 ( 「기본」탭)</span></a>  의 「콘솔을 표시」를 선택했을 경우는, Java 콘솔이 표시되어 Java 의 버젼 번호가 나타납니다 (다음의 섹션으로 설명합니다). 버젼 번호는, 브라우저로 사용중의 Sun JRE 를 나타냅니다. </p>
+<h2><a name="test"></a> 애플릿의 테스트</h2>
+<p>애플릿을 실행해 테스트합니다. 애플릿용으로 표준적인 테스트 세트를 준비해 있는 경우는, 그 테스트를 사용해 애플릿을 실행합니다. </p>
+<p>호환성에 문제가 있는 경우는, Java 콘솔로 상세를 확인합니다. Java 콘솔을 다음에 나타냅니다. </p>
+<p align="center"><img src="images/java-console-2.gif" width="450" height="400"></p>
+<p align="left">Java 콘솔의 상세한 것에 대하여는,<a href="http://java.sun.com/j2se/1.4.2/docs/technotes/guides/plugin/developer_guide/console.html"><span id="span29" class="bg3" onMouseOver="document.getElementById('span29').className='bg5';"  onmouseout="document.getElementById('span29').className='bg3';">http://java.sun.com/j2se/1. 4.2/docs/technotes/guides/plugin/developer_guide/console.html</span></a>  를 참조해 주세요. </p>
+<h2><a name="possible"></a> 업그레이드의 잠재적인 문제점</h2>
+<p>발생이 예상되는 잠재적인 문제점을, 증상별로 일람으로 합니다. </p>
+<ul>
+<li><a href="article-01.html"><span id="span1" class="bg3" onMouseOver="document.getElementById('span1').className='bg4';"  onmouseout="document.getElementById('span1').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>ClassFormatError</code> 가 <code>ClassLoader</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-02.html"><span id="span2" class="bg3" onMouseOver="document.getElementById('span2').className='bg4';"  onmouseout="document.getElementById('span2').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>ClassNotFoundException</code> 가 <code>ClassLoader</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-03.html"><span id="span3" class="bg3" onMouseOver="document.getElementById('span3').className='bg4';"  onmouseout="document.getElementById('span3').className='bg3';">서명필의 <code>. cab</code> 파일을 <code>. jar</code> 파일로서 재패키지 하면(자), Sun JRE 로 실행중의 애플릿이 미서명으로서 다루어진다. <code>. cab</code> 파일로서 패키지 된 같은 애플릿은, Microsoft VM 에서는 서명필로서 실행된다</span></a> </li>
+<li><a href="article-15.html"><span id="span4" class="bg3" onMouseOver="document.getElementById('span4').className='bg4';"  onmouseout="document.getElementById('span4').className='bg3';">Sun JRE 로 실행하기 위해서 <code>. cab</code> 파일로부터 <code>. jar</code> 파일에 서명필 애플릿을 업그레이드 하면(자), 그 애플릿은 Microsoft VM 로 동작하지 않게 된다. Sun JRE 에서는 정상적으로 실행된다</span></a> </li>
+<li><a href="article-04.html"><span id="span5" class="bg3" onMouseOver="document.getElementById('span5').className='bg4';"  onmouseout="document.getElementById('span5').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>AccessControlException</code> 가 <code>Introspector.setBeanInfoSearchPath()</code> 의 실행중에 throw 된다.  같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-05.html"><span id="span6" class="bg3" onMouseOver="document.getElementById('span6').className='bg4';"  onmouseout="document.getElementById('span6').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>ClassNotFoundException</code> 가 <code>com.ms.security</code> 패키지의 <code>ClassLoader</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-06.html"><span id="span7" class="bg3" onMouseOver="document.getElementById('span7').className='bg4';"  onmouseout="document.getElementById('span7').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>ClassNotFoundException</code> 가 <code>com.ms. *</code> 패키지의 <code>ClassLoader</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-07.html"><span id="span8" class="bg3" onMouseOver="document.getElementById('span8').className='bg4';"  onmouseout="document.getElementById('span8').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있을 때, 애플릿의 메소드, 특히 <code>java.awt.Component</code> 로부터 상속된 메소드가 동기화 너무 되면(자) 데드락이 발생하는 경우가 있다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-08.html"><span id="span9" class="bg3" onMouseOver="document.getElementById('span9').className='bg4';"  onmouseout="document.getElementById('span9').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있을 때, 마우스가 애플릿의 프레임상을 이동하면(자),<code>ClassCastException</code> 가 AWT 발송이벤트쓰레드로부터 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-09.html"><span id="span10" class="bg3" onMouseOver="document.getElementById('span10').className='bg4';"  onmouseout="document.getElementById('span10').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>Applet.start()</code> 또는 <code>Applet.stop()</code> 가 불려 가면(자),<code>NullPointerException</code> 가 thread로부터 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-10.html"><span id="span11" class="bg3" onMouseOver="document.getElementById('span11').className='bg4';"  onmouseout="document.getElementById('span11').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>NullPointerException</code> 가 <code>java.awt.Graphics.drawString()</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-11.html"><span id="span12" class="bg3" onMouseOver="document.getElementById('span12').className='bg4';"  onmouseout="document.getElementById('span12').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>NullPointerException</code> 가 <code>java.awt.Graphics.drawImage()</code> 로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-12.html"><span id="span13" class="bg3" onMouseOver="document.getElementById('span13').className='bg4';"  onmouseout="document.getElementById('span13').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>IllegalArgumentException</code> 가 <code>java.awt.Color</code> 생성자 으로 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-13.html"><span id="span14" class="bg3" onMouseOver="document.getElementById('span14').className='bg4';"  onmouseout="document.getElementById('span14').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>AccessControlException</code> 가 <code>java.lang.Thread</code> 의 <code>stop()</code>,<code>suspend()</code>, 또는 <code>resume()</code> 로 throw 된다.  같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-14.html"><span id="span15" class="bg3" onMouseOver="document.getElementById('span15').className='bg4';"  onmouseout="document.getElementById('span15').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>InstantiationException</code> 가 throw 된다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있다</span></a> </li>
+<li><a href="article-16.html"><span id="span16" class="bg3" onMouseOver="document.getElementById('span16').className='bg4';"  onmouseout="document.getElementById('span16').className='bg3';">클라이언트의 인증에 브라우저로부터의 증명서를 사용할 수 없다</span></a> </li>
+<li><a href="article-17.html"><span id="span17" class="bg3" onMouseOver="document.getElementById('span17').className='bg4';"  onmouseout="document.getElementById('span17').className='bg3';">애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우, HTTPS URL 에 리다이렉트(redirect) 하는 서버에 대해서 애플릿이 HTTP 요구를 실시하면, 리다이렉트(redirect)에 실패한다. 또, HTTP URL 에 리다이렉트(redirect) 하는 서버에 대해서 HTTPS 요구를 실시하는 경우도 실패한다. 같은 애플릿이 Microsoft VM 에서는 에러없이 실행할 수 있다</span></a> </li>
+<li><a href="article-18.html"><span id="span18" class="bg3" onMouseOver="document.getElementById('span18').className='bg4';"  onmouseout="document.getElementById('span18').className='bg3';">CJK (Chinese-Japanese-Korean) 폰트를 볼드로 표시하면(자) 읽기 어려워진다</span></a> </li>
+</ul>
+<p>이 일람에 없는 문제가 발생했을 경우는, Java Upgrade Forum 를 참조해 주세요. </p>
+<blockquote> 
+<p><a href="http://forum.java.sun.com/forum.jsp?forum=481"><span id="span26" class="bg3" onMouseOver="document.getElementById('span26').className='bg5';"  onmouseout="document.getElementById('span26').className='bg3';">http://forum.java.sun.com/forum.jsp? forum=481</span></a>  
+  </p>
+</blockquote>
+<h3>&nbsp;</h3>
+</body>
+</html>

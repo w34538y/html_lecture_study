@@ -1,0 +1,2819 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>JDK 에서의 액세스권 - xrath.com 에서 번역됨</TITLE>
+  
+  <!-- *** bug 6357792 july 2006 from Brad Wetmore, now added to table in SSL section      The following doc in our security bundle:  http://java.sun.com/j2se/1.5.0/docs/guide/security/permissions.html#SSLPermission  Is missing some of the newer SSLPermissions.  In particular, I noticed:  ./javax/net/ssl/SSLContext.java:            sm.checkPermission(new SSLPermission ("setDefaultSSLContext"));  Are there others? *** (#1 of 1): 2005-12-01 08:55:26 PST bradford.wetmore@sun.com  -->
+  
+<style type = "text/css">
+
+td {text-align: left; vertical-align: top }
+
+</style>
+
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H1><CENTER>Java&trade; SE 6 Development Kit (JDK)에서의 액세스권</CENTER></H1>
+
+<P><BR> <BR>
+</P>
+
+<P>액세스권은, system resource에의 액세스를 나타냅니다. 애플릿 (또는 시큐리티 매니저와 함께 실행하는 어플리케이션)이, 자원에의 액세스가 허가되기 위해서(때문에)는, 액세스를 시도하는 코드에 대해, 해당하는 액세스권을 명시적에게 줄 필요가 있습니다. </P>
+<P>일반적으로, 액세스권은 이름 (자주 「타겟명」이라고 불린다)을 가지고 있습니다. 경우에 따라서는, 이름 외에, 콤마로 단락지어진 1 개(살) 이상의 액션의 리스트를 가지는 일도 있습니다. 예를 들어, 다음의 코드에서는,<CODE>/tmp</CODE> 디렉토리의 <CODE>abc</CODE> 라는 이름의 파일에의 읽어내 액세스를 나타내는 FilePermission 객체를 작성합니다. </P>
+<BLOCKQUOTE>
+<pre>
+perm = new java.io.FilePermission(&quot;/tmp/abc&quot;, &quot;read&quot;);</pre>
+</BLOCKQUOTE>
+
+<P>이 경우, 타겟명이 <CODE>/tmp/abc</CODE> 로, 액션 캐릭터 라인이 <CODE>read</CODE> 가 됩니다. </P>
+
+  <blockquote>
+  <HR>
+<B>중요:</B> 상기의 문장에 의해, 액세스권 객체가 작성됩니다. 액세스권 객체는, 시스템 자원을 나타냅니다만, 시스템 자원에의 액세스를 허가할 것은 없습니다. 액세스권 객체는, 실효성이 있는 정책에 근거해 작성되어 코드에 할당 (허가되고). 액세스권 객체가 있는 코드에 할당할 수 있으면(자), 그 코드는 액세스권 객체에 의해 지정된 시스템 자원에, 지정된 방법으로 액세스 하는 것이 허가됩니다. 현재의 시큐리티 매니저가, 액세스 판단을 실시할 때에, 액세스권 객체를 작성하는 일도 있습니다. 이 경우, 타겟의 액세스권 객체는, 요구된 액세스에 근거해 작성됩니다. 게다가 타겟의 액세스권 객체는, 요구를 실시하는 코드에 허가되어 한편 요구를 실시하는 코드가 보관 유지하는, 액세스권 객체에 비추어 체크됩니다.
+  <HR></BLOCKQUOTE>
+  
+<P>Java 어플리케이션 환경의 정책는, Policy 객체에 의해 표현됩니다. Policy 의 레퍼런스 구현에서는, 1 개(살) 또는 복수의 정책 구성 파일로부터 정책를 지정할 수 있습니다. 정책 파일은, 지정한 코드 소스의 코드에 어느 액세스권을 허가하는지를 지정합니다. 예를 들어,<CODE>/home/sysadmin</CODE> 디렉토리의 코드에 대해,<CODE>/tmp/abc</CODE> 파일에의 읽어내 액세스를 허가하는 경우, 정책 파일의 엔트리는, 다음과 같이 됩니다. </P>
+<BLOCKQUOTE>
+<pre>
+grant codeBase &quot;file:/home/sysadmin/&quot; {
+    permission java.io.FilePermission &quot;/tmp/abc&quot;, &quot;read&quot;;
+};
+</pre>
+</BLOCKQUOTE>
+<P>정책 파일의 장소, 및 정책 파일에 의해 허가하는 액세스권의 상세한 것에 대하여는,<A HREF="PolicyFiles.html">「디폴트의 Policy 의 구현과 정책 파일의 구문」</a>을 참조해 주세요. <B>Policy Tool</B> 를 사용해 액세스권을 지정하는 방법에 대해서는, Policy Tool 의 문서 (<A HREF="../../tools/solaris/policytool.html">Solaris 판</a>) (<A HREF="../../tools/windows/policytool.html">Windows 판</a>)를 참조해 주세요. <B>Policy Tool</B> 를 사용하면(자), 입력이나 정책 파일의 구문 규칙을 기억하는 수고를 줄일 수가 있습니다. </P>
+<P>기술적인 관점으로부터 말하면(자), 자원에의 액세스를 시도하는 경우는, 실행 thread상의 코드에 「특권 설정」의 마크를 붙일 수 있지 않은 한, 실행 thread가 이용하는 코드는 「모든 것」, 그 자원에의 액세스권을 보관 유지할 필요가 있습니다. 특권의 설정된 코드의 상세한 것에 대하여는,<A   HREF="doprivileged.html">「특권 블록을 위한 API」</A>  를 참조해 주세요. </P>
+<P>이 문서에서는, JDK 에 편입의 액세스권형을 나타내는 것과 동시에, 각각의 액세스권을 주었을 경우의 리스크에 대해 설명합니다. 또, 호출에 액세스권을 필요로 하는 메소드와 각각의 메소드가 필요로 하는 액세스권의 일람도 가리킵니다. </P>
+<P>설명하는 내용은 다음과 같습니다. </P>
+  <DL>
+<DD><A HREF="#PermRisks"><B>액세스권의 설명과 리스크</B></A> 
+    <DL>
+<DD><A HREF="#AllPermission"><CODE>java.security. <B>AllPermission</B></CODE></A> 
+<DD><A HREF="#SecurityPermission"><CODE>java.security. <B>SecurityPermission</B></CODE></A> 
+<DD><A HREF="#UnresolvedPermission"><CODE>java.security. <B>UnresolvedPermission</B></CODE></A> 
+<DD><A HREF="#AWTPermission"><CODE>java.awt. <B>AWTPermission</B></CODE></A> 
+<DD><A HREF="#FilePermission"><CODE>java.io. <B>FilePermission</B></CODE></A> 
+<DD><A HREF="#SerializablePermission"><CODE>java.io. <B>SerializablePermission</B></CODE></A> 
+<DD><A HREF="#ReflectPermission"><CODE>java.lang.reflect. <B>ReflectPermission</B></CODE></A> 
+<DD><A HREF="#RuntimePermission"><CODE>java.lang. <B>RuntimePermission</B></CODE></A> 
+<DL><DD><BL><LI><A HREF="#NIO"><FONT SIZE="-1">NIO 관련 타겟</FONT></A> </BL></DL> 
+<DD><A HREF="#NetPermission"><CODE>java.net. <B>NetPermission</B></CODE></A> 
+<DD><A HREF="#SocketPermission"><CODE>java.net. <B>SocketPermission</B></CODE></A> 
+<DD><A HREF="#SQLPermission"><CODE>java.sql. <B>SQLPermission</B></CODE></A> 
+<DD><A HREF="#PropertyPermission"><CODE>java.util. <B>PropertyPermission</B></CODE></A> 
+<DD><A HREF="#LoggingPermission"><CODE>java.util.logging. <B>LoggingPermission</B></CODE></A> 
+<DD><A HREF="#SSLPermission"><CODE>javax.net.ssl. <B>SSLPermission</B></CODE></A> 
+<DD><A HREF="#AuthPermission"><CODE>javax.security.auth. <B>AuthPermission</B></CODE></A> 
+<DD><A HREF="#PrivateCredentialPermission"><CODE>javax.security.auth. <B>PrivateCredentialPermission</B></CODE></A> 
+<DD><A HREF="#DelegationPermission"><CODE>javax.security.auth.kerberos. <B>DelegationPermission</B></CODE></A> 
+<DD><A HREF="#ServicePermission"><CODE>javax.security.auth.kerberos. <B>ServicePermission</B></CODE></A> 
+<DD><A HREF="#AudioPermission"><CODE>javax.sound.sampled. <B>AudioPermission</B></CODE></A> 
+    </DL>
+    <P><BR>
+<DD><A HREF="#PermsAndMethods"><B>메소드와 그 호출에 필요한 액세스권</B></A>  <BR> <BR>
+<DD><A HREF="#SecMgrChecks"><B>java.lang.SecurityManager 의 메소드와 그 호출에 필요한 액세스권</B></A> 
+  </DL>
+  <P><BR>
+  </P>
+<P>액세스권이나, 슈퍼 클래스 <CODE>java.security.Permission</CODE> 및 <CODE>java.security.BasicPermission</CODE> 에 대한 상세와 액세스권 객체의 작성 및 액세스권의 설정의 예에 대해서는,<B><A HREF="spec/security-spec.doc.html">시큐리티 아키텍쳐(architecture)의 스펙</A> </B>을 참조해 주세요. </P>
+  <P><HR ALIGN=LEFT><p></P>
+<H1><A NAME="PermRisks"></A> 액세스권의 설명과 리스크</H1>
+  <BLOCKQUOTE>
+<P>여기에서는, JDK 에 편입의 액세스권형의 일람표를 나타내는 것과 동시에, 각각의 액세스권을 주었을 경우의 리스크에 대해 설명합니다. </P>
+<H2><A NAME="AllPermission"></A> <CODE>AllPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.security.AllPermission</CODE> 는, 모든 액세스권을 의미하는 액세스권입니다. </P>
+<P><B>주:</B> <code>AllPermission</CODE> 를 부여하면(자), 모든 액세스권을 부여하게 되기 때문에 충분히 주의해 주세요. 이 액세스권을 지정하면(자), 코드는 시큐리티 무효 상태로 실행되게 됩니다. 이러한 액세스권을 코드에게 줄 때는, 충분한 주위를 기울여 주세요. 이 액세스권은, 테스트시인가, 어플리케이션 또는 애플릿이 완전하게 신뢰할 수 있는 경우로, 게다가 필요한 액세스권을 정책에 추가하는 것이 매우 번잡한 작업이 되는 것 같은, 지극히 보기 드문 케이스로만 사용하도록 해 주세요. </P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="SecurityPermission"></A> <CODE>SecurityPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.security.SecurityPermission</CODE> 는, 시큐리티 액세스권을 나타냅니다. <CODE>SecurityPermission</CODE> 에는 이름 (타겟명이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 지정하는지, 지정하지 않는가의 어딘가에 됩니다. </P>
+<P>타겟명에는, 시큐리티 구성 파라미터의 이름 (아래와 같이를 참조)을 지정합니다. 현재로서는,<CODE>SecurityPermission</CODE> 객체는,<CODE>Policy</CODE>,<CODE>Security</CODE>,<CODE>Provider</CODE>,<CODE>Signer</CODE>, 및 <CODE>Identity</CODE> 객체에의 액세스의 보호에 사용됩니다. </P>
+<P><CODE>SecurityPermission</CODE> 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주는 것으로 생기는 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="SecurityPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+<CODE>java.security.SecurityPermission </CODE><BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>createAccessControlContext</CODE></TD> 
+          <TD>
+<CODE>AccessControlContext</CODE> 의 작성. </TD> 
+          <TD>
+이것에 의해,<CODE>DomainCombiner</CODE> 를 사용해 <CODE>AccessControlContext</CODE> 를 인스턴스화할 수 있습니다. 현재 스택에 있는 <CODE>ProtectionDomain</CODE> 에의 레퍼런스가 <CODE>DomainCombiner</CODE> 에게 줄 수 있으므로, 악의가 있는 <CODE>DomainCombiner</CODE> 인 경우, 프라이버시가 누출하는 위험성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>getDomainCombiner</CODE></TD> 
+          <TD>
+<CODE>AccessControlContext</CODE> 의 <CODE>DomainCombiner</CODE> 를 취득. </TD> 
+          <TD>
+특정의 CodeSource 에 대해서 어떠한 액세스권이 주어지고 있을까를 알 수 있는 getPermissions 의 호출에 의해, 시스템 전체의 시큐리티 정책에 대해서 문의를 할 수 있게 됩니다. 정책 정보가 도둑맞아도 시스템의 시큐리티가 위협해지는 것은 아닙니다만, 공격의 목적을 보다 정확하게 정하기 위한 추가 정보를 악의가 있는 코드에게 주어 버립니다. 필요 이상의 정보는 공개하지 않게 할 필요가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getPolicy</CODE></TD> 
+          <TD>
+시스템 전체의 시큐리티 정책 (구체적으로는, 현재 인스톨 되고 있는 Policy 객체)의 취득. </TD> 
+          <TD>
+특정의 <CODE>CodeSource</CODE> 에 대해서 어떠한 액세스권이 주어지고 있을까를 알 수 있는 <CODE>getPermissions</CODE> 의 호출에 의해, 시스템 전체의 시큐리티 정책에 대해서 문의를 할 수 있게 됩니다. 정책 정보가 도둑맞아도 시스템의 시큐리티가 위협해지는 것은 아닙니다만, 공격의 목적을 보다 정확하게 정하기 위한 추가 정보를 악의가 있는 코드에게 주어 버립니다. 필요 이상의 정보는 공개하지 않게 할 필요가 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setPolicy</CODE></TD> 
+          <TD>
+시스템 전체의 시큐리티 정책 (구체적으로는, Policy 객체)의 설정. </TD> 
+          <TD>
+이 액세스권을 주면(자), 악의가 있는 코드는, 시스템을 공격하는데 필요한 액세스권의 모든 것을 스스로에게 줄 수가 있게 되기 (위해)때문에, 지극히 위험합니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>createPolicy. {policy type}</CODE></TD> 
+          <TD>
+Policy.getInstance 를 사용한 Policy 의 인스턴스의 취득.
+          </TD> 
+          <TD>
+	  이 액세스권을 허가하면(자), Policy 객체를 취득하는 코드가 유효하게 됩니다. 악의가 있는 코드가, 코드에 다른 어떠한 액세스권이 부여되고 있을까에 임해서 Policy 객체에 문의를 실시할 가능성이 있습니다.
+	</TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>getProperty. {key}</CODE></TD> 
+          <TD>
+열쇠를 지정한 시큐리티 프로퍼티의 취득. </TD> 
+          <TD>
+지정한 열쇠에 의해 가능하게 되는 액세스의 종류에 따라서는, 코드로부터, 시스템 전체의 정책와 사용자 시큐리티 정책의 장소외, 시큐리티 프로바이더의 리스트에도 액세스 할 수 있게 됩니다. 이 정보가 도둑맞아도 시스템의 시큐리티가 위협해지는 것은 아닙니다만, 공격의 목적을 보다 정확하게 정하기 위한 추가 정보를 악의가 있는 코드에게 주어 버립니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>setProperty. {key}</CODE></TD> 
+          <TD>
+열쇠를 지정한 시큐리티 프로퍼티의 설정. </TD> 
+          <TD>
+이것에는, 시큐리티 프로바이더의 설정과 시스템 전체의 시큐리티 정책의 장소의 정의가 포함됩니다. 새로운 시큐리티 프로바이더를 설정하는 액세스권이 주어진 악의가 있는 코드는, 암호화 비공개키등의 기밀 정보를 훔치는 프로바이더를 설정할 가능성이 있습니다. 또, 시스템 전체의 시큐리티 정책의 장소를 설정하는 액세스권이 주어진 악의가 있는 코드는, 시스템을 공격하는데 필요한 액세스권의 모든 것을 공격자에게 주는 시큐리티 정책의 장소를 그 자리소로 설정할 가능성이 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>insertProvider. {provider name}</CODE></TD> 
+          <TD>
+지정한 새로운 프로바이더의 추가. </TD> 
+          <TD>
+악의가 있는 프로바이더 (받은 비공개키를 폭로하는 프로바이더등)를, 가장 높은 우선 순위를 가지는 프로바이더로서 추가할 수 있게 됩니다. 이것은, 인스톨 되고 있는 프로바이더를 관리하는 현재의 Security 객체는, 프로바이더를 추가하기 전에, 그 무결성이나 신뢰성의 체크는 실시하지 않기 때문에로입니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>removeProvider. {provider name}</CODE></TD> 
+          <TD>
+지정한 프로바이더의 삭제. </TD> 
+          <TD>
+프로그램의 다른 부분의 동작을 변경하거나 그 실행을 무효로 할 수 있게 됩니다. 프로그램이 요구한 프로바이더가 벌써 삭제되어 버렸을 경우, 실행이 이상종료(ABEND) 할 가능성이 있습니다. 또, 삭제된 프로바이더가 프로그램의 나머지의 부분에서 요구되어 있지 않아도, 그 프로바이더가, 일반적으로, 암호화 서비스가 요구되었을 때에 선택되는 프로바이더인 경우는 (프로바이더의 리스트로 앞쪽에 있기 (위해)때문에), 대신에 다른 프로바이더가 선택되는지, 적절한 프로바이더가 발견되지 않는 경우는 에러가 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setSystemScope</CODE></TD> 
+          <TD>
+시스템의 아이덴티티 스코프의 설정. </TD> 
+          <TD>
+공격자는, 신뢰되어야 하는 것이 아닌 증명서를 사용해 시스템의 아이덴티티 스코프를 설정해, 그러한 증명서를 사용해 서명된 애플릿이나 어플리케이션의 코드에, 시스템의 원의 아이덴티티 스코프에서는 거부되고 있던 특권을 줄 수가 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setIdentityPublicKey</CODE></TD> 
+          <TD>
+Identity 의 공개키의 설정. </TD> 
+          <TD>
+아이덴티티가 「신뢰할 수 있는 것」으로서 마크 되고 있는 경우, 공격자는, 시스템의 아이덴티티 스코프가 신뢰하고 있지 않는 다른 공개키 (독자적인 공개키등)를 설정해, 그 공개키를 사용해 서명된 애플릿이나 어플리케이션의 코드에, 본래라면 부정되고 있던 특권을 줄 수가 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setIdentityInfo</CODE></TD> 
+          <TD>
+Identity 의 개요를 나타내는 캐릭터 라인의 설정. </TD> 
+          <TD>
+공격자는, 아이덴티티의 개요를 나타내는 캐릭터 라인을 설정할 수 있게 됩니다. 이것에 의해 공격자는, 어플리케이션을 속여 목적의 것과는 다른 아이덴티티를 사용시키도록(듯이) 하거나 특정의 아이덴티티를 찾아낼 수가 없게 하거나 할 수 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>addIdentityCertificate</CODE></TD> 
+          <TD>
+Identity 의 증명서의 추가. </TD> 
+          <TD>
+공격자는, 아이덴티티의 공개키에 증명서를 설정할 수 있게 됩니다. 시스템 전체의 신뢰 관계에 영향을 주기 (위해)때문에, 이 액세스권은 위험합니다. 이 공개키는, 본래보다 넓은 범위의 코드에 대해서 갑자기 신뢰성을 가지게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>removeIdentityCertificate</CODE></TD> 
+          <TD>
+Identity 의 증명서의 삭제. </TD> 
+          <TD>
+공격자는, 아이덴티티의 공개키를 위한 증명서를 삭제할 수 있게 됩니다. 시스템 전체의 신뢰 관계에 영향을 주기 (위해)때문에, 이 액세스권은 위험합니다. 이 공개키는, 갑자기 본래보다 신뢰성이 낮게 보여지게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>printIdentity</CODE></TD> 
+          <TD>
+주체의 이름, 및 필요하게 응하고 주체가 사용되는 스코프를 표시한다. 또, 주체가 그 스코프로 「신뢰되고 있다」라고 보일지 어떨지도 가리킨다. </TD> 
+          <TD>
+출력되는 스코프가 파일명의 경우, 로컬 시스템의 정보가 전달되어 버리는 일이 있습니다. 예를 들어, 「carol」라고 하는 이름의 아이덴티티의 샘플 출력을 나타냅니다. 「carol」는, 사용자의 아이덴티티 데이타베이스에서는 「신뢰되지 않는다」로서 마크 붙이고 되고 있습니다. <BR>carol[/home/luehe/identitydb.obj][not trusted]</TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>clearProviderProperties. {provider name}</CODE></TD> 
+          <TD>
+Provider 에 의해 구현되고 있는 서비스의 참조에 사용되는 프로퍼티이 비우도록(듯이), Provider 를 「클리어」한다. </TD> 
+          <TD>
+프로바이더에 의해 구현되고 있는 서비스의 참조가 무효가 됩니다. 따라서, 액세스권 「removeProvider. {provider name}」의 부분에서 설명하고 있도록(듯이), 일반적으로은 그 Provider 를 이용하고 있는 프로그램외의 부분의 동작이 변경되거나 그 실행이 무효가 되거나 할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>putProviderProperty. {provider name}</CODE></TD> 
+          <TD>
+지정한 Provider 의 프로퍼티의 설정. </TD> 
+          <TD>
+프로바이더의 프로퍼티은, 그 프로바이더에 의해 구현되고 있는 특정의 서비스의 이름과 장소를 지정합니다. 이 액세스권을 주면(자), 코드로부터 서비스의 지정을 변경해, 다른 구현을 지정할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>removeProviderProperty. {provider name}</CODE></TD> 
+          <TD>
+지정한 Provider 로부터의 프로퍼티의 삭제. </TD> 
+          <TD>
+프로바이더에 의해 구현되고 있는 서비스의 참조가 무효가 됩니다. 프로바이더의 이름과 장소를 지정한 프로퍼티이 삭제되기 (위해)때문에, 그 프로바이더에는 액세스 할 수 없게 됩니다. 따라서, 액세스권 「removeProvider. {provider name}」의 부분에서 설명하고 있도록(듯이), 일반적으로은 그 Provider 를 이용하고 있는 프로그램외의 부분의 동작이 변경되거나 그 실행이 무효가 되거나 할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>getSignerPrivateKey</CODE></TD> 
+          <TD>
+서명자의 비공개키의 취득. </TD> 
+          <TD>
+비공개키에의 액세스를 허가하는 것은 매우 위험합니다. 비공개키는, 그 밖에 알려지지 않게 해 두는 것이 전제가 되어 있습니다. 비공개키가 알려져 버리면(자), 코드는 그 비공개키를 사용해 다양한 파일에 서명해, 서명이 그 서명자의 것이다고 주장할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setSignerKeyPair</CODE></TD> 
+          <TD>
+서명자의 열쇠의 페어 (공개키와 비공개키)의 설정. </TD> 
+          <TD>
+공격자는, 타인 (표적)의 열쇠의 페어를, 그것보다 약한 열쇠의 페어 (키 사이즈의 작은 것 등)등과 옮겨놓을 수가 있게 됩니다. 또, 표적과 그 통신 상대와의 사이의 암호화된 교환을 감청할 수 있도록(듯이)도 됩니다. 표적의 통신 상대가, 표적의 「새롭다」공개키를 사용해 암호화 세션열쇠를 랩 해도, 공격자 (대응하는 비공개키의 소유자)는, 「새롭다」공개키를 사용해 그 세션열쇠의 랩을 해제해, 그 세션열쇠를 사용해 암호화된 통신 데이터를 해독할 수 있습니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="UnresolvedPermission"></A> <CODE>UnresolvedPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><A HREF="../../../api/java/security/UnresolvedPermission.html"><CODE>java.security.UnresolvedPermission</CODE></A>  클래스는, 정책가 초기화되었을 때에 「미해결」이 되어 있는 액세스권을 보관 유지하기 위해서 사용됩니다. 미해결의 액세스권이란, 정책가 초기화 (이하를 참조)되었을 때에, 실제로 사용하는 <CODE>Permission</CODE> 클래스가 아직 존재하고 있지 않는 액세스권입니다.  
+	<P>
+	Java Runtime 의 정책는, 다양한 법칙을 출처(소)로 하는 코드가 어떠한 액세스권을 사용할 수 있는지를 지정해서 ,<CODE>Policy</CODE> 객체에 의해 나타내집니다. 정책가 초기화 또는 갱신될 때마다, 그 정책에 의해 허가되는 모든 액세스권에 대해서, 적절한 클래스의 <CODE>Permission</CODE> 객체가 작성됩니다.  
+	<P>
+	정책의 구성에 의해 참조되는 아크세스뙛쿠라스타이프의 상당수는, 로컬에 존재합니다 (즉, CLASSPATH 상에 놓여져 있다). 그러한 액세스권의 객체는, 정책의 초기화중에 인스턴스화할 수 있습니다. 예를 들어,<CODE>FilePermission</CODE> 클래스는, CLASSPATH 상에 있기 (위해)때문에,<CODE>java.io.FilePermission</CODE> 는 언제라도 인스턴스화할 수 있습니다.  
+	<P>
+	이것에 대해, 정책의 초기화시에게는 아직 존재하고 있지 않는 액세스권 클래스도 있습니다. 예를 들어, 참조된 액세스권 클래스는, 나중에 로드 되는 JAR 파일내에 있을 가능성이 있습니다. 그러한 각 클래스에 대해서는,<CODE>UnresolvedPermission</CODE> 가 인스턴스화 됩니다. 즉,<CODE>UnresolvedPermission</CODE> 는, 기본적으로 액세스권에 관한 정보를 포함한 「플레이스홀더」입니다.  
+	<P>
+	나중에, 코드가 미해결 타입의 액세스권에 관한 <CODE>AccessController.checkPermission</CODE> 를 호출했을 때에, 그 액세스권의 클래스가 벌써 로드 되고 있는 경우는, 그 미해결 타입의 액세스권이 「해결」됩니다. 즉, 각 <CODE>UnresolvedPermission</CODE> 에 대해,<CODE>UnresolvedPermission</CODE> 내의 정보에 근거해 적절한 쿠라스타이프의 신규 객체의 인스턴스가 생성됩니다. 이 신규 객체가 <CODE>UnresolvedPermission</CODE> 에 옮겨져, UnresolvedPermission 는 삭제됩니다.
+    </BLOCKQUOTE>
+
+<H2><A NAME="AWTPermission"></A> <CODE>AWTPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.awt.AWTPermission</CODE> 는, AWT 의 액세스권을 나타냅니다. </P>
+<P><CODE>AWTPermission</CODE> 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주었을 경우의 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="AWTPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+java.awt.AWTPermission<BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>accessClipboard</CODE></TD> 
+          <TD>
+AWT 의 클립보드에의 정보의 포스트와 AWT 의 클립보드로부터의 정보의 취득. </TD> 
+          <TD>
+이것에 의해, 신중한 취급이 필요한 정보나 기밀 정보가, 악의가 있는 코드에 의해 공유될 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>accessEventQueue</CODE></TD> 
+          <TD>
+AWT 의 이벤트 큐에의 액세스. </TD> 
+          <TD>
+악의가 있는 코드가, AWT 의 이벤트 큐를 취득한 뒤, 시스템의 이벤트를 들여다 보거나 삭제하거나 할 가능성이 있는 것 외에 어플리케이션이나 애플릿이 부정한 행동을 하는 것 같은 가짜의 이벤트를 포스트할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>createRobot</CODE></TD> 
+          <TD>
+<CODE>java.awt.Robot </CODE> 객체의 작성. </TD> 
+          <TD>
+<CODE>java.awt.Robot </CODE> 객체는, 코드로 네이티브 레벨의 마우스와 키보드 이벤트를 생성해, 화면을 읽어낼 수가 있습니다. 악의가 있는 코드에 의해 시스템의 관리, 프로그램의 실행, 화면의 읽기를 실시해, 사용자가 마우스와 키보드를 사용할 수 없게 할 수가 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>listenToAllAWTEvents</CODE></TD> 
+          <TD>
+시스템 전체에 건너, 모든 AWT 이벤트를 대기. </TD> 
+          <TD>
+AWT 이벤트 청취자의 추가 후, 악질적인 코드가 시스템내에서 발송 된 모든 AWT 이벤트를 주사 해, 패스워드를 포함한 사용자의 입력을 모두 읽어내려고 할 가능성이 있습니다. 각 AWT 이벤트 청취자는, 그 이벤트 큐의 <CODE>EventDispatchThread</CODE> 의 문맥내로부터 불려 가기 (위해)때문에, accessEventQueue 권한이 유효한 경우, 악질적인 코드가 AWT 이벤트 큐의 내용을 시스템 전체에 건너 변경해, 어플리케이션 또는 애플릿을 안전하지 않은 방법으로 오동작 시킬 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>readDisplayPixels</CODE></TD> 
+          <TD>
+표시 화면으로부터 픽셀을 읽어낸다. </TD> 
+          <TD>
+임의의 코드에 표시 화면의 픽셀을 검사하는 것을 허가하는 <CODE>java.awt.Composite</CODE> 인터페이스등의 인터페이스에 의해, 악질적인 코드가 사용자의 활동을 들여다 보는 것을 허가해 버릴 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>showWindowWithoutWarningBanner</CODE></TD> 
+          <TD>
+애플릿에 의해 작성된 것을 나타내는 경고 배너를 표시하지 않고 , 윈도우만을 표시. </TD> 
+          <TD>
+이 경고가 표시되지 않으면 애플릿이 윈도우를 표시해도, 그 윈도우가 애플릿에 속하는 것이 사용자에게 인식되지 않습니다. 사용자는, 윈도우가 애플릿에 속하고 있는지 어떤지에 의해, 시큐리티와 관계되는 결정을 하는 경우가 있기 (위해)때문에 (사용자명과 패스워드를 다이알로그 박스에 입력하는 등), 이 경고 배너를 무효로 하면(자), 애플릿은, 사용자를 속여 사용자에게 이러한 정보를 입력시킬 수가 있게 됩니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="FilePermission"></A> <CODE>FilePermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.io.FilePermission</CODE> 는, 파일 또는 디렉토리에의 액세스를 나타냅니다. <CODE>FilePermission</CODE> 는, 경로명과 그 경로명에 대해서 유효한 액션의 집합으로부터 됩니다. </P>
+<P>경로명에는, 지정한 액션을 허가하는 파일 또는 디렉토리의 경로명을 지정합니다. 「/*」( 「/」은 파일 단락 문자 <CODE>File.separatorChar</CODE>)로 끝나는 경로명은, 디렉토리와 그 디렉토리에 포함되는 모든 파일을 나타냅니다. 「/-」으로 끝나는 경로명은, 디렉토리와 그 디렉토리에 포함되는 모든 파일과 서브 디렉토리 (재귀적으로)를 나타냅니다. 경로명에 특수한 토큰 「&quot;&lt;&lt;ALL FILES&gt;&gt;&quot;」를 지정했을 경우는,<bold>모든</bold>파일에 일치합니다. </P>
+<P>「*」이 1 개(살)만 지정된 경로명은, 현재의 디렉토리내의 모든 파일을 나타내, 「-」이 1 개(살)만 지정된 경로명은, 현재의 디렉토리내의 모든 파일과 현재의 디렉토리에 포함되는 모든 파일과 서브 디렉토리 (재귀적으로)를 나타냅니다. </P>
+<P>허가하는 액션은, 콤마로 단락지어진 0 개 이상의 키워드의 리스트를 내용으로 하는 캐릭터 라인으로서 생성자 에 인도해집니다. 지정할 수 있는 키워드는, read, write, execute, 및 delete 입니다. 각각의 의미는, 다음과 같이 정의됩니다. </P>
+      <P><TABLE summary="layout" WIDTH="535" BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>read</CODE></TD>
+          <TD WIDTH="85%">
+읽기 권한. </TD>
+        </TR>
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>write</CODE></TD>
+          <TD WIDTH="85%">
+쓰기 권한 (작성권도 포함한다)</TD>
+        </TR>
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>execute</CODE></TD>
+          <TD WIDTH="85%">
+실행 권한. <CODE>Runtime.exec</CODE> 를 호출할 수 있게 된다. <CODE>SecurityManager.checkExec</CODE> 에 대응</TD>
+        </TR>
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>delete</CODE></TD>
+          <TD WIDTH="85%">
+삭제 권한. <CODE>File.delete</CODE> 를 호출할 수 있게 된다. <CODE>SecurityManager.checkDelete</CODE> 에 대응</TD>
+        </TR>
+      </TABLE><p></P>
+<P>액션 캐릭터 라인은, 처리되기 전에 소문자에 변환됩니다. </P>
+<P><CODE>FilePermission</CODE> 를 허가하는 경우에는 주의해 주세요. 다양한 파일이나 디렉토리에의 읽어내 액세스, 특별히 기입해 액세스를 허가하면(자) 어떻게 될까를 잘 검토해 주세요. write 액션에 대해서 &quot;&lt;&lt;ALL FILES&gt;&gt;&quot; 를 지정하는 것은 특히 위험합니다. 이것은, 파일 시스템 전체에 대한 기입을 허가한다고 하는 것입니다. 이러한 지정을 하면(자), 사실상, JVM 실행 환경을 포함해 시스템 바이너리를 옮겨놓는 것이 가능하게 되어 버립니다. </P>
+<P><B>Note:</B>코드는 동일 디렉토리 (또는 그 디렉토리의 서브 디렉토리) 내의 파일을 항상 읽어낼 수가 있으므로, 읽기시의 액세스권을 명시할 필요는 없습니다. </P>
+    </BLOCKQUOTE>
+<H2><A NAME="SerializablePermission"></A> <CODE>SerializablePermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.io.SerializablePermission</CODE> 는, 직렬화 가능 액세스권을 나타냅니다. <CODE>SerializablePermission</CODE> 에는 이름 ( 「타겟명」이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 지정하는지, 지정하지 않는가의 어딘가에 됩니다. </P>
+<P>타겟명에는, 직렬화 가능 액세스권 (아래와 같이를 참조)의 이름을 지정합니다. </P>
+<P><CODE>SerializablePermission</CODE> 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주는 것으로 생기는 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="SerializablePermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+<CODE>java.io.SerializablePermission</CODE> <BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>enableSubclassImplementation</CODE></TD> 
+          <TD>
+<CODE>ObjectOutputStream</CODE> 또는 <CODE>ObjectInputStream</CODE> 의 서브 클래스를 구현해, 객체의 디폴트의 직렬화 또는 직렬화 복원을 오버라이드(override) 한다. </TD> 
+          <TD>
+코드는 이것을 이용해, 악의를 가져 클래스의 직렬화나 직렬화 복원을 실시할 가능성이 있습니다. 예를 들어, 직렬화중, 매우 중요한 private field data를, 공격자가 간단하게 액세스 할 수 있는 형태로 보존할 가능성이 있습니다. 또, 직렬화 복원중, 클래스의 private 필드를 모두 제로로 해 직렬화 복원할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>enableSubstitution</CODE></TD> 
+          <TD>
+직렬화 또는 직렬화 복원중, 객체를 다른 객체와 바꿔 넣는다. </TD> 
+          <TD>
+악의가 있는 코드가, 객체를, 부정한 데이터가 포함된 객체와 갈아넣을 가능성이 있기 (위해)때문에, 이 액세스권은 위험합니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="ReflectPermission"></A> <CODE>ReflectPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.lang.reflect.ReflectPermission</CODE> 는, 리플렉션 조작에 대한 액세스권을 나타냅니다. ReflectPermission 는 「이름 첨부 액세스권」이며, 액션은 잡지 않습니다. 현시점에서 정의되고 있는 이름은 <TT>suppressAccessChecks</TT> 뿐입니다. 이 이름을 지정하면(자), 리플렉트 된 객체에 의해 그 사용시점으로써 실행되는, 표준의 언어 액세스 체크 (public, 디폴트 (패키지) 액세스, protected, 및 private 인 멤버가 대상)가 억제됩니다. </P>
+<P>이 액세스권에 의해 가능하게 되는 조작과 이 액세스권을 코드에게 주는 것으로 생기는 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="ReflectPermission description" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+java.lang.reflect.ReflectPermission <BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>suppressAccessChecks</CODE></TD> 
+          <TD>
+<B>경고:</B> 이 액세스권을 코드에게 줄 때는, 충분한 주위를 기울여 주세요. 이 액세스권에 의해, 특정의 클래스의 필드에의 액세스와 메소드의 호출이 가능하게 됩니다. public 외, protected, private 등의 필드 및 메소드도 포함됩니다. </TD> 
+          <TD>
+악의가 있는 코드가, 일반적으로은 이용할 수 없는 정보 (기밀 정보등) 및 메소드에 액세스 할 수 있게 되어 버리기 (위해)때문에, 이 액세스권은 위험합니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+<H2><A NAME="RuntimePermission"></A> <CODE>RuntimePermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.lang.RuntimePermission</CODE> 는, 실행시 액세스권을 나타냅니다. <CODE>RuntimePermission</CODE> 에는 이름 ( 「타겟명」이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 지정하는지, 지정하지 않는가의 어딘가에 됩니다. </P>
+
+<P>타겟명에는, 실행시 액세스권 (아래를 참조)의 이름을 지정합니다. 명명 규약은, 계층적인 프로퍼티 명명 규약에 따릅니다. 또, 타겟명의 후에 asterisk를 지정해 ( 「<CODE>. </CODE>」의 후에 지정하는지, 단독으로 지정), 와일드 카드에 의한 조합을 실시할 수도 있습니다. 예를 나타냅니다. 「<CODE>loadLibrary. *</CODE>」(이)나 「<CODE>*</CODE>」은 유효합니다만, 「<CODE>*loadLibrary</CODE>」나 「<CODE>a*b</CODE>」는 무효입니다. </P>
+
+<P><CODE>RuntimePermission</CODE> 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및, 그 액세스권을 코드에게 주는 것으로 생기는 리스크를 다음의 겉(표)에 나타냅니다. </P>
+
+      <P><TABLE summary="RuntimePermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+java.lang.RuntimePermission <BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>createClassLoader</CODE></TD> 
+          <TD>
+클래스 로더의 작성. </TD> 
+          <TD>
+이 액세스권을 주는 것은 지극히 위험합니다. 악의가 있는 어플리케이션이 독자적인 클래스 로더의 인스턴스를 생성해, 파괴 행위를 실시하는 클래스를 시스템에 로드할 가능성이 있습니다. 이 새롭게 로드 된 클래스가 같은 클래스 로더에 의해 보호 도메인에 놓여져 로드 된 클래스에, 그 도메인의 액세스권이 자동적으로 주어질 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>getClassLoader</CODE></TD> 
+          <TD>
+클래스 로더 (호출측 클래스의 클래스 로더등)의 취득. </TD> 
+          <TD>
+이것에 의해, 특정의 클래스의 클래스 로더를 취득하기 위한 액세스권을, 공격자에게 주게 됩니다. 어느 클래스의 클래스 로더에 액세스 할 수 있으면(자), 공격자는, 그 클래스 로더로부터 사용할 수 있는 것 외의 클래스를 로드할 수 있게 되기 (위해)때문에, 이 액세스권은 위험합니다. 본래는, 그러한 클래스에는 액세스 할 수 없습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setContextClassLoader</CODE></TD> 
+          <TD>
+특정의 thread에 의해 사용되는 문맥 클래스 로더의 설정. </TD> 
+          <TD>
+문맥 클래스 로더는, 시스템 클래스 로더에 존재하지 않을 가능성이 있는 자원을 찾을 필요가 있을 때, 시스템 코드 및 extension에 의해 사용됩니다. setContextClassLoader 액세스권을 주면(자), 코드는, 시스템 thread를 포함해 특정의 thread로 사용하는 문맥 클래스 로더를 변경할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setSecurityManager</CODE></TD> 
+          <TD>
+시큐리티 매니저의 설정 (기존의 시큐리티 매니저의 교환도 포함한다). </TD>
+          <TD>
+시큐리티 매니저란, 어플리케이션이 시큐리티 정책를 구현할 수 있는 클래스입니다. setSecurityManager 액세스권을 주면(자), 코드는, 다른 시큐리티 매니저 (보다 제한의 적은 시큐리티 매니저등)를 로드해, 사용하는 시큐리티 매니저를 변경할 수 있게 됩니다. 이 결과, 원의 시큐리티 매니저에 의해 부과되고 있던 체크를 회피할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>createSecurityManager</CODE></TD> 
+          <TD>
+새로운 시큐리티 매니저의 작성. </TD> 
+          <TD>
+이것에 의해, 코드는, 다른 클래스 또는 실행 스택에 관한 정보를 개시해 버리는 것 같은, 보호된, 신중하게 취급되어야 할 메소드에 액세스 할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>exitVM. {exit status}</CODE></TD> 
+          <TD>
+지정된 종료 상태에서의 Java 가상 머신의 정지. </TD> 
+          <TD>
+공격자는, Java 가상 머신을 자동적으로 강제 정지시키는 서비스 방해 공격을 장치할 수가 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>shutdownHooks</CODE></TD> 
+          <TD>
+Java 가상 머신의 종료 훅의 등록 및 해제. </TD> 
+          <TD>
+공격자는 악의가 있는 종료 훅을 등록해, Java 가상 머신의 깨끗한 종료을 변경할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setFactory</CODE></TD> 
+          <TD>
+ServerSocket 또는 Socket 에 의해 사용되는 소켓 팩토리, 또는 URL 에 의해 사용되는 스트림 핸들러 팩토리의 설정. </TD> 
+          <TD>
+이것에 의해, 코드로부터, 소켓, 서버 소켓, 스트림 핸들러, 또는 RMI 소켓 팩토리의 실제의 구현을 설정할 수 있게 됩니다. 공격자는, 데이터 스트림을 미치게 하는 이상한 구현을 설정할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setIO</CODE></TD> 
+          <TD>
+System.out, System.in, 및 System.err 의 설정. </TD> 
+          <TD>
+표준 시스템 스트림의 값을 변경할 수 있게 됩니다. 공격자는, 사용자의 입력을 감시해, 그것을 훔칠 수 있도록(듯이) System.in 를 개변하거나 System.err 에 보내지는 에러 메세지가 출력되지 않게 System.err 를 null OutputSteam 로 설정하거나 할 가능성이 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>modifyThread</CODE></TD> 
+          <TD>
+<odification of threads, e.g., via calls to Thread ><code>stop, <CODE>suspend</CODE>, <CODE>resume</CODE>, <CODE>setPriority</CODE>, and <CODE>setName</CODE> methods</code></TD> 
+          <TD>
+공격자는, 시스템내의 어느 thread에서도 개시 또는 일시정지를 할 수 있게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>stopThread</CODE></TD> 
+          <TD>
+Thread 의 <CODE>stop</CODE> 메소드의 호출에 의한 thread의 정지. </TD> 
+          <TD>
+thread에의 액세스권을 벌써 취득하고 있는 경우, 코드로부터, 시스템내의 어느 thread에서도 정지할 수 있게 됩니다. 실행중의 thread가 종료 당해 시스템이 파괴될 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>modifyThreadGroup</CODE></TD> 
+          <TD>
+thread 그룹의 작성 또는 변경 (thread의 작성중에 thread를 thread 그룹에 추가하는지, 또는 ThreadGroup 의 <CODE>destroy</CODE>,<CODE>resume</CODE>,<CODE>setDaemon</CODE>,<CODE>setMaxPriority</CODE>,<CODE>stop</CODE>, 및 <CODE>suspend</CODE> 메소드를 호출하는 것에 의한다). </TD>
+          <TD>
+공격자는, thread 그룹내의 thread의 작성이나, thread 그룹의 작성이나 변경 (실행의 우선 순위의 설정등)이 가능하게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>getProtectionDomain</CODE></TD> 
+          <TD>
+특정의 클래스의 <CODE>ProtectionDomain</CODE> 의 취득. </TD> 
+          <TD>
+코드로부터, 특정의 코드 소스의 정책 정보를 취득할 수 있게 됩니다. 정책 정보가 도둑맞아도 시스템의 시큐리티가 위협해지는 것은 아니지만, 공격의 목적을 보다 정확하게 정하기 위한 로컬 파일명등의 추가 정보를 공격자에게 주어 버리게 됩니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>readFileDescriptor</CODE></TD> 
+          <TD>
+파일 기술자의 읽기. </TD> 
+          <TD>
+코드로부터, 읽어낸 파일 기술자가 관련지을 수 있고 있는 파일을 읽어낼 수가 있게 됩니다. 파일에 기밀 데이터가 포함되어 있는 경우, 이 액세스권은 위험합니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>writeFileDescriptor</CODE></TD> 
+          <TD>
+파일 기술자에게로의 기입해. </TD> 
+          <TD>
+코드로부터, 그 파일 기술자가 관련지을 수 있고 있는 파일에 기입할 수 있게 됩니다. 악의가 있는 코드에 의해, 바이러스가 설치되거나 디스크를 가득 되거나 할 가능성이 있기 (위해)때문에, 이 액세스권은 위험합니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>loadLibrary. {library name}</CODE></TD> 
+          <TD>
+지정한 라이브러리의 동적인 링크. </TD> 
+          <TD>
+Java 의 시큐리티 아키텍쳐(architecture)는, native code 레벨에서의 악의가 있는 행동을 저지하지 못하고, 그처럼은 설계되고 있지 않습니다. 이 때문에, native code 라이브러리의 로드 허가를 애플릿에게 주는 것은 위험합니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>accessClassInPackage. <BR> {package name}</CODE></TD> 
+          <TD>
+클래스 로더가 시큐리티 매니저의 <CODE>checkPackageAcesss</CODE> 메소드를 호출할 때, 그 클래스 로더의 <CODE>loadClass</CODE> 메소드를 사용해 지정한 패키지에 액세스 한다. </TD> 
+          <TD>
+일반적으로은 액세스 할 수 없는 패키지내의 클래스에, 코드로부터 액세스 할 수 있게 됩니다. 이 때문에, 악의가 있는 코드가, 이러한 클래스를 이용해 시스템의 시큐리티를 위협할 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>defineClassInPackage. <BR> {package name}</CODE></TD> 
+          <TD>
+클래스 로더가 시큐리티 매니저의 <CODE>checkPackageDefinition</CODE> 메소드를 호출할 때, 그 클래스 로더의 <CODE>defineClass</CODE> 메소드를 사용해, 지정한 패키지내에 클래스를 정의한다. </TD> 
+          <TD>
+이것에 의해, 특정의 패키지내에 클래스를 정의하기 위한 액세스권을 코드에게 주게 됩니다. 이 액세스권이 주어진 악의가 있는 코드는,<CODE>java.security</CODE> 나 <CODE>java.lang</CODE> 등의 신뢰할 수 있는 패키지내에 파괴 행위를 실시하는 클래스를 정의할 가능성이 있기 (위해)때문에, 이 액세스권은 위험합니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>accessDeclaredMembers</CODE></TD> 
+          <TD>
+<B>경고</B>:이 액세스권을 코드에게 줄 때는, 충분한 주위를 기울여 주세요. 이 액세스권에 의해, 특정의 클래스에서 선언되고 있는 멤버에게로의 액세스가 가능하게 됩니다. </TD> 
+          <TD>
+특정의 클래스내의 public, 디폴트 (패키지) 액세스, protected, 및 private 인 필드나 메소드에 관한 문의를 실시하는 코드 액세스권을 코드에게 주게 됩니다. 이 액세스권이 주어진 코드는, private 및 protected 인 필드명과 메소드명에는 액세스 할 수 있지만, private 및 protected 인 필드의 데이터에는 액세스 할 수 없고, private 인 메소드를 호출할 수 없습니다. 그러나, 공격의 목적을 보다 정확하게 정하기 (위해)때문에, 악의가 있는 코드가 이 정보를 이용할 가능성이 있습니다. 또, 클래스내의 public 인 메소드를 호출하거나 public 인 필드에 액세스 하거나 할 가능성이 있습니다. 코드가, 메소드와 필드가 포함되는 클래스나 인터페이스에 객체를 캐스트 할 수 없기 위해(때문에), 일반적으로은 코드가 이러한 메소드를 호출하거나 필드에 액세스 하거나 할 수 없는 경우는 위험합니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>queuePrintJob</CODE></TD> 
+          <TD>
+인쇄 작업 요구의 발행. </TD> 
+          <TD>
+기밀 정보가 인쇄될 가능성이 있는 것 외에 용지가 낭비될 가능성이 있습니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+
+<H3><A NAME="NIO"></A> NIO 관련 타겟</H3>
+    <BLOCKQUOTE>
+	Java 2 SDK 의 릴리스 1.4 에서는, 다음의 2 개의 NIO 에 관한 <code>RuntimePermission</code> 타겟이 추가되었습니다.
+
+<blockquote>
+<pre>
+selectorProvider
+charsetProvider
+</pre>
+</BLOCKQUOTE>
+이러한 <code>RuntimePermission</code> 는,<code>java.nio.channel.spi.SelectorProvider</code> 또는 <code>java.nio.charset.spi.CharsetProvider</code> 를 서브 클래스화해 구현하는 클래스에 부여할 필요가 있습니다. 액세스권은, 추상 base class 생성자 의 호출시에 체크됩니다. 이러한 액세스권은, 중요한 프로바이더 기구를 구현하는 클래스의 신뢰성을 확증 합니다.
+<P>
+상세한 것에 대하여는,<A HREF="../../../api/java/nio/channels/spi/SelectorProvider.html"><code>「java.nio.channels.spi.SelectorProvider」</code></A>  와 <A HREF="../../../api/java/nio/charset/spi/CharsetProvider.html"><code>「java.nio.channels.spi.CharsetProvider」</code></A> 를 참조해 주세요.
+
+    </BLOCKQUOTE>
+    </BLOCKQUOTE>
+
+<H2><A NAME="NetPermission"></A> <CODE>NetPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.net.NetPermission</CODE> 는, 다양한 네트워크 액세스권을 나타냅니다. <CODE>NetPermission</CODE> 에는 이름은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 얻는지, 액세스권을 얻지 않을까의 어딘가에 됩니다. </P>
+<P><CODE>NetPermission</CODE> 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주었을 경우의 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="NetPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+<CODE>java.net.NetPermission</CODE><BR> 의 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setDefaultAuthenticator</CODE></TD> 
+          <TD>
+프록시 또는 HTTP 서버가 증명서를 요구했을 때에 사용하는, 인증 정보의 취득 방법을 설정한다. </TD> 
+          <TD>
+이것에 의해, 사용자로부터의 입력을 취득 때에, 사용자의 인증 정보 입력을 감시해, 그것을 훔치는 Authenticator가 악의가 있는 코드에 의해 설정될 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>requestPasswordAuthentication</CODE></TD> 
+          <TD>
+시스템에 등록된 Authenticator에 패스워드를 요구. </TD> 
+          <TD>
+악의가 있는 코드에 의해, 이 패스워드가 도둑맞을 가능성이 있습니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>specifyStreamHandler</CODE></TD> 
+          <TD>
+URL 의 작성시에 스트림 핸들러를 지정. </TD> 
+          <TD>
+악질적인 코드가, 그것이 실제로 액세스 하는 장소로부터 실효 바이트를 취득하는 스트림 핸들러를 지정해, 일반적으로은 액세스 할리가 없는 자원 (file:/foo/fum/ 와 같이)을 사용해 URL 를 작성할 가능성이 있습니다. 이와 같이 해 시스템을 속여, 어느 클래스의 출처(소)를 속여, 그 클래스의 ProtectionDomain/CodeSource 를 작성시켜 버릴 가능성이 있습니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="SocketPermission"></A> <CODE>SocketPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.net.SocketPermission</CODE> 는, 소켓을 이용한 네트워크 액세스를 나타냅니다. SocketPermission 는, 호스트의 지정과 그 호스트에게로의 접속 방법을 지정한 액션의 집합으로부터 됩니다. 호스트는, 다음과 같이 지정합니다. </P>
+<BLOCKQUOTE>
+<pre>
+host = (hostname | IPaddress)[:portrange]
+portrange = portnumber | -portnumber | portnumber-[portnumber]
+</pre>
+</BLOCKQUOTE>
+
+<P>호스트는, DNS 명, 수치에 의한 IP 주소, localhost (로컬 머신의 경우)의 어떤 것인가로 나타내집니다. DNS 명에 의한 호스트 지정에는, 와일드 카드 「*」을 1 회 사용할 수 있습니다. 이것을 사용하는 경우는, 「*. sun.com」와 같이 제일왼쪽의 위치에 사용합니다. </P>
+<P>포트 또는 포트 범위는 생략 가능합니다. 포트를 「N-」(<I>N</I> 는 포트 번호)이라고 하는 형태로 지정했을 경우는, 포트 번호 <I>N</I> 와 그것보다 위의 모든 포트 번호를 나타냅니다. 또, 「-N」라고 하는 형태로 지정했을 경우는, 포트 번호 <I>N</I> 와 그것보다 아래의 모든 포트 번호를 나타냅니다. </P>
+<P>호스트에게로의 접속 방법으로서는, 다음의 어떤 것인지를 지정할 수 있습니다. </P>
+      <pre>
+accept
+connect
+listen
+resolve</pre>
+<P>「listen」액션은, 「localhost」와(과) 함께 사용했을 경우만 의미를 가집니다. 「resolve」(호스트 및 IP 네임 서비스의 참조를 해결) 액션은, 그 이외의 액션의 어떤 것인지를 지정하면(자), 자동적으로 지정한 것이  됩니다. </P>
+<P>SocketPermissions 의 작성 및 그 의미의 예로서 정책 파일에 이하의 엔트리가 있는 경우를 생각해 봅시다. </P>
+<BLOCKQUOTE>
+<pre>
+grant signedBy &quot;mrm&quot; {
+    permission java.net.SocketPermission &quot;puffin.eng.sun.com:7777&quot;, &quot;connect, accept&quot;;
+};
+</pre>
+</BLOCKQUOTE>
+<P>이 엔트리에 의해, 다음의 액세스권 객체가 생성되어 「mrm」에 의해 서명된 코드에 허가가 주어집니다. </P>
+<BLOCKQUOTE>
+<pre>
+p1 = new SocketPermission(&quot;puffin.eng.sun.com:7777&quot;, &quot;connect, accept&quot;);</pre>
+</BLOCKQUOTE>
+<P><CODE>p1</CODE> 는,<CODE>puffin.eng.sun.com</CODE> 상의 포트 7777 에 접속하는 액세스권, 및 접속을 받아들이는 액세스권을 나타냅니다. </P>
+<P>같이 정책에 다음의 엔트리가 있다고 합니다. </P>
+<BLOCKQUOTE>
+<pre>
+grant signedBy &quot;paul&quot; {
+    permission java.net.SocketPermission &quot;localhost:1024-&quot;, &quot;accept, connect, listen&quot;;
+};
+</pre>
+</BLOCKQUOTE>
+<P>이 경우, 다음의 액세스권 객체가 생성되어 「paul」에 의해 서명된 코드에 허가가 주어집니다. </P>
+<BLOCKQUOTE>
+<pre>
+p2 = new SocketPermission(&quot;localhost:1024-&quot;, &quot;accept, connect, listen&quot;);
+</pre>
+</BLOCKQUOTE>
+<P><CODE>p2</CODE> 는, 로컬 호스트의 1024 에서 65535 까지의 임의의 포트에의 접속의 접수, 그 포트에의 접속, 및 그 포트에서의 대기를 허가하는 액세스권을 나타냅니다. </P>
+<P><B>주:</B> 원격 호스트에게로의 접속 요구를 받아들이기 위한 액세스권이나 원격 호스트에게 접속하기 위한 액세스권을 코드에게 주면(자), 악의가 있는 코드가, 그러한 액세스권이 없으면 그 데이터에 액세스 할 수 없는 호스트 사이로, 기밀 데이터를 보다 간단하게 전송 및 공유할 수 있게 되기 (위해)때문에 위험합니다. </P>
+    </BLOCKQUOTE>
+<H2><A NAME="SQLPermission"></A> <CODE>SQLPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P>애플릿내에서 실행중의 코드가 <CODE>setLogWriter</CODE> 메소드의 1 개를 호출하는 경우에,<CODE>SecurityManager</CODE> 가 체크하는 액세스권. 이러한 메소드에는, 다음의 리스트내의 메소드가 포함됩니다. </P>
+      <UL>
+<LI><CODE>DriverManager.setLogWriter</CODE> <BR>
+<LI><CODE>DriverManager.setLogStream</CODE> (비추천)<BR>
+<LI><CODE>javax.sql.DataSource.setLogWriter<BR></CODE>
+<LI><CODE>javax.sql.ConnectionPoolDataSource.setLogWriter<BR></CODE>
+<LI><CODE>javax.sql.XADataSource.setLogWriter<BR></CODE>
+      </UL>
+<P><CODE>SQLPermission</CODE> 객체가 존재하지 않는 경우, 이 메소드는 실행시 예외로서 <CODE>java.lang.SecurityException</CODE> 를 throw 합니다. </P>
+<P><CODE>SQLPermission</CODE> 객체에는 이름 ( 「타겟명」이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권이 존재하는지, 존재하지 않는가의 어딘가에 됩니다. 타겟명에는, 액세스권 (아래와 같이를 참조)의 이름을 지정합니다. 명명 규약은, 계층적인 프로퍼티 명명 규약에 따릅니다. 또, 타겟명의 후에 asterisk를 지정해 ( 「.」의 후에 지정하는지, 단독으로 지정), 와일드 카드에 의한 조합을 실시할 수도 있습니다. 예를 나타냅니다. 예를 들어, 「<CODE>loadLibrary. *</CODE>」(이)나 「<CODE>*</CODE>」은 유효합니다만, 「<CODE>*loadLibrary</CODE>」나 「<CODE>a*b</CODE>」는 무효입니다. </P>
+<P><CODE>SQLPermission</CODE> 로 지정할 수 있는 타겟명을 다음의 겉(표)에 나타냅니다. 현시점에서 지정 가능한 이름은 <CODE>setLog</CODE> 뿐입니다. 겉(표)에는, 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주었을 경우의 리스크가 나타납니다. </P>
+      <P><TABLE summary="SQLPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+액세스권 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setLog</CODE></TD> 
+          <TD>
+로깅스트림의 설정. </TD> 
+          <TD>
+이 액세스권을 주는 것은 위험합니다. 로그의 내용에는, 사용자명과 패스워드, SQL 문, 및 SQL 데이터가 포함됩니다. </TD> 
+        </TR>
+      </TABLE><p></P>
+<P>애플릿을 실행하는 사용자는, 허가하는 액세스권을 결정해,<CODE>Policy Tool</CODE> 를 실행해, 정책 파일에 <CODE>SQLPermission</CODE> 를 작성합니다. 프로그래머는, 생성자 을 직접 사용하는 것이 아니라, 툴을 사용해 <CODE>SQLPermission</CODE> 의 인스턴스를 작성합니다. </P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="PropertyPermission"></A> <code>PropertyPermission</code></H2>
+    <BLOCKQUOTE>
+<P><CODE>java.util.PropertyPermission</CODE> 는, 프로퍼티 액세스권을 나타냅니다. </P>
+<P>이름에는, 프로퍼티의 이름 ( 「java.home」나 「os.name」등)을 지정합니다. 명명 규약은, 계층적인 프로퍼티 명명 규약에 따릅니다. 또, 타겟명의 후에 asterisk를 지정해 ( 「.」의 후에 지정하는지, 단독으로 지정), 와일드 카드에 의한 조합을 실시할 수도 있습니다. 예를 나타냅니다. 「&quot;java. *&quot;」나 「&quot;*&quot;」는 유효합니다만, 「&quot;*java&quot;」나 「&quot;a*b&quot;」는 무효입니다. </P>
+<P>허가하는 액션은, 콤마로 단락지어진 0 개 이상의 키워드의 리스트를 내용으로 하는 캐릭터 라인으로서 생성자 에 인도해집니다. 지정할 수 있는 키워드는, 「read」와「write」입니다. 각각의 의미는, 다음과 같이 정의됩니다. </P>
+      <P><TABLE summary="layout" WIDTH="535" BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>read</CODE></TD>
+          <TD WIDTH="85%">
+읽기 권한. <CODE>System.getProperty</CODE> 를 호출할 수 있게 된다</TD>
+        </TR>
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>write</CODE></TD>
+          <TD WIDTH="85%">
+쓰기 권한. <CODE>System.setProperty</CODE> 를 호출할 수 있게 된다</TD>
+        </TR>
+      </TABLE><p></P>
+<P>액션 캐릭터 라인은, 처리되기 전에 소문자에 변환됩니다. </P>
+<P>특정의 시스템 프로퍼티에의 액세스권을 코드에게 줄 때는 주의해 주세요. 예를 들어, 시스템 프로퍼티 「java.home」에의 액세스권을 주면(자), 악의가 있는 코드에 의해, 시스템 환경에 관한 기밀 정보 (실행 환경의 디렉토리 위치)가 도둑맞을 가능성이 있습니다. 또, 시스템 프로퍼티 「user.name」 및 「user.home」에의 액세스권을 주면(자), 악의가 있는 코드에 의해, 사용자 환경에 관한 중요한 정보 (사용자의 어카운트명으로 홈 디렉토리)가 도둑맞을 가능성이 있습니다. </P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="LoggingPermission"></A> <code>LoggingPermission</code></H2>
+    <BLOCKQUOTE>
+<code>SecurityManager</code> 는,<code>SecurityManager</code> 을 사용해 실행되고 있는 코드가,<code>Logger.setLevel</code> 등의 로깅 제어 메소드를 호출하면(자),<A HREF="../../../api/java/util/logging/LoggingPermission.html"><CODE>java.util.logging.LoggingPermission</CODE></A>  객체를 체크합니다.  
+	<P>
+	현재로서는, 로깅 구성의 제어 권한을 부여하는 제어 기능은,<code>LoggingPermission</code> 에 의한 「<code>제어</code>」 뿐입니다. 예를 들어, 핸들러의 추가나 삭제, 필터의 추가나 삭제, 또는 로깅레벨의 변경에 의해 로깅을 제어할 수 있게 됩니다.  
+	<P>
+	일반적으로,<code>LoggingPermission</code> 객체를 직접 작성하는 것이 아니라, 시큐리티 정책 파일의 읽기에 근거해 시큐리티 정책 코드에 의해 작성됩니다.  
+    </BLOCKQUOTE>
+
+<H2><A NAME="SSLPermission"></A> <code>SSLPermission</code></H2>
+    <BLOCKQUOTE>
+<P><A HREF="../../../api/javax/net/ssl/SSLPermission.html"><CODE>javax.net.ssl.SSLPermission</CODE></A>  클래스는, 다양한 네트워크 액세스권을 나타냅니다. <CODE>SSLPermission</CODE> 에는 이름 (타겟명이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 지정하는지, 지정하지 않는가의 어딘가에 됩니다.  
+	<P>
+	타겟명에는, 네트워크 액세스권 (아래와 같이를 참조)의 이름을 지정합니다. 명명 규약은, 계층적인 프로퍼티 명명 규약에 따릅니다. 또, 타겟명의 후에 asterisk를 지정해 ( 「<CODE>. </CODE>」의 후에 지정하는지, 단독으로 지정), 와일드 카드에 의한 조합을 실시할 수도 있습니다. 예를 나타냅니다. "예를 들어, 「<CODE>foo. *</CODE>」(이)나 「<CODE>*</CODE>」은 유효합니다만, 「<CODE>*foo</CODE>」나 「<CODE>a*b</CODE>」는 무효입니다.  
+	<P>
+	SSLPermission 로 지정할 수 있는 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주는 것으로 생기는 리스크를 다음의 겉(표)에 나타냅니다.  
+
+      <P><TABLE summary="SSLPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+액세스권 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>setHostnameVerifier</CODE></TD> 
+          <TD>
+<CODE>HttpsURLConnection</CODE> 에 의해 접속되고 있는 호스트와 서버 증명서의 공통명 필드의 불일치를 허가할지 어떨지를 판정할 수 있는 콜백을 설정한다.  </TD> 
+          <TD>
+악의가 있는 코드가,<code>HttpsURLConnection</code> 요구에 의해 참조된 호스트명을 감시하거나 무효인 공통명을 사용하는 서버 증명서를 허가하거나 하는 검증자를 설정할 가능성이 있습니다.  </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getSSLSessionContext</CODE></TD> 
+          <TD>
+		<CODE>SSLSession</CODE> 의 <CODE>SSLSessionContext</CODE> 를 취득. </TD> 
+          <TD>
+악의가 있는 코드가, SSL 피어를 사용해 확립된 세션을 감시하거나 세션을 무효로 해 퍼포먼스를 저하시키거나 할 가능성이 있습니다. </TD>
+        </TR>
+	   
+	   <tr>
+	   <td>
+	   <CODE>setDefaultSSLContext </CODE>
+	   </td>
+	   
+	   <td>디폴트의 SSL 문맥을 설정.
+	   
+	   </td>
+	   <td>
+디폴트의 SSL 문맥을 설정해 어플리케이션으로 디폴트의 SSLContext 를 사용하면(자), 악의가 있는 코드가, 보증되어 있지 않은 트러스트 데이터, 열쇠 데이터, 난수 제네레이터를 사용하거나 위험한 SSL 소켓 팩토리나 SSL 서버 소켓 팩토리를 사용할 가능성이 있습니다.
+</td>
+</tr>
+	   
+	   
+       </TABLE>
+
+    </BLOCKQUOTE>
+
+<H2><A NAME="AuthPermission"></A> <code>AuthPermission</code></H2>
+    <BLOCKQUOTE>
+<P><A HREF="../../../api/javax/security/auth/AuthPermission.html"><CODE>javax.security.auth.AuthPermission</CODE></A>  클래스는, 인증 액세스권을 나타냅니다. <CODE>AuthPermission</CODE> 에는 이름 ( 「타겟명」이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 얻는지, 액세스권을 얻지 않을까의 어딘가에 됩니다. </P>
+<P>현재로서는,<CODE>AuthPermission</CODE> 객체는,<CODE>Subject</CODE>,<CODE>SubjectDomainCombiner</CODE>,<CODE>LoginContext</CODE>, 및 <CODE>Configuration</CODE> 객체에의 액세스의 보호에 사용됩니다. </P>
+<P><CODE>AuthPermission</CODE> 로 지정 가능한 타겟명과 그래서 주어지는 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주었을 경우의 리스크를 다음의 겉(표)에 나타냅니다. </P>
+      <P><TABLE summary="AuthPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+액세스권 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>doAs</CODE></TD> 
+          <TD>
+<CODE>Subject.doAs</CODE> 메소드의 호출. </TD> 
+          <TD>
+이것에 의해, 어플리케이션은 <CODE>doAs</CODE> 메소드로 지정된 <CODE>Subject</CODE> 의 식별 정보로 코드 (Actions)를 호출할 수가 있게 됩니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>doAsPrivileged</CODE></TD> 
+          <TD>
+<CODE>Subject.doAsPrivileged</CODE> 메소드의 호출. </TD> 
+          <TD>
+이것에 의해, 어플리케이션은 <CODE>doAsPrivileged</CODE> 메소드로 지정된 <CODE>Subject</CODE> 의 식별 정보로 코드 (Actions)를 호출할 수가 있게 됩니다. 또, 호출측이 <CODE>AccessControlContext</CODE> 로서 <CODE>null</CODE> 를 건네주면(자), 호출측을 호출해 스택으로부터 삭제해, 게다가 그 후의 시큐리티 판단으로부터도 삭제할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getSubject</CODE></TD> 
+          <TD>
+주어진 <CODE>AccessControlContext</CODE> 로부터 <CODE>Subject</CODE> 를 꺼낸다. </TD>
+          <TD>
+이것에 의해, 어플리케이션은 인증된 <CODE>Subject</CODE> 에의 액세스를 가져옵니다. 어플리케이션은 Subject 의 인증된 Principal 와 public 의 쿠레덴샤르에 액세스 할 수 있게 됩니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getSubjectFromDomainCombiner</CODE></TD> 
+          <TD>
+주어진 <CODE>SubjectDomainCombiner</CODE> 로부터 <CODE>Subject</CODE> 를 꺼낸다. </TD>
+          <TD>
+이것에 의해, 어플리케이션은 <CODE>SubjectDomainCombiner</CODE> 와 관련이 있는, 인증된 <CODE>Subject</CODE> 에의 액세스를 가져옵니다. 어플리케이션은 Subject 의 인증된 Principal 와 public 의 쿠레덴샤르에 액세스 할 수 있게 됩니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>setReadOnly</CODE></TD> 
+          <TD>
+<CODE>Subject</CODE> 를 읽어내 전용으로 설정. </TD>
+          <TD>
+이것에 의해, 어플리케이션은 법칙의 <CODE>Principal</CODE>, public 쿠레덴샤르 및 private 쿠레덴샤르를 읽어내 전용으로 설정할 수 있게 됩니다. 이것을 서비스 방해 거부의 형태로서 사용할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>modifyPrincipals</CODE></TD> 
+          <TD>
+Subject 의 <CODE>Principal</CODE> 세트를 변경. </TD>
+          <TD>
+액세스 제어는 <CODE>Subject</CODE> 에 관련하는 Principal 에 근거해 결정됩니다. 이 액세스권에 의해, 어플리케이션은 Subject 의 <CODE>Principal</CODE> 세트를 변경해, 그 후의 시큐리티 판단에 영향을 줄 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>modifyPublicCredentials</CODE></TD> 
+          <TD>
+Subject 의 public 쿠레덴샤르셋트를 변경. </TD>
+          <TD>
+이 액세스권에 의해, 어플리케이션은 <CODE>Subject</CODE> 로부터 public 쿠레덴샤르를 추가 또는 삭제할 수가 있습니다. private 쿠레덴샤르의 적절한 세트에 의존하는 코드를 가장해, 그 <CODE>Subject</CODE> 에 존재할 가능성이 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>modifyPrivateCredentials</CODE></TD> 
+          <TD>
+Subject 의 private 쿠레덴샤르셋트를 변경. </TD>
+          <TD>
+이 액세스권에 의해, 어플리케이션은 <CODE>Subject</CODE> 로부터 private 쿠레덴샤르를 추가 또는 삭제할 수가 있습니다. private 쿠레덴샤르의 적절한 세트에 의존하는 코드를 가장해, 그 <CODE>Subject</CODE> 에 존재할 가능성이 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>refreshCredential</CODE></TD> 
+          <TD>
+<CODE>Refreshable</CODE> 인터페이스를 구현하는 쿠레덴샤르 <CODE>Object</CODE> 를 갱신. </TD>
+          <TD>
+이 액세스권에 의해, 어플리케이션은 기한 마감이 되는 쿠레덴샤르를 갱신할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>destroyCredential</CODE></TD> 
+          <TD>
+<CODE>Destroyable</CODE> 인터페이스를 구현하는 쿠레덴샤르 <CODE>Object</CODE> 를 삭제. </TD>
+          <TD>
+이 액세스권에 의해, 어플리케이션은 서비스 방해 공격으로서 쿠레덴샤르를 삭제할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>createLoginContext. {name}</CODE></TD> 
+          <TD>
+<CODE>LoginContext</CODE> 를 지정한 「이름」으로 인스턴스화. </TD>
+          <TD>
+시큐리티상의 문제로부터, 관리자는 모든 <CODE>LoginModule</CODE> 에 대해서 어플리케이션이 인증되도록(듯이) 하고 싶지 않은 경우가 있습니다. 이 액세스권에 의해, 어플리케이션은 지정한 「이름」으로 구성되는 로그인 모듈을 인증할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getLoginConfiguration</CODE></TD> 
+          <TD>
+시스템 전체의 로그인 <CODE>Configuration</CODE> 를 꺼낸다. </TD>
+          <TD>
+이것에 의해, 시스템의 전어플리케이션으로 설정되어 있는 로그인 모듈을 모두 어플리케이션으로 결정할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>getLoginConfiguration</CODE></TD> 
+          <TD>
+시스템 전체의 로그인 <CODE>Configuration</CODE> 를 꺼낸다. </TD>
+          <TD>
+이것에 의해, 시스템의 전어플리케이션으로 설정되어 있는 로그인 모듈을 모두 어플리케이션으로 결정할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>setLoginConfiguration</CODE></TD> 
+          <TD>
+시스템 전체의 로그인 <CODE>Configuration</CODE> 를 설정. </TD>
+          <TD>
+이것에 의해, 시스템의 전어플리케이션의 로그인 모듈을 어플리케이션으로 설정할 수가 있습니다. </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>createLoginConfiguration. {configuration type}</CODE></TD> 
+          <TD>
+Configuration.getInstance 를 사용해 Configuration 객체를 취득. </TD>
+          <TD>
+어플리케이션은 구성내에서 지정 떠날 수 있어 모든 LoginModules 를 참조할 수 있습니다.
+          </TD>
+        </TR>
+        <TR>
+          <TD>
+<CODE>refreshLoginConfiguration</CODE></TD> 
+          <TD>
+시스템 전체의 로그인 <CODE>Configuration</CODE> 를 갱신. </TD>
+          <TD>
+이것에 의해, 어플리케이션은 로그인 <CODE>Configuration</CODE> 를 갱신할 수 있습니다. </TD>
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+<H2><A NAME="PrivateCredentialPermission"></A> <CODE>PrivateCredentialPermission</CODE></H2>
+    <BLOCKQUOTE>
+	<A HREF="../../../api/javax/security/auth/PrivateCredentialPermission.html"><CODE>javax.security.auth.PrivateCredentialPermission</CODE></A>  클래스는, 특정의<tt>주제</tt>에 속하는 private 쿠레덴샤르에의 액세스를 보호하기 위해서 사용됩니다. <tt>주제</tt>는, 법칙세트에 의해 나타내집니다.
+	<p>이<tt>액세스권</tt>의 타겟명에는,<CODE>Credential</CODE> 클래스명과 법칙세트를 지정합니다. 이<CODE>액세스권</CODE>의 액션으로서 유효한 값은, 「read」 뿐입니다. 타겟명은, 다음의 구문에 따르고 있을 필요가 있습니다.
+<BLOCKQUOTE>
+<pre>
+CredentialClass {PrincipalClass "PrincipalName"}*
+</pre>
+</BLOCKQUOTE>
+	예를 들어, 다음의 액세스권은,<code>com.sun.Principal</code> 와 「<code>duke</code>」라고 하는 이름을 가지는 <code>주제</code> 에 의해 소유된 <code>com.sun.PrivateCredential</code> 에의 액세스를 허가합니다.
+<P>
+	<B>주:</B> 이 예와 이하의 모든 예에서는, grant 문내에 <code>Codebase</code>,<code>SignedBy</code>, 또는 <code>Principal</code> 의 정보가 포함되어 있지 않습니다만, 실제의 정책의 설정에서는, 필요에 따라서 이러한 정보를 지정합니다.
+<BLOCKQUOTE>
+<pre>
+grant {
+    permission javax.security.auth.PrivateCredentialPermission
+             "com.sun.PrivateCredential com.sun.Principal \"duke\"",
+             "read";
+};
+</pre>
+</BLOCKQUOTE>
+	<code>CredentialClass</code> 가 「<code>*</code>」이 되어 있는 경우는, 지정한 주제에 속하는 모든 private 쿠레덴샤르에의 액세스권이 부여됩니다. <code>PrincipalName</code> 가 「<code>*</code>」이 되어 있는 경우는, 지정한 법칙을 포함한 모든 주제에 의해 소유되고 있는 대상의 쿠레덴샤르에의 액세스권이 부여됩니다. 실제의 <code>PrincipalName</code> 는 중요하지는 않습니다. 예를 들어, 다음의 구문은,<code>a.b.Principal</code> 를 포함한 모든 주제에 의해 소유되고 있는 <code>a.b.Credential</code> 에의 액세스권을 부여합니다.
+<BLOCKQUOTE>
+<pre>
+grant {
+    permission javax.security.auth.PrivateCredentialPermission
+             "a.b.Credential a.b.Principal "*"",
+             "read";
+};
+</pre>
+</BLOCKQUOTE>
+	<code>PrincipalClass</code> 와 <code>PrincipalName</code> 의 양쪽 모두가 「<code>*</code>」이 되어 있는 경우는, 모든 주제에 의해 소유되고 있는 지정한 쿠레덴샤르에의 액세스권이 부여됩니다. 또,<code>PrincipalClass</code>/<code>PrincipalName</code> 의 대는, 반복 지정할 수 있습니다.
+<BLOCKQUOTE>
+<pre>
+grant {
+    permission javax.security.auth.PrivateCredentialPermission
+             "a.b.Credential a.b.Principal "duke" c.d.Principal "dukette"",
+             "read";
+};
+</pre>
+</BLOCKQUOTE>
+	상기의 코드는, private 자격 「<code>a.b.Credential</code>」에의 액세스권을 부여합니다. "이 자격은, 「<code>duke</code>」라고 하는 이름을 가지는 「<code>a.b.Principal</code>」와「<code>dukette</code>」라고 하는 이름을 가지는 「<code>c.d.Principal</code>」가 적어도 2 개의 주체에 관련지을 수 있었던 피인증자에 속합니다.
+
+    </BLOCKQUOTE>
+
+<H2><A NAME="DelegationPermission"></A> <CODE>DelegationPermission</CODE></H2>
+    <BLOCKQUOTE>
+<A HREF="../../../api/javax/security/auth/kerberos/DelegationPermission.html"><CODE>javax.security.auth.kerberos.DelegationPermission</CODE></A>  클래스는, Kerberos 위양 모델의 사용 (즉 전송 가능 티켓과 프록시화 가능 티켓)을 제한하기 위해서 사용됩니다.  
+    <P>
+이 액세스권의 타겟명에는, kerberos 서비스 법칙의 대를 지정합니다. 최초의 법칙에는, 티켓 인가 티켓 (Ticket Granting Ticket, TGT)의 사용을 위양 되는 하위의 서비스 법칙을 지정합니다. 2 번째의 서비스 법칙에는, 하위의 서비스 법칙이 <code>KerberosPrincipal</code> 를 기동하기 위해서 대화하는 타겟 서비스를 지정합니다. 후자의 서비스 법칙은, 프록시화 가능 티켓의 사용을 제한하기 위해서 지정합니다.  
+<P>
+예를 들어, 「host」서비스에 의한 전송 가능 TGT 의 사용을 지정하려면 , 다음과 같이 타겟의 액세스권을 지정합니다.  
+<blockquote>
+<pre>
+DelegationPermission("\"host/foo.example.com@EXAMPLE.COM\" \"krbtgt/EXAMPLE.COM@EXAMPLE.COM\"");
+</pre>
+</blockquote> 
+
+「backup」서비스에 프록시화 가능한 NFS 서비스 티켓을 부여하려면 , 타겟의 액세스권을 다음과 같이 지정합니다.  
+
+<blockquote>
+<pre>
+DelegationPermission("\"backup/bar.example.com@EXAMPLE.COM\" \"nfs/home.EXAMPLE.COM@EXAMPLE.COM\"");
+</pre>
+</blockquote>
+    </BLOCKQUOTE>
+
+<H2><A NAME="ServicePermission"></A> <CODE>ServicePermission</CODE></H2>
+    <BLOCKQUOTE>
+	<A HREF="../../../api/javax/security/auth/kerberos/ServicePermission.html"><CODE>javax.security.auth.kerberos.ServicePermission</CODE></A>  클래스는, Kerberos 서비스와 그러한 서비스에 액세스 하기 위해서 필요한 쿠레덴샤르를 보호하기 위해서 사용됩니다. 서비스 법칙과 서비스에 액세스 하기 위해서 필요한 쿠레덴샤르는 1 대 1 으로 대응합니다. 그 때문에, 서비스 법칙에 액세스권을 부여하면(자), 그 서비스 법칙과의 시큐리티 문맥을 확립하기 위해서 필요한 쿠레덴샤르에 대한 암묵적인 액세스권을 부여하게 됩니다. 이것은, 쿠레덴샤르가, 캐쉬내에 있는 경우에도, KDC 와의 교환에 의해 획득되는 경우에도 들어맞읍니다. 쿠레덴샤르는, TGT, 혹은 열쇠 테이블에서 취득되는 서비스 티켓 또는 비밀열쇠의 어느 쪽인가에 됩니다.
+
+	<p><code>ServicePermission</code> 는, 서비스 법칙명과 쿠레덴샤르를 사용할 수 있는 문맥을 지정하는 액션의 리스트를 포함하고 있습니다.
+	
+	<p>서비스 법칙명은, 서비스를 제공하는 <tt>KereberosPrincipal</tt> 의 표준명입니다. 즉,<code>KerberosPrincipal</code> 는, Kerberos 서비스 법칙을 나타냅니다. 이 이름에서는, 대문자와 소문자가 구별됩니다.
+
+	<p>이 액세스권을 부여하면(자), 호출측이, 액션에 의해 지정된 문맥내에서, 캐쉬된 쿠레덴샤르 (티켓 인가 티켓 (TGT), 서비스 티켓, 비밀열쇠)을 사용할 수 있게 됩니다. TGT 의 경우, 이 액세스권의 부여에 의해 게다가<code>인증 서비스</code>교환에 의해 TGT 를 취득하는 일도 가능하게 됩니다.
+
+<p>다음의 조작을 지정할 수 있습니다.
+<BLOCKQUOTE>
+<P><TABLE summary="layout" WIDTH="535" BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>initiate</CODE></TD>
+          <TD WIDTH="85%">
+		호출측이, 쿠레덴샤르를 사용해, 서비스 법칙내에서 시큐리티 문맥을 개시할 수 있다 </TD>
+        </TR>
+        <TR>
+          <TD WIDTH="15%" VALIGN="TOP">
+<CODE>accept</CODE></TD>
+          <TD WIDTH="85%">
+호출측이, 쿠레덴샤르를 사용해, 특정의 법칙으로서 시큐리티 문맥을 받아들일 수가 있다
+        </TD>
+        </TR>
+      </TABLE>
+</BLOCKQUOTE>
+
+예를 들어, TGT 에 액세스 해 시큐리티 문맥을 개시하기 위한 액세스권을 지정하려면 , 다음과 같이 액세스권을 작성합니다.
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp; ServicePermission("krbtgt/EXAMPLE.COM@EXAMPLE.COM", "initiate");
+</pre>
+
+서비스 티켓을 취득해, 「host」서비스를 사용해 문맥을 개시하려면 , 다음과 같이 액세스권을 작성합니다.
+<BLOCKQUOTE>
+<pre>
+ServicePermission("host/foo.example.com@EXAMPLE.COM", "initiate");
+</pre>
+</BLOCKQUOTE>  
+Kerberos 화 된 서버의 경우, 액션은 「accept」가 됩니다. 예를 들어, kerberos 화 된 「host」서비스 (telnet 등)의 비밀열쇠에 액세스 해 사용하기 위해서 필요한 액세스권은, 다음과 같이 작성합니다.
+<BLOCKQUOTE>
+<pre>
+ServicePermission("host/foo.example.com@EXAMPLE.COM", "accept");
+</pre>   
+</BLOCKQUOTE>      
+    </BLOCKQUOTE>
+
+<H2><A NAME="AudioPermission"></A> <CODE>AudioPermission</CODE></H2>
+    <BLOCKQUOTE>
+<P><CODE>AudioPermission</CODE> 클래스는, 오디오 system resource에의 액세스권을 나타냅니다. <CODE>AudioPermission</CODE> 에는 타겟명은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 얻는지, 액세스권을 얻지 않을까의 어딘가에 됩니다. </P>
+<P>타겟명에는, 오디오의 액세스권 (아래와 같은 겉(표)를 참조)의 이름을 지정합니다. 이름은, 계층적인 프로퍼티 명명 규약에 따릅니다. 또, asterisk를 사용해, 모든 오디오의 액세스권을 나타낼 수도 있습니다. </P>
+<P><CODE>AudioPermission</CODE> 로 지정할 수 있는 타겟명을 다음의 겉(표)에 나타냅니다. 겉(표)에는, 타겟명 마다, 그 액세스권에 의해 가능하게 되는 조작, 및 그 액세스권을 코드에게 주는 것으로 생기는 리스크도 가리킵니다. </P>
+      <P><TABLE summary="AudioPermission target names" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+        <TR>
+          <TH>
+액세스권 타겟명</TH> 
+          <TH>
+가능하게 되는 조작</TH> 
+          <TH>
+이 액세스권을 주었을 경우의 리스크</TH> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>play</CODE></TD> 
+          <TD>
+시스템의 오디오 디바이스를 개입시켜 실행되는 오디오 재생. 이것에 의해, 오디오 재생 (렌더링) 용의 라인과 믹서의 취득 및 조작이 가능하게 됩니다. </TD> 
+          <TD>
+경우에 따라서는, 이 액세스권을 사용하는 것으로써, 다른 어플리케이션이 영향을 받는 일이 있습니다. 이것은, 어느 라인의 오디오가 다른 오디오와 믹스 되어 시스템으로 재생될 가능성이 있기 (위해)때문에, 또, 믹서를 조작하면(자) 그 믹서를 사용하는 모든 라인의 오디오가 영향을 받기 (위해)때문에입니다. </TD> 
+        </TR>
+        <TR>
+          <TD>
+<CODE>record</CODE></TD> 
+          <TD>
+시스템의 오디오 디바이스를 개입시켜 실행되는 오디오의 녹음. 이것에 의해, 오디오 녹음 (혼잡) 용의 라인과 믹서의 취득 및 조작이 가능하게 됩니다. </TD> 
+          <TD>
+경우에 따라서는, 이 액세스권을 사용하는 것으로써, 다른 어플리케이션이 영향을 받는 일이 있습니다. 이것은, 믹서를 조작하면(자) 그 믹서를 사용하는 모든 라인의 오디오가 영향을 받기 (위해)때문에입니다. 이 액세스권을 사용하면(자), 애플릿 또는 어플리케이션으로부터 사용자의 도청을 실시하는 것이 가능하게 됩니다. </TD>
+        </TR>
+      </TABLE><p></P>
+    </BLOCKQUOTE>
+
+  </BLOCKQUOTE>
+  <HR ALIGN=LEFT>
+<H1><A NAME="PermsAndMethods"></A> 필요하게 되는 메소드 및 액세스권</H1>
+  <BLOCKQUOTE>
+<P>여기에서는, 액세스권이 필요한 모든 메소드를 나타내는 것과 동시에, 어느 <CODE>SecurityManager</CODE> 메소드를 필요로 하는지, 및 어느 액세스권이 <CODE>SecurityManager</CODE> 메소드의 디폴트 구현에 의해 검사되는지를 나타냅니다. </P>
+<P>따라서,<CODE>SecurityManager</CODE> 메소드의 디폴트의 구현에 의해, 우측의 열로 나타나고 있는 액세스권이 현재 유효한 정책로 주어지고 있는 경우만, 좌측의 열로 가리킨 메소드를 호출할 수가 있습니다. 예를 다음에 나타냅니다.
+    <P><TABLE summary="Java 2 SDK methods that require permissions" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+      <TR>
+        <TH>
+메소드</TH> 
+        <TH>
+불려 가는 SecurityManager 메소드</TH> 
+        <TH>
+액세스권</TH> 
+      </TR>
+      <TR>
+        <TD>
+        <pre>
+java.awt.Toolkit
+    getSystemEventQueue(); </pre>
+</TD> 
+        <TD>
+<CODE>checkAwtEventQueueAccess</CODE></TD>
+        <TD>
+<CODE>java.awt.AWTPermission &quot;accessEventQueue&quot;;</CODE></TD> 
+      </TR>
+    </TABLE><p></P>
+<P>이 경우,<CODE>java.awt.Toolkit</CODE> 클래스의 <CODE>getSystemEventQueue</CODE> 메소드에의 호출은, SecurityManager 메소드 <CODE>checkAwtEventQueueAccess</CODE> 에의 호출이 됩니다. 이 메소드는, 호출 스택상의 코드에 다음의 액세스권이 주어지고 있는 경우에만 호출할 수 있습니다. </P>
+    <pre>
+  java.awt.AWTPermission &quot;accessEventQueue&quot;;</pre>
+<P>다음과 같은 형식의 경우,</P>
+    <P><TABLE summary="example convention" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+      <TR>
+        <TH>
+메소드</TH> 
+        <TH>
+불려 가는 SecurityManager 메소드</TH> 
+        <TH>
+액세스권</TH> 
+      </TR>
+      <TR>
+        <TD>
+        <pre>
+ some.package.class
+   public static void someMethod(String foo); </pre>
+</TD>
+        <TD>
+<CODE>checkXXX</CODE></TD>
+        <TD>
+<CODE>SomePermission &quot;{foo}&quot;;</CODE></TD> 
+      </TR>
+    </TABLE><p></P>
+<P>액세스권 명중의 캐릭터 라인 <CODE>{foo}</CODE> 는 <CODE>foo</CODE> 의 실행시의 값으로 옮겨놓을 수 있다고 하는 의미입니다. </P>
+<P>다음의 예를 봐 주세요. </P>
+    <P><TABLE summary="example table entry" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+      <TR>
+        <TH>
+메소드</TH> 
+        <TH>
+불려 가는 SecurityManager 메소드</TH> 
+        <TH>
+액세스권</TH> 
+      </TR>
+      <TR>
+        <TD>
+        <pre>
+java.io.FileInputStream
+    FileInputStream(String name) </pre>
+</TD>
+        <TD>
+<CODE>checkRead(String)</CODE></TD>
+        <TD>
+<CODE>java.io.FilePermission &quot;{name}&quot;, &quot;read&quot;;</CODE></TD> 
+      </TR>
+    </TABLE><p></P>
+<P><CODE>FileInputStream</CODE> 메소드 (이 경우는 생성자 )를, 다음과 같이 인수 <CODE>name</CODE> 에 /test/MyTestFile 를 지정해 호출했다고 합니다. </P>
+    <pre>
+  FileInputStream(&quot;/test/MyTestFile&quot;);</pre>
+<P>이 호출은, 현재의 정책로 다음의 액세스권이 설정되어 /test/MyTestFile 파일에의 읽어내 액세스가 허가되어 있지 않으면 실시할 수 없습니다. </P>
+    <pre>
+  java.io.FilePermission &quot;/test/MyTestFile&quot;, &quot;read&quot;;</pre>
+<P>보다 정확하게는, 액세스권은, 이와 같이 명시적으로 설정되어 있는지, 다음과 같이, 다른 액세스권에 의해 암묵으로 설정되어 있을 필요가 있습니다. </P>
+    <pre>
+  java.io.FilePermission &quot;/test/*&quot;, &quot;read&quot;;</pre>
+<P>이 예에서는, /test 디렉토리에 포함되는 임의의 파일에의 읽어내 액세스가 허가되고 있습니다. </P>
+<P>안괄호로 둘러싸인 항목이, 특정의 메소드 인수와 동일하지 않고, 관계가 있는 값을 나타내는 경우도 있습니다. 다음에 예를 나타냅니다. </P>
+    <P><TABLE summary="example of relevant value" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+      <TR>
+        <TH>
+메소드</TH> 
+        <TH>
+불려 가는 SecurityManager 메소드</TH> 
+        <TH>
+액세스권</TH> 
+      </TR>
+      <TR>
+        <TD>
+        <pre>
+java.net.DatagramSocket
+  public synchronized void 
+      receive(DatagramPacket p);</pre>
+</TD>
+        <TD>
+<CODE>checkAccept({host}, {port})</CODE></TD>
+        <TD>
+<CODE>java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;accept&quot;;</CODE></TD> 
+      </TR>
+    </TABLE><p></P>
+<P>여기에서는, 적절한 호스트 및 포트의 값이 <CODE>receive</CODE> 메소드에 의해 계산되어,<CODE>checkAccept</CODE> 에게 건네집니다. </P>
+<P>대부분의 경우, 불려 가는 SecurityManager 의 메소드가 일람표 나타납니다. 메소드는, 다수 있는 동명의 메소드의 어떤 것인가여, 인수의 형태도 일람표 나타납니다. 예를 들어,<CODE>checkRead(String)</CODE> 및 <CODE>checkRead(FileDescriptor)</CODE> 등이 있습니다. 인수가 관계하는 그 외의 경우에도, 인수는 일람표 나타납니다. </P>
+<P>이하의 겉(표)는, 패키지명의 순서에 늘어놓을 수 있고 있습니다. 즉, 최초로 <CODE>java.awt</CODE> 패키지 클래스내의 메소드, 다음에 <CODE>java.io</CODE> 패키지 클래스내의 메소드, 라고 하는 차례입니다. </P>
+  </BLOCKQUOTE>
+
+<P><b></B><center><font></font></CENTER><TABLE summary="methods and the premissions they require" BORDER="1" CELLPADDING="5" CELLSPACING="2"><center><font><b>필요하게 되는 메소드 및 액세스권</b></font></center><font> 
+    <TR>
+      <TH>
+메소드</TH> 
+      <TH>
+불려 가는 SecurityManager 메소드</TH> 
+      <TH>
+액세스권</TH> 
+    </TR>
+    
+    <!-- ************* Brad's new permission per #6357792              <tr><td><pre>
+    . /javax/net/ssl/SSLContext.java:            sm.checkPermission(new SSLPermission
+("setDefaultSSLContext"));</pre></td>  <td> <i><pre>access control manager goes here</pre></i></td></tr>       *****************   -->
+    
+    
+    
+    
+    <TR>
+      <TD>
+      <pre>
+java.awt.Graphics2d
+  public abstract void 
+    setComposite(Composite comp)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.awt.AWTPermission "readDisplayPixels". 이 Graphics2D 문맥이 화면상의 Component 에 draw중이며, 한편 Composite 가 AlphaComposite 클래스의 인스턴스는 아니고, 커스텀 객체의 경우. 주:setComposite 메소드는, 실제로는 abstract 메소드이기 (위해)때문에, 시큐리티 체크를 호출할 수 없다. 이러한 조건하에서는, 메소드의 구현 마다 java.lang.SecurityManager checkPermission 메소드를 java.awt.AWTPermission("readDisplayPixels") 액세스권으로 호출할 필요가 있다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Robot
+  public Robot()
+  public Robot(GraphicsDevice screen)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.awt.AWTPermission &quot;createRobot&quot;</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Toolkit
+  public void addAWTEventListener(
+          AWTEventListener listener, 
+          long eventMask)
+  public void removeAWTEventListener(
+     AWTEventListener listener)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.awt.AWTPermission &quot;listenToAllAWTEvents&quot;</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Toolkit
+  public abstract PrintJob getPrintJob(
+           Frame frame, String jobtitle,
+           Properties props)</pre>
+</TD>
+      <TD>
+checkPrintJobAccess</TD>
+      <TD>
+<P>java.lang.RuntimePermission &quot;queuePrintJob&quot;</P>
+
+<P>주:getPrintJob 메소드는 실제로는 abstract 메소드이므로, 시큐리티 체크를 기동할 수 없다. getPrintJob 메소드의 실제의 각 구현 부분에서는, java.lang.SecurityManager 의 checkPrintJobAccess 메소드를 호출해야 함. 이 메소드는, 액세스권 java.lang.RuntimePermission "queuePrintJob" 가 현재 허가되고 있는 경우만 호출할 수가 있다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Toolkit
+  public abstract Clipboard 
+                    getSystemClipboard()</pre>
+</TD>
+      <TD>
+checkSystemClipboardAccess</TD>
+      <TD>
+<P>java.awt.AWTPermission &quot;accessClipboard&quot;</P>
+
+<P>주:getSystemClipboard 메소드는 실제로는 abstract 메소드이므로, 시큐리티 체크를 기동할 수 없다. getSystemClipboard 메소드의 실제의 각 구현 부분에서는, java.lang.SecurityManager checkSystemClipboardAccess 메소드를 호출해야 함. 이 메소드는, 액세스권 java.awt.AWTPermission "accessClipboard" 가 현재 허가되고 있는 경우만 호출할 수가 있다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Toolkit
+  public final EventQueue 
+               getSystemEventQueue()</pre>
+</TD>
+      <TD>
+checkAwtEventQueueAccess</TD>
+      <TD>
+java.awt.AWTPermission &quot;accessEventQueue&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.awt.Window
+  Window()</pre>
+</TD>
+      <TD>
+checkTopLevelWindow</TD>
+      <TD>
+java.awt.AWTPermission "showWindowWithoutWarningBanner" 가 설정되어 있으면(자), 윈도우가 표시될 때, 그 윈도우가 애플릿에 의해 작성되고 있는 것을 경고하는 배너는 표시되지 않는다. 설정되어 있지 않은 경우는, 배너가 표시된다</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.beans.Beans
+  public static void setDesignTime(
+                 boolean isDesignTime)
+  public static void setGuiAvailable(
+                 boolean isGuiAvailable)
+
+java.beans.Introspector
+  public static synchronized void 
+    setBeanInfoSearchPath(String path[])
+
+java.beans.PropertyEditorManager
+  public static void registerEditor(
+                 Class targetType, 
+                 Class editorClass)
+  public static synchronized void 
+    setEditorSearchPath(String path[])</pre>
+</TD>
+      <TD>
+checkPropertiesAccess</TD>
+      <TD>
+java.util.PropertyPermission &quot;*&quot;, &quot;read, write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.File
+  public boolean delete()
+  public void deleteOnExit()</pre>
+</TD>
+      <TD>
+checkDelete(String)</TD>
+      <TD>
+java.io.FilePermission &quot;{name}&quot;, &quot;delete&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.FileInputStream
+  FileInputStream(FileDescriptor fdObj)</pre>
+</TD>
+      <TD>
+checkRead(FileDescriptor)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;readFileDescriptor&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.FileInputStream
+  FileInputStream(String name)
+  FileInputStream(File file)
+
+java.io.File
+  public boolean exists()
+  public boolean canRead()
+  public boolean isFile()
+  public boolean isDirectory()
+  public boolean isHidden()
+  public long lastModified()
+  public long length()
+  public String[] list()
+  public String[] list(
+           FilenameFilter filter)
+  public File[] listFiles()
+  public File[] listFiles(
+           FilenameFilter filter)
+  public File[] listFiles(
+           FileFilter filter)
+      
+java.io.RandomAccessFile
+  RandomAccessFile(String name, String mode)
+  RandomAccessFile(File file, String mode)
+      (여기서, 어느쪽이나 모드는 「r」)</pre>
+</TD>
+      <TD>
+checkRead(String)</TD>
+      <TD>
+java.io.FilePermission &quot;{name}&quot;, &quot;read&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.FileOutputStream
+  FileOutputStream(FileDescriptor fdObj)</pre>
+</TD>
+      <TD>
+checkWrite(FileDescriptor)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;writeFileDescriptor&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.FileOutputStream 
+  FileOutputStream(File file)
+  FileOutputStream(String name)
+  FileOutputStream(String name, 
+                   boolean append)
+
+java.io.File
+  public boolean canWrite()
+  public boolean createNewFile()
+  public static File createTempFile(
+          String prefix, String suffix)
+  public static File createTempFile(
+          String prefix,  String suffix, 
+          File directory)
+  public boolean mkdir()
+  public boolean mkdirs()
+  public boolean renameTo(File dest)
+  public boolean setLastModified(long time)
+  public boolean setReadOnly()</pre>
+</TD>
+      <TD>
+checkWrite(String)</TD>
+      <TD>
+java.io.FilePermission &quot;{name}&quot;, &quot;write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.ObjectInputStream
+  protected final boolean 
+    enableResolveObject(boolean enable);
+
+java.io.ObjectOutputStream
+  protected final boolean 
+    enableReplaceObject(boolean enable)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.io.SerializablePermission &quot;enableSubstitution&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.ObjectInputStream
+  protected ObjectInputStream()
+
+java.io.ObjectOutputStream
+  protected ObjectOutputStream()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.io.SerializablePermission &quot;enableSubclassImplementation&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.io.RandomAccessFile
+  RandomAccessFile(String name, String mode)
+      (여기서, 모드는 「rw」)</pre>
+</TD>
+      <TD>
+checkRead(String) and checkWrite(String)</TD>
+      <TD>
+java.io.FilePermission &quot;{name}&quot;, &quot;read, write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Class
+  public static Class forName(
+     String name, boolean initialize, 
+     ClassLoader loader)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+<CODE>loader</CODE> 가 null 로, 호출측의 클래스 로더는 null 가 아닌 경우, java.lang.RuntimePermission("getClassLoader")가 된다</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Class
+  public ClassLoader getClassLoader()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+호출측의 클래스 로더가 null 의 경우, 혹은 호출해 옆의 클래스 로더가, 클래스 로더가 요구되고 있는 클래스의 클래스 로더와 같은가 게다가 위클래스의 경우는, 액세스권은 필요없다. 그 이외의 경우는,<BR> java.lang.RuntimePermission &quot;getClassLoader&quot;<BR> 하지만 필요</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Class
+  public Class[] getDeclaredClasses()
+  public Field[] getDeclaredFields()
+  public Method[] getDeclaredMethods()
+  public Constructor[] 
+    getDeclaredConstructors()
+  public Field getDeclaredField(
+                       String name)
+  public Method getDeclaredMethod(...)
+  public Constructor 
+    getDeclaredConstructor(...)</pre>
+</TD>
+      <TD>
+checkMemberAccess(this, Member.DECLARED), 및 이 클래스가 패키지내에 있는 경우는 checkPackageAccess({pkgName})</TD>
+      <TD>
+이 클래스의 클래스 로더가 호출해 옆의 클래스 로더와 동일한 경우는, 디폴트의 checkMemberAccess 는 어떠한 액세스권도 필요로 하지 않는다. 동일하지 않은 경우는, java.lang.RuntimePermission "accessDeclaredMembers" 가 필요. 이 클래스가 패키지내에 있는 경우, java.lang.RuntimePermission "accessClassInPackage. {pkgName}" 도 필요. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Class
+  public Class[] getClasses()
+  public Field[] getFields()
+  public Method[] getMethods()
+  public Constructor[] getConstructors()
+  public Field getField(String name)
+  public Method getMethod(...)
+  public Constructor getConstructor(...)</pre>
+</TD>
+      <TD>
+checkMemberAccess(this, Member.PUBLIC), 및 이 클래스가 패키지내에 있는 경우는 checkPackageAccess({pkgName})</TD>
+      <TD>
+액세스 타입이 Member.PUBLIC 의 경우, 디폴트의 checkMemberAccess 는 어떠한 액세스권도 필요로 하지 않는다. 이 클래스가 패키지내에 있는 경우, java.lang.RuntimePermission "accessClassInPackage. {pkgName}" 가 필요. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Class
+   public ProtectionDomain 
+            getProtectionDomain()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.lang.RuntimePermission &quot;getProtectionDomain&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.ClassLoader
+  ClassLoader()
+  ClassLoader(ClassLoader parent)</pre>
+</TD>
+      <TD>
+checkCreateClassLoader</TD>
+      <TD>
+java.lang.RuntimePermission &quot;createClassLoader&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.ClassLoader
+  public static ClassLoader 
+           getSystemClassLoader()
+  public ClassLoader getParent()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+호출측의 클래스 로더가 null 의 경우, 혹은 호출해 옆의 클래스 로더가, 클래스 로더가 요구되고 있는 클래스의 클래스 로더와 같은가 게다가 위클래스의 경우는, 액세스권은 필요없다. 그 이외의 경우는,<BR> java.lang.RuntimePermission &quot;getClassLoader&quot;<BR> 하지만 필요</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Runtime
+  public Process exec(String command)
+  public Process exec(String command, 
+                      String envp[])
+  public Process exec(String cmdarray[])
+  public Process exec(String cmdarray[], 
+                      String envp[])</pre>
+</TD>
+      <TD>
+checkExec</TD>
+      <TD>
+java.io.FilePermission &quot;{command}&quot;, &quot;execute&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Runtime
+  public void exit(int status)
+  public static void 
+      runFinalizersOnExit(boolean value)
+java.lang.System
+  public static void exit(int status)
+  public static void 
+      runFinalizersOnExit(boolean value)</pre>
+</TD>
+      <TD>
+checkExit(status). 이 때, runFinalizersOnExit 에 대해서 status 는 0</TD>
+      <TD>
+java.lang.RuntimePermission &quot;exitVM. {status}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Runtime
+  public void addShutdownHook(Thread hook)
+  public boolean removeShutdownHook(Thread hook)</pre>
+</TD>
+      <TD>
+checkPermission</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;shutdownHooks&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Runtime
+  public void load(String lib)
+  public void loadLibrary(String lib)
+java.lang.System
+  public static void load(String filename)
+  public static void loadLibrary(
+                          String libname)</pre>
+</TD>
+      <TD>
+checkLink({libName}) 다만,{libName} 는 lib, filename 또는 libname 인수</TD>
+      <TD>
+java.lang.RuntimePermission &quot;loadLibrary. {libName}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.SecurityManager 메소드</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+<A HREF="#SecMgrChecks">다음의 겉(표)</a>를 참조</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.System
+  public static Properties 
+      getProperties()
+  public static void 
+      setProperties(Properties props)</pre>
+</TD>
+      <TD>
+checkPropertiesAccess</TD>
+      <TD>
+java.util.PropertyPermission &quot;*&quot;, &quot;read, write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.System
+  public static String 
+      getProperty(String key)
+  public static String 
+      getProperty(String key, String def)</pre>
+</TD>
+      <TD>
+checkPropertyAccess</TD>
+      <TD>
+java.util.PropertyPermission &quot;{key}&quot;, &quot;read&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.System
+  public static void setIn(InputStream in)
+  public static void setOut(PrintStream out)
+  public static void setErr(PrintStream err)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.lang.RuntimePermission &quot;setIO&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.System
+  public static String 
+    setProperty(String key, String value)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.util.PropertyPermission &quot;{key}&quot;, &quot;write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.System
+  public static synchronized void 
+    setSecurityManager(SecurityManager s)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.lang.RuntimePermission &quot;setSecurityManager&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public ClassLoader getContextClassLoader()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+호출측의 클래스 로더가 null 의 경우, 혹은 호출해 옆의 클래스 로더가, 문맥 클래스 로더가 요구되고 있는 thread의 문맥 클래스 로더와 같은가 게다가 위클래스의 경우는, 액세스권은 필요없다. 그 이외의 경우는,<BR> java.lang.RuntimePermission &quot;getClassLoader&quot;<BR> 하지만 필요</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public void setContextClassLoader
+                      (ClassLoader cl)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.lang.RuntimePermission &quot;setContextClassLoader&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public final void checkAccess()
+  public void interrupt()
+  public final void suspend()
+  public final void resume()
+  public final void setPriority
+                     (int newPriority)
+  public final void setName(String name)
+  public final void setDaemon(boolean on)</pre>
+</TD>
+      <TD>
+checkAccess(this)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThread&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public static int 
+      enumerate(Thread tarray[])</pre>
+</TD>
+      <TD>
+checkAccess({threadGroup})</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public final void stop()</pre>
+</TD>
+      <TD>
+checkAccess(this). 현재의 thread가 자신 이외의 thread를 정지 시키려고 하고 있는 경우는, checkPermission 도 불려 간다</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThread&quot;. <BR> 현재의 thread가 자신 이외의 thread를 정지 시키려고 하고 있는 경우, java.lang.RuntimePermission "stopThread" 도 필요. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  public final synchronized void 
+                    stop(Throwable obj)</pre>
+</TD>
+      <TD>
+checkAccess(this). 현재의 thread가 자신 이외의 thread를 정지 시키려고 하고 있는 경우, 또는 obj 가 ThreadDeath 의 인스턴스가 아닌 경우는, checkPermission 도 불려 간다</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThread&quot;. <BR> 현재의 thread가 자신 이외의 thread를 정지 시키려고 하고 있는 경우, 또는 obj 가 ThreadDeath 의 인스턴스가 아닌 경우는, java.lang.RuntimePermission "stopThread" 도 필요. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  Thread()
+  Thread(Runnable target)
+  Thread(String name)
+  Thread(Runnable target, String name)
+
+java.lang.ThreadGroup
+  ThreadGroup(String name)
+  ThreadGroup(ThreadGroup parent, 
+              String name)</pre>
+</TD>
+      <TD>
+checkAccess({parentThreadGroup})</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.Thread
+  Thread(ThreadGroup group, ...)
+
+java.lang.ThreadGroup
+  public final void checkAccess()
+  public int enumerate(Thread list[])
+  public int enumerate(Thread list[],
+      boolean recurse)
+  public int enumerate(ThreadGroup list[])
+  public int enumerate(ThreadGroup list[],
+      boolean recurse)
+  public final ThreadGroup getParent()
+  public final void 
+      setDaemon(boolean daemon)
+  public final void setMaxPriority(int pri)
+  public final void suspend()
+  public final void resume()
+  public final void destroy()</pre>
+</TD>
+      <TD>
+ThreadGroup 메소드의 경우는 checkAccess(this), Thread 메소드의 경우는 checkAccess(group)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.ThreadGroup
+  public final void interrupt()</pre>
+</TD>
+      <TD>
+checkAccess(this)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot; 가 필요합니다. <BR>또, thread 그룹과 그 모든 소그룹의 thread 마다 java.lang.Thread interrupt() 메소드가 불려 가기 (위해)때문에, java.lang.RuntimePermission "modifyThread" 도 필요. Thread interrupt() 메소드를 참조</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.ThreadGroup
+  public final void stop()</pre>
+</TD>
+      <TD>
+checkAccess(this)</TD>
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot; 가 필요합니다. <BR>또, java.lang.Thread 의 stop() 메소드는, 그 thread 그룹 및 모든 소그룹에서 스렛트 마다 불려 가므로, java.lang.RuntimePermission "modifyThread" 및 경우에 따라서는 java.lang.RuntimePermission "stopThread" 가 필요. Thread 의 stop() 메소드를 참조</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.lang.reflect.AccessibleObject
+  public static void setAccessible(...)
+  public void setAccessible(...)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.lang.reflect.ReflectPermission &quot;suppressAccessChecks&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.Authenticator
+  public static PasswordAuthentication
+       requestPasswordAuthentication(
+             InetAddress addr,
+             int port,
+             String protocol,
+             String prompt,
+             String scheme)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.net.NetPermission &quot;requestPasswordAuthentication&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.Authenticator
+  public static void 
+      setDefault(Authenticator a)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.net.NetPermission &quot;setDefaultAuthenticator&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.MulticastSocket
+  public void 
+      joinGroup(InetAddress mcastaddr)
+  public void 
+      leaveGroup(InetAddress mcastaddr)</pre>
+</TD>
+      <TD>
+checkMulticast(InetAddress)</TD>
+      <TD>
+java.net.SocketPermission( mcastaddr.getHostAddress(), &quot;accept, connect&quot;)</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.DatagramSocket
+  public void send(DatagramPacket p)</pre>
+</TD>
+      <TD>
+checkMulticast(p.getAddress()) 또는 checkConnect(<BR> p.getAddress(). getHostAddress(),  p.getPort())</TD>
+      <TD>
+if (p.getAddress(). isMulticastAddress()) {<BR> java.net.SocketPermission(<BR> (p.getAddress()). getHostAddress(), &quot;accept, connect&quot;)<BR> }<BR> else {<BR> port = p.getPort();<BR> host = p.getAddress(). getHostAddress();<BR> if (port == -1) java.net.SocketPermission &quot;{host}&quot;, &quot;resolve&quot;;<BR> else java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;connect&quot;<BR> }</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.MulticastSocket
+  public synchronized void 
+      send(DatagramPacket p, byte ttl)</pre>
+</TD>
+      <TD>
+checkMulticast(p.getAddress(), ttl) or checkConnect(<BR> p.getAddress(). getHostAddress(), p.getPort())</TD>
+      <TD>
+if (p.getAddress(). isMulticastAddress()) {<BR> java.net.SocketPermission(<BR> (p.getAddress()). getHostAddress(), &quot;accept, connect&quot;)<BR> }<BR> else {<BR> port = p.getPort();<BR> host = p.getAddress(). getHostAddress();<BR> if (port == -1) java.net.SocketPermission &quot;{host}&quot;, &quot;resolve&quot;;<BR> else java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;connect&quot;<BR> }</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.InetAddress
+  public String getHostName()
+  public static InetAddress[]
+                  getAllByName(String host)
+  public static InetAddress getLocalHost()
+
+java.net.DatagramSocket
+  public InetAddress getLocalAddress()</pre>
+</TD>
+      <TD>
+checkConnect({host}, -1)</TD>
+      <TD>
+java.net.SocketPermission &quot;{host}&quot;, &quot;resolve&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.ServerSocket
+  ServerSocket(...)
+
+java.net.DatagramSocket
+  DatagramSocket(...)
+
+java.net.MulticastSocket
+  MulticastSocket(...)</pre>
+</TD>
+      <TD>
+checkListen({port})</TD>
+      <TD>
+if (port == 0) java.net.SocketPermission &quot;localhost:1024-&quot;, &quot;listen&quot;;<BR> else java.net.SocketPermission &quot;localhost:{port}&quot;, &quot;listen&quot;</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.ServerSocket
+  public Socket accept()
+  protected final void implAccept(Socket s)</pre>
+</TD>
+      <TD>
+checkAccept({host}, {port})</TD>
+      <TD>
+java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;accept&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.ServerSocket
+  public static synchronized void 
+      setSocketFactory(...)
+
+java.net.Socket
+  public static synchronized void
+      setSocketImplFactory(...)
+
+java.net.URL
+  public static synchronized void
+      setURLStreamHandlerFactory(...)
+
+ java.net.URLConnection
+   public static synchronized void
+      setContentHandlerFactory(...)
+   public static void 
+      setFileNameMap(FileNameMap map)
+
+java.net.HttpURLConnection
+   public static void 
+       setFollowRedirects(boolean set)
+
+java.rmi.activation.ActivationGroup
+  public static synchronized
+    	ActivationGroup createGroup(...)
+  public static synchronized void 
+      setSystem(ActivationSystem system)
+
+java.rmi.server.RMISocketFactory
+   public synchronized static void
+      setSocketFactory(...)</pre>
+</TD>
+      <TD>
+checkSetFactory</TD>
+      <TD>
+java.lang.RuntimePermission &quot;setFactory&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.Socket
+  Socket(...)</pre>
+</TD>
+      <TD>
+checkConnect({host}, {port})</TD>
+      <TD>
+java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;connect&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.DatagramSocket
+  public synchronized void 
+      receive(DatagramPacket p)</pre>
+</TD>
+      <TD>
+checkAccept({host}, {port})</TD>
+      <TD>
+java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;accept&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.URL
+  URL(...)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.net.NetPermission &quot;specifyStreamHandler&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.net.URLClassLoader
+  URLClassLoader(...)</pre>
+</TD>
+      <TD>
+checkCreateClassLoader</TD>
+      <TD>
+java.lang.RuntimePermission &quot;createClassLoader&quot;</TD> 
+    </TR>
+    
+
+    
+    <TR>
+      <TD>
+      <pre>
+java.security.AccessControlContext
+  public AccessControlContext(AccessControlContext acc,
+				DomainCombiner combiner)
+  public DomainCombiner getDomainCombiner()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.security.SecurityPermission &quot;createAccessControlContext&quot;</TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Identity
+  public void addCertificate(...)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;addIdentityCertificate&quot;)</TD>
+      <TD>
+java.security.SecurityPermission &quot;addIdentityCertificate&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Identity
+  public void removeCertificate(...)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;removeIdentityCertificate&quot;)</TD> 
+      <TD>
+java.security.SecurityPermission &quot;removeIdentityCertificate&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Identity
+  public void setInfo(String info)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;setIdentityInfo&quot;)</TD> 
+      <TD>
+java.security.SecurityPermission &quot;setIdentityInfo&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Identity
+  public void setPublicKey(PublicKey key)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;setIdentityPublicKey&quot;)</TD> 
+      <TD>
+java.security.SecurityPermission &quot;setIdentityPublicKey&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Identity
+  public String toString(...)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;printIdentity&quot;)</TD> 
+      <TD>
+java.security.SecurityPermission &quot;printIdentity&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.IdentityScope
+  protected static void setSystemScope()</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;setSystemScope&quot;)</TD> 
+      <TD>
+java.security.SecurityPermission &quot;setSystemScope&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Permission
+  public void checkGuard(Object object) </pre>
+</TD>
+      <TD>
+checkPermission(this)</TD>
+      <TD>
+이 액세스권 객체가 검사된 액세스권</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Policy
+  public static Policy getPolicy()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.security.SecurityPermission &quot;getPolicy&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Policy
+  public static void 
+      setPolicy(Policy policy)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.security.SecurityPermission &quot;setPolicy&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Policy
+  public static Policy 
+      getInstance(String type, SpiParameter params)
+      getInstance(String type, SpiParameter params, String provider)
+      getInstance(String type, SpiParameter params, Provider provider)
+      </pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.security.SecurityPermission &quot;createPolicy. {type}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Provider
+  public synchronized void clear()</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;clearProviderProperties. &quot;+{name})</TD>
+      <TD>
+java.security.SecurityPermission "clearProviderProperties. {name}"; <I>name</I> 에는, 프로바이더명을 지정한다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Provider
+  public synchronized Object 
+      put(Object key, Object value)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;putProviderProperty. &quot;+{name})</TD>
+      <TD>
+java.security.SecurityPermission "putProviderProperty. {name}"; <I>name</I> 에는, 프로바이더명을 지정한다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Provider
+  public synchronized Object 
+      remove(Object key)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;removeProviderProperty. &quot;+{name})</TD>
+      <TD>
+java.security.SecurityPermission "removeProviderProperty. {name}" <I>name</I> 에는, 프로바이더명을 지정한다. </TD>
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.SecureClassLoader
+  SecureClassLoader(...)</pre>
+</TD>
+      <TD>
+checkCreateClassLoader</TD>
+      <TD>
+java.lang.RuntimePermission &quot;createClassLoader&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Security
+  public static void getProperty(String key)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.security.SecurityPermission &quot;getProperty. {key}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Security
+  public static int 
+      addProvider(Provider provider)
+  public static int 
+      insertProviderAt(Provider provider,
+                       int position);</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;insertProvider. &quot;+provider.getName())</TD>
+      <TD>
+java.security.SecurityPermission &quot;insertProvider. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Security
+  public static void 
+      removeProvider(String name)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;removeProvider. &quot;+name)</TD>
+      <TD>
+java.security.SecurityPermission &quot;removeProvider. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Security
+  public static void 
+    setProperty(String key, String datum)</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;setProperty. &quot;+key)</TD>
+      <TD>
+java.security.SecurityPermission &quot;setProperty. {key}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Signer
+  public PrivateKey getPrivateKey()</pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;getSignerPrivateKey&quot;)</TD>
+      <TD>
+java.security.SecurityPermission &quot;getSignerPrivateKey&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.security.Signer
+  public final void 
+      setKeyPair(KeyPair pair) </pre>
+</TD>
+      <TD>
+checkSecurityAccess(<BR> &quot;setSignerKeypair&quot;)</TD>
+      <TD>
+java.security.SecurityPermission &quot;setSignerKeypair&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.sql.DriverManager
+  public static synchronized void 
+      setLogWriter(PrintWriter out) </pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.sql.SQLPermission &quot;setLog&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.sql.DriverManager
+  public static synchronized void 
+      setLogStream(PrintWriter out) </pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.sql.SQLPermission &quot;setLog&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.util.Locale
+  public static synchronized void 
+            setDefault(Locale newLocale)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+java.util.PropertyPermission &quot;user.language&quot;, &quot;write&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+java.util.zip.ZipFile
+  ZipFile(String name)</pre>
+</TD>
+      <TD>
+checkRead</TD>
+      <TD>
+java.io.FilePermission &quot;{name}&quot;, &quot;read&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public static Subject getSubject(final AccessControlContext acc)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;getSubject&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public void setReadOnly()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;setReadOnly&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public static Object doAs(final Subject subject,
+				final PrivilegedAction action)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;doAs&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public static Object doAs(final Subject subject,
+				final PrivilegedExceptionAction action)
+	throws java.security.PrivilegedActionException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;doAs&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public static Object doAsPrivileged(final Subject subject,
+				final PrivilegedAction action,
+				final AccessControlContext acc)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;doAsPrivileged&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.Subject
+    public static Object doAsPrivileged(final Subject subject,
+				final PrivilegedExceptionAction action,
+				final AccessControlContext acc)
+	throws java.security.PrivilegedActionException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;doAsPrivileged&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.SubjectDomainCombiner
+    public Subject getSubject()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;getSubjectFromDomainCombiner&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.SubjectDomainCombiner
+    public Subject getSubject()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;getSubjectFromDomainCombiner&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.LoginContext
+    public LoginContext(String name)
+	throws LoginException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;createLoginContext. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.LoginContext
+    public LoginContext(String name,
+			Subject subject)
+	 throws LoginException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;createLoginContext. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.LoginContext
+    public LoginContext(String name,
+			CallbackHandler callbackHandler)
+	 throws LoginException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;createLoginContext. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.LoginContext
+    public LoginContext(String name,
+			Subject subject,
+			CallbackHandler callbackHandler)
+	 throws LoginException</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;createLoginContext. {name}&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.Configuration
+    public static Configuration getConfiguration()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;getLoginConfiguration&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.Configuration
+    public static void setConfiguration(Configuration configuration)</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;setLoginConfiguration&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.Configuration
+    public static void refresh()</pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;refreshLoginConfiguration&quot;</TD> 
+    </TR>
+    <TR>
+      <TD>
+      <pre>
+javax.security.auth.login.Configuration
+  public static Configuration 
+      getInstance(String type, SpiParameter params)
+      getInstance(String type, SpiParameter params, String provider)
+      getInstance(String type, SpiParameter params, Provider provider)
+      </pre>
+</TD>
+      <TD>
+checkPermission</TD>
+      <TD>
+javax.security.auth.AuthPermission &quot;createLoginConfiguration. {type}&quot;</TD> 
+    </TR>
+  </font></TABLE><p></P>
+  <P><BR>
+  <HR ALIGN=LEFT><p></P>
+<H1><A NAME="SecMgrChecks"></A> java.lang.SecurityManager 의 메소드와 그 호출에 필요한 액세스권</H1>
+<P>다음의 겉(표)에서는,<CODE>java.lang.SecurityManager</CODE> 메소드의 디폴트의 구현에 의해 검사되는 액세스권을 나타냅니다. </P>
+<P>지정된 각 <CODE>check</CODE> 메소드는 <CODE>SecurityManager</CODE> <CODE>checkPermission</CODE> 메소드가 지정된 액세스권으로 호출합니다 (문맥 인수를 취하는 <CODE>checkConnect</CODE> 및 <CODE>checkRead</CODE> 메소드를 제외하다). 이러한 메소드는,<CODE>AccessControlContext</CODE> 문맥을 상정해, 문맥의 <CODE>checkPermission</CODE> 메소드가 지정된 액세스권으로 호출합니다.  <BR> <BR>
+  <TABLE summary="checked permissions" BORDER="1" CELLPADDING="5" CELLSPACING="2">
+    <TR>
+      <TH>
+메소드</TH> 
+      <TH>
+액세스권</TH> 
+    </TR>
+    <TR>
+      <TD>
+public void checkAccept(String host, int port);</TD> 
+      <TD>
+java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;accept&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkAccess(Thread g);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;modifyThread&quot;);</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkAccess(ThreadGroup g);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;modifyThreadGroup&quot;);</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkAwtEventQueueAccess();</TD> 
+      <TD>
+java.awt.AWTPermission &quot;accessEventQueue&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkConnect(String host, int port);</TD> 
+      <TD>
+if (port == -1) java.net.SocketPermission &quot;{host}&quot;, &quot;resolve&quot;; <BR> else java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;connect&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkConnect(String host, int port, Object context);</TD> 
+      <TD>
+if (port == -1) java.net.SocketPermission &quot;{host}&quot;, &quot;resolve&quot;; <BR> else java.net.SocketPermission &quot;{host}:{port}&quot;, &quot;connect&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkCreateClassLoader();</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;createClassLoader&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkDelete(String file);</TD> 
+      <TD>
+java.io.FilePermission &quot;{file}&quot;, &quot;delete&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkExec(String cmd);</TD> 
+      <TD>
+if cmd is an absolute path:java.io.FilePermission &quot;{cmd}&quot;, &quot;execute&quot;;<BR> else java.io.FilePermission &quot;-&quot;, &quot;execute&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkExit(int status);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;exitVM. {status}&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkLink(String lib);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;loadLibrary. {lib}&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkListen(int port);</TD> 
+      <TD>
+if (port == 0) java.net.SocketPermission &quot;localhost:1024-&quot;, &quot;listen&quot;;<BR> else java.net.SocketPermission &quot;localhost:{port}&quot;, &quot;listen&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkMemberAccess(Class clazz, int which);</TD> 
+      <TD>
+      <pre>
+if (which ! = Member.PUBLIC) {
+  if (currentClassLoader() ! = clazz.getClassLoader()) {
+    checkPermission(
+      new java.lang.RuntimePermission(&quot;accessDeclaredMembers&quot;));
+  }
+}</pre>
+</TD>
+    </TR>
+    <TR>
+      <TD>
+public void checkMulticast(InetAddress maddr);</TD> 
+      <TD>
+java.net.SocketPermission(maddr.getHostAddress(), &quot;accept, connect&quot;);</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkMulticast(InetAddress maddr, byte ttl);</TD> 
+      <TD>
+java.net.SocketPermission(maddr.getHostAddress(), &quot;accept, connect&quot;);</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkPackageAccess(String pkg);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;accessClassInPackage. {pkg}&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkPackageDefinition(String pkg);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;defineClassInPackage. {pkg}&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkPrintJobAccess();</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;queuePrintJob&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkPropertiesAccess();</TD> 
+      <TD>
+java.util.PropertyPermission &quot;*&quot;, &quot;read, write&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkPropertyAccess(String key);</TD> 
+      <TD>
+java.util.PropertyPermission &quot;{key}&quot;, &quot;read, write&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkRead(FileDescriptor fd);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;readFileDescriptor&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkRead(String file);</TD> 
+      <TD>
+java.io.FilePermission &quot;{file}&quot;, &quot;read&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkRead(String file, Object context);</TD> 
+      <TD>
+java.io.FilePermission &quot;{file}&quot;, &quot;read&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkSecurityAccess(String action);</TD> 
+      <TD>
+java.security.SecurityPermission &quot;{action}&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkSetFactory();</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;setFactory&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkSystemClipboardAccess();</TD> 
+      <TD>
+java.awt.AWTPermission &quot;accessClipboard&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public boolean checkTopLevelWindow(Object window);</TD> 
+      <TD>
+java.awt.AWTPermission &quot;showWindowWithoutWarningBanner&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkWrite(FileDescriptor fd);</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;writeFileDescriptor&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public void checkWrite(String file);</TD> 
+      <TD>
+java.io.FilePermission &quot;{file}&quot;, &quot;write&quot;;</TD> 
+    </TR>
+    <TR>
+      <TD>
+public SecurityManager();</TD> 
+      <TD>
+java.lang.RuntimePermission &quot;createSecurityManager&quot;;</TD> 
+    </TR>
+  </TABLE><p></P>
+
+
+<P>
+
+<!-- Body text ends here --><!-- ============================================================== -->
+<HR ALIGN=LEFT SIZE="3" NOSHADE><TABLE summary="layout" BORDER="0" WIDTH="100%" CELLSPACING="2"
+CELLPADDING="0">
+  <TR VALIGN="TOP">
+    <TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &COPY;</A>  1997-2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<P><FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:java-security@sun.com">java-security@sun.com</A> </FONT></TD>
+    <TD ALIGN="RIGHT">
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER="0"     WIDTH="64" HEIGHT="30" NATURALSIZEFLAG="0" ALIGN="BOTTOM"> <BR> <I><FONT SIZE="+1">Java Software</FONT></I></TD>
+  </TR>
+</TABLE>
+
+</BODY>
+</HTML>

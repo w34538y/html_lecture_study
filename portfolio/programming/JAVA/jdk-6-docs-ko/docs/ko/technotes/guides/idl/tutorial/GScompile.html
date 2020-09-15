@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL 입문 :Hello World 어플리케이션의 실행 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: desoto, 1/30/98 --> <!-- Changed by: carson, 4/2001 --> <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+
+<H1 ALIGN=CENTER>Java IDL 입문<BR>Hello World 어플리케이션의 실행</H1>
+<HR>
+
+이 토픽에서는, 모두 「Hello World」어플리케이션을 구성하는 서버 및 클라이언트의 프로그램의 실행에 대해 개요를 설명합니다.
+ 
+<H2>Hello World 어플리케이션의 실행</H2>
+
+
+<P>「Hello World」프로그램은 단순합니다만, 이 프로그램을 통해,<A href="../jidlGlossary.html#invocation">「정적 호출」</a>을 사용하는 CORBA 프로그램의 개발에 필요한 작업 모든 것을 배워, 경험할 수가 있습니다.   
+
+<P>이 예에서는, 클라이언트측으로부터 서번트 객체의 오퍼레이션을 이용 가능하게 하기 위해서, 네임 서비스가 필요합니다. 서버는, 다양한 인터페이스를 구현하고 있는 객체의 참조를 발행할 수 있도록(듯이) 하기 위한(해), 네임 서비스에의 객체 참조가 필요합니다. 이러한 객체 참조는, 클라이언트가 메소드를 호출하는데 사용됩니다. J2SE v. 1.4 의 네이밍 서비스에는 2 개의 옵션이 있습니다. 일시 네이밍 서비스인 <tt><a href="../jidlNaming.html">tnameserv</a> </tt>, bootstrap 서비스, 일시 네이밍 서비스, 지속 네이밍 서비스, 서버 매니저를 포함한 demon 프로세스인 <tt><a href="../../../tools/share/orbd.html">orbd</a> </tt> 입니다. 이 예에서는 <tt>orbd</tt> 를 사용합니다.
+
+<P>이 예를 실행하기에 즈음해, Solaris 소프트웨어의 사용시는, 포트 1024 미만으로 프로세스를 개시하는 경우, root 사용자가 될 필요가 있습니다. 이 때문에, 1024 이상의 포트를 사용하는 것을 추천합니다. 이 예에서는,<TT>-ORBInitialPort</TT> 옵션을 사용해 디폴트의 포트 번호를 오버라이드(override) 합니다. 다음의 설명에서는, Java&nbsp;IDL Object Request Broker Daemon (<tt>orbd</tt>)용으로 포트 1050 을 사용할 수 있는 것을 전제로 하고 있습니다. 필요하면 다른 포트로 변경해 주세요. Windows 로 이 예를 실행하는 경우는, 경로명에 backslash (\)를 사용합니다. </P>
+
+
+<P>개발 머신으로 이 클라이언트서버 어플리케이션을 실행하려면 , 다음과 같이 합니다.
+<P>
+<OL>
+      
+<LI><tt>orbd</tt> 를 기동합니다.   
+<P>UNIX 커멘드 쉘로 <tt>orbd</tt> 를 기동하려면 , 다음과 같이 입력합니다.
+   <P>   
+<pre>
+  orbd -ORBInitialPort 1050 -ORBInitialHost localhost&
+</pre>
+<P>Windows 의 MS-DOS system prompt에서는, 다음과 같이 입력합니다.
+<pre>
+  start orbd -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+   
+<P><TT>1050</TT> 은 네임서버-를 실행하는 포트입니다. <tt>-ORBInitialPort</tt> 는 필요한 커멘드행의 인수입니다. Solaris 소프트웨어의 사용시는, 1024 보다 작은 포트로 프로세스를 개시하는 경우는, root 사용자가 될 필요가 있습니다. 이 때문에, 1024 이상의 포트를 사용하는 것을 추천합니다.
+
+<P>또,<tt>-ORBInitialHost</tt> 도 요구되는 커멘드행 인수입니다. 이 예에서는, 클라이언트와 서버는 어느쪽이나 개발 머신으로 실행하고 있으므로, 호스트를 <tt>localhost</tt> 로 설정했습니다. 복수의 머신으로 개발하는 경우는, 호스트명에 옮겨놓습니다. 이 프로그램을 2 대의 머신으로 실행하는 경우의 예는,<a href="jidl2machines.html">「2 대의 머신으로 실행하는 Hello World 프로그램」</a>을 참조해 주세요. <P>
+ 
+<LI>Hello 서버를 기동합니다.
+<P>UNIX 커멘드 쉘로 Hello 서버를 기동하려면 , 다음과 같이 입력합니다.
+   <P>   
+<pre>
+  java HelloServer -ORBInitialPort 1050 -ORBInitialHost localhost&
+</pre>
+<P>Windows 의 MS-DOS system prompt에서는, 다음과 같이 입력합니다.
+<pre>
+  start java HelloServer -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+<P>이 예의 <TT>-ORBInitialHost localhost</TT> 는 생략 할 수가 있습니다. 네임서버-가 Hello 서버로서 동일 호스트상에서 동작하고 있기 때문입니다. 네임서버-가 다른 호스트로 동작하고 있는 경우는, IDL 네임서버-가 동작하고 있는 호스트를 <TT>-ORBInitialHost</TT> <em>nameserverhost</em> 로 지정합니다.
+
+<P>전회의 순서와 같게 네임서버- (<tt>orbd</tt>)의 포트를 지정합니다. 예를 들어 <TT>-ORBInitialPort  1050</TT> 과 같이 됩니다.   <P>
+
+   
+<LI>클라이언트 어플리케이션을 실행합니다. <P>
+<pre>
+  java HelloClient -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+
+<P>이 예의 <TT>-ORBInitialHost localhost</TT> 는 생략 할 수가 있습니다. 네임서버-가 Hello 클라이언트로서 동일 호스트상에서 동작하고 있기 때문입니다. 네임서버-가 다른 호스트로 동작하고 있는 경우는, IDL 네임서버-가 동작하고 있는 호스트를 <TT>-ORBInitialHost</TT> <em>nameserverhost</em> 로 지정합니다.
+
+<P>전회의 순서와 같게 네임서버- (<tt>orbd</tt>)의 포트를 지정합니다. 예를 들어 <TT>-ORBInitialPort  1050</TT> 과 같이 됩니다.   <P>
+<P>
+  
+<LI>클라이언트는, 서버로부터 커멘드행에 다음과 같은 캐릭터 라인을 출력합니다.
+<pre>Hello world!!</pre>
+   
+</OL>
+
+<P>대부분의 CORBA 서버와 같게, 네임서버-는 명시적으로 정지될 때까지 가동을 계속합니다. 복수의 서버를 동시에 가동시키는 것을 피하기 (위해)때문에, 클라이언트 어플리케이션이 정상적으로 복귀한 후, 네임서버-프로세스를 종료시킵니다. DOS prompt에서는, 서버를 실행하고 있는 윈도우를 선택해 <TT>Ctrl+C</TT> 라고 입력하면(자) 정지합니다. UNIX 쉘에서는, 프로세스를 검출해 종료 (kill)합니다.  
+
+
+
+
+
+
+<P><HR>
+<CENTER><A href="GSserver.html">전의 레슨:서버의 개발</A> <BR>
+<CENTER><A href="GSapp.html">전의 레슨:클라이언트 어플리케이션의 개발</A> <BR>
+<CENTER><A href="GSstring.html">다음의 레슨:캐릭터 라인화 된 객체 참조의 사용</A> <BR>
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="../index.html">Java IDL 탑에</A> </TD>
+</TR></TABLE></CENTER>
+
+<HR>
+<FONT SIZE="-2"><A HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2">1996-2001 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA. 94043-1100 USA., All rights reserved. </FONT><p></P>
+
+</center></center></BODY>
+</HTML>
+
+

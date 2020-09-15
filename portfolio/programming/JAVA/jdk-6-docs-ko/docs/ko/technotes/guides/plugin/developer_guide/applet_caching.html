@@ -1,0 +1,131 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Plug-in 에서의 애플릿의 캐쉬 및 인스톨 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>애플릿 캐쉬</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#option">캐쉬 옵션</a>  
+    <ul>
+<li><a href="#cache_archive">cache_archive</a> </li>
+<li><a href="#cache_version">cache_version</a> </li>
+<li><a href="#cache_archive_ex">cache_archive_ex</a> </li>
+<li><a href="#algorithm">업 렛 캐쉬의 갱신 알고리즘</a> </li>
+    </ul>
+  </li>
+<li><a href="#security">시큐리티</a> </li>
+<li><a href="#limitations">기존의 문제</a> </li>
+</ul>
+<h2><a name="option"></a> 캐쉬 옵션</h2>
+<p>애플릿을 캐쉬하면(자), 재차 참조할 때에 애플릿을 다운로드할 필요가 없어집니다. 이것에 의해, 애플릿의 기동 시간이 단축됩니다. Java Plug-in 의 애플릿에 의해 사용되는 모든 파일 타입은, 현재 캐쉬되고 있습니다.  </p>
+<p> 애플릿 캐싱의 새로운 방식이 제공되었습니다. 이 방법에서는, 애플릿을 배포할 때, 애플릿이 「고정적」화도인지를 지정할 수 있습니다. 고정적인 애플릿은, Java Plug-in 에 의해 작성 및 제어되어 브라우저에 의해 덧쓰기되지 않는 디스크 캐쉬 프로그램내에 포함됩니다. <i></i>「고정적」인 애플릿이 다운로드되는 것은, 애플릿이 서버상에서 갱신되었을 경우만입니다. 애플릿이 갱신되지 않는 이상 항상 고속으로  읽어들일 수가 있습니다. 코어 비지니스 어플리케이션을 제공하는 애플릿은, 기동시의 퍼포먼스를 개선하기 위해(때문에), 「고정적」인 애플릿으로 할 필요가 있습니다.  
+<p> 이 신기능은, 다음에 나타내도록(듯이),<code>OBJECT/EMBED</code> 태그에, 새로운 값 <code>cache_archive</code>,<tt></tt><code>cache_version</code><tt> </tt>, 및 <code>cache_archive_ex</code> 를 포함하는 것에 의해 유효하게 됩니다.
+<p>
+<table summary="layout" width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+    <td>
+<h2><u>주:</u> </h2>
+<p><code>archive</code> 속성으로 지정된다 <code>. jar</code> 파일도, 이 「고정적」인 캐쉬에 캐쉬됩니다.  
+    </td>
+  </tr>
+</table>
+<p>
+<h3> <b><a name="cache_archive"></a> cache_archive</b></h3>
+<p> <tt>cache_archive</tt> 속성에는, 캐쉬하는 파일의 리스트를 지정합니다.  
+<blockquote>
+  <pre>
+&lt;PARAM NAME=&quot;cache_archive&quot; VALUE=&quot;a.jar, b.jar, c.jar&quot;&gt;
+</pre>
+</blockquote>
+<p> <tt>APPLET</tt> 태그의 <tt>archive</tt> 속성과 같게,<tt>cache_archive</tt> 속성의 <code>. jar</code> 파일의 리스트에는 완전한 URL 는 지정되고 있지 않습니다만, 항상 <tt>codebase</tt> 로부터 다운로드됩니다.  
+<h3><b><a name="cache_version"></a> cache_version</b></h3>
+<p><tt>cache_version</tt> 는, 생략 가능한 속성입니다. 사용하는 경우, 이 속성에는 캐쉬하는 파일의 버젼 리스트를 포함합니다. </p>
+  <blockquote>
+<pre>&lt;PARAM NAME=&quot;cache_version&quot; VALUE=&quot;1. 2.0. 1, 2.1. 1.2, 1.1. 2.7&quot;&gt;</pre>
+  </blockquote>
+<p>각 버젼 번호는,<code>xxxx.xxxx.xxxx.xxxx</code> 의 형식이 됩니다 (<code>x</code> 는 16 진수). 각 버젼 번호는,<tt>cache_archive</tt> 내의 각 <code>. jar</code> 파일에 대응합니다. </p>
+<h3><a name="cache_archive_ex"></a> cache_archive_ex</h3>
+<p><span style="FONT-SIZE: 12pt; mso-bidi-font-size: 10.0pt"><code>. jar</code> 파일을 사전 로드할 수 있도록(듯이) 하려면 , HTML 파라미터 <code>cache_archive_ex</code><i></i> 를 사용할 수 있습니다. 이 파라미터에서는 <code>. jar</code> 파일을 사전 로드할 필요가 있을지 어떨지를 지정할 수 있어 옵션으로 <code>. jar</code> 파일의 버젼도 지정할 수 있습니다. <code>cache_archive_ex</code>의 <code>VALUE</code> 의 형식은, 다음과 같습니다. </span></p>
+<blockquote>
+<p><span style="FONT-SIZE: 12pt; mso-bidi-font-size: 10.0pt"><code>VALUE="&lt;<i>jar_file_name</i>&gt;;&lt;preload(옵션) &gt;;&lt;<i>jar_file_version</i>(옵션) &gt;, &lt;<i>jar_file_name</i>&gt;; &lt;preload(옵션) &gt;;&lt;<i>jar_file_version</i>(옵션) &gt;, ...&quot;</code></span></p>
+</blockquote>
+<p><span style="FONT-SIZE: 12pt; mso-bidi-font-size: 10.0pt">옵션의 <code>preload</code> 및 <i><code>jar_file_version</code></i> 태그는,<i><code>jar_file_name</code></i> 의 후에 「;」으로 단락지어 임의의 순서로 둘 수가 있습니다. 복수의 엔트리는 「<code>,</code>」그리고 단락짓습니다. </span></p>
+<p>이러한 태그를 HTML 페이지내에서 사용하는 방법을 다음에 나타냅니다. </p>
+<table summary="layout" width="90%" border="0" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><tt>&lt;OBJECT ....</tt> &gt;<br> <font face="Courier New" size="2">&lt;PARAM NAME="archive</font><font face="Courier New" size="3">"</font><font face="Courier New" size="2">VALUE="a.jar"&gt;<br></font><font color="#0000ff"><tt><font color="#000000">&lt;PARAM NAME="cache_archive" VALUE="b.jar, c.jar, d.jar"&gt;<br> &lt;PARAM NAME="cache_version" VALUE="0.0. 0.1, 0.0. 2A. 1, 0.3D. 22. FFFE"&gt;<br> &lt;PARAM NAME="cache_archive_ex" VALUE="applet.jar;preload, util.jar;preload;0. 9.0.AC1, tools.jar;0. 9.8. 7F"&gt;</font><br></tt></font><tt>&lt;/OBJECT&gt;</tt></td>
+  </tr>
+</table>
+<p>위의 예에서는,<code>a.jar</code> 는 <code>archive</code> 내에서 지정되고 있습니다만,<code>b.jar</code>,<code>c.jar</code>, 및 <code>d.jar</code> 는 <code>cache_archive</code> 내에서 지정되고 있습니다. <code>b.jar</code>,<code>c.jar</code>, 및 <code>d.jar</code> 의 버젼도 각각 <code>0.0. 0.1</code>,<code>0.0. 2A. 1</code>, 및 <code>0.3D. 22. FFFE</code> 와 지정되고 있습니다. <code>cache_archive_ex</code> 에서는,<code>applet.jar</code> 를 사전 로드하도록(듯이) 지정되고 있습니다. <code>util.jar</code> 도 사전 로드하도록(듯이) 지정되고 있습니다만, 버젼도 지정되고 있습니다. <code>tools.jar</code> 에 대해서는, 버젼만이 지정되고 있습니다. </p>
+<p>Java Plug-in 는, HTML 파라미터 <code>cache_archive</code> 로 지정되고 있다 <code>. jar</code> 파일 모든 버젼이 지정되어 있지 않으면, 버젼의 비교를 실시하지 않습니다. <code>cache_archive</code> 가 <code>cache_version</code> 없음으로 사용되었을 경우,<code>cache_archive</code> 로 지정되고 있다 <code>. jar</code> 파일은, HTML 파라미터 <code>archive</code> 로 지정되고 있다 <code>. jar</code> 파일과 완전히 똑같이 처리됩니다. 사전 로드와 버젼의 옵션이 지정되어 있지 않은 경우,<code>cache_archive_ex</code> 로 지정되고 있다 <code>. jar</code> 파일도 똑같이 처리됩니다. </p>
+<p>클래스 파일과 자원은, HTML 파라미터에 의해 지정되었다 <code>. jar</code> 파일로부터 이하의 순서로 검색됩니다.  </p>
+<ol>
+<li><code>cache_archive_ex</code> </li>
+<li><code>cache_archive</code> </li>
+<li><code>archive</code> </li>
+</ol>
+<h3><a name="algorithm"></a> 애플릿 캐쉬의 갱신 알고리즘</h3>
+<p>디폴트에서는,<tt>cache_version</tt> 속성을 지정하지 않는 경우, 이하의 상황으로 애플릿 캐쉬가 갱신됩니다. </p>
+<ul>
+<li><tt>cache_archive</tt> 가 이전에 캐쉬되었던 적이 없다</li>
+<li>Web 서버의 <tt>cache_archive</tt> 의 「Last-Modified」치가, 애플릿 캐쉬에 로컬에 포함된 「Last-Modified」치보다 새롭다</li>
+<li>Web 서버의 <tt>cache_archive</tt> 의 「Content-Length」치가, 애플릿 캐쉬에 로컬에 포함된 「Content-Length」치와 다른 &nbsp;</li>
+</ul>
+<p>다만, 상황에 따라서는, HTTP/HTTPS 경유로 Web 서버로부터 반환되는 「Last-Modified」치가, 애플릿의 실제의 버젼과 다른 경우가 있습니다. 예를 들어, Web 서버가 크래쉬 해, 모든 파일이 복원되었을 경우, 서버상의 <tt>cache_archive</tt> 의 변경 일자는 다른 것이 됩니다. 이 경우, 비록 <tt>cache_archive</tt> 가 갱신되어 있지 않은 경우에서도, 모든 Java Plug-in 클라이언트에 대해,<tt>cache_archive</tt> 의 재다운로드가 강제당합니다. </p>
+<p>버젼의 갱신을 강제하는 경우,<tt>cache_version</tt> 속성을 사용해 애플릿을 배치하는 것을 추천합니다.  </p>
+<p><code>cache_version</code> 를 사용하는 경우,<tt>cache_archive</tt> 에 대응한 <tt>cache_version</tt> 가, 애플릿 캐쉬에 로컬에 포함된 <tt>cache_version</tt> 보다 크면 애플릿 캐쉬가 갱신됩니다. 갱신의 트리거에 버젼 번호를 사용하는 경우, 실제의 버젼 번호가 Web 서버의 <code>. jar</code> 파일에 부속될 것은 없습니다. 실제의 곳, 갱신의 트리거에 버젼을 사용하므로 없는 한, Web 서버상의 애플릿을 cache_archive 내의 애플릿없이 갱신할 수 있습니다. </p>
+<p><tt>cache_version </tt> 를 사용하는 것으로, Web 서버에 접속해 <tt>cache_archive</tt> 의 「Modification-Date」및 「Content-Length」를 취득할 필요가 없어집니다. 대부분의 경우, 이것에 의해 퍼포먼스가 향상합니다. </p>
+<h2><a name="security"></a> 시큐리티</h2>
+<p>고정적인 애플릿은, 로컬에 캐쉬됩니다만, 원의 코드 베이스 및 서명자가 정의한 시큐리티 정책에 준거합니다. </p>
+<h2><a name="versioningsupport"></a> 버젼 관리의 지원</h2>
+<p>Java Plug-in 6 의 애플릿은, HTML 파일내에 일람표 나타나고 있는 JAR 자원을 기동하기 위해서 JNLP Version Download 프로토콜을 사용할 수 있습니다. 버젼 관리는, JarDiff 도 지원합니다. 버젼 관리의 지원를 사용하려면 ,<code>archive_x</code> 태그를 사용합니다. x 는, 번호를 지정합니다. <code>archive_x</code> 태그의 구문을 다음에 나타냅니다. </p>
+<ul>
+<li>최초의 값은 jar 파일명으로 합니다. </li>
+<li>각 치는 콤마로 단락짓습니다. </li>
+<li>jar 파일의 프리로드를 나타내려면 ,<code>preload</code> 를 사용합니다. </li>
+<li> <code>version=</code> 는, jar 파일 요구의 버젼 캐릭터 라인을 지정하기 위해서 사용됩니다. <BR>
+  </li>
+</ul>
+<p>archive_x 태그를 사용할 수 있는 다양한 방법을, 다음에 나타냅니다.  </p>
+<p><code>&lt;PARAM NAME="archive_1" VALUE="a.jar, preload,   version=2. 0+"&gt; </code></p>
+<ul>
+<li>버젼의 뒤의 + 기호는, 지정된 버젼 이상의 버젼의 jar 파일을 요구하는 Java Plug-in 를 나타냅니다. </li>
+</ul>
+<code>&lt;PARAM NAME="archive_1" VALUE="a.jar, preload, version=2. 0*"&gt;</code><BR>
+  <ul>
+<li>버젼의 뒤의 * 기호는, 버젼이 2.0 으로부터 시작된다 (2.0. 1 이나 2.0. 2 등)  jar 파일을 요구하는 Java Plug-in 를 나타냅니다. </li>
+  </ul>
+<code>&lt;PARAM   NAME="archive_2" VALUE="b.jar, version=0. 0.0. 3"&gt;</code>
+  <ul>
+<li>이것에 의해, Java Plug-in 는 버젼이 엄밀하게 0.0. 0.3 의 jar 파일을 요구할 수 있습니다. </li>
+  </ul>
+  <table summary="layout" width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+    <tr>
+<td><h2><u>주:</u> </h2>
+<p>cache_archive, cache_version, 및 cache_archive_ex 태그내의 archive_x 태그는 무시됩니다. </td>
+    </tr>
+  </table>
+<p>JNLP 스타일의 버젼의 지원를 사용하는 애플릿은, JNLPDownloadServlet 를 사용해 애플릿 자원을 호스트 하도록 해 주세요. JNLP Version Download 프로토콜 및 JNLPDownloadServlet 의 자세한 것은,<a href="../../javaws/developersguide/downloadservletguide.html">「JNLP 가이드」</a>  를 참조해 주세요.   </p>
+<h2><a name="limitations"></a> 기존의 문제</h2>
+<ul>
+<li>Manifest의 <tt>Class-Path</tt> 변수로 지정되고 있다 <code>. jar</code> 파일을, Java Plug-in 의 캐쉬를 사용해 캐쉬하는 것은 현재 할 수 없습니다.
+  </li>
+<li><tt>cache_archive</tt> 로 지정하는 패스는, 애플릿의 <code>codebase</code> 에 대한 상대 URL 로 할 필요가 있습니다. <tt>cache_archive</tt> 에서는, 완전 지정의 URL 는 지원되지 않습니다. </li>
+<li>「<code>java.io.IOException: Caching not supported for</code> ...」(은)는, 지정된 JAR 파일의 유효기간 및 최종 변경 일자를 Java Plug-in 가 Web 서버로부터 취득할 수 없었기(위해)때문에 throw 됩니다. Java Plug-in 가 일자 정보를 취득할 수 없는 경우, JAR 파일은 사용마다 다운로드됩니다. <br>
+  </li>
+</ul>
+<p>&nbsp;</p>
+</body>
+</html>

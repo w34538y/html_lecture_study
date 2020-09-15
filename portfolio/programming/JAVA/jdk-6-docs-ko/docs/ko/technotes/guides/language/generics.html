@@ -1,0 +1,137 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>총칭 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>총칭</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Language 의 목차</a> </font>
+<p>
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+
+<hr size=3 noshade>
+
+<p>요소를 <code>Collection</code> 로부터 꺼낼 때는, 요소를 컬렉션에 포함되고 있는 요소의 형태에 캐스트 할 필요가 있습니다. 이것은 불편해, 게다가 안전하지는 않습니다. 컴파일러는 캐스트가 컬렉션의 형태와 같은지 어떤지를 체크하지 않기 때문에, 실행시에 캐스트가 실패할 우려가 있습니다.
+
+<p>총칭을 사용하면(자), 컬렉션의 형태를 컴파일러에 통지할 수 있기 (위해)때문에, 형태의 체크를 실시할 수가 있습니다. 컴파일러가 컬렉션의 요소의 형태를 인식하면(자), 그 컬렉션을 모순 없게 사용하고 있는 것을 체크할 수 있어 컬렉션으로부터의 값의 적절한 캐스트를 삽입할 수 있습니다.
+
+<p>
+기존의 컬렉션의 튜토리얼로부터, 간단한 예를 나타냅니다.
+<blockquote>
+<pre><b>// Removes 4-letter words from c.  <font color="#cc0000">Elements must be strings</font></b>
+static void expurgate(Collection c) {
+    for (Iterator i = c.iterator(); i.hasNext(); )
+      if (<font color="#cc0000">((String) i.next())</font>. length() == 4)
+        i.remove();
+}
+</pre>
+</blockquote>
+
+<p>같은 예를, 총칭을 사용하도록(듯이) 변경한 코드를 다음에 나타냅니다.
+<blockquote>
+<pre><a name=expurgate><b>// Removes the 4-letter words from c</b></a> 
+static void expurgate(Collection<font color="#009900">&lt;String&gt;</font> c) {
+    for (Iterator<font color="#009900">&lt;String&gt;</font> i = c.iterator(); i.hasNext(); )
+      if (<font color="#009900">i.next()</font>. length() == 4)
+        i.remove();
+}
+</pre>
+</blockquote>
+
+<p>코드 <code>&lt;Type&gt;</code> 의 개소는, 「<code>Type</code> 의 것」이라고 읽어 바꾸어 주세요.  상기의 선언은, 「<code>String c</code> 의 <code>Collection</code>」라고 읽습니다.  총칭을 사용한 코드가 알기 쉽고, 안전합니다. 안전하지 않은 캐스트나, 불필요한 괄호는 제거되었습니다. 보다 중요한 점으로서 메소드의 스펙 기술을 코멘트부로부터 서명부로 이동했습니다.  그 때문에, 형태의 제약이 실행시에 침해되지 않는 것을, 컴파일시에 검증할 수 있습니다. 프로그램은 경고없이 컴파일 되기 (위해)때문에, 실행시에 <code>ClassCastException</code> 가 throw 되는 것은 절대로 없습니다. 총칭을 사용하는 것으로써, 특히 대규모 프로그램에서는, 가독성 및 견뢰성이 향상한다고 하는 실질적인 효과가 있습니다.
+
+<p>총칭 스펙 리드의 Gilad Bracha 의 말을 바꾸어 말하면(자), 형태 <code>Collection&lt;String&gt;</code> 의 <code>c</code> 를 선언하면(자), 변수 <code>c</code> 는 사용할 때에 언제 어디서나 올바른 값을 보관 유지해, 그것을 컴파일러가 보증한다 (프로그램은 경고없이 컴파일 되면(자) 가정해)라고 하는 것을 의미합니다. 한편, 캐스트의 경우는, 코드가 있는 개소에서 프로그래머가 올바르다고 생각한 값이라는 것이 됩니다.  그리고 가상 머신이, 실행시가 되어 프로그래머가 올바른지 어떤지를 확인합니다.
+
+<p>총칭의 주된 용도는 컬렉션입니다만, 그 밖에도 많은 사용법이 있습니다. <a href="../../api/java/lang/ref/WeakReference.html"><code><a href="../../../api/java/lang/ref/WeakReference.html"><code>WeakReference</code></a> ,<a href="../../../api/java/lang/ThreadLocal.html"><code>ThreadLocal</code></a>  등의 홀더 클래스는 모두 범용화 되어 총칭을 이용할 수 있도록(듯이) 개량되었습니다. 클래스 <a href="../../../api/java/lang/Class.html"><code>Class</code></a>  도 범용화 되고 있습니다. Class 리터럴은 「형태 토큰」으로서 기능하게 되었기 때문에, 실행시와 컴파일시 양쪽 모두의 형태 정보를 제공할 수 있습니다. 이것에 의해, 새로운 <a href="../../../api/java/lang/reflect/AnnotatedElement.html"><code>AnnotatedElement</code></a>  인터페이스의 <code>getAnnotation</code> 메소드와 같이, 정적 팩토리의 형식을 이용할 수 있게 됩니다.
+<pre>    &lt;T extends Annotation&gt; T getAnnotation(Class&lt;T&gt; annotationType); </pre>
+
+이것은 총칭 메소드입니다. 형태 파라미터 T 의 값을 인수로부터 추측해, 다음의 예의 같게 <code>T</code> 의 적절한 인스턴스를 돌려줍니다.
+
+<pre>    Author a = Othello.class.getAnnotation(Author.class);
+</pre>
+총칭전에, 결과를 <code>Author</code> 에 캐스트 할 필요가 있습니다. 또,<code>Annotation</code> 의 서브 클래스를 나타내는 실제의 파라미터를 컴파일러가 체크하는 방법은 없습니다.
+
+<p>총칭은 「형태 소거」에 의해 구현됩니다. 총칭 정보는, 컴파일시 밖에 존재하지 않고, 컴파일 후는 컴파일러에 의해 「소거」됩니다. 이 어프로치의 주된 이점으로서는, 총칭 코드와 파라미터화되어 있지 않은 형태 (기술적으로는 「raw」형으로 불린다)를 사용하는 유산 코드와의 사이에, 종합적인 상호 운용성이 실현되는 점입니다. 주된 결점으로서는, 파라미터의 형태 정보를 실행시에 이용할 수 없는 점과 동작이 적절하지 않은 유산 코드와 상호 운용하면(자), 자동적으로 생성된 캐스트가 실패할 우려가 있는 점입니다. 그러나, 동작이 적절하지 않은 유산 코드와 상호 운용할 때도, 총칭 컬렉션에 대해서 실행시의 형태의 안전성이 보증됩니다.
+
+<p><code>java.util.Collections</code> 클래스는, 실행시의 형태의 안전성을 보증하는 래퍼 클래스에 장비 되었습니다. 동기화 되고 변경 불가능한 래퍼와 닮은 구조를 가집니다. 이러한 「체크가 끝난 컬렉션 래퍼」는 디버그시에 매우 도움이 됩니다. 캐릭터 라인의 조 <code>s</code> 를 생각해 보겠습니다.  일부의 유산 코드로 왠지 정수를 <code>s</code> 에 삽입하고 있다고 합니다. 래퍼없이는, 문제 있는 요소를 캐릭터 라인의 조로부터 읽어낼 때까지 문제를 알아차리지 않고,<code>String</code> 에의 자동적으로 생성된 캐스트는 실패합니다. 이 시점에서 문제의 원인을 밝혀내는 것은 너무 늦습니다. 그러나, 다음의 선언을 생각해 보겠습니다.
+
+<pre>    Set&lt;String&gt; s = new HashSet&lt;String&gt;();
+</pre>
+이 선언을 다음과 같이 고쳐 씁니다.
+<pre>    Set&lt;String&gt; s = Collections.checkedSet(new HashSet&lt;String&gt;(), String.class);
+</pre>
+
+이렇게 하면(자), 유산 코드가 정수를 삽입하려고 한 시점에서, 컬렉션이 <code>ClassCastException</code> 를 throw 합니다. 얻을 수 있는 스택 트레이스에 의해, 문제를 진단해, 수복하는 것이 가능합니다.
+
+<p>총칭은, 가능한 한 어떤 장소라도 사용하는 것을 추천합니다. 코드를 범용화하는 노력은 걸립니다만, 코드가 알기 쉬워져, 형태의 안전성이 보증됩니다. 총칭 라이브러리를 사용하는 것은 간단합니다만, 총칭 라이브러리를 기술하거나 기존의 라이브러리를 범용화하려면  전문 지식이 필요합니다. 주의점이 1 개 있습니다. 컴파일 한 코드를 5.0 보다 전의 가상 머신에 배치하는 경우, 총칭이나 그 외의 Tiger 의 기능은 사용하지 말아 주세요.
+
+<p>C++ 의 템플릿 기구에 자세한 경우는, 총칭이 거기에 유사하고 있다고 생각하겠지요.  그러나, 유사점은 표면적인 것입니다. 총칭에서는, 특별한 용도 마다 신규 클래스를 생성하지 않고, 「템플릿의 메타 프로그래밍」을 허가하고 있습니다.
+
+<p>총칭화에 대한 자세한 것은,<a href="http://java.sun.com/j2se/1.5/pdf/generics-tutorial.pdf">「Generics Tutorial」</a>를 참조해 주세요.
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+   <FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved.
+
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>

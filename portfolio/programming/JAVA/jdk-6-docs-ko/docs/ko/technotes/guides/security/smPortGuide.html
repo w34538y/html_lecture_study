@@ -1,0 +1,1042 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>시큐리티 매니저와 Java SE JDK - xrath.com 에서 번역됨</title>
+  </head>
+
+<body bgcolor="#ffffff">
+
+<center>
+<h1>시큐리티 매니저와 Java SE JDK</h1>
+
+
+<!--  We use the SCCS file version as the document version. Note that while the file is being edited, the version below should  read '% I %' (without the spaces), not '1.n'. Upon 'sccs delget', SCCS will replace it with the correct '1.n' version number. --> <b>문서 개정 1.7</b>
+
+</center>
+
+<br> <br>
+<p>
+
+<HR>
+
+<p><dl>
+
+<dt><dd><a href="#Introduction"><b>처음에</b></a> <dt><dd><a href="#SecurityModelEv"><b>시큐리티 모델의 진화</b></a> <dt><dd><a href="#SecurityManagerEv"><b>시큐리티 매니저의 진화</b>
+
+</a> <dl>
+<dt><dd><a href="#SecurityManagerMethods"><b>   시큐리티 매니저의 메소드</b></a> <dt><dd><a href="#SM11"><b>   JDK 1.1 의 시큐리티 매니저</b></a> <dt><dd><a href="#SM12"><b>   Java SE JDK 의 시큐리티 매니저</b>
+
+</a> <dl>
+<dt><dd><a href="#Installing"><b><code>java.lang.SecurityManager</code> 를 디폴트의 시큐리티 매니저로서 인스톨 하는</b></a> <dt><dd><a href="#CLChanges"><b>   클래스 로더 및 클래스 로더 심도용 메소드의 변경</b></a> </dl>
+
+</dl>
+
+
+<dt><dd><a href="#HowToPort"><b>1.1 스타일의 시큐리티 매니저의 포팅 방법</b></a> <dt><dd><a href="#MethodChanges"><b>SecurityManager 메소드의 변경과 오버라이드(override)에 관한 어드바이스</b>
+
+</a> </dl>
+<br>
+<hr>
+
+<h1><a name="Introduction">처음에</a> </h1>
+
+<blockquote>
+
+이 문서에서는, JDK 의 시큐리티 매니저에 더해진 변경에 대해 설명합니다.  이 변경에 의해, 어플리케이션의 디폴트의 시큐리티 매니저로서 이 시큐리티 매니저를 사용할 수 있게 되었습니다.
+
+</blockquote>
+
+
+<H1><a name="SecurityModelEv">시큐리티 모델의 진화</a> </H1>
+
+<blockquote>
+
+JDK 1.1 에서는, 로컬 어플리케이션 및 적절히 디지털 서명 된 애플릿은 일반적으로은 신뢰되어 파일 시스템등이 중요한 system resource에의 완전한 액세스권을 가지고 있었습니다만, 서명되어 있지 않은 애플릿은 신뢰되지 않고, 한정되거나 소스 밖에 액세스 할 수 없었습니다. 어느 자원에의 액세스를 허가할까 결정할 책임은, 시큐리티 매니저가 업고 있었습니다.
+
+<p>Java SE JDK 의 시큐리티 아키텍쳐(architecture)는 정책 베이스로, 치밀한 액세스 관리 가 가능합니다. 로드 된 코드에는, 현재 유효한 시큐리티 정책를 기초로 「액세스권」을 할당할 수 있습니다. 개개의 액세스권에는, 특정의 자원에 대해서 허가되는 액세스가 지정됩니다. 예를 들어, 특정의 파일이나 디렉토리에 대한 「읽기」와「기입」의 액세스나, 특정의 호스트와 포트에의 「접속」액세스 등입니다. 정책는, 서명자나 장소가 다른 코드에게 주는 권한을 지정합니다. 정책는, 설정 가능한 외부의 정책 파일을 사용해 초기화할 수 있습니다. 코드에 대해 명시적으로 액세스권이 주어지지 않으면, 그 코드로부터, 그 액세스권으로 보호된 자원에는 액세스 할 수 없습니다. 액세스권과 정책의 이 새로운 개념에 의해, JDK 에서는 섬세해 조절하기 쉽고, 유연해 확장성의 높은 액세스 관리 를 제공할 수 있습니다. 애플릿 뿐만이 아니라, 어플리케이션, Bean, 서브 렛을 포함한 모든 Java 코드에, 이러한 액세스 관리 를 지정할 수 있게 되었습니다.
+
+<p>
+Java 의 시큐리티 아키텍쳐(architecture)의 상세한 것에 대하여는,<a href="index.html">시큐리티 문서</a>를 참조해 주세요.
+<p>
+
+</blockquote>
+
+
+<H1><a name="SecurityManagerEv">시큐리티 매니저의 진화</a> </H1>
+
+<blockquote>
+
+
+<H2><a name="SecurityManagerMethods">시큐리티 매니저의 메소드</a> </H2>
+
+<blockquote>
+
+<p><code>SecurityManager</code> 클래스에는, 이름이 <code>check</code> 로 시작되는 메소드가 다수 있습니다. 예를 들어 <code>checkRead</code> 나 <code>checkConnect</code> 등입니다. Java 라이브러리의 다양한 메소드가, 시큐리티가 중시되는 오퍼레이션을 실행하기 전에 매회 <code>check</code> 메소드를 호출합니다. 이것에 의해, 시큐리티 매니저에게는, 예외를 throw 해 오퍼레이션의 실행을 저지할 기회가 주어집니다. 시큐리티 매니저의 루틴은, 그 오퍼레이션이 허가되고 있을 때는 단지 호출해 원래대로 돌아갈 뿐입니다만, 그 오퍼레이션이 허가되어 있지 않을 때에는 SecurityException 를 throw 합니다. 이 규칙의 유일한 예외는 <code>checkTopLevelWindow</code> 로, 이것은 불리언 값을 돌려줍니다.  
+
+<p><code>SecurityManager</code> 클래스에 포함되는, 또 하나의 주요한 타입의 메소드는, 클래스 로더의 존재와 심도에 관계하는 클래스입니다.
+    <ul>
+<li>currentClassLoader
+<li>currentLoadedClass
+<li>inClassLoader
+<li>classLoaderDepth
+    </ul>
+
+
+</blockquote>
+
+
+<H2><a name="SM11">JDK 1.1 의 시큐리티 매니저</a> </H2>
+
+<blockquote>
+
+JDK 1.1 에서는,<code>java.lang.SecurityManager</code> 클래스는 abstract 클래스였습니다. 시큐리티 매니저의 <code>check</code> 메소드는, 디폴트 구현에서는 예외를 throw 했습니다. 클래스 로더와 심도에 관련하는 클래스는 적절히, 많은 경우는 native code로 구현되었습니다.
+
+<p>시큐리티 매니저를 인스톨 하려고 하는 어플리케이션 (브라우저등)은 모두, 독자적인 시큐리티 매니저를 작성해, 디폴트로 예외를 throw 하는 메소드의 고정 구현을 적절히 제공할 필요가 있었습니다. 이러한 메소드는, 주로 <code>check</code> 메소드였습니다.  
+
+<p> JDK 1.1 애플릿의 시큐리티 매니저 모델을 기본으로 한 시큐리티 매니저는, 일반적으로는 다음의 2 점에 근거해 액세스 관리 를 결정합니다.
+    <ol>
+<li> 클래스 로더를 가지는 클래스 (JDK 1.1 의 애플릿)가 스택상에 있을지 어떨지<p>
+<li> 클래스 로더의 심도 (클래스 로더를 사용해 정의된 클래스 메소드가, 스택의 어느 정도의 깊이로 최근 발생했는지)
+    </ol>
+
+<p>이러한 타입의 결정은, 클래스 로더의 존재와 심도에 관계하는 <code>SecurityManager</code> 메소드의 호출에 의해 행해지고 있었습니다. 예를 들어, 전형적인 1.1 스타일의 시큐리티 매니저에게는, 다음과 같은 <code>checkExit</code> 메소드가 있습니다.
+
+<pre>
+     public void checkExit(int status) {
+       if (inClassLoader()) {
+        throw new SecurityException(..);
+       } 
+     }
+</pre>
+
+<p>이러한 <code>checkExit</code> 메소드는, 클래스 로더를 사용해 정의된 클래스 (애플릿)가 스택에 있을 때는 <code>Runtime.exit</code> 의 호출을 허가하지 않았습니다. 이것은 전자의 케이스의 예로, 클래스 로더를 가지는 클래스가 스택에 있을지 어떨지를 체크합니다. 후자의 케이스 (클래스 로더의 심도)의 예는, 다음과 같은 것입니다.
+    <p>
+<pre>
+      public void checkCreateClassLoader() {
+         if (classLoaderDepth() == 2) {
+            throw new SecurityException();
+         }
+      }
+</pre>
+
+<p>이 메소드는, 클래스 로더의 심도가 2 여서는 안 되는 것을 나타내고 있습니다. 즉,<code>checkCreateClassLoader</code> 를 호출한 메소드를 호출하는 메소드는, 클래스 로더로 정의된 클래스에 있어서는 되지 않습니다. 예를 들어,<code>java.lang.ClassLoader</code> 의 생성자 은 <code>checkCreateClassLoader</code> 를 호출합니다. 이것은,<code>java.lang.ClassLoader</code> 의 생성자 을 호출하는 메소드가, 클래스 로더를 가지고 있어서는 안 되는 것을 의미합니다. 따라서, 애플릿은 클래스 로더를 직접 작성할 수 없게 됩니다.
+
+<p>2 개의 메소드는 어느쪽이나 애플릿의 실행을 저지하려고 합니다만, 2 개(살)에는 큰 차이가 있습니다. 전자의 케이스에서는, 스택의 어디엔가 애플릿이 있으면(자) <code>checkExit</code> 가 예외를 throw 합니다. 이것은, 편입의 JDK 코드여도, 애플릿으로부터 불려 갔을 경우에는, VM 를 종료할 수 없는 것을 의미합니다. 후자의 케이스에서는, JDK 코드는 애플릿으로부터 불려 갔을 경우에도, 클래스 로더를 작성할 수가 있습니다. 그 이유는, 사용되는 것은 클래스 로더를 가지는 클래스의 심도이며, 그것이 존재한다고 하는 사실은 아니기 때문입니다.
+
+
+</blockquote>
+
+
+<H2><a name="SM12">Java SE JDK 의 시큐리티 매니저</a> </H2>
+
+<blockquote>
+
+JDK 에서는,<code>java.lang.SecurityManager</code> 클래스를 어플리케이션의 디폴트의 시큐리티 매니저로서 사용할 수 있도록, 많은 변경이 더해졌습니다. 특히 다음의 점이 중요합니다. <p>
+<ul>
+<li> <code>abstract</code> 클래스는 아니게 되었으므로, 그대로 인스톨 할 수가 있다<p>
+
+<li> 대부분의 <code>check</code> 메소드는, 신규 작성된 <code>checkPermission</code> 메소드를 호출한다. 이 메소드는, 디폴트로, 신규 작성된 <code>AccessController</code> 클래스내의 동명의 메소드 (<code>checkPermission</code>)를 호출한다. <code>checkPermission</code> 를 호출하지 않는 메소드에는, 적절한 디폴트가 설정되어 있다<p>
+
+<li> 클래스 로더가 스택에 있을지 어떨지의 결정과 클래스 로더의 심도의 계산에 JDK 1.1 으로 사용되고 있던 메소드는, JDK 에서는 변경되어<code>java.security.AllPermission</code> 가 주어진 시스템 클래스 로더와 시큐리티 문맥을 무시하게 된다
+</ul>
+
+
+<h2><a name="Installing"><code>java.lang.SecurityManager</code> 를 디폴트의 시큐리티 매니저로서 인스톨 한다</a> </h2>
+
+<blockquote>
+
+<p><code>java.lang.SecurityManager</code> 는 abstract 클래스가 아니게 되었으므로, 디폴트의 시큐리티 매니저로서 인스톨 해 사용할 수 있게 되었습니다. 이것을 실시하려면 , VM 를 기동할 경우에 시스템 프로퍼티을 설정합니다.
+
+<pre>
+    java -Djava.security.manager YourApp
+</pre>
+
+다른 방법으로서 다음의 코드를 사용해 어플리케이션으로부터 직접 인스톨 할 수도 있습니다.
+
+<pre>
+    System.setSecurityManager(new SecurityManager());
+</pre>
+
+디폴트의 시큐리티 매니저의 동작은, 정책 파일을 변경하는 것에 의해 커스터마이즈 할 수 있습니다. 상세한 것에 대하여는,<a href="PolicyFiles.html">정책 파일</a>의 시큐리티 가이드를 참조해 주세요.
+
+</blockquote>
+
+
+
+<h2><a name="CLChanges">클래스 로더 및 클래스 로더 심도용 메소드의 변경</a> </h2>
+
+<blockquote>
+
+<p> JDK 에서는, 클래스 로더와 클래스 로더 심도에 관련하는 <code>SecurityManager</code> 메소드는 추천 되지 않고, 어느 <code>check</code> 메소드로부터도 불려 가지 않습니다. 새로운 시큐리티 매니저에서는 이러한 메소드는 사용하지 않고, 기존의 시큐리티 매니저로부터도 삭제하는 것을 추천합니다. 다만, 이러한 메소드는 구버젼과의 호환성을 위해서(때문에) 남겨져 있어, JDK 에서도 1.1 스타일의 시큐리티 매니저가 동작하도록(듯이) 변경되었습니다.  
+
+<p>이러한 메소드를 다음에 듭니다.
+    <ul>
+<li>currentClassLoader
+<li>currentLoadedClass
+<li>inClassLoader
+<li>classLoaderDepth
+    </ul>
+
+
+<h3>클래스 로더와 심도에 관련하는 메소드의 수정</h3>
+
+<blockquote>
+
+<p>클래스 로더와 심도에 관련하는 메소드는 모두, 다음의 3 개의 점으로써 수정되었습니다.
+
+<ol>
+<li>이러한 메소드는 시스템 클래스 로더를 무시합니다. 시스템 클래스 로더란, 시스템 클래스 로더 (<code>ClassLoader.getSystemClassLoader</code> 에 의해 반환된다) 또는 그 조상의 하나에 동일한 클래스 로더이다고 정의됩니다.
+
+<p>시스템 클래스 로더에 의해 로드 된 클래스에는, 어플리케이션 클래스 (<code>CLASSPATH</code> 로부터 로드 된다), 확장 클래스, 편입 JDK 클래스가 있으므로, 이러한 메소드는 이 수정에 의해, 이러한 코드를 무시할 수가 있습니다.  <p>
+
+<p>커스텀 시큐리티 매니저를 인스톨 하고 있는 어플리케이션을 실행하는 경우로, 한편 그 시큐리티 매니저가 JDK 의 <code>CLASSPATH</code> 로부터 로드 되는 경우에는, 그 시큐리티 매니저에게는, 시스템 클래스 로더를 관련지을 수 있습니다. JDK 1.1 에서는 어플리케이션 클래스는 클래스 로더를 가지지 않습니다. 사용자가 커스텀 시큐리티 매니저내로부터 <code>classLoaderDepth</code> 와 같은 메소드를 호출할 예정으로, 또 그 메소드가 시스템 클래스 로더에 의해 로드 된 클래스를 무시하도록(듯이) 변경되어 있지 않은 경우에는, 그 메소드는 항상 0 을 돌려줍니다. 이것은 편리하다고는 말할 수 없습니다. 같이 클래스 로더 메소드가 시스템 클래스를 무시하도록(듯이) 변경되지 않고, 커스텀의 시큐리티 매니저가 <code>CLASSPATH</code> 로부터 로드 되는 경우에도, 예를 들어  "classLoaderDepth() == 2" 때에 오퍼레이션을 허가하지 않는다고 하는 방법으로, 시큐리티 매니저가 결정을 실시하는 것 같은 경우에는, 시큐리티 홀이 생기는(실제는 "classLoaderDepth() &lt;= 2" 여야 합니다).  <p>
+
+
+<li>이러한 메소드는, 스택상에서 「특권 다하고」의 마크가 붙여져 있는 메소드에 도달하면(자), 체크를 종료합니다(java.security.AccessController.doPrivileged() 및<a href="doprivileged.html">「특권 블록을 위한 API」</a>를 참조). <p>
+
+<li>이러한 메소드는,<code>AllPermission</code> 가 주어지고 있는 시큐리티 문맥을, 스택상에 클래스 로더가 존재하지 않는 것처럼 취급합니다.  
+
+</ol>
+
+<p>1 번째와 2 번째의 변경의 예로서 JDK 로 시큐리티 매니저의 인스톨 후에 파일을 여는 등의 조작을 실시하는 장소가 있습니다. 1.1 스타일의 시큐리티 매니저에게는, 다음과 같은 <code>checkRead</code> 메소드를 가지는 것이 있습니다.
+
+<pre>
+       public void checkRead(String file) {
+         if (inClassLoader()) {
+          throw new SecurityException(..);
+         } 
+       }
+</pre>
+
+<p>JDK 의 코드를 수정하지 않으면 JDK 자체가 파일을 읽어들이려고 했을 때에, 시스템 클래스 로더가 아닌 클래스 로더가 스택상에 존재하는 경우에는, JDK 로 실행하는 것 같은 체크가 시큐리티 예외를 일으킵니다. 새로운 시큐리티 모델에서는, 호출 바탕으로 대해 허가되어 있지 않을 가능성이 있는 조작을 실행하려고 하는 JDK 코드는 모두,<code>doPrivileged</code> 블록을 가집니다. <code>inClassLoader</code> 는 단지, 「특권 첨부」코드를 포함한 프레임까지의 스택을 조사하는 것만으로 있어, 스택의 맨 위의 코드는 시스템 클래스 로더 또는 게다가 위클래스에 의해 로드 되는 JDK 코드이므로,<code>inClassLoader</code> 메소드는 <code>false</code> 를 돌려주어, 읽기를 허가합니다.
+
+</blockquote>
+
+
+<h3>클래스 로더 심도의 유지</h3>
+
+<blockquote>
+
+<p>먼저 설명한 것처럼, 1.1 애플릿의 시큐리티 매니저를 기본으로 한 시큐리티 매니저는, 액세스 관리 의 결정의 일부를 클래스 로더 심도에 근거해 실시합니다. 예로서 전술한 <code>checkCreateClassLoader</code> 메소드를 한번 더 가리킵니다.  
+
+<pre>
+       public void checkCreateClassLoader() {
+          if (classLoaderDepth() == 2) {
+             throw new SecurityException();
+          }
+       }
+</pre>
+
+JDK 에서는, 1.1 스타일의 시큐리티 매니저로 사용되고 있었던 대로, 스택 심도를 유지하려고 했습니다. 예를 들어, java.security.SecureClassLoader 의 생성자 은, 그 슈퍼 클래스 (ClassLoader)의 생성자 이 같은 것을 실시한다고 해도,<code>SecurityManager.checkCreateClassLoader</code> 에의 명시적인 호출을 실시합니다. <code>SecureClassLoader</code> 의 생성자 에 체크 기능이 없는 경우는, 클래스 로더의 심도는 항상 2 보다 크기 때문에, 1.1 스타일의 시큐리티 매니저는 신뢰되지 않는 클래스에 대해서 <code>SecureClassLoader</code> 를 확장해 클래스 로더를 구축하는 것을 허가합니다.  
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<h1><a name="HowToPort">1.1 스타일의 시큐리티 매니저의 포팅 방법</a> </h1>
+
+<blockquote>
+
+<p>시큐리티 매니저를 JDK 환경에서 실행하기 전에, 우선 자신의 커스텀 시큐리티 매니저의 메소드를 모두 해석해 두는 것을 강하게 추천합니다. 해석을 실시하지 않으면 시큐리티 홀이 생기거나 JDK 가 적절히 동작하지 않게 되는 일이 있습니다. 이것은, 1.1 스타일의 시큐리티 매니저가 약한 성질을 가지고 있기 (위해)때문에입니다.
+
+<p>가능하면, 1.2 의 <code>SecurityManager</code> 의 디폴트 구현을 사용하도록(듯이) 합니다. 이것은, 사용자와 관리자에 대해서 일관성이 있는 동작을 제공하는데 도움이 됩니다. 이것이 불가능하면, 적어도 <code>checkXXX</code> 메소드 중(안)에서 시큐리티 예외를 throw 하기 전에 <code>super.checkXXX</code> 를 호출하도록 해 주세요. 이것에 의해, 액세스 관리  알고리즘의 사용이 가능하게 되어, JDK 자체가 올바르게 기능하게 됩니다.
+
+
+<p>
+JDK 에서는,<code>SecurityManager check</code> 메소드의 호출에 사용되고 있던 기존의 코드는, 변경되고 있지 않습니다. 시큐리티 체크의 필요한 새로운 코드에 대해서는, 호출이 <code>SecurityManager.checkPermission</code> 에 대해서 행해져 새로운 <code>SecurityManager check</code> 메소드는 추가되지 않습니다. 예를 들어, 새롭게 추가된 <code>java.lang.System.setProperty</code> 메소드는,<code>java.util.PropertyPermission</code> 액세스권으로 <code>checkPermission</code> 를 호출합니다.
+
+<p>
+SecurityManager 클래스를 확장해 기존의 메소드를 오버라이드(override) 하는 경우는, 주의가 필요합니다. 예를 들어,<code>checkRead(String file)</code> 메소드를 오버라이드(override) 해 항상 시큐리티 예외를 throw 하도록(듯이) 하면(자), JDK 자체가 올바르게 동작하지 않게 되는 일이 있습니다. 즉, 일부의 JDK 코드로 파일을 열 필요가 있는 경우에 (프로퍼티 파일의 read나, JAR 파일의 로드등을 (위해)때문에), 읽기마다 시큐리티 예외를 throw 하면(자), 파일을 여는 조작이 반드시 실패하게 됩니다.  
+
+<p><b>일반적으로, 디폴트의 메소드를 오버라이드(override) 하는 것은, 시큐리티의 완화의 목적에서만 실시해야 하는 것이어, 시큐리티의 강화의 목적으로는 실시해야 하는 것이 아닙니다. 시큐리티를 강화하고 싶은 경우에는, 디폴트의 정책 파일의 수정, 또는 커스텀의 <code>java.security.Policy</code> 객체의 인스톨의 어느 쪽인지 또는 양쪽 모두를 실시합니다. </b>상세한 것에 대하여는,<a href="PolicyFiles.html">정책 파일</a>의 시큐리티 가이드를 참조해 주세요.
+
+<p>일반적으로, 시큐리티 매니저의 메소드를 오버라이드(override) 할 때는, 오버라이드(override) 된 <code>super.checkXXX</code> 메소드가 예외를 throw 하는 위치에,<code>checkXXX</code> 메소드에의 호출을 기술할 필요가 있습니다. 예를 나타냅니다.
+    <pre>
+      public class MySecurityManager extends SecurityManager {
+
+        public void checkRead(String file) {
+          if (someCustomSecurityCheckFails()) {
+             super.checkRead(file);
+          }
+        }
+      }
+    </pre>
+커스텀의 시큐리티 체크가 실패했을 경우에는, 다음에 <code>super.checkRead</code> 이 불려 갑니다. <code>checkRead</code> 의 디폴트 구현에서는 <code>checkPermission</code> 가 불려 가 이것은 디폴트로 <code>AccessController</code> 에 문의를 실시합니다. <code>AccessController</code> 를 호출하는 것으로, 파일을 읽어내기 전에 <code>AccessController.doPrivileged</code> 를 행한 시스템 코드는, 그 파일의 읽기에 성공합니다. 그 이외의 모든 코드는 그 시점에서 유효한 정책에 따라, 그 파일에의 액세스권이 주어지지 않은 경우에는, 액세스 관리  예외가 throw 됩니다.
+
+<p><code>checkXXX</code> 메소드에는, 그것을 오버라이드(override) 할 경우에 <code>super.checkXXX</code> 메소드를 호출해서는 안 되는 것이 있습니다. 그 이유는, 이러한 메소드의 디폴트 구현은, 오버라이드(override) 후의 메소드로 구현하고 있는 정책만큼 어렵지 않은 경우가 있기 때문입니다. 예를 들어, 디폴트의 <code>checkAccess(ThreadGroup g)</code> 메소드는, 시스템 thread 그룹만을 보호합니다. 독립한 thread 그룹 (애플릿 thread 그룹등)을 서로로부터 보호하려고 하는 경우는, 일반적으로은 시큐리티 예외를 throw 하는 위치에서 <code>super.checkAccess</code> 를 호출하면(자), 커스텀 체크의 목적이 손상되기 (위해)때문에, 일반적으로 그 위치에서는 throw 하지 않습니다. 그 대신해, 오버라이드(override) 한 메소드의 최초의 스테이트먼트로,<code>super.checkAccess</code> 에의 호출을 기술할 수가 있습니다.
+<p>예를 나타냅니다.
+
+    <pre>
+      public class AppletSecurityManager extends SecurityManager {
+
+        public void checkAccess(ThreadGroup g) {
+          // a call to super will throw an exception if someone
+          // is trying to modify the system thread group
+          super.checkAccess(g);
+          ...
+          // now perform checks based on which applet thread group
+          // the current caller is in to see if they can modify thread group g.
+          ...
+      }
+    </pre>
+
+<p>다음에, 각 메소드를 오버라이드(override) 하는 방법을 설명합니다.
+
+</blockquote>
+
+
+
+<h1><a name="MethodChanges">SecurityManager 메소드의 변경과 오버라이드(override)에 관한 어드바이스</a> </h1>
+
+<blockquote>
+
+여기에서는, JDK 로 <code>java.lang.SecurityManager</code> 메소드에 더해진 변경의 리스트를 나타내, 오버라이드(override)를 실행할 때의 어드바이스를 실시합니다. 이러한 메소드의 상세한 것에 대하여는,<code>SecurityManager</code> 클래스의 Java 문서를 참조해 주세요.
+
+<h3>protected boolean inCheck</h3>
+<blockquote>
+<p>이 필드는 추천 되지 않게 되어, JDK 내에서의 이 필드의 사용은 모두 삭제되었습니다. inCheck 를 사용하는 대신에,<code>checkPermission</code> 를 <code>doPrivileged</code> 와 함께 사용해 주세요.
+</blockquote>
+
+   
+<h3>public boolean getInCheck();</h3>
+<blockquote>
+<p>이 메소드도 추천 되지 않게 되었습니다.  
+</blockquote>
+
+
+<h3>public SecurityManager();</h3>
+<blockquote>
+<p>생성자 은, 호출원이 <code>RuntimePermission("createSecurityManager")</code> 액세스권을 가지고 있으면(자) 가정해, 복수의 SecurityManager 의 작성이 가능하게 되도록(듯이) 수정되었습니다.
+</blockquote>
+
+
+<h3>protected native Class[] getClassContext();</h3>
+<blockquote>
+<p>변경은 없습니다. 이 호출은, JDK 로 변경된 메소드 (<code>currentClassLoader</code>,<code>currentLoadedClass</code>,<code>classLoaderDepth</code>,<code>inClassLoader</code>)의 1.1 에서의 동작을 에뮤레이트 하기 위해서 사용할 수 있습니다.
+</blockquote>
+
+
+<h3>protected ClassLoader currentClassLoader();</h3>
+<blockquote>
+<p>JDK 1.1 스타일의 시큐리티 매니저에서의 이 메소드의 전형적인 사용 방법은, 스택에 클래스 로더가 있을지 어떨지를 조사하는 것입니다. 이 때, 클래스 로더가 없는 경우는, 코드를 「신뢰할 수 있다」것으로 해 취급해, 코드에 모든 동작을 허가합니다. 이 메소드는 JDK 로 수정되어<code>doPrivileged</code> 를 호출하는 신뢰할 수 있는 JDK 코드 (실제로는,<code>java.security.AllPermission</code> 가 주어진 모든 코드)는, 1.1 스타일의 시큐리티 매니저에게 신뢰되는 것으로서 취급되게 되었습니다. 또 이 코드는, 시스템 클래스 로더를 무시하도록(듯이) 수정되었습니다. 시스템 클래스 로더란, 시스템 클래스 로더 (ClassLoader.getSystemClassLoader 에 의해 반환된다) 또는 게다가 위객체의 하나에 동일한 클래스 로더이다고 정의됩니다.
+
+<p>
+이 메소드는, 다음의 3 개의 경우에 <code>null</code> 코드를 돌려줍니다. <p>
+<ol>
+<li>실행 스택상의 모든 메소드가, 시스템 클래스 로더 또는 게다가 위객체의 1 개를 사용해 정의된 클래스로부터의 것인 경우
+
+<li>최초의 「특권 다하고」호출원 (java.security.AccessController.doPrivileged 를 참조)까지의 실행 스택상의 모든 메소드가, 시스템 클래스 로더 또는 게다가 위객체의 1 개를 사용해 정의된 클래스로부터의 것인 경우
+
+<li> checkPermission 를 <code>java.security.AllPermission</code> 액세스권으로 호출한 결과, SecurityExeception 가 throw 되지 않았던 경우 
+</ol>
+
+<p>이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+
+</blockquote>
+
+
+<h3>protected Class currentLoadedClass();</h3>
+<blockquote>
+<p>이 메소드는 <code>currentClassLoader</code> 와 같은 방법으로 수정되었습니다. 그 시점에서의 시큐리티 문맥에 <code>AllPermission</code> 가 주어지고 있는지, 스택상의 모든 메소드 (존재하는 경우는, 특권을 가지는 최초의 호출원까지)가 시스템 클래스 로더 또는 게다가 위클래스의 1 개를 사용해 정의된 클래스로부터의 것인 경우에는,<code>null</code> 를 돌려줍니다.
+
+<p>이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+</blockquote>
+
+
+<h3>protected int classDepth(String name);</h3>
+<blockquote>
+<p>동작으로 변경은 없습니다. 이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+</blockquote>
+
+
+<h3>protected int classLoaderDepth();</h3>
+<blockquote>
+<p> 이 메소드는 <code>currentClassLoader</code> 와 같은 방법으로 수정되었습니다. 그 시점에서의 시큐리티 문맥에 <code>AllPermission</code> 가 주어지고 있는지, 스택상의 모든 메소드 (존재하는 경우는, 특권을 가지는 최초의 호출원까지)가 시스템 클래스 로더 또는 그 조상의 1 개를 사용해 정의된 클래스로부터의 것인 경우에는,<code>-1</code> 을 돌려줍니다.
+
+<p>이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+</blockquote>
+
+
+<h3>protected boolean inClass(String name);</h3>
+<blockquote>
+<p>동작으로 변경은 없습니다. 이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+</blockquote>
+
+
+<h3>protected boolean inClassLoader();</h3>
+<blockquote>
+<p>이 메소드는,<code>currentClassLoader</code> 가 null 이외의 클래스 로더를 돌려주는 경우에는, true 를 돌려줍니다. 그 때문에, 이 메소드는 <code>currentClassLoader</code> 와 같은 시멘틱스에 따릅니다.
+
+<p>이 메소드는 추천 되지 않게 되었습니다. 대신에 <code>checkPermission</code> 를 사용해 주세요.
+</blockquote>
+
+
+<h3>public Object getSecurityContext();</h3>
+<blockquote>
+<p> 이 메소드는,<code>java.security.AccessController.getContext</code> 에의 호출과 함께 작성된 <code>java.security.AccessControlContext</code> 객체를 돌려줍니다. JDK 1.1 에서는, 이 메소드는 디폴트로 <code>null</code> 를 돌려주고 있었습니다.
+</blockquote>
+
+
+<h3>public void checkPermission(Permission perm);</h3>
+<blockquote>
+<p>이것은, JDK 에 새롭게 추가된 메소드입니다. <code>지정된 액세스권으로 <code>java.security.AccessController.checkPermission</code> 를 호출합니다. 내부적으로는, JDK 는 직접 <code>AccessController</code> 를 호출하지 않고 , 항상 <code>SecurityManager.checkPermission</code> 를 호출합니다. 이 때문에, 프로그래머는 이 메소드를 오버라이드(override) 해, 감사나 GUI 다이얼로그와 같은 기능을 추가할 수가 있습니다.
+</blockquote>
+
+
+<h3>public void checkPermission(Permission perm, Object context);</h3>
+<blockquote>
+<p>이것은, JDK 에 새롭게 추가된 메소드입니다. <code><code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스인 경우는,<code>AccessControlContext.checkPermission</code> 메소드가, 지정된 액세스권에 따라 불려 갑니다.
+
+<p> <code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스가 아닌 경우는,<code>SecurityException</code> 가 throw 됩니다.  
+</blockquote>
+
+
+<h3>public void checkCreateClassLoader();</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("createClassLoader")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkCreateClassLoader</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkCreateClassLoader() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkCreateClassLoader();
+      }
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkAccess(Thread t);</h3>
+<blockquote>
+<p>thread의 인수가 시스템 thread (부모가 <code>null</code> 인 thread 그룹에 속하는 thread)의 경우, 이 메소드는 <code>RuntimePermission("modifyThread")</code> 액세스권으로 <code>checkPermission</code> 를 호출합니다.
+<p>
+보다 어려운 정책가 필요한 어플리케이션에서는, 이 메소드를 오버라이드(override) 할 필요가 있습니다.  
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 후의 메소드의 최초의 스테이트먼트로 <code>super.checkAccess</code> 메소드를 호출하는지, 같은 시큐리티 체크를 실시할 필요가 있습니다.  
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 후의 메소드에서는, 호출원의 thread가 <code>RuntimePermission("modifyThread")</code> 액세스권을 가질지 어떨지를 체크해, 가지고 있는 경우에는 아무것도 하지 않고 종료하도록(듯이) 합니다. 이것은, 그 액세스권이 주어진 코드 (JDK 자체등)가 어떤 thread라도 취급할 수 있도록(듯이) 하기 (위해)때문에입니다.
+
+<p>예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkAccess(Thread t) {
+      // a call to super will throw an exception if someone
+      // is trying to modify a system thread
+      super.checkAccess(t);
+      ...
+      if (someCustomSecurityCheckForOtherThreadsFails()) {
+        // if the check fails, instead of throwing an exception,
+        // call checkPermission, which will throw an exception
+        // if need be
+        checkPermission(new RuntimePermission("modifyThread"));  
+      }
+      ...
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkAccess(ThreadGroup g);</h3>
+<blockquote>
+<p> thread 그룹의 인수가 시스템 thread 그룹 (부모가 <code>null</code>)의 경우, 이 메소드는,<code>RuntimePermission("modifyThreadGroup")</code> 액세스권으로 <code>checkPermission</code> 를 호출합니다.
+<p>
+보다 어려운 정책가 필요한 어플리케이션에서는, 이 메소드를 오버라이드(override) 할 필요가 있습니다.  
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 후의 메소드의 최초의 스테이트먼트로 <code>super.checkAccess</code> 메소드를 호출하는지, 같은 시큐리티 체크를 실시할 필요가 있습니다.  
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 후의 메소드에서는, 호출원의 thread가 <code>RuntimePermission("modifyThreadGroup")</code> 액세스권을 가질지 어떨지를 체크해, 가지고 있는 경우에는 아무것도 하지 않고 종료하도록(듯이) 합니다. 이것은, 그 액세스권이 주어진 코드 (JDK 자체등)가 어떤 thread 그룹에서도 취급할 수 있도록(듯이) 하기 (위해)때문에입니다.
+
+<p>예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkAccess(ThreadGroup g) {
+      // a call to super will throw an exception if someone
+      // is trying to modify the system thread group
+      super.checkAccess(g);
+      ...
+      if (someCustomSecurityCheckForOtherThreadGroupsFails()) {
+        // if the check fails, instead of throwing an exception,
+        // call checkPermission, which will throw an exception
+        // if need be
+        checkPermission(new RuntimePermission("modifyThreadGroup"));  
+      }
+      ...
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkExit(int status);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("exitVM")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkExit</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkExit(int status) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkExit(status);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+  
+<h3>public void checkExec(String cmd);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>FilePermission</code> 로 호출합니다. <code>cmd</code> 가 절대 패스 (<code>java.io.File.isAbsolute</code> 를 참조)의 경우는,<code>FilePermission</code> 의 타겟으로서 그대로 건네받습니다. <code>cmd</code> 가 절대 패스가 아닌 경우는, 특별한 타겟 "&lt;&lt;ALL FILES&gt;&gt;" 가 사용됩니다. 이 타겟을 사용하는 이유는, 개별의 플랫폼에서 실행되는 커멘드의 실제의 패스를 판단하는 것은, 환경 변수등의 요인을 위해서(때문에) 곤란하기 때문에입니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkExec</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkExec(String cmd) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkExec(cmd);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkLink(String lib);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("loadLibrary. "+lib)</code> 액세스권으로 호출합니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkLink</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkLink(String lib) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkLink(lib);
+      }
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkRead(FileDescriptor fd);</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("readFileDescriptor")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkRead</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkRead(FileDescriptor fd) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkRead(fd);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+  
+<h3>public void checkRead(String file);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>FilePermission(file,"read")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkRead</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkRead(String file) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkRead(file);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkRead(String file, Object context);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스인 경우는,<code>AccessControlContext.checkPermission</code> 메소드가,<code>FilePermission(file,"read")</code> 의 액세스권에 따라 불려 갑니다.
+<p> <code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스가 아닌 경우는,<code>SecurityException</code> 이 throw 됩니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkRead</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkRead(String file, Object context) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkRead(file, context);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkWrite(FileDescriptor fd);</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("writeFileDescriptor")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkWrite</code> 에의 호출을 실시할 필요가 있습니다. 다음에 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkWrite(FileDescriptor fd) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkWrite(fd);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkWrite(String file);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>FilePermission(file,"write")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkWrite</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkWrite(String file) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkWrite(file);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkDelete(String file);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>FilePermission(file,"delete")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkDelete</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkDelete(String file) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkDelete(file);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkConnect(String host, int port);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. 포트가 -1 나오지 않는 경우에는,<code>checkPermission</code> 를 <code>SocketPermission(host+":"+port,"connect")</code> 액세스권으로 호출합니다. 포트가 -1 의 경우는,<code>checkPermission</code> 를 <code>SocketPermission(host,"resolve")</code> 액세스권으로 호출합니다.
+<p>이 동작에는 JDK 1.1 과의 일관성이 있어, 포트가 -1 인 경우는, IP 주소의 룩 업을 하고 있는 것을 나타냅니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkConnect</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkConnect(String host, int port) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkConnect(host, port);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkConnect(String host, int port, Object context);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스인 경우는, 포트가 -1 에 동일하지 않을 때에는,<code>AccessControlContext.checkPermission</code> 메소드가 <code>SocketPermission(host+":"+port,"connect")</code> 액세스권으로 불려 갑니다. 포트가 -1 에 동일할 때는,<code>checkPermission</code> 가 <code>SocketPermission(host,"resolve")</code> 의 액세스권에 따라 불려 갑니다.
+  
+<p> <code>context</code> 가 <code>AccessControlContext</code> 의 인스턴스가 아닌 경우는,<code>SecurityException</code> 가 throw 됩니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkConnect</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkConnect(String host, int port, Object context) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkConnect(host, port, context);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkListen(int port)</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. 포트가 0 이 아닌 경우는,<code>checkPermission</code> 를 <code>SocketPermission("localhost:"+port,"listen")</code> 로 호출합니다. 포트가 0 의 경우는,<code>checkPermission</code> 를 <code>SocketPermission("localhost:1024-","listen")</code> 로 호출합니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkListen</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkListen(int port) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkListen(port);
+      }
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkAccept(String host, int port);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>SocketPermission(host+":"+port,"accept")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkAccept</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkAccept(String host, int port) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkAccept(host, port);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkMulticast(InetAddress maddr);</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>SocketPermission(maddr.getHostAddress(),"accept, connect")</code> 액세스권으로 호출합니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkMulticast</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkMultiCast(InetAddress maddr) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkMultiCast(maddr);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkMulticast(InetAddress maddr, byte ttl);</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>SocketPermission(maddr.getHostAddress(),"accept, connect")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkMulticast</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkMultiCast(InetAddress maddr, byte ttl) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkMultiCast(maddr, ttl);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkPropertiesAccess();</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>PropertyPermission("*", "read, write")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkPropertiesAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkPropertiesAccess() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkPropertiesAccess();
+      }
+    }
+  }
+</pre>
+
+
+</blockquote>
+
+
+<h3>public void checkPropertyAccess(String key);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>PropertyPermission(key, "read")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkPropertyAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkPropertyAccess(String key) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkPropertiesAccess(key);
+      }
+    }
+  }
+</pre>
+
+
+</blockquote>
+
+
+<h3>public boolean checkTopLevelWindow(Object window);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>AWTPermission("showWindowWithoutWarningBanner")</code> 액세스권으로 호출해, SecurityException 가 throw 되지 않는 경우는 true 를 돌려줍니다. 그 이외의 경우는 false 를 돌려줍니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로 false 를 돌려주는 위치에서,<code>super.checkTopLevelWindow</code> 에의 호출을 실시해,<code>super.checkTopLevelWindow</code> 의 값을 돌려줄 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkTopLevelWindow(Object window) {
+      if (someCustomSecurityCheckFails()) {
+        return super.checkTopLevelWindow(window);
+      } else {
+        return true;
+      }
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkPrintJobAccess();</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("queuePrintJob")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkPrintJobAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkPrintJobAccess() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkPrintJobAccess();
+      }
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkSystemClipboardAccess();</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>AWTPermission("accessClipboard")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkSystemClipboardAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkSystemClipboardAccess() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkSystemClipboardAccess();
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkAwtEventQueueAccess();</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>AWTPermission("accessEventQueue")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkAwtEventQueueAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkAwtEventQueueAccess() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkAwtEventQueueAccess();
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public void checkPackageAccess(String pkg);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. 최초로,<code>java.security.Security.getProperty("package.access")</code> 를 호출해 콤마로 단락지어진 리스트를 취득하는 것으로써, 제한부의 패키지의 리스트를 얻습니다. 다음에,<code>pkg</code> 가 제한부 패키지의 어떤 것인가로 개시할지 어떨지, 또는 동일한지 어떤지를 체크합니다. 해당하는 경우에는,<code>checkPermission</code> 가 <code>RuntimePermission("accessClassInPackage. "+pkg)</code> 액세스권으로 불려 갑니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드의 1 행 째로,<code>super.checkPackageAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkPackageAccess(String pkg) {
+      super.checkPackageAccess(pkg);
+      ...
+      someCustomSecurityCheck();
+      ...
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkPackageDefinition(String pkg);</h3>
+<blockquote>
+<p>이 메소드는 수정되었습니다. 최초로,<code>java.security.Security.getProperty("package.definition")</code> 를 호출해 콤마로 단락지어진 리스트를 취득하는 것으로써, 제한부의 패키지의 리스트를 얻습니다. 다음에,<code>pkg</code> 가 제한부 패키지의 어떤 것인가로 개시할지 어떨지, 또는 동일한지 어떤지를 체크합니다. 해당하는 경우에는,<code>checkPermission</code> 가 <code>RuntimePermission("defineClassInPackage. "+pkg)</code> 액세스권으로 불려 갑니다.
+
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드의 1 행 째로,<code>super.checkPackageDefinition</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkPackageDefinition(String pkg) {
+      super.checkPackageDefinition(pkg);
+      ...
+      someCustomSecurityCheck();
+      ...
+    }
+  }
+</pre>
+</blockquote>
+
+
+<h3>public void checkSetFactory();</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. <code>checkPermission</code> 를 <code>RuntimePermission("setFactory")</code> 액세스권으로 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkSetFactory</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkSetFactory() {
+      if (someCustomSecurityCheckFails()) {
+        super.checkSetFactory();
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+  
+<h3>public void checkMemberAccess(Class clazz, int which);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. 디폴트의 정책는 PUBLIC 멤버에게로의 액세스 및, 호출원과 같은 클래스 로더를 가지는 클래스에의 액세스를 허가합니다. 그 이외의 경우는 모두,<code>checkPermission</code> 가 <code>RuntimePermission("accessDeclaredMembers")</code> 액세스권으로 불려 갑니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는,<code>super.checkMemberAccess</code> 에의 호출은 실시할 수 없습니다. <code>checkMemberAccess</code> 의 디폴트 구현은, 스택 심도 4 에 있는 것을 체크되는 코드에 의존합니다. 다음에 예를 나타냅니다.
+
+<pre>
+     someCaller[3]
+     java.lang.Class.someReflectionAPI [2]
+     java.lang.Class.checkMemberAccess [1]
+     SecurityManager.checkMemberAccess [0]
+</pre>
+이 동작을 에뮤레이트 하려면 ,<code>getClassContext</code> 를 호출해, 디폴트의 <code>checkMemberAccess</code> 메소드의 경우와 같게, 인덱스 3 의 클래스의 클래스 로더를 조사할 필요가 있습니다.
+
+<pre>
+  if (which ! = Member.PUBLIC) {
+    Class stack[] = getClassContext();
+    /*
+     * stack depth of 4 should be the caller of one of the
+     * methods in java.lang.Class that invoke checkMember
+     * access.  The stack should look like:
+     * 
+     * someCaller [3]
+     * java.lang.Class.someReflectionAPI  [2]
+     * java.lang.Class.checkMemberAccess [1]
+     * MySecurityManager.checkMemberAccess [0]
+     *
+     */
+    if ((stack.length&lt;4) || 
+      (stack[3]. getClassLoader() ! = clazz.getClassLoader())) {
+      if (checkMemberAccessPermission == null)
+        checkMemberAccessPermission = 
+          new RuntimePermission("accessDeclaredMembers");
+      checkPermission(checkMemberAccessPermission);
+    }
+  }
+</pre>
+<p>이 메소드는, JDK 로 현재에도 호출해 원의 심도에 근거하고 있는 유일한 시큐리티 매니저 메소드입니다. 이 메소드가 존재하는 이유는, 호출원이, 자신과 같은 클래스 로더로부터의 클래스에 반영할 수 있도록(듯이) 하기 (위해)때문에입니다.
+</blockquote>
+
+  
+<h3>public void checkSecurityAccess(String target);</h3>
+<blockquote>
+<p> 이 메소드는 수정되었습니다. 지정된 액세스권 타겟명에 대한 <code>SecurityPermission</code> 객체를 작성해, 그 액세스권으로 <code>checkPermission</code> 를 호출합니다.
+<p>이 메소드를 오버라이드(override) 하는 경우는, 오버라이드(override) 된 메소드가 일반적으로은 예외를 throw 하는 위치에서,<code>super.checkSecurityAccess</code> 에의 호출을 실시할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+  public class MySecurityManager extends SecurityManager {
+
+    public void checkSecurityAccess(String target) {
+      if (someCustomSecurityCheckFails()) {
+        super.checkSecurityAccess(target);
+      }
+    }
+  }
+</pre>
+
+</blockquote>
+
+
+<h3>public ThreadGroup getThreadGroup();</h3>
+<blockquote>
+<p>이 메소드는 수정되고 있지 않습니다.
+</blockquote>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+<TD>
+
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1997-2001 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다. </FONT>
+
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+</blockquote></BODY>
+
+</HTML>
+

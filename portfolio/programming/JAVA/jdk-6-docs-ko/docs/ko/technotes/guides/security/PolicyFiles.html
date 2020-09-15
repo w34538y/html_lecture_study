@@ -1,0 +1,870 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+
+
+<HTML><HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<TITLE>
+
+디폴트의 Policy 의 구현과 정책 파일의 구문
+
+ - xrath.com 에서 번역됨</TITLE></HEAD>
+
+<BODY bgcolor="#ffffff">
+
+
+
+<center>
+
+<H1>디폴트의 Policy 의 구현과 정책 파일의 구문</H1>
+
+
+<!--  We use the SCCS file version as the document version. Note that while the file is being edited, the version below should  read '% I %' (without the spaces), not '1.n'. Upon 'sccs delget', SCCS will replace it with the correct '1.n' version number. --> <b>문서 개정 1.6</b>
+
+</center>
+
+
+
+<p>Java<SUP><FONT SIZE="-1">TM</FONT></SUP> 프로그램 언어의 어플리케이션 환경의 정책는, 다양한 소스를 출처(소)로 하는 코드가 어떠한 액세스권을 사용할 수 있는지를 지정해, 다양한 법칙으로서 실행해서 , Policy 객체에 의해 나타내집니다. 구체적으로는,<code>Policy</code> 클래스 (<code>java.security</code> 패키지내)에서 정의되고 있는 abstract 메소드를 구현한 <code>Policy</code> 서브 클래스에 의해 나타내집니다.
+
+<p>Policy 객체가 사용하는 정책 정보가 어디에 놓여질까는, Policy 의 구현에 의합니다. Policy 의 레퍼런스 구현에서는, 정책 정보를 정적인 정책 구성 파일로부터 얻습니다.
+<P>
+이 문서에서는, Policy 의 레퍼런스 구현과 거기에 따라 읽어내지는 정책 파일로 사용하는 구문에 대해 설명합니다. <b> Policy Tool</b> 를 사용한 (구문을 알 필요가 없다) 정책 파일의 작성 방법의 상세한 것에 대하여는, Policy Tool 의 문서 (<a href="../../tools/solaris/policytool.html">Solaris 용</a>) (<a href="../../tools/windows/policytool.html">Win32 용</a>)를 참조해 주세요.
+
+
+<p>이 문서에서는, 다음의 내용에 대해 설명합니다.
+
+<dl>
+<dt><dd><a href="#Changes"><b>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition, v 1.4</b></a>  에서의 Policy 의 변경점</b></a> <dt><dd><a href="#DefaultImpl"><b> 디폴트의 Policy 의 구현</b></a> <dt><dd><a href="#DefaultLocs"><b>정책 파일의 디폴트의 장소</b></a> <dt><dd><a href="#ChangingDefault"><b>정책의 구현의 변경</b></a> <dt><dd><a href="#FileSyntax"><b>정책 파일의 구문</b></a> <dt><dd><a href="#Examples"><b>정책 파일의 예</b></a> <dt><dd><a href="#PropertyExp"><b>정책 파일에 있어서의 프로퍼티의 전개</b></a> <dt><dd><a href="#GeneralExp"><b>정책 파일에 있어서의 일반적인 전개</b></a> <dt><dd><a href="#RelatedDoc"><b>관련 문서</b></a> 
+</dl>
+<br>
+
+
+<H2><a name="Changes">Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition, v 1.4</a>  에서의 Policy 의 변경점</a> </H2>
+
+<blockquote>
+
+<p>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 인증·승인 서비스 (JAAS)가, J2SDK, v 1.4 에 통합되고 있으므로,<code>java.security.Policy</code> API 는 주체 베이스의 쿼리를 취급해, 디폴트 Policy 의 구현은 주체 베이스의 <code>grant</code> 엔트리를 지원하고 있습니다. 이와 같이, 어느 코드가 실행되고 있을까 만이 아니고, 어느 「사용자」가 실행하고 있을까에 근거해, 액세스 제어를 실행할 수 있게 되었습니다. 법칙 베이스의 <code>grant</code> 엔트리의 상세한 것에 대하여는, 이 문서외시에를 참조해 주세요.
+
+<blockquote>
+<hr>
+<B>주:</B> 이 버젼 (v 1.4) 이후, 디폴트의 정책의 구현으로 사용되는 정책 파일은, UTF-8 인코딩 방식에서 인코딩 할 필요가 있습니다. 이 변환에는,<A HREF="../../tools/index.html#intl">native2ascii 툴</a>을 사용할 수 있습니다.
+<hr>
+</blockquote>
+
+이 마디로 설명하는 내용은, Policy API 를 사용하는 프로그래머인 만큼 관계합니다. Policy API 를 사용하지 않는 경우는, 다음의<a href="#DefaultImpl">「디폴트의 Policy 의 구현」이라고</a> <a href="#DefaultLocs">「정책 파일의 디폴트의 장소」</a>로 나아가 주세요.
+
+<p>J2SDK, v 1.4 에서의 정책 관련 API 의 변경점에는, 이하의 내용이 포함됩니다.
+
+<ul>
+<li> <a href="../../../api/java/security/ProtectionDomain.html"><code>java.security.ProtectionDomain</code></a> 
+     <blockquote>
+신규 생성자 <a  href="../../../api/java/security/ProtectionDomain.html#ProtectionDomain(java.se%0Acurity.CodeSource,%20java.security.PermissionCollection,%20java.lang.ClassLoader,%20%0Ajava.security.Principal%5B%5D)"><code> ProtectionDomain(CodeSource cs, PermissionCollection perms, ClassLoader loader, Principal[] principals)</code></a>  가 추가되었습니다. 이 생성자 은, 지정된 <code>CodeSource</code>,<code>Permission</code>,<code>ClassLoader</code>, 및 <code>Principal</code> 에 의해 수식된 신규 <code>ProtectionDomain</code> 를 작성합니다.
+     </blockquote>
+<li> <a href="../../../api/java/security/Policy.html"><code>java.security.Policy</code></a> 
+     <blockquote>
+2 개의 메소드가 새롭게 추가되었습니다.
+      <ol>
+<li> 신규 메소드 <a  href="../../../api/java/security/Policy.html#getPermissions(java.security.Prote%0ActionDomain)"><code>getPermissions(ProtectionDomain domain)</code></a>  는, 시스템 정책을 평가해,<code>ProtectionDomain</code> 의 특성에 허가된 액세스권 세트를 지정하는 <code>PermissionCollection</code> 객체를 돌려줍니다.
+<li> <a  href="../../../api/java/security/Policy.html#implies(java.security.ProtectionDo%0Amain,%20java.security.Permission)"><code>implies(ProtectionDomain domain, Permission permission)</code></a>  는,<a  href="../../../api/java/security/Policy.html#implies(java.security.ProtectionDo%0Amain,%20java.security.Permission)"><code>ProtectionDomain</code> 에 허가된 액세스권을 위한 시스템 정책을 평가해, 실제로 액세스권이 부여되고 있는지 어떤지를 테스트합니다.
+      </ol>
+     </blockquote>
+</ul>
+
+</blockquote>
+
+<H2><a name="DefaultImpl">디폴트의 Policy 의 구현</a> </H2>
+
+<blockquote>
+
+Policy 의 레퍼런스 구현에서는, 1 개(살) 또는 복수의 정책 구성 파일로부터 정책를 지정할 수 있습니다. 정책 구성 파일에서는, 지정된 코드 소스로부터의 코드에 대해서 어떠한 액세스권을 주어 지정된 법칙으로서 실행하는지를 지정합니다. 각 설정 파일은, UTF-8 방식에서 encode 할 필요가 있습니다.  
+
+<p>정책 파일은, 단순한 텍스트 문자 편집기, 또는 그래피컬한 <b>Policy Tool</b> 유틸리티를 사용해 작성할 수 있습니다.  
+
+<p>디폴트에서는, 시스템 전체의 정책 파일이 1 개로 사용자 정책 파일 (옵션)이 1 개 존재합니다.
+
+<p>Policy 의 레퍼런스 구현은, 그 <code>getPermissions</code> 메소드가 처음 불려 갔을 때, 혹은, 그 <code>refresh</code> 메소드가 불려 갔을 때에 초기화됩니다. 초기화시에는, 정책 구성 파일 (<a href = "#FileSyntax">「정책 파일의 구문」</a>을 참조)의 해석을 한 뒤, 그 정보가 Policy 객체에 읽힙니다.  
+
+</blockquote>
+
+
+<H2><a name="DefaultLocs">정책 파일의 디폴트의 장소</a> </H2>
+
+<blockquote>
+
+<p>전술한 것처럼, 디폴트에서는, 시스템 전체의 정책 파일이 1 개로 사용자 정책 파일이 1 개 존재합니다.
+
+<p>시스템 정책 파일은, 디폴트에서는 다음의 장소에 있습니다.
+
+<blockquote>
+<pre>
+<i>java.home</i>/lib/security/java.policy  (Solaris)
+<i>java.home</i>\lib\security\java.policy  (Win32)
+</pre>
+</blockquote>
+
+<p><B>주:</B> <i><code>java.home</code></i> 는, 「java.home」라고 하는 이름의 시스템 프로퍼티의 값으로, 실행 환경의 포함처 디렉토리 (Java 2 SDK 의 <tt>jre</tt> 디렉토리, 또는 Java 2 Runtime Environment 의 최상정도 디렉토리)를 가리킵니다.
+
+<p>시스템의 정책 파일은, 시스템 전체에 건너 코드에 액세스권을 줍니다. SDK 에 포함되어 있는 <code>java.policy</code> 파일은, 표준 확장 기능에 모든 액세스권을 주어 사용자가 특권의 없는 포트로 대기하거나 「<code>os.name</code>」프로퍼티이나 「<code>file.separator</code>」프로퍼티등의 임의의 코드가 시큐리티와 관계되지 않는 특정의 「표준」프로퍼티을 읽어들이거나 하는 것을 허가합니다.
+
+<p>사용자 정책 파일은, 디폴트에서는 다음의 장소에 있습니다.
+
+<blockquote>
+<pre>
+<i>user.home</i>/. java.policy  (Solaris)
+<i>user.home</i>\. java.policy  (Win32)
+</pre>
+</blockquote>
+
+<p><B>주:</B> <i><code>user.home</code></i> 는 「<code>user.home</code>」라고 하는 이름의 시스템 프로퍼티의 값으로, 사용자의 홈 디렉토리를 지정합니다. Win32 의 시스템에서는, 사용자명이 <code>uName</code> 의 경우,<code>user.home</code> 프로퍼티의 값은 디폴트에서는 다음과 같이 설정됩니다.
+
+<blockquote>
+<pre>
+다중 사용자 Windows NT 시스템에서는 C:\Winnt\Profiles\uName
+다중 사용자 Windows 95 시스템에서는 C:\Windows\Profiles\uName
+단일 사용자 Windows 95 시스템에서는 C:\Windows
+</pre>
+</blockquote>
+
+<p>Policy 가 초기화되면(자), 우선 시스템 정책이 로드 되어 다음에, 로드 된 시스템 정책에 사용자 정책가 추가됩니다. 어느 쪽의 정책도 존재하지 않는 경우는, 편입 정책가 사용됩니다. 편입 정책는, JRE 와 함께 인스톨 한 java.policy 파일과 같습니다.
+
+<p>정책 파일의 장소는, 시큐리티 프로퍼티 파일 중(안)에서 지정되고 있습니다. 시큐리티 프로퍼티 파일은, 다음의 장소에 있습니다.
+
+<blockquote>
+<pre>
+<i>java.home</i>/lib/security/java.security  (Solaris)
+<i>java.home</i>\lib\security\java.security  (Win32)
+</pre>
+</blockquote>
+
+전술과 같이,<i><code>java.home</code></i> 는 실행 환경의 포함처 디렉토리 (Java 2 SDK 의 <tt>jre</tt> 디렉토리, 또는 Java 2 Runtime Environment 의 최상정도 디렉토리)를 가리킵니다.
+
+정책 파일의 장소는, 다음과 같은 형식의 이름을 가지는 프로퍼티의 값으로 해서 지정되고 있습니다.
+
+<blockquote>
+<pre>
+policy.url. <i>n</i>
+</pre>
+</blockquote>
+
+<i><code>n</code></i> 는 숫자입니다. 다음에 나타내는 형식의 행으로, 각각의 프로퍼티의 값을 지정합니다.
+
+<blockquote>
+<pre>
+policy.url. <i>n</i>=<i>URL</i>
+</pre>
+</blockquote>
+
+여기서,<i><code>URL</code></i> 는 URL 의 지정을 나타냅니다.
+
+<p>예를 들어, 디폴트의 시스템 및 사용자 정책 파일은, 시큐리티 프로퍼티 파일에 다음과 같이 지정되고 있습니다.
+
+<blockquote>
+<pre>
+policy.url. 1=file:${java.home}/lib/security/java.policy
+policy.url. 2=file:${user.home}/. java.policy
+</pre>
+</blockquote>
+
+<p><i><code>${java.home}</code></i> 를 사용해 <i><code>java.home</code></i> 프로퍼티의 값을 지정하는 등, 특별한 구문으로 프로퍼티의 값을 지정하는 방법에 대해서는,<a href = "#PropertyExp">「정책 파일에 있어서의 프로퍼티의 전개」</a>를 참조해 주세요.
+
+<p>URL 를 얼마든지 지정해 (<code>http://</code> 형식의 것을 포함한다), 해당하는 정책 파일을 모두 로드할 수도 있습니다. 또, 위에 나타낸 정책 파일의 지정 가운데, 2 번째의 정책 파일의 지정을 comment out 하든가, 혹은 수정하면, 디폴트 사용자 정책 파일의 read를 무효로 할 수 있습니다.
+
+<p>알고리즘은,<code>policy.url. 1</code> 으로부터 처리를 개시해, 번호를 1 개씩 늘리면서, URL 가 발견되지 않게 될 때까지 처리를 계속합니다. 따라서,<code>policy.url. 1</code> 으로 <code>policy.url. 3</code> 이 있는 경우,<code>policy.url. 3</code> 은 읽히지 않습니다.
+
+<H3>실행시에 새로운 정책 파일을 지정한다</H3>
+
+<blockquote>
+
+<p>어플리케이션을 실행할 경우에, 추가의 정책 파일이나 다른 정책 파일을 지정할 수도 있습니다. 이 경우는,<code>-Djava.security.policy</code> 커멘드행 인수를 사용해 <i><code>java.security.policy</code></i> 프로퍼티의 값을 설정합니다. 예를 들어, 다음과 같이 지정합니다.
+
+<pre>
+    java -Djava.security.manager -Djava.security.policy=<i>someURL</i> SomeApp
+</pre>
+
+<i><code>someURL</code></i> 는, 정책 파일의 장소를 나타내는 URL 입니다. 이 예에서는, 시큐리티 프로퍼티 파일로 지정된 모든 정책 파일에 가세해,<i><code>someURL</code></i> 로 지정된 정책 파일이 로드 됩니다.  
+
+<p><B>주 -</B>
+
+<ul>
+<li>다음에 나타내는 대로, URL 는 일반적으로의 URL 에서도, 단순하게 현재의 디렉토리의 정책 파일의 이름이라도 괜찮습니다.
+
+<pre>
+    java -Djava.security.manager -Djava.security.policy=mypolicy WriteFile
+</pre>
+<p>
+
+<li><code>-Djava.security.manager</code> 인수에 의해 디폴트 시큐리티 매니저가 인스톨 되므로, 이 어플리케이션에 대해서는 정책의 체크를 합니다. 어플리케이션 <i><code>SomeApp</code></i> 가 시큐리티 매니저를 인스톨 하는 경우는, -Djava.security.manager 인수를 지정할 필요는 없습니다.
+</ul> 
+
+<p>다음과 같이 지정할 수도 있습니다.
+
+<pre>
+    java -Djava.security.manager -Djava.security.policy==<i>someURL</i> SomeApp
+</pre>
+
+등호가 2 개 사용되고 있는 것에 주의해 주세요. 이 경우는, 지정된 정책 파일만이 사용되어 시큐리티 프로퍼티에 나타난 정책 파일은 모두 무시됩니다.
+
+<p>정책 파일을 appletviewer (애플릿 viewer)에 건네주는 경우는, 다음과 같이 <code>-J-Djava.security.policy</code> 인수를 지정합니다.
+
+<pre>
+    appletviewer -J-Djava.security.policy=<i>someURL</i> myApplet
+</pre>
+
+<b>주</B> -시큐리티 프로퍼티 파일로 <code>policy.allowSystemProperty</code> 프로퍼티에 false 가 설정되어 있는 경우는,<code>-Djava.security.policy</code> 의 정책 파일의 값은 (<code>java</code> 커멘드와 <code>appletviewer</code> 커멘드의 어느 쪽의 경우도) 무시됩니다. policy.allowSystemProperty 프로퍼티의 디폴트 값는 true 입니다.
+
+</blockquote>
+
+</blockquote>
+
+
+<H2><a name="ChangingDefault">정책의 구현의 변경</a> </H2>
+
+<blockquote>
+
+<p>새로운 정책 클래스를 작성해, Policy 의 레퍼런스 구현 클래스와 옮겨놓을 수도 있습니다. 이 경우는, Policy 추상 클래스의 서브 클래스를 작성해,<code>getPermissions</code> 메소드 (필요에 따라서 그 외의 메소드도)를 구현합니다.
+
+<p>시큐리티 프로퍼티 파일 (SDK 의 <code>lib/security</code> 디렉토리의 <code>java.security</code> 파일)을 편집하면, Policy 의 레퍼런스 구현을 변경할 수 있습니다.
+
+<p><code>java.security</code> 로 설정할 수 있는 프로퍼티의 예를 다음에 나타냅니다.
+
+<pre>
+    policy.provider=<i>PolicyClassName</i>
+</pre>
+
+<p><i><code>PolicyClassName</code></i> 에는, 목적의 <code>Policy</code> 구현 클래스를 완전 수식명으로 지정합니다. 디폴트의 시큐리티 프로퍼티 파일에서는, 이 프로퍼티은 다음과 같이 지정되고 있습니다.
+
+<pre>
+    policy.provider=sun.security.provider.PolicyFile
+</pre>
+
+<p>커스터마이즈 하려면 , 다음과 같이, 이 프로퍼티에 다른 클래스를 지정합니다.
+
+<pre>
+   policy.provider=com.mycom.MyPolicy
+</pre>
+
+</blockquote>
+
+
+
+<H2><a name="FileSyntax">정책 파일의 구문</a> </H2>
+
+<blockquote>
+
+<p>인스톨 한 SDK 의 정책 구성 파일에서는, 지정된 코드 소스로부터의 코드에 대해, 어떠한 액세스권 (system resource에의 액세스의 종류)을 주어 지정한 법칙으로서 실행하는지를 지정합니다.
+ 
+<p>애플릿 (또는 시큐리티 매니저아래에서 동작하고 있는 어플리케이션)이, 파일의 읽고 쓰기 등, 시큐리티 보호된 조작을 실시하기 위해서(때문에)는, 그 조작을 행하기 위한 액세스권이 주어지지 않으면 안됩니다. Policy 의 레퍼런스 구현에서는, 정책 구성 파일의 부여 엔트리에 의해, 그 액세스권을 주지 않으면 안됩니다. 자세하게는, 이후의 설명과<a href="spec/security-spec.doc.html">「Java 시큐리티 아키텍쳐(architecture)」</a>를 참조해 주세요. 다만, 같은 (URL 의) 장소에 있는 파일과 그 자리소의 서브 디렉토리에 있는 파일의 읽기 액세스권은, 항상 자동적으로 주어집니다. 따라서, 그러한 액세스권에 대해서는, 명시적으로 지정할 필요는 없습니다.
+
+<p>정책 구성 파일은, 엔트리의 리스트로 구성됩니다. 1 개의 keystore 엔트리와 0 이상의 grant 엔트리를 갖게할 수가 있습니다.
+
+
+<a name=KeyStoreEntry><H3>키스토어엔트리</H3></a> 
+
+<blockquote>
+
+<p>「키스토어」는, 비공개키와 대응하는 공개키를 인증하는 X. 509 증명서등의 디지털 증명서가 포함된 데이타베이스입니다. 키스토어의 작성과 관리에는,<b>keytool</b> 유틸리티 (<a href="../../tools/solaris/keytool.html">Solaris 용</a>), (<a href="../../tools/windows/keytool.html">Win32 용</a>)를 사용합니다. 정책 설정 파일로 지정되고 있는 키스토어는, 그 파일의 grant 엔트리로 지정되고 있는 서명자의 공개키를 조합하기 위해서 사용됩니다. 서명자의 별명을 지정하고 있는 grant 엔트리가 있는 경우, 또는 법칙의 별명을 지정하고 있는 grant 엔트리가 있는 경우는, 정책 설정 파일에 반드시 keystore 엔트리를 둡니다 (다음을 참조).
+
+<P>이 때, 정책 파일내에서 유효한 <B><code>keystore</code>/<code>keystorePasswordURL</code></B> 엔트리는 1 개 뿐입니다.  최초의 엔트리 이외의 후속 엔트리는 무시됩니다. 이 엔트리는, 파일의 grant 엔트리 외부의 임의의 장소에 배치할 수 있습니다. keystore 엔트리의 구문은 다음과 같습니다.
+<BLOCKQUOTE>
+<pre>
+keystore "some_keystore_url", "keystore_type", "keystore_provider";
+keystorePasswordURL "some_password_url";
+</pre>
+</BLOCKQUOTE>
+
+<code>some_keystore_url</code> 에는 키스토어의 URL 의 장소를 지정해,<code>some_password_url</code> 에는 키스토어파스워드의 URL 의 장소를 지정해,<code>keystore_type</code> 에는 키스토어의 형태를 지정해,<code>keystore_provider</code> 에는 키스토어의 프로바이더를 지정합니다. <code>some_keystore_url</code> 로부터의 입력 스트림은 <code>KeyStore.load</code> 메소드에게 건네지는 것에 주의해 주세요. URL 로서 <code>NONE</code> 가 지정되고 있는 경우는, null 의 스트림이 <code>KeyStore.load</code> 메소드에게 건네집니다. <code>NONE</code> 는,<code>KeyStore</code> 가 파일 베이스는 아니고, 예를 들어, 하드웨어 토큰 디바이스에 놓여져 있는 경우로 지정합니다.  <p></P>
+
+
+<p>URL 는, 정책 파일이 있는 장소로부터의 상대 위치를 나타냅니다. 예를 들어, 시큐리티 프로퍼티 파일 중(안)에서 정책 파일이 다음과 같이 지정되고 있다고 합니다.
+
+<pre>
+    policy.url. 1=http://foo.bar.com/fum/some.policy
+</pre>
+
+또, 이 정책 파일에는, 다음의 엔트리가 있다고 합니다.
+
+<pre>
+    keystore ". keystore";
+</pre>
+
+이 경우, 키스토어는 다음의 장소에서 로드 됩니다.
+
+<pre>
+    http://foo.bar.com/fum/.keystore
+</pre>
+
+URL 에 절대 위치를 지정할 수도 있습니다.
+
+<p><b>키스토어의 타입</b>은, 키스토어 정보의 포함 형식과 데이터 형식을 정의함과 함께, 키스토어내의 비공개키와 키스토어 자체의 무결성을 보호하기 위해서 사용되는 알고리즘을 정의합니다. Sun Microsystems 가 지원하는 디폴트의 타입은, Sun Microsystems 에 소유권이 있는 키스토어타이프명 「JKS」입니다. 따라서, 키스토어의 타입이 「JKS」이면, 키스토어엔트리를 지정할 필요는 없습니다.
+
+</blockquote>
+
+
+<H3>부여 엔트리</H3>
+ 
+<blockquote>
+
+<p>실행되는 코드는, 항상, 특정의 「코드 소스」(<code>CodeSource</code> 형의 객체에 의해 나타내진다)로부터 온다고 생각됩니다. 코드 소스는, 코드의 출처(소)를 나타내는 장소 (URL) 뿐만이 아니라, 코드의 서명에 사용된 비공개키에 대응하는 공개키를 포함한 증명서에의 참조도 포함합니다. 코드 소스내의 증명서는, 사용자의 키스토어로부터의 상징적인 별명에 의해 참조됩니다. 코드는 게다가 특정의 법칙 (<code>Principal</code> 형의 객체에 의해 나타내진다) 또는 법칙의 그룹으로서 실행된다고 생각됩니다.
+
+<p>각<b>부여 엔트리</b>에는, 생략 가능한 <code>codeBase</code> 와 <code>signedBy</code>, 및 법칙의 이름과 값의 페어의 후에, 액세스권을 부여하는 코드를 지정하는 몇개의 「액세스권 엔트리」가 포함됩니다. 부여 엔트리의 기본 형식은, 다음과 같습니다.
+
+<pre>
+  grant signedBy "<i>signer_names</i>", codeBase "<i>URL</i>",
+        principal <i>principal_class_name</i> "<i>principal_name</i>",
+        principal <i>principal_class_name</i> "<i>principal_name</i>",
+        ... {
+
+      permission <i>permission_class_name</i> "<i>target_name</i>", "<i>action</i>", 
+          signedBy "<i>signer_names</i>";
+      permission <i>permission_class_name</i> "<i>target_name</i>", "<i>action</i>", 
+          signedBy "<i>signer_names</i>";
+      ...
+  };
+ 	
+</pre>
+
+위의 형식에서 이탤릭체로 되어 있지 않은 항목은, 나타나고 있는 대로 지정합니다. 다만, 대문자와 소문자는 구별되지 않고, 또, 이후에 설명하도록(듯이), 몇개의 항목은 생략 가능합니다. 이탤릭으로 나타나고 있는 항목은, 가변의 항목입니다.
+
+<p> 부여 엔트리는,<code>grant</code> 로 시작됩니다.
+
+
+<H3><code>SignedBy</code>,<code>Principal</code>, 및 <code>CodeBase</code> 필드</H3>
+
+<blockquote>
+
+<p><code>signedBy</code>,<code>codeBase</code> 및 <code>principal</code> 의 값은 생략 가능합니다. 또, 이러한 필드의 순서는 거론되지 않습니다.  
+
+<p><code>signedBy</code> 의 값은, 키스토어에 포함된 증명서의 별명을 나타냅니다. 증명서내의 공개키는, 코드의 디지털 서명의 검증에 사용됩니다. 별명에 의해 지정된 키스토어엔트리내의 공개키에 대응하는, 비공개키로 서명된 코드에, 액세스권을 부여합니다.
+
+<p><code>signedBy</code> 의 값에는, 복수의 별명을 콤마로 단락지어 지정할 수 있습니다. 예를 들어,"Adam, Eve, Charles" 와 같이 지정할 수 있습니다. 이 경우는, 각 요소가 OR 는 아니고 AND 로 연결되어 「Adam, Eve, 및 Charles 에 의해 서명되었다」라고 하는 의미가 됩니다. 보다 엄밀하게는, 「Adam 에 의해 서명된 코드」란, 「Adam 라고 하는 별명을 붙일 수 있었던 엔트리를 가지는 키스토어에 있는 공개키 증명서에 대응하는, 비공개키를 사용해 서명된 JAR 파일에 포함되어 있는, 클래스 파일내의 코드」라고 하는 의미입니다.
+
+<p><code>signedBy</code> 필드는 생략 가능합니다. 생략 했을 경우는, 「임의의 서명자」라고 하는 의미가 됩니다. 코드에 서명이 붙어 있는지 어떤지, 누가 서명하고 있을까는 거론되지 않게 됩니다.
+
+<p> 법칙의 값은 <code>class_name</code> 와 <code>principal_name</code> 의 페어를 지정합니다. 이 페어는, 실행중의 thread의 법칙 세트내에 있을 필요가 있습니다. 법칙 세트는, Subject 에 의해 실행하는 코드에 관련지을 수 있습니다. 법칙 필드는 생략 가능합니다. 생략 했을 경우는, 「임의의 법칙」이라고 하는 의미가 됩니다.
+
+<p><a name=keystoreAliasReplace><b>키스토어의 별명의 치환  </b></a> 
+<p> principal class_name/principal_name 의 페어가 단일 인용부호로 둘러싸인 캐릭터 라인으로서 지정되는 경우는, 키스토어의 별명으로서 다루어집니다. 키스토어는 별명을 경유해 X509 증명서를 조사해, 문의합니다. 키스토어가 있는 경우는, principal class_name 는 자동적으로 <code>javax.security.auth.x500.X500Principal</code> 로서 다루어져<code>principal_name</code> 는 증명서로 이름이 식별된 주제로서 자동적으로 다루어집니다. X509 증명서의 매핑이 발견되지 않는 경우는, grant 엔트리는 모두 무시됩니다.
+
+<p><code>codeBase</code> 의 값은, 코드가 놓여지는 장소를 나타냅니다. 이 장소로부터 코드에 액세스권을 부여합니다. <code>codeBase</code> 엔트리를 생략 했을 경우는, 「임의의 코드」라고 하는 의미가 되어, 코드의 출처(소)는 거론되지 않습니다.
+
+<p><B>주:</B> <code>codeBase</code> 의 값은 URL 이기 (위해)때문에, 코드 소스가 Win32 시스템상에 있는 경우여도, 디렉토리의 단락 문자는, backslash는 아니고, 반드시 slash를 사용합니다. 따라서, Win32 시스템상에서 코드의 장소가 <code>C:\somepath\app\</code> 의 경우,<code>codeBase</code> 정책 엔트리는 다음과 같이 지정합니다.
+
+<pre>
+    grant codeBase "file:/C:/somepath/api/" {
+        ...
+    }
+</pre>
+
+<code>codeBase</code> 의 값의 정확한 의미는, 말미의 문자에 의해 바뀝니다. 말미가 「/」의 <code>codeBase</code> 는, 지정된 디렉토리내의 모든 클래스 파일 (JAR 파일이 아니다)에 일치합니다. 말미가 「/*」의 <code>codeBase</code> 는, 그 디렉토리내에 있는 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두)에 일치합니다. 말미가 「/-」의 <code>codeBase</code> 는, 디렉토리의 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두), 및 재귀적으로 그 디렉토리의 서브 디렉토리에 있는 모든 파일을 나타냅니다. 다음의 겉(표)에서는, 다양한 케이스를 나타냅니다.
+
+<p>
+
+<table summary="codeBase values and meanings" border=1 cellpadding=5>
+<tr>
+<th>다운로드된 코드의 codebase URL</th>
+<th>정책의 codebase URL</th>
+<th>일치할지 어떨지</th>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/gong</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/gong/</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/gong/*</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/gong/-</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/appl.jar</td>
+<td>java.sun.com/people/gong/</td>
+<td><center>N</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/appl.jar</td>
+<td>java.sun.com/people/gong/-</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/appl.jar</td>
+<td>java.sun.com/people/gong/*</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/appl.jar</td>
+<td>java.sun.com/people/-</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/appl.jar</td>
+<td>java.sun.com/people/*</td>
+<td><center>N</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/-</td>
+<td><center>Y</center></td>
+</tr>
+
+<tr>
+<td>java.sun.com/people/gong/</td>
+<td>java.sun.com/people/*</td>
+<td><center>N</center></td>
+</tr>
+
+</table>
+
+</blockquote>
+
+
+<H3>액세스권 엔트리</H3>
+
+<blockquote>
+
+<p> <b>액세스권 엔트리</b> 는,<code>permission</code> 로 시작됩니다. 먼저 가리킨 템플릿의 <code><i>permission_class_name</i></code> 의 부분에는, 실제로는,<code>java.io.FilePermission</code> 나 <code>java.lang.RuntimePermission</code> 등, 특정의 액세스권형을 지정합니다.
+
+<p><code>java.io.FilePermission</code> (어떠한 종류의 파일 액세스를 허가하는지를 지정) 등, 많은 액세스권형에서는,"<i><code>action</code></i>" 가 필수입니다. <code>java.lang.RuntimePermission</code> 등, 액션의 지정이 필요하지 않은 액세스권형에서는,"<code><i>action</i></code>" 를 지정할 필요는 없습니다. 이 경우는,<i><code>permission_class_name</code></i> 의 뒤의 "<code><i>target_name</i></code>" 치로 지정된 액세스권이 주어지는지, 액세스권이 주어지지 않는가의 어딘가에 됩니다.
+
+<p>액세스권 엔트리의 <code>signedBy</code> 의 이름과 값의 페어는 생략 가능합니다. 이 값이 존재하는 경우는, 서명 첨부 액세스권인 것을 나타냅니다. 즉, 그 액세스권을 줄 수가 있기 위해서(때문에)는, 액세스권 클래스 그 자체가, 지정된 별명에 의해 서명되어 있지 않으면 안됩니다. 예를 들어, 다음과 같은 부여 엔트리가 있다고 합니다.
+
+<pre>
+  grant {
+      permission Foo "foobar", signedBy "FooSoft";
+  }
+</pre>
+
+<p>이 경우, 액세스권 <code>Foo.class</code> 가 있는 JAR 파일에 놓여져 있어, 그 JAR 파일이 별명 "FooSoft" 에 의해 지정되는 증명서에 포함되어 있는 공개키에 대응하는 비공개키에 의해 서명되고 있는지,<code>Foo.class</code> 가 시스템 클래스인 경우에, 이 액세스권형 「Foo」가 주어집니다. 시스템 클래스는 정책에 의한 제한을 받지 않습니다.
+
+<p>액세스권 엔트리의 각 항목은, 지정의 순서 (<code>permission</code>,<i>permission_class_name</i>,"<i>target_name</i>","<i>action</i>", 및 <code>signedBy</code> "<i>signer_names</i>")로 지정하지 않으면 안됩니다. 각 엔트리는 세미콜론으로 끝납니다.
+
+<p>식별자 (<code>permission</code>,<code>signedBy</code>,<code>codeBase</code> 등)에서는 대문자와 소문자는 구별됩니다만,<i>permission_class_name</i> 와 값으로 해서 인도해지는 캐릭터 라인에 대해서는 대문자와 소문자가 구별됩니다.  
+
+</blockquote>
+
+
+<H3>Win32 시스템상에서의 파일 패스의 지정에 대한 주기</H3>
+
+<blockquote>
+
+<p><B>주:</B> <code>java.io.FilePermission</code> 를 지정하는 경우,"<i><code>target_name</code></i>" 는 파일 패스가 됩니다. Win32 시스템에서는, 파일 패스를 codeBase URL 는 아니고 직접 캐릭터 라인으로 지정하는 경우는, 패스중의 backslash는, 다음과 같이 2 개(살) 거듭해 지정할 필요가 있습니다.
+
+<pre>
+  grant {
+      permission java.io.FilePermission "C:\\users\\cathy\\foo.bat", "read";
+  };
+</pre>
+
+이것은, 캐릭터 라인은 토크나이자 (<code>java.io.StreamTokenizer</code>)에 의해 처리되어 토크나이자는 「<code>\</code>」을 이스케이프 캐릭터 라인과 해석하기 위해(때문에) ( 「<code>\n</code>」는 개행을 나타내는 등), backslash 그 자체를 나타내기 위해서(때문에)는, backslash를 2 개 거듭하지 않으면 안 되기 때문입니다. 토크나이자는, 상기의 파일 패스 캐릭터 라인의 처리를 끝내면(자), 이중의 backslash를 단일의 backslash로 변환해, 최종적으로는 다음과 같이 됩니다.  
+
+<pre>
+    "C:\users\cathy\foo.bat"
+</pre>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<H2><a name="Examples">정책 파일의 예</a> </H2>
+
+<blockquote>
+
+<p>정책 구성 파일로부터 꺼낸 2 개의 엔트리의 예를 다음에 나타냅니다.
+<pre>
+  // If the code is signed by "Duke", grant it read/write access to all 
+  // files in /tmp:
+  grant signedBy "Duke" {
+      permission java.io.FilePermission "/tmp/*", "read, write";
+  };
+
+  // Grant everyone the following permission:
+  grant { 
+      permission java.util.PropertyPermission "java.vendor", "read";
+  };
+ </pre>
+
+<p>다른 정책 구성 파일의 예를 다음에 나타냅니다.
+  
+<pre>
+  grant signedBy "sysadmin", codeBase "file:/home/sysadmin/*" {
+      permission java.security.SecurityPermission "Security.insertProvider. *";
+      permission java.security.SecurityPermission "Security.removeProvider. *";
+      permission java.security.SecurityPermission "Security.setProperty. *";
+  };
+</pre>
+
+이것은, 다음의 조건을 채우는 코드만이 Security 클래스내의 메소드를 호출해, 프로바이더의 추가 또는 삭제를 행하거나 Security 프로퍼티을 설정하거나 할 수 있는 것을 나타내고 있습니다.
+
+<ul>
+<li>로컬 파일 시스템의 <code>/home/sysadmin/</code> 디렉토리에 있는, 서명된 JAR 파일로부터 코드가 로드 되었다
+<li>서명이, 키스토어내의 별명 sysadmin 에 의해 참조되는 공개키로 인증된다
+</ul>
+
+<p>코드 소스를 지정하는 요소는, 어느쪽이나 (또는 양쪽 모두를) 생략 가능합니다. <code>codeBase</code> 를 생략 한 예를 다음에 나타냅니다.
+
+<pre>
+  grant signedBy "sysadmin" {
+      permission java.security.SecurityPermission "Security.insertProvider. *";
+      permission java.security.SecurityPermission "Security.removeProvider. *";
+  };
+</pre>
+
+이 정책가 유효한 경우,"sysadmin" 에 의해 서명된 JAR 파일에 포함되는 코드는, JAR 파일의 출처(소)에 관계없이, 프로바이더의 추가와 삭제 을 할 수가 있습니다.
+
+<p>서명자를 생략 한 예를 다음에 나타냅니다.
+
+<pre>
+  grant codeBase "file:/home/sysadmin/-" {
+      permission java.security.SecurityPermission "Security.insertProvider. *";
+      permission java.security.SecurityPermission "Security.removeProvider. *";
+  };
+</pre>
+
+이 경우, 로컬 파일 시스템의 <code>/home/sysadmin/</code> 디렉토리에 놓여진 코드는, 프로바이더의 추가와 삭제를 실시할 수가 있습니다. 코드에 서명은 필요 없습니다.
+
+<p><code>codeBase</code> 와 <code>signedBy</code> 를 양쪽 모두 생략 한 예를 다음에 나타냅니다.
+
+<pre>
+  grant {
+      permission java.security.SecurityPermission "Security.insertProvider. *";
+      permission java.security.SecurityPermission "Security.removeProvider. *";
+  };
+</pre>
+
+이 예에서는, 코드 소스를 지정하는 요소가 어느쪽이나 생략 되고 있습니다. 따라서, 출처(소)가 어딘가, 서명이 붙어 있는지, 누구의 서명이 붙어 있을까에 관계없이, 어느 코드에서도 프로바이더의 추가와 삭제 을 할 수가 있습니다.
+
+<p>다음의 예는, 법칙 베이스의 엔트리를 나타내고 있습니다.
+
+<pre>
+  grant principal javax.security.auth.x500.X500Principal "cn=Alice" {
+      permission java.io.FilePermission "/home/Alice", "read, write";
+  };
+</pre>
+
+이것에 의해, X500Principal 의 액세스권 <code>cn=Alice</code> 로서 실행하는 코드는 <code>/home/Alice</code> 를 읽어내는 일도 기입하는 일도 가능하게 됩니다.
+
+<p>다음의 예는, codesource 정보와 principal 정보를 가지는 grant 문을 나타내고 있습니다.
+
+<pre>
+  grant codebase "http://www.games.com",
+        signedBy "Duke",
+        principal javax.security.auth.x500.X500Principal "cn=Alice" {
+      permission java.io.FilePermission "/tmp/games", "read, write";
+  };
+</pre>
+
+이것에 의해,<code>Duke</code> 에 의해 서명되어<code>www.games.com</code> 로부터 다운로드된 코드가 <code>cn=Alice</code> 에 의해 실행되면(자),<code>/tmp/games</code> 디렉토리에의 읽어내 권이라고 써내 권이 주어집니다.
+
+<p>다음의 예는, 키스토어의 별명을 옮겨놓는 grant 문을 나타내고 있습니다.
+<pre>
+  keystore "http://foo.bar.com/blah/.keystore";
+
+  grant principal "alice" {
+      permission java.io.FilePermission "/tmp/games", "read, write";
+  };
+</pre>
+"<code>alice</code>" 는 다음의 액세스권으로 옮겨집니다.
+<blockquote>
+javax.security.auth.x500.X500Principal "cn=Alice"
+</blockquote>
+다만, 키스토어의 별명 <i><code>alice</code></i> 에 관련지을 수 있었던 X. 509 증명서가 주제의 식별명 <code>cn=Alice</code> 를 가지고 있는 것이 전제가 됩니다. 이것에 의해, X500Principal 의 액세스권 <code>cn=Alice</code> 에 의해 실행되는 코드에,<code>/tmp/games</code> 디렉토리에의 읽어내 권이라고 써내 권이 주어집니다.
+
+</blockquote>
+
+<H2><a name="PropertyExp">정책 파일에 있어서의 프로퍼티의 전개</a> </H2>
+
+<blockquote>
+
+정책 파일과 시큐리티 프로퍼티 파일에서는, 프로퍼티의 전개가 가능합니다.
+
+<p>프로퍼티의 전개는, 쉘에 있어서의 변수의 전개를 닮아 있습니다. 정책 파일 또는 시큐리티 프로퍼티 파일에 다음과 같은 캐릭터 라인이 있는 경우,
+
+<pre>
+    ${some.property}
+</pre>
+
+이 캐릭터 라인은 시스템 프로퍼티의 값에 전개됩니다. 다음에 예를 나타냅니다.
+
+<pre>
+    permission java.io.FilePermission "${user.home}", "read";
+</pre>
+
+이 경우,"<code>${user.home}</code>" 는, 시스템 프로퍼티 user.home 의 값에 전개됩니다. user.home 의 값이 <code>/home/cathy</code> 인 경우, 위의 기술은 아래의 기술과 같게 됩니다.
+
+<pre>
+    permission java.io.FilePermission "/home/cathy", "read";
+</pre>
+
+플랫폼에 의해 다른 정책 파일을 사용하기 쉽게 하기 위해서,<code>${/}</code> 라고 하는 특수한 표기 (<code>${file.separator}</code> 의 간략형)를 사용할 수 있습니다. 이 표현을 사용해, 다음과 같은 지정이 가능합니다.
+
+<pre>
+    permission java.io.FilePermission "${user.home}${/}*", "read";
+</pre>
+
+<code>user.home</code> 프로퍼티의 값이 <code>/home/cathy</code> 로, 플랫폼이 Solaris 인 경우, 이것은 다음과 같이 변환됩니다.
+
+<pre>
+    permission java.io.FilePermission "/home/cathy/*", "read";
+</pre>
+
+한편,<code>user.home</code> 의 값이 <code>C:\users\cathy</code> 로, 플랫폼이 Win32 인 경우는, 다음과 같이 변환됩니다.
+
+<pre>
+    permission java.io.FilePermission "C:\users\cathy\*", "read";
+</pre>
+
+또, 특수한 케이스로서 다음과 같이 코드 베이스의 프로퍼티을 전개하는 경우는, file.separator 문자는 자동적으로 <code>/</code> 에 변환됩니다.
+
+<pre>
+    grant codeBase "file:${java.home}/lib/ext/"
+</pre>
+
+따라서, Win32 시스템에서는 다음과 같이 변환됩니다.
+
+<pre>
+    grant codeBase "file:C:/jdk1. 4/jre/lib/ext/"
+</pre>
+
+이것은 <code>java.home</code> 가 <code>C:\jdk1. 4\jre</code> 로 설정되어 있는 경우도 같습니다. 따라서, 코드 베이스 캐릭터 라인에서는 <code>${/}</code> 을 사용할 필요는 없습니다. 또, 사용해야 하는 것이 아닙니다.
+
+<p>프로퍼티의 전개는, 정책 파일내에서, 이중 인용부호로 둘러싸인 캐릭터 라인을 사용할 수 있는 장소이면 어디에서라도 행해집니다. 프로퍼티의 전개를 하는 장소로서는,<i>"<code>signer_names</code>"</i>,<i>"<code>URL</code>"</i>,<i>"<code>target_name</code>"</i>,<i>"<code>action</code>"</i> 의 각 필드를 들 수 있습니다.
+
+<p>프로퍼티의 전개가 허가될지 어떨지는, 시큐리티 프로퍼티 파일의 <code>policy.expandProperties</code> 프로퍼티의 값에 의해 정해집니다. 이 프로퍼티의 값이 true (디폴트)의 경우는, 전개가 허가됩니다.
+
+<p><B>주:</B>상자의 프로퍼티은 사용할 수 없습니다. 다음에 예를 나타냅니다.  
+
+<pre>
+    "${user. ${foo}}"
+</pre>
+
+이 예에서는,<code>foo</code> 프로퍼티이 <code>home</code> 로 설정되어 있는 경우여도, 에러가 됩니다. 이것은, 프로퍼티 구문 분석 프로그램은 상자가 된 프로퍼티을 인식하지 않기 때문입니다. 프로퍼티 구문 분석 프로그램은, 최초의 「<code>${</code>」찾아내면(자), 다음에 최초의 「<code>}</code>」을 찾아, 그 결과 (이 경우는 <code>${user. $foo}</code>)를 프로퍼티이라고 해석하려고 시도합니다. 그러나, 그러한 프로퍼티이 없는 경우는 에러가 됩니다.
+
+<p><B>주:</B>부여 엔트리, 액세스권 엔트리, 또는 키스토어엔트리로 전개할 수 없는 프로퍼티이 있는 경우, 그 엔트리는 무시됩니다. 예를 들어, 다음과 같이 시스템 프로퍼티 <code>foo</code> 가 정의되어 있지 않은 경우,
+
+<pre>
+    grant codeBase "${foo}" {
+        permission ...;
+        permission ...;
+    };
+</pre>
+
+이 grant 엔트리내의 permission 는 모두 무시됩니다. 또, 다음과 같은 경우,
+
+<pre>
+    grant {
+        permission Foo "${foo}";
+        permission Bar "barTarget";
+    };
+</pre>
+
+<code>permission Foo...</code> 엔트리만이 무시됩니다. 또, 다음과 같이 지정되고 있는 경우,
+
+<pre>
+    keystore "${foo}";
+</pre>
+
+이 경우는, keystore 엔트리가 무시됩니다.
+
+
+<H3>Win32 시스템, 파일 패스, 및 프로퍼티의 전개</H3>
+
+<blockquote>
+
+전술대로, Win32 시스템에서는, 파일 패스를 codeBase URL 는 아니고 직접 캐릭터 라인으로 지정하는 경우는, 패스중의 backslash는, 다음과 같이 2 개(살) 거듭해 지정할 필요가 있습니다.
+
+<pre>
+    grant {
+        permission java.io.FilePermission "C:\\users\\cathy\\foo.bat", "read";
+    };
+</pre>
+
+이것은, 캐릭터 라인은 토크나이자 (<code>java.io.StreamTokenizer</code>)에 의해 처리되어 토크나이자는 「<code>\</code>」을 이스케이프 캐릭터 라인과 해석하기 위해(때문에) (예를 들어, 「<code>\n</code>」는 개행을 나타낸다), backslash 그 자체를 나타내기 위해서(때문에)는, backslash를 2 개 거듭하지 않으면 안 되기 때문입니다. 토크나이자는, 상기의 파일 패스 캐릭터 라인의 처리를 끝내면(자), 이중의 backslash를 단일의 backslash로 변환해, 최종적으로는 다음과 같이 됩니다.  
+
+<pre>
+    "C:\users\cathy\foo.bat"
+</pre>
+
+캐릭터 라인중의 프로퍼티의 전개는, 토크나이자가 그 캐릭터 라인의 처리를 완료한 뒤에 행해집니다. 예를 들어, 다음과 같은 캐릭터 라인이 있다고 합니다.
+
+<pre>
+    "${user.home}\\foo.bat"
+</pre>
+
+토크나이자는, 이 캐릭터 라인중의 이중의 backslash를 단일의 backslash로 변환해, 결과는 다음과 같이 됩니다.
+
+<pre>
+    "${user.home}\foo.bat"
+</pre>
+
+다음에,<code>${user.home}</code> 프로퍼티이 전개되어 다음과 같이 됩니다.
+
+<pre>
+    "C:\users\cathy\foo.bat"
+</pre>
+
+여기에서는,<code>user.home</code> 의 값을 <code>C:\users\cathy</code> 로 하고 있습니다. 물론, 플랫폼에 의존하지 않기 위해(때문에), 명시적으로 slash를 사용하는 것이 아니라,<code>${/}</code> 프로퍼티을 사용해 다음과 같이 지정하는 (분)편이 바람직하다고 말할 수 있습니다.
+
+<pre>
+    "${user.home}${/}foo.bat"
+</pre>
+
+</blockquote>
+</blockquote>
+
+<H2><a name="GeneralExp">정책 파일에 있어서의 일반적인 전개</a> </H2>
+
+<blockquote>
+정책 파일에서는 일반화된 형식의 전개도 지원되고 있습니다. 예를 들어, 액세스권명이 다음의 형식의 캐릭터 라인을 포함하고 있다고 합니다.
+<blockquote>
+<pre>
+${{protocol:protocol_data}}
+</pre>
+</blockquote>
+
+이러한 캐릭터 라인이 액세스권명에 포함되는 경우,<i>protocol</i> 의 값에 의해 실행되는 전개의 타입이 정해져,<i>protocol_data</i> 는 전개를 실행하기 위해서 사용됩니다. <i>protocol_data</i> 는 비울 수도 있습니다. 빈 상태(empty)의 경우는, 상기의 캐릭터 라인은 다음과 같은 단순한 형식이 됩니다.
+<blockquote>
+<pre>
+${{protocol}}
+</pre>
+</blockquote>
+<p>
+디폴트의 정책 파일의 구현에서는, 다음의 2 개의 프로토콜이 지원됩니다.
+<p>
+<ol>
+<li><code>${{self}}</code>
+	<p> 프로토콜 <b><code>self</code></b> 는,<code>${{self}}</code> 캐릭터 라인 전체를 1 개 이상의 법칙 클래스와 법칙명의 페어에 옮겨놓는 것을 나타냅니다. 실제로 실행되는 치환은, permission 를 포함한 grant 구에 의해 정해집니다.
+
+	<p> grant 구에 법칙의 정보가 포함되지 않은 경우는, permission 는 무시됩니다. 법칙 베이스의 grant 구의 문맥에서는, 타겟명에 <code>${{self}}</code> 를 포함한 permission 만이 유효합니다. 예를 들어, 다음의 grant 구내의 <code>BarPermission</code> 는 항상 무시됩니다.
+
+	<pre>
+	    grant codebase "www.foo.com", signedby "duke" {
+		permission BarPermission "... ${{self}} ...";
+	    };
+	</pre>
+
+	grant 구에 법칙 정보가 포함되어 있는 경우는,<code>${{self}}</code> 가 그 법칙 정보로 옮겨집니다. 예를 들어, 다음의 grant 구의 <code>BarPermission</code> 내의 <code>${{self}}</code> 는,<b><code>javax.security.auth.x500.X500Principal "cn=Duke"</code></b> 로 옮겨집니다.
+<blockquote>
+<pre>
+grant principal javax.security.auth.x500.X500Principal "cn=Duke" {
+    permission BarPermission "... ${{self}} ...";
+};
+</pre>
+</blockquote>
+
+	grant 구내에 콤마로 단락지어진 법칙의 리스트가 있는 경우,<code>${{self}}</code> 는, 그 콤마로 단락지어진 법칙의 리스트로 옮겨집니다. grant 클래스내의 법칙 클래스와 법칙명이 어느쪽이나 와일드 카드가 되어 있는 경우,<code>${{self}}</code> 는, 현재의 <code>AccessControlContext</code> 내의 <code>Subject</code> 에 관련지을 수 있던 모든 법칙으로 옮겨집니다.
+
+	<p> 다음의 예는,<b><code>self</code></b> 와<a href=#keystoreAliasReplace><code>키스토어</code>의 별명의 치환</a>의 양쪽 모두를 포함한 예를 나타내고 있습니다.
+<blockquote>
+<pre>
+keystore "http://foo.bar.com/blah/.keystore";
+
+grant principal "duke" {
+    permission BarPermission "... ${{self}} ...";
+};
+</pre>
+</blockquote>
+
+	위의 예에서는, 처음에 "<code>duke</code>" 가,<code><b>javax.security.auth.x500.X500Principal "cn=Duke"</b></code> 에 전개됩니다. 다만,<code>키스토어</code>의 별명 「<code>duke</code>」에 관련지을 수 있었던 X. 509 증명서가 주제의 식별명 「<code>cn=Duke</code>」를 가지고 있는 것이 전제가 됩니다. 다음에,<code>${{self}}</code> 가, grant 구내에서 전개된 그 같은 법칙 정보로 옮겨집니다. <b><code>javax.security.auth.x500.X500Principal "cn=Duke"</code></b>.
+	
+	<p>
+
+<li><code>${{alias:<i>alias_name</i>}}</code>
+	<p> 프로토콜 <b><code>alias</code></b> 는, java.security.KeyStore 별명의 치환을 나타냅니다. KeyStore</code> 엔트리</a>  로 지정된 <code>KeyStore</code> 가 사용됩니다. <i><code>${{alias:<i>alias_name</i>}}</code> 는,<b><code>javax.security.auth.x500.X500Principal "DN"</code></b> 로 옮겨집니다. <i><code>DN</code></i> 는,<i><code>alias_name</code></i> 에 속하는 증명서의 주제의 식별명을 나타냅니다. 예를 나타냅니다.
+
+<blockquote>
+<pre>
+keystore "http://foo.bar.com/blah/.keystore";
+
+grant codebase "www.foo.com" {
+    permission BarPermission "... ${{alias:duke}} ...";
+};
+</pre>
+</blockquote>
+
+	위의 예의 별명 <i><code>duke</code></i> 에 관련지을 수 있고 있는 X. 509 증명서는, 키스토어 <i><code>foo.bar.com/blah/.keystore</code></i> 로부터 취득됩니다. duke 의 증명서가 주제의 식별명으로서 「<code>o=dukeOrg, cn=duke</code>」를 지정하고 있는 경우,<code>${{alias:duke}}</code> 는,<<b><code>javax.security.auth.x500.X500Principal "o=dukeOrg, cn=duke"</code></b> 로 옮겨집니다.
+
+	<p> 다음의 에러 조건에 해당하는 경우, 액세스권 엔트리는 무시됩니다.
+	<ul>
+	<li> 키스토어엔트리가 지정되어 있지 않다
+	<li> <i><code>alias_name</code></i> 가 지정되어 있지 않다
+	<li> <i><code>alias_name</code></i> 의 증명서를 취득할 수 없다
+	<li> 취득되는 증명서가 X. 509 증명서는 아니다
+	</ul>
+</ol>
+</blockquote>
+
+<h2><a name="RelatedDoc">관련 문서</a> </h2>
+
+<blockquote>
+
+<ul>
+
+<li><a href="permissions.html">Java 2 SDK 에 있어서의 액세스권</a> <p>
+
+<LI>Policy Tool (<a href="../../tools/solaris/policytool.html">Solaris 용</a>) (<a href="../../tools/windows/policytool.html">Win32 용</a>)
+
+</ul>
+
+</blockquote>
+
+<p>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+<TD>
+
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1997-2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다. </FONT>
+
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+</BODY>
+
+</HTML>
+
+
+

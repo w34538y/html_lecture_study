@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java SE 6 에 있어서의 국제화의 확장 기능 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077" LANG="en">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>국제화의 확장 기능</CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<P>여기에서는, JDK (Java SE Development Kit) 6 에 있어서의 국제화의 확장 기능에 대해 개설합니다. </P>
+
+<UL>
+<LI><A HREF="#core">코어 Java 의 국제화</A> </LI>
+   
+<LI><A HREF="#desktop">데스크탑 Java 의 국제화</A> </LI>
+</UL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="core"></A> 코어 Java 의 국제화</H2>
+
+<H4>로케일에 의존하는 서비스의 SPI</H4>
+
+<P>로케일에 의존하는 데이터 (일자의 서식 설정 캐릭터 라인등)와 서비스 (일자 포매터등)를 플러그 인 할 수 있도록(듯이),<CODE>java.text</CODE> 및 <CODE>java.util</CODE> 패키지에 포함되는 로케일 의존 클래스에는, 몇개의 SPI (Service Provider Interface)가 추가되고 있습니다. 이러한 SPI 에 의해, 개발자는 Java SE 의<A HREF="locale.doc.html">「현재 사용 가능한 로케일」</a>외에도 다수의 로케일을 용이하게 지원할 수가 있습니다. 예를 들어, Java 런타임의 <CODE>BreakIterator.getSentenceInstance</CODE> 팩토리로, 중국어의 <A HREF="../../../api/java/text/BreakIterator.html"><CODE>BreakIterator</CODE></A>  를 독자적으로 구현할 수 있게 됩니다. </P>
+
+<H4>Unicode Normalizer API</H4>
+
+<P>새로운 <A HREF="../../../api/java/text/Normalizer.html"><CODE>java.text.Normalizer</CODE></A>  클래스는,<A HREF="http://www.unicode.org/unicode/reports/tr15/">「Unicode Standard Annex #15」</A>  로 정의된 Unicode 텍스트 정규화를 지원합니다.
+</P>
+
+<H4>국제화 된 도메인명의 지원</H4>
+
+<P>새로운 <A HREF="../../../api/java/net/IDN.html"><CODE>java.net.IDN</CODE></A>  클래스는, RFC 3490, 3491, 3454, 3492 에 준거한 IDN (Internationalized Domain Name)를 지원합니다. </P>
+
+<H4>일본이 달력의 지원</H4>
+
+<P>2005 년 (태양력)을 「헤세이」17 년으로 할 것 같은 일본이 달력의 계수를 지원하기 위해(때문에), 새로운 <CODE>Calendar</CODE> 구현이 추가되고 있습니다. 이 일본이 달력의 인스턴스는,<CODE>로케일 ( 「ja」, 「JP」, 「JP」)</CODE> 을 지정하면,<CODE>Calendar.getInstance</CODE> 팩토리로 작성할 수가 있습니다. &nbsp;&nbsp;<A HREF="../../../api/java/text/SimpleDateFormat.html"><CODE>java.text.SimpleDateFormat</CODE></A>  클래스는, 태양력 이외의 달력 고유의 연호 및 일자 형식을 지원하고 있습니다. 자세한 것은<A HREF="calendar.doc.html">「지원되는 달력」</A>  의 문서를 참조해 주세요. </P>
+
+<H4><CODE>ResourceBundle</CODE> 의 확장 기능</H4>
+
+<P>어플리케이션에 의한 자원 번들 로드 처리의 제어를 강화하기 위해(때문에), 상자로 된 새로운 <CODE><A HREF="../../../api/java/util/ResourceBundle.Control.html">java.util.ResourceBundle.Control</A> </CODE> 클래스가 추가되고 있습니다. 이 클래스는, 자원 번들 로드 처리중에 <CODE>ResourceBundle.getBundle</CODE> 팩토리에 의해 불려 가는 일련의 콜백 메소드를 정의합니다. 어플리케이션에서는, 이러한 콜백 메소드를 오버라이드(override) 해, 팩토리 메소드의 동작을 변경할 수가 있습니다. </P>
+
+<H4>추가 로케일의 지원</H4>
+
+<P>현재 사용할 수 있는 로케일은 다음과 같습니다. </P>
+<UL>
+<LI><CODE>zh_SG</CODE> - 중국어 (중공에서 정식으로 쓰는 약자체�, 싱가폴</LI>
+<LI><CODE>en_MT</CODE> - 영어, 몰타</LI>
+<LI><CODE>en_PH</CODE> - 영어, 필리핀</LI>
+<LI><CODE>en_SG</CODE> - 영어, 싱가폴</LI>
+<LI><CODE>el_CY</CODE> - 그리스어, 사이프러스</LI>
+<LI><CODE>id_ID</CODE> - 인도네시아어, 인도네시아</LI>
+<LI><CODE>ga_IE</CODE> - 아일랜드어, 아일랜드</LI>
+<LI><CODE>ms_MY</CODE> - 말레이어, 말레이지아</LI>
+<LI><CODE>mt_MT</CODE> - 몰타어, 몰타</LI>
+<LI><CODE>pt_BR</CODE> - 포르투갈어, 브라질</LI>
+<LI><CODE>pt_PT</CODE> - 포르투갈어, 포르투갈</LI>
+<LI><CODE>es_US</CODE> - 스페인어, 미국</LI>
+</UL>
+<P>자세한 것은<A HREF="locale.doc.html">「지원되는 로케일」</A>  의 문서를 참조해 주세요. </P>
+
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="desktop"></A> 데스크탑 Java 의 국제화</H2>
+
+<H4>영어 이외의 로케일의 키 입력</H4>
+
+<P>Solaris 및 Linux  operating system에 대해 영어 이외의 로케일로 발생하는 키 입력의 각종 문제를 수정하기 위해(때문에), 키보드에 관한 AWT 코드의 아키텍쳐(architecture)가 변경되었습니다. </P>
+
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2005 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT          SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/intl/enhancements.html&category=api&mailsubject=Internationalization Support">피드백</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I><FONT SIZE="+1"></FONT>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

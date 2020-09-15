@@ -1,0 +1,113 @@
+<!--[Targeted for programmers.]-->
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JDK v5. 0, Beta1 에서의 서명 타임 스탬프의 지원
+    - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+
+<hr SIZE=3 NOSHADE WIDTH="100%"></h1>
+
+<center>
+<h1>
+서명 타임 스탬프의 지원<br>JDK v5. 0, Beta1
+</h1></center>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+
+<a name=INTRO><h2>처음에</h2></a> 이 문서에서는, 서명 타임 스탬프를 지원하기 위해서 J2SE 5.0 에 추가된 확장 기능에 대해 설명합니다. 이러한 신기능에 관한 피드백은,<a href=mailto:java-security@sun.com>java-security@sun.com</a>  까지 전송해 주세요.
+
+<p>
+5.0 보다 전에서는,<code>jarsigner</code> 가 생성한 서명에는, 서명이 언제 생성되었는지를 붙은 정보가 포함되어 있지 않았습니다. 그 외의 정보를 입수할 수 없기 때문에, 시스템이나 데프로이야 (Java Plug-in 의 사용자도 포함한다)는 서명된 JAR 파일의 타당성을, 서명 대상의 증명서의 타당성을 기준으로서 평가하고 있었습니다. 서명 증명서의 유효기간이 끊어지면(자), 서명 및 JAR 파일의 유효기간도 끊어졌다고 인식됩니다. 서명 증명서는 일반적으로는 1 년 단위로 기한이 지나므로, 고객은 배치된 JAR 파일에 매년재서명해야 한다고 하는 중대한 문제가 발생합니다.
+<p>
+5.0 이후에서는,<code>jarsigner</code> 는 타임 스탬프를 포함한 서명을 생성하므로, 시스템이나 데프로이야 (Java Plug-in 를 포함한다)는 JAR 파일이 서명 증명서의 유효기간중에 서명되었는지의 여부를 체크할 수 있습니다. 게다가 5.0 으로 추가된 API 를 사용해, 어플리케이션은 타임 스탬프 정보를 취득할 수 있습니다.
+<p>
+Java 2 플랫폼의 버젼 5.0 으로 지원되는 서명 시각의 확장 기능 및 추가 기능을 다음에 나타냅니다.
+<ul>
+<li><a href=#JARSIGNER>Jarsigner 의 확장 기능</a> 
+<li><a href=#JAVAPLUGIN>Java Plug-in 의 확장 기능</a> 
+<li><a href=#APIENHANCE>API 의 확장</a> 
+</ul>
+
+<p>
+
+<a name=JARSIGNER><h2>Jarsigner 의 확장 기능</h2></a> <code>jarsigner</code> 툴은, JAR 파일의 서명시에 서명 타임 스탬프를 생성해 보존할 수 있게 되었습니다. 게다가<code>jarsigner</code> 는 대체 서명 기구를 지원합니다. 이것은 임의의 동작으로, 이하로 설명하는 옵션을 사용해, 서명시에 사용자가 제어합니다.
+
+<h3>Jarsigner 타임 스탬프 옵션</h3>
+다음의 옵션이 <code>jarsigner</code> 툴에 추가되어 서명 타임 스탬프를 지원합니다.
+<p>
+<code>-tsa url</code>
+<blockquote>
+JAR 파일의 서명시에 커멘드행에 「<code>-tsa http://example.tsa.url</code>」가 표시되는 경우, 서명의 타임 스탬프가 생성됩니다. URL <code>http://example.tsa.url</code> 는, TSA (Time Stamping Authority)의 장소를 특정합니다. 이것은,<code>-tsacert</code> 옵션으로 검출된 URL 를 오버라이드(override) 합니다. <code>-tsa</code> 옵션에서는, TSA 의 공개키 증명서를 키스토어에 배치할 필요는 없습니다.
+<p> 
+타임 스탬프를 생성하기 위해(때문에),<code>jarsigner</code> 는 <a href=http://www.ietf.org/rfc/rfc3161.txt>RFC 3161</a>  으로 정의되고 있는 TSP (Time-Stamp Protocol)를 사용해 TSA 와 통신합니다. 성공하면(자), TSA 로부터 반환된 타임 스탬프 토큰은 서명 블록 파일의 서명과 함께 보존됩니다.
+</blockquote>
+<p>
+<code>-tsacert alias</code>
+<blockquote>
+JAR 파일의 서명시에 커멘드행에 「<code>-tsacert alias</code>」가 표시되는 경우, 서명의 타임 스탬프가 생성됩니다. <code>alias</code> 는, 키스토어내의 현재 유효한 TSA 의 공개키 증명서를 특정합니다. 엔트리의 증명서로, TSA 의 장소를 특정하는 URL 를 포함한 Subject Information Access 확장 기능이 확인됩니다.  
+<p>
+TSA 의 공개키 증명서는,<code>-tsacert</code> 를 사용했을 경우, 키스토어에 배치되고 있을 필요가 있습니다.
+</blockquote>
+
+<h3>대체 서명 옵션</h3>
+
+<h4>대체 서명 기구의 지정</h4>
+
+<code>-altsigner  class</code>
+
+<blockquote> 
+대체 서명 기구를 사용하는 것을 지정합니다. 완전 수식 클래스명은,<code>com.sun.jarsigner.ContentSigner</code> 의 abstract 클래스를 확장하는 클래스 파일을 특정합니다. 이 클래스 파일에의 패스는,<code>-altsignerpath</code> 옵션에 의해 정의됩니다. <code>-altsigner</code> 옵션을 사용했을 경우,<code>jarsigner</code> 는 지정된 클래스가 제공하는 서명 기구를 사용합니다. 또는,<code>jarsigner</code> 는 디폴트의 서명 기구를 사용합니다.
+<p>
+예를 들어,<code>com.sun.sun.jarsigner.AuthSigner</code> 라고 하는 클래스가 제공하는 서명 기구를 사용하려면 ,<code>jarsigner</code> 옵션 「<code>-altsigner com.sun.jarsigner.AuthSigner</code>」를 사용합니다.
+</blockquote>
+
+<h4>대체 서명 기구에의 패스의 지정</h4>
+
+<code>-altsignerpath  classpathlist</code>
+
+<blockquote> 
+클래스 파일 (클래스 파일명은 상기와 같이 <code>-altsigner</code> 옵션으로 지정된다) 및 그것이 의존하는 JAR 파일에의 패스를 지정합니다. 클래스 파일이 JAR 파일내에 있는 경우, 이하의 예의 같게 JAR 파일에의 패스가 지정됩니다.
+<p>
+절대 패스 또는 현재의 디렉토리로부터의 상대 패스를 지정할 수 있습니다. <code>classpathlist</code> 에는, 복수의 패스 또는 JAR 파일을 포함할 수가 있습니다.  그 경우, 각 패스 또는 JAR 파일을, Solaris 의 경우에는 구두점 (<code>:</code>), Windows 의 경우에는 세미콜론 (<code>;</code>)으로 단락짓습니다. 목적의 클래스가 벌써 검색 패스내에 있는 경우는, 이 옵션은 불필요합니다.
+<p> 
+클래스 파일을 포함한, JAR 파일에의 패스를 지정하는 예를 나타냅니다.
+<p>
+<code>-altsignerpath /home/user/lib/authsigner.jar</code>
+<p>
+JAR 파일명이 포함되어 있는 것에 주의해 주세요.
+<p>
+클래스 파일을 포함한 JAR 파일에의 패스를 지정하는 예를 나타냅니다.
+<p>
+<code>-altsignerpath /home/user/classes/com/sun/tools/jarsigner/</code>
+<p>
+JAR 파일명은 포함되지 않은 것에 유의해 주세요.
+</blockquote>
+
+<a name=JAVAPLUGIN><h2>Java Plug-in 의 확장 기능</h2></a> 5.0 에서는, Java Plug-in 는 JAR 파일의 검증중에 서명 타임 스탬프 (존재하는 경우)를 체크하도록(듯이) 확장되었습니다. 서명 타임 스탬프에 의해 서명이 유효기간내 또는 취소해 일자전에 생성되었던 것이 확인할 수 있는 경우는, 서명필 jar  의 검증중에 기한 마감 또는 삭제된 증명서가 발견되어도, Java Plug-in 는 다이얼로그를 표시하지 않게 되었습니다.
+<p>
+Plug-in 가 서명 타임 스탬프를 포함한 JAR 파일을 검증하고 있을 때, Plug-in 의 키스토어 또는 증명서 스토어로부터 TSA 의 증명서를 취득할 수 있을 필요가 있습니다.
+<p>
+서명에 타임 스탬프가 포함되지 않은 경우는, Plug-in 의 동작은 1.4.x 와 같게 됩니다.
+<p>
+
+<a name=APIENHANCE><h2>API 의 확장</h2></a> 시큐리티 및 JAR API 가 확장되어 어플리케이션이 타임 스탬프 정보에 액세스 할 수 있게 되었습니다.
+<p>
+새로운 2 개의 클래스가 <tt>java.security</tt> 패키지에 추가되었습니다. 이러한 클래스는, 서명자가 관련지을 수 있었던 정보를 보관 유지하는 <a href=../../../api/java/security/CodeSigner.html>CodeSigner</a>  와 서명 타임 스탬프에 관련지을 수 있었던 정보를 나타내는 <a href=../../../api/java/security/Timestamp.html>Timestamp</a>  입니다.
+<p>
+
+<tt><a href="../../../api/java/security/CodeSource.html#getCodeSigners()">java.security.CodeSource</a> </tt> 클래스 및 <tt><a href="../../../api/java/util/jar/JarEntry.html#getCodeSigners()">java.util.jar.JarEntry</a> </tt> 클래스에 새로운 메소드가 추가되어 새로운 옵션 정보에 액세스 할 수 있게 되었습니다.
+
+<blockquote>
+<hr>
+
+<pre>
+
+
+
+</pre></blockquote>

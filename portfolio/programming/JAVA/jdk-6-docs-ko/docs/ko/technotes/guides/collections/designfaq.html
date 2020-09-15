@@ -1,0 +1,231 @@
+	<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 컬렉션 API 의 설계에 관한 FAQ - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH=60>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+<TD>
+<center>
+<h1>Java 컬렉션 API 의 설계에 관한 FAQ</h1>
+</center>
+</TD>
+
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+<hr>
+
+이 페이지는, Java Collections Framework 의 설계에 관한 자주 있는 질문과 그 회답입니다. 질문과 회답은, collections-comments 앨리어스(alias)상의 방대한 트래픽으로부터 선출했습니다. Collections Framework 의 설계 원리로서 참고로 할 수 있습니다.
+<p>
+
+<h3>코어 인터페이스 - 일반적인 질문</h3>
+<ol>
+<li><a href="#1"><b>생략 가능 오퍼레이션 ( 및 UnsupportedOperationException 예외)을 배제할 수 있도록(듯이), 코어 컬렉션으로 불변성을 직접 지원하면 어떨까요. </b></a> <p>
+<li><a href="#2"><b>UnsupportedOperationException 를 발행하는 경우, 생략 가능 오퍼레이션을 호출하는 코드를 try-catch 블록안에 넣을 필요는 없습니까. </b></a> <p>
+<li><a href="#3"><b>「가방」(멀티 세트라고도 부른다)을 위한 코어 인터페이스가 없는 것은 왜입니까. </b></a> <p>
+<li><a href="#28"><b>일관성을 얻기 위해서(때문에) 「Bean 방식의 이름」을 사용하지 않았던 것은 왜입니까. </b></a> <p>
+</ol>
+<h3>Collection 인터페이스</h3>
+<ol>
+<li><a href="#5"><b>Collection 가 Cloneable 와 Serializable 를 상속하지 않는 것은 왜입니까. </b></a> <p>
+<li><a href="#6"><b>Collection 의 모든 요소에 기존의 메소드 (upcall)를 적용하기 위해서 apply 메소드를 Collection 로 제공하면 어떨까요. </b></a> <p>
+<li><a href="#7"><b>Predicate 인터페이스와 관련 메소드 (술부를 채우는 Collection 내의 최초의 요소를 검색하는 메소드등)가 없는 것은 왜입니까. </b></a> <p>
+<li><a href="#8"><b>addAll 메소드에 Enumeration (또는 Iterator)를 취하는 형식을 제공하지 않는 것은 왜입니까. </b></a> <p>
+<li><a href="#9"><b>JDK 의 고정 구현에 Enumeration (또는 Iterator)의 생성자 이 없는 것은 왜입니까. </b></a> <p>
+<li><a href="#10"><b>Iterator.add 메소드가 없는 것은 왜입니까. </b></a> <p>
+</ol>
+<h3>List 인터페이스</h3>
+<ol>
+<li><a href="#11"><b>List 인터페이스를 Sequence 에 개명하지 않는 것은 왜입니까.  list 는 일반적으로 「링크 리스트」를 시사하는 것은 아닙니까. 또, java.awt.List 와 모순되지 않습니까. </b></a> <p>
+<li><a href="#12"><b>Set 와의 혼란을 막기 위해서(때문에), List 의 set 메소드를 replace 에 개명하지 않는 것은 왜입니까. </b></a> <p>
+</ol>
+<h3>Map 인터페이스</h3>
+<ol>
+<li><a href="#14"><b>Map 가 Collection 를 상속하지 않는 것은 왜입니까. </b></a> <p>
+</ol>
+
+<h3>Iterator 인터페이스</h3>
+<ol>
+<li><a href="#18"><b>Iterator 가 Enumeration 를 상속하지 않는 것은 왜입니까. </b></a> <p>
+<li><a href="#19"><b>반복자를 진행시키지 말고 반복의 다음의 요소를 볼 수가 있는, Iterator.peek 메소드를 제공하지 않는 것은 왜입니까. </b></a> <p>
+</ol>
+
+<h3>그 외</h3>
+<ol>
+<li><a href="#23"><b>SDK 에 JGL (ObjectSpace, Inc.  의 기존의 컬렉션 패키지)를 채용하지 않고 새로운 Collections Framework 를 만든 것은 왜입니까. </b></a> <p>
+<li><a href="#26"><b>뷰 (컬렉션을 닮은 다른 객체로부터 반환되는 컬렉션)를 돌려주는 메소드와 클래스를 모두 폐지하지 않는 것은 왜입니까. 폐지하면, 앨리어싱(aliasing)를 큰폭으로 삭감할 수 있다고 생각합니다만. </b></a> <p>
+<li><a href="#27"><b>수정되었을 때에 이벤트를 송출하는 피감시 컬렉션을 제공하지 않는 것은 왜입니까. </b></a> <p>
+</ol>
+
+<HR SIZE=3 NOSHADE>
+
+<h3>코어 인터페이스 - 일반적인 질문</h3>
+<ol>
+<li><a name="1"><b>생략 가능 오퍼레이션 ( 및 UnsupportedOperationException 예외)을 배제할 수 있도록(듯이), 코어 컬렉션으로 불변성을 직접 지원하면 어떨까요. </b></a> <em></em>
+<p>
+이것은, API 전체에서 가장 논의의 여지가 있는 설계상의 결정 사항입니다. 정적인 (컴파일시의) 형태 체크가 바람직한 것은 분명해, Java 의 표준이기도 합니다. 정적인 (컴파일시의) 형태 체크가 바람직한 것은 분명해, Java 의 표준이기도 합니다. 가능하면 지원하고 싶었습니다만, 이것을 지원하면(자) 인터페이스 계층의 사이즈가 매우 커져, 실행시의 예외의 필요성을 ( 꽤 줄일 수 있어도) 없앨 수가 없습니다.
+<p>
+Doug Lea 는, 인터페이스 계층에 가변성의 특징을 반영한 파퓰러인 Java 컬렉션을 작성했습니다.  그러나, 그 컬렉션 패키지의 사용자로서의 경험으로부터, 이 어프로치는 이미 실행 가능하지 않다고 생각하고 있습니다. 그는, 사신 중(안)에서 「이것을 말하는 것은 괴롭지만, 강력한 정적형 설정은 Java 의 컬렉션 인터페이스에서는 기능하지 않는다」라고 말하고 있습니다.
+<p>
+문제를 자세하게 설명하기 위해서, 계층에 수정 가능성이라고 하는 개념을 추가하려고 하는 경우, ModifiableCollection, ModifiableSet, ModifiableList, ModifiableMap 의 4 개의 새로운 인터페이스가 필요하게 됩니다. 이전에는 단순했던 계층이 복잡하게 됩니다. 또, 삭제 오퍼레이션을 가지지 않는 수정 불가능한 컬렉션으로 사용하기 위한 새로운 반복자가 필요하게 됩니다. 이 상태로, UnsupportedOperationException 를 배제할 수 없습니다.
+<p>
+배열에 대해 생각합니다. 배열에는 대부분의 List 조작이 갖춰지고 있습니다만, 삭제와 추가의 조작은 없습니다.  배열은 「고정 사이즈」의 List 입니다. 계층에 이 개념을 주려고 하면(자), VariableSizeList 와 VariableSizeMap 의 2 개의 새로운 인터페이스가 필요하게 됩니다. VariableSizeCollection 와 VariableSizeSet 는, ModifiableCollection 와 ModifiableSet 에 동일하기 때문에 추가할 필요는 없습니다만, 일관성을 위해서(때문에) 추가해야 하는 경우가 있습니다. 또, 변경 불가능한 List 에 대처하기 위해(때문에), 추가와 삭제의 오퍼레이션을 지원하지 않는 신종의 ListIterator 가 필요합니다. 최초로 필요했던 것은 4 개의 인터페이스만이었지만, 이와 같이 10 ?  12 개의 인터페이스에 가세해 2 개의 새로운 반복자 인터페이스가 필요하게 됩니다. 그러나, 그런데도 충분하지는 않습니다.
+<p>
+로그 (에러 로그, 감사 로그, 수복 가능한 데이터 객체용의 저널)에 대해 생각합니다. 이것들은, 본질적으로 추가 전용 순서로, 삭제와 설정 (치환) 이외의 모든 List 오퍼레이션을 지원합니다. 로그에는, 새로운 코어 인터페이스와 새로운 반복자가 필요하게 됩니다.
+<p>
+수정 불가능한 컬렉션과는 대조적인, 불변성이 있는 컬렉션 (즉, 클라이언트에 의한 변경이 불가능해, 한편 다른 어떤 이유에 의해도 변화하지 않는 컬렉션)에 대해서는 어떨까요. 많은 사람이, 이것이 가장 중요한 특징이다고 주장하고 있습니다.  그 이유는, 복수의 thread가 (동기의 필요없고) 동시에 1 개의 컬렉션에 액세스 할 수 있기 때문입니다. 형태의 계층에 이것을 추가하려면 , 게다가 4 개의 인터페이스가 필요합니다.
+<p>
+이것으로, 인터페이스의 수는 최대 20 개 정도, 반복자는 5 개가 되었습니다.  실제로는, 분명하게 어느 인터페이스에도 적합하지 않는 컬렉션이 증가하고 있는 것은 거의 확실합니다. 예를 들어, Map 로부터 반환되는 코레크션뷰는 본질적으로 삭제 전용 컬렉션입니다. 또, 값에 근거해 특정의 요소를 거부하는 컬렉션도 있으므로, 실행시의 예외를 배제할 수 없습니다.
+<p>
+논의와 시행의 끝, 실행시 예외를 발행할 수 있는 코어 인터페이스의 매우 작은 세트를 제공하는 것으로 문제 전체를 회피하는 것이, 당연하게 이루어진 기술적 타협안이다라는 결론에 이르렀습니다.
+<p>
+
+<li><a name="2"><b>UnsupportedOperationException 를 발행하는 경우, 생략 가능 오퍼레이션을 호출하는 코드를 try-catch 블록안에 넣을 필요는 없습니까. </b></a> 
+<p>
+프로그램으로 이러한 예외를 캐치 할 필요는 없다고 생각하고 있습니다. 이러한 예외가 체크되지 않는 예외 (실행시 예외)인 것은, 기타째입니다. 이러한 예외는, 프로그래밍 에러의 결과로서만 발생하기 위해(때문에), 이 경우는, 예외가 캐치 되지 않기 위해(때문에) 프로그램이 기능 정지합니다.
+<p>
+
+<li><a name="3"><b>「가방」(멀티 세트라고도 부른다)을 위한 코어 인터페이스가 없는 것은 왜입니까. </b></a> 
+<p>
+Collection 인터페이스에 이 기능이 있습니다. 이 인터페이스가 다른 인터페이스와 같이 빈번하게 이용된다고는 생각할 수 없기 때문에, public 의 구현은 하고 있지 않습니다. AbstractCollection (예를 들어, Map.values 로부터 반환되는 컬렉션) 위에 간단하게 구현되는 것 같은 컬렉션을 수시로 돌려주겠습니다.
+<p>
+<li><a name="28"><b>일관성을 얻기 위해서(때문에) 「Bean 방식의 이름」을 사용하지 않았던 것은 왜입니까. </b></a> 
+<p>
+새로운 컬렉션 메소드의 이름은 「Bean 의 명명 규약」에는 고집하고 있었습니다만, 타당해 일관성이 있어, 목적에 적절한 이름이라고 생각하고 있습니다. Bean 의 명명 규약은, JDK 전체에 적용되고 있는 것은 아닙니다.  AWT 는 이러한 규약을 채용했습니다만, 이 결단은 논의를 부르는 것이었습니다. 컬렉션 API 는, 지극히 광범위하게 사용되므로, 1 행의 코드로 복수의 메소드가 불려 가는 것이 많아, 이름이 짧은 일이 중요하다고 생각합니다. 예를 들어, Iterator 메소드에 대해 생각해 봅시다. 현재, 1 개의 컬렉션에 관한 루프는 다음과 같은 것입니다.
+<pre>
+    for (Iterator i = c.iterator(); i.hasNext(); )
+        System.out.println(i.next());
+</pre>
+컬렉션의 이름이 긴 경우에서도, 모든 것이 1 행에 들어갑니다. 메소드의 이름을 getIterator, hasNextElement, getNextElement 로 했을 경우, 1 행에는 들어가지 않습니다. 이러한 이유로부터, Bean 방식은 아니고 「종래의」JDK 방식을 채용했습니다.
+
+</ol>
+<hr>
+<h3>Collection 인터페이스</h3>
+<ol>
+<li><a name="5"><b>Collection 가 Cloneable 와 Serializable 를 상속하지 않는 것은 왜입니까. </b></a> 
+<p>
+많은 Collection 구현 (JDK 가 공급하는 것도 모두 포함하고)에는 public 의 clone 메소드가 있습니다만, 모든 Collection 에 이 메소드를 요구하는 것은 잘못입니다. 예를 들어, 1 테라바이트의 SQL 데이타베이스를 기본으로 하는 Collection 의 복제를 만든다고는 무슨 일입니까. 메소드를 호출하는 것으로, 회사가 새로운 디스크 장치 펌을 청구 하는것 같은 일이 되어도 좋은 것일까요. 동일한 논의는, 얼마든지 있습니다.
+<p>
+클라이언트가 Collection 의 실제의 형태를 모르는 경우, 클라이언트가 어느 형태의 Collection 가 필요한가를 결정해, 그 형태의 빈 상태(empty)의 Collection 를 작성해, addAll 메소드를 사용해 원의 컬렉션의 요소를 새로운 컬렉션에 카피하는 (분)편이, 보다 유연성이 높게 에러가 일어나기 어려워집니다.
+<p>
+
+<li><a name="6"><b>Collection 의 모든 요소에 기존의 메소드 (upcall)를 적용하기 위해서 apply 메소드를 Collection 로 제공하면 어떨까요. </b></a> 
+<p>
+이것은, 「Design Patterns」(Gamma 외 저)이라고 하는 책으로 「Internal Iterator」라고 불리고 있는 것입니다. 이것을 제공하는 것에 대하여는 고려했습니다만, 내부 및 외부 반복자를 지원하는 것은 장황하다라고 생각되어 또 Java 에는 벌써 외부 반복자용의 기능 (Enumeration 에 대해서)이 있으므로, 제공하지 않는 것에 결정했습니다. 업 콜을 기술하기 위해서 public 의 인터페이스가 필요하기 때문에, 이 기능의 「투사 중량」은 증대해 버립니다.
+<p>
+
+<li><a name="7"><b>Predicate 인터페이스와 관련 메소드 (술부를 채우는 Collection 내의 최초의 요소를 검색하는 메소드등)가 없는 것은 왜입니까. </b></a> 
+<p>
+Iterator  위에 이 기능을 구현하는 것은 간단해, 사용자가 술어를 직렬에 늘어놓을 수가 있기 (위해)때문에, 결과의 코드는 보다 간결하게 됩니다. 그러나, 이 간결함이 충분히 도움이 될지 어떨지는 명확하지는 않습니다. 도움이 된다고 생각되는 경우는, Collection 클래스에 나중에 이것을 추가 (Iterator  위에 구현)할 수가 있습니다.
+<p>
+
+<li><a name="8"><b>addAll 메소드에 Enumeration (또는 Iterator)를 취하는 형식을 제공하지 않는 것은 왜입니까. </b></a> 
+<p>
+「대용의 컬렉션」으로서 Enumeration (또는 Iterator)를 사용하지 않는 것이 좋다고 생각하기 때문입니다. 이 사용 방법은, 이전의 릴리스에서는 자주 행해지고 있었습니다만, 이번 릴리스에서는 Collention 인터페이스가 있으므로, 객체의 추상 컬렉션을 차례차례로 돌리는 편이 좋은 방법입니다.
+<p>
+
+<li><a name="9"><b>JDK 의 고정 구현에 Enumeration (또는 Iterator)의 생성자 이 없는 것은 왜입니까. </b></a> 
+<p>
+이것도, 「대용의 컬렉션」으로서의 Enumeration 의 사용 방법이며, 우리는 이 사용 방법의 방지에 노력하고 있습니다. 반대로, 모든 고정 구현에는 Collection 를 취하는 생성자 을 갖게하는 것을 (또, 같은 요소로 새로운 Collection 를 작성하는 것을) 강하게 추천합니다.
+<p>
+
+<li><a name="10"><b>Iterator.add 메소드가 없는 것은 왜입니까. </b></a> 
+<p>
+Iterator 의 규약이 반복의 순서에 관해서 어떤 보증도 실시하지 않는다고 하면, 의미가 애매하게 됩니다. 다만, ListIterator 에서는 반복의 순서가 보증되므로, 추가 오퍼레이션을 이용할 수 있습니다.
+</ol>
+<hr>
+<h3>List 인터페이스</h3>
+<ol>
+<li><a name="11"><b>List 인터페이스를 Sequence 에 개명하지 않는 것은 왜입니까.  list 는 일반적으로 「링크 리스트」를 시사하는 것은 아닙니까. 또, java.awt.List 와 모순되지 않습니까. </b></a> 
+<p>
+List 가 링크 리스트를 시사할지 어떨지의 의견은 2분하고 있습니다. 구현 명명 규약을 &lt;<em>Implementation</em>&gt;&lt;<em>Interface</em>&gt;와 가정하면(자), 코어 인터페이스의 이름은 짧은 채로 하고 싶다고 하는 강한 요망이 있습니다. 또, List 를 Sequence 로 변경하면(자), 기존의 이름의 몇개인가 (AbstractSequentialList, LinkedList)는, 올바르지 않은 것이 됩니다.
+
+명명의 모순은, 다음의 「형식」에서 대처할 수 있습니다.
+<pre>
+    import java.util. *;
+    import java.awt. *;
+    import java.util.List;   // Dictates interpretation of "List"
+</pre>
+<p>
+
+<li><a name="12"><b>Set 와의 혼란을 막기 위해서(때문에), List 의 set 메소드를 replace 에 개명하지 않는 것은 왜입니까. </b></a> 
+<p>
+이 언어에서는, set/get 명명 규약이 정식적다라고 정해져 있으므로, 거기에 따랐습니다.
+</ol>
+<hr>
+<h3>Map 인터페이스</h3>
+<ol>
+<li><a name="14"><b>Map 가 Collection 를 상속하지 않는 것은 왜입니까. </b></a> 
+<p>
+이것은 설계에 의하는 것입니다. 매핑은 컬렉션은 아니고, 컬렉션은 매핑은 아니라고 생각하고 있습니다. 그 때문에, Map 가 Collection 인터페이스를 상속한다 (그 역도)라고 하는 것에는 거의 의미가 없습니다.
+<p>
+Map 가 Collection 라고 하면, 요소는 무엇입니까. 유일한 타당한 대답은 「키와 값의 페어」입니다만, 이것으로는 매우 한정된 (게다가 특별히 도움이 되는 것도 아니다) Map 의 추상화 밖에 할 수 없습니다. 주어진 키가 어떤 값에 맵 할까를 문의하는 일도, 주어진 키가 어떤 값에 맵 할까를 알지 못하고 그 키의 엔트리를 삭제할 수도 있습니다.
+<p>
+Collection 가 Map 를 상속하도록(듯이)는 할 수 있습니다만, 「키란 무엇인가」라고 하는 문제가 발생합니다. 이것에는 만족할 수 있는 대답은 없고, 무리하게 대답을 찾아도, 결과적으로는 부자연스러운 인터페이스가 됩니다.
+<p>
+Map 는 (키, 값, 또는 키와 값의 페어의) Collection 로서 「표시」할 수 있습니다.  이것은, Map 의 3 개의 「컬렉션 표시 오퍼레이션」 (keySet, entrySet, values)에 반영되고 있습니다. 원리적으로는, List 를 요소에의 Map 매핑 인덱스로서 표시할 수 있습니다만, List 로부터 요소를 삭제하면(자), 삭제된 요소의 전의 모든 요소에 관련하는 Key 가 변경된다고 하는 귀찮은 성질이 있습니다. List 에 맵 표시 오퍼레이션이 없는 것은, 이 이유로부터입니다.
+</ol>
+<hr>
+<h3>Iterator 인터페이스</h3>
+<ol>
+<li><a name="18"><b>Iterator 가 Enumeration 를 상속하지 않는 것은 왜입니까. </b></a> 
+<p>
+Enumeration 의 메소드명은 올바르지 않은 것이라고 생각하고 있습니다. 이것들은 매우 길고, 빈번하게 사용됩니다. 메소드를 추가해 새로운 시스템 전체를 작성하는 입장으로부터, 이름을 개선할 기회는 이용해야 한다라고 생각했습니다. 물론, Iterator 로 새로운 이름과 낡은 이름의 양쪽 모두를 지원할 수도 있습니다만, 그것은 가치가 있는 것으로는 생각되지 않았습니다.
+<p>
+
+<li><a name="19"><b>반복자를 진행시키지 말고 반복의 다음의 요소를 볼 수가 있는, Iterator.peek 메소드를 제공하지 않는 것은 왜입니까. </b></a> 
+<p>
+그 메소드는, java.io.PushbackInputStream 와 닮은 방법으로, 현재의 Iterator  위에 구현할 수 있습니다. 이 메소드를 사용하는 것은 분별없게 않기 때문에, 누구나가 구현할 필요가 있는 인터페이스내에 포함하는 가치는 없다고 생각합니다.
+</ol>
+<hr>
+<h3>그 외</h3>
+<ol>
+<li><a name="23"><b>SDK 에 JGL (ObjectSpace, Inc.  의 기존의 컬렉션 패키지)를 채용하지 않고 새로운 Collections Framework 를 만든 것은 왜입니까. </b></a> 
+<p>
+Collections Framework 의 설계 목표 ( 「Collections Framework 의 개요」에 있다)를 읽으면(자), JGL 와 전혀 같은 입장에서는 작업하고 있지 않는 것을 이해할 수 있다고 생각합니다. Java 컬렉션 개요의 「설계 목표」로부터 인용하면(자), 「설계상의 주요한 목표는, 실제의 사이즈에 대하고, 또보다 중요성의 높은 「개념의 무게」냄새나도 타당한 작음의 API 를 작성하는 것이었습니다」라고 하는 기술이 있습니다.
+<p>
+JGL 는 약 130 의 클래스와 인터페이스로 구성되어 주된 목표는 C++ STL (Standard Template Library)와의 무결성이었습니다. 이것은, Collections Framework 의 목표가 아니었습니다. Java 는 종래, C++ 가 가지는 복잡한 특징 (다중 상속, 연산자의 overload등)을 피해 왔습니다. 모든 인프라스트럭쳐(infrastructure)를 포함해 Collections Framework 에는 전체로 약 25 의 클래스와 인터페이스가 있습니다.
+<p>
+C++ 의 프로그래머중에는 이것을 불쾌하게 느끼는 사람이 있을지도 모릅니다만, 장기적으로는 Java 에 있어 좋은 일이라고 생각합니다. Java 의 라이브러리가 성숙하는 것에 따라 증대하는 것은 피할 수 없습니다만, Java 가 용이하게 학습할 수 있어 즐겁게 사용할 수 있는 언어이며 계속되도록, 작음과 관리하기 쉬움을 가능한 한 유지하도록 노력하고 있습니다.
+<p>
+<li><a name="26"><b>뷰 (컬렉션을 닮은 다른 객체로부터 반환되는 컬렉션)를 돌려주는 메소드와 클래스를 모두 폐지하지 않는 것은 왜입니까. 폐지하면, 앨리어싱(aliasing)를 큰폭으로 삭감할 수 있다고 생각합니다만. </b></a> 
+<p>
+프로그래머가 자신의 구현을 「숨긴다」일을 할 수 있는 코어 컬렉션 인터페이스를 제공하면(자), 별명의 컬렉션이 (그것을 JDK 가 제공하고 않는에 관계없이) 존재하게 됩니다. JDK 로부터의 모든 뷰를 폐지하면(자), 예를 들어 배열로부터 Collection 를 작성하는 것 같은 공통의 오퍼레이션의 코스트가 증대해, 많은 유용한 기능 (동기 래퍼등)이 폐지되겠지요. 특히 유용하다고 생각되고 있는 뷰의 하나는,<a href="../../../api/java/util/List.html#subList(int,%20int)">List.subList</a>  입니다. 이 메소드의 존재는, 입력에 List 를 취하는 메소드를 쓰는 경우에, (배열의 경우와 같이) 오프셋(offset)와 길이를 취하는 제 2 의 형식을 쓸 필요가 없다고 하는 것을 의미합니다.
+<p>
+<li><a name="27"><b>수정되었을 때에 이벤트를 송출하는 피감시 컬렉션을 제공하지 않는 것은 왜입니까. </b></a> 
+<p>
+주로, 자원의 제약에 의합니다. 그러한 API 에 임한다면, 만명에 도움이 되는 것 나오지 않으면 안되어, 또 장기가 사용할 만한 것이 아니면 안됩니다. 이러한 기능도 제공해 나갈 예정입니다. 지금까지의 사이, public 의 API  위에 그러한 기능을 구현하는 것은 어려운 일이 아닙니다.
+</ol>
+<!-- Body text ends here --> <!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<FONT SIZE=-2><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1997-1999 Sun Microsystems, Inc., 901 San Antonia Ave., Palo Alto, CA 94303 USA.All rights reserved. </FONT> <br> <br>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:collections-comments@java.sun.com">collections-comments@java.sun.com</a> </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+</body>
+</html>

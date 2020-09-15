@@ -1,0 +1,2150 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JNDI/LDAP 보유 :LDAP 서비스 프로바이더의 가이드 라인 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+
+<hr SIZE=3 NOSHADE WIDTH="100%"></h1>
+
+<center>
+<h1>
+LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인</h1></center>
+
+<center>
+<h1>
+Draft 0.4. 2</h1></center>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<p><font size=-1>코멘트의 송부처: <font color="#CC0000"><a href="mailto:jndi@java.sun.com">jndi@java.sun.com</a> </font></font>
+<dl>
+<dt>
+<b>목차</b></dt>
+
+<dt>&nbsp;
+</dt>
+
+<dt>
+<b><a href="#INTRO">1.  처음에</a> </b></dt>
+
+<dt>
+<b><a href="#CONF">2.  적합성</a> </b></dt>
+
+<dt>
+<b><a href="#PROP">3.  환경 프로퍼티</a> </b></dt>
+
+<dt>
+<b><a href="#NAME">4.  이름</a> </b></dt>
+
+<dt>
+<b><a href="#ATTRS">5.  속성</a> </b></dt>
+
+<dt>
+<b><a href="#URLS">6.  URL</a> </b></dt>
+
+<dt>
+<b><a href="#OBJ">7.  Java 객체</a> </b></dt>
+
+<dt>
+<b><a href="#SCHEMA">8.  schema</a> </b></dt>
+
+<dt>
+<b><a href="#EXCEPT">9.  예외</a> </b></dt>
+
+<dt>
+<b><a href="#API">10.  API 매핑</a> </b></dt>
+
+<dt>
+<b><a href="#FED">11.  연합</a> </b></dt>
+
+<dt>
+<b><a href="#SASL">12.  SASL</a> </b></dt>
+
+<dt>
+<b><a href="#CTL">13.  확장 기능 및 컨트롤</a> </b></dt>
+
+<dt>
+<b><a href="#EVENT">14.  이벤트의 통지</a> </b></dt>
+
+<dt>
+<b><a href="#SSL">15.  SSL</a> </b></dt>
+</dl>
+
+<dd>&nbsp;
+</dd>
+
+<p>
+<hr><a NAME="INTRO"></a> 
+<h2>
+1.  처음에</h2>
+이 문서는, LDAP 서비스 프로바이더를 작성하는 개발자, 및 LDAP 와 유사한 기능을 지원하는 프로바이더가 따를 필요가 있는 가이드 라인에 대해 설명합니다. 이러한 가이드 라인에 따르는 것으로, 개발자는, JNDI API 사용자가 지금까지의 조작이나 기술과의 차이를 의식하는 것을 최소한으로 눌러 설정 및 사용 가능한 구현을 작성할 수 있습니다.
+<p>이 문서로 설명하는 모든 기능을, LDAP 서비스 프로바이더가 지원해야 하는 것은 아닙니다. 다만, 어느 기능을 지원하는 경우, 그 지원 방법은 이 문서에 설명된 방법에 따를 필요가 있습니다.
+<p>
+<hr>
+<br><a NAME="CONF"></a> 
+<h2>
+2.  적합성</h2>
+LDAP 버젼 3 (LDAPv3)을 지원하는 LDAP 서비스 프로바이더는, 다음에 적합하고 있습니다.
+<ul>
+<li>
+&nbsp;<a href="http://www.ietf.org/rfc/rfc2251.txt">RFC 2251</a>  및 관련하는 스펙</li>
+</ul>
+LDAP 버젼 2 (LDAPv2)를 지원하는 LDAP 서비스 프로바이더는, 다음에 적합하고 있습니다.
+<ul>
+<li>
+&nbsp;<a href="http://www.ietf.org/rfc/rfc1777.txt">RFC 1777</a> &nbsp; 및 관련하는 스펙</li>
+</ul>
+
+<p>
+<hr><a NAME="PROP"></a> 
+<h2>
+3.  환경 프로퍼티</h2>
+환경 프로퍼티은, JNDI 어플리케이션 사용자가 JNDI 서비스 프로바이더의 동작을 설정 및 변경하기 위한 수단입니다. 이 때문에, 각 서비스 프로바이더는 환경 프로퍼티을 같은 방법으로 해석 및 처리할 필요가 있습니다.
+<p>
+LDAP 서비스 프로바이더에 영향을 미치는 환경 프로퍼티에는 4 개의 타입이 있습니다.
+<ul>
+<li>
+<a href="#JNDIPROPS">표준 JNDI 환경 프로퍼티</a> </li>
+
+<li>
+<a href="#LDAPPROPS">LDAP 고유의 환경 프로퍼티</a> </li>
+
+<li>
+<a href="#SPIPROPS">프로바이더 고유의 환경 프로퍼티</a> </li>
+
+<li>
+<a href="#FEATUREPROPS">기능 고유의 환경 프로퍼티</a> </li>
+</ul>
+
+<h3>
+3.1 개요</h3>
+
+<h4>
+3.1. 1 초기화</h4>
+초기 문맥을 작성할 때에, 환경 프로퍼티은 생성자 에의 인수로서 건네주는지,<a href=../../../api/javax/naming/InitialContext.html#ENVIRONMENT>JNDI 의 문서</a>로 지정되고 있도록(듯이) 초기화할 수가 있습니다.
+<p>특히, 다음의 프로퍼티중 한쪽이 환경 프로퍼티내에서 제공되어 있지 않은 경우, 시스템 프로퍼티, 애플릿 파라미터, 및 프로바이더와 어플리케이션의 resource file의 양쪽 모두로부터, 다음에 나타내는 순서로 검색됩니다.
+<ul>
+<li>
+<tt><a href="#control">java.naming.factory.control</a> </tt></li>
+
+<li>
+<tt><a href="#initial">java.naming.factory.initial</a> </tt></li>
+
+<li>
+<tt><a href="#object">java.naming.factory.object</a> </tt></li>
+
+<li>
+<tt><a href="#state">java.naming.factory.state</a> </tt></li>
+
+<li>
+<tt><a href="#url">java.naming.provider.url</a> </tt></li>
+</ul>
+컨트롤, 객체 및 상태 팩토리 프로퍼티의 경우, 프로퍼티의 여러 차례의 출현이 배치되고 있으면(자), 그 값은 연결되어 단일의 리스트가 됩니다. url 프로퍼티 및 다른 모든 프로퍼티의 경우, 최초로 출현한 것만이 사용됩니다.
+<p>문맥의 환경 프로퍼티은,<tt><a href="../../../api/javax/naming/Context.html#getEnvironment()">Context.getEnvironment</a> </tt> 메소드를 사용해 검사할 수 있습니다.
+<h4>
+3.1. 2 변경</h4>
+문맥의 환경 프로퍼티은,<tt><a href="../../../api/javax/naming/Context.html#addToEnvironment(java.lang.String,%20java.lang.Object)">Context.addToEnvironment</a> </tt> 메소드 및 <tt><a href="../../../api/javax/naming/Context.html#removeFromEnvironment(java.lang.String)">Context.removeFromEnvironment</a> </tt> 메소드를 사용해 검사할 수 있습니다.
+<h4>
+3.1. 3 스코프</h4>
+<tt><a href="../../../api/javax/naming/Context.html#PROVIDER_URL">java.naming.provider.url</a> </tt> 및 <tt><a href="../../../api/javax/naming/Context.html#INITIAL_CONTEXT_FACTORY">java.naming.factory.initial</a> </tt> 프로퍼티을 제외해,<tt><a href="../../../api/javax/naming/Context.html#addToEnvironment(java.lang.String,%20java.lang.Object)">Context.addToEnvironment</a> </tt> 또는 <tt> <a href="../../../api/javax/naming/Context.html#removeFromEnvironment(java.lang.String)">Context.removeFromEnvironment</a> </tt> 메소드를 사용해 프로퍼티을 변경하면(자), 메소드의 호출처의 문맥 인스턴스가 영향을 받습니다. 예를 들어, 문맥으로 사용되는 새로운 자격을 지정했을 경우는, 그 문맥으로 불려 가는 후속의 메소드로 서버와의 통신을 할 때, 새로운 자격이 사용됩니다. 내부적으로는, 최초로 서버에 새로운 접속이 확립될 때 사용됩니다. 갱신된 환경 프로퍼티은, 갱신이 적용된 문맥 인스턴스로부터 파생한 문맥 인스턴스에 상속됩니다. 다만, 갱신 이전에 생성된 문맥 인스턴스에는 상속되지 않습니다.
+<h4>
+3.1. 4 변경 스케줄</h4>
+환경 프로퍼티으로 변경이 더해졌을 경우는,<tt><a href="../../../api/javax/naming/Context.html#addToEnvironment(java.lang.String,%20java.lang.Object)">Context.addToEnvironment</a> </tt> 또는 <tt><a href="../../../api/javax/naming/Context.html#removeFromEnvironment(java.lang.String)">Context.removeFromEnvironment</a> </tt> 메소드의 호출시에, 변경을 확인하거나 유효하게 하거나 할 필요는 없습니다. 그 프로퍼티을 사용하는 조작이 다음에 불려 갔을 때에, 변경이 유효하게 됩니다.
+<h4>
+3.1. 5 디폴트</h4>
+이 스펙으로, 환경 프로퍼티의 디폴트를 정의합니다. 디폴트가 서비스 프로바이더로 결정되는 경우도 있습니다. 문맥이 특정의 환경 프로퍼티을 보관 유지하지 않는 경우, 문맥은 디폴트 값의 환경 프로퍼티을 보관 유지하고 있는것 같이 동작합니다.
+<p>문맥의 환경 프로퍼티으로부터 있는 프로퍼티을 삭제하는 경우, 문맥은 그 프로퍼티에는 디폴트의 동작을 할당할 수 있고 있는 것으로 간주합니다. 다만, 프로퍼티의 값으로 해서 디폴트 값를 지정해야 한다고 하는 의미가 아닙니다. 삭제는, 문맥의 환경 프로퍼티에 그 프로퍼티이 존재하지 않는 것에 따라도 나타납니다.
+<h4>
+3.1. 6 설정 가능한 값</h4>
+이 스펙은, 환경 프로퍼티으로 설정 가능한 값을 정의합니다. 환경 프로퍼티에는, 설정치가 고정되고 있는 것과 특정의 구문에 따라 값을 설정하는 것이 있습니다. 설정할 수 없는 값을 지정했을 경우는,<tt><a href=../../../api/javax/naming/ConfigurationException.html>ConfigurationException</a> </tt>,<tt><a href="../../../api/java/lang/IllegalArgumentException.html">IllegalArgumentException</a> </tt>,<tt><a href=../../../api/javax/naming/AuthenticationNotSupportedException.html>AuthenticationNotSupportedException</a> </tt> 등, 프로퍼티 고유의 예외가 throw 됩니다. 이 경우, 서비스 프로바이더로 설정할 수 있는 값에, 정의된 값 이외의 값을 추가하는 (분)편이 적절한 일이 있습니다. 추가하는 경우는, 그러한 값을 문서에 명기할 필요가 있습니다.
+<p><a NAME="JNDIPROPS"></a> 
+<h3>
+3.2 JNDI 프로퍼티</h3>
+LDAP 서비스 프로바이더는, 다음의 스펙에 따라 JNDI 환경 프로퍼티을 처리할 필요가 있습니다. 예의 <tt>env</tt> 는, 초기 문맥의 작성에 사용되는 환경 프로퍼티을 보관 유지하는 <tt><a href="../../../api/java/util/Hashtable.html">Hashtable</a> </tt> 의 인스턴스입니다.
+<p>
+<a NAME="batchsize"></a> 
+<dt>
+<b><tt>java.naming.batchsize</tt></b></dt>
+
+<blockquote>프로퍼티의 값은, 서버로부터 반환되는 검색 결과의 배치 사이즈를 지정하는 10 진수의 캐릭터 라인입니다.
+<p>이 프로퍼티은,<tt>Context.list</tt>,<tt>Context.listBindings</tt>, 및 <tt>DirContext.search</tt> 메소드의 블록 동작 및 이러한 메소드가 돌려주는 <tt>NamingEnumeration</tt> 객체에 영향을 미칩니다. 이것은, 반환되는 열거내의 항목수에는 영향을 주지 않습니다. LDAP 프로토콜 레벨로 항목의 배치처리 또는 읽기를 하는 방법인 만큼 영향을 줍니다.
+<p>값을 제로로 설정하면(자), 그것은, 모든 결과가 수취될 때까지 프로바이더가 블록 하는 것을 의미합니다. 제로보다 큰 정수 <i>n</i> 를 설정하는 것은, 서버로부터 결과 <i>n</i> 를 받을 때까지, 또는 열거가 끝날 때까지, 프로바이더가 블록 하는 것을 의미합니다. 어느 쪽의 경우에도, 생성되는 결과의 수는 보다 작은 값이 됩니다. 어플리케이션이 결과 <i>n</i> 를 읽어낸 후 (<tt>NamingEnumeration.next</tt> 또는 <tt>NamingEnumeration.nextElement</tt> 를 사용해), 프로바이더는 서버로부터 한층 더 <i>n</i> 개의 결과를 읽어내는지, 열거가 끝날 때까지 결과를 읽어냅니다.  어느 쪽의 경우에도, 생성되는 결과의 수는 보다 작은 값이 됩니다.
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 구현 고유의 값이 됩니다.
+<p>
+다음에 예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#BATCHSIZE">Context.BATCHSIZE</a> , "24");</pre>
+</blockquote>
+이것은, 서버로부터 24 엔트리가 읽어내지는지, 열거가 종료할 때까지, 프로바이더가 블록 하는 것을 의미합니다. 어느 쪽의 경우에도, 생성되는 결과의 수는 보다 작은 값이 됩니다.
+</blockquote>
+<a NAME="control"></a> 
+<dt>
+<b><tt>java.naming.factory.control</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 컨트롤 팩토리 클래스의 완전 수식된 클래스명을 구두점으로 단락지은 리스트입니다.
+<p>팩토리는, 응답 컨트롤을 실시하는 클래스의 「네로우 변환」변환을 실시합니다. 이러한 팩토리는, 프로바이더가 생성하는 총칭적인 응답 컨트롤로부터 고유의 응답 컨트롤을 작성합니다.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>다음에 예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/ldap/LdapContext.html#CONTROL_FACTORIES">LdapContext.CONTROL_FACTORIES</a> ,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "com.sun.jndi.ldap.ctl.ResponseControlFactory");</pre>
+</blockquote>
+이것은,<tt>ResponseControlFactory</tt> 클래스를, 시행 대상의 컨트롤 팩토리로서 설정합니다. </blockquote>
+<a NAME="initial"></a> 
+<dt>
+<b><tt>java.naming.factory.initial</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, LDAP 서비스 프로바이더의 초기 문맥을 작성하는 팩토리 클래스의 완전 수식된 클래스명입니다.
+<p>이것은, 특정의 LDAP 서비스 프로바이더를 선택하기 위해서 사용합니다. 프로바이더 자신이 사용할 것은 없습니다. 초기 문맥 메소드에의 이름 인수가 URL 인 경우에는, 이 프로퍼티을 설정할 필요는 없습니다.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>다음에 예를 나타냅니다.
+<blockquote><tt>env.put(<a href="../../../api/javax/naming/Context.html#INITIAL_CONTEXT_FACTORY">Context.INITIAL_CONTEXT_FACTORY</a> ,</tt> <br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"com.sun.jndi.ldap.LdapCtxFactory");</tt></blockquote>
+이것은, Sun 의 LDAP 프로바이더를 선택합니다. </blockquote>
+<a NAME="object"></a> 
+<dt>
+<b><tt>java.naming.factory.object</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 객체 팩토리 클래스의 완전 수식된 클래스명을 구두점으로 단락지은 리스트입니다.
+<p>팩토리는, 프로바이더로부터 반환된 LDAP 엔트리로부터 특정의 객체를 작성합니다. 예를 들어, Person 객체 팩토리가, 객체 클래스 person 의 LDAP 엔트리로부터 <tt>Person</tt> 객체를 생성한다고 합니다. 객체 팩토리는, LDAP 속성으로부터 객체를 생성한다고 하는 점으로써,<a href="#state">상태 팩토리</a>와는 반대의 동작을 실행합니다.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>다음에 예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/ldap/LdapContext.html#CONTROL_FACTORIES">Context.OBJECT_FACTORIES</a> ,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "com.sun.jndi.ldap.obj.PersonFromLDAP");</pre>
+</blockquote>
+이것은,<tt>PersonFromLDAP</tt> 클래스를, 시행 대상의 객체 팩토리로서 설정합니다. </blockquote>
+<a NAME="state"></a> 
+<dt>
+<b><tt>java.naming.factory.state</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 상태 팩토리 클래스의 완전 수식된 클래스명을 구두점으로 단락지은 리스트입니다.
+<p>이 팩토리는, 객체 자체로부터 객체 상태 (포함용)를 작성합니다. 예를 들어, Person 상태 팩토리는,<tt>Person</tt> 객체로부터 객체 클래스 person 의 LDAP 엔트리를 생성합니다. 상태 팩토리는, 객체로부터 LDAP 속성을 생성한다고 하는 점으로써,<a href="#object">객체 팩토리</a>와는 반대의 동작을 실행합니다.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>다음에 예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#STATE_FACTORIES">Context.STATE_FACTORIES</a> ,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "com.sun.jndi.ldap.obj.PersonToLDAP");</pre>
+</blockquote>
+이것은,<tt>PersonToLDAP</tt> 클래스를, 시행 대상 상태 팩토리로서 설정합니다. </blockquote>
+<a NAME="language"></a> 
+<dt>
+<b><tt>java.naming.language</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은,<a href="http://www.ietf.org/rfc/rfc1766.txt">RFC 1766</a>  에 준거한 캐릭터 라인 언어 태그입니다. </blockquote>
+
+<dl>
+<dl>이 프로퍼티은, 특정의 자연 언어의 우선 순위를 나타냅니다. 프로바이더는, 그 LDAP 요구 및 응답을 이 프로퍼티의 값에 따라 조정할 수 있습니다.
+<p>이 프로퍼티이 주는 영향은, 구현 고유합니다. 디폴트 값는 정의되고 있지 않습니다.
+<p>예를 나타냅니다.
+<dl>
+<pre><tt>env.put(<a href="../../../api/javax/naming/Context.html#LANGUAGE">Context.LANGUAGE</a> , "ja-JP");</tt></pre>
+</dl>
+이것은, 일본어가 우선되는 것을 나타냅니다. </dl>
+</dl>
+<a NAME="url"></a> 
+<dt>
+<b><tt>java.naming.provider.url</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, LDAP 서버의 호스트명과 포트 번호, 및 사용하는 네이밍 문맥의 루트 식별명을 지정하는 스페이스 단락의 LDAP 또는 LDAPS URL 캐릭터 라인의 리스트입니다. LDAP URL 는 프레인 (즉 보호되어 있지 않다) 접속의 사용을 지정해, LDAPS URL 는 SSL 접속의 사용을 지정합니다. 이 리스트에 복수의 URL 가 포함되는 경우, 프로바이더는 정상적으로 접속을 작성할 수 있을 때까지 각 URL 를 차례로 사용해, 작성 후는 프로퍼티을 성공한 URL 로 설정합니다.
+
+<p>디폴트의 호스트명은 <tt>localhost</tt>, 디폴트의 포트는 프레인 접속의 경우는 <tt>389</tt>, SSL 접속의 경우는 <tt>636</tt> 입니다. 디폴트의 루트 식별명은, 공문자열입니다. 이 프로퍼티이 설정되어 있지 않은 경우, 또는 호스트명이나 포트 번호중 한쪽이 생략 되고 있는 경우, 미지정의 정보 대신에 디폴트 값가 사용됩니다. URL 에 호스트명도 포트도 결핍 해, 식별명이 나타나고 있는 경우, 프로바이더는<a href="#URLS">「URL」</a>로 설명했던 대로, 식별명을 사용해 LDAP 서버의 호스트명으로 포트를 판단할 필요가 있습니다.  접속의 확립에 성공했을 경우,<tt>java.naming.provider.url</tt> 프로퍼티을 접속에 성공한 호스트명, 포트, 식별명을 사용해 구축된 URL 로 설정합니다. URL 로 발견된 그 외의 정보를 프로바이더가 어떻게 처리할까에 대해서는,<a href="#URLS">「URL」</a>를 참조해 주세요.  다음에 예를 나타냅니다.
+
+<p>예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#PROVIDER_URL">Context.PROVIDER_URL</a> , "ldap://secserver:636");</pre>
+</blockquote>
+이것은, LDAP 서버가 <tt>secserver</tt> 라는 이름의 호스트상의 포트 <tt>636</tt> 으로 가동중인 것을 나타냅니다.
+
+<p><b>주 - </b><tt><a href="../../../api/javax/naming/Context.html#addToEnvironment(java.lang.String,%20java.lang.Object)">Context.addToEnvironment</a> </tt> 메소드 또는 <tt><a href="../../../api/javax/naming/Context.html#removeFromEnvironment(java.lang.String)">Context.removeFromEnvironment</a> </tt> 메소드를 사용해 이 프로퍼티을 변경해도, 문맥에는 영향 없습니다. 이 프로퍼티을 사용하는 것은, 초기 문맥 생성자  뿐입니다. </blockquote>
+
+<a NAME="referral"></a> 
+<dt>
+<b><tt>java.naming.referral</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 프로바이더가 조회를 처리하는 방법을 지정하는 캐릭터 라인입니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다. </blockquote>
+
+<dl>
+<dl>
+<dl>
+<dt>
+<tt>follow</tt></dt>
+
+<dd>
+자동적으로 모든 조회에 따릅니다. </dd>
+
+<dt>
+<tt>throw</tt></dt>
+
+<dd>
+각 조회에 대해서 <tt><a href="../../../api/javax/naming/ReferralException.html">ReferralException</a> </tt> 를 throw 합니다. </dd>
+
+<dt>
+<tt>ignore</tt></dt>
+
+<dd>
+결과에 표시되는 조회를 무시합니다. 미완료의 결과를 나타내기 위해서(때문에) <tt><a href="../../../api/javax/naming/PartialResultException.html">PartialResultException</a> </tt> 가 throw 됩니다. 또, LDAPv3 서버의 경우, 프로바이더는, 조회가 엔트리내에 표시되면(자), 일반적으로의 속성으로서 조회를 처리하는 것을 요구합니다. 이것은 각 LDAP 요구와 함께, 위기가 아닌 ManageDsaIT (<a href=http://www.ietf.org/rfc/rfc3296.txt>RFC 3296</a> ) LDAP 컨트롤을 송신하는 것으로써 실현됩니다. 이 LDAP 컨트롤을 지원하지 않는 LDAP 서버는, 단지 조회를 무시해 요구를 일반적으로에 처리합니다. </dd>
+</dl>
+
+<p>단일의 조회 엔트리내에서 검출되는 복수의 URL 의 처리 방법에 대해서는,<a href="#URLS">「URL」</a>  를 참조해 주세요.
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>ignore</tt> 가 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#REFERRAL">Context.REFERRAL</a> , "throw");</pre>
+</dl>
+이것은, LDAP 조작중에 조우한 조회가 <tt><a href="../../../api/javax/naming/ReferralException.html">ReferralException</a> </tt> 를 어플리케이션에 throw 하는 것을 나타냅니다. </dl>
+</dl>
+<a NAME="authentication"></a> 
+<dt>
+<b><tt>java.naming.security.authentication</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 사용하는 프로바이더용의 인증 기구를 지정하는 캐릭터 라인입니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다. </blockquote>
+
+<dl>
+<dl>
+<dl>
+<dt>
+<tt>none</tt></dt>
+
+<dd>
+인증을 사용하지 않습니다 (익명 바인드). </dd>
+
+<dt>
+<tt>simple</tt></dt>
+
+<dd>
+간단한 인증을 사용합니다 (clear text 패스워드). </dd>
+
+<dt>
+공백 문자로 단락지어진 1 개(살) 이상의 SASL 기구명의 리스트:</dt>
+
+<dd>
+리스트내에서, 지정한 정책 요건에 준거하는 최초로 이용 가능한 SASL 기구를 사용합니다. </dd>
+</dl>
+
+<p>SASL 인증으로 이 프로퍼티을 사용하는 방법에 대해서는,<a href="#SASL">SASL</a>  를 참조해 주세요. LDAP 인증 기구의 상세한 것에 대하여는,<a href="http://www.ietf.org/rfc/rfc2829.txt">RFC 2829</a>  를 참조해 주세요.
+<p>이 프로퍼티이 설정되지 않는 경우,<a href="#credentials">java.naming.security.credentials</a>  프로퍼티이 설정되지 않는 이상 그 디폴트 값는 <tt>none</tt> 가 됩니다. <a href="#credentials"> java.naming.security.credentials</a>  프로퍼티이 설정되었을 경우의 디폴트 값는 <tt>simple</tt> 입니다. 이 프로퍼티이, 프로바이더가 인식 또는 지원하지 않는 값으로 설정되는 경우,<tt>AuthenticationNotSupportedException</tt> 가 throw 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#SECURITY_AUTHENTICATION">Context.SECURITY_AUTHENTICATION</a> , "simple");</pre>
+</dl>
+이것은, LDAP 서버의 인증에 간단한 인증이 사용되는 것을 나타냅니다. 또는, 다음과 같이 기술합니다.
+<dl>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#SECURITY_AUTHENTICATION">Context.SECURITY_AUTHENTICATION</a> , "DIGEST-MD5 CRAM-MD5");</pre>
+</dl>
+이것은, DIGEST-MD5 인증을 사용하는지, 또는 SASL 기구가 이용 불가능한 경우에는 CRAM-MD5 인증을 사용하는 것을 나타냅니다. 어느쪽이나 이용 불가능한 경우에는,<tt>AuthenticationNotSupportedException</tt> 가 throw 됩니다. </dl>
+</dl>
+<a NAME="credentials"></a> 
+<dt>
+<b><tt>java.naming.security.credentials</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 인증 대상의 법칙의 쿠레덴샤르를 지정하는 객체입니다. 그 형식 및 처리는,<a href="#authentication">java.naming.security.authentication</a>  프로퍼티의 값에 따라서 다릅니다.
+<p>익명 바인드의 경우, 이 프로퍼티은 무시되어 항상 공백 캐릭터 라인이 쿠레덴샤르로서 사용됩니다. 간단한 인증의 경우, 및 패스워드를 요구하는 SASL 인증의 경우, 이 프로퍼티의 값은 <tt>java.lang.String</tt>,<tt>char[]</tt>, 또는 <tt>byte[]</tt> 로서 제공됩니다. 이 프로퍼티의 값이 <tt>String</tt> 또는 <tt>char[]</tt> 의 경우, LDAPv3 에서는 UTF-8 를 사용해 바이트 배열에 encode 되어 LDAPv2 에서는 ISO-Latin-1 를 사용해 encode 됩니다. 이 프로퍼티의 값이 <tt>byte[]</tt> 의 경우에는, 그대로의 형식에서 사용됩니다.
+<p>SASL 인증으로 이 프로퍼티을 사용하는 방법에 대해서는,<a href="#SASL">SASL</a>  를 참조해 주세요.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#SECURITY_CREDENTIALS">Context.SECURITY_CREDENTIALS</a> , "secret");</pre>
+</dl>
+이것은, 쿠레덴샤르를 캐릭터 라인 「secret」로 설정합니다. </dl>
+</dl>
+<a NAME="principal"></a> 
+<dt>
+<b><tt>java.naming.security.principal</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 인증 대상의 법칙의 아이덴티티를 지정하는 캐릭터 라인입니다. 그 형식은 인증의 종류에 따라서 다릅니다. 상세한 것에 대하여는 <a href="http://www.ietf.org/rfc/rfc2829.txt">RFC 2829</a> &nbsp; 를 참조해 주세요. 그 값은, SASL 이외의 인증용의 LDAP ASN. 1 BindRequest 의 <tt>name</tt> 컴퍼넌트로서 사용됩니다. SASL 인증의 경우, 이 프로퍼티의 값은, 인증 ID 를 필요로 하는 SASL 기구의 인증 ID 로서 사용됩니다.
+<p>프로바이더가, 법칙명의 유효성을 검증할 필요는 없습니다. 프로바이더는, 예를 들어, 서버에 의해 검증되는 캐릭터 라인을 건네주는 등의 처리를 실시할 뿐입니다. 식별되는 법칙이 유효한 법칙이 아닌 경우, 프로바이더는 <tt>AuthenticationException</tt> 를 throw 합니다.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>예를 나타냅니다.
+<blockquote>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#SECURITY_PRINCIPAL">Context.SECURITY_PRINCIPAL</a> , "cn=admin, o=sun, c=us");</pre>
+</blockquote>
+이것은, 법칙명으로서 식별명 「cn=admin, o=sun, c=us」를 설정합니다. </blockquote>
+<a NAME="protocol"></a> 
+<dt>
+<b><tt>java.naming.security.protocol</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 사용하는 프로바이더용의 시큐리티 프로토콜을 지정하는 캐릭터 라인입니다. 다음의 값이, 이 프로퍼티용으로 정의되고 있습니다.  <br>&nbsp;
+<dl>
+<dt>
+<tt>ssl</tt></dt>
+
+<dd>
+Secure Sockets Layer 버젼 3.0 을 사용합니다. </dd>
+</dl>
+
+<p>이 프로퍼티이 <tt>ssl</tt> 로 설정되어 있는 경우, 프로바이더는 SSL 소켓을 사용할 필요가 있습니다. SSL 소켓을 사용할 수 없는 경우는,<tt>ConfigurationException</tt> 를 throw 할 필요가 있습니다. 상기의 값리스트에 가세해 프로바이더는 다른 시큐리티 프로토콜을 지원할 수도 있습니다. 다만, 그러한 프로바이더 고유의 프로토콜을, 모든 프로바이더가 지원하는 것은 아닙니다. 이 프로퍼티이, 프로바이더가 인식 또는 지원하지 않는 시큐리티 프로토콜로 설정되는 경우,<tt>ConfigurationException</tt> 가 throw 됩니다.
+<p><a href="#socket">java.naming.ldap.factory.socket</a>  프로퍼티이 설정되어 있는 경우, 그 프로퍼티으로 식별되는 소켓 팩토리는, 이 프로토콜의 설정에 적절한 소켓을 작성할 필요가 있습니다. 예를 들어, 시큐리티 프로토콜이 <tt>ssl</tt> 로 설정되면(자), 소켓 팩토리는 SSL 에 준거한 소켓을 작성할 필요가 있습니다.
+<p>이 프로퍼티을 설정하지 않는 경우에는, 시큐리티 프로토콜을 사용하지 않는 것이 디폴트가 됩니다.
+<p>LDAP 프로바이더의 개발자는, SSL 접속을 대기하지 않는 포트상의 서버에의 접속에 SSL 를 사용한다면, 소켓이 행업 하는 것을 명기해 둘 필요가 있습니다. 같이 SSL 접속을 대기하는 서버에의 접속에 프레인인 소켓을 사용해도 행업이 일으켜집니다. 이것은, 구현에 따라서는 정정이 실행되는 것은 있지만, 다른 구현의 경우에는 정정을 실행할 필요는 없는, 이라고 하는 프로토콜의 특성입니다. 다만, 프로바이더의 문서내에서, 이 동작을 사용자에게 설명할 필요가 있습니다. SSL 의 사용 방법에 대해서는,<a href="#SSL">SSL</a>  를 참조해 주세요.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put(<a href="../../../api/javax/naming/Context.html#SECURITY_PROTOCOL">Context.SECURITY_PROTOCOL</a> , "ssl");</pre>
+</dl>
+이것은, 서버와의 통신에 SSL 준거의 소켓을 사용하는 것을 나타냅니다. </dl>
+</dl>
+<a NAME="LDAPPROPS"></a> 
+<h3>
+3.3 LDAP 고유의 프로퍼티</h3>
+LDAP 고유의 프로퍼티은, LDAP 서비스 프로바이더 전반에 적용되는 환경 프로퍼티입니다. 이러한 프로퍼티명에는, 접두사 「<tt>java.naming.ldap. </tt>」(이)가 붙습니다. 다음의 겉(표)는, 지금까지 정의된 LDAP 고유의 프로퍼티을 나타냅니다. 이 리스트에 속한다고 생각되는 프로퍼티이 있으면,<font color="#CC0000"><a href="mailto: jndi@java.sun.com">jndi@java.sun.com</a> </font> 까지 알려주세요.
+<p>
+<a NAME="binary"></a> 
+<dt>
+<b><tt>java.naming.ldap.attributes.binary</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 공백 문자로 단락지어진 속성명의 캐릭터 라인입니다. 이 값을 사용해, 비캐릭터 라인 구문을 보관 유지하는 속성이 지정됩니다. 이것은, 프로바이더의 비캐릭터 라인 속성의 「편입」리스트를 확장합니다 (이하를 참조). 비캐릭터 라인 구문을 보관 유지하는 속성치가,<tt>String</tt> 는 아니고 배열 (<tt>byte[]</tt>)로서 돌려주어집니다.
+<p>디폴트는 정의되고 있지 않습니다. 이 프로퍼티이 설정되지 않는 경우, 다음의 속성만이 비캐릭터 라인 구문을 보관 유지한다고 보입니다. </dl>
+
+<center><table summary="attributes with non-string syntax" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>속성 ID</th>
+
+<th>OID</th>
+
+<th NOSAVE>참조</th>
+</tr>
+
+<tr>
+<td>「<tt>;binary</tt>」옵션 첨부의 모든 속성 ID</td>
+
+<td>&nbsp;</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>photo</tt></td>
+
+<td>0.9. 2342.19200300. 100.1. 7</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc1274.txt">RFC 1274</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>personalSignature</tt></td>
+
+<td>0.9. 2342.19200300. 100.1. 53</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc1274.txt">RFC 1274</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>audio</tt></td>
+
+<td>0.9. 2342.19200300. 100.1. 55</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc1274.txt">RFC 1274</a> </td>
+</tr>
+
+<tr>
+<td><tt>jpegPhoto</tt></td>
+
+<td>0.9. 2342.19200300. 100.1. 60</td>
+
+<td ALIGN=CENTER><a href="http://www.ietf.org/rfc/rfc2798.txt">RFC 2798</a> </td>
+</tr>
+
+<tr>
+<td><tt>javaSerializedData</tt></td>
+
+<td>1.3. 6.1. 4.1. 42.2. 27.4. 1.7</td>
+
+<td ALIGN=CENTER><a href="http://www.ietf.org/rfc/rfc2713.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>thumbnailPhoto</tt></td>
+
+<td>2.16. 128.113533. 1.1400. 1</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.netapps.org">NAC LIP Schema</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>thumbnailLogo</tt></td>
+
+<td>2.16. 128.113533. 1.1400. 2</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.netapps.org">NAC LIP Schema</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>userPassword</tt></td>
+
+<td>2.5. 4.35</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC 2256</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>userCertificate</tt></td>
+
+<td>2.5. 4.36</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>cACertificate</tt></td>
+
+<td>2.5. 4.37</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>authorityRevocationList</tt></td>
+
+<td>2.5. 4.38</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>certificateRevocationList</tt></td>
+
+<td>2.5. 4.39</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>crossCertificatePair</tt></td>
+
+<td>2.5. 4.40</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+
+<tr NOSAVE>
+<td><tt>x500UniqueIdentifier</tt></td>
+
+<td>2.5. 4.45</td>
+
+<td ALIGN=CENTER NOSAVE><a href="http://www.ietf.org/rfc/rfc2256.txt">RFC-2713</a> </td>
+</tr>
+</table></center>
+<p>
+<dl>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.attributes.binary",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "mpegVideo myspecialkey");</pre>
+</dl>
+이것은, 프로바이더에 대해,<tt>mpegVideo</tt> 속성 및 <tt>myspecialkey</tt> 속성의 값을 <tt>byte[]</tt> 로서 돌려주는 것을 통지합니다.  <a NAME="connect"></a> </dl>
+
+<p>
+<dt>
+<b><tt>java.naming.ldap.control.connect</tt></b></dt>
+<p>
+<dl>이 프로퍼티의 값은,<tt>Control[]</tt> 객체입니다. &nbsp;이것은, 접속시에 액티브한 접속 요구 컨트롤을 설정합니다. <tt><a href="../../../api/javax/naming/ldap/LdapContext.html">LdapContext</a> </tt> 를 참조해 주세요.
+<p>이 프로퍼티의 디폴트 값는 정의되고 있지 않습니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.control.connect",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new Control[]{ new ManageReferralControl(true) });</pre>
+</dl>
+이것은, 위기인 ManageDsaIT LDAP 컨트롤을 접속 요구 컨트롤로서 설정합니다. </dl>
+
+<p>
+<a NAME="deleteRDN"></a> 
+<dt>
+<b><tt>java.naming.ldap.deleteRDN</tt></b></dt>
+<p>
+
+<dl>이 프로퍼티의 값은, 구래의 RDN 가 <tt><a href="../../../api/javax/naming/Context.html#rename(java.lang.String,%20java.lang.String)"> Context.rename</a> </tt> 메소드에 의해 삭제될지 어떨지를 지정하는 캐릭터 라인입니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다.  <br>&nbsp;
+<dl>
+<dt>
+<tt>true</tt></dt>
+
+<dd>
+이름의 변경 조작중에, 구래의 RDN 를 엔트리로부터 삭제합니다. </dd>
+
+<dt>
+<tt>false</tt></dt>
+
+<dd>
+구래의 RDN 를 엔트리의 속성치로서 보관 유지합니다. </dd>
+
+<br>&nbsp;</dl>
+이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>true</tt> 가 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.deleteRDN", "false");</pre>
+</dl>
+이것은, 구래의 RDN 를, 이름의 변경된 엔트리의 속성으로서 보관 유지합니다. </dl>
+</dl>
+<p>
+<a NAME="derefAliases"></a> 
+<dt>
+<b><tt>java.naming.ldap.derefAliases</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은, 검색 조작중에 별명을 간접 참조하는 방법을 지정하는 캐릭터 라인입니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다. </blockquote>
+
+<blockquote>
+<blockquote>
+<dt>
+<tt>always</tt></dt>
+
+<dd>
+항상 별명을 간접 참조합니다. </dd>
+
+<dt>
+<tt>never</tt></dt>
+
+<dd>
+별명을 간접 참조하지 않습니다. </dd>
+
+<dt>
+<tt>finding</tt></dt>
+
+<dd>
+이름 해석중 (즉, 타겟 엔트리의 위치의 검출중)만 별명을 간접 참조합니다. </dd>
+
+<dt>
+<tt>searching</tt></dt>
+
+<dd>
+이름 해석 완료 후 (즉, 타겟 엔트리의 위치 검출 후)에 별명을 간접 참조합니다. </dd>
+</blockquote>
+</blockquote>
+
+<blockquote>
+<dl>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>always</tt> 가 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.derefAliases", "searching");</pre>
+</dl>
+이것은, 타겟 엔트리의 검출 후에, 프로바이더가 한 번만 별명을 간접 참조하도록(듯이) 지정합니다.
+<p><b>주 - </b>이 프로퍼티은,<tt><a href="../../../api/javax/naming/directory/SearchControls.html">SearchControls</a> </tt> 객체의 간접 참조 링크 플래그와는 무관계합니다. </dl>
+
+</blockquote>
+<p>
+<a NAME="socket"></a> 
+<dt>
+<b><tt>java.naming.ldap.factory.socket</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 소켓 팩토리의 클래스명을 식별하는 캐릭터 라인입니다.
+<p>이 프로퍼티은, 디폴트의 소켓 팩토리를 오버라이드(override) 하기 위해서 사용됩니다. 이 프로퍼티으로 지정된 클래스는,<tt><a href="../../../api/javax/net/SocketFactory.html">javax.net.SocketFactory</a> </tt> 인터페이스를 구현할 필요가 있습니다. 상세한 것에 대하여는,<a href="../security/jsse/JSSERefGuide.html">http://java.sun.com/j2se/1. 4/ja/docs/ja/guide/security/jsse/JSSERefGuide.html</a>  를 참조해 주세요. SSL 의 사용 방법에 대해서는,<a href="#SSL">SSL</a>  를 참조해 주세요.
+<p>또,<a href="#protocol">java.naming.security.protocol</a>  프로퍼티이 설정되어 있는 경우, 이 프로퍼티으로 식별되는 소켓 팩토리는, 이 프로토콜의 설정에 적절한 소켓을 작성할 필요가 있습니다. 예를 들어, 시큐리티 프로토콜이 <tt>ssl</tt> 로 설정되면(자), 소켓 팩토리는 SSL 에 준거한 소켓을 작성할 필요가 있습니다.
+<p>이 프로퍼티의 디폴트는 정의되고 있지 않습니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.factory.socket",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "javax.net.ssl.SSLSocketFactory");</pre>
+</dl>
+이것은, 프로바이더의 소켓 팩토리를 <tt>javax.net.ssl.SSLSocketFactory</tt> 로 설정합니다. </dl>
+</dl>
+<p>
+<a NAME="separator"></a> 
+<dt>
+<b><tt>java.naming.ldap.ref.separator</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은,<tt>javaReferenceAddress</tt> 속성의 <tt><a href="../../../api/javax/naming/RefAddr.html">RefAddr</a> </tt> 객체 (<a href="#OBJ">Java 객체</a>를 참조)를 encode 할 때에 사용하는 문자를 포함한 캐릭터 라인입니다.
+<p>이 프로퍼티은, 디폴트의 단락 문자가 <tt><a href="../../../api/javax/naming/RefAddr.html">RefAddr</a> </tt> 객체의 컴퍼넌트내에 나타나는 경우에, 충돌을 피하기 위해서(때문에) 사용합니다.
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 「<tt>#</tt>」(해시 문자)이 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.ref.separator", ":");</pre>
+</dl>
+이것은,<tt><a href="../../../api/javax/naming/RefAddr.html"> <a href= "../../api/javax/naming/RefAddr.html">RefAddr</a> </tt> 인스턴스의 포함시에 사용하는 단락 문자를 「<tt>:</tt>」(구두점)로 지정합니다. </dl>
+</dl>
+<p>
+<a NAME="limit"></a> 
+<dt>
+<b><tt>java.naming.ldap.referral.limit</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 조회의 연쇄내에서 계속되는 조회의 최대수를 지정하는 10 진수의 캐릭터 라인입니다. 값이 제로의 경우, 무제한한 것을 나타냅니다.
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>10</tt> 이 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.referral.limit", "5");</pre>
+</dl>
+이것은, 조회수를 5 에 제한합니다. </dl>
+</dl>
+<p>
+<a NAME="typesOnly"></a> 
+<dt>
+<b><tt>java.naming.ldap.typesOnly</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 결과내에 속성 ID 만이 반환되는 (속성치는 생략 된다) 화도인지를 지정하는 캐릭터 라인입니다. 이것은,<tt><a href="../../../api/javax/naming/directory/SearchResult.html#getAttributes()">SearchResult.getAttributes</a> </tt> 메소드 및 <tt><a href="../../../api/javax/naming/directory/DirContext.html#getAttributes(java.lang.String)">DirContext.getAttributes</a> </tt> 메소드에 영향을 줍니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다.  <br>&nbsp;
+<dl>
+<dt>
+<tt>true</tt></dt>
+
+<dd>
+속성 ID 만을 돌려줍니다. </dd>
+
+<dt>
+<tt>false</tt></dt>
+
+<dd>
+속성 ID 와 속성치의 양쪽 모두를 돌려줍니다. </dd>
+</dl>
+
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>false</tt> 가 됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.typesOnly", "true");</pre>
+</dl>
+이것은, 서버가 속성 ID 를 돌려주어, 속성치는 돌려주지 않는 것을 지정합니다. </dl>
+</dl>
+<p>
+<dt>
+<a NAME="version"></a> </dt>
+
+<dt>
+<b><tt>java.naming.ldap.version</tt></b></dt>
+
+<dl>
+<dl>이 프로퍼티의 값은, 프로바이더의 프로토콜 버젼을 지정하는 캐릭터 라인입니다. 다음의 값은, 이 프로퍼티용으로 정의된 것입니다.  <br>&nbsp;
+<dl>
+<dt>
+<tt>2</tt></dt>
+
+<dd>
+LDAP 버젼 2 (LDAPv2)를 선택합니다. </dd>
+
+<dt>
+<tt>3</tt></dt>
+
+<dd>
+LDAP 버젼 3 (LDAPv3)을 선택합니다. </dd>
+</dl>
+
+<p>이 프로퍼티이 설정되지 않는 경우, 프로바이더는 우선 LDAP v3 를 사용해 바인드를 시도합니다. 서버로부터 프로토콜 에러를 수신하면(자) LDAP v2 를 사용해 처리를 계속합니다. <tt><a href="#authentication">java.naming.security.authentication</a> </tt> 프로퍼티이 익명 바인드 또는 간단한 인증을 나타내는 경우에만, 이 페이르오바 기구가 사용됩니다.
+<p>예를 나타냅니다.
+<dl>
+<pre>env.put("java.naming.ldap.version", "2");</pre>
+</dl>
+이것은, LDAP 프로바이더가 LDAPv2 를 사용해 서버와 통신하는 것을 요구합니다. </dl>
+</dl>
+
+<h3>
+<a NAME="FEATUREPROPS"></a>  3.4 기능 고유의 프로퍼티</h3>
+기능 고유의 프로퍼티은, 프로바이더가 지원하는 특정의 기능인 만큼 적용되는 환경 프로퍼티입니다.
+<h4>
+<a NAME="SASLPROPS"></a>  3.4. 1 SASL 프로퍼티</h4>
+
+SASL 프로퍼티은 2 개의 그룹으로 나눌 수 있습니다. 최초의 그룹은, JNDI 서비스 프로바이더의 Java SASL API (<a href=http://www.worldspot.com/jsr28/>JSR 28)와의 제휴 방법으로 관련하는 프로퍼티으로 구성됩니다. 이러한 프로퍼티명에는, 접두사 「<tt>java.naming.security.sasl</tt>」가 붙습니다. 2 번째의 그룹은, SASL 기구에 영향을 주는 프로퍼티으로 구성됩니다. 이러한 프로퍼티은 Java SASL API 로 지정되어<tt>「javax.security.sasl」</tt>라고 하는 접두사를 가지고 있습니다. 2 번째의 프로퍼티 그룹의 상세한 것에 대하여는,<a href=#SASL>「SASL」 </a>및<a href="http://www.ietf.org/internet-drafts/draft-weltman-java-sasl-05.txt">「Java SASL API」</a>를 참조해 주세요.
+
+
+<p>
+<a NAME="authorizationId"></a>  <b><tt>java.naming.security.sasl.authorizationId</tt></b>
+<blockquote>이 프로퍼티의 값은, SASL 기구의 인증 ID 를 지정하는 캐릭터 라인입니다.
+<p>이 프로퍼티을 설정하지 않으면 SASL 기구에게 건네지는 인증 ID 는 빈 상태(empty)의 캐릭터 라인이 됩니다. SASL (<a href="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</a> )의 규정에 따라, 인증 ID 에 빈 상태(empty)의 캐릭터 라인을 사용했을 경우는, 서버는 클라이언트의 인증 쿠레덴샤르로부터 인증 ID 를 꺼냅니다.
+<p>예를 나타냅니다.
+<dl>
+<dl>
+<pre>env.put("java.naming.security.sasl.authorizationId",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "dn:cn=administrators, ou=groups, o=sun, c=us");</pre>
+</dl>
+</dl>
+이것은, 인증의 성공시에 승인 (액세스 컨트롤)용으로 사용되는 식별 정보를 지정합니다. </blockquote>
+
+
+<p>
+<a NAME="realm"></a>  <b><tt>java.naming.security.sasl.realm</tt></b>
+<blockquote>이 프로퍼티의 값은, DIGEST-MD5 등 몇개의 SASL 기구로 필요한 범위 정보를 지정하는 캐릭터 라인입니다.
+
+<p>이 프로퍼티이 설정되어 있지 않은 경우는, 기구 고유의 디폴트로, 인증 교환이 사용되고 있는 동안에 클라이언트와 서버간에서의 협상등이 행해집니다.
+<p>예를 나타냅니다.
+<dl>
+<dl>
+<pre>env.put("java.naming.security.sasl.realm", "webusers");
+</pre>
+</dl>
+</dl>
+클라이언트가 인증에 「webusers」의 범위를 사용하도록(듯이) 지정합니다.
+</blockquote>
+
+<p>
+<a NAME="callback"></a>  <br><b><tt>java.naming.security.sasl.callback</tt></b>
+<blockquote>이 프로퍼티의 값은,<a href=../../../api/javax/security/auth/callback/CallbackHandler.html><tt>javax.security.auth.callback.CallbackHandler</tt></a>  의 인스턴스입니다. 프로바이더가 콜백의 필요한 SASL 기구를 사용하는 경우, SASL 기구는 이 프로퍼티이 제공하는 객체를 사용합니다. 콜백 핸들러는, 인증 ID 를 제공하는 것으로써,<a href=../../../api/javax/security/auth/callback/NameCallback.html><tt>NameCallback</tt></a>  의 요건을 채웁니다.
+
+<p>이 프로퍼티이 설정되지 않는 경우, 프로바이더는 디폴트의 콜백 핸들러를 사용합니다. 디폴트의 콜백 핸들러는,<a href=#principal><tt>java.naming.security.principal</tt></a>  프로퍼티의 값을 사용해 <a href=../../../api/javax/security/auth/callback/NameCallback.html><tt>NameCallback</tt></a>  의 요건을 채워,<a href=#credentials><tt>java.naming.security.credentials</tt></a>  프로퍼티의 값을 사용해 <a href=../../../api/javax/security/auth/callback/PasswordCallback.html><tt>PasswordCallback</tt></a>  의 요건을 채웁니다. 또,<a href=#realm><tt>java.naming.security.sasl.realm</tt></a>  프로퍼티의 값을 사용해,<tt>RealmCallback</tt> 및 <tt>RealmChoiceCallback</tt> (<a href="http://www.ietf.org/internet-drafts/draft-weltman-java-sasl-05.txt">Java SASL API</a>  를 참조)의 요건을 채웁니다.  
+
+<p>예를 나타냅니다.
+<dl>
+<dl>
+<pre>env.put("java.naming.security.sasl.callback",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new MyCallbackHandler());</pre>
+</dl>
+</dl>
+이것은, 사용하는 SASL 기구의 콜백 핸들러의 인스턴스를 제공합니다.
+</blockquote>
+
+<a NAME="qop"></a>  <br><b><tt>javax.security.sasl.qop</tt></b>
+<blockquote>
+이 프로퍼티의 값은, 보호의 품질 (qop)을 「<tt>,</tt>」그리고 단락지은 리스트로, 클라이언트의 qop 의 설정을 지정하기 위해서 사용됩니다. qop 치는, 다음의 머지않아인가입니다.
+<ul>
+<li><tt>auth</tt> - 인증만</li>
+<li><tt>auth-int</tt> - 인증에  완전한 보호</li>
+<li><tt>auth-conf</tt> - 인증과 완전 및 기밀의 보호</li>
+</ul>
+리스트의 순서로, 우선 순위가 정해집니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트의 qop 치는 「<tt>auth</tt>」가 됩니다.
+</blockquote>
+
+<a NAME="strength"></a>  <br><b><tt>javax.security.sasl.strength</tt></b>
+<blockquote>
+이 프로퍼티의 값은 암호의 강함을 나타내는 값을 「<tt>,</tt>」그리고 단락지은 리스트로, 클라이언트의 설정을 지정하기 위해서 사용됩니다. 강함을 나타내는 값은, 다음의 머지않아인가입니다.
+<ul>
+<li><tt>low</tt></li>
+<li><tt>medium</tt></li>
+<li><tt>high</tt></li>
+</ul>
+리스트의 순서로, 우선 순위가 정해집니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트의 강함은 「<tt>high, medium, low</tt>」가 됩니다.
+<p>
+DIGEST-MD5 내에서의 기밀성에 대해서는,<tt>high</tt> 가 <tt>3des</tt> 에,<tt>medium</tt> 가 <tt>rc4</tt> 또는 <tt>des</tt> 에,<tt>low</tt> 가 <tt>rc4-56</tt> 또는 <tt>rc4-40</tt> 에 매핑 됩니다.  
+</blockquote>
+
+<a NAME="maxbuffer"></a>  <br><b><tt>javax.security.sasl.maxbuffer</tt></b>
+<blockquote>
+이 프로퍼티의 값은, 클라이언트가 수신하는 수신 버퍼의 최대 사이즈를 바이트수로 지정한 정수의, 캐릭터 라인 표현입니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트의 사이즈는 SASL 기구로 정의됩니다.
+</blockquote>
+
+<a NAME="mutual"></a>  <br><b><tt>javax.security.sasl.server.authentication</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 서버가 클라이언트에 대해서 인증할 필요의 유무를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_forward"></a>  <br><b><tt>javax.security.sasl.policy.forward</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구가 세션간의 전송 기밀성을 지원할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_creds"></a>  <br><b><tt>javax.security.sasl.policy.credentials</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구가 클라이언트의 쿠레덴샤르를 필요로 할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_noplain"></a>  <br><b><tt>javax.security.sasl.policy.noplaintext</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구를, 단순하고 수동적인 공격의 영향을 받기 어렵게 할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_noactive"></a>  <br><b><tt>javax.security.sasl.policy.noactive</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구를, 능동적인 (비사전) 공격의 영향을 받기 어렵게 할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_nodictionary"></a>  <br><b><tt>javax.security.sasl.policy.nodictionary</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구를, 사전 공격의 영향을 받기 어렵게 할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+<a NAME="policy_noanonymous"></a>  <br><b><tt>javax.security.sasl.policy.noanonymous</tt></b>
+<blockquote>
+이 프로퍼티의 값은 「true」또는 「false」의 어느 쪽인지입니다. 각각, 선택한 SASL 기구가 익명의 로그인을 허가할지 어떨지를 지정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트는 「false」입니다.
+</blockquote>
+
+
+<a NAME="SPIPROPS"></a> 
+<h3>
+3.5 프로바이더 고유의 프로퍼티</h3>
+프로바이더 고유의 프로퍼티은, 특정의 프로바이더 구현인 만큼 적용되는 환경 프로퍼티입니다. 이러한 프로퍼티명은, 프로바이더의 구현자에 의해 선택됩니다. 이러한 프로퍼티의 추천 되는 명명 정책는, 구현자의 반대로 한 DNS 도메인명을 프로바이더의 패키지명의 접두사로서 사용해, 그 패키지명을 프로퍼티명의 접두사로서 사용합니다. 예를 들어, Sun 는, 프로바이더 고유의 LDAP 프로퍼티의 접두사를 「<tt>com.sun.jndi.ldap</tt>」라고 합니다.
+<p>
+<hr>
+<a NAME="NAME"></a> 
+<h2>
+4.  이름</h2>
+이름은, 프로바이더의 문맥 메소드에 의해, 다음의 규칙에 따라 처리됩니다.
+<ol>
+<li>
+파라미터로서 문맥 메소드에 제공되는 <tt>String</tt> 명은,<a href=../../../api/javax/naming/CompositeName.html>복합명 구문</a>내에 있습니다. </li>
+복합명의 최초의 컴퍼넌트는 LDAP 식별명인데 대해, 다른 컴퍼넌트는 연합에서 사용됩니다.
+
+<li>
+<tt>Name</tt> 인수가 <tt>CompositeName</tt> 객체인 경우, 그 최초의 컴퍼넌트가 LDAP 식별명이다고 보여 나머지의 컴퍼넌트 (존재하는 경우)가 연합에서 사용됩니다. </li>
+
+<li>
+<tt>Name</tt> 인수가 <tt>CompositeName</tt> 객체가 아닌 경우, 그 컴퍼넌트 모든 것이 LDAP 식별명의 구문 분석 된 형식이다고 보입니다. 즉, 각 <tt>Name</tt> 컴퍼넌트는 LDAP 관련의 식별명 (RDN)입니다. </li>
+
+<li>
+이름은,<tt>Context.getNameParser</tt> 메소드가 돌려주는 이름 퍼서를 사용해 구문 분석 됩니다. 이름 퍼서는, LDAP 식별명을 <tt>String</tt> 객체로서 받아, LDAP 식별명을 <tt>Name</tt> 객체로서 생성합니다. </li>
+
+<li>
+문맥 조작에 의해 반환되는 이름은, 캐릭터 라인 복합명 또는 캐릭터 라인 URL 입니다.
+</li>
+</ol>
+캐릭터 라인 LDAP 식별명의 구문은,<a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a>  에 준거하고 있습니다. 예를 나타냅니다.
+<blockquote>
+<li>
+<tt>CN=Steve Kille, O=Isode Limited, C=GB</tt></li>
+
+<li>
+<tt>OU=Sales+CN=J.  Smith, O=Widget Inc., C=US</tt></li>
+
+<li>
+<tt>CN=L.  Eagle, O=Sue\, Grabbit and Runn, C=GB</tt></li>
+</blockquote>
+LDAP 문맥에 제공되는 이름은, 항상 그 문맥에 대한 상대적인 것입니다. 예를 들어, 「<tt>dc=widget, dc=com</tt>」에 대해서 LDAP 문맥 (<tt>lctx</tt>)이 지정되었을 경우, 그 서브 트리내의 LDAP 엔트리의 명명에는 「<tt>dc=widget, dc=com</tt>」에 대한 상대명을 사용할 필요가 있습니다. 예를 들어, 다음의 호출은, 「<tt>cn=John Smith, dc=widget, dc=com</tt>」엔트리의 속성을 가져옵니다.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>Attributes attrs = lctx.getAttributes("cn=John Smith");</tt>
+<p>같이 열거 메소드 (<tt>Context.list</tt>,<tt>Context.listBindings</tt>,<tt>DirContext.search</tt>)의 어느쪽이든을 사용해 문맥을 열거하면(자), 타겟 문맥 (열거 대상의 문맥)에 대한 상대명이 돌려주어집니다. 리페랄이 불려 가면(자), 상대명 대신에, 완전 수식명을 포함한 LDAP 또는 LDAP URL 캐릭터 라인이 돌려주어집니다. SSL 접속을 사용해 열거가 실행되었을 경우는, LDAPS URL 캐릭터 라인이 반환된다). LDAP URL 의 형식은,<a href="http://www.ietf.org/rfc/rfc2255.txt">RFC 2255</a>  로 정의되고 있습니다.
+<p><a href="http://www.ietf.org/rfc/rfc2255.txt">RFC 2255</a>  에 준거하는 LDAP URL 와　LDAPS URL 는, 임의의 문맥 메소드에 제공 가능합니다. 호스트명과 포트 번호는 URL 로부터 추출되어 LDAP 서버에 접속하는 경우에 사용됩니다.  URL 의 schema ( 「ldap」또는 「ldaps」)는, 프레인 접속과 SSL 접속의 어느 쪽이 사용될까를 판단하기 위해서(때문에) 사용됩니다. <tt><a href="#initial">java.naming.factory.initial</a> </tt> 프로퍼티과 <tt><a href="#url">java.naming.provider.url</a> </tt> 프로퍼티은 무시됩니다. 다음에 예를 나타냅니다.
+<p><tt>&nbsp;&nbsp;&nbsp; DirContext ictx = new InitialDirContext();</tt> <br><tt>&nbsp;&nbsp;&nbsp; Attributes attrs = ictx.getAttributes(</tt> <br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "ldap://wserver:389/cn=John Smith, dc=widget, dc=com");</tt>
+<p>
+이 코드는, 프레인 접속을 사용해 머신 <tt>wserver</tt>, 포트 <tt>389</tt> 의 LDAP 서버와 통신합니다.
+<p>
+<hr>
+<h2>
+<a NAME="ATTRS"></a> </h2>
+
+<h2>
+5.  속성</h2>
+<p>LDAP 프로바이더는, 모든 속성치가 <tt>String</tt> 또는 <tt>byte[]</tt> 객체로서 입력되는 것으로 간주해, 모든 속성치를 <tt>String</tt> 또는 <tt>byte[]</tt> 객체로서 돌려줍니다. 어느 속성치가 <tt>byte[]</tt> 로 간주해지는지, 및 그 리스트의 확장 방법에 대해서는,<a href=#binary><tt>java.naming.ldap.attributes.binary</tt></a>  환경 프로퍼티을 참조해 주세요.  
+<p>
+<hr>
+<a NAME="URLS"></a> 
+<h2>
+6.  URL</h2>
+LDAP URL 의 구문 형식에 대해서는,<a href="http://www.ietf.org/rfc/rfc2255.txt">RFC 2255</a>  를 참조해 주세요. 이 형식은, LDAP 검색 조작의 지정에 필요한 모든 요소를 포함해, 확장 기능을 지원합니다.
+<blockquote>
+<pre>ldap://host:port/dn? attributes? scope? filter? extensions</pre>
+</blockquote>
+인증 정보는, URL 의 <tt>extensions</tt> 부에서 지정 가능합니다. 이 형식의 상세한 것에 대하여는, RFC 를 참조해 주세요.
+
+<p>
+LDAP URL 외에, 프로바이더는 표준이 아닙니다만, 넓게 사용되고 있는 LDAPS URL 도 지원합니다. LDAPS URL 는 프레인 (즉 보호되어 있지 않다) 접속 대신에 SSL 접속을 사용합니다. LDAPS URL 의 구문은 LDAP URL 와 닮아 있습니다만, schema는 달라, LDAPS URL 의 디폴트의 포트는 389 는 아니고 636 입니다.
+<blockquote>
+<pre>ldaps://host:port/dn? attributes? scope? filter? extensions</pre>
+</blockquote>
+
+<p>URL 는, JNDI 의 다양한 곳으로 다음과 같은 역할을 완수합니다.
+<ol>
+<li>
+서비스 프로바이더의 구성</li>
+
+<br>LDAP 서비스 프로바이더를 구성하려면 , 일반적으로,<a href=#url><tt>java.naming.provider.url</tt></a>  프로퍼티내에서 LDAP URL 또는 LDAPS URL 를 지정합니다.  복수의 URL 를 지정하는 경우는 스페이스에서 단락짓습니다. 이것은, LDAP 서비스 프로바이더가 디렉토리 서버에의 접속 설정을 실시할 때에 사용됩니다. 이 설정과 관계가 있는 것은, URL 의 <tt>host</tt>,<tt>port</tt>, 및 <tt>dn</tt> 부 뿐입니다. URL 외 부분을 지정하면(자),<tt>ConfigurationException</tt> 가 throw 됩니다.  <br>&nbsp;
+<li>
+초기 문맥 메소드에의 인수</li>
+
+
+<br>URL 캐릭터 라인 (<i>scheme_id:rest_of_name</i> 구문)이 <tt>InitialContext</tt> 내의 메소드에 <tt>String</tt> 인수 또는 <tt>Name</tt> 의 최초의 컴퍼넌트로서 건네받으면(자), schema를 처리하는 문맥 팩토리의 검출이 URL 의 schema ID 를 사용해 행해집니다. 아무것도 검출되지 않는 경우, URL 캐릭터 라인은 일반적으로명으로서 처리되어<a href=#initial><tt>java.naming.factory.initial</tt></a>  프로퍼티에 의해 지정된 초기 문맥에게 건네집니다. URL 문맥 팩토리의 검출 방법에 대한 자세한 것은,<tt>java.naming.spi.NamingManager.getURLContext</tt> 메소드를 참조해 주세요. URL 를 이름으로서 지원하는 것이 가능한 것은, 초기 문맥내 뿐인 것에 유의해 주세요.
+
+<p>검색 메소드를 제외해, LDAP URL 또는 LDAPS URL 를 이름으로서 초기 문맥에 건네주는 경우, URL 에는 어떠한 쿼리 ( 「<tt>? </tt>」) 컴퍼넌트도 포함하지 않습니다. 쿼리컴퍼넌트를 포함하면(자), 서비스 프로바이더에 의해 <tt>InvalidNameException</tt> 가 throw 됩니다. 검색 메소드의 경우, URL 의 쿼리컴퍼넌트는 인수로서 제공된 대응하는 컴퍼넌트 모든 것을 오버라이드(override) 합니다. 예를 들어, 스코프 컴퍼넌트를 포함한 LDAP URL 가 지정되면(자), 그 스코프는 <tt>SearchControls</tt> 인수내에서 건네받는 모든 스코프 설정을 오버라이드(override) 합니다.  
+
+<br>&nbsp;
+<li>
+조회</li>
+
+<br>LDAP 조회에는, 1 개(살) 이상의 URL 의 리스트가 포함됩니다. LDAP 조회를 (<a href=#referral><tt>java.naming.referral</tt></a>  프로퍼티을 설정하는 것으로써 명시적 또는 암묵적으로) 처리하려면 , 서비스 프로바이더가 이러한 URL 내의 정보를 사용해 참조처의 LDAP 서버에의 접속을 작성할 필요가 있습니다. 단일의 조회내에 복수의 URL 가 존재하는 경우, 이것들은 대체로서 다루어져 그 어느쪽이든가 성공할 때까지 각 URL 가 처리됩니다. 완전한 URL (즉, 모든 쿼리컴퍼넌트를 포함한다)가 사용됩니다.  <br>&nbsp;
+<li>
+리스트 및 검색 열거내에 이름으로서 반환된다</li>
+
+<br>반환되는 엔트리명이 타겟 문맥에 대한 상대명이 아닌 (즉, 리스트 또는 검색의 기점이 되는 문맥이다) 경우, 이름은 URL 로서 돌려주어집니다. 자세한 것은,<tt>NameClassPair.isRelative</tt> 를 참조해 주세요.  <br>&nbsp;
+<li>
+<tt>NamingManager</tt> 또는 <tt>DirectoryManager</tt> 의 <tt>getObjectInstance</tt> 메소드에의 인수
+</li>
+
+<br> LDAP 이름 공간이 다른 이름 공간하 (DNS 등)에서 연합 하는 경우, 상위의 이름 공간내에 포함되는 정보는 LDAP URL 또는 LDAPS URL 가 됩니다. 이러한 경우, 상위의 이름 공간내에서의 룩 업/리스트/검색 조작은, LDAP 이름 공간에 LDAP URL 또는 LDAPS URL 를 포함한 <tt>Reference</tt> 를 돌려줍니다. 상위의 이름 공간의 서비스 프로바이더는,<tt>Reference</tt> 를 <tt>getObjectInstance</tt> 메소드에 건네주어 LDAP 문맥의 인스턴스를 생성합니다. </ol>
+
+항목 (1), (2), (3), 및 (5)의 경우, URL 에 호스트명과 포트 번호가 결핍 해, 식별명이 지정되고 있는 경우, 프로바이더는 인터넷 문서 <a href="http://www.ietf.org/internet-drafts/draft-ietf-ldapext-locate-08.txt">draft-ietf-ldapext-locate-08.txt</a>  의 설명대로, DNS 를 사용해 LDAP 서비스를 검출하는 알고리즘을 사용할 필요가 있습니다. 프로바이더가 이 알고리즘을 사용하지 않는 경우, 또는 DNS 설정을 사용할 수 없는 경우, 프로바이더는 호스트명에 <tt>localhost</tt> 를 사용해, 포트에는 프레인 접속의 경우는 389 를, SSL 접속의 경우는 636 을 사용할 필요가 있습니다.
+
+<p>
+<hr>
+<br><a NAME="OBJ"></a> 
+<h2>
+7.  Java 객체</h2>
+
+<h3>
+7.1 포함</h3>
+LDAP 프로바이더는, Java 객체의 디렉토리내에의 포함을 지원할 필요가 있습니다. 이것은, 다음의 메소드내에서 구현되고 있습니다.
+<ul>
+<li>
+<tt>Context.bind()</tt></li>
+
+<li>
+<tt>Context.rebind()</tt></li>
+
+<li>
+<tt>DirContext.bind()</tt></li>
+
+<li>
+<tt>DirContext.rebind()</tt></li>
+</ul>
+프로바이더는, 적어도 다음의 타입의 Java 객체의 포함을 지원할 필요가 있습니다.
+<ol>
+<li>
+<tt>Reference</tt> 의 인스턴스</li>
+
+<li>
+<tt>Referenceable</tt> 인터페이스를 구현하는 객체</li>
+
+<li>
+<tt>Serializable</tt> 인터페이스를 구현하는 객체</li>
+
+<li>
+<tt>DirContext</tt> 인터페이스를 구현하는 객체</li>
+</ol>
+클라이언트의 의도를 가장 정확하게 파악하기 위해서, 객체가 이것들 4 개의 카테고리에 속할지 어떨지를 리스트 된 순서로 체크할 필요가 있습니다. 예를 들어,<tt>Reference</tt> 는 <tt>Serializable</tt> 입니다. 이 때문에,<tt>Serializable</tt> 검사를 최초로 실행하면(자), 어느 <tt>Reference</tt> 도 참조 형식에서 포함될 것은 없습니다 (즉, 모두 직렬화 됩니다).
+<p><tt>Reference</tt>,<tt>Referenceable</tt>, 및 <tt>Serializable</tt> 객체는,<a href="http://www.ietf.org/rfc/rfc2713.txt">RFC 2713</a>  에 따라 포함할 필요가 있습니다. <tt>DirContext</tt> 객체는, 그 속성을 포함하는 것으로써 포함됩니다.  
+<p>
+<tt>RefAddr</tt> 의 참조 리스트를 <tt>javaReferenceAddress</tt> 속성에 포함할 때에, 주소의 위치, 형태, 및 내용의 단락 문자는, 환경 프로퍼티 <a href="#separator">java.naming.ldap.ref.separator</a>  를 사용해 제어합니다. 이 환경 프로퍼티이 지정되지 않는 경우, 단락 문자로서 해시 문자 「#」이 사용됩니다.
+<p>객체를 디렉토리내에 포함할 때, 프로바이더는 <tt>DirectoryManager.getStateToBind</tt> 메소드를 사용합니다. 이것에 의해, 어떤 형태의 객체에서도 상기의 4 개의 카테고리의 1 개로 변환해, 디렉토리내에 포함할 수 있게 됩니다.
+
+<h3>
+7.2 read</h3>
+객체는, 다음의 오퍼레이션을 사용해 디렉토리로부터의 read를 실행합니다.
+<ul>
+<li>
+<tt>Context.lookup()</tt></li>
+
+<li>
+<tt>Context.lookupLink()</tt></li>
+
+<li>
+<tt>Binding.getObject()</tt></li>
+</ul>
+프로바이더는, 디렉토리로부터의 엔트리의 read시에, LDAP 속성, 및 <a href="http://www.ietf.org/rfc/rfc2713.txt">RFC 2713</a>  에 정의된 속성 (엔트리를 관련지을 수 있었던 Java 객체를 보관 유지하는 경우)을 가져옵니다. 엔트리에 Java 객체에 관련한 속성이 포함되는 경우, 프로바이더는 이러한 속성을 사용해 객체를 재작성합니다. 그 이외의 경우, 프로바이더는 엔트리의 속성을 포함한 <tt>DirContext</tt> 의 인스턴스를 돌려줄 필요가 있습니다. <tt>DirContext</tt> 와 Java 객체의 어느 쪽의 경우에도, 프로바이더는 <tt>DirectoryManager.getObjectInstance()</tt> 를 호출해, 결과를 호출해 측에 돌려줍니다.
+<p>
+<hr>
+<br><a NAME="SCHEMA"></a> 
+<h2>
+8.  schema</h2>
+JNDI 는, schema 트리의 구조나 내용, schema 트리의 내용을 변경하는 권한등의 schema 관련의 상세를 지정하지 않습니다. schema 트리에의 변경에 의해 받는 영향은, 기반이 되는 디렉토리에 의존합니다. JNDI 가 지정하는 것은, 루트 schema 문맥 (<tt>DirContext.getSchema()</tt> 에 의해 반환된다)에 다음의 바인딩이 포함되는 것 뿐입니다.
+<ul>
+<li>
+AttributeDefinition</li>
+
+<li>
+ClassDefinition</li>
+
+<li>
+SyntaxDefinition</li>
+</ul>
+이 문서에서는, LDAP 베이스의 schema로부터 파생하는 schema 트리의 구조 및 내용의 스펙을 정합니다. 또, schema 트리의 배치 방법, 및 이 schema 트리의 다양한 부분의 엔트리와의 관련짓고를 기대할 수 있는 필수 및 옵션의 속성에 대해 설명합니다.
+<p>schema 트리의 내용을 변경하는 권한은, 디렉토리 관리자에 의해 결정됩니다. schema 트리가 변경되면(자), 변경은 디렉토리 서버에 포함된 schema에 적용됩니다.
+<h3>
+8.1 schema 트리의 구조</h3>
+전술의 루트 schema 문맥내의 3 개의 바인딩에 가세해 루트 schema 문맥에 다음의 4 개의 바인딩을 포함할 수도 있습니다.
+<ul>
+<li>
+MatchingRule</li>
+
+<li>
+ExtensionDefinition</li>
+
+<li>
+ControlDefinition</li>
+
+<li>
+SASLDefinition</li>
+
+<br>&nbsp;</ul>
+
+<center><table summary="name and description of binding" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>바인딩명</th>
+
+<th>바인딩의 설명</th>
+</tr>
+
+<tr>
+<td><a href="#ATTRSCHEMA">AttributeDefinition</a> </td>
+
+<td>속성 정의 트리의 루트:이름 또는 OID 로 식별되는 속성을 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr NOSAVE>
+<td><a href="#CLASSSCHEMA">ClassDefinition</a> </td>
+
+<td NOSAVE>「objectclass」정의 트리의 루트:이름 또는 OID 로 식별되는 객체 클래스를 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr NOSAVE>
+<td><a href="#SYNTAXSCHEMA">SyntaxDefinition</a> </td>
+
+<td NOSAVE>구문 정의 트리의 루트 :OID 로 식별되는 구문을 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><a href="#MATCHSCHEMA">MatchingRule</a> </td>
+
+<td>일치 규칙 트리의 루트:이름 또는 OID 로 식별되는 일치 규칙을 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr>
+<td><a href="#EXTSCHEMA">ExtensionDefinition</a> </td>
+
+<td>확장 기능 트리의 루트 :OID 로 식별되는 확장 기능을 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr>
+<td><a href="#CTLSCHEMA">ControlDefinition</a> </td>
+
+<td>컨트롤 트리의 루트 :OID 로 식별되는 컨트롤을 가지는, 플랫인 이름 공간</td>
+</tr>
+
+<tr>
+<td><a href="#SASLSCHEMA">SASLMechanism</a> </td>
+
+<td>SASL 트리의 루트:캐릭터 라인명으로 식별되는 SASL 인증 기구를 가지는, 플랫인 이름 공간</td>
+</tr>
+</table></center>
+
+<p>기반이 되는 디렉토리가 이런 종류의 schema 정보를 공개하지 않는 경우, 또는 서비스 프로바이더가 그 취득을 지원하지 않는 경우에는, 이러한 바인딩의 언젠가 또는 모든 것이 존재하지 않는 것이 있을 수 있습니다. 다만, 이러한 이름이 루트 schema 문맥내에 존재하는 경우에는, 상기의 겉(표)에 나타낸 바인딩을 보관 유지할 필요가 있습니다.
+<p>속성명 및 이러한 엔트리의 속성의 값은, 대문자 소문자로 구별되지 않습니다.  <br><a NAME="ATTRSCHEMA"></a> 
+<h3>
+8.2 속성 정의</h3>
+이름 「AttributeDefinition」는, schema내의 속성 정의를 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 디렉토리가 「commonName」속성을 지원하는 경우, 「AttributeDefinition」문맥은,<tt>DirContext</tt> 객체에 바인드 되는 이름 「commonName」라는 바인드를 보관 유지합니다.
+<p>「AttributeDefinition」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="attribute identifier and value description" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr>
+<td>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (OID)</td>
+</tr>
+
+<tr>
+<td>NAME</td>
+
+<td>속성의 이름</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>속성의 설명</td>
+</tr>
+
+<tr>
+<td>OBSOLETE</td>
+
+<td>현재 사용되어 있지 않은 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>SUP</td>
+
+<td>이 속성형의 파생원인, 상위의 속성형의 이름</td>
+</tr>
+
+<tr NOSAVE>
+<td>EQUALITY</td>
+
+<td NOSAVE>등가의 일치가 허가되는 경우에는 일치 규칙의 이름 또는 OID, 등가의 일치가 허가되지 않는 경우에는 값없음</td>
+</tr>
+
+<tr>
+<td>ORDERING</td>
+
+<td>순서 붙이고 된 일치가 허가되는 경우에는 일치 규칙의 이름 또는 OID, 허가되지 않는 경우에는 값없음</td>
+</tr>
+
+<tr>
+<td>SUBSTRING</td>
+
+<td>부분 캐릭터 라인의 일치가 허가되는 경우에는 일치 규칙의 이름 또는 OID, 허가되지 않는 경우에는 값없음</td>
+</tr>
+
+<tr>
+<td>SYNTAX</td>
+
+<td>이 형태의 값의 구문의 수치 OID</td>
+</tr>
+
+<tr>
+<td>SINGLE-VALUE</td>
+
+<td>속성이 복수의 값을 보관 유지하지 않는 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>COLLECTIVE</td>
+
+<td>속성이 취득 가능한 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>NO-USER-MODIFICATION</td>
+
+<td>사용자에 의한 변경이 불가능한 경우는 「true」, 그 외의 경우는 값없음</td>
+</tr>
+
+<tr>
+<td>USAGE</td>
+
+<td>속성의 사용 방법의 설명</td>
+</tr>
+</table></center>
+
+<p>이러한 속성은, 「AttributeTypeDescription」에 대해서 <a href="http://www.ietf.org/rfc/rfc2252.txt">RFC 2252</a>  로 정의된 이름과 일대일로 대응합니다. 속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해 「cn」속성을 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext cnSchema = schema.lookup("AttributeDefinition/cn");</pre>
+</blockquote>
+그 후, 「cnSchema」<tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.5. 4.3
+NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cn
+SYNTAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3. 6.1. 4.1. 1466.115. 121.1. 15
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Standard Attribute, alias for commonName</pre>
+</blockquote>
+「cn」속성을 벌써 보관 유지하고 있는 경우에는, 「cnSchema」를 취득하는 이제(벌써) 1 개의 방법이 있습니다. 다음의 코드로, 그방법을 나타냅니다.
+<blockquote>
+<pre>Attributes attrs = ctx.getAttributes("cn=John", new String[]{"cn"});
+Attribute cnAttr = attrs.get("cn");
+DirContext cnSchema = cnAttr.getAttributeDefinition();</pre>
+</blockquote>
+<a NAME="CLASSSCHEMA"></a> 
+<h3>
+8.3 객체 클래스 정의</h3>
+이름 「ClassDefinition」는, schema내의 객체 클래스 정의를 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 디렉토리가 「country」객체 클래스를 지원하는 경우, 「ClassDefinition」문맥은,<tt>DirContext</tt> 객체에 바인드 되는 이름 「country」에의 바인드를 보관 유지합니다.
+<p>「ClassDefinition」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<caption>&nbsp;</caption>
+
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr>
+<td>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (OID)</td>
+</tr>
+
+<tr>
+<td>NAME</td>
+
+<td>객체 클래스의 이름</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>객체 클래스의 설명</td>
+</tr>
+
+<tr>
+<td>OBSOLETE</td>
+
+<td>현재 사용되어 있지 않은 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>SUP</td>
+
+<td>이 객체 클래스의 파생원인, 상위의 객체 클래스의 이름</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>ABSTRACT</td>
+
+<td>객체 클래스가 추상 클래스인 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>STRUCTURAL</td>
+
+<td>객체 클래스가 구조화 클래스인 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>AUXILIARY</td>
+
+<td>객체 클래스가 보조 클래스인 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>MUST</td>
+
+<td>존재할 필요가 있는 속성의 형명의 리스트</td>
+</tr>
+
+<tr>
+<td>MAY</td>
+
+<td>존재할 가능성이 있는 속성의 형명의 리스트</td>
+</tr>
+</table></center>
+
+<p>이러한 속성은, 「ObjectClassDescription」에 대해서 <a href="http://www.ietf.org/rfc/rfc2252.txt">RFC 2252</a>  로 정의된 이름과 일대일로 대응합니다. 속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해 「country」객체 클래스를 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext countrySchema = schema.lookup("ClassDefinition/country");</pre>
+</blockquote>
+그 후, 「countrySchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.5. 6.2
+NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; country
+MAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; aci, searchguide, description
+MUST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; objectclass, c
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Standard ObjectClass
+SUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; top</pre>
+</blockquote>
+「country」객체를 이미 보관 유지하고 있는 경우, 「countrySchema」를 취득하는 이제(벌써) 1 개의 방법이 있습니다. 다음의 코드로, 그방법을 나타냅니다.
+<blockquote>
+<pre>// Read object from directory
+DirContext countryObj = (DirContext) ctx.lookup("c=us", new String[]{"country"});
+
+// Get all of object's object class definitions
+DirContext objClasses = countryAttr.getSchemaClassDefinition();
+
+// Pick out "country" object class in particular
+DirContext countryClass = (DirContext) objClasses.lookup("country");</pre>
+</blockquote>
+<p>
+<b>주 - </b>JNDI 1.1 으로 규정된 <tt>getSchemaClassDefinition()</tt> 의 스펙에 의하면, 서비스 프로바이더가 객체의 객체 클래스 정의의 어느쪽이든을 돌려주게 되어 있습니다. 객체는 일반적으로 복수의 객체 클래스를 보관 유지하는 것, 및 어플리케이션은 실행중의 동작에 근거해, 이러한 객체 클래스의 어느 쪽인가에 관한 지식을 필요로 하기 (위해)때문에, 이 스펙은 부적절합니다. 위의 예에서는, 객체 클래스 정의를 모두 포함한 문맥이 돌려주어집니다.  <br><a NAME="SYNTAXSCHEMA"></a> 
+<h3>
+8.4 구문 정의</h3>
+이름 「SyntaxDefinition」는, schema내의 구문 정의를 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 디렉토리가 「1.3. 6.1. 4.1. 1466.115. 121.1. 15」구문 (디렉토리 캐릭터 라인) 구문을 지원하는 경우, 「SyntaxDefinition」문맥은,<tt>DirContext</tt> 객체에 바인드 된 이름 「1.3. 6.1. 4.1. 1466.115. 121.1. 15」에의 바인딩을 보관 유지합니다.
+<p>「SyntaxDefinition」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="mandatory and optional attributes" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (OID)</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>구문의 설명</td>
+</tr>
+</table></center>
+
+<p>이러한 속성은, 「SyntaxDescription」에 대해서 <a href="http://www.ietf.org/rfc/rfc2252.txt">RFC 2252</a>  로 정의된 이름과 일대일로 대응합니다. 속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해, 「1.3. 6.1. 4.1. 1466.115. 121.1. 15」구문을 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext dirStringSchema =&nbsp;
+&nbsp;&nbsp;&nbsp; schema.lookup("SyntaxDefinition/1. 3.6. 1.4. 1.1466. 115.121. 1.15");</pre>
+</blockquote>
+그 후, 「dirStringSchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3. 6.1. 4.1. 1466.115. 121.1. 15
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Directory String</pre>
+</blockquote>
+그 구문을 보관 유지하는 속성 ( 「country」속성등)을 이미 취득하고 있다면, 「dirStringSchema」를 취득하는 등가인 방법이 존재합니다. 다음의 코드로, 그방법을 나타냅니다.
+<blockquote>
+<pre>Attributes attrs = ctx.getAttributes("c=us", new String[]{"country"});
+Attribute countryAttr = attrs.get("country");
+DirContext dirStringSchema = countryAttr.getSyntaxAttributeDefinition();</pre>
+</blockquote>
+<a NAME="MATCHSCHEMA"></a> 
+<h3>
+8.5 일치 규칙</h3>
+이름 「MatchingRule」는, schema내의 일치 규칙을 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 「일치 규칙」은, 속성치의 비교로 사용하는 알고리즘을 일의에 식별합니다. 예를 들어, 디렉토리는 캐릭터 라인의 발음시의 들리는 방법에 근거하는 일치 규칙을 지원해, 그것을 일치 규칙 「soundAlikeMatch」로서 정의하는 경우가 있습니다. 그 후, 「MatchingRule」문맥은,<tt>DirContext</tt> 객체에 바인드 되는 이름 「soundAlikeMatch」에의 바인딩을 보관 유지합니다.
+<p>일치 규칙이 확장 가능한 규칙의 경우, 「APPLIES」속성도 포함하고 있을 필요가 있습니다. 이 속성은, 이 확장 가능한 일치 규칙에 적용 가능한 속성을 일람표 가리킵니다.
+<p>「MatchingRule」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="mandatory and optional attributes" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr>
+<td>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (OID)</td>
+</tr>
+
+<tr>
+<td>NAME</td>
+
+<td>일치 규칙의 이름</td>
+</tr>
+
+<tr NOSAVE>
+<td>DESC</td>
+
+<td NOSAVE>일치 규칙의 설명</td>
+</tr>
+
+<tr>
+<td>OBSOLETE</td>
+
+<td>현재 사용되어 있지 않은 경우는 「true」, 그 외의 경우는 「false」또는 값없음</td>
+</tr>
+
+<tr>
+<td>SYNTAX</td>
+
+<td>이 규칙의 적용 대상의 구문의 수치 OID</td>
+</tr>
+
+<tr>
+<td>APPLIES</td>
+
+<td>이 확장 가능한 일치 규칙의 적용 대상 속성의 형명의 리스트</td>
+</tr>
+</table></center>
+
+<p>이러한 속성은, 「MatchingRuleDescription」 및 「MatchingRuleUseDescription」에 대해서 <a href="http://www.ietf.org/rfc/rfc2252.txt">RFC2252</a>  로 정의된 이름과 일대일로 대응합니다. 속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해 「soundAlikeMatch」구문을 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext soundMatchSchema =&nbsp;
+&nbsp;&nbsp;&nbsp; schema.lookup("MatchingRule/soundAlikeMatch");</pre>
+</blockquote>
+그 후, 「soundMatchSchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.2. 3.4. 5
+NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; soundAlikeMatch
+SYNTAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3. 6.1. 4.1. 1466.115. 121.1. 15 (for directory string)
+APPLIES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.5. 4.41, 2.5. 4.15
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Home-grown Phonetic match</pre>
+</blockquote>
+<a NAME="EXTSCHEMA"></a> 
+<h3>
+8.6 확장 기능 정의</h3>
+이름 「ExtensionDefinition」는, 서버에 의해 지원되는 확장 기능을 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 어느 디렉토리가<a href="http://www.ietf.org/rfc/rfc2830.txt">「Start TLS」확장 기능</a>  ( 「1.3. 6.1. 4.1. 1466.20037」)을 지원한다고 합니다. 그렇다면, 「ExtensionDefinition」문맥은,<tt>DirContext</tt> 객체에 바인드 되는 이름 「1.3. 6.1. 4.1. 1466.20037」에의 바인딩을 보관 유지합니다.
+<p>「ExtensionDefinition」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="mandatory and optional attributes" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (OID)</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>확장 기능의 설명</td>
+</tr>
+</table></center>
+
+<p>속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해, Start TLS 확장 기능 ( 「1.3. 6.1. 4.1. 1466.20037」)을 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext startTLSSchema =&nbsp;
+&nbsp;&nbsp;&nbsp; schema.lookup("ExtensionDefinition/1. 3.6. 1.4. 1.1466. 20037");</pre>
+</blockquote>
+그 후, 「startTLSSchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3. 6.1. 4.1. 1466.20037
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Start TLS (see RFC 2830)</pre>
+</blockquote>
+<a NAME="CTLSCHEMA"></a> 
+<h3>
+8.7 컨트롤 정의</h3>
+이름 「ControlDefinition」는, 서버가 지원하는 컨트롤을 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 디렉토리는, 서버가 돌려주는 검색 결과를 소트 하도록(듯이) 서버에 의뢰하기 위한 컨트롤을 지원하는 경우가 있습니다.
+<p>「ControlDefinition」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="mandatory and optional attributes" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>NUMERICOID (<font color="#CC0000">필수</font>)</td>
+
+<td>일의의 식별자 (캐릭터 라인)</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>컨트롤의 설명</td>
+</tr>
+</table></center>
+
+<p>속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해,<a href="http://www.ietf.org/rfc/rfc2891.txt">서버측 소트 컨트롤</a>  ( 「1.2. 840.113556. 1.4. 473」)을 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext svrSortSchema =&nbsp;
+&nbsp;&nbsp;&nbsp; schema.lookup("ControlDefinition/1. 2.840. 113556.1. 4.473");</pre>
+</blockquote>
+그 후, 「svrSortSchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote>
+<pre>NUMERICOID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.2. 840.113556. 1.4. 473
+DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; server-side sorting of search results</pre>
+</blockquote>
+<a NAME="SASLSCHEMA"></a> 
+<h3>
+8.8 SASL 기구</h3>
+이름 「SASLMechanism」는, 서버가 지원하는 SASL 인증 기구를 나타내는 <tt>DirContext</tt> 객체를 포함한 문맥에 바인드 됩니다. 예를 들어, 디렉토리는, 저위층에 의해 교환되는 시큐리티의 쿠레덴샤르를 서버가 이용하는 것을 요구하는 EXTERNAL SASL 기구 (<a href="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</a> )를 지원하는 경우가 있습니다.
+<p>「SASLMechanism」문맥내의 각 객체에는, 다음과 같이 필수 속성과 옵션 속성이 있습니다.  <br>&nbsp;
+<center><table summary="mandatory and optional attributes" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>속성 식별자</th>
+
+<th>속성치의 설명</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>NAME (<font color="#CC0000">필수</font>)</td>
+
+<td>SASL 기구의 이름</td>
+</tr>
+
+<tr>
+<td>DESC</td>
+
+<td>SASL 기구의 설명</td>
+</tr>
+</table></center>
+
+<p>속성치 모든 것은,<tt>java.lang.String</tt> 클래스에 의해 표현됩니다.
+<p>예를 들어, 다음의 코드를 사용해 EXTERNAL SASL 기구를 나타내는 객체를 취득할 수 있습니다.
+<blockquote>
+<pre>DirContext schema = ctx.getSchema(""); // get schema tree
+DirContext saslExternalSchema =&nbsp;
+&nbsp;&nbsp;&nbsp; schema.lookup("SASLMechanism/EXTERNAL");</pre>
+</blockquote>
+그 후, 「saslExternalSchema」 <tt>DirContext</tt> 객체의 속성을 취득하면(자), 다음과 같이 표시됩니다.
+<blockquote><tt>NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXTERNAL</tt> <br><tt>DESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXTERNAL SASL mechanism (RFC 2222)</tt></blockquote>
+
+<p>
+<hr><a NAME="EXCEPT"></a> 
+<h2>
+9.  예외</h2>
+LDAP 프로바이더를 구축할 때, LDAP 에러 코드 (<a href="http://www.ietf.org/rfc/rfc2251.txt">RFC 2251</a>  을 참조)를 JNDI 예외로 번역할 필요가 있습니다. 번역의 실행시에는, 다음의 겉(표)를 사용해 주세요. 또, 에러에 관한 가능한 한 많은 정보를, 예외의 상세한 메세지, 「근본 원인」예외, 해결 지음의 이름 및 나머지의 이름내에 encode 해 넣어 주세요. 해결 지음의 이름과 해결 지음의 객체는, 상호의 설정치에 대응하고 있지 않으면 안됩니다.  <br>&nbsp;
+<center><table summary="LDAP error codes and exceptions or actions" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr>
+<th>LDAP 에러 코드</th>
+
+<th>예외 또는 액션</th>
+</tr>
+
+<tr>
+<td>success (0)</td>
+
+<td>성공을 보고한다</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>operationsError (1)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+
+<tr>
+<td>protocolError (2)</td>
+
+<td><tt>CommunicationException</tt></td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>timeLimitExceeded (3)</td>
+
+<td NOSAVE><tt>TimeLimitExceededException</tt></td>
+</tr>
+
+<tr>
+<td>sizeLimitExceeded (4)</td>
+
+<td><tt>SizeLimitExceededException</tt></td>
+</tr>
+
+<tr NOSAVE>
+<td>compareFalse (5)</td>
+
+<td NOSAVE><tt>DirContext.search()</tt> 에 의해 사용되어 예외를 생성하지 않는다</td>
+</tr>
+
+<tr NOSAVE>
+<td>compareTrue (6)</td>
+
+<td NOSAVE><tt>DirContext.search()</tt> 에 의해 사용되어 예외를 생성하지 않는다</td>
+</tr>
+
+<tr>
+<td>authMethodNotSupported (7)</td>
+
+<td><tt>AuthenticationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>strongAuthRequired (8)</td>
+
+<td><tt>AuthenticationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>partialResults (9)</td>
+
+<td><tt>java.naming.referral</tt> 가 <tt>ignore</tt> 로 설정되는 경우, 또는 에러 내용에 조회가 포함되지 않는 경우,<tt>PartialResultException</tt> 를 throw 한다. 그 이외의 경우, 그 내용을 사용해 조회를 구축한다</td>
+</tr>
+
+<tr>
+<td>referral (10)</td>
+
+<td><tt>java.naming.referral</tt> 가 <tt>ignore</tt> 로 설정되었을 경우,<tt>PartialResultException</tt> 가 throw 된다. 이것이 <tt>throw</tt> 로 설정되었을 경우에는,<tt>ReferralException</tt> 를 throw 된다. 이것이,<tt>follow</tt> 로 설정되었을 경우, 프로바이더는 조회에 따른다. 조회에 따라 처리를 실행중에 <tt>java.naming.ldap.referral.limit</tt> 의 값이 초과하면(자),<tt>LimitExceededException</tt> 가 throw 된다</td>
+</tr>
+
+<tr>
+<td>adminLimitExceeded (11)</td>
+
+<td><tt>LimitExceededException</tt></td>
+</tr>
+
+<tr>
+<td>unavailableCriticalExtension (12)</td>
+
+<td><tt>OperationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>confidentialityRequired (13)</td>
+
+<td><tt>AuthenticationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>saslBindInProgress (14)</td>
+
+<td>멀티 스테이지의 SASL 인증중에, LDAP 프로바이더에 의해 내부에서 사용된다</td>
+</tr>
+
+<tr>
+<td>noSuchAttribute (16)</td>
+
+<td><tt>NoSuchAttributeException</tt></td>
+</tr>
+
+<tr>
+<td>undefinedAttributeType (17)</td>
+
+<td><tt>InvalidAttributeIdentifierException</tt></td>
+</tr>
+
+<tr>
+<td>inappropriateMatching (18)</td>
+
+<td><tt>InvalidSearchFilterException</tt></td>
+</tr>
+
+<tr>
+<td>constraintViolation (19)</td>
+
+<td><tt>InvalidAttributeValueException</tt></td>
+</tr>
+
+<tr>
+<td>attributeOrValueExists (20)</td>
+
+<td><tt>AttributeInUseException</tt></td>
+</tr>
+
+<tr>
+<td>invalidAttributeSyntax (21)</td>
+
+<td><tt>InvalidAttributeValueException</tt></td>
+</tr>
+
+<tr>
+<td>noSuchObject (32)</td>
+
+<td><tt>NameNotFoundException</tt></td>
+</tr>
+
+<tr>
+<td>aliasProblem (33)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+
+<tr>
+<td>invalidDNSyntax (34)</td>
+
+<td><tt>InvalidNameException</tt></td>
+</tr>
+
+<tr>
+<td>isLeaf (35)</td>
+
+<td>프로바이더가 사용. 일반적으로 예외를 생성하지 않는다</td>
+</tr>
+
+<tr>
+<td>aliasDereferencingProblem (36)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+
+<tr>
+<td>inappropriateAuthentication (48)</td>
+
+<td><tt>AuthenticationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>invalidCredentials (49)</td>
+
+<td><tt>AuthenticationException</tt></td>
+</tr>
+
+<tr>
+<td>insufficientAccessRights (50)</td>
+
+<td><tt>NoPermissionException</tt></td>
+</tr>
+
+<tr>
+<td>busy (51)</td>
+
+<td><tt>ServiceUnavailableException</tt></td>
+</tr>
+
+<tr>
+<td>unavailable (52)</td>
+
+<td><tt>ServiceUnavailableException</tt></td>
+</tr>
+
+<tr>
+<td>unwillingToPerform (53)</td>
+
+<td><tt>OperationNotSupportedException</tt></td>
+</tr>
+
+<tr>
+<td>loopDetect (54)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+
+<tr>
+<td>namingViolation (64)</td>
+
+<td><tt>InvalidNameException</tt></td>
+</tr>
+
+<tr>
+<td>objectClassViolation (65)</td>
+
+<td><tt>SchemaViolationException</tt></td>
+</tr>
+
+<tr>
+<td>notAllowedOnNonLeaf (66)</td>
+
+<td><tt>ContextNotEmptyException</tt></td>
+</tr>
+
+<tr>
+<td>notAllowedOnRDN (67)</td>
+
+<td><tt>SchemaViolationException</tt></td>
+</tr>
+
+<tr>
+<td>entryAlreadyExists (68)</td>
+
+<td><tt>NameAlreadyBoundException</tt></td>
+</tr>
+
+<tr>
+<td>objectClassModsProhibited (69)</td>
+
+<td><tt>SchemaViolationException</tt></td>
+</tr>
+
+<tr>
+<td>affectsMultipleDSAs (71)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+
+<tr>
+<td>other (80)</td>
+
+<td><tt>NamingException</tt></td>
+</tr>
+</table></center>
+
+<p>
+<hr><a NAME="API"></a> 
+<h2>
+10.  API 매핑</h2>
+JNDI API 문맥 인터페이스의 메소드는, 다음과 같이 LDAP 조작에 맵 됩니다.  <br>&nbsp;
+<dt>
+<b><tt>EventContext.addNamingListener</tt></b></dt>
+<dt>
+<b><tt>EventDirContext.addNamingListener</tt></b></dt>
+
+<blockquote>
+<dt>
+LDAP 엔트리의 지정된 서브 트리내에서 발생하는 명명 이벤트를 받는 청취자를 등록합니다. LDAP 서버는, LDAP 조작 응답에 접속된 LDAP 컨트롤, 또는 LDAP 임의 통지에 의해, 클라이언트에 대해서 이벤트를 통지합니다. 이런 종류의 응답은 LDAP 프로바이더에 의해 처리되고 나서,<tt>NamingEvent</tt> 또는 <tt>UnsolicitedNotificationEvent</tt> 의 형태로 어플리케이션에게 건네집니다.
+</dt>
+</blockquote>
+
+<dt>
+<b><tt>Context.addToEnvironment</tt></b></dt>
+
+<blockquote>문맥의 환경 프로퍼티을 갱신합니다. 복수의 문맥이 같은 환경 프로퍼티세트를 공유하는 경우, 프로바이더는 목적의 문맥의 환경만을 수정하도록(듯이) 주의할 필요가 있습니다. 환경 프로퍼티을 변경하면(자), 문맥이 사용하고 있는 기존의 접속도 변경해야 하는 경우가 있습니다. </blockquote>
+
+<dl>
+<dl>프로퍼티치에 null 를 지정해도, 프로퍼티을 삭제하는 것과 같은 결과를 얻을 수 있습니다.
+<p>어떤 환경 프로퍼티의 경우에서도, 새로운 프로퍼티은, 비록 그것이 문맥에 영향을 주지 않는 경우에서도, 기록됩니다. 자세한 것은,<a href="#PROP">「환경 프로퍼티」</a>을 참조해 주세요. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.bind</tt></b></dt>
+
+<br><b><tt>DirContext.bind</tt></b>
+<dl>
+<dl>LDAP 추가 조작을 실행해, 디렉토리내에 엔트리를 신규 작성합니다. <tt>DirContext.bind</tt> 메소드에 비 null 속성 세트도 지정되는 경우, 이 메소드는 바인드 대상의 객체로서 null 를 받을 수가 있습니다. 그렇게 하지 않으면 메소드에 충분한 정보 (즉, 객체나 속성)가 지정되지 않는 경우에, 엔트리는 추가되지 않습니다. 인수내에 객체가 지정되고 있는 경우, 객체는 속성에 변환되어 제공된 모든 속성과 함께 엔트리내에 포함됩니다.  자세한 것은,<a href="#OBJ">「Java 객체」</a>를 참조해 주세요. 프로바이더는,<tt>DirectoryManager.getStateToBind</tt> 메소드를 사용해, 입력 객체를 포함 가능한 형식으로 변환할 필요가 있습니다.
+<p>프로바이더는, 디렉토리내의 객체의 바인딩을 지원하지 않는 경우,<tt>OperationNotSupportedException</tt> 를 throw 할 필요가 있습니다. 그렇게 하지 않으면 프로바이더가 객체의 바인딩을 지원해도 제공된 객체를 지원하지 않는 경우, 프로바이더는 <tt>IllegalArgumentException</tt> 를 throw 할 필요가 있습니다. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.close</tt></b></dt>
+
+<dl>
+<dl>문맥에 할당할 수 있었던 자원을 해제합니다. 예를 들어, 이 문맥에 사용되는 접속이 다른 문맥에 공유되어 있지 않은 경우는, 프로바이더는 미처리의 요구를 파기해 서버에의 네트워크 접속을 닫을 수가 있습니다. 어느 자원이 해제될까는, 엄밀하게는 구현에 의존하고 있습니다. </dl>
+
+<dt>
+<b><tt>Context.composeName</tt></b></dt>
+</dl>
+
+<dl>
+<dl>
+친문맥이 동일한 LDAP 이름 공간에 유래하고 있는 경우,<tt>Context.getNameParser()</tt> 로 설명한 LDAP 이름 구문에 따라 이름을 연결합니다. 그 이외의 경우, 이름을 복합명으로서 연결합니다.
+</dl>
+</dl>
+
+<dt>
+<b><tt>Context.createSubcontext</tt></b></dt>
+
+<br><b><tt>DirContext.createSubcontext</tt></b>
+<dl>
+<dl>LDAP 추가 조작을 실행해, 이름 첨부 엔트리 및 그 관련지을 수 있었던 속성을 작성합니다. 속성이 제공되지 않는 경우, objectClass 속성이 값 <tt>top</tt> 및 <tt>javaContainer</tt> (<tt>javaContainer</tt> 는 schema 위반 에러의 회피에 필요한 구조화 클래스)를 사용해 생성됩니다. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.destroySubcontext</tt></b></dt>
+
+<dl>
+<dl>LDAP 삭제 조작을 실행해, 이름 첨부 엔트리 및 그 관련지을 수 있었던 속성을 삭제합니다. 이름 첨부 엔트리는, 리프 엔트리가 아니면 안됩니다.  서브 트리는 삭제되지 않습니다. 리프 엔트리가 존재하지 않는 (다만 부모는 존재한다) 경우에는, 조작은 성공합니다. </dl>
+</dl>
+
+<dt>
+<b><tt>LdapContext.extendedOperation</tt></b></dt>
+
+<blockquote>
+<dt>
+LDAP 확장 조작을 실행합니다. </dt>
+</blockquote>
+
+<dt>
+<b><tt>DirContext.getAttributes</tt></b></dt>
+
+<dl>
+<dl>LDAP 기저 객체의 검색 조작을 실행해, LDAP 엔트리의 속성을 가져옵니다. 필터로서 「(objectclass=*)」를 사용해 주세요.
+<p>요구된 속성의 리스트가 null 인지, 또는 특별한 속성 식별자 「*」을 포함한 경우, LDAP 엔트리의 사용자 속성 모든 것이 돌려주어집니다. 조작 속성이 필요한 경우, 요구되는 속성 리스트내에 이러한 속성 식별자가 존재하고 있지 않으면 안됩니다. </dl>
+</dl>
+
+<dt>
+<b><tt>LdapContext.getConnectControls</tt></b></dt>
+
+<dl>
+<dl>
+<dt>
+이 문맥에 대해서 불려 가는 LDAP 바인드 조작용의, 유효한 접속 요구 컨트롤을 가져옵니다. </dt>
+</dl>
+</dl>
+
+
+<dt>
+<b><tt>Context.getEnvironment</tt></b></dt>
+
+<dl>
+<dl>이 문맥으로 기록된 환경 프로퍼티을 돌려줍니다. </dl>
+
+<p>
+<dt>
+<b><tt>Context.getNameInNamespace</tt></b></dt>
+<p>
+<dl>이 문맥의 LDAP 식별명을 돌려줍니다. </dl>
+
+<p>
+<dt>
+<b><tt>Context.getNameParser</tt></b></dt>
+<p>
+<dl><a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a>  에 따라 LDAP 명을 구문 분석 하는 이름 퍼서를 돌려줍니다. </dl>
+</dl>
+
+<dt>
+<b><tt>LdapContext.getRequestControls</tt></b></dt>
+
+<dl>
+<dl>
+<dt>
+이 문맥에 대해서 그 후 불려 가는 LDAP 조작용의, 유효한 요구 컨트롤을 가져옵니다. </dt>
+</dl>
+</dl>
+
+<dt>
+<b><tt>LdapContext.getResponseControls</tt></b></dt>
+
+<dl>
+<dl>
+<dt>
+이 문맥에 대해서 불려 가는 마지막 LDAP 조작이 돌려주는 응답 컨트롤을 가져옵니다. </dt>
+</dl>
+</dl>
+
+<dt>
+<b><tt>DirContext.getSchema</tt></b></dt>
+
+<dl>
+<dl><a href="#SCHEMA">「schema」</a>를 참조해 주세요. </dl>
+</dl>
+
+<dt>
+<b><tt>DirContext.getSchemaClassDefinition</tt></b></dt>
+
+<dl>
+<dl><a href="#SCHEMA">「schema」</a>를 참조해 주세요. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.list</tt></b></dt>
+
+<dl>
+<dl>필터 「(objectclass=*)」를 사용해 이름 첨부 엔트리의 LDAP 단일 레벨 검색 조작을 실행해, 이름 첨부 엔트리 직하의 엔트리명을 가져옵니다.
+<p>적어도, 각 엔트리의 클래스명을 판별할 수 있도록(듯이),<tt>javaClassName</tt> 속성에의 문의를 실행합니다. 클래스명을 판별할 수 없는 경우, 클래스명으로서 <tt>javax.naming.directory.DirContext</tt> 를 돌려줍니다.
+<p>반환되는 이름은, 이름 첨부 문맥에 대한 상대적인 이름, 또는 LDAP URL 나 LDAPS URL 입니다. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.listBindings</tt></b></dt>
+
+<dl>
+<dl>필터 「(objectclass=*)」를 사용해 이름 첨부 엔트리의 LDAP 단일 레벨 검색 조작을 실행해, 객체 (또는 객체 참조)를 나타내는 속성을 가져옵니다. Java 객체를 재구축 하기 위해서 필요한 속성을 ( 및 많은 경우 그 외의 속성도) 요구합니다. 객체의 재구축 방법의 자세한 것은,<a href="#OBJ">「Java 객체」</a>를 참조해 주세요. 객체를 <a href="http://www.ietf.org/rfc/rfc2713.txt">RFC 2713</a>  에 따라 재구축 할 수 없는 경우, LDAP 엔트리를 나타내는 <tt>DirContext</tt> 객체를 돌려줍니다. 프로바이더는,<tt>DirectoryManager.getObjectInstance</tt> 메소드를 사용해,<tt>Binding.getObject</tt> 메소드에의 호출해 요건을 채울 필요가 있습니다.
+<p>반환되는 이름은, 이름 첨부 문맥에 대한 상대적인 이름, 또는 LDAP URL 나 LDAPS URL 입니다. </dl>
+</dl>
+
+<dt>
+<b><tt>Context.lookup</tt></b></dt>
+
+<br><b><tt>Context.lookupLink</tt></b>
+<dl>
+<dl>필터 「(objectclass=*)」를 사용해, 이름 첨부 엔트리의 LDAP 기저 객체 검색 조작을 실행합니다. Java 객체를 재구축 하기 위해서 필요한 속성 (아마 모든 것)을 요구합니다. 객체의 재구축 방법의 자세한 것은,<a href="#OBJ">「Java 객체」</a>를 참조해 주세요. 프로바이더는,<tt>DirectoryManager.getObjectInstance</tt> 메소드를 사용해,<tt>Binding.getObject</tt> 메소드에의 호출해 요건을 채울 필요가 있습니다. </dl>
+</dl>
+
+<dt>
+<b><tt>DirContext.modifyAttributes</tt></b></dt>
+
+<dl>
+<dl>제공된 변경을 사용해, 이름 첨부 엔트리로 LDAP 변경 조작을 실행합니다. <tt>Attributes</tt> 를 받는 overload 된 메소드의 경우, 우선 <tt>Attributes.getAll()</tt> 를 사용해 내용을 열거해, 다음으로 변경 조작의 인수 (<tt>mod_op</tt>)를 재사용하는 것으로써,<tt>Attributes</tt> 인수를 순서 붙일 수 있었던 변경 리스트로 변환합니다. </dl>
+</dl>
+<b><tt>LdapContext.newInstance</tt></b>
+<dl>
+<dl>
+<dt>
+이 문맥의 신규 인스턴스를, 지정된 요구 컨트롤을 사용해 초기화합니다. </dt>
+</dl>
+</dl>
+
+<dl>
+<dt>
+<b><tt>Context.rebind</tt></b></dt>
+
+<br><b><tt>DirContext.rebind</tt></b></dl>
+
+<dl>
+<dl>이 메소드에는, 몇개의 다른 LDAP 조작을 포함할 수가 있습니다. 우선, 기존의 엔트리의 속성을 가져옵니다. 기존의 엔트리가 존재하지 않는 경우, 이 메소드는 <tt>bind()</tt> 와 같은 동작을 실시합니다. 그 이외의 경우, 속성이 제공되지 않고, 바인드 되는 객체가 <tt>DirContext</tt> 이라고,<tt>DirContext.getAttributes()</tt> 를 호출해, 그 결과를 속성 인수 (<tt>attrs</tt>)로서 사용합니다. 그런데도 속성이 존재하지 않는 경우에는, 원의 엔트리의 속성을 <tt>attrs</tt> 로서 사용합니다. LDAP 삭제 조작을 실행해, 기존의 엔트리를 삭제합니다. 인수내에서 제공된 객체를 속성으로 변환해 (<a href="#OBJ">「Java 객체」</a>로 설명했던 대로),LDAP 추가 조작을 실행해 엔트리내에 <tt>attrs</tt> 와 함께 포함합니다. 프로바이더는,<tt>DirectoryManager.getStateToBind</tt> 메소드를 사용해, 입력 객체를 포함 가능한 형식으로 변환할 필요가 있습니다.
+</dl>
+</dl>
+
+<dl>
+<dt>
+<b><tt>LdapContext.reconnect</tt></b></dt>
+<p>
+<dl>제공된 접속 요구 컨트롤 및 현재의 환경 프로퍼티을 사용해 LDAP 서버에 재접속합니다.
+<dl>
+<dt>
+</dt>
+</dl>
+</dl>
+<p>
+
+<dt>
+<b><tt>Context.removeFromEnvironment</tt></b></dt>
+</dl>
+
+<blockquote>문맥의 환경 프로퍼티을 삭제합니다. 복수의 문맥이 같은 환경 프로퍼티세트를 공유하는 경우, 프로바이더는 목적의 문맥의 환경만을 수정하도록(듯이) 주의할 필요가 있습니다. 환경 프로퍼티을 변경하면(자), 문맥이 사용하고 있는 기존의 접속도 변경해야 하는 경우가 있습니다. </blockquote>
+
+<dl>
+<dl>
+<dt>
+어떤 환경 프로퍼티의 경우에서도, 새로운 프로퍼티은, 비록 그것이 문맥에 영향을 주지 않는 경우에서도, 기록됩니다. 프로퍼티을 삭제하면(자), 문맥은 프로퍼티의 디폴트가 설정되어 있으면(자) 간주합니다. </dt>
+</dl>
+</dl>
+
+<dl>
+<dt>
+<b><tt>EventContext.removeNamingListener</tt></b></dt>
+</dl>
+
+<blockquote>
+<dt>
+명명 이벤트 청취자의 등록 해제를 실시해, 그 청취자를 대상으로 하는 이벤트가 그 후 송신되지 않게 합니다. </dt>
+</blockquote>
+
+<dt>
+<b><tt>Context.rename</tt></b></dt>
+
+<dl>
+<dl>LDAP 변경 DN 조작을 실행해, 엔트리의 이름을 변경합니다. LDAPv2 가 사용되는 경우, 새로운 이름 및 이전의 이름은 같은 직계의 부모의 이름을 공유할 필요가 있습니다. 부모가 동일하지 않은 경우에는,<tt>InvalidNameException</tt> 가 throw 됩니다.
+<p>이 메소드의 동작에 <a href="#deleteRDN">java.naming.ldap.deleteRDN</a>  프로퍼티이 주는 영향에 유의해 주세요. </dl>
+</dl>
+
+<dt>
+<b><tt>DirContext.search</tt></b></dt>
+
+<dl>
+<dl>지정된 검색 컨트롤에 따라, LDAP 검색 조작을 실행합니다.
+<p>요구된 속성의 리스트가 null 인지, 또는 특별한 속성 식별자 「*」을 포함한 경우, LDAP 엔트리의 사용자 속성 모든 것이 돌려주어집니다. 조작 속성이 필요한 경우, 요구되는 속성 리스트내에 이러한 속성 식별자가 존재하고 있지 않으면 안됩니다.
+<p>객체를 돌려주도록(듯이) 요구되고 있는 경우, API 사용자로부터의 요구 사항에 가세해, Java 객체 관련의 속성 (<a href="http://www.ietf.org/rfc/rfc2713.txt">RFC 2713</a> )도 요구됩니다. 이러한 속성이 존재하는 경우, 그 속성을 사용해 원의 객체를 조립할 수 있습니다 (<a href="#OBJ">「Java 객체」</a>를 참조). 객체를 <a href="http://www.ietf.org/rfc/rfc2713.txt">RFC 2713</a>  에 따라 재구축 할 수 없는 경우, LDAP 엔트리를 나타내는 <tt>DirContext</tt> 객체를 돌려줍니다. 프로바이더는,<tt>DirectoryManager.getObjectInstance</tt> 메소드를 사용해,<tt>Binding.getObject</tt> 메소드에의 호출해 요건을 채울 필요가 있습니다.
+<p>반환되는 이름은, 이름 첨부 문맥에 대한 상대적인 이름, 또는 LDAP URL 나 LDAPS URL 입니다.
+<p>제공하는 검색 필터가 적절히 제한되고 있는 경우, 프로바이더는 LDAP 검색 조작 대신에 LDAP 비교 조작을 사용할 수 있습니다.  <br>&nbsp;
+<dl>
+<li>
+필터의 형식은 「<tt>(&lt;attributeID>=&lt;value>)</tt>」가 아니면 안됩니다. </li>
+
+<li>
+스코프는, 객체 스코프일 필요가 있습니다. </li>
+
+<li>
+제로 속성 (빈 상태(empty)의 귀가 속성 리스트)을 요구할 필요가 있습니다. </li>
+</dl>
+
+<p>캐릭터 라인 필터를 인수로서 받는 검색 형식에서는, 필터의 구문은, Unicode 문자도 허가된다고 하는 예외를 제외해,<a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  에 준거합니다. encode 된 UTF-8 8중창보다 Unicode 문자를 사용하는 것이 추천 되고 있습니다. 서비스 프로바이더는, 서버에 전송 하기 위해서 Unicode 문자를, 대응하는 UTF-8 표현으로 번역하는 역할을 담당합니다. 예를 들어, 그리스 문자의 알파는, 캐릭터 라인 필터내에서 「<tt>\u03B1</tt>」또는 「<tt>\\CE\\B1</tt>」로서 지정할 수 있습니다.
+<p><tt>search(Name, Attributes)</tt> 및 관련 메소드 형식내에서,<tt>Attributes</tt> 인수는, 그 요소로부터 논리적을 작성하는 것으로써, 캐릭터 라인 필터에 변환됩니다. 각 속성치는 리터럴로서 처리되기 (위해)때문에, 속성치내에 나타나는 「*」 및 <a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  로 정의된 것 외의 특수 문자는,<a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  의 규칙에 따라 이스케이프 할 필요가 있습니다. 예를 들어, 「*」의 속성치는 캐릭터 라인 「<tt>\\2a</tt>」로서 encode 할 필요가 있습니다.
+<p><tt>search(Name, String filterExpr, Object[] filterArgs)</tt> 및 그 <tt>String</tt> 로 overload 된 메소드 형식에서는,<tt>filterArgs</tt> 로부터 취득한 값을 입력하는 것으로써, 필터내에서 「{<i>num</i>}」전개가 실행됩니다. 각 「{<i>num</i>}」컴퍼넌트는,<a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  섹션 4 의 「attr」또는 「value」대신에 사용됩니다.
+<p><tt>filterArgs</tt> 내의 객체는, 다음의 방법으로 encode 할 필요가 있습니다.  <br>&nbsp;
+<dl>
+<li>
+바이트 배열 (<tt>byte[]</tt>)의 encode는, 각 바이트를 <a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  에 준거한 캐릭터 라인으로서 encode 하는 것으로써 행해집니다. 예를 들어, 배열 {0, 1, 10, 100} 은, 캐릭터 라인 「<tt>\\00\\01\\0a\\64</tt>」로서 encode 됩니다. </li>
+
+<li>
+캐릭터 라인은 리터럴로서 처리됩니다. 즉,<a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  로 정의된 asterisk ( 「*」)나 그 외의 특수한 문자가 캐릭터 라인내에서 사용되고 있는 경우, <a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a>  의 규칙에 따라 이스케이프 됩니다. 예를 들어, 「*」이라고 하는 캐릭터 라인은, 「<tt>\\2a</tt>」라고 하는 캐릭터 라인에 encode 됩니다. </li>
+
+<li>
+<tt>String</tt> 도 <tt>byte[]</tt> 도 아닌 객체는,<tt>Object.toString()</tt> 를 사용해 캐릭터 라인 형식에 변환되어 그 후 <tt>String</tt> 용의 규칙이 적용됩니다. </li>
+</dl>
+</dl>
+</dl>
+
+<dt>
+<b><tt>LdapContext.setRequestControls</tt></b></dt>
+
+<dl>
+<dl>
+<dt>
+이 문맥에 대해서 그 후 불려 가는 LDAP 조작용의 요구 컨트롤을 설정합니다. </dt>
+</dl>
+</dl>
+
+<dt>
+<b><tt>EventContext.targetMustExist</tt></b></dt>
+
+<dl>
+<dl>
+<dt>
+청취자가, 존재하지 않는 LDAP 엔트리에의 관계를 등록할 수 있을지 어떨지를 판단합니다. </dt>
+</dl>
+</dl>
+
+<dt>
+<b><tt>Context.unbind</tt></b></dt>
+
+<dl>
+<dl>LDAP 삭제 조작을 실행해, 이름 첨부 엔트리를 삭제합니다. 이름 첨부 엔트리는, 리프 엔트리가 아니면 안됩니다.  서브 트리는 삭제되지 않습니다. 리프 엔트리가 존재하지 않는 (다만 부모는 존재한다) 경우에는, 조작은 성공합니다. </dl>
+</dl>
+
+<p>
+<hr><a NAME="FED"></a> 
+<h2>
+11.  연합</h2>
+LDAP 서비스 프로바이더는, 강분류, 및 접속과 암묵의 다음의 네임 시스템 포인터의 어느 쪽인지 또는 양쪽 모두를 사용해 연합을 지원할 필요가 있습니다.
+<p>
+<hr>
+<br><a NAME="SASL"></a> 
+<h2>
+12.  SASL</h2>
+프로바이더는 Java SASL API (<a href="http://www.worldspot.com/jsr28/">JSR 28</a> )에 의한 SASL 기구를 지원합니다. 이것에 의해, 다른 벤더로부터 제공되는 SASL 기구 드라이버를 LDAP 프로바이더로 사용할 수 있게 됩니다. 또, SASL 기구 드라이버를 다양한 LDAP 프로바이더 및 비 LDAP 프로토콜 라이브러리에서 사용할 수도 있습니다.
+<p>
+Java SASL API 는 <a href="http://java.sun.com/products/jaas/">Java Authentication and Authorization Service</a>  (JAAS)에 의존하고 있습니다. JAAS 는, 사용자/어플리케이션 정보를 직접 취득 또는 제공할 필요가 있는 SASL 기구의 콜백 지원를 제공합니다.
+<h3>
+12.1 SASL 구성</h3>
+
+사용하는 SASL 인증을 지정하려면 , IANA 에 등록된 공식의 SASL 기구명을 <a href=#authentication><tt>java.naming.security.authentication</tt></a>  프로퍼티으로 지정합니다. 이용 가능한 동시에 옵션으로 지정된 정책를 채우는 리스트상의 최초의 SASL 기구가 사용됩니다. 즉, 접두사 「<tt>javax.security.sasl.policy</tt>」가 붙은 프로퍼티을, 선택한 SASL 기구의 시큐리티의 특징을 제어하기 위해서 사용할 수 있습니다.
+
+<p>SASL 기구안에는, 인증되는 엔티티의 식별 정보를 요구하는 것도 있습니다. 이것은, 「인증 ID」로서 알려져 있습니다. SASL 기구에 따라서는, CRAM-MD5 나 DIGEST-MD5 와 같이, 패스워드나 범위의 사용이 요건이 되고 있는 것도 있습니다. 디폴트에서는, 프로바이더는 <a href=#principal><tt>java.naming.security.principal</tt></a>  프로퍼티의 값을, 인증 ID 를 필요로 하는 SASL 기구에 인증 ID 로서 제공해,<a href=#credentials><tt>java.naming.security.credentials</tt></a>  프로퍼티의 값을 패스워드로서<a href=#realm><tt>java.naming.security.sasl.realm</tt></a>  프로퍼티의 값을 범위로서 제공합니다. 이러한 디폴트를 오버라이드(override) 하는 경우는,<a href=#callback><tt>java.naming.security.sasl.callback</tt></a>  프로퍼티을 사용합니다.
+
+<p>SASL 기구는, 인증 식별 정보 즉 「인증 ID」라고 하는 개념을 지원하고 있습니다. 인증 ID 는, 인증의 성공시에 서버가 액세스를 허가하는 대상이 되는 엔티티입니다. &nbsp;<a href=#authorizationId><tt>java.naming.security.sasl.authorizationId</tt></a>  프로퍼티이 설정되어 있는 경우에는, 이 값이 인증 ID 로서 사용됩니다.
+설정되어 있지 않은 경우는 빈 상태(empty)의 캐릭터 라인이 인증 ID 로서 사용됩니다. 이것에 의해, 서버는 클라이언트의 인증 자격으로부터 인증 ID 를 작성합니다.
+<p>LDAP 서비스 프로바이더가 SASL 의 지원로 사용하는 프로퍼티의 상세한 것에 대하여는,<a href="#SASLPROPS">「SASL 프로퍼티」</a>을 참조해 주세요.
+<p>
+이러한 프로퍼티에 가세해 특정의 SASL 기구로 필요하게 되는 프로퍼티도 존재합니다. 예를 들어, 기밀성과 완전성을 지원하는 SASL 기구는, 클라이언트가 요구하는 보호의 품질을 인식하고 있을 필요가 있습니다. 이러한 프로퍼티은, 환경 프로퍼티 경유로 SASL 기구에게 건네집니다. 환경 프로퍼티의 설정 방법법에 대해서는,<a href=../../../api/javax/naming/InitialContext.html#ENVIRONMENT>「JNDI 의 문서」</a>를 참조해 주세요.
+<p>예를 들어, 어플리케이션으로 기밀성이 필요한 경우는 다음과 같은 호출을 사용합니다.
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <tt>env.put("javax.security.sasl.qop", "auth-conf");</tt>
+<p>이 코드는, 초기 문맥 생성자 에 <tt>env</tt> 를 건네주기 전에 실행합니다. 이러한 프로퍼티의 상세한 것에 대하여는, 「Java SASL API」를 참조해 주세요.
+<h3>
+12.2 SASL 기구의 드라이버</h3>
+Java SASL API 는, SASL 기구 드라이버에의 동적인 플러그 인을 실현하는 시스템를 제공하고 있습니다. LDAP 프로바이더는, 몇개의 디폴트 드라이버를 제공 가능합니다. 자세한 것은, 「Java SASL API」를 참조해 주세요.
+<p>
+<hr><a NAME="CTL"></a> 
+<h2>
+13.  확장 기능 및 컨트롤</h2>
+프로바이더는,<tt>javax.naming.ldap</tt> 패키지를 사용해 LDAP 확장 기능 및 컨트롤을 지원합니다. 또, 프로바이더는,<tt>javax.naming.event</tt> 패키지의 서비스를 사용해, LDAP 임의 통지 (LDAP 확장 조작 응답내에서 전송 된다)도 지원합니다.
+<p>IETF LDAPEXT 워킹 그룹에 의해, 몇개의 LDAP 확장 기능 및 컨트롤이 정의되고 있습니다.
+<p>
+<a href="http://www.ietf.org/rfc/rfc2830.txt">「Start TLS」확장 기능</a>  ( 「1.3. 6.1. 4.1. 1466.20037」)은,<a href=../../../api/javax/naming/ldap/StartTlsRequest.html><tt>StartTlsRequest</tt></a>  및 <a href=../../../api/javax/naming/ldap/StartTlsResponse.html><tt>StartTlsResponse</tt></a>  클래스에서 지원됩니다. LDAP 프로바이더에서는, 추상 <tt>StartTlsResponse</tt> 클래스를 고정 구현해, LDAP 프로바이더로 그것을 이용할 수 있도록(듯이) 할 필요가 있습니다. <a href="../../../api/javax/naming/ldap/StartTlsRequest.html#createExtendedResponse(java.lang.String,%20byte%5B%5D,%20int,%20int)">StartTlsRequest.createExtendedResponse</A>  의 설명을 참조해 주세요. <tt>StartTlsResponse</tt> 의 구현에서는 일반적으로, LDAP 프로바이더의 데이터 구조에의 액세스가 필요하게 됩니다.
+
+<p>
+LDAP 서비스 프로바이더는, RFC 2830 에 규정되는 Start TLS 협상의 다음에, 호스트명의 검증을 실행할 필요가 있습니다.  <a href=#URLS>「URL」</a>내에서 설명한다) DNS 의 정보를 사용해 자동적으로 LDAP 서버가 검출되었을 경우,<a href="http://www.ietf.org/internet-drafts/draft-ietf-ldapext-locate-08.txt">draft-ietf-ldapext-locate-08.txt</a>  의 추천에 따라, 프로바이더는 식별명으로부터 검증 대상의 호스트명으로서 추출된 도메인명을 사용할 필요가 있습니다.
+
+<p>
+<hr><a NAME="EVENT"></a> 
+<h2>
+14.  이벤트의 통지</h2>
+프로바이더는,<tt>javax.naming.event</tt> 패키지를 사용해 이벤트 통지를 지원합니다.
+<p>JNDI 어플리케이션은, 디렉토리내에서 발생하는 이벤트 (엔트리의 추가 또는 삭제, 엔트리의 변경등)를 등록할 수 있습니다. 어플리케이션은, 임의 통지도 등록할 수 있습니다.
+<p>
+<hr>
+<br><a NAME="SSL"></a> 
+<h2>
+15.  SSL</h2>
+프로바이더는 <a href="../security/jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) 스펙</a>에 따라 SSL 를 지원합니다. <a href=#protocol><tt>java.naming.security.protocol</tt></a>  환경 프로퍼티을 다음과 같이 설정하는 것으로써, SSL 가 기동합니다.
+<blockquote><tt>env.put(Context.SECURITY_PROTOCOL, "ssl");</tt></blockquote>
+또, SSL 를 지원하는 LDAP 서버의 호스트명과 포트 번호를 선택해도, SSL 를 기동할 수 있습니다. SSL 접속이 일단 확립되면(자), 후속의 LDAP 프로토콜 교환은 그 보호 접속 경유로 행해집니다.
+<p>게다가 LDAP 인증도 필요한 경우에는,<a href=#authentication><tt>java.naming.security.authentication</tt></a> ,<a href=#principal><tt>java.naming.security.principal</tt></a> , 및 <a href=#credentials><tt>java.naming.security.credentials</tt></a>  환경 프로퍼티을 적절히 설정할 필요가 있습니다. LDAP 인증이 필요해, 한편 SSL 쿠레덴샤르를 LDAP 인증으로 재사용할 필요가 있는 경우에는, 다음과 같이 <a href=#authentication><tt>java.naming.security.authentication</tt></a>  환경 프로퍼티을 설정해 SASL EXTERNAL 기구를 선택합니다.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>env.put(Context.SECURITY_AUTHENTICATION, "EXTERNAL");</tt> <br>&nbsp;
+<p>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<br><i>Copyright &copy; 2002 Sun Microsystems, Inc.  All rights reserved. </i>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 3 - 문서의 종류의 지정
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="attributes.fm6.html">전의 항목</a>  | <a href="docflavor.fm1.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+<a name="996957"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table summary="layout" border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 3 장</FONT></B></U>
+</td>
+</tr>
+</table>
+
+<a name="996958"><!-- --></a> 
+<h1>
+문서의 종류의 지정
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><blockquote>
+<a name="996973"><!-- --></a>  사용자가 사용하는 문서에는, PDF 파일, 디지탈카메라의 이미지, 전자 메일, 워드 프로세서의 문서, Web 페이지 등, 다양한 형식이 있습니다. 클라이언트에서는, 특정의 서식의 문서를 인쇄하기 전에, 그 서식이 프린터로 인식되는 것을 확인할 필요가 있습니다. 프린터에 따라서는, 특정의 서식의 문서를 직접 인쇄할 수가 있습니다. 예를 들어, 포트 프린터에서는, 다양한 이미지를 직접 인쇄할 수 있습니다.  또, PostScript<sup><font size="-2">TM</font></sup> 프린터에서는, PostScript<sup><font size="-2">TM</font></sup> 문서를 직접 인쇄할 수 있습니다. 다만, 광범위의 서식의 문서를 직접 인쇄할 수 있는 프린터는, 거의 없습니다. 대부분의 프린터에서는, 소스 문서를 인쇄할 수 있는 서식으로 변환하기 위해서(때문에), 고수준의 소프트웨어 지원가 필요하게 됩니다.   <p>
+<a name="996984"><!-- --></a>  인쇄 API 에서는, 이하의 기능을 실현하기 위해서(때문에), 문서의 종류를 지정할 필요가 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="997428"><!-- --></a>  인쇄 가능한 서식을 프린터로부터 보고한다
+</li>
+<li>
+<a name="997434"><!-- --></a>  인쇄하는 데이터의 서식을 클라이언트로부터 지정한다
+</li>
+<li>
+<a name="997314"><!-- --></a>  텍스트 데이터의 인코딩을 클라이언트로부터 지정한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="996990"><!-- --></a>  Java<sup><font size="-2">TM</font></sup> 인쇄 서비스 API 에서는, DocFlavor 클래스를 사용해 문서의 종류를 지정합니다. DocFlavor 는, 이하의 요소로 구성됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="997457"><!-- --></a>  MIME 타입. 데이터의 해석 방법을 프린터에 통지한다
+</li>
+<li>
+<a name="997459"><!-- --></a>  표현 클래스명. 데이터를 프린터에 송신하는 방법을 지정한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="997456"><!-- --></a>  HTML 페이지를 인쇄 서비스로 지정할 때 DocFlavor 를 사용할 때는, MIME 타입에 「text/html; charset=utf-16」을 지정해, 표현 클래스명에 「java.io.InputStream」를 지정합니다. 클라이언트에서는, 다음의 어느 쪽인가의 방법으로, DocFlavor 를 취득할 수 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="997480"><!-- --></a>  DocFlavor 를 구축하는: DocFlavor htmlStreamFlavor = new DocFlavor(&quot;text/html; charset=utf-16&quot;,	&quot;java.io.InputStream&quot;);
+</li>
+<li>
+<a name="997468"><!-- --></a>  다음의 종류의 DocFlavor 를 표현하는 정의 끝난 인스턴스를 사용하는 :DocFlavor.INPUT_STREAM TEXT_HTML_UTF_16Java 인쇄 서비스 API 에는, 사용 빈도의 높은 드큐먼트후레이바전용으로, 정의가 끝난 인스턴스 세트가 짜넣어지고 있습니다.
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="998696"><!-- --></a>  HTML 페이지에는 텍스트 데이터가 포함되기 (위해)때문에, MIME 타입의 String 에는 텍스트 인코딩을 지정합니다. 위의 예에서는, 「charset=utf-16」이 지정되고 있습니다. 클라이언트에서는, 인쇄 서비스에 대해서 인쇄 데이터를 정확하게 지정할 필요가 있습니다. <a href="docflavor.fm1.html#997577">「클라이언트 지정 서식 첨부 인쇄 데이터」</a>에서는, 인쇄 데이터를 지정하기 위해서 DocFlavor 를 구성하는 방법에 대해 설명합니다. MIME 타입에 텍스트 인코딩을 지정하지 않는 경우는,<a href="docflavor.fm2.html#1000346">「문자 인코딩의 중요성」</a>으로 설명하도록(듯이), 예기치 않은 결과가 발생하는 일이 있습니다. 클라이언트가 Java 객체로서 지정한 데이터의 서식은, 서비스로 결정할 수도 있습니다. <a href="docflavor.fm3.html#997144">「서비스 지정 서식 첨부 인쇄 데이터」</a>에서는, 서비스 지정 서식 첨부 인쇄 데이터를 표현하는 DocFlavor 의 사용 방법에 대해 설명합니다. <p>
+
+<tt>DocFlavor</tt> API 로 드큐먼트후레이바가 미리 선언되고 있는 것 만으로는, 특정의 후레이바가 구현되고 있는 것에는 되지 않습니다. 예를 들어, UTF-16 에 의한 HTML 텍스트를 나타내는 정의가 끝난 <tt>DocFlavor</tt> 를 사용하고 있는 경우에서도, HTML 의 인쇄를 지원하는 인쇄 서비스를 갖추지 않으면 인쇄는 할 수 없습니다. 프린터가 특정의 서식을 지원하고 있을지 어떨지의 확인은, 사용자측에서 실시해 주세요.
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="attributes.fm6.html">전의 항목</a>  | <a href="docflavor.fm1.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="drivermanager.html">[전의 항목]</a>  <a href="resultset.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="1000062"> </a> 
+<h2> Statement</h2>
+<p><a name="1006436"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="996854"> </a> 
+<h3>4.1	 Statement 의 개요</h3>
+<p><a name="996855"> </a> <code>Statement</code> 객체는, SQL 문을 데이타베이스에 보내는 경우에 사용합니다. 실제로는 <code>Statement</code>,<code>PreparedStatement</code>, 및 <code>CallableStatement</code> 의 3 종류의 <code>Statement</code> 객체가 있어, 이 모든 객체가 주어진 접속으로 SQL 문의 실행을 위한 컨테이너의 역할을 합니다. <code>PreparedStatement</code> 는 <code>Statement</code> 로부터 상속해,<code>CallableStatement</code> 는 <code>PreparedStatement</code> 로부터 상속하고 있습니다. 이것들은 특정의 종류의 SQL 문을 송신하기 위한 전용 객체입니다.  구체적으로는,<code>Statement</code> 객체는 파라미터를 가지지 않는 단순한 SQL 문의 실행에 사용되어<code>PreparedStatement</code> 객체는 IN 파라미터의 유무에 관계없이 프리컴파일 된 SQL 문의 실행에 사용되어<code>CallableStatement</code> 객체는 데이타베이스에 포함된 프로시저의 호출의 실행에 사용됩니다.  
+</p><p><a name="998356"> </a> <code>Statement</code> 인터페이스는, 문장의 실행 및 결과의 취득을 위한 기본 메소드를 제공합니다. <code>PreparedStatement</code> 인터페이스는, IN 파라미터의 처리를 위한 메소드를 추가하고 있습니다. <code> CallableStatement</code> 인터페이스는, OUT 파라미터의 처리를 위한 메소드를 추가하고 있습니다.
+</p><p><a name="1002550"> <a name="1002550"> JDBC 2.0 코어 API 의 <code>ResultSet</code> 인터페이스에는, 몇개의 새로운 <code>updateXXX</code> 메소드 및 그 외의 새로운 관련 메소드가 추가되고 있어 테이블의 열의 값을 프로그램으로 실시하도록(듯이) 갱신할 수가 있습니다. 또, 이 새로운 API 에서는,<code>Statement</code>,<code>PreparedStatement</code>, 및 <code>CallableStatement</code> 인터페이스에 메소드가 추가되고 있어 갱신문을 개별적으로 실행하지 않고 배치처리 할 수도 있습니다.
+</p><a name="996886"> </a> 
+<h4>4.1. 1	 Statement 객체의 작성</h4>
+<p><a name="996890"> </a> 특정의 데이타베이스와 접속이 확립되어 있으면, 그 접속을 SQL 문의 송신에 사용할 수 있습니다. <code>Statement</code> 객체는, 다음의 코드 단편에 있는 것 같은 <code>Connection</code> 메소드 <code>createStatement</code> 를 이용해 작성됩니다.
+</p><blockquote><pre>
+Connection con = DriverManager.getConnection(url, "sunny", "");
+Statement stmt = con.createStatement();
+
+</pre></blockquote><p><a name="999462"> </a>  데이타베이스에 송신되는 SQL 문은,<code>Statement</code> 객체의 <code>execute</code> 메소드의 1 개에 인수로서 건네받습니다. 다음의 코드는,<code>executeQuery</code> 메소드를 사용했을 경우의 예입니다.
+</p><blockquote><pre>
+ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table2");
+</pre></blockquote><p><a name="1003672"> </a> 변수 rs 는, 결과 세트를 참조하고 있습니다.  디폴트에서는,<code>ResultSet</code> 객체의 결과 세트는 갱신하지 못하고, 결과 세트내에서는 커서는 전방에게만 이동할 수 있습니다. JDBC 2.0 코어 API 에는, 새로운 <code>Connection.createStatement</code> 메소드가 추가되고 있습니다.  이 메소드를 사용해 생성한 <code>Statement</code> 객체에서는, 스크롤 또는 갱신, 혹은 그 양쪽 모두를 실시할 수 있는 결과 세트가 생성됩니다.
+</p><a name="1003674"> </a> 
+<h4>4.1. 2	 Statement 객체를 사용한 문장의 실행</h4>
+<p><a name="1000668"> </a> <code>Statement</code> 인터페이스에는, SQL 문을 실행하는 것 3 개(살)이 다른 메소드 (<code>executeQuery</code>,<code>executeUpdate</code>, 및 <code>execute</code> )를 제공하고 있습니다. 사용하는 메소드는, 무엇을 SQL 문이 생성할까에 의해 정해집니다.
+</p><p><a name="998967"> </a>  메소드 <code>executeQuery</code> 는,<code>SELECT</code> 문등의 단일의 결과 세트를 작성하는 문장을 위해서(때문에) 설계되고 있습니다.
+</p><p><a name="998227"> </a>  메소드 <code>executeUpdate</code> 는,<code>INSERT</code>,<code>UPDATE</code>, 또는 <code>DELETE</code> 의 각 문, 및 <code>CREATE</code> <code>TABLE</code>,<code>DROP</code> <code>TABLE</code>,<code>ALTER TABLE 와 같은 SQL DDL (Deta Definition Language) 문을 실행하기 위해서 사용합니다. </code><code>INSERT</code>,<code>UPDATE</code>, 또는 <code>DELETE</code> 문의 결과는, 테이블안의 0 행 이상의 행중의 1 열이상의 열의 수정입니다. <code>executeUpdate</code> 의 반환값은, 영향을 받는 행의 수를 나타내는 정수치 (갱신 카운트)가 됩니다. <code>CREATE</code> <code>TABLE</code> 또는 <code>DROP</code> <code>TABLE</code> 와 같은 문장에서는, 행에 대해서 동작하지 않기 때문에,<code>executeUpdate</code> 의 반환값은 항상 0 이 됩니다.
+</p><p><a name="1000686"> </a>  메소드 <code>execute</code> 는, 복수의 결과 세트, 복수의 갱신 카운트, 혹은 그 2 개의 편성을 돌려주는 문장을 실행하는데 사용합니다. 이 메소드는 고도의 기능이며, 일반적으로의 경우, 대다수의 프로그래머가 사용하는 것은 우선 생각할 수 없기 때문에, 이 개요에서는 나머지의 항으로 설명합니다.
+</p><p><a name="999296"> </a>  문장을 실행하는 모든 메소드는, 호출하고 있는 <code>Statement</code> 객체의 현재의 결과세트가 열려 있으면 이것을 닫습니다. 따라서, 현재의 <code>Statement</code> 객체를 재실행하기 전에 현재의 <code>ResultSet</code> 객체의 처리를 모두 완료할 필요가 있습니다.
+</p><p><a name="999297"> </a> <code>PreparedStatement</code> 인터페이스는 <code>Statement</code> 인터페이스안의 모든 메소드를 상속하고 있습니다만,<code>PreparedStatement</code> 인터페이스는, 메소드 <code>executeQuery</code>,<code>executeUpdate</code>, 및 <code>execute</code> 의 독자적인 버젼을 가지고 있는 것에 주의해 주세요. <code>Statement</code> 객체 자체는 SQL 문을 포함하고 있지 않습니다.  따라서, SQL 문을 인수로서 <code>Statement.execute</code> 메소드로 지정할 필요가 있습니다. <code> PreparedStatement</code> 객체는, 컴파일 된 SQL 문을 포함하고 있기 (위해)때문에, 이러한 메소드에 SQL 문을 인수로서 주지 않습니다. <code>CallableStatement</code> 객체는, 이러한 메소드의 <code>PreparedStatement</code> 형식을 상속하고 있습니다. <code>PreparedStatement</code> 또는 <code>CallableStatement</code> 남을 수 있는들의 메소드에 파라미터를 건네주면(자),<code>SQLException</code> 예외가 throw 됩니다.
+</p><a name="999265"> </a> 
+<h4>4.1. 3	 문의 완료</h4>
+<p><a name="999854"> </a>  접속이 자동 위탁 모드에 있는 경우에는, 그 모드에서의 실행중의 문장은, 완료시에 위탁되든가, 혹은 롤백(rollback) 됩니다. 문장은, 그 실행이 종료해, 한편 그 결과가 모두 돌려주어졌을 때에 완료한 것이라고 보여집니다. <code>executeQuery</code> 메소드는 1 개의 결과 세트를 돌려주므로, 문장은,<code>ResultSet</code> 객체의 모든 열의 취득이 종료했을 때에 완료합니다. <code>executeUpdate</code> 메소드의 경우는, 문장은, 그것이 실행되었을 때에 완료합니다. 다만,<code>execute</code> 메소드가 불리는 것 같은 보기 드문 경우에는, 그것이 생성한 모든 결과 세트 또는 갱신 카운트의 취득이 종료할 때까지는, 문장은 완료하지 않습니다.  
+</p><p><a name="999859"> </a>  DBMS 안에는, 스트아드프로시쟈중의 각 문을 별개의 문장으로서 취급하는 것도 있습니다.  또, 전체의 프로시저를 1 개의 복합문으로서 취급하는 것도 있습니다. 이 상위는,<code>commit</code> 메소드가 불리는 타이밍에 영향을 주기 (위해)때문에, 자동 위탁이 유효하게 되어 있는 경우에 중요하게 됩니다. 전자의 경우에는, 각 문은, 개별적으로 위탁됩니다.  후자의 경우에는, 모든 것이 함께 위탁됩니다.  
+</p><a name="1000569"> </a> 
+<h4>4.1. 4	 Statement 를 닫는다</h4>
+<p><a name="1000572"> </a>  <code>Statement</code> 객체는, Java 가비지 컬렉터에 의해 자동적으로 닫혀집니다. 다만,<code>Statement</code> 객체가 필요없게 되었을 경우에는, 명시적으로 닫도록(듯이) 프로그래밍 해 두는 것을 추천합니다. <code>Statement</code> 객체를 닫으면(자) 즉시, DBMS 의 자원이 해제되어 잠재적인 메모리에서의 문제가 일어나는 것을 방지할 수 있습니다.
+</p><a name="1006519"> </a>  <a name="17215"></a> 
+<h4>4.1. 5	 Statement 내의 SQL 이스케이프 구문 </h4>
+<p><a name="1004825"> </a>  <code>Statement</code> 객체는 SQL 이스케이프 구문을 사용하는 SQL 문을 포함할 수가 있습니다. 이스케이프 구문은, 이 문장안의 코드를 다른 방법으로 처리하도록(듯이) 드라이버에게 전합니다. <code>Statement.setEscapeProcessing(true) </code>또는 <code>RowSet.setEscapeProcessing(true)</code> 를 호출하는 것에 의해) 이스케이프 처리가 유효하게 되어 있는 경우는, 드라이버는 이스케이프 구문이 없는가 주사 해, 개개의 데이타베이스의 코드에 변환합니다. 이 때문에, 이스케이프 구문은 DBMS 로부터 독립하고 있어, 프로그래머는 다른 방법에서는 사용할 수 없는 것 같은 기능을 사용할 수 있게 됩니다.
+</p><p><a name="999485"> </a> 이스케이프구는, 안괄호와 키워드에 의해 구분 됩니다.  키워드에 의해, 이스케이프구의 종류를 나타냅니다.
+</p><blockquote><pre>
+	{keyword .  .  .  parameters .  .  .  }
+</pre></blockquote><p><a name="1004778"> </a> 이스케이프구를 식별하기 위해서, 다음의 키워드가 사용됩니다.
+</p><ul><a name="1001266"> </a> 
+<li>LIKE 이스케이프 문자를 위한 <strong>escape </strong> <a><B>퍼센트 기호 (<code>%</code>) </B>및<a>밑줄 (<code>_</code>) 문자는, SQL 의 <code>LIKE</code> 구에서는 와일드 카드와 같이 기능합니다 (<code>%</code> 는 0 개 이상의 문자와 일치해,<code>_</code> 는 1 개의 문자와 일치합니다). </b></a> 이것들을 문자대로 해석하려면 , 캐릭터 라인의 특수한 이스케이프 문자인 backslash (<code>\</code>)를 직전에 둡니다. </b></b></a> 쿼리의 끝에 다음의 구문을 짜넣으면(자), 어느 문자를 이스케이프 문자로서 사용해야할 것인가를 지정할 수가 있습니다.
+<blockquote><pre>
+<code>	{escape 'escape-character'}
+</code></pre></blockquote><a name="999505"> </a>  예를 들어, 다음의 쿼리에서는, 밑줄로 시작되는 식별명을 검색하고 있습니다.  여기에서는, backslash 문자를 이스케이프 문자로서 사용하고 있습니다.
+<blockquote><pre>
+stmt.executeQuery("SELECT name FROM Identifiers 
+      WHERE Id LIKE <code>'</code>\_%<code>'</code> {escape <code>'</code>\<code>'</code>}");
+
+</pre></blockquote>
+<li>스칼라 함수를 위한 <strong>fn</strong>
+<p>
+거의 모든 DBMS 는, 스칼라치에 관해서, 숫자, 캐릭터 라인, 시각, 일자, 시스템, 및 변환의 함수를 가지고 있습니다. 희망의 함수의 이름 및 그 인수의 후에 계속되는 키워드 <code>fn</code> 를 이용해, 이러한 함수의 1 개를 이스케이프 구문안에 넣으면(자), 그 함수를 사용할 수가 있습니다. 예를 들어, 다음의 코드는, 2 개의 인수를 연결하는 함수 <code>concat</code> 를 호출합니다.
+<blockquote><pre>
+	{fn concat("Hot", "Java")};
+</pre></blockquote><a name="999532"> </a>  다음의 구문으로 현재의 데이타베이스의 사용자명을 취득할 수가 있습니다.
+<blockquote><pre>
+	{fn user()};
+</pre></blockquote><a name="999534"> </a>  스칼라 함수는, 조금 구문이 차이가 나는 다른 데이타베이스로 지원되고 있을지도 모릅니다만, 모든 드라이버가 지원하고 있는 것은 아닙니다. <code>DatabaseMetaData</code> 의 다양한 메소드로, 지원되고 있는 함수의 리스트를 취득할 수 있습니다. 예를 들어, 메소드 <code>getNumericFunctions</code> 는 수치 함수의 이름 (Open Group CLI 명)의 칸마로 단락지은 리스트를 돌려주어, 메소드 <code>getStringFunctions</code> 는 캐릭터 라인 함수의 이름의 리스트를 돌려줍니다. <a name="999537"><a name="999537"> </a>  드라이버는, 이스케이프 된 함수 호출을 적절한 구문에 매핑 하든가, 혹은 그 함수를 드라이버 자체로 구현합니다. 다만, 드라이버는, 그 대상의 DBMS 가 지원하고 있는 이러한 스칼라 함수를 구현하도록(듯이) 요구됩니다.
+<p>
+<li>일자와 시각 리터럴을 위한 <strong>d</strong>,<strong>t</strong>, 및 <strong>ts</strong> 일자, 시각, 및 타임 스탬프의 리터럴에 사용하는 구문은, DBMS 마다 다릅니다. JDBC API 는, 이러한 리터럴의 구문에 대해서는 ISO 의 표준 형식을 지원해, 드라이버가 DBMS 고유의 표현으로 변환하는 이스케이프절을 사용하고 있습니다. 예를 들어, 일자는 다음의 구문을 이용한 JDBC SQL 문으로 지정됩니다.
+<blockquote><pre>
+	{d 'yyyy-mm-dd'}
+</pre></blockquote>
+이 구문에서는,<code>yyyy</code> 는 해,<code>mm</code> 는 달, 그리고 <code>dd</code> 는 날입니다. 드라이버는 이스케이프구를 등가의 DBMS 고유의 표현과 치환한다. 예를 들어, 드라이버는 <code>{d '1999-02-28'}</code> 의 기초 데이타베이스의 적절한 포맷이 <code>'28-FEB-99'</code> 이면 이것에 치환합니다. <code>TIME</code> 및 <code>TIMESTAMP</code> 에는, 다음과 같은 유사한 이스케이프구가 있습니다.
+<blockquote><pre>
+		{t 'hh:mm:ss'}
+		{ts 'yyyy-mm-dd hh:mm:ss.f .  .  . '}
+</pre></blockquote><a name="999565"> </a> <code>TIMESTAMP</code> 의 소수초 (<code>. f .  .  . </code>) 부분은 생략 할 수도 있습니다.
+<p>
+<li>스트아드프로시쟈를 위한 <strong>call</strong> 또는 ?  call 데이타베이스가 스트아드프로시쟈를 지원하는 경우, 다음과 같은 구문으로 이것들을 JDBC 로부터 호출할 수가 있습니다. 꺽쇄묶음 (<code>[ ]</code>)은, 거기에 둘러싸인 부분이 옵션인 것을 나타냅니다.  이러한 괄호는, 구문의 일부에서는 없습니다.
+<blockquote><pre>
+	{call procedure_name[(?, ?, .  .  . )]}
+</pre></blockquote><p><a name="999572"> </a>  결과의 파라미터를 돌려주는 프로시저의 경우는, 다음의 구문을 사용합니다.
+</p><blockquote><pre>
+	{?  = call procedure_name[(?, ?, .  .  . )]}
+</pre></blockquote><a name="999570"> </a>  입력 인수에는, 리터럴 또는 파라미터를 지정할 수 있습니다. 자세한 것은,<a href="callablestatement.html#999937">「파라미터의 번호 붙이고」</a>  를 참조해 주세요. <a name="999578"></a>  메소드 <code>DatabaseMetaData.supportsStoredProcedures</code> 를 호출하는 것으로, 데이타베이스가 스트아드프로시쟈를 지원할지 어떨지를 조사할 수가 있습니다.
+<p>
+<li>외부 결합을 위한 <strong>oj</strong> </a>   외부 결합의 구문은 다음과 같습니다.
+<blockquote><pre>
+		{oj outer-join}
+</pre></blockquote><a name="999590"> </a>  이 구문에서는,<code>outer-join</code> 는 다음의 형식이 됩니다.
+<blockquote><pre>
+table {LEFT|RIGHT|FULL} OUTER JOIN {table | outer-join} 
+	ON search-condition
+</pre></blockquote><a name="999592"> </a> 1 행 눈 안 괄호 (<code>{}</code>)는, 괄호내의 항목의 어느쪽이든을 사용해야 하는 것을 나타냅니다.  괄호는 구문에는 포함되지 않습니다. 다음의 <code>SELECT</code> 문에서는, 외부 결합을 위한 이스케이프 구문이 사용되고 있습니다.
+<blockquote><pre>
+Statement stmt = con.createStatement("SELECT * FROM {oj TABLE1 
+	LEFT OUTER JOIN TABLE2 ON DEPT_NO = 003420930}"); 
+</pre></blockquote><a name="1001261"> </a> 외부 결합은 고도의 기능이므로, 일부의 DBMS 에서는 지원되고 있지 않습니다.  자세한 것은 SQL 문법을 참조해 주세요. JDBC 는, 드라이버가 지원하는 외부 조인의 종류의 결정을 위해서(때문에), 다음의 3 개의 <code>DatabaseMetaData</code> 메소드, 즉 <code>supportsOuterJoins</code>,<code>supportsFullOuterJoins</code>, 및 <code>supportsLimitedOuterJoins</code> 를 제공하고 있다 <a name="1003665"> </a> 
+<p><a name="999571"> </a> </b></b></ul><B><code>Statement.setEscapeProcessing</code></B> 메소드를 사용해, 이스케이프 처리의 온 또는 오프를 바꿀 수가 있습니다. 디폴트에서는 온이 되어 있습니다. 퍼포먼스를 최고로 해, 처리 시간을 단축하려면 , 프로그래머가 이것을 오프로 하는 경우도 있습니다만, 이스케이프 처리는, 일반적으로 온이 되어 있습니다. <code>setEscapeProcessing</code> 메소드는,<code>PreparedStatement</code> 객체에는 기능하지 않습니다.  호출할 수가 있게 되기 전에, 벌써 데이타베이스에 문장이 송신되고 있는 것이 있기 때문에입니다. 프리컴파일에 대해서는,<a href="preparedstatement.html#996870">「<code>PreparedStatement</code> 의 개요」</a>를 참조해 주세요.
+<p></p><a name="1000712"> </a> 
+<h4>4.1. 6	 배치 갱신의 송신</h4>
+<p><a name="1002557"> </a> JDBC 2.0 코어 API 로 제공되고 있는 배치 갱신 기능을 사용하면(자), 1 개의 <code>Statement</code> 객체로, 기반이 되고 있는 DBMS 에 대해서, 복수의 갱신 커멘드를 일괄해 송신할 수가 있습니다. 갱신을 개별적으로 송신하지 않고, 복수의 갱신을 배치로서 송신할 수 있으므로, 상황에 따라서는 퍼포먼스를 크게 향상시킬 수가 있습니다.
+</p><p><a name="1002562"> </a> 다음의 코드는, 데이타베이스에 배치 갱신을 송신하는 방법을 나타내고 있습니다. 이 예에서는, 회사의 데이타베이스에 신입사원을 추가하기 위해서, 새로운 행이 3 개가 다른 테이블에 삽입됩니다. 복수의 문장을 트랜잭션(transaction)로서 일괄해 송신할 수 있도록(듯이), 최초로 <code>Connection</code> 객체 con 의 자동 위탁 모드를 오프로 설정합니다. <code>Statement</code> 객체 stmt 를 생성하고 나서,<code>addBatch</code> 메소드를 사용해 3 개의 SQL <code>INSERT</code> <code>INTO</code> 커멘드를 배치에 추가해, 다음에 <code>executeBatch</code> 메소드를 사용해 데이타베이스에 배치를 송신합니다. 코드예를 나타냅니다.
+</p><blockquote><pre>
+Statement stmt = con.createStatement();
+con.setAutoCommit(false);
+
+stmt.addBatch("INSERT INTO employees VALUES (1000, 'Joe Jones')");
+stmt.addBatch("INSERT INTO departments VALUES (260, 'Shoe')");
+stmt.addBatch("INSERT INTO emp_dept VALUES (1000, '260')");
+
+int [] updateCounts = stmt.executeBatch();
+
+</pre></blockquote><p><a name="1002595"> </a> 접속의 자동 위탁 모드를 무효로 하고 있으므로, 에러가 발생했을 경우, 또는 배치처리의 일부의 커멘드의 실행에 실패했을 경우에, 트랜잭션(transaction)를 위탁할지 어떨지를 어플리케이션이 자유롭게 결정할 수가 있습니다. 예를 들어, 삽입에 실패했을 경우는, 어플리케이션으로 변경을 위탁하지 않는 것에 따라, 사원 정보가 일부의 테이블에만 존재하는 상태를 회피할 수가 있습니다.
+</p><p><a name="1004730"> </a> JDBC 2.0 코어 API 에서는,<code>Statement</code> 객체를 생성했을 때에, 커멘드의 관련 리스트가 작성됩니다. 이 리스트는, 처음은 빈 상태(empty)입니다. 커멘드는,<code>Statement</code> 의 <code>addBatch</code> 메소드를 사용해 리스트에 추가합니다. 리스트에 추가하는 커멘드는, 갱신 카운트 이외의 결과를 돌려줄 수 없습니다. 예를 들어, 커멘드의 1 개가 결과 세트를 돌려주는 쿼리 (<code>SELECT</code> 문)의 경우는,<code>executeBatch</code> 메소드는 <code>BatchUpdateException</code> 를 throw 합니다. <code>Statement</code> 객체의 커멘드의 리스트는,<code>clearBatch</code> 메소드를 호출하는 것에 의해 비울 수 있습니다.
+</p><p><a name="1002618"> </a> 상기의 예에서는,<code>executeBatch</code> 메소드는, 기반이 되고 있는 DBMS 에 stmt 의 커멘드 리스트를 송신합니다. DBMS 에서는, 각 커멘드가 배치에 추가된 차례로 실행되어 배치의 각 커멘드에 대해서 갱신 카운트가 같은 차례로 돌려주어집니다. 커멘드로부터 갱신 카운트가 돌려주어지지 않았던 경우는, 그 커멘드의 반환값은 <code>executeBatch</code> 메소드가 돌려주는 갱신 카운트의 배열에는 추가되지 않습니다. 이 경우,<code>executeBatch</code> 메소드로부터 <code>BatchUpdateException</code> 가 throw 됩니다. 이 예외에 의해, 에러가 발생하기 전에, 정상적으로 실행된 커멘드의 갱신 카운트를 추적할 수가 있습니다.  또, 갱신 카운트의 차례는, 배치처리내의 커멘드의 차례와 일치하고 있습니다.
+</p><p><a name="1002670"> </a> 다음의 코드에서는, 어플리케이션은,<code>try</code> 블록과 <code>catch</code> 블록을 사용하고 있습니다. <code> BatchUpdateException</code> 가 throw 되었을 경우는, 예외의 갱신 카운트의 배열을 꺼내,<code>BatchUpdateException</code> 가 throw 되기 전에 정상적으로 실행된 배치 갱신의 커멘드를 검출합니다.
+</p><blockquote><pre>
+try {
+    stmt.addBatch("INSERT INTO employees VALUES (" +
+				"1000, 'Joe Jones')");
+	stmt.addBatch("INSERT INTO departments VALUES (260, 'Shoe')");
+	stmt.addBatch("INSERT INTO emp_dept VALUES (1000, '260')");
+
+	int [] updateCounts = stmt.executeBatch();
+
+} catch(BatchUpdateException b) {
+	System.err.println("Update counts of successful commands: ");
+	int [] updateCounts = b.getUpdateCounts();
+	for (int  i = 0; i &lt; updateCounts.length; i ++) {
+		System.err.print(updateCounts[i] + "  ");
+	}
+	System.err.println("");
+}
+
+</pre></blockquote><p><a name="1002714"> </a> 다음과 같은 출력이 생성되었을 경우는, 최초의 2 개의 커멘드는 정상적으로 실행되어 3 번째의 커멘드는 실패하고 있습니다.
+</p><blockquote><pre>
+Update counts of successful commands:
+1  &#32;1
+
+</pre></blockquote>
+<p><a name="1002741"> </a> JDBC 드라이버는 배치 갱신의 지원가 요구되고 있지 않습니다.  이 때문에, 드라이버에 따라서는,<code>addBatch</code>,<code>clearBatch</code>, 및 <code>executeBatch</code> 메소드가 구현되어 있지 않은 것이 있습니다. 일반적으로은, 사용하고 있는 드라이버로 배치 갱신이 지원되고 있는지 어떤지에 대해서는, 프로그래머는 파악하고 있습니다만, 어플리케이션으로부터 검사하고 싶은 경우는,<code>DatabaseMetaData</code> 의 <code>supportsBatchUpdates</code> 메소드를 호출해 조사할 수가 있습니다. 다음의 코드에서는, 드라이버로 배치 갱신이 지원되고 있는 경우에만, 배치 갱신이 사용됩니다.  지원되어 있지 않은 경우는, 각 갱신문이 개별적으로 송신됩니다. 접속의 자동 위탁 모드가 무효가 되어 있기 (위해)때문에, 어느 경우도, 갱신은 모두 1 개의 트랜잭션(transaction)에 포함됩니다.
+</p><blockquote><pre>
+con.setAutoCommit(false);
+    if(dbmd.supportsBatchUpdates) {
+	stmt.addBatch("INSERT INTO .  .  . ");
+	stmt.addBatch("DELETE .  .  . ");
+	stmt.addBatch("INSERT INTO .  .  . ");
+	.  .  .
+	stmt.executeBatch();
+} else {
+	System.err.print("Driver does not support batch updates; ");
+	System.err.println("sending updates in separate statements. ");
+	stmt.executeUpdate("INSERT INTO .  .  . ");
+	stmt.executeUpdate("DELETE .  .  . ");
+	stmt.executeUpdate("INSERT INTO .  .  . ");
+	.  .  .
+con.commit();
+</pre></blockquote><a name="1005624"> </a> 
+<h4>4.1. 7	 퍼포먼스 힌트의 제공</h4>
+<p><a name="1005625"> </a> 드라이버에 퍼포먼스에 관한 힌트를 제공하기 위해서,<code>Statement</code> 인터페이스에는 <code>setFetchDirection</code> 및 <code>setFetchSize</code> 메소드가 짜넣어지고 있습니다. 이러한 메소드는,<code>ResultSet</code> 인터페이스에도 짜넣어지고 있어 완전히 같은 처리를 합니다. 다만,<code>Statement</code> 의 메소드에서는, 특정의 <code>Statement</code> 에 의해 생성되는 모든 <code>ResultSet</code> 객체의 디폴트 값를 설정합니다. <code> ResultSet</code> 의 메소드는, 페치 방향 또는 페치 사이즈를 변경할 경우에,<code>ResultSet</code> 객체의 유효기간내의 임의 때에 호출할 수가 있습니다. 이러한 메소드에 대한 자세한 것은,<a href="resultset.html#1011961">「퍼포먼스 힌트의 제공」</a>을 참조해 주세요.
+</p><p><a name="1003791"> </a> <code>Statement</code> 인터페이스 및 <code>ResultSet</code> 인터페이스에는, 대응하고 있는 <code>getFetchDirection</code> 및 <code>getFetchSize</code> 라고 하는 <code>get</code> 메소드가 있습니다. <code>Statement.getFetchDirection</code> 가, 페치 방향의 설정전에 불려 갔을 경우는, 반환되는 값은 구현에 따라서 달라, 드라이버에 의존합니다. <code>Statement.getFetchSize</code> 메소드의 경우도 같습니다.  
+</p><a name="1003795"> </a> 
+<h4>4.1. 8	 특별한 종류의 Statement 의 실행</h4>
+<p><a name="1003798"> </a> <code>execute</code> 메소드는, 문장이 복수의 <code>ResultSet</code> 객체, 복수의 갱신 카운트, 또는 <code>ResultSet</code> 객체와 갱신 카운트가 배합하고를 돌려줄 가능성이 있는 경우인 만큼 사용해 주세요. 이 결과가 복수가 될 가능성이, 보기 드물게입니다만, 일부의 스트아드프로시쟈를 실행할 때, 또는(컴파일시에 어플리케이션 프로그래머에게 알려지지 않았다) 미지의 SQL 캐릭터 라인을 동적으로 실행할 경우에 일어나는 일이 있습니다. 예를 들어, 사용자가 스트아드프로시쟈를 실행하는 일이 있어 (<code>CallableStatement</code> 객체를 사용), 스트아드프로시쟈가 갱신, 계속되어 선택, 한층 더 갱신, 계속되어 선택과 차례차례로 실행하는 일이 있는 경우가 있습니다. 스트아드프로시쟈를 사용하는 경우에는, 그것이 무엇을 돌려줄까 벌써 알고 있는 것이 보통입니다.
+</p><blockquote><pre>
+</pre></blockquote>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="drivermanager.html">[전의 항목]</a>  <a href="resultset.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</b></b></body>
+</html>

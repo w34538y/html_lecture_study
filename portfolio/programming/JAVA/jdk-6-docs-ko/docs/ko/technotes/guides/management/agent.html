@@ -1,0 +1,520 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- GenHTML@14981-->
+<head>
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
+<title>2. &nbsp;&nbsp;JMX 테크놀러지를 사용하는 감시와 관리 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<!--stopindex-->
+<script language="javascript1.2" type="text/javascript" src="css/menucontent.js"></script>
+<script language="javascript1.2" type="text/javascript" src="css/menucode.js"></script>
+</head>
+
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" bgcolor="#ffffff" onload="prepmenus();" class="a0v0">
+<a name="top"></a> 
+
+<!-- BEGIN A1 COMPONENT V.0 -->
+<div class="a1">
+<div class="a1v0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr valign="bottom">
+<td nowrap="nowrap">
+<span class="toolbarlinks"><a href="http://www.sun.com">sun.com</a>  <a href="http://docs.sun.com/" class="dividelink">docs.sun.com</a> </span>
+</td><td align="right" nowrap="nowrap">
+<span class="toolbarlinks"><a href="http://www.sun.com/MySun/">My Sun</a>  <a href="http://www.sun.com/worldwide/" class="dividelink">Worldwide Sites</a> </span>
+</td></tr>
+</table>
+</div>
+</div>
+<!-- END A1 COMPONENT V.0 -->
+
+<!-- BEGIN A2 COMPONENT V.0 -->
+<div class="a2" id="a2v0">
+<div class="cornerTL">
+<div class="cornerTR">
+<div class="cornerBL">
+<div class="cornerBR">
+<div class="a2topiclinks">
+<table cellpadding="1" cellspacing="0" border="0">
+<tr valign="bottom">
+<td><a href="http://www.sun.com/" title="홈 페이지"><img src="css/a.gif" alt="홈 페이지" width="104" height="58" border="0" class="sunlogo"></a> </td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip1"></td>
+<td class="navlinks" id="navlink1">
+<div>
+<a id="glink1" href="http://www.sun.com/products/">제품</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip2"></td>
+<td class="navlinks" id="navlink2">
+<div>
+<a id="glink2" href="http://www.sun.com/downloads/">다운로드</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip3"></td><td class="navlinks" id="navlink3">
+<div>
+<a id="glink3" href="http://www.sun.com/service/">서비스 &amp; 솔루션</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip4"></td><td class="navlinks" id="navlink4">
+<div>
+<a id="glink4" href="http://www.sun.com/support/">테크니컬 지원</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip5"></td><td class="navlinks" id="navlink5">
+<div>
+<a id="glink5" href="http://www.sun.com/training/">트레이닝</a> 
+</div>
+</td><td><img src="css/a.gif" alt="" width="1" height="1" border="0" id="ip6"></td><td class="navlinks" id="navlink6">
+<div>
+<a id="glink6" href="http://research.sun.com/">리서치</a> 
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+</div></div></div></div>
+</div>
+<!-- END A2 COMPONENT V.0 -->
+
+<!-- BEGIN BREADCRUMB -->
+<div id="breadcrumb">
+<A href="toc.html">Java SE 감시 및 관리 가이드</A> &nbsp;
+</div><br /> <!-- END BREADCRUMB -->
+
+<!-- BEGIN WRAPPER TABLE, 1 COLUMN, MAIN -->
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<tr><td width="100%" valign="top">
+<!-- BEGIN CENTRAL COLUMN COMPONENTS -->
+
+<!-- BEGIN PAGE CONTROL ROW -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="grey1"><td></td><td align="right"><A HREF="overview.html"><IMG BORDER="0" ALT="전의 항목" SRC="graphics/prev.gif"> 전의 항목</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="toc.html">목차</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="jconsole.html">다음의 항목 <IMG BORDER="0" ALT="다음의 항목" SRC="graphics/next.gif"></A> </td></tr>
+</table>
+<!-- END PAGE CONTROL ROW -->
+
+</td></tr>
+<tr><td width="100%" valign="top">
+<a name="skip2content"> </a> 
+
+<!--startindex-->
+<div class="maincontent">
+<A NAME="agent"></A> <b>제 2 장</b><h1>JMX 테크놀러지를 사용하는 감시와 관리</h1>
+<p>Java 가상 머신 (Java VM)은 편입 Instrumentation을 갖추어 이것에 의해 Java Management Extensions (JMX) 테크놀러지를 사용한 감시와 관리를 실시할 수가 있습니다. 이러한 편입 관리 유틸리티는 일반적으로, Java VM 의 「아웃 오브 박스의 관리」툴로 불립니다. 적절히 계측 된 어플리케이션이면, JMX API 를 사용해 감시할 수 있습니다. </p>
+<A NAME="gdepe"></A> <h2>시스템 프로퍼티의 설정</h2>
+<p>아웃 오브 박스의 JMX 에이전트를 유효하게 해, Java VM 의 감시와 관리를 할 수 있도록(듯이) 설정하려면 , Java VM 의 기동시에 특정의 시스템 프로퍼티을 설정할 필요가 있습니다. 시스템 프로퍼티은, 커멘드행으로 다음과 같이 설정합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>java -Dproperty=value ...</pre>
+</td></table><br><p>이와 같이 시스템 프로퍼티은 몇개에서도 설정할 수 있습니다. 관리 프로퍼티은, 값을 지정하지 않으면 디폴트 값로 설정됩니다. 아웃 오브 박스의 관리 프로퍼티의 풀 세트에 대해서는, 본장의 말미의<A HREF="agent.html#gdeum">겉(표) 2-1</A>  를 참조해 주세요. 시스템 프로퍼티은,<A HREF="agent.html#gdevf">「아웃 오브 박스의 감시 및 관리의 프로퍼티」</a>으로 설명하고 있도록(듯이), 구성 파일 중(안)에서도 설정할 수 있습니다. </p>
+<p><hr size="1" noshade><p><b>주 - </b>커멘드행으로부터 Java VM 를 기동하려면 , 패스에 <tt><i>JRE_HOME</i>/bin</tt> 를 추가할 필요가 있습니다. <tt><i>JRE_HOME</i></tt> 는 Java Runtime Environment (JRE) 구현이 들어간 디렉토리입니다. 다른 방법으로서 커멘드 입력시에 풀 패스를 키 입력해도 상관하지 않습니다. </p>
+<hr size="1" noshade></p><p>Java HotSpot VM 로 지원되는 구문과 커멘드행의 풀 세트 옵션에 대해서는, 다음의 문서를 참조해 주세요. </p>
+<ul><li><p><A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html">Java 어플리케이션 기동 툴 (Microsoft Windows 용)</A> </p>
+</li>
+<li><p><A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html">Java 어플리케이션 기동 툴 (Solaris 오퍼레이팅(operating) 환경 및 Linux 용)</A> </p>
+</li>
+<!--
+<li><p><A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/linux/java.html">Java 어플리케이션 기동 툴 (Linux 용)</A> </p>
+</li>
+-->
+</ul>
+<A NAME="gcykd"></A> <h2>아웃 오브 박스의 관리의 유효화</h2>
+<p>JMX API 를 사용해 Java 플랫폼을 감시하려면 , 다음의 순서를 실행할 필요가 있습니다. </p>
+<ol Type="1"><li><p>Java VM 의 기동시에 JMX 에이전트 (플랫폼 MBean 서버의 별명)를 유효하게 합니다. JMX 에이전트의 유효 범위는 다음과 같습니다. </p>
+<ul><li><p>로컬 감시, 로컬 시스템으로 실행되는 클라이언트 관리 어플리케이션. </p>
+</li>
+<li><p>원격 감시, 원격 시스템으로 실행되는 클라이언트 관리 어플리케이션. </p>
+</li>
+</ul>
+</li>
+<li><p>JMX 스펙에 컴파일 하는 툴 (JConsole 등)로 Java VM 를 감시합니다. 콘솔의 상세한 것에 대하여는,<A HREF="jconsole.html#jconsole">제&nbsp;3 장 「JConsole 의 사용」</A>  을 참조해 주세요.  </p>
+</li>
+</ol>
+<p>그러한 스텝에 대해, 다음의 섹션으로 설명합니다. </p>
+<A NAME="gcyjz"></A> <h3>로컬의 감시 및 관리</h3>
+<p>Java SE 플랫폼의 이전의 릴리스에서는, JMX 클라이언트로 로컬의 Java VM 에 액세스 하려면 , Java VM 또는 Java 어플리케이션의 기동시에, 다음의 시스템 프로퍼티을 설정할 필요가 있었습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote</pre>
+</td></table><br><p>이 프로퍼티을 설정하는 것으로 Java VM 플랫폼의 MBean 를 등록해, 비공개 인터페이스를 개입시켜 Remote Method Invocation (RMI) 연결기를 공개해, JMX 클라이언트 어플리케이션으로 로컬의 Java 플랫폼 (JMX 클라이언트와 같은 머신상에서 동작하는 Java VM)을 감시할 수 있도록(듯이) 했습니다. </p>
+<p>Java SE 6 플랫폼에서는, 이 시스템 프로퍼티의 설정은 필요 없습니다. 어느 어플리케이션에서도, Java SE 6 플랫폼에서 기동한 것이면 Attach API 가 지원되어 로컬의 감시와 관리가 필요한 경우는 자동적으로 사용 가능하게 됩니다. </p>
+<p>예를 들어, 이전이라면 Java SE 의 샘플 어플리케이션 <tt>Notepad</tt> 로 JMX 에이전트를 유효하게 하려면 , 다음의 커멘드를 실행할 필요가 있었습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% cd <i>JDK_HOME</i>/demo/jfc/Notepad
+% java -Dcom.sun.management.jmxremote -jar Notepad.jar</pre>
+</td></table><br><p>이 커멘드중 <tt><i>JDK_HOME</i></tt> 는, Java Development Kit (JDK)가 인스톨 되는 디렉토리입니다. Java SE 6 플랫폼에서는, 다음의 커멘드를 실행하는 것만으로 <tt>Notepad</tt> 가 기동합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% java -jar Notepad.jar</pre>
+</td></table><br><p><tt>Notepad</tt> 가 기동하면(자), Attach API 를 사용하는 JMX 클라이언트가 아웃 오브 박스의 관리 에이전트를 유효하게 해,<tt>Notepad</tt> 어플리케이션의 감시와 관리를 실시할 수 있게 됩니다. </p>
+<p><hr size="1" noshade><p><b>주 - </b>Windows 플랫폼에서는 시큐리티상의 이유로부터, 로컬의 감시와 관리가 지원되는 것은, 디폴트의 일시 디렉토리가, 파일 및 디렉토리의 액세스권이 설정 가능한 파일 시스템 (예를 들어, New Technology File System (NTFS) 파일 시스템)에 있는 경우에 한정됩니다. 액세스 제어가 불충분한 File Allocation Table (FAT) 파일 시스템에서는 지원되지 않습니다. </p>
+<hr size="1" noshade></p><A NAME="gdemy"></A> <h4>JConsole 를 사용한 로컬의 관리 및 관리</h4>
+<p>JConsole 를 사용한 로컬의 감시는, 개발과 prototype의 작성에 도움이 됩니다. JConsole 의 로컬인 사용은, 열매 가동 환경에서는 추천하지 않습니다. JConsole 자체가 상당한 system resource를 소비하기 (위해)때문에입니다. JConsole 는 원격 시스템으로 사용해, 감시 대상의 플랫폼으로부터 분리하는 것이 좋을 것입니다. </p>
+<p>그런데도 로컬의 감시에 JConsole 를 사용하는 경우는, 커멘드 쉘에 <tt>jconsole</tt> 와 키 입력해 툴을 기동합니다. 인수없이 <tt>jconsole</tt> 를 기동하면(자), 로컬의 Java 어플리케이션이 모두 자동 검출되어 다이알로그 박스가 표시됩니다. 이 다이알로그 박스로부터, 감시 대상으로 하는 어플리케이션을 선택합니다. JConsole 와 어플리케이션은 어느쪽이나, 같은 사용자가 실행할 필요가 있습니다. 시스템의 감시에는,  operating system의 파일 액세스권이 필요하게 되기 (위해)때문에입니다. </p>
+<p><hr size="1" noshade><p><b>주 - </b>커멘드행으로부터 JConsole 를 기동하려면 ,<tt><i>JDK_HOME</i>/bin</tt> 를 패스에 추가합니다. 다른 방법으로서 커멘드 입력시에 풀 패스를 키 입력해도 상관하지 않습니다. </p>
+<hr size="1" noshade></p><p>자세한 것은,<A HREF="jconsole.html#jconsole">제&nbsp;3장 「JConsole 의 사용」</a>을 참조해 주세요. </p>
+<A NAME="gdenl"></A> <h3>원격의 감시 및 관리</h3>
+<p>원격 시스템으로부터 감시와 관리를 실시하려면 , Java VM 기동시에 다음의 시스템 프로퍼티을 설정할 필요가 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.port=<i>portNum</i></pre>
+</td></table><br><p>이 프로퍼티안의 <tt><i>portNum</i></tt> 는, JMX RMI 접속에 사용하는 포트 번호입니다. 반드시 미사용의 포트 번호를 지정해 주세요. 로컬 액세스에서는 RMI 연결기를 공개하는데 더해, 이 프로퍼티을 설정하는 것으로써, 표준명<tt>「jmxrmi」</tt>를 사용해, 지정된 포트의 비공개의 읽기 전용 레지스트리로 추가의 RMI 연결기를 공개합니다. </p>
+<p><hr size="1" noshade><p><b>주 - </b>시큐리티용으로 설정하는 프로퍼티 외에, 앞에서 본 시스템 프로퍼티을 설정할 필요가 있습니다. 이것에 대해서는<A HREF="agent.html#gdenv">「패스워드 인증의 사용」</a>이후시에를 참조해 주세요. </p>
+<hr size="1" noshade></p><p>원격의 감시와 관리에는, 권한이 없는 사람이 어플리케이션의 제어나 감시를 할 수 없게, 시큐리티가 필요합니다. 디폴트로, SSL (secure sockets layer) 경유의 패스워드 인증과 TLS (Transport Layer Security)가 유효하게 되어 있습니다. 다음의 마디에 설명하도록(듯이), 패스워드 인증과 SSL 는 개별적으로 무효로 할 수 있습니다. </p>
+<p>JMX 에이전트를 원격로 사용 가능하게 하면(자),<A HREF="agent.html#gdevs">「JConsole 에 의한 원격 감시」</a>에 설명하도록(듯이),JConsole 로 어플리케이션을 감시할 수 있습니다. 프로그램으로부터 관리 에이전트에 접속하는 방법에 대해서는,<A HREF="agent.html#gdevg">「프로그램에 의한 JMX 에이전트에의 접속」</a>을 참조해 주세요. </p>
+<A NAME="gdenv"></A> <h4>패스워드 인증의 사용 </h4>
+<p>디폴트에서는, 원격 감시로 JMX 에이전트를 유효하게 하면(자), JMX 에이전트는 패스워드 인증을 사용합니다. 다만, 패스워드를 설정하는 방법은, 단일 사용자 환경이나 다중 사용자 환경 등에 의해서 다릅니다. </p>
+<p>패스워드는 패스워드 파일에 clear text로 포함되기 (위해)때문에, 일반적으로의 사용자명과 패스워드를 감시용으로 사용하는 것은 추천할 수 없습니다. 대신에,<tt>monitorRole</tt> 및 <tt>controlRole</tt> 등의 패스워드 파일로 지정한 사용자명을 사용합니다. 자세한 것은,<A HREF="agent.html#gdeup">「패스워드와 액세스 파일의 사용」</A>  을 참조해 주세요. </p>
+<A NAME="gdeno"></A> <p><IMG border="0" alt="순서" src="graphics/procedure.gif">단일 사용자 환경을 설정하는 방법</p>
+<p><tt><i>JRE_HOME</i>/lib/management</tt> 디렉토리의 패스워드 파일을, 다음과 같이 설정합니다. </p>
+<ol><li><p><b>패스워드 템플릿 파일 <tt>jmxremote.password.template</tt> 를 <tt>jmxremote.password</tt> 에 카피합니다. </b></p></li>
+<li><p><b>파일 소유자만이 패스워드 파일을 읽고 쓰기할 수 있도록(듯이), 파일의 액세스권을 설정합니다. </b></p></li>
+<li><p><b><tt>monitorRole</tt> 이나 <tt>controlRole</tt> 등의 롤의 패스워드를 추가합니다. </b></p></li>
+</ol><A NAME="gdemx"></A> <p><IMG border="0" alt="순서" src="graphics/procedure.gif">다중 사용자 환경을 설정하는 방법</p>
+<p><tt><i>JRE_HOME</i>/lib/management</tt> 디렉토리의 패스워드 파일을, 다음과 같이 설정합니다. </p>
+<ol><li><p><b>패스워드 템플릿 파일 <tt>jmxremote.password.template</tt> 를 홈 디렉토리에 카피해, 그 파일명을 <tt>jmxremote.password</tt> 로 변경합니다. </b></p></li>
+<li><p><b>파일 소유자만이 패스워드 파일을 읽고 쓰기할 수 있도록(듯이), 파일의 액세스권을 설정합니다. </b></p></li>
+<li><p><b><tt>monitorRole</tt> 이나 <tt>controlRole</tt> 등의 롤의 패스워드를 추가합니다. </b></p></li>
+<li><p><b>Java VM 의 기동시에, 다음의 시스템 프로퍼티을 설정합니다. </b></p><table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.password.file=<i>pwFilePath</i></pre>
+</td></table><br><p>이 프로퍼티안의 <tt><i>pwFilePath</i></tt> 는, 패스워드 파일에의 패스입니다. </p>
+<hr size="1" noshade><p><IMG ALT="경고" src="graphics/caution.gif">  <b>경고 - </b>클라이언트가 시큐리티 보호되어 있지 않은 RMI 레지스트리 (디폴트)로부터 원격 연결기를 취득하면(자), 원격 연결기로부터의 패스워드 인증으로 시큐리티의 문제가 발생할 가능성이 있습니다. 타겟 서버상에서 정당한 RMI 레지스트리가 기동하기 전에 공격자가 가짜의 RMI 레지스트리를 기동하면, 클라이언트의 패스워드를 훔칠 수가 있습니다. 이것은, 시스템 프로퍼티 <tt>com.sun.management.jmxremote.port=<i>portNum</i></tt> 로 remote administration를 유효하게 해 Java VM 를 기동하는 경우도 들어맞읍니다. SSL 가 유효하게 되어 있어도 같습니다. 이러한 공격자는 발견되는 것이 많기는 하지만, 취약성이 있는 것은 확실합니다. </p><p>이 문제를 피하기 (위해)때문에, 인증에는 패스워드 대신에 SSL 클라이언트 증명서를 사용해 주세요. 또는, 클라이언트가 원격 연결기 객체를 안전하게 (예를 들어 시큐리티 보호된 LDAP 서버, 또는 공유의 시큐리티 보호된 파일 시스템에 있는 파일을 경유해) 취득하도록 해 주세요. </p>
+<hr size="1" noshade></li>
+</ol><A NAME="gdeng"></A> <h4>패스워드 인증의 무효화</h4>
+<p>원격 감시의 패스워드 인증은, 디폴트로 유효하게 되어 있습니다. 패스워드 인증을 무효로 하려면 , JVM 의 기동시에 다음의 시스템 프로퍼티을 올바르게 설정합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.authenticate=false</pre>
+</td></table><br><hr size="1" noshade><p><IMG ALT="경고" src="graphics/caution.gif">  <b>경고 - </b>이 구성은 안전하지는 않습니다. JMX 포트 번호 및 호스트명을 알고 있는 (또는 추측한다) 원격 사용자-라면 누구라도, Java 어플리케이션 및 플랫폼의 감시와 제어를 할 수 있습니다. 개발용으로는 허용 되는 경우가 있어도, 열매 가동 시스템에는 추천하지 않습니다. </p><hr size="1" noshade><p>패스워드 인증을 무효로 하는 경우,<A HREF="agent.html#gdevb">「시큐리티의 무효화」</a>로 설명하고 있도록(듯이) SSL 를 무효로 할 수도 있습니다. <A HREF="agent.html#gdepp">「SSL 클라이언트 인증의 유효화」</a>로 설명하고 있도록(듯이), 패스워드를 무효로 해 SSL 클라이언트 인증을 사용하는 경우도 있습니다. </p>
+<A NAME="gdemv"></A> <h4>SSL 의 사용</h4>
+<p>원격 감시 및 관리를 유효하게 하면(자), SSL 는 디폴트로 유효하게 되어 있습니다. SSL 를 사용하려면 , JMX 에이전트 (MBean 서버)가 가동하는 시스템상에서 디지털 증명서를 설정해, 다음에 SSL 를 올바르게 설정할 필요가 있습니다. 커멘드행 유틸리티 <tt>keytool</tt> 를 사용해, 증명서를 조작합니다. 일반적인 순서는 다음과 같습니다. </p>
+<A NAME="gdeoz"></A> <p><IMG border="0" alt="순서" src="graphics/procedure.gif">SSL 를 설정하는 방법</p>
+<ol><li><p><b>서버상에서 아직 열쇠 페어와 증명서를 설정하고 있지 않는 경우, 다음의 순서에 따릅니다. </b></p><ul><li><p><tt>keytool -genkey</tt> 커멘드로 열쇠 페어를 생성합니다. </p>
+</li>
+<li><p><tt>keytool -certreq</tt> 커멘드로 인증국 (CA)에 서명 첨부 증명서를 요구합니다. </p>
+</li>
+<li><p><tt>keytool -import</tt> 커멘드로, 증명서를 키스토어에 임포트 합니다. <tt>keytool</tt> 문서의<A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/solaris/keytool.html#ImportCertificate">「증명서의 임포트」</a>를 참조해 주세요. </p>
+<p>상세 및 예에 대해서는,<A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/solaris/keytool.html">「keytool - 열쇠 및 증명서 관리툴」(Solaris 및 Linux)</A>  또는 <A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/windows/keytool.html">(Windows 플랫폼)</a>을 참조해 주세요. </p>
+</li>
+</ul>
+</li>
+<li><p><b>서버 시스템상에서 SSL 를 설정합니다. </b></p><p>이 문서에서는, SSL 의 설정과 커스터마이즈에 대해 상세하게는 설명합니다만, 일반적으로은 다음의 겉(표)에 기재되어 있는 시스템 프로퍼티을 설정할 필요가 있습니다.  </p>
+<table border="0" cellspacing="5"><tr><td valign="top"><p><b>시스템 프로퍼티</b></p></td><td valign="top"><p><b>설명</b></p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.keyStore</tt></p></td><td valign="top"><p>키스토어의 장소. </p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.keyStoreType</tt></p></td><td valign="top"><p>디폴트의 키스토어형. </p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.keyStorePassword</tt></p></td><td valign="top"><p>디폴트의 키스토어파스워드. </p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.trustStore</tt></p></td><td valign="top"><p>트러스트 스토어의 장소. </p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.trustStoreType</tt></p></td><td valign="top"><p>디폴트의 트러스트 스토어형. </p>
+</td></tr><tr><td valign="top"><p><tt>javax.net.ssl.trustStorePassword</tt></p></td><td valign="top"><p>디폴트의 트러스트 스토어 패스워드. </p>
+</td></tr></table>
+<p>시스템 프로퍼티의 설정의 자세한 것은, 앞에서 본<A HREF="agent.html#gdepe">「시스템 프로퍼티의 설정」</a>또는 다음의 문서를 참조해 주세요. </p>
+<ul><li><p><A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/solaris/keytool.html">keytool - 열쇠 및 증명서 관리툴 (Solaris 및 Linux 플랫폼)</A> </p>
+</li>
+<li><p><A  HREF="http://java.sun.com/javase/6/docs/technotes/tools/windows/keytool.html">keytool - 열쇠 및 증명서 관리툴 (Windows 플랫폼)</A> </p>
+</li>
+<li><p>JSSE 가이드의<A  HREF="http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">「디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 스토어 패스워드의 커스터마이즈」</A> </p>
+</li>
+</ul>
+</li>
+</ol><A NAME="gdfmq"></A> <h4>RMI 레지스트리 인증의 유효화</h4>
+<p>원격 어플리케이션의 감시로 접속을 설정할 때, SSL 로 보호되고 있는 RMI 레지스트리에 RMI 연결기 Stub를 임의에 바인드 할 수 있습니다. 이것에 의해, 적절한 SSL 증명서를 가지는 클라이언트는, RMI 레지스트리에 등록된 연결기 Stub를 취득할 수 있습니다. RMI 레지스트리를 SSL 로 보호하려면 , 다음의 시스템 프로퍼티을 설정할 필요가 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.registry.ssl=true</pre>
+</td></table><br><p>이 프로퍼티이 <tt>true</tt> 로 설정되어 있는 경우, Java VM 의 기동시에, 아웃 오브 박스의 관리 에이전트에 의해, SSL 로 보호된 RMI 레지스트리의 생성 및 설정을 합니다. 이 프로퍼티의 디폴트 값는 <tt>false</tt> 입니다. 이 프로퍼티이 <tt>true</tt> 로 설정되어 있는 경우, 전면적인 시큐리티를 베풀기 (위해)때문에, 다음의 항으로 설명되고 있도록(듯이) SSL 클라이언트 인증을 유효하게 할 필요가 있습니다. </p>
+<A NAME="gdepp"></A> <h4>SSL 클라이언트 인증의 유효화</h4>
+<p>SSL 클라이언트 인증을 유효하게 하려면 , Java VM 의 기동시에 다음의 시스템 프로퍼티을 올바르게 설정합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.ssl.need.client.auth=true</pre>
+</td></table><br><p>클라이언트 SSL 인증을 사용하려면 , SSL 를 유효 (디폴트)로 해 둘 필요가 있습니다. 이 구성에서는, 클라이언트 시스템이 유효한 디지털 증명서를 가질 필요가 있습니다. <A HREF="agent.html#gdemv">「SSL 의 사용」</a>의 설명에 따라, 클라이언트 시스템에 증명서를 인스톨 해,SSL 를 설정할 필요가 있습니다. 전의 항으로 말한 것처럼, RMI 레지스트리의 SSL 보호를 유효하게 했을 경우는, 클라이언트 SSL 인증을 <tt>true</tt> 로 설정할 필요가 있습니다. </p>
+<A NAME="gdevj"></A> <h4>SSL 의 무효화</h4>
+<p>원격 감시로 SSL 를 무효로 하려면 , Java VM 의 기동시에 다음의 시스템 프로퍼티을 설정할 필요가 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.ssl=false</pre>
+</td></table><br><p>패스워드 인증은,<A HREF="agent.html#gdeng">「패스워드 인증의 무효화」</a>의 순서에 따라 무효로 하지 않는 한, 필요하게 됩니다. </p>
+<A NAME="gdevb"></A> <h4>시큐리티의 무효화</h4>
+<p>패스워드 인증과 SSL 의 양쪽 모두를 무효 (즉<b>모든</b>시큐리티를 무효)로 하려면 , Java VM 의 기동시에 다음의 시스템 프로퍼티을 설정할 필요가 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.authenticate=false
+com.sun.management.jmxremote.ssl=false</pre>
+</td></table><br><hr size="1" noshade><p><IMG ALT="경고" src="graphics/caution.gif">  <b>경고 - </b>이 구성은 안전하지는 않습니다. 포트 번호 및 호스트명을 알고 있는 (또는 추측한다) 원격 사용자-라면 누구라도, Java 어플리케이션 및 플랫폼의 감시와 제어를 할 수 있습니다. 게다가 위해의 가능성은 MBean 로 정의하는 조작으로 한정되지 않습니다. 최저한의 시큐리티 매니저도 없는 경우, 원격 클라이언트는 <tt>javax.management.loading.MLet</tt> MBean 를 작성해, 그것을 사용해 임의의 URL 로부터 새로운 MBean 를 작성할 수 있습니다. 즉, 악의가 있는 원격 클라이언트로부터, Java 어플리케이션에 임의의 코드를 실행시킬 수가 있다고 하는 것입니다. </p><p>이러한 이유로부터, 시큐리티의 무효화는, 개발시에는 허용 되는 경우가 있어도,<b>열매 가동 시스템의 시큐리티에서는 실시하지 않는</b>것을 강하게 추천합니다. </p>
+<hr size="1" noshade><A NAME="gdevs"></A> <h4>JConsole 에 의한 원격 감시</h4>
+<p>시큐리티가 유효해도 무효에서도, JConsole 를 사용해 어플리케이션을 원격 감시할 수 있습니다. </p>
+<A NAME="gdevk"></A> <h5>JConsole 에 의한 원격 감시 (SSL 가 무효인 경우)</h5>
+<p>SSL 가 무효인 상태로 원격 어플리케이션을 감시하려면 , 다음의 커멘드로 JConsole 를 기동합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% jconsole hostName:portNum</pre>
+</td></table><br><p>호스트명과 포트 번호를 생략 해, JConsole 가 제공하는 다이알로그 박스에 입력할 수도 있습니다. </p>
+<A NAME="gdevo"></A> <h5>JConsole 에 의한 원격 감시 (SSL 가 유효한 경우)</h5>
+<p>SSL 가 유효한 상태로 원격 어플리케이션을 감시하려면 , JConsole 가 가동하고 있는 시스템으로 트러스트 스토어를 설정해, SSL 를 올바르게 설정할 필요가 있습니다. 예를 들어,<A  HREF="http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore">「JSSE 가이드」</a>의 순서에 따라 키스토어를 작성해, 다음의 커멘드로 어플리케이션 (이 예에서는 <tt>Server</tt>)을 기동합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% java -Djavax.net.ssl.keyStore=keystore \
+  -Djavax.net.ssl.keyStorePassword=password Server</pre>
+</td></table><br><p>키스토어를 작성해, 앞에서 본 <tt>Server</tt> 가 기동하면(자), 다음과 같이 JConsole 를 기동할 필요가 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% jconsole -J-Djavax.net.ssl.trustStore=truststore \
+  -J-Djavax.net.ssl.trustStorePassword=trustword</pre>
+</td></table><br><p> 이 구성은 서버만을 인증합니다. 클라이언트 SSL 인증이 설정되어 있는 경우, 같은 키스토어를 JConsole 의 키에 건네주어, 해당하는 트러스트 스토어를 어플리케이션에 건네줄 필요가 있습니다.  </p>
+<p>자세한 것은, 「JSSE 가이드」의<A  HREF="http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">「디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 스토어 패스워드의 커스터마이즈」</a>를 참조해 주세요. </p>
+<p>JConsole 의 사용에 관한 자세한 것은,<A HREF="jconsole.html#jconsole">「 제&nbsp;3장　JConsole 의 사용」</a>을 참조해 주세요. </p>
+<A NAME="gdeup"></A> <h2>패스워드와 액세스 파일의 사용</h2>
+<p>패스워드 및 액세스 파일은, 원격 감시 및 관리의 시큐리티를 제어합니다. 이러한 파일은, 디폴트에서는 <tt><i>JRE_HOME</i>/lib/management</tt> 에 있어, 표준의 Java 프로퍼티 파일 포맷입니다. 포맷에 관한 자세한 것은,<tt>java.util.Properties</tt> 패키지의 「API 레퍼런스」를 참조해 주세요. </p>
+<A NAME="gdeuj"></A> <h3>패스워드 파일</h3>
+<p>패스워드 파일은, 각종 롤과 그 패스워드를 정의합니다. 액세스 제어 파일 (디폴트에서는,<tt>jmxremote.access</tt>)은, 롤 마다 허가하는 액세스권을 정의합니다. 롤을 기능시키려면 , 패스워드와 액세스 파일의 양쪽 모두에 엔트리를 가질 필요가 있습니다. </p>
+<p>JRE 구현에는,<tt>jmxremote.password.template</tt> 라고 하는 패스워드 파일 템플릿이 있습니다. 이 파일을 <tt></tt><i>JRE_HOME<tt></i>/lib/management/jmxremote.password</tt> 또는 홈 디렉토리에 카피해, 액세스 파일로 정의한 롤의 패스워드를 추가합니다. </p>
+<p>패스워드 파일에는 패스워드가 clear text로 포함되기 (위해)때문에, 반드시 소유자만이 이 파일에의 읽기 및 기입해 액세스권을 가지도록 해 주세요. 시큐리티상의 이유로부터, 시스템은 소유자만이 파일을 읽어내 가능한가 확인해, 그렇지 않은 경우는 에러로서 종료합니다. 이 때문에, 다중 사용자 환경에서는, 패스워드 파일을 홈 디렉토리등의 비공개의 장소에 보존할 필요가 있습니다. </p>
+<p>프로퍼티명은 롤로, 관련지을 수 있었던 값은 롤의 패스워드입니다. 예를 들어, 패스워드 파일의 엔트리의 예는 다음과 같이 됩니다. </p>
+<A NAME="gdfbl"></A> <p><b>예 2-1 </b>패스워드 파일의 예</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre># The "monitorRole" role has password "QED".
+# The "controlRole" role has password "R&amp;D".
+monitorRole QED
+controlRole R&amp;D</pre>
+</td></table><br><p>Solaris 및 Linux 시스템으로 패스워드 파일의 파일 액세스권을 설정하려면 , 다음의 커멘드를 실행합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>chmod 600 jmxremote.password</pre>
+</td></table><br><p>Windows 플랫폼에서 파일 액세스권을 설정하는 순서에 대해서는,<A HREF="security-windows.html#security-windows">부록&nbsp;A 「Microsoft Windows 용의 시큐리티 정보의 상세」</a>를 참조해 주세요. </p>
+<A NAME="gdeuc"></A> <h3>액세스 파일</h3>
+<p>디폴트에서는, 액세스 파일은 <tt>jmxremote.access</tt> 라는 이름입니다. 프로퍼티명은 패스워드 파일과 같은 영역의 ID 입니다. 관련하는 값은 <tt>readonly</tt> 또는 <tt>readwrite</tt> 의 어느 쪽인가에 할 필요가 있습니다. </p>
+<p>액세스 파일은 롤과 그 액세스 레벨을 정의합니다. 디폴트에서는, 액세스 파일은 다음의 2 개의 주요한 롤을 정의합니다. </p>
+<ul><li><p><tt>monitorRole</tt>: 감시를 위한 읽어내 전용 액세스를 허가합니다. </p>
+</li>
+<li><p><tt>controlRole</tt>: 감시 및 관리를 위해서(때문에) 읽기 및 기입해 액세스를 허가합니다. </p>
+</li>
+</ul>
+<p>액세스 제어 엔트리는, 롤명으로 관련하는 액세스 레벨로 구성되어 있습니다. 롤명에는, 스페이스나 탭을 포함하지 못하고, 패스워드 파일내의 엔트리에 대응하고 있을 필요가 있습니다. 액세스 레벨은 다음의 머지않아인가입니다. </p>
+<ul><li><p><tt>readonly</tt>: MBean 의 속성의 읽기 액세스를 허가합니다. 이것은, 감시의 경우, 이 롤의 원격 클라이언트로부터 측정치를 읽어낼 수 있지만, 실행중의 프로그램의 환경을 변경하는 액션은 실행할 수 없다고 하는 의미입니다. 원격 클라이언트는 MBean 의 통지를 대기할 수도 있습니다. </p>
+</li>
+<li><p><tt>readwrite</tt>: MBean 의 속성의 읽기 및 기입해 액세스, MBean 의 속성에의 조작의 호출해, MBean 의 속성의 작성 또는 삭제를 허가합니다. 어플리케이션의 조작을 방해할 가능성이 있기 (위해)때문에, 이 액세스권은 신뢰할 수 있는 클라이언트에만 허가할 필요가 있습니다. </p>
+</li>
+</ul>
+<p>롤은, 액세스 파일내에서 1 개의 엔트리만을 가질 필요가 있습니다. 롤에 엔트리가 없는 경우, 액세스권은 없습니다. 롤에 복수의 엔트리가 있는 경우, 마지막 엔트리가 우선됩니다. 액세스 파일의 사전 정의된 일반적인 롤에는, 다음과 같은 것이 있습니다. </p>
+<A NAME="gdfcd"></A> <p><b>예 2-2 </b>액세스 파일의 예</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre># The "monitorRole" role has readonly access.
+# The "controlRole" role has readwrite access.
+monitorRole readonly
+controlRole readwrite</pre>
+</td></table><br><A NAME="gdevf"></A> <h2>아웃 오브 박스의 감시 및 관리의 프로퍼티</h2>
+<p>아웃 오브 박스의 관리 및 감시의 프로퍼티은, 구성 파일 또는 커멘드행으로 설정할 수 있습니다. 커멘드행으로 지정한 프로퍼티은, 구성 파일내의 프로퍼티을 오버라이드(override) 합니다. 구성 파일의 디폴트의 장소는,<tt></tt><i>JRE_HOME<tt></i>/lib/management/management.properties</tt> 입니다. <tt>com.sun.management.jmxremote</tt> 또는 <tt>com.sun.management.jmxremote.port</tt> 의 몇개의 커멘드행 프로퍼티이 설정되어 있는 경우, Java VM 는 이 파일을 읽어냅니다. SNMP (Simple Network Management Protocol)에 의한 관리에서는, 같은 구성 파일을 사용합니다. SNMP 의 감시에 관한 자세한 것은,<A HREF="snmp.html#snmp">제&nbsp;5 장 「SNMP 감시와 관리」</a>를 참조해 주세요. </p>
+<p>다음의 커멘드행 옵션으로, 구성 파일의 다른 위치를 지정할 수 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.config.file=<i>ConfigFilePath</i></pre>
+</td></table><br><p>위의 프로퍼티에서는,<tt><i>ConfigFilePath</i></tt> 가 구성 파일에의 패스입니다. </p>
+<p><A HREF="agent.html#gdeum">겉(표) 2-1</A>  는, 모든 아웃 오브 박스의 감시 및 관리 프로퍼티을 나타내고 있습니다. </p>
+<A NAME="gdeum"></A> <p><b>겉(표) 2-1 </b>아웃 오브 박스의 감시 및 관리의 프로퍼티</p>
+
+<table cellspacing="5" border="1">
+<tr><th scope="col"><p>프로퍼티</p></th><th scope="col"><p>설명</p></th><th scope="col"><p>치</p></th></tr>
+<tr><td><p><tt>com.sun.management.jmxremote</tt></p></td><td><p>JConsole 로 사용되는 비공개 인터페이스상에 공개된 JMX 연결기와 Attach API 를 사용하는 다른 로컬의 JMX 클라이언트로부터, JMX 원격 에이전트 및 로컬의 감시를 유효하게 합니다. JConsole 로 이 연결기를 사용할 수 있는 것은, 에이전트를 기동했을 때와 같은 사용자 ID 로 JConsole 를 기동했을 경우입니다. 이 연결기 경유의 요구에 대해서는, 패스워드나 액세스 파일은 체크되지 않습니다. </p></td><td><p><tt>true</tt> / <tt>false</tt>. 디폴트는 <tt>true</tt>. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  port</tt></p></td><td><p>JMX 원격 에이전트를 유효하게 해, 원격 JMX 연결기를 작성해, 지정한 포트로 대기합니다. 디폴트에서는, SSL, 패스워드, 및 액세스 파일 프로퍼티이 이 연결기에 사용됩니다. 또,<tt>com.sun.management.jmxremote</tt> 프로퍼티으로 설명한 로컬의 감시도 유효하게 합니다. </p></td><td><p>포트 번호. 디폴트는 존재하지 않는다</p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  registry.ssl</tt></p></td><td><p>SSL 로 보호된 RMI 레지스트리에 RMI 연결기 Stub를 바인드 합니다. </p></td><td><p><tt>true</tt> / <tt>false</tt>. 디폴트에서는 <tt>false</tt>. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  ssl</tt></p></td><td><p>SSL 경유로 안전하게 감시할 수 있도록(듯이) 합니다. <tt>false</tt> 의 경우, SSL 는 사용되지 않습니다. </p></td><td><p><tt>true</tt> / <tt>false</tt>. 디폴트는 <tt>true</tt>. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  ssl.enabled.protocols</tt></p></td><td><p>유효하게 하는 SSL/TLS 프로토콜 버젼의 콤마 단락의 리스트. <tt>com.sun.management.jmxremote.ssl</tt> 와 조합해 사용합니다. </p></td><td><p>디폴트의 SSL/TLS 프로토콜 버젼. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  ssl.enabled.cipher.suites</tt></p></td><td><p>유효하게 하는 SSL/TLS 암호화 방식군의 콤마 단락의 리스트. <tt>com.sun.management.jmxremote.ssl</tt> 와 조합해 사용합니다. </p></td><td><p>디폴트의 SSL/TLS encode 방식. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  ssl.need.client.auth</tt></p></td><td><p>이 프로퍼티이 <tt>true</tt> 로 프로퍼티 <tt>com.sun.management.jmxremote.ssl</tt> 도 <tt>true</tt> 의 경우, 클라이언트 인증이 실행됩니다. </p></td><td><p><tt>true</tt> / <tt>false</tt>. 디폴트는 <tt>true</tt>. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  authenticate</tt></p></td><td><p>이 프로퍼티이 <tt>false</tt> 의 경우, JMX 에서는 패스워드도 액세스 파일도 사용하지 않습니다. 모든 사용자가 모든 액세스가 허가됩니다. </p></td><td><p><tt>true</tt> / <tt>false</tt>. 디폴트는 <tt>true</tt>. </p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  password.file</tt></p></td><td><p>패스워드 파일의 장소를 지정합니다. <tt>com.sun.management.jmxremote.authenticate</tt> 가 <tt>false</tt> 의 경우, 이 프로퍼티과 패스워드 및 액세스 파일은 무시됩니다. 그 이외의 경우는, 패스워드 파일이 존재해, 유효한 형식일 필요가 있습니다. 패스워드 파일이 빈 상태(empty)일까 존재하지 않는 경우, 액세스는 허가되지 않습니다. </p></td><td><p><tt><i>JRE_HOME</i>/lib/management/ jmxremote.password</tt></p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  access.file</tt></p></td><td><p>액세스 파일의 장소를 지정합니다. <tt>com.sun.management.jmxremote.authenticate</tt> 가 false 의 경우, 이 프로퍼티과 패스워드 및 액세스 파일은 무시됩니다. 그 이외의 경우는, 액세스 파일이 존재해, 유효한 형식일 필요가 있습니다. 액세스 파일이 빈 상태(empty)일까 존재하지 않는 경우, 액세스는 허가되지 않습니다. </p></td><td><p><tt><i>JRE_HOME</i>/lib/management/ jmxremote.access</tt></p></td></tr>
+<tr><td><p><tt>com.sun.management.jmxremote.  login.config</tt></p></td><td><p>JMX 에이전트가 사용자를 인증하는 경우에 사용하는 JAAS (Java Authentication and Authorization Service) 로그인 구성 엔트리의 이름을 지정합니다. 이 프로퍼티을 사용해 디폴트의 로그인 설정을 오버라이드(override) 하는 경우는, 지정된 구성 엔트리가 JAAS 로 로드 된 파일에 존재할 필요가 있습니다. 또, 구성으로 지정된 로그인 모듈은, 이름과 패스워드의 콜백을 사용해 사용자의 자격을 취득할 필요가 있습니다. 자세한 것은,<tt>javax.security.auth.callback.NameCallback</tt> 및 <tt>javax.security.auth.callback.PasswordCallback</tt> 의 API 문서를 참조해 주세요. </p></td><td><p>디폴트의 로그인 구성은, 파일 베이스의 패스워드 인증입니다. </p></td></tr>
+</table><A NAME="gdevd"></A> <h3>구성 에러</h3>
+<p>MBean 서버, RMI 레지스트리, 또는 연결기의 기동중에 에러가 발생했을 경우, Java VM 는 예외를 throw 해 종료합니다. 구성 에러에는, 다음과 같은 것이 있습니다. </p>
+<ul><li><p>포트 번호에 대한 바인드의 실패. </p>
+</li>
+<li><p>무효인 패스워드 파일. </p>
+</li>
+<li><p>무효인 액세스 파일. </p>
+</li>
+<li><p>패스워드 파일이 소유자 이외의 사용자로부터 읽어내 가능하게 되어 있다. </p>
+</li>
+</ul>
+<p>어플리케이션으로 시큐리티 매니저를 실행하는 경우, 시큐리티 액세스권 파일에 추가의 액세스권을 등록할 필요가 있습니다. </p>
+<A NAME="gdevg"></A> <h2>프로그램에 의한 JMX 에이전트에의 접속</h2>
+<p>JMX 에이전트를 유효하게 하면(자), 클라이언트로부터 다음의 URL 를 사용해 감시 서비스에 액세스 할 수 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>service:jmx:rmi:///jndi/rmi://<i>hostName</i>:<i>portNum</i>/jmxrmi</pre>
+</td></table><br><p>클라이언트가 에이전트의 연결기를 작성하려면 ,<A HREF="agent.html#gdfci">예 2-3</A>  와 같이, URL 를 사용해 <tt>javax.management.remote.JMXServiceURL</tt> 객체를 인스턴스화한 후,<tt>JMXConnectorFactory.connect</tt> 메소드를 사용해 접속을 작성합니다. </p>
+<A NAME="gdfci"></A> <p><b>예 2-3 </b><tt>JMXConnectorFactory.connect</tt> 를 사용한 접속의 작성</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>JMXServiceURL u = new JMXServiceURL(
+  "service:jmx:rmi:///jndi/rmi://" + hostName + ":" + portNum +  "/jmxrmi");
+  JMXConnector c = JMXConnectorFactory.connect(u); </pre>
+</td></table><br><A NAME="gdhkz"></A> <h3>프로그램에 의한 감시 및 관리의 설정</h3>
+<p>전술과 같이, Java SE 플랫폼의 버젼 6 에서는, <A  HREF="http://java.sun.com/javase/6/docs/technotes/guides/attach/index.html">Attach API</A>  를 사용하는 JMX 클라이언트를 작성할 수 있습니다. 이것에 의해 Java SE 6 플랫폼에서 기동하는 임의의 어플리케이션으로부터, 기동시에 감시용의 설정을 하지 않아도, 아웃 오브 박스의 감시 및 관리를 할 수 있게 됩니다.  Attach API 는, 툴에 의해 타겟 어플리케이션의 에이전트에 접속해, 그러한 에이전트를 기동합니다. 에이전트가 기동하면, JMX 클라이언트 (나 다른 툴)는, 그 에이전트에 대신해 Java VM 가 보관 유지하는 프로퍼티 리스트로부터, 그 에이전트의 JMX 연결기 주소를 취득할 수 있습니다. 이 리스트에 포함되는 프로퍼티은, Attach API.  (을)를 사용하는 툴로부터 액세스 할 수 있습니다. 따라서, 어플리케이션으로부터 기동한 에이전트가 구성 정보를 나타내는 프로퍼티을 생성했을 경우, 그 구성 정보는 어플리케이션에 접속하는 툴로부터 이용할 수 있습니다. </p>
+<p>JMX 에이전트는, 로컬의 JMX 연결기 서버의 주소로부터 프로퍼티을 생성합니다. 이것에 의해, JMX 툴은, 기동중의 에이전트의 연결기 주소를 취득해, 이것에 접속할 수가 있습니다.  </p>
+<p><A HREF="agent.html#gdhkq">예 2-4</A>  에 나타내는 코드를 JMX 툴로 사용하면, 타겟 VM 에 접속해, JMX 에이전트의 연결기 주소를 취득해, 이것에 접속할 수가 있습니다. </p>
+<A NAME="gdhkq"></A> <p><b>예 2-4 </b>JMX 툴의 연결기에의 접속과 에이전트의 주소의 취득</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>static final String CONNECTOR_ADDRESS =
+ "com.sun.management.jmxremote.localConnectorAddress";
+ 
+// attach to the target application
+VirtualMachine vm = VirtualMachine.attach(id);
+ 
+// get the connector address
+String connectorAddress =
+    vm.getAgentProperties(). getProperty(CONNECTOR_ADDRESS);
+ 
+// no connector address, so we start the JMX agent
+if (connectorAddress == null) {
+   String agent = vm.getSystemProperties(). getProperty("java.home") +
+       File.separator + "lib" + File.separator + "management-agent.jar";
+   vm.loadAgent(agent);
+ 
+   // agent is started, get the connector address
+   connectorAddress =
+       vm.getAgentProperties(). getProperty(CONNECTOR_ADDRESS);
+}
+ 
+// establish connection to connector server
+JMXServiceURL url = new JMXServiceURL(connectorAddress);
+JMXConnector = JMXConnectorFactory.connect(url);</pre>
+</td></table><br><p><A HREF="agent.html#gdhkq">예 2-4</A>  는,<tt>com.sun.tools.attach.VirtualMachine</tt> 클래스의 <tt>attach()</tt> 메소드를 사용해, 지정된 Java VM 에 접속하는 것으로써, 타겟 Java VM 가 가동중의 에이전트에 대신해 보관 유지하는 프로퍼티을, 지정된 Java VM 로 읽어낼 수가 있게 되어 있습니다. 에이전트가 벌써 기동하고 있는 경우는,<tt>VirtualMachine</tt> 클래스의 <tt>getAgentProperties()</tt> 메소드를 호출해, 그 에이전트의 주소를 가져옵니다. 로컬의 연결기 주소 <tt>com.sun.management.jmxremote.localConnectorAddress</tt> 의 경우,<tt>getAgentProperties()</tt> 메소드는 캐릭터 라인 프로퍼티을 돌려줍니다. 이것을 사용하면, 로컬의 JMX 에이전트에 접속할 수 있습니다. </p>
+<p>기동중의 에이전트가 없는 경우,<tt><i>JRE_HOME</i>/lib/management-agent.jar</tt> 매운 차이인가의 에이전트가 <tt>VirtualMachine</tt> 에 의해 로드 됩니다. 그 연결기 주소는 <tt>getAgentProperties()</tt> 에 의해 얻을 수 있습니다. </p>
+<p>다음에, 에이전트에의 접속을 확립하려면 , 이 연결기 주소로부터 구축된 JMX 서비스 URL 의 <tt>JMXConnectorFactory.connect</tt> 를 호출합니다. </p>
+<A NAME="gdfvv"></A> <h2>JMX 원격 API 를 사용한 아웃 오브 박스의 관리의 모방</h2>
+<p>전술과 같이, 아웃 오브 박스의 관리 에이전트에의 원격 접근은, 인증과 승인, 및 SSL 암호화에 의해 보호되고 있습니다. 모든 설정은, 시스템 프로퍼티의 설정 또는 <tt>management.properties</tt> 파일의 정의에 의해 행해집니다. 대부분의 경우, 아웃 오브 박스의 관리 에이전트를 사용해, 이것을 <tt>management.properties</tt> 파일로 설정하면, 원격 Java VM 의 관리의 안전성은 충분합니다. 다만, 한층 더 높은 레벨의 시큐리티가 필요한 경우도 있으면, 시스템 구성에 따라서는 <tt>management.properties</tt> 파일을 사용할 수 없는 경우도 있습니다. 이러한 경우에는, 방화벽(fire wall)를 통과할 수 있도록(듯이) RMI 서버의 원격 객체를 특정의 포트에 export 하는 것, 혹은 multi-homed 시스템으로 특정의 네트워크 인터페이스를 사용해 RMI 서버의 원격 객체를 export 하는 일도 있습니다. 이러한 경우, JMX 원격 API 를 사용해 직접 프로그램으로부터 관리 에이전트의 작성, 구성, 배치를 실시하는 것으로, 아웃 오브 박스의 관리 에이전트의 동작은 모방됩니다. </p>
+<A NAME="gdfxb"></A> <h3>아웃 오브 박스의 관리의 모방의 예</h3>
+<p>이 섹션에서는, 아웃 오브 박스의 관리 에이전트를 완전히 같은 것으로서 모방하는 JMX 에이전트의 구현 방법을 예시합니다. 아웃 오브 박스의 관리 에이전트와 완전히 같이<A HREF="agent.html#gdfvq">예 2-5</A>  로 작성된 에이전트는 포트 3000 으로 동작해,<tt>password.properties</tt> 라고 하는 패스워드 파일과 <tt>access.properties</tt> 라고 하는 액세스 파일을 갖고, SSL/TLS 베이스의 RMI 소켓 팩토리의 디폴트의 구성을 구현해, 서버 인증만을 필요로 합니다. 이 예는,<A HREF="agent.html#gdemv">「SSL의 사용」</a>으로 설명하고 있도록(듯이),<tt>keystore</tt> 가 벌써 작성되고 있는 것을 전제로 하고 있습니다. SSL 구성의 설정 방법법에 대해서는,<A  HREF="http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore">「JSSE 레퍼런스 가이드」</a>를 참조해 주세요. </p>
+<p>앞에서 본 같게 구성된 아웃 오브 박스의 JMX 에이전트를 사용해 <tt>com.example.MyApp</tt> 라고 하는 어플리케이션의 감시와 관리를 유효하게 하려면 , 다음의 커멘드로 <tt>com.example.MyApp</tt> 를 기동합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% java -Dcom.sun.management.jmxremote.port=3000 \
+     -Dcom.sun.management.jmxremote.password.file=password.properties \
+     -Dcom.sun.management.jmxremote.access.file=access.properties \
+     -Djavax.net.ssl.keyStore=keystore \
+     -Djavax.net.ssl.keyStorePassword=password \
+     com.example.MyApp</pre>
+</td></table><br><p><hr size="1" noshade><p><b>주 - </b><tt>com.sun.management.jmxremote. *</tt> 프로퍼티은, 커멘드행으로 건네주는 대신에 <tt>management.properties</tt> 파일로 지정할 수도 있습니다. 그 경우는, 시스템 프로퍼티 <tt>-Dcom.sun.management.config.file=management.properties</tt> 로,<tt>management.properties</tt> 파일의 장소를 지정할 필요가 있습니다. </p>
+<hr size="1" noshade></p><p><A HREF="agent.html#gdfvq">예 2-5</A>  는,<tt>com.example.MyApp</tt> 로 앞에서 본 커멘드를 사용했을 경우와 전혀 같은 감시 및 관리를 할 수 있는 JMX 에이전트를 프로그램에 의해 작성하는 경우에, 기술이 필요한 코드를 나타내고 있습니다. </p>
+<A NAME="gdfvq"></A> <p><b>예 2-5 </b>프로그램에 의한 아웃 오브 박스의 JMX 에이전트의 모방</p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>package com.example;
+
+import java.lang.management. *;
+import java.rmi.registry. *;
+import java.util. *;
+import javax.management. *;
+import javax.management.remote. *;
+import javax.management.remote.rmi. *;
+import javax.rmi.ssl. *;
+
+public class MyApp {
+
+    public static void main(String[] args) throws Exception {
+
+        // Ensure cryptographically strong random number generator used
+        // to choose the object number - see java.rmi.server.ObjID
+        //
+        System.setProperty("java.rmi.server.randomIDs", "true");
+
+        // Start an RMI registry on port 3000.
+        //
+        System.out.println("Create RMI registry on port 3000");
+        LocateRegistry.createRegistry(3000);
+
+        // Retrieve the PlatformMBeanServer.
+        //
+        System.out.println("Get the platform's MBean server");
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+        // Environment map.
+        //
+        System.out.println("Initialize the environment map");
+        HashMap&lt;String, Object> env = new HashMap&lt;String, Object>();
+
+        // Provide SSL-based RMI socket factories.
+        //
+        // The protocol and cipher suites to be enabled will be the ones
+        // defined by the default JSSE implementation and only server
+        // authentication will be required.
+        //
+        SslRMIClientSocketFactory csf = new SslRMIClientSocketFactory();
+        SslRMIServerSocketFactory ssf = new SslRMIServerSocketFactory();
+        env.put(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, csf);
+        env.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);
+
+        // Provide the password file used by the connector server to
+        // perform user authentication.  The password file is a properties
+        // based text file specifying username/password pairs.
+        //
+        env.put("jmx.remote.x.password.file", "password.properties");
+
+        // Provide the access level file used by the connector server to
+        // perform user authorization.  The access level file is a properties
+        // based text file specifying username/access level pairs where
+        // access level is either "readonly" or "readwrite" access to the
+        // MBeanServer operations.
+        //
+        env.put("jmx.remote.x.access.file", "access.properties");
+
+        // Create an RMI connector server.
+        //
+        // As specified in the JMXServiceURL the RMIServer stub will be
+        // registered in the RMI registry running in the local host on
+        // port 3000 with the name "jmxrmi".  This is the same name the
+        // out-of-the-box management agent uses to register the RMIServer
+        // stub too.
+        //
+        System.out.println("Create an RMI connector server");
+        JMXServiceURL url =
+            new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:3000/jmxrmi");
+        JMXConnectorServer cs =
+            JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
+
+        // Start the RMI connector server.
+        //
+        System.out.println("Start the RMI connector server");
+        cs.start();
+    }
+}</pre>
+</td></table><br><p>다음의 커멘드로 이 어플리케이션을 기동합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>java -Djavax.net.ssl.keyStore=keystore \
+     -Djavax.net.ssl.keyStorePassword=password \
+     com.example.MyApp</pre>
+</td></table><br><p><tt>com.example.MyApp</tt> 어플리케이션에 의해, JMX 에이전트가 유효하게 되어, Java 플랫폼의 아웃 오브 박스의 관리 에이전트를 사용했을 경우와 전혀와 같이  감시와 관리를 할 수 있게 됩니다. 다만, 아웃 오브 박스의 관리 에이전트로 사용하는 RMI 레지스트리와 그것을 모방한 관리 에이전트로 사용하는 RMI 레지스트리와는, 적지만 중요한 차이가 1 개 있습니다. 아웃 오브 박스의 관리 에이전트로 사용하는 RMI 레지스트리는 읽어내 전용입니다. 즉, 이것에 바인드 할 수 있는 것은 단일의 엔트리이며, 한 번 바인드 된 엔트리는 이제 언바인드(unbind) 할 수 없습니다. 이것은<A HREF="agent.html#gdfvq">예 2-5</A>  로 작성된 RMI 레지스트리에는 들어맞지 않습니다. </p>
+<p>그 외 , 어느 쪽의 RMI 레지스트리도, SSL/TLS 를 사용하지 않기 때문에, 안전하지는 않습니다. RMI 레지스트리는, 클라이언트 인증을 필요로 하는 SSL/TLS 베이스의 RMI 소켓 팩토리를 사용해 작성해야 합니다. 그러면, 클라이언트의 자격이 악의가 있는 RMI 서버에 송신될 것은 없고, RMI 레지스트리를 신뢰할 수 없는 클라이언트에 RMI 서버 Stub에의 액세스를 허락하는 일도 없습니다. </p>
+<p>SSL/TLS RMI 소켓 팩토리를 구현하는 RMI 레지스트리는,<tt>management.properties</tt> 파일에 다음의 프로퍼티을 추가하는 것으로 작성할 수 있습니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>com.sun.management.jmxremote.registry.ssl=true
+com.sun.management.jmxremote.ssl.need.client.auth=true</pre>
+</td></table><br><p><A HREF="agent.html#gdfvq">예 2-5</A>  에서는, 아웃 오브 박스의 JMX 에이전트의 주된 동작을 모방하고 있습니다만,<tt>management.properties</tt> 파일에 있는 기존의 프로퍼티의 모든 것을 복제하고 있는 것은 아닙니다. 다만,<tt>com.example.MyApp</tt> 를 적절히 변경하면, 다른 프로퍼티을 추가할 수 있습니다. </p>
+<A NAME="gdjou"></A> <h4>방화벽(fire wall)를 개입시킨 어플리케이션의 감시</h4>
+<p>전술과 같이,<A HREF="agent.html#gdfvq">예 2-5</A>  의 코드를 사용하면 방화벽(fire wall)를 개입시켜 어플리케이션의 감시를 할 수 있습니다만, 아웃 오브 박스의 감시 솔루션에서는 이것을 할 수 없는 경우도 있습니다. <tt>com.sun.management.jmxremote.port</tt> 관리 프로퍼티은, RMI 레지스트리에 접속 가능한 포트를 올바르게 지정해도, RMI 스택은 <tt>RMIServer</tt> 및 <tt>RMIConnection</tt> 원격 객체가 export 되는 포트를 선택합니다. 원격 객체 (<tt>RMIServer</tt> 와 <tt>RMIConnection</tt>)가 지정된 포트에 export 하려면 ,<A HREF="agent.html#gdfvq">예 2-5</A>  와 같이, 프로그램에 의해 RMI 연결기 서버를 작성할 필요가 있습니다. 다만,<tt>JMXServiceURL</tt> 는 반드시 다음과 같이 지정합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>JMXServiceURL url = new JMXServiceURL("service:jmx:rmi://localhost:" + 
+      <i>port1</i>  + "/jndi/rmi://localhost:" + <i>port2</i> + "/jmxrmi");</pre>
+</td></table><br><p>이 URL 안의 <tt><i>port1</i></tt> 는 <tt>RMIServer</tt> 및 <tt>RMIConnection</tt> 원격 객체가 export 되는 포트 번호,<tt><i>port2</i></tt> 는 RMI 레지스트리의 포트 번호입니다. </p>
+<A NAME="gdjpk"></A> <h4>에이전트 클래스를 사용하는 어플리케이션의 계측</h4>
+<p>Java SE 플랫폼은, Java 프로그램 언어 에이전트에 의해 Java VM 로 실행중의 프로그램을 계측 하는 서비스를 제공합니다. Instrumentation에이젠트를 작성하면, 어플리케이션을 감시하는 경우, 그 어플리케이션에 새로운 코드를 추가할 필요가 없어집니다. 감시와 관리는, 어플리케이션의 static <tt>main</tt> 메소드에 구현하는 것이 아니라 다른 에이전트 클래스에 구현해,<tt>-javaagent</tt> 옵션을 지정하는 것으로 어플리케이션을 기동합니다. 에이전트 클래스를 작성해 어플리케이션을 계측 하는 방법의 자세한 것은,<A  HREF="http://java.sun.com/javase/6/docs/api/java/lang/instrument/package-summary.html">java.lang.instrument</A>  패키지의 API 레퍼런스 문서를 참조해 주세요. </p>
+<p>다음의 순서는,<tt>com.example.MyApp</tt> 의 코드를 개변해, 에이전트에 감시 및 관리용의 다른 어플리케이션을 계측 시키는 방법을 나타내고 있습니다. </p>
+<A NAME="gdkay"></A> <p><IMG border="0" alt="순서" src="graphics/procedure.gif">에이전트 클래스의 작성에 의한 어플리케이션의 계측</p>
+<ol><li><p><b><tt>com.example.MyAgent</tt> 클래스를 작성합니다. </b></p><p><tt>com.example.MyAgent</tt> 라고 하는 클래스를 작성해,<tt>main</tt> 메소드는 아니고 <tt>premain</tt> 메소드를 선언합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>package com.example;
+
+[...]
+
+public class MyAgent {
+    
+    public static void premain(String args) throws Exception {
+    
+    [...]</pre>
+</td></table><br><p><tt>com.example.MyAgent</tt> 클래스의 나머지의 코드는,<A HREF="agent.html#gdfvq">예 2-5</A>  에 나타낸 <tt>com.example.MyApp</tt> 클래스와 완전히 같아도 상관하지 않습니다. </p>
+</li>
+<li><p><b><tt>com.example.MyAgent</tt> 클래스를 컴파일 합니다. </b></p></li>
+<li><p><b><tt>Premain-Class</tt> 엔트리를 사용해, Manifest 파일 <tt>MANIFEST.MF</tt> 를 작성합니다. </b></p><p>에이전트는 Java 어카이브(archive) (JAR) 파일로서 배치됩니다. JAR 파일에 포함되는 Manifest의 속성은, 에이전트를 기동하기 위해서 로드 되는 에이전트 클래스를 지정합니다. <tt>MANIFEST.MF</tt> 라고 하는 파일을 작성해, 다음의 행을 삽입합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>Premain-Class: com.example.MyAgent</pre>
+</td></table><br></li>
+<li><p><b>JAR 파일 <tt>MyAgent.jar</tt> 를 작성합니다. </b></p><p>JAR 파일에는 반드시 다음의 파일을 넣습니다. </p>
+<ul><li><p><tt>META-INF/MANIFEST.MF</tt></p>
+</li>
+<li><p><tt>com/example/MyAgent.class</tt></p>
+</li>
+</ul>
+</li>
+<li><p><b>어플리케이션을 기동해, 감시 및 관리 서비스를 제공하는 에이전트를 지정합니다. </b></p><p><tt>com.example.MyAgent</tt> 를 사용하면, 감시 및 관리용의 어플리케이션을 계측 할 수 있습니다. 다음의 예에서는, 어플리케이션으로서 <tt>Notepad</tt> 를 사용합니다. </p>
+<table cellpadding="4" border="1" cols="1" width="100%"><td><pre>% java -javaagent:MyAgent.jar -Djavax.net.ssl.keyStore=keystore \
+      -Djavax.net.ssl.keyStorePassword=password -jar Notepad.jar</pre>
+</td></table><br><p><tt>Notepad</tt> 를 기동할 때,<tt>-javaagent</tt> 옵션을 사용해,<tt>com.example.MyAgent</tt> 에이전트를 지정합니다. 또,<tt>com.example.MyAgent</tt> 어플리케이션이<A HREF="agent.html#gdfvq">예 2-5</A>  의 <tt>com.example.MyApp</tt> 어플리케이션과 같은 코드를 복제하는 경우, RMI 연결기 서버는 SSL 로 보호되고 있기 (위해)때문에,<tt>keystore</tt> 와 <tt>password</tt> 가 필요하게 됩니다. </p>
+</li>
+</ol>
+</div>
+<!--stopindex-->
+
+<!-- END CENTRAL COLUMN COMPONENTS -->
+</td></tr>
+
+<!-- BEGIN SPACER ROW -->
+<tr><td><img src="css/a.gif" width="780" height="1" border="0" alt="" /></td></tr>
+<!-- END SPACER ROW -->
+
+<tr><td>
+
+<!-- BEGIN PAGE CONTROL ROW -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="suntab"><td></td><td align="right"><A HREF="overview.html"><IMG BORDER="0" ALT="전의 항목" SRC="graphics/prev.gif"> 전의 항목</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="toc.html">목차</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="jconsole.html">다음의 항목 <IMG BORDER="0" ALT="다음의 항목" SRC="graphics/next.gif"></A> </td></tr>
+</table>
+<!-- END PAGE CONTROL ROW -->
+</td></tr>
+
+</table>
+<!-- END WRAPPER TABLE, 1 COLUMN, MAIN -->
+
+
+<!-- BEGIN A5 COMPONENT V.0 -->
+<div class="a5" id="a5v0">
+<span class="footerlinks"><a href="http://www.sun.com/company/">회사 정보</a>  <a href="http://www.sun.com/contact/">연락처</a>  <a href="http://www.sun.com/share/text/termsofuse.html">이용 규약</a>  <a href="http://www.sun.com/privacy/">프라이버시</a> 
+
+<span class="footercopy">Copyright 1994-2006 Sun Microsystems, Inc. </span></span>
+</div>
+<!-- END A5 COMPONENT V.0 -->
+
+<script type="text/javascript">
+printmenus();
+</script>
+
+</body>
+</html>
+

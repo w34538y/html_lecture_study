@@ -1,0 +1,191 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>rmid 를 기동하는 inetd 의 구성 - xrath.com 에서 번역됨</title>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+&nbsp;
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"><img src="../images/javalogo52x88.gif" alt="Java" border="0" height="88"  width="52">&nbsp;</td>
+
+<td>
+<ul>
+<center>
+<h1>
+<code>rmid</code> 를 기동하는 <code>inetd</code> 의 구성</h1></center>
+</ul>
+</td>
+
+<td width="15%" align="center" valign="top">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+&nbsp;
+<p> Solaris  operating system (Solaris OS)에서는, 인터넷 서비스 demon의 <code>inetd</code> 가, 시스템 부트시에 서비스를 기동하는 대체 수단이 됩니다. 인터넷의 표준 서비스에 대한 서버 프로세스인 이 demon를, 필요에 따라서 서비스를 기동하도록(듯이) 구성할 수가 있습니다. 인터넷 서비스 demon의 상세한 것에 대하여는, Solaris OS 의 <code>inetd(1M)</code> 의 메뉴얼 페이지를 참조해 주세요.
+
+</p><p>J2SE(TM) 5.0 릴리스에서는,<code>inetd</code> 를 구성해, 필요에 따라서 Java RMI 기동 demon의 <code>rmid</code> 를 기동할 수가 있습니다. 이 경우,<code>rmid</code> 를 부트시에 기동하는 일도, 수동으로 기동하는 일도 필요 없습니다. 그 대신해, 객체를 기동하는 등을 위해서(때문에) 클라이언트가 접속하려고 하면(자),<code>rmid</code> 가 기동됩니다.
+
+</p><p>주:재기동 가능한 서비스가 <code>rmid</code> 에 등록되어 있는 경우,<code>rmid</code> 는,<code>inetd</code> 에 의해서가 아니라, 시스템 기동시에 기동되도록(듯이) 해야 합니다. 그처럼 하면(자), 재기동 가능한 서비스가 시스템 가동중, 항상 실행되고 있는 상태가 됩니다.
+
+</p><p><code>rmid</code> 를 기동하도록(듯이) <code>inetd</code> 를 구성하려면 ,<code>inetd</code> 가 사용하는 <code>/etc/inetd.conf</code> 및 <code>/etc/services</code> 의 2 개의 구성 파일의 각각 엔트리를 추가할 필요가 있습니다. 이러한 파일을 편집하려면 ,<code>rmid</code> 가 실행되는 머신에의 루트 액세스권이 필요합니다.
+
+</p><p><code>inetd</code> 를 복구 이룬 후에, 올바르게 기능할지 어떨지를 확인하기 위해서 테스트할 필요가 있습니다.
+
+</p><p>이 튜토리얼에서는, 다음의 순서를 실행합니다.
+
+<p>
+
+</p><blockquote>
+<ul>
+<li>
+<a href="#1"><code>/etc/inetd.conf</code> 의 구성</a> </li>
+
+<li>
+<a href="#2"><code>/etc/services</code> 의 구성</a> </li>
+
+<li>
+<a href="#3"><code>inetd</code> 에 의한 새로운 구성의 read</a> </li>
+
+<li>
+<a href="#4">작성한 구성의 테스트</a> </li>
+</ul> <p>
+</blockquote>
+<p></p><hr>
+<h2>
+<a name="1"></a> <code>/etc/inetd.conf</code> 의 구성</h2>
+<blockquote>
+<p><code>/etc/inetd.conf</code> 구성 파일에는,<code>inetd</code> 가 소켓 경유로 요구를 받아들였을 때에 기동되는 서비스용의 엔트리가 포함되어 있습니다. 이 구성 파일의 형식에 대한 자세한 것은, Solaris OS 의 <code>inetd.conf(4)</code> 의 메뉴얼 페이지를 참조해 주세요.  
+
+</p><p>
+<code>rmid</code> 를 기동하도록(듯이) <code>inetd</code> 를 구성하려면 , 다음의 엔트리를 <code>/etc/inetd.conf</code> 구성 파일에 추가합니다 (머신에의 루트 액세스권이 필요).
+<blockquote>
+<pre>
+rmid stream tcp wait nobody <i><b>jreHome</b></i>/bin/rmid  \
+     rmid -log <i><b>logDir</b></i>/rmid.log <i><b>rmidOptions</b></i>
+</pre>
+</blockquote>
+<b>jreHome</b> 는 인스톨이 끝난 JRE 에의 패스,<b>logDir</b> 는 로그 파일의 디렉토리,<b>rmidOptions</b> 는 그 외의 <code>rmid</code> 용의 옵션 (프로퍼티의 초기화 등)입니다. <code>rmid</code> 가 <code>inetd</code> 에 의해 기동되는 경우는,<code>-log</code> 옵션을 지정할 필요가 있습니다. 또, 포트는 <code>/etc/services</code> 구성 파일로부터 취득되므로,<code>-port</code> 옵션은 지정하지 말아 주세요.
+
+<p></p><p><code>nobody</code> 이외의 사용자로서 <code>rmid</code> 를 실행할 필요가 있는 경우는,<code>nobody</code> 를 <code>rmid</code> 를 실행할 필요가 있는 사용자 ID 에 옮겨놓아 주세요.
+</p>
+</blockquote>
+<h2>
+<a name="2"></a> <code>/etc/services</code> 의 구성</h2>
+<blockquote>
+<p>다음에,<code>rmid</code> 를<code>/etc/services</code> 구성 파일에 서비스로서 지정할 필요가 있습니다. 이 구성 파일의 형식에 대한 자세한 것은, Solaris OS 의 <code>services(4)</code> 의 메뉴얼 페이지를 참조해 주세요.
+
+</p><p>서비스로서 <code>rmid</code> 를 지정하려면 , 다음의 엔트리를 <code>/etc/services</code> 구성 파일에 추가합니다 (머신에의 루트 액세스권이 필요).
+<blockquote>
+<pre>
+rmid        <b><i>port</i></b>/tcp
+</pre>
+</blockquote>
+<b>port</b> 는 <code>ActivationSystem</code> 및 <code>rmid</code> 가 export 하는 <code>Activator</code> 원격 객체를 위한 포트 번호입니다. 이 포트 번호는 일반적으로 1098 입니다만, 클라이언트와 기동 가능한 서비스가 시스템 프로퍼티 <code>java.rmi.activation.port</code> 를 다른 포트에 정의하고 있는 경우는, 다른 포트 번호를 사용할 수 있습니다.
+
+<p></p>
+</blockquote>
+<h2>
+<a name="3"></a> <code>inetd</code> 에 의한 새로운 구성의 read</h2>
+
+<blockquote>
+
+<p>여기까지로 구성 파일이 변경되었으므로,<code>inetd</code> 는 새로운 구성을 읽어낼 필요가 있습니다. 그 결과, 구성된 서비스에 대응하는 적절한 포트로 요구를 대기할 수 있게 됩니다.
+
+</p><p>다만 최초로,<code>rmid</code> 가 아직 실행되어 있지 않은 것을 확인할 필요가 있습니다. 이것을 실시하려면 , 다음의 커멘드를 실행합니다.
+<blockquote>
+<pre>
+% ps -ef | grep rmid
+</pre>
+</blockquote>
+상기 커멘드에 의해 실행중의 <code>rmid</code> 프로세스에 대한 정보가 표시되지 않는 경우는,<code>rmid</code> 가 실행되어 있지 않게 됩니다. 정보가 표시되었을 경우는, 작업을 속행하기 전에, 우선 <code>rmid</code> 를 종료 할 필요가 있습니다.
+
+<p></p><p>다음에,<code>inetd</code> 가 새로운 구성을 읽어낼 필요가 있습니다. <code>inetd</code> 에 구성을 재차 읽어내게 하려면 , 실행중의 <code>inetd</code> 프로세스에 행업의 신호를 송신할 필요가 있습니다. 우선, 다음의 커멘드를 실행해, 실행중의 inetd 프로세스의 프로세스 ID 를 조사합니다.
+<blockquote>
+<pre>
+% ps -ef | grep inetd
+</pre>
+</blockquote>
+이 커멘드에 의해, 다음과 같이 표시됩니다.
+<blockquote>
+<pre>
+root   171     1  0   Sep 30 ?         0:02 /usr/sbin/inetd -s
+</pre>
+</blockquote>
+이 예의 <code>inetd</code> 의 프로세스 ID 는,<code>171</code> 입니다. 이것으로, 다음의 커멘드에 프로세스 ID 를 지정해 실행하면(자) (루트 액세스권이 필요),<code>inetd</code> 프로세스에 행업 신호를 송신할 수가 있습니다.
+<blockquote>
+<pre>
+% kill -HUP 171
+</pre>
+</blockquote>
+
+<p></p><p></p>이것으로, 프로그램이 상기와 같이 구성된 포트에 접속하려고 했을 때에 <code>rmid</code> 를 기동하기 위한 설정이,<code>inetd</code> 에 대해서 모두 행해집니다.
+</blockquote>
+<h2>
+<a name="4"></a> 작성한 구성의 테스트</h2>
+
+<blockquote>
+<p><code>inetd</code> 가 올바르게 구성된 것을 테스트하려면 ,<code>ActivationSystem</code> 를 검색하는 단순한 프로그램을 실행할 수가 있습니다. 다음에, 구성이 올바른 경우는,<code>ActivationSystem</code> 가 <code>inetd</code> 에 <code>rmid</code> 를 기동시킵니다.
+
+</p><p>이하는,<code>java.rmi.activation.port</code> 시스템 프로퍼티의 값으로 해서 공급된 포트상에서 <code>ActivationSystem</code> 를 검색하는 단순한 프로그램입니다.
+
+<blockquote>
+<pre>
+package example.inetd;
+
+import java.rmi.activation.ActivationSystem;
+import java.rmi.activation.ActivationGroup;
+
+public class GetActivationSystem {
+
+    public static void main(String[] args) throws Exception {
+
+	ActivationSystem system = ActivationGroup.getSystem();
+	System.err.println("ActivationSystem = " + system);
+    }
+}
+</pre>
+</blockquote>
+<p></p><p>다음과 같이 해, 이 프로그램을 컴파일 해, 실행합니다.
+<blockquote>
+<pre>
+% javac -d <b><i>classDir</i></b> GetActivationSystem.java
+% java -classpath <b><i>classDir</i></b> -Djava.rmi.activation.port=<b><i>port</i></b> 
+example.inetd.GetActivationSystem
+</pre>
+</blockquote>
+<b>classDir</b> 는, 이 예의 클래스를 위한 클래스 패스입니다. <b><i>port</i></b> 는,<a href="#2"><code>/etc/services</code> 파일내의 <code>rmid</code> 에 구성된</a>  <code>ActivationSystem</code> 를 위한 포트입니다.
+
+<p></p><p>프로그램이 <code>ActivationSystem</code> 를 정상적으로 표시했을 경우는,<code>inetd</code> 에 의해 <code>rmid</code> 가 기동된 것이  됩니다.
+
+</p><p>프로그램이 행업 할까 예외의 트레이스를 출력했을 경우는,<code>rmid</code> 에 의해 작성된 출력 파일을 체크해 주세요. <code>rmid</code> 가 <code>inetd</code> 에 의해 기동되면(자),<code>System.err</code> 에의 모든 출력은,<code>java.io.tmpdir</code> 프로퍼티으로 지정된 디렉토리내의 파일에 써내집니다. 일반적으로, Solaris OS 에서는, 이 디렉토리는 <code>/var/tmp</code> 입니다. 이 출력 파일의 접두사는 「rmid-err」, 접미사(suffix)은 「. tmp」입니다. 이 파일명에는, 파일명을 일의로 하기 위한 문자 (일반적으로은 숫자)가 접두사와 접미사(suffix)의 사이에 포함되어 있습니다.
+
+</p><p><code>rmid</code> 가 <code>inetd</code> 로부터 올바르게 기동되었을 경우, 출력 파일에는 다음과 같은 텍스트가 포함되어 있습니다. 경고도 에러 메세지도 포함되어 있지 않습니다.
+<blockquote>
+<pre>
+Tue Sep 30 13:07:38 EDT 2003
+rmid startup with inherited channel: sun.nio.ch.ServerSocketChannelImpl[/129. 148.70. 120:1098]
+</pre>
+</blockquote>
+파일이 존재하지 않는지, 상기 텍스트가 파일내에 없는지, 또는 추가의 에러 출력이 파일내에 있는 경우는, 구성을 재체크해 주세요. <code>inetd</code> 구성의 변경을 끝냈을 때에는,<code>inetd</code> 에 행업 신호를 송신해 변경 끝난 구성이 읽히도록 해 주세요. 또, 그 전에 기동된 모든 <code>rmid</code> 프로세스를 종료시키는 일도 잊지 말아 주세요.  <br>
+</blockquote>
+<p>
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A  HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

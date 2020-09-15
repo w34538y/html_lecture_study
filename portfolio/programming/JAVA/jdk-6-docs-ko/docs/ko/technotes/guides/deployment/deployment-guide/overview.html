@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Java 배치의 개요 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../../../technotes/guides/deployment/deployment-guide/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">Java<sup><font size="5">TM</font></sup> 배치의 개요</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<h2><a name="installation"></a> 개요</h2>
+<p>Java<sup><font size="-2">TM</font></sup> Standard Edition (Java SE) &nbsp; 에서는, 데스크탑상에서 클라이언트 측에 Java 어플리케이션을 배치하기 위해서, 다음의 2 종류의 배치용 테크놀러지를 이용할 수가 있습니다. </p>
+<ol>
+<li>Java Plug-in<br> <br> Java Plug-in 는, Web 브라우저의 내부에서 실행되는 Java 애플릿을 배치하기 위해서 사용되는 툴입니다. &nbsp; 지원되는 Web 브라우저에는 Internet Explorer, Mozilla, 및 Netscape Navigator 가 포함됩니다. 상세한 것에 대하여는,<a  href="../../plugin/developer_guide/contents.html">「Java Plug-in 개발자 가이드」</a>를 참조해 주세요. <br> &nbsp;</li>
+<li>Java Web Start <br> <br> Java Web Start 는, 데스크탑상에서 스탠드얼론의 Java 어플리케이션을 배치하기 위해서 사용되는 툴로, JNLP (Java Network Launching Protocol)를 사용합니다. 상세한 것에 대하여는,<a href="faq/index.html">「Java Web Start 개발자 가이드」</a>를 참조해 주세요. </li>
+</ol>
+<p>Java Plug-in 및 Java Web Start 로 사용되는 많은 같은 배치 기능이 통합되었습니다. 이 문서의 초점은, 양쪽 모두의 제품으로 공통의 배치 기능과 일반적인 실천 방법의 개략을 나타내는 것입니다. <br> &nbsp;</p>
+<h2><a name="installation"></a> Java 플랫폼의 인스톨</h2>
+<p>Java 애플릿 또는 어플리케이션을 배치하려면 , 최초로 JRE (Java Runtime Environment)의 배치 방법을 결정할 필요가 있습니다. JRE 를 다운로드해 수동으로 인스톨 하기 위해서, 많은 인스톨 방법을 이용할 수 있습니다. JRE 및 어플리케이션을 배치하기 위해서,<a href="autodownload.html">자동 다운로드 </a>및 인스톨을 Windows 상의 브라우저를 개입시켜 이용할 수 있습니다. 기업에 있어서의 개발자 또는 ISV 가, JRE 의 사일런트 인스톨을 실시하는 경우, 인스톨러의<a href="silent.html">사일런트 인스톨 </a>옵션을 이용할 수 있습니다. Windows 환경에만 Java 플랫폼을 배치하는 개발자 및 ISV 는, 인스톨러의 <a  href="install-msi.html">Active Directory 헤의 배치</a>라고 하는 옵션도 확인할 필요가 있습니다. <br> <br> &nbsp;</p>
+<h2><a name="writing"></a> Java 애플릿 및 어플리케이션의 작성</h2>
+<p>배치를 실시할 때의 주요한 목표는, Java 프로그램 언어로 애플릿 및 어플리케이션을 기술하는 것입니다. Java Platform Standard Edition, v 6 의 API 스펙은, Java 프로그램 언어로 애플릿 및 어플리케이션을 개발하기 위한 수단이나, 다양한 컴파일러 및 디버거를 제공합니다. <a href="../../../../api/index.html">Java(TM) 2 Platform Standard Edition, v 6 의 API 스펙</a>을 참조해 주세요. </p>
+<p>Microsoft VM 로부터 Sun 의 Java 가상 머신에 애플릿을 이행 하는 경우, 이행에 관한 상세한 것에 대하여는,<a  href="applet-compatibility.html">애플릿의 호환성</a>,<a  href="upgrade-guide/index.html">Java 업그레이드에 관한 가이드 </a>및<a  href="repository.html">「시스템 전체의 리포지터리(repository)」</a>를 참조해 주세요. </p>
+<h2><br> <a name="authoring"></a> Java 애플릿 및 어플리케이션의 배치</h2>
+<p>인터넷을 경유해 애플릿 및 어플리케이션을 배치하려면 , 다운로드 및 기동하기 위해서 Web 페이지상에 두는, 애플릿 및 어플리케이션을 지정할 필요가 있습니다. </p>
+<p>Sun JVM 를 사용해 브라우저에 표시되는 Web 페이지의 애플릿의 경우, Java Plug-in 가 필요로 하는 태그 구조에 의해, 애플릿을 페이지에 묻을 필요가 있습니다.  자세한 것은,<a  href="../../plugin/developer_guide/contents.html">「Java Plug-in 개발자 가이드」</a>를 참조해 주세요.  </p>
+<p> Web 페이지로부터 어플리케이션을 순조롭게 다운로드, 캐쉬, 및 기동하려면 , 그 페이지에, Web 서버상에 있는 특별한 Java Network Launch Protocol (JNLP) 파일에의 링크가 포함되어 있을 필요가 있습니다. 이것에 의해 JRE 에 동고 되고 있는 Java Web Start 가, 어플리케이션의 다운로드, 캐쉬, 및 기동을 가능하게 합니다. JNLP 및 Java Web Start 에 관련하는 항목에 대해서는,<a  href="../../javaws/developersguide/contents.html">「Java Web Start 개발자 가이드」</a>를 참조해 주세요. </p>
+<h2><br> <a name="setting"></a> Java 배치에 있어서의 네트워크</h2>
+<p>Java Plug-in 및 Java Web Start 에서는, HTTP, HTTPS, FTP, SOCKS 등, 많은 종류의 네트워크 프로토콜, 또, HTTP Basic, Digest, NTLM 등 많은 종류의 시큐리티 인증을 개입시켜 애플릿 및 어플리케이션의 배치를 실시할 수가 있습니다.  </p>
+<p>Java Plug-in 및 Java Web Start 는, 프록시 서버-의 안쪽에서 애플릿과 어플리케이션을 배치하기 위해서, Java 컨트롤 패널 뿐만이 아니라, 브라우저로부터도 다양한 설정을 실시할 수가 있는 완전한 프록시 지원를 제공합니다. <a  href="proxie_config.html">「프록시 구성」</a>을 참조해 주세요. </p>
+<p>Java Plug-in 및 Java Web Start 는, 서버로부터 배치된다, 또는 서버에 접속하는 애플릿 및 어플리케이션에, 서버가 클라이언트 측에 데이터를 보관하기 위한 완전한 cookie 지원도 제공합니다. <a href="cookie_support.html">Cookie</a>  를 참조해 주세요. </p>
+<p>Java Archive (JAR)는, 애플릿 및 어플리케이션을 패키지화하기 위한 표준적인 방법입니다만, 반드시 네트워크 다운로드에 있어서의 가장 효과적인 방법이라고는 할 수 없습니다. Java Plug-in 및 Java Web Start 에 있어서의 Java 애플릿 및 어플리케이션을 배치하기 위해서, gzip 와 Pack200 라고 하는 2 개의 새로운 압축 형식을 이용할 수 있게 되었습니다. <a href="pack200.html">Pack200 와 압축</a>을 참조해 주세요. <br> &nbsp;</p>
+<h2><a name="setting"></a> Java 배치에 있어서의 시큐리티</h2>
+<p>디폴트에서는, Java Plug-in 및 Java Web Start 를 사용해 배치되는 Java 애플릿과 어플리케이션은, 신뢰되어 있지 않은 어플리케이션에게 주는 일련의 액세스권을 정의하는, 안전한 샌드 박스내에서 실행됩니다. <a  href="security.html"><a href="security.html">Security 클래스</a>를 참조해 주세요. </p>
+<p>
+사용자가 신뢰되고 있는 어플리케이션에 액세스권을 주고 싶은 경우는, JAR 서명을 사용합니다.  Java Plug-in 및 Java Web Start 를 사용해 배치된 Java 애플릿 및 어플리케이션은, 추가된 액세스권을 사용해 샌드 박스외에서 실행할 수 있습니다. 배치를 위해서(때문에) 어플리케이션에 적절히 서명하는 방법에 대해서는,<a href="../../../tools/windows/jarsigner.html">jarsigner</a>  를 참조해 주세요. </p>
+<p>
+서명된 애플릿 및 어플리케이션이 증명서의 기한이 지났을 경우에서도 동작을 계속하는 것을 보증하기 위해서, 배치 담당자는 서명 타임 스탬프에 의한 서명을 고려할 필요가 있습니다. 이것은 Java Plug-in 및 Java Web Start 에 의해 완전하게 지원되고 있습니다. <a href="../../security/time-of-signing.html">「Signature Timestamp Support」</a>를 참조해 주세요. </p>
+<p>서명 검증과 HTTPS 서버 및 클라이언트의 인증 시에, 디폴트의 Java 키스토어의 증명서와 키가, Java Plug-in 및 Java Web Start 에 의해 사용됩니다. 더해, Java Plug-in 및 Java Web Start 도, 다양한 목적을 위해서(때문에) 브라우저와 스마트 카드의 증명서 및 키를 지원합니다. <a  href="keystores.html">「브라우자키스토어」</a>를 참조해 주세요. </p>
+<h2><br> <a name="setting"></a> Java 배치에 있어서의 구성</h2>
+<p>Java Plug-in 및 Java Web Start 에서는, 시큐리티 액세스 제어, 네트워크 설정, 증명서 스토어등을 포함해 배치 환경이 많은 기능이 배치 구성 프로퍼티으로 구성 가능합니다.  </p>
+<p>개발자가 배치 환경을 커스터마이즈 하는 경우, 배치 구성 파일이 커스터마이즈를 위해서(때문에) 사용됩니다.  </p>
+<p>기업의 개발자 또는 ISV 는, 중앙 관리로 몇만이라고 하는 시스템에 구성을 배치하는 경우, Java Plug-in 및 Java Web Start 의 배치 구성 인프라스트럭쳐(infrastructure)에 짜넣어지고 있는 기업 구성 지원도 이용할 수 있습니다. 상세한 것에 대하여는,<a  href="properties.html">「구성 파일 및 프로퍼티의 배치」</a>를 참조해 주세요.  </p>
+<p>개발자 또는 최종 사용자는, 사용자 고유의 배치 환경을 사용하기 쉬운 환경에 커스터마이즈 하기 위해서, Java 컨트롤 패널을 사용할 수가 있습니다. <a href="jcp.html">「Java 컨트롤 패널」</a>을 참조해 주세요. <br> &nbsp;</p>
+<h2>
+<a name="setting"></a> Java 배치에 있어서의 디버그</h2>
+<p> Java 애플릿 및 어플리케이션의 디버그는, Java IDE 또는 Java 디버거에 의해 행해집니다. 더해, Java Plug-in 및 Java Web Start 에는, 디버그를 용이하게 하는 <a href="console.html">Java 콘솔</a>,<a href="tracing_logging.html">트레이스, 로그</a>등의 짜넣어 기능이 갖춰져 있습니다. <br> &nbsp;</p>
+<h2>
+<a name="setting"></a> Java 플랫폼의 갱신</h2>
+<p>Java Update 는, 지원된 Windows 플랫폼상에서, 최종 사용자가 사용하는 Java 플랫폼을 자동적으로 갱신해, 최신 상태를 유지하기 위한 솔루션입니다. Java Update 는 JRE 에 포함되어 있어 JRE 가 인스톨 떠날 수 있어 모든 시스템으로 디폴트로 이용할 수 있습니다. Java Update 는, JRE 의 최신의 버젼을 사용해 대부분의 시스템을 최신 상태에 유지합니다. 따라서 개발자는, 고객의 시스템상에 최신의 JRE 를 배치하는 것에 대하여 그다지 신경쓰지 않고 , 최신의 JRE 의 기능으로 개발을 실시할 수가 있습니다. 상세한 것에 대하여는,<a  href="java-update.html">「Java Update」</a>를 참조해 주세요. <br> &nbsp;</p>
+<hr>
+</body>
+</html>

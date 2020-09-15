@@ -1,0 +1,1832 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--updated dcarson 4/2002-->
+<TITLE>Java IDL:포타브르인타세프타 (PI) - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER><br>Java IDL 및 Java RMI-IIOP 테크놀러지: <br><br>포타브르인타세프타 (PI)의 사용</H1>
+<P><HR><P>
+<P>
+<FONT COLOR="GREEN">최종 갱신일: 4/25/2002</FONT>
+
+<P><STRONG>주:</STRONG> <FONT COLOR="RED"> 이 문서는, 고도의 지식을 가지는 CORBA 개발자를 대상으로 하고 있습니다.   </FONT>
+
+<P>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> CORBA Object Request Broker (ORB)는, 훅 (차단점)을 제공해, ORB 서비스는 이 훅을 사용해 ORB의 일반적으로의 실행의 흐름을 차단할 수가 있습니다. 이러한 「포타브르인타세프타」는, 추가의 ORB 의 동작을 플러그 인하기 위한 기구와 클라이언트와 서버간의 통신을 변경하는 것에 의해 ORB 의 동작을 변경하기 위한 기구를 제공합니다. 이후에의<a href="#example">예</a>에서는, 포타브르인타세프타의 다양한 사용법에 대해 설명합니다.
+
+<P>포타브르인타세프타의 지원는, CORBA 스펙에 최근 추가된 중요한 기능입니다. <em>RequestInterceptor</em> 를 사용하면(자), ORB 가 중개하는 임의의 호출을 차단하는 휴대용 ORB 훅을 간단하게 기술해 접속할 수가 있습니다. <em>IORInterceptor</em> 를 사용하면(자), CORBA 객체 참조에 주석을 붙이기 위한 코드를 기술할 수 있습니다.
+
+<P><STRONG>이 문서를 읽기 전에, 포타브르인타세프타의 스펙 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/2001-03-04">ptc/2001-03-04</a> )을 읽으시는 것을 강하게 추천합니다. </STRONG>
+
+<P>이 문서에서는, 다음과 같은 토픽에 대해 설명합니다.
+<P>
+<UL>
+
+<LI><a href="#types">인타세프타의 형태</a> 
+<LI><a href="#register">Java 에서의 <code>ORBInitializers</code> 의 등록</a> 
+	<UL>
+	<LI><a href="#scope notes">인타세프타의 스코프에 관한 주의</a> 
+	<LI><a href="#notes order">인타세프타의 순서에 관한 주의</a> 
+	<LI><a href="#notes register">인타세프타 등록시의 주의</a> 
+	</UL>
+<LI><a href="#PICurrent">PortableInterceptor Current (<tt>PICurrent</tt>)</a> 
+	<UL>
+	<LI><a href="#obtainPICurrent">PICurrent 의 취득</a> 
+	<LI><a href="#scope">요구 스코프와 thread 스코프의 비교</a> 
+	</UL>
+<LI><a href="#example">포타브르인타세프타의 예</a> 
+	<UL>
+	<LI><a href="#contextinformationflow">클라이언트와 서버의 사이에서의 문맥 정보의 교환</a> 
+	<LI><a href="#infinite recursion">인타세프타의 발신 호출시의 무한 재귀를 회피한다</a> 
+	<LI><a href="#avoid recursion colocated">발신 호출의 참조처가 같은 장소에 있는 경우에 재귀를 회피한다</a> 
+	<LI><a href="#multiORB">복수의 ORB 를 사용하는 것으로 재귀를 회피한다</a> 
+	</UL>
+<LI><a href="#Example Code">코드예</a> 
+<LI><a href="#running">어플리케이션의 컴파일과 실행</a> 
+</UL>
+
+
+<P><HR><P>
+<a name="types"></a> 
+<P><H1>인타세프타의 형태</H1>
+<p>현재, 등록할 수 있는 인타세프타에는 다음의 3 개의 형태가 있습니다. 각각의 예에 대해서는 이후에의<a href="#example">예</a>로 설명합니다.
+<ul>
+<li><A HREF="../../../api/org/omg/PortableInterceptor/IORInterceptor.html"><CODE>IORInterceptor</CODE></A>  
+  <P>
+경우에 따라서는, 클라이언트상의 ORB 서비스 구현을 올바르게 기능시키기 위해서(때문에), 휴대용 ORB 서비스의 구현으로, 서버 또는 객체의 ORB 서비스 관련 기능을 설명하는 정보를 객체 참조에 추가할 필요가 있습니다. 이 처리는,<tt>IORInterceptor</tt> 인터페이스와 <tt>IORInfo</tt> 인터페이스에 의해 지원됩니다. IOR 인타세프타는, Interoperable Object Reference (IOR)의 프로파일내에 태그 첨부 컴퍼넌트를 확립하기 위해서 사용합니다.
+      
+<P>IOR 인타세프타의 예는, 이후에 설명하는 예의 <a href="#AServiceIORInterceptor"><tt>AServiceIORInterceptor.java</tt></a>  파일에 나타냅니다. </li>
+  <P>
+<li><A  HREF="../../../api/org/omg/PortableInterceptor/ClientRequestInterceptor.html"><CODE>ClientRequestInterceptor</CODE></A> 
+  <P>
+요구 인타세프타는, ORB 의 응답이나 요구 순서의 흐름을 특정의 포인트로 차단할 수 있도록(듯이) 설계되고 있습니다. 이것에 의해, 서비스는, 요구 정보를 문의하거나 클라이언트와 서버간에 전파 되는 서비스 문맥을 조작하거나 할 수 있습니다. 요구 인타세프타는 주로, ORB 서비스가 클라이언트와 서버간에 문맥 정보를 전송 할 수 있도록(듯이) 하기 위해서 사용됩니다.   
+       
+<P><CODE> ClientRequestInterceptor</CODE> 는, 클라이언트측의 ORB 의 요구나 응답 순서의 흐름을 차단합니다. </li>
+      
+<P><tt>ClientRequestInterceptor</tt> 의 예는, 이후에 설명하는 예의 <a href="#ClientIntercept"><tt>LoggingServiceClientInterceptor.java</tt></a>  파일에 나타냅니다. <P>
+  <P>
+<li><A  HREF="../../../api/org/omg/PortableInterceptor/ServerRequestInterceptor.html"><CODE>ServerRequestInterceptor</CODE></A>  
+  <P>
+<CODE> ServerRequestInterceptor</CODE> 는, 서버측의 ORB 의 요구나 응답 순서의 흐름을 차단합니다.
+      
+<P><tt>ServerRequestInterceptor</tt> 의 예는, 이후에 설명하는 예의 <a  href="#LoggingServiceServerInterceptor"><tt>LoggingServiceServerInterceptor.java</tt></a>  파일에 나타냅니다. </li><P>
+</ul>
+
+
+
+<P><HR><P>
+ <a name="register"></a> 
+<H1>Java 에서의 <code>ORBInitializers</code> 의 등록</H1>
+ <p>
+<A HREF="../../../api/org/omg/PortableInterceptor/ORBInitializer.html"><CODE>ORBInitializer</CODE></A>  인터페이스를 이용하면(자), 인타세프타의 등록과 ORB 의 초기화가 간단하게 됩니다.
+ 
+ <P>
+인타세프타에 의해, ORB 서비스는 ORB 프로세스에 액세스 해, 효과적으로 ORB 의 일부가 될 수가 있습니다. 인타세프타는 ORB 의 일부이므로,<code>ORB.init</code> 가 ORB 를 돌려줄 때 인타세프타는 이미 등록이 끝난 상태입니다. <code>ORB.init</code> 에의 호출로 반환된 후는, 인타세프타는 그 ORB 에 등록할 수 없습니다.  
+ 
+ <p>
+<code>ORBInitializers</code> 는 Java ORB 프로퍼티을 경유해 등록됩니다. <code>ORBInitializer</code> 인터페이스를 구현하는 관련 객체 <code>ORBInitializer</code> 를 등록하면(자), 인타세프타가 등록됩니다. ORB 는, 등록된 <code>ORBInitializer</code> 를 각각 초기화중에 호출해, 인타세프타를 등록하기 위해서 사용하는 <code>ORBInitInfo</code> 객체를 건네줍니다.
+ 
+ <p>
+이 프로퍼티명은 이하의 형식을 취합니다.  
+<blockquote><code>org.omg.PortableInterceptor.ORBInitializerClass. &lt;Service&gt;</code></blockquote>
+<code>&lt;Service&gt;</code> 는 다음의 프로퍼티을 구현하는 클래스의 캐릭터 라인명입니다.  
+<blockquote><code>org.omg.PortableInterceptor.ORBInitializer</code></blockquote>
+이름의 충돌을 막기 위해, 역방향의 DNS 명명 규칙이 사용됩니다. 예를 들어, X 사에 초기화자가 3 개 있는 경우, 다음의 프로퍼티을 정의할 수 있습니다.  
+ <ul>
+<li><code>org.omg.PortableInterceptor.ORBInitializerClass.com.x.Init1</code></li>
+<li><code>org.omg.PortableInterceptor.ORBInitializerClass.com.x.Init2</code></li>
+<li><code>org.omg.PortableInterceptor.ORBInitializerClass.com.x.Init3</code></li>
+ </ul>
+ 
+<P><strong>주:</strong> <code>ORBInitializerClass</code> 프로퍼티에 값을 관련지어도, 모두 무시됩니다.
+
+
+ 
+ <P>
+<tt>ORB.init</tt> 에서는,<code>org.omg.PortableInterceptor.ORBInitializerClass</code> 로 시작되는 ORB 프로퍼티이 수집되어 각각의 프로퍼티으로부터 <code>&lt;Service&gt;</code> 의 부분이 추출되어 객체는 클래스명으로서 <code>&lt;Service&gt;</code> 캐릭터 라인으로 인스턴스가 생성되어 그 객체로 <code>pre_init</code> 메소드 및 <code>post_init</code> 메소드가 불려 갑니다. 예외가 있어도 ORB 는 무시해 처리를 실시합니다.  
+ 
+ <p>
+ <a name="scope notes"></a> 
+<H2>인타세프타의 스코프에 관한 주의</H2>
+ <p>
+ <UL>
+<LI>인타세프타는 ORB 베이스로 등록됩니다.  
+ <p>
+<LI>POA 마다의 가상 인타세프타를 실현하려면 , 각 POA 를 다른 ORB 로 인스턴스화합니다.  
+ </UL>
+ 
+ <a name="notes order"></a> 
+<H2>인타세프타의 순서에 관한 주의</H2>
+ <UL>
+<LI>관리상, 인타세프타를 순서 붙일 수 있습니다만, 인타세프타의 등록에 대해서는 순서라고 하는 생각은 없습니다. 요구 인타세프타에서는 서비스의 문맥이 관련하고 있습니다. 서비스 문맥에는 순서부가 없기 때문에, 요구 인타세프타에 순서부를 하는 것은 의미가 없습니다. IOR 인타세프타는 태그 첨부 컴퍼넌트가 관련하고 있습니다. 태그 첨부 컴퍼넌트에도 순서부가 없기 때문에, IOR 인타세프타에 순서부를 하는 것은 의미가 없습니다.  
+ </UL>
+ 
+ <a name="notes register"></a> 
+<H2>인타세프타 등록시의 주의</H2>
+ <UL>
+<LI>등록 코드에서는 ORB 를 사용하지 않게 합니다. 즉, 주어진 <code>orb_id</code> 로 <code>ORB.init</code> 를 호출하지 않게 합니다. ORB 의 초기화중에 등록이 발생하므로, 이 상태로 이 ORB 를 호출해도 결과는 정의되지 않습니다.
+
+</UL>
+<P><HR><P>
+<a name="PICurrent"></a> 
+<H1>PortableInterceptor Current (<tt>PICurrent</tt>)</H1>
+<P> <tt>PortableInterceptor::Current</tt> 객체 (이 이후 <tt>PICurrent</tt> 라고 부른다)는, 포타브르인타세프타가, thread의 문맥 정보를 요구 문맥에 전송 하기 위해서 사용하는 <tt>Current</tt> 객체입니다. 포타브르인타세프타는,<tt>PICurrent</tt> 를 항상 사용할 필요는 없습니다만, 인타세프타의 차단점으로써, 클라이언트의 thread 문맥의 정보가 필요한 경우는,<tt>PICurrent</tt> 를 사용해 그 정보를 전파 할 수가 있습니다. <tt>PICurrent</tt> 를 사용하면(자), ORB 의 thread 모델에 관계없이 이식성이 있는 서비스 코드를 기술할 수 있습니다.
+ 
+<P><strong>주:</strong>  <tt>PICurrent</tt> 는 일반적으로, CORBA 의 클라이언트 코드 또는 서버 코드로부터 직접 사용될 것은 없습니다. 일반적으로는, 이후에 설명하는 <tt><a href="#AService diagram">AService</a> </tt> 라고 하는 인타세프타의 예로 소개되고 있도록(듯이), 인타세프타베이스의 서비스 구현에 의해 사용됩니다.
+
+ <a name="obtainPICurrent"></a> 
+<H2>PICurrent 의 취득</H2>
+ 
+<P><tt>PICurrent</tt>는, 호출을 실시하기 전에,<tt>ORB::resolve_initial_references ( PICurrent )</tt> 의 호출에 의해 취득됩니다. 차단점으로써,<tt>RequestInfo</tt> 객체에 대한 <tt>get_slot</tt> 오퍼레이션을 실행하면(자), thread 스코프로부터 요구 스코프에 이동된 <tt>PICurrent</tt> 에 관한 데이터를 취득할 수 있습니다. <tt>PICurrent</tt> 는,<tt>resolve_initial_references</tt> 를 사용해 취득할 수도 있습니다만, 이 경우는 인타세프타의 thread 스코프의 PICurrent 가 취득됩니다.  
+
+<a name="scope"></a> 
+<H2>요구 스코프와 thread 스코프의 비교</H2>
+
+<P>thread 스코프의 <tt>PICurrent</tt> (TSC)는, thread의 문맥내에 존재하는 <tt>PICurrent</tt> 입니다. 요구 스코프의 <tt>PICurrent</tt> (RSC)는, 요구에 관련지을 수 있고 있는 <tt>PICurrent</tt> 입니다. 클라이언트측에서는, 요구의 개시시에, thread 스코프의 <tt>PICurrent</tt> 가, thread 문맥으로부터 요구 스코프의 <tt>PICurrent</tt> 에 논리적으로 카피되어<tt>ClientRequestInfo</tt> 객체에 접속됩니다. 서버측에서는, 요구 스코프의 <tt>PICurrent</tt> 가 <tt>ServerRequestInfo</tt> 에 접속되고 나서, 요구의 처리를 합니다. 요구 스코프의 <tt>PICurrent</tt> 는,<tt>receive_request_service_contexts</tt> 차단점의 리스트가 처리된 뒤에, thread 스코프의 <tt>PICurrent</tt> 에 논리적으로 카피됩니다. <tt>PICurrent</tt> 의 스코프의 상세한 것에 대하여는, 「<a target="AuxWindow" href="http://www.omg.org/cgi-bin/doc?ptc/2001-03-04"><em>Updated Interceptors specification</em></a> 」의 「21.4. 4.5 Flow of PICurrent between Scopes」를 참조해 주세요. <em></em> 
+<P>
+
+
+
+<HR><P>
+<!--  ***************   TUTORIAL    ****************--> <a name="example"></a> 
+<H1>포타브르인타세프타의 예</H1>
+<P>여기에서는, 로깅서비스아프리케이션의 예에 대해 설명합니다. 이 어플리케이션의 샘플 코드는, 복잡하고 「특수한 케이스」를 취급하기 (위해)때문에, 매우 복잡하게 되어 있습니다. 이 샘플 어플리케이션에서는 이하의 시나리오를 취급합니다.  
+<P>
+<OL>
+<LI>호출을 로그에 기록하는 로깅서비스. 클라이언트와 서버의 어느쪽이나 이 로깅서비스를 명시적으로 사용하지 않는다 
+<P>
+<LI> 클라이언트로부터 서버에 정보를 건네주는 「빈 상태(empty)의」서비스. 클라이언트와 서버는, 이 서비스를 명시적으로 사용하지만, 인타세프타를 사용해 서비스가 구현되고 있는 것을 인식하고 있지 않다
+</OL>
+
+<P><STRONG>주:</STRONG>이하의 예에서는, 코드를 간단하게 시험해 셋업 할 수 있도록(듯이),<tt>ORBInitializer</tt> 를 명시적으로 등록하고 있습니다. 일반적으로는 이러한 처리는 실시하지 않습니다. 일반적으로, 이 정보는, 어플리케이션의 기동시에 <tt>-D</tt> 프로퍼티으로서 Java 가상 머신에게 건네집니다. 이 방법을 사용하면(자), 서비스 (예를 들어 로깅서비스)가 존재할지 어떨지, 혹은 어플리케이션이 명시적으로 사용하는 서비스 (예를 들어 <tt>AService</tt> 인터페이스)가 인타세프타로서 구현될지 어떨지라고 하는 사실에 어플리케이션이 속박 되지 않게 됩니다.  
+
+<P>로깅서비스의 예를 소개하는 목적은, 차단점내로부터 발신 호출 (즉, CORBA 참조에 대한 호출)을 실시할 때 무한 재귀를 회피하는 방법을 설명하는 것입니다. 이것은, 모든 케이스를 망라하려고 하면(자), 꽤 복잡하게 되는 일이 있습니다.
+
+<P>「빈 상태(empty)의」서비스의 예를 소개하는 목적은, 문맥 정보를 클라이언트와 서버의 사이에 교환하는 서비스의 구현 방법을 설명하는 것입니다.
+
+<a name="contextinformationflow"></a> 
+<H2>클라이언트와 서버의 사이에서의 문맥 정보의 교환</H2>
+
+<P>전형적인 인타세프타베이스의 서비스에서는, 문맥 정보를 클라이언트와 서버의 사이에 교환합니다. <tt>AService</tt> 의 예는, 이 정보가 클라이언트의 thread로부터 클라이언트의 인타세프타에 흘러 와이어를 경유해 서버의 인타세프타에 들어가, 서번트의 thread에 닿는다고 하는 플로우나, 그 역의 플로우에 대해 설명하는 것입니다.
+
+<P>서비스가 인타세프타를 사용해 구현되고 있다고 하는 것을, 클라이언트와 서번트가 어느쪽이나 의식하지 않는다고 하는 점이 중요합니다. 그 어느쪽이나, 로컬 객체 참조 (이 예에서는 <tt>aService</tt> 참조)를 개입시켜 서비스라고 대화하고 있을 뿐입니다.  <a name="AService diagram"></a> 
+<P ALIGN=CENTER><strong><tt>AService</tt> 의 설명도</strong></P>
+
+<img src="images/AService.gif" align=CENTER valign=CENTER alt="AService 의 설명도"><P>
+
+<P><tt>AService</tt> 의 설명도에 있는 각 스텝에 대한 설명은 다음과 같습니다.
+<OL>
+<LI>클라이언트가 <tt>aService.begin()</tt> 를 호출합니다. <P>
+
+1. a.  <tt>aService.begin()</tt> 는,<tt>PICurrent</tt> 에 예약 끝난 슬롯에, 서비스의 문맥 정보를 설정합니다. <P>
+<LI>클라이언트는, 무엇인가의 참조상에 있는 메소드 (즉,<tt>ref.method()</tt>)를 호출합니다. 이 호출은,<tt>aService.begin()</tt> 를 호출한 이후의 서비스 문맥내에서 행해집니다. <P>
+<LI><tt>ref.method call</tt> 를 위해서(때문에),<tt>send_request</tt> 에 들어갑니다. <P>
+<LI>불려 간 참조가 서비스와의 대화를 필요로 할지 어떨지를 판별하기 위해서,<tt>get_effective_component(s)</tt> 가 불려 갑니다. <P>
+<LI>스텝 1a 로 설정된 문맥을 취득하기 위해서,<tt>get_slot</tt> 가 불려 갑니다. <tt>PICurrent</tt> 로 설정된 슬롯이 논리적으로 카피되어,<tt>ClientRequestInfo</tt> 가 그 슬롯을 이용할 수 있게 됩니다. <P>
+<LI>서비스인타세프타가, 적절한 문맥 (대부분의 경우, 스텝 1a 로 설정된 문맥과 스텝 4 로 취득된 컴퍼넌트에 의해 정해진다)을 포함한 서비스 문맥을 추가합니다. 서비스인타세프타는 <tt>add_request_service_context</tt> 를 사용해, 와이어상이 송신되는 요구에 이 문맥 정보를 추가합니다. <P>
+<LI><tt>ref.method request</tt> 가 서버에 도착해,<tt>receive_request_service_contexts</tt> 차단점을 기동합니다. <P>
+<LI><tt>get_request_service_context</tt> 를 사용해, 스텝 6 으로 추가된 서비스 문맥이 취득됩니다. <P>
+<LI><tt>ServerRequestInfo.set_slot</tt> 를 사용해, 스텝 8 으로 취득된 서비스 문맥이, 논리적인 thread 로컬의 데이터에 전송 됩니다. <P>
+<LI><tt>receive_request</tt> 에 들어갑니다. <P>
+<LI>「ref」서번트의 「메소드」에 들어갑니다. <P>
+<LI>서번트의 메소드는,<tt>aService.verify()</tt> 를 호출해 서비스라고 대화합니다. <P>
+<LI>서비스는,<tt>PICurrent</tt> 에 대해 <tt>get_slot</tt> 를 사용해, 클라이언트측으로부터 송신된 문맥 정보를 가져옵니다. 게다가 서비스는,<tt>PICurrent</tt> 에 대해서 <tt>set_slot</tt> 를 사용해, 답장하기 위한 문맥 정보를 설정하는 일도 있습니다. <P>
+<LI>서번트의 처리가 완료하면(자),<tt>send_*</tt> 차단점에 들어갑니다. 서비스가 답신용의 문맥 정보를 설정했을 경우는, 답신의 내용에 서비스 문맥이 추가됩니다. 이 점은, 이 예에서는 나타나고 있지 않습니다. <P>
+<LI>응답이 클라이언트에 도착하면(자),<tt>receive_*</tt> 차단점에 들어갑니다. 서비스가 답신용의 문맥 정보를 설정했을 경우는, 이 시점에서 그 정보가 취득됩니다. 이 점은, 이 예에서는 나타나고 있지 않습니다.
+    </OL>
+
+<a name="infinite recursion"></a> 
+<H2>인타세프타의 발신 호출시의 무한 재귀를 회피한다</H2>
+
+<P>서비스에 따라서는, 차단점내로부터 다른 CORBA 객체 참조에 대한 호출을 실시할 필요가 있습니다. 차단점내로부터 발신 호출을 실시할 때는, 무한 재귀를 회피하기 위한 조치를 취할 필요가 있습니다.  그러한 발신 호출이 차단점을 경유하기 때문입니다. <tt>LoggingService</tt> 의 예에서는, 이 케이스에 대해 설명합니다.
+
+<P><tt>LoggingService</tt> 의 예는, 클라이언트 프로그램에 등록된 <tt>ClientRequestInterceptors</tt> 와 서버 프로그램에 등록된 <tt>ServerRequestInterceptors</tt> 로 구성됩니다. 이러한 인타세프타는, 클라이언트 및 서버로부터 <tt>LoggingService</tt> 의 구현에 정보를 송신합니다. <tt> LoggingService</tt> 의 구현은, 그 정보를 로그에 기록합니다.
+
+<P>다만,<tt>LoggingService</tt> 의 구현은 그 자체가 CORBA 서버이므로, 로거에 대한 호출은 로그에 기록하지 않게 할 필요가 있습니다. 다음의 그림은, 무한 재귀를 회피하기 위해서 취해야 할 처치를 나타내고 있습니다.
+
+<P>다음의 그림에서는, 인타세프타내에서 외부의 로거를 호출한다고 하는, 재귀를 회피해야 할 가장 단순한 케이스를 나타냅니다. 여기서 설명하는 순서는, 클라이언트 ORB 는 <tt>ClientRequestInterceptors</tt> 만을 포함해, 서버 ORB 는 <tt>ServerRequestInterceptors</tt> 만을 포함해,<tt>LoggingService</tt> 는 클라이언트 ORB 와 서버 ORB 의 양쪽 모두에 대해서 외부에 있다고 하는 케이스에 도움이 됩니다.
+
+
+<a name="LoggingService diagram"></a> 
+<P ALIGN=CENTER><strong><tt>LoggingService</tt> 의 설명도</strong></P>
+<img src="images/LoggingService.gif" align=CENTER valign=CENTER  alt="로깅서비스의 설명도">
+<P><tt>LoggingService</tt> 의 설명도에 있는 각 스텝에 대해, 다음에 설명합니다.
+<P>
+<OL>
+<LI>클라이언트는, 무엇인가의 참조상에 있는 메소드를 호출합니다. <P>
+<LI>스텝 1 으로 불려 간 메소드를 위해서(때문에), 쿠라이안트인타세프타의 <tt>send_request</tt> 메소드에 들어갑니다. <P>
+<LI>발신 호출을 나타내기 위해서(때문에) 예약 끝난 <tt>PICurrent</tt> 상의 슬롯이 <tt>true</tt> 로 설정됩니다. <P>
+<LI><tt>get_slot</tt> 에 의해,<tt>ClientRequestInfo</tt> 상의 같은 슬롯이 체크됩니다. 이 값은, 스텝 1 에서의 클라이언트의 thread 상태를 나타내고 있기 (위해)때문에, 설정되어 있지 않습니다.  따라서, 로거에 대한 호출이 실행되게 됩니다. <P>
+<LI>스텝 4 로 행해진 로거호출을 위해서(때문에),<tt>send_request</tt> 에 재귀적으로 들어갑니다. <P>
+<LI>발신 호출을 나타내기 위해서(때문에) 예약 끝난 <tt>PICurrent</tt> 상의 슬롯이 <tt>true</tt> 로 설정됩니다. 이 슬롯은, 언제나 무조건으로 설정되는 것에 주의해 주세요. 그것은, 발신 호출을 실시하는 인타세프타가 2 개 이상 있을 때 필요한 처치입니다. 각 인타세프타는 다른 인타세프타의 존재를 인식하고 있지 않았기 때문에, 언제나 <tt>PICurrent</tt> 를 설정하기로 하겠습니다. <P>
+<LI> <tt>get_slot</tt> 에 의해,<tt>ClientRequestInfo</tt> 상의 슬롯이 체크됩니다. 이번은, 값이 설정되어 있습니다 (스텝 3 로부터. 따라서, 이 호출 (로거그것에 대한 호출)은 로그에 기록하지 않습니다. 스텝 5 로 들어간 <tt>send_request</tt> 포인트가 종료합니다. <P>
+<LI>ORB 는, 스텝 4 로 행해진 로그 호출을 로깅서비스에 송신합니다. <P>
+<LI>스텝 2 로 들어간 <tt>send_request</tt> 포인트가 종료합니다. ORB 는, 스텝 1 으로 행해진 최초의 클라이언트 호출을, 서버의 해당하는 참조에 대해서 송신합니다. <P>
+<LI>서버의 <tt>receive_request_service_contexts</tt> 포인트에 들어갑니다. 이것에 의해, 착신 요구가 로그에 기록됩니다. 발신 호출을 실시하는 쿠라이안트인타세프타가 포함되지 않고, 로거의 구현 그 자체도 포함되지 않은 서버의 경우, 재귀를 회피하는 슬롯을 설정할 필요는 없습니다. 이 그림은, 그러한 케이스를 나타내고 있습니다. <P>
+<LI>- &nbsp;&nbsp;13. &nbsp;&nbsp;&nbsp; 따라, 서버측의 차단점에는 모두 여분의 체크없이 들어가, 클라이언트에 의해 최초로 불려 간 메소드로부터의 응답이 클라이언트 ORB 에 답신됩니다. <P>
+<LI VALUE=14>클라이언트의 <tt>receive_*</tt> 포인트에 들어갑니다. 이 시점에서 발신 호출을 실시할 필요가 있는 경우에는, 스텝 2 ?  9 로 같은 처리를 실시합니다. <P>
+    </OL>
+<a name="avoid recursion colocated"></a> 
+<H2>발신 호출의 참조처가 같은 장소에 있는 경우에 재귀를 회피한다</H2>
+
+<P>다음의 그림은, 클라이언트에 의해 불려 가는 참조와 같은 ORB 에 <tt>LoggingService</tt> 가 있다고 하는 케이스를 나타내고 있습니다. 일반적으로, 특정의 객체 참조가, 그 ORB 에 의해 호스트 되고 있는 다른 객체와 같은 장소에 없다고 하는 것을 식별하는 것은 불가능합니다. 따라서, 모든 케이스를 망라하기 위해서, 한층 더 조치를 취할 필요가 있습니다.
+
+<P>이 그림은, 서버측만을 나타낸 것입니다. 클라이언트측의 순서는, 전의 그림에 있는 순서와 같습니다.  <a name="LoggingServiceColocated diagram"></a> 
+<P ALIGN=CENTER><strong><tt>LoggingServiceColocated</tt> 의 설명도</strong></P>
+<img src="images/LoggingServiceColocated.gif" align=CENTER valign=CENTER   alt="LoggingServiceColocated 의 설명도">
+<P><tt>LoggingServiceColocated</tt> 의 설명도에 있는 각 스텝에 대한 설명은 다음과 같습니다.
+<P>
+<OL>
+<LI>클라이언트 ORB 로부터 요구가 서버에 도착해,<tt>receive_request_service_contexts</tt> 차단점을 기동합니다. <P>
+<LI>발신 호출을 나타내기 위해서(때문에) 예약 끝난 <tt>PICurrent</tt> 상의 슬롯이 <tt>true</tt> 로 설정됩니다. <P>
+<LI><tt>ServerRequestInfo.get_request_service_context</tt> 를 사용해, 발신 호출을 나타내는 서비스 문맥이 존재할지 어떨지가 체크됩니다. 서비스 문맥이 존재하지 않기 때문에, 차단점내로부터 로거가 불려 갑니다. <P>
+<LI>로거요구를 위해서(때문에),<tt>send_request</tt> 차단점에 들어갑니다. <P>
+<LI><tt>get_slot</tt> 에 의해, 발신 호출 인디케이터(indicator)가 체크됩니다.   <P>
+<LI>발신 호출 인디케이터(indicator)는 (스텝 2 로) 설정되어 있기 (위해)때문에,<tt>add_request_service_context</tt> 를 사용해, 발신 호출을 나타내는 서비스 문맥이 추가됩니다. 클라이언트의 thread와 서버의 thread의 사이에는 논리적인 관계가 없기 때문에, 이 처리가 필요하게 됩니다. <P>
+<LI>로거호출이 <tt>receive_request_service_contexts</tt> 에 도착합니다. <P>
+<LI>발신 호출을 나타내기 위해서(때문에) 예약 끝난 <tt>PICurrent</tt> 상의 슬롯이 <tt>true</tt> 로 설정됩니다. <P>
+<LI><tt>ServerRequestInfo.get_request_service_context</tt> 를 사용해, 발신 호출을 나타내는 서비스 문맥이 존재할지 어떨지가 체크됩니다. 서비스 문맥이 존재하기 위해(때문에), 더 이상의 처리는 행해지지 않습니다. <tt> receive_request_service_contexts</tt> 로부터 나옵니다. <P>
+<LI>로거요구가 <tt>receive_request</tt> 에 진행됩니다. <tt>receive_request</tt> 차단점으로써 로거가 불려 가는 경우는,<tt>receive_request_service_context</tt> 내에서 행해지는 것과 같은 처리가 필요합니다.  이 처리는 그림에는 나타나고 있지 않습니다 (다만, 코드예에서는 모든 차단점을 로그에 기록한다). <P>
+<LI>로거요구가 <tt>LoggingService</tt> 서번트에게 도착합니다.  이 서번트에 의해, 최초의 클라이언트 요구 (로거의 호출은 아니다)가 로그에 기록됩니다. <P>
+<LI>로거요구가 <tt>ServerRequestInterceptor.send_*</tt> (대부분의 경우는 <tt>send_reply</tt>)에 진행됩니다. <P>
+<LI>로거요구가 <tt>ClientRequestInterceptor.receive_*</tt> (대부분의 경우는 <tt>receive_reply</tt>)에 진행됩니다. <P>
+스텝 13 의 뒤, 스텝 3 으로 남아 있는 원의 요구가 처리되게 됩니다.
+</OL>
+
+
+<P>이 예로 설명한 내용의 요점은, 쿠라이안트인타세프타와 서바인타세프타의 양쪽 모두를, 발신 호출을 나타내는 <tt>PICurrent</tt> 슬롯 및 서비스 문맥과 함께 사용할 필요가 있다고 하는 것입니다.
+
+<a name="multiORB"></a> 
+<H2>복수의 ORB 를 사용하는 것으로 재귀를 회피한다</H2>
+
+<P>재귀를 회피하는 좀 더 간단한 방법으로서 발신 호출의 참조처를, 로깅인타세프타가 등록되지 않은 다른 ORB 에 관련짓는다고 하는 방법이 있습니다. 이렇게 하면, 발신 호출이 인타세프타에 들어가는 일이 없습니다.
+
+<P>이것은 간단한 해결 방법으로 생각됩니다만, 일반적으로 인타세프타는, 기동시에 VM 에 건네주는 프로퍼티에 의해 등록됩니다. 그렇다면, 그 VM 내에서 작성되는 모든 ORB 는 모든 인타세프타를 포함하고 있게 되기 (위해)때문에, 이 방법은 잘되지 않습니다.
+
+<P>이 방법이 잘되도록(듯이) 하려면 ,<tt>ORB.init</tt> 시에 클라이언트 코드내에서 인타세프타를 명시적으로 등록합니다. 그러나, 그러한 방법으로 인타세프타베이스의 서비스를 등록하는 것은 일반적이지 않기 때문에, 추천 되고 있지 않습니다.
+
+<P><HR><P><a name="Example Code"></a> 
+<H1>코드예</H1>
+
+<P>지금까지 소개한 그림으로 설명되고 있는 코드가, 이하의 파일에 포함되어 있습니다. 이러한 예를 컴파일 해 실행하는 방법은, 코드의 뒤에 기재합니다. 이 예에 포함되는 파일은 다음과 같습니다.
+<P>
+<UL>
+<LI><a href="#idl"><code>serviceexample.idl</code></a> 
+<LI><a href="#clientorbinit"><code>LoggingServiceClientORBInitializer.java</code></a> 
+<LI><a href="#ClientIntercept"><code>LoggingServiceClientInterceptor.java</code></a> 
+<LI><a href="#LoggingServiceServerORBInitializer"><code>LoggingServiceServerORBInitializer.java</code></a> 
+<LI><a href="#LoggingServiceServerInterceptor"><code>LoggingServiceServerInterceptor.java</code></a> 
+<LI><a href="#LoggingServiceImpl"><code>LoggingServiceImpl.java</code></a> 
+<LI><a href="#AServiceORBInitializer"><code>AServiceORBInitializer.java</code></a> 
+<LI><a href="#AServiceImpl"><code>AServiceImpl.java</code></a> 
+<LI><a href="#AServiceInterceptor"><code>AServiceInterceptor.java</code></a> 
+<LI><a href="#AServiceIORInterceptor"><code>AServiceIORInterceptor.java</code></a> 
+<LI><a href="#ArbitaryObjectImpl"><code>ArbitaryObjectImpl.java</code></a> 
+<LI><a href="#Client"><code>Client.java</code></a> 
+<LI><a href="#ColocatedServers"><code>ColocatedServers.java</code></a> 
+</UL>
+<P>
+
+<P><HR><P>
+<UL>
+<a name="idl"></a> 
+<H2><code>serviceexample.idl</code></H2>
+<P>
+ 
+
+이 파일은, 인터페이스 정의 언어 (IDL) 파일로, 호출의 대상이 되는 임의의 객체의 정의와 그 임의의 객체에 대한 호출을 실행하는 2 개의 서비스를 포함하고 있습니다.
+	
+	
+<P><UL><pre>
+
+// <STRONG>serviceexample.idl</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+module pi
+{
+module serviceexample
+{
+
+    // Create some arbitrary object to call.   Those calls
+    // will be serviced by the service implemented using interceptors.
+
+    exception ArbitraryObjectException { string reason; };
+
+    interface ArbitraryObject
+    {
+             string         arbitraryOperation1 ( in string a1 );
+
+        oneway void         arbitraryOperation2 ( in long a1 );
+
+	       void         arbitraryOperation3 ( in string a1 )
+	                        raises (ArbitraryObjectException);
+    };
+
+
+    // This would typically be in a file separate from the "ArbitraryObject"
+    // and probably unknown to it.
+
+    interface LoggingService
+    {
+	void log ( in string a1 );
+    };
+
+    // This would also typically be in a file of its own.
+    // IMPORTANT: the interface should be a local object to avoid
+    // unnecessary overhead.
+    
+    /*local*/ interface AService
+    {
+	void begin();
+	void end();
+	void verify();
+    };
+
+    // Tagged component for adding to an IOR to indicate that
+    // the AService must be in effect when invocations are made 
+    // on the object containing this tagged component.
+
+    // Note: we explicitly declare the tag type rather than using
+    // the IOP typedef (commented out) to simplify compiling this
+    // example (i.e., to avoid includes and make include path directives).
+    //const IOP::ComponentId TAG_ASERVICE_COMPONENT = 2345;
+    const unsigned long TAG_ASERVICE_COMPONENT = 2345;
+
+    struct ASERVICE_COMPONENT {
+        boolean requiresAService;
+    };
+
+}; // module serviceexample
+
+}; // module pi
+</pre></UL>	
+<P><HR><P>	
+
+
+<a name="clientorbinit"></a> 
+<H2><code>LoggingServiceClientORBInitializer.java</code></H2>
+<P>
+	이 파일에서는, 객체의 클라이언트에 의해 사용되는 로깅서비스인타세프타를 작성해 등록합니다.
+	
+<P><UL><pre>
+
+// <STRONG>LoggingServiceClientORBInitializer.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.CurrentHelper;
+import org.omg.PortableInterceptor.ORBInitInfo;
+
+public class LoggingServiceClientORBInitializer 
+    extends org.omg.CORBA.LocalObject
+    implements org.omg.PortableInterceptor.ORBInitializer
+{
+    public void pre_init(ORBInitInfo info)
+    {
+    }
+
+    public void post_init(ORBInitInfo info)
+    {
+	try {
+
+	    // Get a reference to the LoggingService object.
+
+	    NamingContext nameService = 
+		NamingContextHelper.narrow(
+                    info.resolve_initial_references("NameService"));
+
+	    NameComponent path[] =
+	        { new NameComponent("LoggingService", "") };
+	    LoggingService loggingService = 
+		LoggingServiceHelper.narrow(nameService.resolve(path));
+
+	    // Get a reference to TSC PICurrent.
+
+	    Current piCurrent =
+		CurrentHelper.narrow(
+	            info.resolve_initial_references("PICurrent"));
+
+	    // Allocate a slot id to use for the interceptor to indicate
+	    // that it is making an outcall.   This is used to avoid
+	    // infinite recursion.
+
+	    int outCallIndicatorSlotId = info.allocate_slot_id();
+
+	    // Create (with the above data) and register the client
+	    // side interceptor.
+
+	    LoggingServiceClientInterceptor interceptor =
+		new LoggingServiceClientInterceptor(loggingService, 
+						    piCurrent,
+						    outCallIndicatorSlotId);
+
+	    info.add_client_request_interceptor(interceptor);
+	} catch (Throwable t) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+}
+</pre></UL>
+<P><HR><P>
+<a name="ClientIntercept"></a> 
+<H2><code>LoggingServiceClientInterceptor.java</code></H2>
+
+<P>
+	이 인타세프타는, 클라이언트측의 차단점을 로그에 기록합니다. 다음의 코드는, 인타세프타내로부터 다른 객체의 호출을 실행하는 방법과 그러한 「발신」호출에서의 무한 회귀를 회피하는 방법을 나타내고 있습니다.
+	
+<P><UL><pre>
+
+// <STRONG>LoggingServiceClientInterceptor.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.Any;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.TCKind;
+import org.omg.IOP.ServiceContext;
+import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.ClientRequestInfo;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.InvalidSlot;
+
+public class LoggingServiceClientInterceptor
+    extends org.omg.CORBA.LocalObject
+    implements ClientRequestInterceptor
+{
+    private LoggingService loggingService;
+    private Current piCurrent;
+    private int outCallIndicatorSlotId;
+
+    public LoggingServiceClientInterceptor(LoggingService loggingService,
+					   Current piCurrent,
+					   int outCallIndicatorSlotId)
+    {
+	this.loggingService = loggingService;
+	this.piCurrent = piCurrent;
+	this.outCallIndicatorSlotId = outCallIndicatorSlotId;
+    }
+
+    //
+    // Interceptor operations
+    //
+
+    public String name() 
+    {
+	return "LoggingServiceClientInterceptor";
+    }
+
+    public void destroy() 
+    {
+    }
+
+    //
+    // ClientRequestInterceptor operations
+    //
+
+    public void send_request(ClientRequestInfo ri)
+    {
+	log(ri, "send_request");
+    }
+
+    public void send_poll(ClientRequestInfo ri)
+    {
+	log(ri, "send_poll");
+    }
+
+    public void receive_reply(ClientRequestInfo ri)
+    {
+	log(ri, "receive_reply");
+    }
+
+    public void receive_exception(ClientRequestInfo ri)
+    {
+	log(ri, "receive_exception");
+    }
+
+    public void receive_other(ClientRequestInfo ri)
+    {
+	log(ri, "receive_other");
+    }
+
+    //
+    // Utilities.
+    //
+
+    public void log(ClientRequestInfo ri, String point)
+    {
+	// IMPORTANT: Always set the TSC out call indicator in case
+	// other interceptors make outcalls for this request.
+	// Otherwise the outcall will not be set for the other interceptor's
+	// outcall resulting in infinite recursion.
+
+	Any indicator = ORB.init(). create_any();
+	indicator.insert_boolean(true);
+	try {
+	    piCurrent.set_slot(outCallIndicatorSlotId, indicator);
+	} catch (InvalidSlot e) { }
+
+	try {
+	    indicator = ri.get_slot(outCallIndicatorSlotId);
+
+	    // If the RSC out call slot is not set then log this invocation.
+	    // If it is set that indicates the interceptor is servicing the
+	    // invocation of loggingService itself.   In that case do
+	    // nothing (to avoid infinite recursion).
+
+	    if (indicator.type(). kind(). equals(TCKind.tk_null)) {
+		loggingService.log(ri.operation() + " " + point);
+	    }
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");	    
+	}
+    }
+}
+</pre></UL>	
+<P><HR><P>
+<a name="LoggingServiceServerORBInitializer"></a> 
+<H2><code>LoggingServiceServerORBInitializer.java</code></H2>
+
+
+	이 파일에서는, 객체의 서버에 의해 사용되는 로깅서비스인타세프타를 작성해 등록합니다. 이 인타세프타는 서버측의 차단점만을 로그에 기록합니다만, 클라이언트와 서버의 양쪽 모두의 인타세프타가 됩니다. 다음의 코드는, 불려 가는 객체가, 인타세프타가 등록된 ORB 와 같은 ORB 에 놓여져 있는 경우에 무한 회귀를 회피하는 방법을 나타내고 있습니다.
+	
+	
+<P><UL><pre>
+
+// <STRONG>LoggingServiceServerORBInitializer.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.CurrentHelper;
+import org.omg.PortableInterceptor.ORBInitInfo;
+
+public class LoggingServiceServerORBInitializer 
+    extends org.omg.CORBA.LocalObject
+    implements org.omg.PortableInterceptor.ORBInitializer
+{
+    public void pre_init(ORBInitInfo info)
+    {
+    }
+
+    public void post_init(ORBInitInfo info)
+    {
+	try {
+
+	    // Create and register the logging service interceptor.
+	    // Give that interceptor references to the NameService and
+	    // PICurrent to avoid further lookups (i.e., optimization).
+	    // More importantly, allocate and give the interceptor
+	    // a slot id which is will use to tell itself not to
+	    // log calls that the interceptor makes to the logging process.
+
+	    NamingContext nameService = 
+		NamingContextHelper.narrow(
+                    info.resolve_initial_references("NameService"));
+
+	    Current piCurrent =
+		CurrentHelper.narrow(
+	            info.resolve_initial_references("PICurrent"));
+
+	    int outCallIndicatorSlotId = info.allocate_slot_id();
+
+	    LoggingServiceServerInterceptor interceptor =
+		new LoggingServiceServerInterceptor(nameService,
+						    piCurrent,
+						    outCallIndicatorSlotId);
+
+	    info.add_client_request_interceptor(interceptor);
+	    info.add_server_request_interceptor(interceptor);
+	} catch (Throwable t) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+}
+</pre></UL>	
+<P><HR><P>	
+
+<a name="LoggingServiceServerInterceptor"></a> 
+<H2><code>LoggingServiceServerInterceptor.java</code></H2>
+
+<P>
+	이 인타세프타는, 서버측의 차단점을 로그에 기록합니다만,<tt>ClientRequestInterceptor</tt> 및 <tt>ServerRequestInterceptor</tt> 의 양쪽 모두로서 구현됩니다. 이것은,<tt>LoggingServiceServerORBInitializer.java</tt> 의 설명으로 접한 것 같은 케이스에서의 무한 회귀를 회피하기 위해서, 「발신 호출」서비스 문맥의 데이터의 일부를 (발신 호출 슬롯에 가세해) 설정할 필요가 있는 것을 설명하기 (위해)때문에입니다.
+	
+<P><UL><pre>
+
+// <STRONG>LoggingServiceServerInterceptor.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.CORBA.Any;
+import org.omg.CORBA.BAD_PARAM;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.TCKind;
+import org.omg.IOP.ServiceContext;
+import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.ClientRequestInfo;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.InvalidSlot;
+import org.omg.PortableInterceptor.ServerRequestInterceptor;
+import org.omg.PortableInterceptor.ServerRequestInfo;
+
+public class LoggingServiceServerInterceptor
+    extends org.omg.CORBA.LocalObject
+    implements ClientRequestInterceptor,
+	       ServerRequestInterceptor
+{
+    private NamingContext nameService;
+    private LoggingService loggingService;
+    private Current piCurrent;
+    private int outCallIndicatorSlotId;
+    private static final int serviceContextId = 100001;
+    private static final byte[] serviceContextData = {1};
+
+    // Returns a reference to the logging process.
+
+    private LoggingService loggingService()
+    {
+	if (loggingService == null) {
+	    NameComponent path[] =
+	        { new NameComponent("LoggingService", "") };
+	    try {
+		loggingService = 
+		    LoggingServiceHelper.narrow(nameService.resolve(path));
+	    } catch (Throwable t) {
+		System.out.println("Exception handling not shown. ");
+	    }
+	}
+	return loggingService;
+    }
+
+    public LoggingServiceServerInterceptor(NamingContext nameService,
+					   Current piCurrent,
+					   int outCallIndicatorSlotId)
+    {
+	this.nameService = nameService;
+	this.piCurrent = piCurrent;
+	this.outCallIndicatorSlotId = outCallIndicatorSlotId;
+    }
+
+    //
+    // Interceptor operations
+    //
+
+    public String name() 
+    {
+	return "LoggingServiceServerInterceptor";
+    }
+
+    public void destroy() 
+    {
+    }
+
+    //
+    // ClientRequestInterceptor operations
+    //
+
+    public void send_request(ClientRequestInfo ri)
+    {
+
+	// If the server interceptor sets the recursion slot then
+	// put in the service context so the server doesn't make
+	// the call again in the case where the server side interceptor
+	// is colocated in the same ORB as the object being invoked.
+
+	try {
+	    Any indicator = ri.get_slot(outCallIndicatorSlotId);
+	    if (indicator.type(). kind(). equals(TCKind.tk_boolean)) {
+		ServiceContext serviceContext =
+		    new ServiceContext(serviceContextId, serviceContextData);
+		ri.add_request_service_context(serviceContext, false);
+	    }
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+
+    public void send_poll(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_reply(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_exception(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_other(ClientRequestInfo ri)
+    {
+    }
+
+    //
+    // ServerRequestInterceptor operations
+    //
+
+    public void receive_request_service_contexts(ServerRequestInfo ri)
+    {
+	log(ri, "receive_request_service_contexts");
+    }
+
+    public void receive_request(ServerRequestInfo ri)
+    {
+	log(ri, "receive_request");
+    }
+
+    public void send_reply(ServerRequestInfo ri)
+    {
+	log(ri, "send_reply");
+    }
+
+    public void send_exception(ServerRequestInfo ri)
+    {
+	log(ri, "send_exception");
+    }
+
+    public void send_other(ServerRequestInfo ri)
+    {
+	log(ri, "send_other");
+    }
+
+    //
+    // Utilities.
+    //
+
+    public void log(ServerRequestInfo ri, String point)
+    {
+	// This is only relevant for the colocated example.
+	// Do not attempt to log until the logging service object
+	// has been bound in naming.   Otherwise the attempt to call
+	// rebind on naming will call log which will fail.
+	if (!  ColocatedServers.colocatedBootstrapDone) {
+	    return;
+	}
+
+	// IMPORTANT:
+	// The conditional logging of the invocation is only necessary
+	// if there is a chance that the object being invoked is colocated
+	// in the same ORB as this interceptor.   Otherwise the outcall to 
+	// the logging service can be made unconditionally.
+
+	// Always set the recursion slot.
+
+	Any indicator = ORB.init(). create_any();
+	indicator.insert_boolean(true);
+	try {
+	    piCurrent.set_slot(outCallIndicatorSlotId, indicator);
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+
+	// Make the out call if you have not already done so.
+
+	try {
+
+	    // Only the presence of the service context counts.
+	    // The data is ignored.
+
+	    ri.get_request_service_context(serviceContextId);
+	} catch (BAD_PARAM e) {
+	    // Recursion indicator not set so make the call.
+	    loggingService(). log(ri.operation() + " " + point);
+	}
+    }
+}
+</pre></UL>	
+<P><HR><P>
+
+<a name="LoggingServiceImpl"></a> 
+<H2><code>LoggingServiceImpl.java</code></H2>	
+
+
+	이 파일은, 로깅서비스인타세프타가 데이터를 송신하는 앞의 로깅객체의 구현입니다.
+	
+<P><UL><pre>
+
+// <STRONG></STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.PortableServer.POAHelper;
+
+import java.util.Properties;
+
+class LoggingServiceImpl
+    extends LoggingServicePOA
+{
+    public static ORB orb;
+
+    //
+    // The IDL operations.
+    //
+
+    public void log(String a1)
+    {
+	System.out.println(a1);
+    }
+
+    //
+    // The server.
+    //
+
+    public static void main(String[] av)
+    {
+	try {
+	    if (orb == null) {
+		orb = ORB.init(av, null);
+	    }
+	    
+	    POA rootPOA =  POAHelper.narrow( orb.resolve_initial_references("RootPOA"));
+	    rootPOA.the_POAManager(). activate();
+	    
+	    byte[] objectId =
+		rootPOA.activate_object(new LoggingServiceImpl());
+	    org.omg.CORBA.Object ref = rootPOA.id_to_reference(objectId);
+
+	    NamingContext nameService = 
+		NamingContextHelper.narrow(
+                    orb.resolve_initial_references("NameService"));
+	    NameComponent path[] =
+	        { new NameComponent("LoggingService", "") };
+	    nameService.rebind(path, ref);
+
+	    // Only relevant for colocated example.
+	    ColocatedServers.colocatedBootstrapDone = true;
+
+	    System.out.println("LoggingService ready. ");
+
+	    orb.run();
+
+        } catch (Exception e) {
+	    e.printStackTrace();
+	    System.exit(-1);
+        }
+	System.exit(0);
+    }
+}
+</pre></UL>	
+<P><HR><P>
+
+<a name="AServiceORBInitializer"></a> 
+<H2><code>AServiceORBInitializer.java</code></H2>
+
+
+	이 파일은,<tt>AServiceInterceptor</tt> 을 클라이언트와 서버의 양쪽 모두의 인타세프타로서 작성해 등록해, TaggedComponent 를 IOR 에 삽입하는 <tt>AServiceIORInterceptor</tt> 를 작성해 등록합니다. 게다가<tt>AService</tt> 에 의해 제공되는 서비스를 어플리케이션이 명시적으로 제어하기 위해서 사용하는 로컬 객체를 작성합니다. 클라이언트가 <tt>org.omg.CORBA.ORB.resolve_initial_references</tt> 를 사용해 이 로컬 객체를 취득할 수 있도록(듯이), 이 로컬 객체는 초기 서비스로서 ORB 에 등록됩니다.
+
+	
+<P><UL><pre>
+
+// <STRONG>AServiceORBInitializer.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.IOP.Codec;
+import org.omg.IOP.CodecFactory;
+import org.omg.IOP.CodecFactoryHelper;
+import org.omg.IOP.Encoding;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.CurrentHelper;
+import org.omg.PortableInterceptor.ORBInitInfo;
+
+
+public class AServiceORBInitializer 
+    extends org.omg.CORBA.LocalObject
+    implements org.omg.PortableInterceptor.ORBInitializer
+{
+    private AServiceImpl aServiceImpl;
+    private AServiceInterceptor aServiceInterceptor;
+
+    public void pre_init(ORBInitInfo info)
+    {
+	try {
+	    int id = info.allocate_slot_id();
+
+	    aServiceInterceptor = new AServiceInterceptor(id);
+
+	    info.add_client_request_interceptor(aServiceInterceptor);
+	    info.add_server_request_interceptor(aServiceInterceptor);
+
+	    // Create and register a reference to the service to be
+	    // used by client code.
+
+	    aServiceImpl = new AServiceImpl(id);
+
+	    info.register_initial_reference("AService", aServiceImpl);
+
+	} catch (Throwable t) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+
+    public void post_init(ORBInitInfo info)
+    {
+	try {
+
+	    Current piCurrent =
+		CurrentHelper.narrow(
+		    info.resolve_initial_references("PICurrent"));
+	    aServiceImpl.setPICurrent(piCurrent);
+
+	    CodecFactory codecFactory =
+		CodecFactoryHelper.narrow(
+	            info.resolve_initial_references("CodecFactory"));
+	    Encoding encoding = new Encoding((short) 0, (byte) 1, (byte) 2);
+	    Codec codec = codecFactory.create_codec(encoding);
+	    aServiceInterceptor.setCodec(codec);
+	    
+	    AServiceIORInterceptor aServiceIORInterceptor =
+		new AServiceIORInterceptor(codec);
+	    info.add_ior_interceptor(aServiceIORInterceptor);
+
+	} catch (Throwable t) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+
+}
+</pre></UL>	
+<P><HR><P>
+<a name="AServiceImpl"></a> 
+<H2><code>AServiceImpl.java</code></H2>
+
+
+	이 파일은, 클라이언트와 서번트의 코드가 서비스와 통신하기 위해서 명시적으로 사용하는 객체를 포함하고 있습니다. 클라이언트가 서비스에 대한 <tt>begin()</tt> 를 호출하면(자), 서비스에 고유의 <tt>ServiceID</tt> 가, 이 서비스에 의해 예약되고 있는 TSC <tt>PICurrent</tt> 슬롯에 놓여집니다. 클라이언트가 서비스에 대한 <tt>end()</tt> 를 호출하면(자), 서비스가 유효하게 되지 않은 것을 나타내기 위해서(때문에), 서비스에 의해 TSC 슬롯이 무효인 값으로 설정됩니다. 서번트는,<tt>verify()</tt> 메소드를 사용해,<tt>ServiceID</tt> 가 클라이언트측으로부터 서버 측에 건네받았는지의 여부를 조사합니다.
+	
+<P><UL><pre>
+
+// <STRONG></STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.Any;
+import org.omg.CORBA.TCKind;
+import org.omg.CORBA.LocalObject;
+import org.omg.CORBA.ORB;
+import org.omg.PortableInterceptor.Current;
+import org.omg.PortableInterceptor.InvalidSlot;
+
+class AServiceImpl
+    extends LocalObject
+    implements AService
+{
+    private int slotId;
+
+    private int currentServiceId = 0;
+
+    private Current piCurrent;
+
+    private Any NOT_IN_EFFECT;
+
+    public AServiceImpl(int slotId)
+    {
+	this.slotId = slotId;
+	NOT_IN_EFFECT = ORB.init(). create_any();
+    }
+
+    // Package protected so the AService ORBInitializer can access this
+    // non-IDL defined method.
+    void setPICurrent(Current piCurrent)
+    {
+	this.piCurrent = piCurrent;
+    }
+
+    public void begin()
+    {
+	Any any = ORB.init(). create_any();
+	any.insert_long(++currentServiceId);
+	setSlot(any);
+    }
+
+    public void end()
+    {
+	setSlot(NOT_IN_EFFECT);
+    }
+
+    public void verify()
+    {
+	try {
+	    Any any = piCurrent.get_slot(slotId);
+	    if (any.type(). kind(). equals(TCKind.tk_long)) {
+		System.out.println("Service present: " + any.extract_long());
+	    } else {
+		System.out.println("Service not present");
+	    }
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+
+    // Synchronized because two threads in the same ORB could be
+    // sharing this object.
+    synchronized private void setSlot(Any any)
+    {
+	try {
+	    piCurrent.set_slot(slotId, any);
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+}
+</pre></UL>	
+<P><HR><P>
+
+<a name="AServiceInterceptor"></a> 
+<H2><code>AServiceInterceptor.java</code></H2>
+
+<P>
+	이 인타세프타는, 클라이언트측의 <tt>AService</tt> 정보를 서비스 측에 건네주기 위한 준비를 실시합니다.
+<P>
+	클라이언트측에서는,<tt>AService.begin()</tt> 가 불려 가면(자),<tt>send_request(ri)</tt> 포인트가 RSC 슬롯내의 서비스 ID 를 확인합니다. 이 경우,<tt>send_request(ri)</tt> 는, 서비스 ID 의 값을 <tt>org.omg.CORBA.ServiceContext</tt> 에 삽입해, 그 서비스 문맥을 호출로 건네받는 데이터에 추가합니다.
+<P>
+	서버측에서는,<tt>receive_request_service_context(ri)</tt> 가, 그 서비스 문맥의 존재를 확인합니다. 서비스 문맥이 존재하고 있는 경우,<tt>receive_request_service_context(ri)</tt> 는,<tt>ServiceContext</tt> 로부터 서비스 ID 치를 추출해, RSC 슬롯을 그 값으로 설정합니다. 서번트의 실행중은, RSC 슬롯의 값을 TSC 슬롯내에서 사용할 수 있습니다.
+	
+<P><UL><pre>
+
+// <STRONG>AServiceInterceptor.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.Any;
+import org.omg.CORBA.BAD_PARAM;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.TCKind;
+import org.omg.IOP.Codec;
+import org.omg.IOP.CodecPackage.FormatMismatch;
+import org.omg.IOP.CodecPackage.TypeMismatch;
+import org.omg.IOP.ServiceContext;
+import org.omg.IOP.TaggedComponent;
+import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.ClientRequestInfo;
+import org.omg.PortableInterceptor.InvalidSlot;
+import org.omg.PortableInterceptor.ServerRequestInterceptor;
+import org.omg.PortableInterceptor.ServerRequestInfo;
+
+public class AServiceInterceptor
+    extends org.omg.CORBA.LocalObject
+    implements ClientRequestInterceptor, ServerRequestInterceptor
+{
+    private int slotId;
+    private Codec codec;
+
+    private static final int serviceContextId = 1234;
+
+    public AServiceInterceptor(int slotId)
+    {
+	this.slotId = slotId;
+    }
+
+    void setCodec(Codec codec)
+    {
+	this.codec = codec;
+    }
+
+    //
+    // Interceptor operations
+    //
+
+    public String name() 
+    {
+	return "AServiceInterceptor";
+    }
+
+    public void destroy() 
+    {
+    }
+
+    //
+    // ClientRequestInterceptor operations
+    //
+
+    public void send_request(ClientRequestInfo ri)
+    {
+	//
+	// See if the target object contains an ASERVICE_COMPONENT.
+	//
+
+	try {
+	    TaggedComponent taggedComponent =
+		ri.get_effective_component(TAG_ASERVICE_COMPONENT.value);
+
+	    Any sAny = null;
+	    try {
+		sAny = codec.decode_value(taggedComponent.component_data,
+					  ASERVICE_COMPONENTHelper.type());
+	    } catch (TypeMismatch e) {
+		System.out.println("Exception handling not shown. ");
+	    } catch (FormatMismatch e) {
+		System.out.println("Exception handling not shown. ");
+	    }
+
+	    ASERVICE_COMPONENT aServiceComponent =
+		ASERVICE_COMPONENTHelper.extract(sAny);
+
+	    //
+	    // Only send the service context if the target object requires it.
+	    //
+
+	    if (aServiceComponent.requiresAService) {
+		try {
+		    Any any = ri.get_slot(slotId);
+		    if (any.type(). kind(). equals(TCKind.tk_long)) {
+			int serviceId = any.extract_long();
+			byte[] serviceContextData = {
+			    // Little endian to make it
+			    // easier to see in debugger.
+			    (byte)((serviceId &gt;&gt;>  0) &  0xFF),
+			    (byte)((serviceId &gt;&gt;>  8) &  0xFF),
+			    (byte)((serviceId &gt;&gt;> 16) &  0xFF),
+			    (byte)((serviceId &gt;&gt;> 24) &  0xFF)
+			};
+			ri.add_request_service_context(
+			    new ServiceContext(serviceContextId,
+					       serviceContextData),
+			    false);
+		    }
+		} catch (InvalidSlot e) {
+		    System.out.println("Exception handling not shown. ");
+		}
+	    }
+	} catch (BAD_PARAM e) {
+	    // If it is not present, do nothing.
+	    ;
+	}
+    }
+
+    public void send_poll(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_reply(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_exception(ClientRequestInfo ri)
+    {
+    }
+
+    public void receive_other(ClientRequestInfo ri)
+    {
+    }
+
+    //
+    // ServerRequestInterceptor operations
+    //
+
+    public void receive_request_service_contexts(ServerRequestInfo ri)
+    {
+	try {
+	    ServiceContext serviceContext =
+		ri.get_request_service_context(serviceContextId);
+	    byte[] data = serviceContext.context_data;
+	    int b1, b2, b3, b4;
+	    b4 = (data[0] &lt;&lt;  0) & 0x000000FF;
+	    b3 = (data[1] &lt;&lt;  8) & 0x0000FF00;
+	    b2 = (data[2] &lt;&lt; 16) & 0x00FF0000;
+	    b1 = (data[3] &lt;&lt; 24) & 0xFF000000;
+	    int serviceId = (b1 | b2 | b3 | b4);
+	    Any any = ORB.init(). create_any();
+	    any.insert_long(serviceId);
+	    ri.set_slot(slotId, any);
+	} catch (BAD_PARAM e) {
+	    // Not present means service is not in effect.
+	    // Do nothing.
+	    ;
+	} catch (InvalidSlot e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+    }
+
+    public void receive_request(ServerRequestInfo ri)
+    {
+    }
+
+    public void send_reply(ServerRequestInfo ri)
+    {
+    }
+
+    public void send_exception(ServerRequestInfo ri)
+    {
+    }
+
+    public void send_other(ServerRequestInfo ri)
+    {
+    }
+}
+</pre></UL>	
+<P><HR><P>
+
+<a name="AServiceIORInterceptor"></a> 
+<H2><code>AServiceIORInterceptor.java</code></H2>
+
+
+	이 파일은,<tt>TaggedComponent</tt> 를 IOR 에 추가합니다.
+	
+<P><UL><pre>
+
+// <STRONG>AServiceIORInterceptor.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.Any;
+import org.omg.CORBA.LocalObject;
+import org.omg.CORBA.ORB;
+import org.omg.IOP.TaggedComponent;
+import org.omg.IOP.Codec;
+import org.omg.IOP.CodecPackage.InvalidTypeForEncoding;
+import org.omg.PortableInterceptor.IORInfo;
+import org.omg.PortableInterceptor.IORInterceptor;
+
+public class AServiceIORInterceptor
+    extends org.omg.CORBA.LocalObject
+    implements IORInterceptor
+{
+    private Codec codec;
+
+    public AServiceIORInterceptor(Codec codec)
+    {
+	this.codec = codec;
+    }
+
+    //
+    // Interceptor operations
+    //
+
+    public String name() 
+    {
+	return "AServiceInterceptor";
+    }
+
+    public void destroy() 
+    {
+    }
+
+    //
+    // IOR Interceptor operations
+    //
+
+    public void establish_components(IORInfo info)
+    {
+	//
+	// Note: typically, rather than just inserting a tagged component
+	// this interceptor would check info.get_effective_policy(int)
+	// to determine if a tagged component reflecting that policy
+	// should be added to the IOR.   That is not shown in this example.
+	// 
+
+	ASERVICE_COMPONENT aServiceComponent = new ASERVICE_COMPONENT(true);
+	Any any = ORB.init(). create_any();
+	ASERVICE_COMPONENTHelper.insert(any, aServiceComponent);
+	byte[] value = null;
+	try {
+	    value = codec.encode_value(any);
+	} catch (InvalidTypeForEncoding e) {
+	    System.out.println("Exception handling not shown. ");
+	}
+	TaggedComponent taggedComponent =
+	    new TaggedComponent(TAG_ASERVICE_COMPONENT.value, value);
+	info.add_ior_component(taggedComponent);
+    }
+
+}
+</pre></UL>	
+<P><HR><P>	
+	
+	
+
+<a name="ArbitaryObjectImpl"></a> 
+<H2><code>ArbitaryObjectImpl.java</code></H2>
+<P>
+
+	이 파일은,<tt>ArbitraryObject</tt> IDL 인터페이스의 서버 및 구현입니다. 이 IDL 인터페이스 오퍼레이션의 구현에서는, 클라이언트로부터 서번트에게로의 <tt>AService.begin()</tt> 를 사용한 엔드 투 엔드 데이터의 수수를 설명하기 위해서,<tt>AServiceImpl.verify()</tt> 메소드를 명시적으로 호출하고 있습니다.
+	
+<P><UL><pre>
+
+// <STRONG>ArbitaryObjectImpl.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.PortableServer.POAHelper;
+
+import java.util.Properties;
+
+class ArbitraryObjectImpl
+    extends ArbitraryObjectPOA
+{
+    public static ORB orb;
+
+    private AService aService;
+
+    //
+    // The IDL operations.
+    //
+
+    public String arbitraryOperation1(String a1)
+    {
+	verifyService();
+	return "I got this from the client: " + a1;
+    }
+
+    public void arbitraryOperation2 (int a1)
+    {
+	verifyService();
+    }
+
+    public void arbitraryOperation3(String a1)
+	throws ArbitraryObjectException
+    {
+	verifyService();
+	if (a1.equals("throw exception")) {
+	    throw new ArbitraryObjectException("because you told me to");
+	}
+    }
+
+    private void verifyService()
+    {
+	getAService(). verify();
+    }
+
+    private AService getAService()
+    {
+	// Only look up the service once, then cache it.
+
+	if (aService == null) {
+	    try {
+		aService =	
+		    AServiceHelper.narrow(
+	                orb.resolve_initial_references("AService"));
+	    } catch (InvalidName e) {
+		System.out.println("Exception handling not shown. ");
+	    }
+	}
+	return aService;
+    }
+
+    //
+    // The server.
+    //
+
+    public static void main(String[] av)
+    {
+	try {
+	    if (orb == null) {
+		Properties props = new Properties();
+		props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+			  + "pi.serviceexample.AServiceORBInitializer",
+			  "");
+		props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+			  + "pi.serviceexample.LoggingServiceServerORBInitializer",
+			  "");
+		orb = ORB.init(av, props);
+	    }
+	    
+	    POA rootPOA =  POAHelper.narrow( orb.resolve_initial_references("RootPOA"));
+	    // Create a POA so the IOR interceptor executes.
+	    POA childPOA = rootPOA.create_POA("childPOA", null, null);
+	    childPOA.the_POAManager(). activate();
+	    
+	    byte[] objectId =
+		childPOA.activate_object(new ArbitraryObjectImpl());
+	    org.omg.CORBA.Object ref = childPOA.id_to_reference(objectId);
+
+	    NamingContext nameService = 
+		NamingContextHelper.narrow(
+                    orb.resolve_initial_references("NameService"));
+	    NameComponent path[] =
+	        { new NameComponent("ArbitraryObject", "") };
+	    nameService.rebind(path, ref);
+
+	    System.out.println("ArbitaryObject ready. ");
+
+	    orb.run();
+
+        } catch (Exception e) {
+	    e.printStackTrace();
+	    System.exit(-1);
+        }
+	System.exit(0);
+    }
+}
+</pre></UL>
+<P><HR><P>	
+
+<a name="Client"></a> 
+<H2><code>Client.java</code></H2>
+
+<P>
+	이것은,<tt>ArbitraryObject</tt> 에 대한 메소드를 호출하는 클라이언트입니다. 이 클라이언트는,<tt>AService</tt> 의 문맥의 내부와 외부에서, 그러한 호출을 몇개인가 실행합니다. 클라이언트는, 로깅인타세프타의 존재를 인식하지 않습니다. 다만, 전의 예의 같게 <tt>LoggingServerClientORBInitializer</tt> 를 명시적으로 등록합니다.
+	
+<P><UL><pre>
+
+// <STRONG>Client.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+
+import java.util.Properties;
+
+public class Client 
+{
+    public static void main(String av[])
+    {
+        try {
+	    Properties props = new Properties();
+	    props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+		      + "pi.serviceexample.AServiceORBInitializer",
+		      "");
+	    props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+		      + "pi.serviceexample.LoggingServiceClientORBInitializer",
+		      "");
+	    ORB orb = ORB.init(av, props);
+
+	    //
+	    // The client obtains a reference to a service.
+	    // The client does not know the service is implemented
+	    // using interceptors.
+	    //
+
+	    AService aService =	
+		AServiceHelper.narrow(
+	            orb.resolve_initial_references("AService"));
+
+	    //
+	    // The client obtains a reference to some object that
+	    // it will invoke.
+	    //
+
+	    NamingContext nameService = 
+		NamingContextHelper.narrow(
+                    orb.resolve_initial_references("NameService"));
+	    NameComponent arbitraryObjectPath[] =
+	        { new NameComponent("ArbitraryObject", "") };
+	    ArbitraryObject arbitraryObject =
+		ArbitraryObjectHelper.narrow(nameService.resolve(arbitraryObjectPath));
+
+	    //
+	    // The client begins the service so that invocations of
+	    // any object will be done with that service in effect.
+	    //
+
+	    aService.begin();
+	    
+	    arbitraryObject.arbitraryOperation1("one");
+	    arbitraryObject.arbitraryOperation2(2);
+
+	    //
+	    // The client ends the service so that further invocations
+	    // of any object will not be done with that service in effect.
+	    //
+
+	    aService.end();
+
+	    // This invocation is not serviced by aService since
+	    // it is outside the begin/end.
+	    arbitraryObject.arbitraryOperation3("just return");
+
+
+	    aService.begin();
+	    try {
+		arbitraryObject.arbitraryOperation3("throw exception");
+		throw new RuntimeException("should not see this");
+	    } catch (ArbitraryObjectException e) {
+		// Expected in this example, so do nothing.
+	    }
+	    aService.end();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+	    System.exit(-1);
+        }
+	System.out.println("Client done. ");
+	System.exit(0);
+    }
+}
+</pre></UL>	
+<P><HR><P>
+
+<a name="ColocatedServers"></a> 
+<H2><code>ColocatedServers.java</code></H2>	
+
+<P>
+	이 파일은,<tt>ArbitraryObject</tt> 및 <tt>LoggingService</tt> 의 양쪽 모두를 동일한 ORB 내에서 실행하는 서버입니다. 즉, 이러한 객체는 「같은 장소에 놓여져 있습니다」.   
+<P>
+	이 서버는,<tt>LoggingServiceServerInterceptor</tt> 내의 코드를 시험하기 위해서(때문에), 이러한 방법으로 작성되고 있습니다. 이 코드는, 인타세프타가, 같은 ORB 내에 놓여져 있는 복수의 객체에 대한 호출을 실행할 경우에, 무한 회귀를 회피하기 위해서 추가의 처리를 실행할 필요가 있는 것을 나타내고 있습니다.
+	
+<P><UL><pre>
+
+// <STRONG>ColocatedServers.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+package pi.serviceexample;
+
+import org.omg.CORBA.ORB;
+import java.util.Properties;
+
+public class ColocatedServers
+{
+    public static ORB orb;
+
+    public static boolean colocatedBootstrapDone = false;
+
+    public static void main (String[] av)
+    {
+	try {
+
+	    //
+	    // Share an ORB between objects servers.
+	    //
+
+	    Properties props = new Properties();
+	    props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+		      + "pi.serviceexample.AServiceORBInitializer",
+		      "");
+	    props.put("org.omg.PortableInterceptor.ORBInitializerClass. "
+		      + "pi.serviceexample.LoggingServiceServerORBInitializer",
+		      "");
+	    ORB orb = ORB.init(av, props);
+	    ArbitraryObjectImpl.orb = orb;
+	    LoggingServiceImpl.orb = orb;
+
+	    //
+	    // Start both object servers.
+	    //
+
+	    ServerThread ServerThread = new ServerThread(av);
+	    ServerThread.start();
+	    ArbitraryObjectImpl.main(av);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    System.exit(-1);
+	}
+    }
+}
+
+class ServerThread extends Thread
+{
+    String[] av;
+    ServerThread (String[] av)
+    {
+	this.av = av;
+    }
+    public void run ()
+    {
+	LoggingServiceImpl.main(av);
+    }
+}
+</pre></UL>	
+</UL>
+
+
+
+<P><HR><P>
+<a name="running"><H1>어플리케이션의 컴파일과 실행</H1></a> 
+
+<P>로깅의 예와 서비스의 예가 포함되어 있는 이러한 코드예는, 다음과 같은 Makefile 를 사용해 컴파일 및 실행할 수가 있습니다.
+
+<P><UL><pre>
+
+# <STRONG>Makefile for the Example Files</STRONG>
+# <A HREF="examplelicense.html">Copyright and License</A>  
+
+JAVA_HOME=/path_to_J2SE_installation
+
+CLASSPATH=.
+
+JAVAC=$(JAVA_HOME) /bin/javac
+JAVA=$(JAVA_HOME) /bin/java
+
+ORB_INITIAL_PORT=1050
+
+IDLJ=$(JAVA_HOME) /bin/idlj
+IDLJ_FLAGS=-fall -td $(CLASSPATH) -verbose
+
+ORBD=${JAVA_HOME}/bin/orbd -ORBInitialPort ${ORB_INITIAL_PORT}
+
+build:
+        $(IDLJ) $(IDLJ_FLAGS) serviceexample.idl
+        $(JAVAC) -d $(CLASSPATH) *. java
+        $(JAVAC) pi/serviceexample/*.java
+
+runorbd:
+        $(ORBD)
+
+runloggingservice:
+        $(JAVA) -classpath $(CLASSPATH) pi.serviceexample.LoggingServiceImpl \
+                -ORBInitialPort ${ORB_INITIAL_PORT}
+
+runarbitraryobject:
+        $(JAVA) -classpath $(CLASSPATH) pi.serviceexample.ArbitraryObjectImpl \
+                -ORBInitialPort ${ORB_INITIAL_PORT}
+
+runcolocatedservers:
+        $(JAVA) -classpath $(CLASSPATH) pi.serviceexample.ColocatedServers \
+                -ORBInitialPort ${ORB_INITIAL_PORT}
+
+runclient:
+        $(JAVA) -classpath $(CLASSPATH) pi.serviceexample.Client \
+                -ORBInitialPort ${ORB_INITIAL_PORT}
+        
+clean: 
+        rm -rf pi
+        rm -rf orb.db
+
+# Order of steps:
+# Build:     clean build
+# Remote:    runorbd runloggingservice runarbitraryobjectimpl runclient
+# Colocated: runorbd runcolocatedservers runclient
+</pre></UL>
+<P><HR><P> 
+
+
+
+<P>다음에, 상기의 Makefile 를 사용해 Solaris  operating system상에서 이 예를 빌드 해, 실행하기 위한 순서를 소개합니다. 여기서 소개하는 커멘드를, 커멘드 prompt로부터 실행해 주세요. <code></code> 기호는, 기재되어 있는 커멘드를 커멘드 prompt로부터 실행해야 하는 것인 것을 나타내기 위해서(때문에) 사용하고 있습니다.   
+
+<P>
+<OL>
+<LI><tt>% make clean</tt>
+<LI><tt>% make build</tt>
+<LI><tt>% make runorbd &</tt>
+<LI><tt>% make runloggingservice &</tt>
+<LI><tt>% make runarbitraryobject &</tt>
+<LI><tt>% make runclient</tt>
+
+<P>이 스텝의 뒤, 다음과 같은 출력이 표시됩니다.
+    <P><UL><pre>
+resolve send_request
+resolve receive_reply
+arbitraryOperation1 send_request
+Service present: 1
+arbitraryOperation1 receive_reply
+arbitraryOperation2 send_request
+Service present: 1
+arbitraryOperation2 receive_other
+arbitraryOperation3 send_request
+Service not present
+arbitraryOperation3 receive_reply
+arbitraryOperation3 send_request
+Service present: 2
+arbitraryOperation3 receive_exception
+Client done.
+</pre></UL><P>
+
+<LI><tt>% jobs</tt>
+<P>이 스텝의 뒤, 다음과 같은 출력이 표시됩니다.
+    <P><UL><pre>
+[1]   Running                 make runorbd &
+[2]-  Running                 make runloggingservice &
+[3]+  Running                 make runarbitraryobject &
+</pre></UL><P>
+
+<LI><tt>% kill %2 %3</tt>
+<LI><tt>% make runcolocatedservers &</tt>
+<LI><tt>% make runclient</tt>
+<P>이 스텝의 뒤, 다음과 같은 출력이 표시됩니다.
+    <P><UL><pre>
+log receive_request_service_contexts
+log receive_request
+resolve send_request
+log send_reply
+log receive_request_service_contexts
+log receive_request
+resolve receive_reply
+log send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation1 send_request
+log send_reply
+arbitraryOperation1 receive_request_service_contexts
+arbitraryOperation1 receive_request
+Service present: 1
+arbitraryOperation1 send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation1 receive_reply
+log send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation2 send_request
+log send_reply
+arbitraryOperation2 receive_request_service_contexts
+arbitraryOperation2 receive_request
+log receive_request_service_contexts
+Service present: 1
+arbitraryOperation2 send_reply
+log receive_request
+arbitraryOperation2 receive_other
+log send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation3 send_request
+log send_reply
+arbitraryOperation3 receive_request_service_contexts
+arbitraryOperation3 receive_request
+Service not present
+arbitraryOperation3 send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation3 receive_reply
+log send_reply
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation3 send_request
+log send_reply
+arbitraryOperation3 receive_request_service_contexts
+arbitraryOperation3 receive_request
+Service present: 2
+arbitraryOperation3 send_exception
+log receive_request_service_contexts
+log receive_request
+arbitraryOperation3 receive_exception
+log send_reply
+Client done.
+</pre></UL><P>
+
+<LI><tt>% jobs</tt>
+<P>이 스텝의 뒤, 다음과 같은 출력이 표시됩니다.
+    <P><UL><pre>
+[1]-  Running                 make runorbd &
+[4]+  Running                 make runcolocatedservers &
+</pre></UL><P>
+<LI><tt>% kill %1 %4</tt>
+<LI><tt>% make clean</tt>
+</OL>
+
+    
+
+
+
+
+
+<P><HR><P>
+<DL>
+<DT><B>관련 항목:</B>
+<DD><A  HREF="../../../api/org/omg/PortableInterceptor/ORBInitInfo.html"><CODE>ORBInitInfo</CODE></A> 
+<DD><a  href="../../../api/org/omg/PortableInterceptor/package-summary.html"><tt>org.omg.PortableInterceptor</tt> 패키지</a>  
+<DD>포타브르인타세프타의 스펙 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/2001-03-04">ptc/2001-08-31</a> )</DL>
+
+<P>
+<CENTER><P>
+<!-- Body text ends here -->
+
+<HR SIZE=3 NOSHADE>
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+
+<TD>
+
+   <P>
+<FONT SIZE="-2" ALIGN=CENTER>포타브르인타세프타의 상세한 것에 대하여는, 분산 컴퓨팅에 관한 Java Developer's Forum (<a href="http://forum.java.sun.com/">http://forum.java.sun.com/</a> )를 참조해 주세요. </FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+<!-- ----------------- END PRODUCTS ------------------ -->
+
+
+<!-- end main page content -->
+
+
+
+<!-- gutter spacing for right side for the page -->
+
+
+
+
+
+</CENTER>
+</h1></BODY>
+</HTML>

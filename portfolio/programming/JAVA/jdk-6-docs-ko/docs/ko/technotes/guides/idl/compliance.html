@@ -1,0 +1,155 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta http-equiv="Content-Type" content="text/html">
+<title>J2SE 5.0 에서의 CORBA 지원의 공식 스펙 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+J2SE 5.0 에서의 CORBA 지원의 공식 스펙</h1>
+
+<h2>
+스펙의 참조</h2>
+Java 2 Platform Standard Edition (J2SE) 5.0 ORB 의 컴파일시에 적용되는 스펙은 다음과 같습니다. 아래와 같은 링크로부터 올바른 스펙을 참조할 수 없는 경우는, OMG 가 URL 를 변경한 가능성이 있습니다. <a  href="http://www.omg.org/"> www.omg.org</a>  를 참조해, 올바른 스펙을 검색해 주세요.
+<ul>
+<li>
+CORBA 2.3. 1 (<a href="http://www.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )</li>
+
+<li>
+IDL 로부터 Java 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-08">ptc/00-01-08</a> )</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-11-03">ptc/00-11-03</a> )</li>
+
+<li>
+Java 로부터 IDL 언어에의 매핑 (<a href="http://www.omg.org/cgi-bin/doc?ptc/00-01-06">ptc/00-01-06</a> )</li>
+
+<li>
+Interoperable Naming Service (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-08-07">ptc/00-08-07</a> )</li>
+
+<li>
+포타브르인타세프타 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/2001-08-31">ptc/2001-08-31</a> )</li>
+</ul>
+상기에 기재한 것은, 이 문서로 참조되고 있는 스펙만입니다.
+
+
+<h2>
+지원되고 있는 스펙의 상세</h2>
+J2SE 5.0 의 ORB 에서는, 현재로서는, 상기의 스펙의 모든 것이 구현되고 있는 것은 아닙니다. 지원되고 있는 섹션은 다음과 같습니다.
+<ul>
+<li>
+CORBA 2.3. 1 의 제 1? 3 장 및 제 6? 9 장</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑의 섹션 1.21. 8.2 「<tt>orb.properties</tt> file」</li>
+
+<li>
+CORBA 2.3. 1 의 제 4 장.  다만, 일부의 내용이, 포타브르인타세프타 스펙의 이하의 섹션으로 옮겨놓을 수 있고 있습니다. </li>
+
+	<ul>
+	<li>
+	섹션 4.2. 3.5 「<TT>destroy</TT>」</li>
+
+	<li>
+	섹션 4.5. 2 「<TT>CodeFactory</TT>」 및 「<TT>PICurrent</TT>」가 필요</li>
+
+	<li>
+	섹션 4.5. 3.4. <TT> register_initial_reference</TT> 에 대한 갱신</li>
+	</ul>
+
+<li>
+CORBA 2.3. 1 의 제 5 장.  다만, 포타브르인타세프타 스펙의 이하의 섹션의 갱신이 우선됩니다. </li>
+
+	<ul>
+	<li>
+	5.5. 2 <TT>StringSeq</TT> 및 <TT>WStringSeq</TT> 가 필요합니다. 이것에 의해, 다음의 클래스가 <TT>org.omg.CORBA</TT> 에 추가됩니다. </li>
+
+	<ul>
+	<li>
+	<TT>StringSeqHolder</TT></li>
+
+	<li>
+	<TT>StringSeqHelper</TT></li>
+
+	<li>
+	<TT>WStringSeqHolder</TT></li>
+
+	<li>
+	<TT>WStringSeqHelper</TT></li>
+	</ul>
+</ul>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.6. 1 및 10.6. 2 (리포지터리(repository) ID 에 대해서 지원된다)</li>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.7 (<TT>TypeCode</TT> API 에 대해서)</li>
+
+<li>
+CORBA 2.3. 1 의 제 11 장 「Portable Object Adapter (POA)」.  다만, 포타브르인타세프타 스펙의 이하의 섹션의 갱신이 우선됩니다. </li>
+
+<ul>
+<li>
+섹션 11.3. 7.  POA 는 모든 정책를 보관 유지해야 한다</li>
+
+<li>
+섹션 11.3. 8.2.  POA 는 모든 정책를 보관 유지해야 한다</li>
+
+<li>
+섹션 11.3. 8.26. <tt> POA::id</tt> 가 필요</li>
+</ul>
+
+<li>
+CORBA 2.3. 1 의 제 13 장 및 제 15 장 (GIOP 1.0, 1.1, 및 1.2 의 정의). J2SE 5.0 의 ORB 에서는, 모든 버젼의 GIOP 가 완전하게 지원됩니다만, 섹션 15.8 및 15.9 로 정의되고 있는 쌍방향 GIOP 기능은 예외적으로 지원되지 않습니다. </li>
+
+<li>
+Interoperable Naming Service 의 스펙은 모두 지원되고 있습니다. </li>
+
+<li>
+포타브르인타세프타 스펙의 섹션 13.8 (새로운 <TT>Coder</TT> 및 <TT>Decoder</TT> 인터페이스)과 제 21 장 전체 (인타세프타의 스펙)</li>
+
+<li>개정된 IDL 로부터 Java 언어에의 매핑 스펙 (ptc/00-11-03)의 섹션 1.21. 8 은, IDL 로부터 Java 언어에의 매핑 스펙 (ptc/00-01-08)의 내용으로부터 변경되었습니다. </li>
+</ul>
+
+<h2>
+툴</h2>
+
+<ul>
+<li>
+IDL 로부터 Java 에의 컴파일러 (<TT>idlj</TT>)는, 다음의 스펙에 준거하고 있습니다. </li>
+
+<ul>
+<li>
+CORBA 2.3. 1 의 제 3 장 (IDL 의 정의)</li>
+
+<li>
+CORBA 2.3. 1 의 제 5 장 및 제 6 장 (Value 형의 시멘틱스)</li>
+
+<li>
+CORBA 2.3. 1 의 섹션 10.6. 5 (프라그마)</li>
+
+<li>
+IDL 로부터 Java 에의 매핑 스펙</li>
+
+<li>
+개정된 IDL 로부터 Java 에의 매핑 스펙의 섹션 1.12. 1 「local interfaces」</li>
+</ul>
+
+<li>
+Java 로부터 IDL 에의 컴파일러 (<tt>rmic</tt> 의 IIOP 연구 최종 단계)는, 다음의 스펙에 준거하고 있습니다. </li>
+
+<ul>
+<li>
+CORBA 2.3. 1 의 제 5 장 및 제 6 장 (Value 형)</li>
+
+<li>
+Java 로부터 IDL 언어에의 매핑 스펙. IDL 로부터 Java 언어에의 매핑 스펙의 섹션 1.21 을 암묵적으로 참조하고 있습니다. </li>
+
+<li>
+<tt>-idl</tt> 플래그를 지정해 생성되는 IDL 는, CORBA 2.3. 1 의 제 3 장에 준거하고 있습니다. </li>
+</ul>
+</ul>
+
+</body>
+</html>

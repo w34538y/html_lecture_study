@@ -1,0 +1,542 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:3 - 객체 입력 클래스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="output.html">전의 항목</a>  | <a href="class.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="60"><!-- --></a> 
+<h1>
+객체 입력 클래스
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="64"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 3 장</FONT></B></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="883"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="2983"><!-- --></a>  <a href="input.html#961">ObjectInputStream 클래스</a> 
+</li>
+<li>
+<a name="5224"><!-- --></a>  <a href="input.html#4936">ObjectInputStream.GetField 클래스</a> 
+</li>
+<li>
+<a name="2984"><!-- --></a>  <a href="input.html#3403">ObjectInputValidation 인터페이스</a> 
+</li>
+<li>
+<a name="5887"><!-- --></a>  <a href="input.html#2971">readObject 메소드</a> 
+</li>
+<li>
+<a name="3424"><!-- --></a>  <a href="input.html#6014">readExternal 메소드</a> 
+</li>
+<li>
+<a name="5919"><!-- --></a>  <a href="input.html#5903">readResolve 메소드</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="961">3.1	ObjectInputStream 클래스</a> </h2>
+
+<blockquote>
+<a name="1162"><!-- --></a>  클래스 <code>ObjectInputStream</code> 는, 객체의 직렬화 복원을 구현하기 위한의 것입니다. 이 클래스는, 벌써 직렬화 복원된 객체 세트등의 스트림 상태를 관리합니다. 이 클래스의 메소드를 사용하면,<code>ObjectOutputStream</code> 에 의해 기입해진 스트림로부터, 원시형이나 객체를 읽어들일 수가 있습니다. 이 클래스는, 그것이 참조하는 객체를 스트림로부터 복원합니다. <p>
+<a name="5015"><!-- --></a> 
+<pre>package java.io;
+
+public class ObjectInputStream
+    extends InputStream
+    implements ObjectInput, ObjectStreamConstants
+{
+    public ObjectInputStream(InputStream in)
+        throws StreamCorruptedException, IOException;
+</pre>
+
+
+<a name="5233"><!-- --></a> 
+<pre>    public final Object readObject()
+        throws OptionalDataException, ClassNotFoundException, 
+            IOException;
+
+    public Object readUnshared()
+        throws OptionalDataException, ClassNotFoundException, 
+            IOException;
+
+    public void defaultReadObject()
+        throws IOException, ClassNotFoundException,
+            NotActiveException;
+
+    public GetField readFields()
+        throws IOException;
+
+    public synchronized void registerValidation(
+        ObjectInputValidation obj, int prio)
+        throws NotActiveException, InvalidObjectException;
+
+    protected ObjectStreamClass readClassDescriptor()
+        throws IOException, ClassNotFoundException;
+
+    protected Class resolveClass(ObjectStreamClass v)
+        throws IOException, ClassNotFoundException;
+
+    protected Object resolveObject(Object obj)
+        throws IOException;
+
+    protected boolean enableResolveObject(boolean enable)
+        throws SecurityException;
+
+    protected void readStreamHeader()
+        throws IOException, StreamCorruptedException;
+
+    public int read() throws IOException;
+
+    public int read(byte[] data, int offset, int length)
+        throws IOException
+
+    public int available() throws IOException;
+
+    public void close() throws IOException;
+
+    public boolean readBoolean() throws IOException;
+
+    public byte readByte() throws IOException;
+
+    public int readUnsignedByte() throws IOException;
+
+    public short readShort() throws IOException;
+
+    public int readUnsignedShort() throws IOException;
+
+    public char readChar() throws IOException;
+
+    public int readInt() throws IOException;
+
+    public long readLong() throws IOException;
+
+    public float readFloat() throws IOException;
+
+    public double readDouble() throws IOException;
+
+    public void readFully(byte[] data) throws IOException;
+
+    public void readFully(byte[] data, int offset, int size)
+        throws IOException;
+
+    public int skipBytes(int len) throws IOException;
+
+    public String readLine() throws IOException;
+
+    public String readUTF() throws IOException;
+
+    // Class to provide access to serializable fields.
+    static abstract public class GetField
+    {
+        public ObjectStreamClass getObjectStreamClass();
+
+        public boolean defaulted(String name)
+            throws IOException, IllegalArgumentException;
+
+        public char get(String name, char default)
+            throws IOException, IllegalArgumentException;
+
+        public boolean get(String name, boolean default)
+            throws IOException, IllegalArgumentException;
+
+        public byte get(String name, byte default)
+            throws IOException, IllegalArgumentException;
+
+        public short get(String name, short default)
+            throws IOException, IllegalArgumentException;
+
+        public int get(String name, int default)
+            throws IOException, IllegalArgumentException;
+
+        public long get(String name, long default)
+            throws IOException, IllegalArgumentException;
+
+        public float get(String name, float default)
+            throws IOException, IllegalArgumentException;
+
+        public double get(String name, double default)
+            throws IOException, IllegalArgumentException;
+
+        public Object get(String name, Object default)
+            throws IOException, IllegalArgumentException;
+    }
+
+    protected ObjectInputStream()
+        throws StreamCorruptedException, IOException;
+
+    protected readObjectOverride()
+        throws OptionalDataException, ClassNotFoundException,
+            IOException;
+}
+</pre>
+
+
+<a name="1168"><!-- --></a> 단일 인수의 <code>ObjectInputStream</code> 생성자 에는 <code>InputStream</code> 가 필요합니다. 이 생성자 은,<code>readStreamHeader</code> 를 호출해 읽어들여, 대응하는 <code>ObjectOutputStream.writeStreamHeader</code> 메소드에 의해 기입해진 헤더와 버젼을 검사합니다. 시큐리티 매니저가 인스톨 되고 있는 경우, 이 생성자 은,<code>readFields</code> 메소드 또는 <code>readUnshared</code> 메소드, 혹은 그 양쪽 모두를 오버라이드(override) 하는 서브 클래스의 생성자 에 의해 직접 또는 간접적으로 불려 갔을 때에,<code>&#34;enableSubclassImplementation&#34;</code> <code>SerializablePermission</code> 의 체크를 실시합니다. <p>
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="5998">주 - </a> </b><code>ObjectInputStream</code> 생성자 은, 직렬화 스트림 헤더의 read가 완료할 때까지 블록 됩니다. 코드가 <code>ObjectInputStream</code> 의 구축을 대기하고 있을 때, 직렬화 스트림에 대해서 대응하는 <code>ObjectOutputStream</code> 가 작성되어 있지 않은 경우는, 데드락이 발생합니다. <code>ObjectInputStream</code> 생성자 은, 헤더가 그 스트림에 기입해질 때까지 블록 되어 헤더는 <code>ObjectOutputStream</code> 생성자 이 실행될 때까지 스트림에 기입해지지 않기 때문입니다. 이 문제는,<code>ObjectInputStream</code> 가 구축되기 전에 <code>ObjectOutputStream</code> 를 작성하는지,<code>ObjectInputStream</code> 의 구축의 완료 및 <code>ObjectOutputStream</code> 의 작성동안의 타이밍 의존관계(dependencies)을 해제하면(자) 해결할 수 있습니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<blockquote>
+<a name="1169"><!-- --></a>  스트림로부터 객체를 직렬화 복원하려면 ,<code>readObject</code> 메소드를 사용합니다. 이 메소드는, 이 스트림을 읽어, 객체를 재구축 합니다. <p>
+</blockquote><a name="5509"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	1. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE"><code>ObjectInputStream</code> 서브 클래스가 구현을 오버라이드(override) 하고 있는 경우는,<code>readObjectOverride</code> 메소드를 호출해, 되돌립니다. 다시 구현하는 방법에 대해서는, 이 마디의 최후로 설명합니다.  </TD>
+</TR>
+</TABLE>
+<a name="5512"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	2. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">블록 데이터 레코드가 스트림에 있으면(자),<code>BlockDataException</code> 를 throw 해, 사용 가능한 바이트수를 알립니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4418"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	3. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 null 이면, null 를 돌려줍니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="5328"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	4. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 전의 객체에 대한 핸들이면, 그 객체를 돌려줍니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="5330"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	5. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 <code>Class</code> 이면, 그 <code>ObjectStreamClass</code> 기술자를 읽어, 그것과 그 핸들을, 인식되고 있는 객체 세트에 추가해, 대응하는 <code>Class</code> 객체를 돌려줍니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3491"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	6. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 <code>ObjectStreamClass</code> 이면,<a href="class.html#5421">4.3</a>  절로 설명하는 서식에 따라 그 데이터를 읽습니다. 그 객체와 그 핸들을, 인식되고 있는 객체 세트에 추가합니다. Version 1.3 이후의 Java<sup>TM</sup> 2 SDK, Standard Edition 에서는,<code>ObjectStreamClass</code> 가 스트림 데이터로 나타난 다이나믹 프록시 클래스 이외의 클래스를 나타내는 경우,<code>readClassDescriptor</code> 메소드가 불려 가 그 클래스를 읽어들입니다. 클래스 기술자가 다이나믹 프록시 클래스를 나타낸다면, 스트림상에서 <code>resolveProxyClass</code> 메소드를 호출해, 그 기술자의 로컬 클래스를 가져옵니다.  그렇지 않은 경우는, 스트림상에서 <code>resolveClass</code> 메소드를 호출해, 로컬 클래스를 가져옵니다. 클래스를 해결할 수 없는 경우는, ClassNotFoundException 를 throw 합니다. 취득한 <code>ObjectStreamClass</code> 객체를 돌려줍니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="5334"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	7. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가<code>String</code>의 경우, 그 길이 정보를 읽어냅니다.  그 길이 정보의 후에, 변경 후의 UTF-8 로 encode 된 캐릭터 라인의 내용이 계속됩니다.  자세한 것은,<a href="protocol.html#8299">「6.2 스트림 요소」</a>를 참조해 주세요. <code>String</code> 와 그 핸들을, 인식되고 있는 객체 세트에 추가해, 순서 12 에 진행됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3492"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	8. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 배열이면, 그 <code>ObjectStreamClass</code> 와 배열의 길이를 읽습니다. 그 배열을 할당해 그 객체와 그 핸들을, 인식되고 있는 객체 세트에 추가합니다. 형태에 적절한 메소드를 사용해 각 요소를 읽어들여, 배열에 할당합니다. 순서 12 에 진행됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3483"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	9. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">스트림의 객체가 enum 정수이면, 그 <code>ObjectStreamClass</code> 와 enum 정수명을 읽습니다. <code>ObjectStreamClass</code> 이 enum 형 이외의 클래스를 나타내는 경우,<code>InvalidClassException</code> 가 throw 됩니다. 받은 <code>ObjectStreamClass</code> 명과 함께 바인드 된 enum 형을 인수로서 건네주어<code>java.lang.Enum.valueOf</code>메소드를 호출해, enum 정수에의 참조를 가져옵니다. <code>valueOf</code> 메소드로 <code>IllegalArgumentException</code> 가 throw 되는 경우는,<code>IllegalArgumentException</code> 가 원인으로서 <code>InvalidObjectException</code> 가 throw 됩니다. enum 정수와 그 핸들을, 인식되고 있는 객체 세트에 추가해, 순서 12 에 진행됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="6255"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	10. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">그 외의 객체의 경우는, 그 객체의 <code>ObjectStreamClass</code> 가 스트림로부터 읽힙니다. 그 <code>ObjectStreamClass</code> 의 로컬 클래스가 꺼내집니다. 이 클래스는, 직렬화 가능한가 외부화 가능하지 않으면 안됩니다.  또, enum 형 이외가 아니면 안됩니다. 클래스가 이 조건을 채우지 않으면<code>InvalidClassException</code> 가 throw 됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4917"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	11. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">그 클래스의 인스턴스를 할당할 수 있습니다. 그 인스턴스와 그 핸들이, 인식되고 있는 객체 세트에 추가됩니다. 내용이 적절히 복원됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4918"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	a. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">직렬화 가능 객체의 경우, 최초의 직렬화 불능인 슈퍼타입의 인수 없음의 생성자 이 실행됩니다. Serializable 클래스의 경우, 필드는, 그 형태에 적절한 디폴트 값에 초기화됩니다. 다음에, 클래스 고유의 <code>readObject</code> 메소드인가, 이것들이 정의되어 있지 않으면,<code>defaultReadObject</code> 메소드가 불려 가, 각 클래스의 필드가 복원됩니다. 직렬화 복원시에는, 직렬화 가능 클래스에 대해서, 필드의 초기화자 및 생성자 은 실행되지 않습니다. 일반적으로, 이 스트림을 기입한 클래스의 버젼은, 이 스트림을 읽어들이는 클래스와 같습니다. 이 경우, 스트림의 객체의 모든 슈퍼타입은, 현재 로드 되고 있는 클래스의 슈퍼타입과 일치합니다. 이 스트림을 기입한 클래스의 버젼의 슈퍼타입이, 로드 되고 있는 클래스의 슈퍼타입과 다른 경우는,<code>ObjectInputStream</code> 로 다른 클래스 상태를 복원하거나 초기화하거나 할 때, 한층 더의 주의가 필요합니다. 이 경우에는, 모든 클래스를 조사해, 스트림에 있는 데이터와 복원하는 객체의 클래스를 비교할 필요가 있습니다. 스트림에는 있지만 객체에는 없는 클래스의 데이터는 파기됩니다. 객체에는 있지만 스트림에는 없는 클래스의 경우에는, 그 클래스의 필드가, 디폴트의 직렬화에 의해 디폴트 값로 설정됩니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="3584"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	b. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">외부화 가능한 객체의 경우, 그 클래스의 인수 없음의 생성자 이 실행되고 나서 <code>readExternal</code> 메소드가 불려 가 그 객체의 내용이 복원됩니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="5072"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	12. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체의 클래스, 또는 <code>ObjectInputStream</code> 의 서브 클래스에 의해, 치환을 처리합니다. <code></code> </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="5078"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	a. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">객체의 클래스가 enum 형은 아니고, 적절한 <code>readResolve</code> 메소드를 정의하는 경우는, 그 메소드가 불려 가 객체가 스스로의 치환을 실시하는 것을 가능하게 합니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="5079"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	b. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE"><code>enableResolveObject</code> 에 의해 <code>resolveObject</code> 메소드가 사용 가능하게 되고 있으면,<code class="cCode">resolveObject</code> 메소드가 불려 갑니다.  이것에 의해, 스트림의 서브 클래스가 객체를 조사해 그것을 옮겨놓을 수가 있습니다. 전의 순서로 원의 객체를 옮겨놓았을 경우는, 치환 객체로 <code>resolveObject</code> 메소드가 불려 갑니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="5080"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">치환을 했을 경우, 인식되고 있는 객체의 테이블이 갱신되므로, 치환 객체를 핸들에 관련지을 수 있습니다. 그 후, 치환 객체가 <code>readObject</code> 로부터 돌려주어집니다. </TD>
+</TR>
+</TABLE>
+<blockquote>
+<a name="3621"><!-- --></a>  원시형을 읽기 위한 모든 메소드는, 스트림의 블록 데이터 레코드로부터 바이트만을 사용합니다. 스트림의 다음의 아이템이 객체 때에 프리미티브(primitive) 데이터의 read를 하면(자), read 메소드는 -1 인가 <code>EOFException</code>  가운데로 적절한 (분)편을 돌려줍니다. <em></em>원시형의 값은,<code>DataInputStream</code> 에 의해 블록 데이터 레코드로부터 읽힙니다. <p>
+<a name="4427"><!-- --></a>  throw 된 예외는, 그 횡단(traverse)의 사이에 일어난 에러인가, 기본의 스트림로 일어난 예외를 반영한 것입니다. 예외가 throw 되었을 경우, 기본의 스트림은 불명해 사용 불능인 상태인 채입니다. <p>
+<a name="4563"><!-- --></a>  스트림로 리셋 토큰이 일어나면(자), 스트림의 모든 상태는 파기됩니다. 인식되고 있는 객체 세트는 클리어 됩니다. <p>
+<a name="4564"><!-- --></a> 스트림로 예외 토큰이 일어나면(자), 그 예외가 읽혀 새로운 <code>WriteAbortedException</code> 가 throw 됩니다.  이 때, 정지를 일으킨 예외가 인수로서 지정됩니다. 스트림 문맥은 전에 말한 것처럼 리셋 됩니다. <p>
+<a name="3502"><!-- --></a>  스트림로부터 비공유 객체를 읽어들이려면 ,<code>readUnshared</code> 메소드를 사용합니다. 이 메소드는, 후속의 <code>readObject</code> 및 <code>readUnshared</code> 의 호출이, 원의 <code>readUnshared</code> 의 호출에 의해 반환된 직렬화 복원 인스턴스에의 추가 참조를 돌려줄 수가 없는 점을 제외해서는,<code>readObject</code> 와 같습니다. 구체적으로는, 다음과 같이 됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="6120"><!-- --></a> 백 참조 (이전에 그 스트림에 기입해진 객체의 스트림 표현)를 직렬화 복원하기 위해서(때문에) <code>readUnshared</code> 가 불려 갔을 경우는,<code>ObjectStreamException</code> 가 throw 된다
+</li>
+<li>
+<a name="6139"><!-- --></a> <code>readUnshared</code> 가 정상적으로 돌려준 후에,<code>readUnshared</code> 에 의해 직렬화 복원된 스트림 핸들에의 백 참조를 직렬화 복원하려고 하면(자),<code>ObjectStreamException</code> 가 throw 된다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="6344"><!-- --></a> <code>readUnshared</code> 를 개입시켜 객체의 직렬화 복원을 실시하면, 반환된 객체에 관련지을 수 있었던 스트림 핸들이 무효가 됩니다. 다만, 이것으로,<code>readUnshared</code> 가 돌려주는 참조가 일의인 것이 항상 보증되는 것은 아닙니다. 직렬화 복원된 객체는,<code>readResolve</code> 메소드를 정의해, 다른 조직이 볼 수가 있는 객체를 돌려주는 일이 있습니다.  또,<code>readUnshared</code> 가, 스트림내외의 장소나 외부 기관으로부터 취득 가능한 <code>Class</code> 객체 또는 enum 정수를 돌려주는 일도 있습니다. 직렬화 복원된 객체가 <code>readResolve</code> 메소드를 정의해, 그 메소드의 호출에 의해 배열이 반환되는 경우,<code>readUnshared</code> 는 그 배열의 샤로 복제를 돌려줍니다. 이것에 의해, 기본이 되는 데이터 스트림이 처리되고 있는 경우에서도, 반환되는 배열 객체가 일의이며,<code>ObjectInputStream</code> 에 대한 <code>readObject</code> 또는 <code>readUnshared</code> 의 호출로부터 2 번째에는 취득할 수 없게 됩니다. <p>
+<a name="6363"><!-- --></a>  스트림로부터 필드 및 객체를 읽어들이려면 ,<code>defaultReadObject</code> 메소드를 사용합니다. 이 메소드는, 스트림의 클래스 기술자를 사용해, 이름과 형태에 의한 표준의 순서로 스트림로부터 그러한 필드를 읽어들입니다. 그러한 값은, 이름에 의해 현행 클래스의 대응하는 필드에 대입됩니다. 버젼 관리 기구의 상세한 것에 대하여는,<a href="version.html#6519">「5.5 호환성이 있는 <sup>TM</sup> 의 형태 전개」</a>를 참조해 주세요. 스트림내에 없는 객체의 필드는, 그 디폴트 값로 설정됩니다. 스트림에 있지만 객체에 없는 값은, 파기됩니다. 이러한 상태는 주로, 전의 버젼에는 없었던 필드를, 클래스의 뒤의 버젼에 추가로 기입했을 경우에 일어납니다. 이 메소드는, 클래스의 필드를 복원하고 있는 동안에 <code>readObject</code> 메소드로부터 마셔 호출할 수가 있습니다. 그 이외 때에 호출하면(자),<code>NotActiveException</code> 가 throw 됩니다. <p>
+<a name="4979"><!-- --></a>  <code>readFields</code> 메소드는, 스트림로부터 직렬화 가능 필드의 값을 읽어내,<code>GetField</code> 클래스를 사용해 그 값을 사용할 수 있도록(듯이) 합니다. <code>readFields</code> 메소드는, 직렬화 가능 클래스의 <code>readObject</code> 메소드내로부터 밖에 호출할 수가 없습니다. 또, 이 메소드는, 1 회 밖에 호출하지 못하고,<code>defaultReadObject</code> 가 벌써 불려 가고 있는 경우는 호출할 수 없습니다. <code>GetFields</code> 객체는, 현재의 객체인 <code>ObjectStreamClass</code> 를 사용해 이 클래스용으로 취득할 수 있는 필드를 확인합니다. <code>readFields</code> 에 의해 반환되는 <code>GetFields</code> 객체는, 그 클래스의 <code>readObject</code> 메소드에의 호출동안만 유효합니다. 필드는, 임의의 순서로 취득할 수 있습니다. 추가 데이터의 read는,<code>readFields</code> 가 불려 간 뒤에, 스트림로부터 직접 읽어들이는 경우만 가능합니다. <p>
+<a name="1302"><!-- --></a>  <code>registerValidation</code> 메소드를 호출하면(자), 객체가 <code>readObject</code> 의 원의 호출 측에 돌려주어지기 전에 그래프 전체가 복원되었을 경우에, 콜백을 요구할 수가 있습니다. 유효화 콜백의 순서는, 우선 차례차례로 제어할 수가 있습니다. 비싼 값의 콜백은, 낮은 값의 것보다 전에 불려 갑니다. 유효하게 되는 객체는,<code>ObjectInputValidation</code> 인터페이스를 지원해,<code>validateObject</code> 메소드를 구현하고 있지 않으면 안됩니다. 유효화를 등록하는 것은, 클래스의 <code>readObject</code> 메소드를 호출하는 동안이 아니면 안됩니다. 그렇지 않으면<code>NotActiveException</code> 가 throw 됩니다. <code>registerValidation</code> 으로 지정된 콜백 객체가 null 의 경우,<code>InvalidObjectException</code> 가 throw 됩니다. <p>
+<a name="5994"><!-- --></a>  Java<sup>TM</sup> SDK, Standard Edition, v1. 3 으로부터, 모든 <code>ObjectStreamClass</code> 객체를 읽어들일 때 <code>readClassDescriptor</code> 메소드가 사용되고 있습니다. 직렬화 스트림내에서 <code>ObjectInputStream</code> 의 다음의 항목이 클래스 기술자의 경우는,<code>readClassDescriptor</code> 가 불려 갑니다. <code>writeClassDescriptor</code> 메소드를 오버라이드(override) 한 <code>ObjectOutputStream</code> 의 서브 클래스에 의해 비표준 형식에서 기술된 클래스 기술자가 읽어들이기 위한 이 메소드는,<code>ObjectInputStream</code> 의 서브 클래스에 의해 오버라이드(override) 됩니다. 디폴트에서는, 이 메소드는,<a href="protocol.html#10258">「6.4 스트림 형식의 문법」</a>으로 설명하고 있는 형식에 따라 클래스 기술자를 읽어들입니다. <p>
+<a name="1194"><!-- --></a>  <code>resolveClass</code> 메소드는, 직렬화 복원되고 있는 동안과 그 클래스 기술자가 읽힌 후에 불려 갑니다. 서브 클래스는, 이 메소드를 확장해,<code>ObjectOutputStream</code> 의 대응하는 서브 클래스에 의해 기입해진 클래스의 다른 정보를 읽을 수 있습니다. 이 메소드는, 주어진 이름과 <code>serialVersionUID</code> 를 가지는 클래스를 찾아내 돌려주지 않으면 안됩니다. 디폴트의 구현에서는, 이 클래스는, 클래스 로더를 가지는 <code>readObject</code> 의 가장 가까운 호출측의 클래스 로더를 호출하는 것에 의해, 찾아낼 수가 있습니다. 이 클래스가 발견되지 않으면<code>ClassNotFoundException</code> 가 throw 됩니다. JDK<sup>TM</sup> 1.1. 6 보다 전의 버젼에서는,<code>resolveClass</code> 메소드는, 스트림내의 클래스명과 같은, 완전 지정된 클래스명을 돌려줄 필요가 있었습니다. JDK<sup>TM</sup> 1.1. 6 이후의 버젼에서는, 릴리스 마다 패키지의 이름을 변경할 수 있도록(듯이) 하기 위해서,<code>resolveClass</code> 메소드는, 같은 base class명 및 <code>SerialVersionUID</code> 를 가지는 클래스를 돌려주는 것만이 필요합니다. <code></code> <p>
+<a name="5264"><!-- --></a>  <code>resolveObject</code> 메소드는, 직렬화 복원 시에, 어느 객체를 다른 객체 대신에 모니터 하거나 있는 객체와 다른 객체를 치환하거나 하기 위해서, 신뢰할 수 있는 서브 클래스에 의해 사용됩니다. 해석 처리하는 최초의 객체에 대해서 <code>readObject</code> 를 호출하기 전에,<code>enableResolveObject</code> 를 호출해, 객체의 해석 처리를 명시적으로 사용 가능하게 하지 않으면 안됩니다. 객체의 해석 처리를 사용 가능하게 하면(자), 각각의 직렬화 가능 객체가 <code>readObject</code> 로부터 최초로 돌려주어지기 직전에,<code>resolveObject</code> 는 한 번만 불려 갑니다. <code>resolveObject</code> 메소드는, 특별히 처리되는 클래스인 <code>Class</code>,<code>ObjectStreamClass</code>,<code>String</code>, 및 배열의 객체에 대해서는 불려 가지 않습니다. 서브 클래스의 <code>resolveObject</code> 의 구현에서는, 오리지날 대신에 대입되거나 돌려주어지거나 하는 치환 객체가 반환되는 경우가 있습니다. 반환되는 객체는, 일관성이 있어, 원의 객체의 참조에 반드시 대입할 수 있는 형태의 것이 아니면 안됩니다.  그렇지 않으면<code>ClassCastException</code> 가 throw 됩니다. 모든 대입에서는 형태의 검사를 합니다. 스트림에 있어서의 원의 객체에의 모든 참조는, 치환 객체에의 참조에 의해 옮겨놓을 수 있습니다. <p>
+<a name="5120"><!-- --></a>  <code>enableResolveObject</code> 메소드는, 직렬화 복원 시에, 어느 객체를 다른 객체 대신에 모니터 하거나 있는 객체로 다른 객체를 치환하는 것을 가능하게 하기 위해서,<code>ObjectOutputStream</code> 의 신뢰할 수 있는 서브 클래스에 의해 불려 갑니다. 객체의 치환은,<code>enableResolveObject</code> 가 <code>true</code> 치로 불려 갈 때까지는, 사용 불가가 되어 있습니다. 또, 사용 가능하게 한 후에,<code>false</code> 로 설정해, 사용 불가로 되는 경우가 있습니다. 전의 설정이 돌려주어집니다. <code>enableResolveObject</code> 메소드는, 직렬화 시에 스트림이 치환을 요구하는 권한이 있을지 어떨지를 검사합니다. 객체의 private 상태가 의도하지 않고 로 변경될리가 없게, 신뢰할 수 있는 스트림밖에 <code>resolveObject</code> 를 사용할 수 없습니다. 신뢰할 수 있는 클래스란, 클래스 로더가 null 에 동일한지, 치환을 유효하게 하는 것을 허가하는 시큐리티 보호 도메인에 속하는 클래스입니다. <p>
+<a name="5521"><!-- --></a>  <code>ObjectInputStream</code> 의 서브 클래스가 시스템 도메인이 일부에서 없다고 보이는 경우는,<code>enableResolveObject</code> 를 호출하기 위한 허가를 <code>ObjectInputStream</code> 의 서브 클래스에게 주는 행을, 시큐리티 정책 파일에 추가할 필요가 있습니다. 추가하는 <code>SerializablePermission</code> 는,<code>&#34;enableSubstitution&#34;</code> 입니다. <code>ObjectStreamClass</code> 의 서브 클래스의 보호 도메인에,<code>enableResolveObject</code> 의 호출에 의한 <code>&#34;enableSubstitution&#34;</code> 의 권한이 없는 경우는,<code>AccessControlException</code> 가 throw 됩니다. 시큐리티 모델의 자세한 것은, Java<sup>TM</sup> 시큐리티 아키텍쳐(architecture) (JDK<sup>TM</sup> 1.2)의 문서를 참조해 주세요. <p>
+<a name="5059"><!-- --></a>  <code>readStreamHeader</code> 메소드는, 스트림의 매직 번호와 버젼을 읽어들여, 검사합니다. 그것들이 일치하지 않으면<code>StreamCorruptedMismatch</code> 가 throw 됩니다. <p>
+<a name="5506"><!-- --></a>  직렬화 복원의 구현을 오버라이드(override) 하려면 ,<code>ObjectInputStream</code> 의 서브 클래스는, 보호된 인수 없음의 <code>ObjectInputStream</code> 생성자 을 호출할 필요가 있습니다. <code>SerializablePermission &#34;enableSubclassImplementation&#34;</code> 의 인수 없음의 생성자 내에는 시큐리티 체크가 있어, 신뢰할 수 있는 클래스에만 디폴트의 구현의 오버라이드(override)를 허가합니다. 이 생성자 은,<code>ObjectInputStream</code> 에 private 인 데이터를 할당하지 않고, 파이널의 <code>readObject</code> 메소드는 <code>readObjectOverride</code> 메소드를 호출하고 나서 복귀하는 것을 나타내는 플래그를 설정합니다. 다른 모든 <code>ObjectInputStream</code> 메소드는, 파이널은 아니기 때문에, 서브 클래스에 의해 직접 오버라이드(override) 됩니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4936">3.2 ObjectInputStream.GetField 클래스</a> </h2>
+
+<blockquote>
+<a name="5058"><!-- --></a> <code>ObjectInputStream.GetField</code> 는, 직렬화 가능 필드의 값을 취득하기 위한 API 를 제공합니다. 스트림의 프로토콜은,<code>defaultReadObject</code> 가 사용하는 프로토콜과 같습니다. <code>readFields</code> 의 사용에 의한 직렬화 가능 필드에의 액세스에서는, 스트림의 형식은 변경되지 않고 , 값에 액세스하기 위한 대신의 API 가 제공될 뿐입니다. 이 API 는, 클래스의 각 이름 첨부 직렬화 가능 필드에 대해, 대응하는 비 transient 및 비 static 필드를 필요로 하지 않습니다. 직렬화 가능 필드는,<code>serialPersistentFields</code> 를 사용해 선언된 필드이든가, 혹은 그러한 필드가 선언되어 있지 않은 경우는, 객체의 비 transient 및 비 static 필드입니다. 스트림의 read시에 이용할 수 있는 직렬화 가능 필드는, 객체의 직렬화시에 스트림에 기입해진 필드입니다. 스트림을 기입하는 클래스의 버젼이 다른 경우는, 모든 필드가 현재의 클래스의 직렬화 가능 필드에 대응하는 것은 아닙니다. 이용 가능한 필드는,<code>GetField</code> 객체의 <code>ObjectStreamClass</code> 로부터 취득할 수 있습니다. <p>
+<a name="5029"><!-- --></a> <code>getObjectStreamClass</code> 메소드는, 스트림내의 클래스를 나타내는 <code>ObjectStreamClass</code> 객체를 돌려줍니다. 이것에는, 직렬화 가능 필드의 일람이 포함되어 있습니다. <p>
+<a name="4941"><!-- --></a>  스트림내에 필드가 존재하지 않는 경우는,<code>defaulted</code> 메소드가 <em>true</em> 를 돌려줍니다. 요구된 필드가 현재의 클래스의 직렬화 가능 필드가 아닌 경우는,<code>IllegalArgumentException</code> 이 throw 됩니다. <p>
+<a name="4942"><!-- --></a>  각 <code>get</code> 메소드는, 지정된 직렬화 가능 필드를 스트림로부터 돌려줍니다. 배후의 스트림이 예외를 throw 했을 경우는, 입출력 예외가 throw 됩니다. 현재의 클래스의 직렬화 가능 필드의 이름 및 형태에, 이름 또는 형태가 일치하지 않는 경우는,<code>IllegalArgumentException</code> 가 throw 됩니다. 스트림의 그 필드에 명시적인 값이 포함되지 않은 경우는, 디폴트의 값이 돌려주어집니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="3403">3.3 ObjectInputValidation 인터페이스</a> </h2>
+
+<blockquote>
+<a name="2942"><!-- --></a>  이 인터페이스를 사용하면(자), 객체의 완전 그래프 (객체가 구성하는 완전 그래프)가 직렬화 복원되었을 때, 객체가 불려 갑니다. 객체를 유효하게 할 수 없는 경우, 이 인터페이스는 일반적으로 <code>ObjectInvalidException</code> 를 throw 합니다. <code>validateObject</code> 의 호출로 예외가 일어나면(자), 유효화 처리는 중지되어<code>InvalidObjectException</code> 가 throw 됩니다. <p>
+<a name="2969"><!-- --></a> 
+<pre>package java.io;
+
+public interface ObjectInputValidation
+{
+    public void validateObject()
+        throws InvalidObjectException;
+}
+</pre>
+
+
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="2971">3.4 readObject 메소드</a> </h2>
+
+<blockquote>
+<a name="4567"><!-- --></a>  Serializable 객체의 경우,<code>readObject</code> 메소드에 의해, 클래스가 그것 독자적인 필드의 직렬화 복원을 제어할 수가 있습니다. 그 시그니챠를 다음에 나타냅니다. <p>
+<a name="1081"><!-- --></a> 
+<pre>    private void readObject(ObjectInputStream stream)
+        throws IOException, ClassNotFoundException;
+</pre>
+
+
+<a name="4580"><!-- --></a>  Serializable 객체의 각 서브 클래스는, 그것 독자적인 <code>readObject</code> 메소드를 정의할 수가 있습니다. 이 메소드가 클래스에 구현되어 있지 않은 경우는,<code>defaultReadObject</code> 에 의해 주어지는 디폴트의 직렬화가 사용됩니다. 구현되고 있는 경우는, 그 클래스는, 그 슈퍼타입이나 subtype의 필드는 아니고, 그것 독자적인 필드만을 복원할 책임이 있습니다. <p>
+<a name="4581"><!-- --></a>  클래스의 <code>readObject</code> 메소드가 구현되고 있으면, 그 메소드는 그 클래스 상태를 복원할 책임이 있습니다. transient 또는 static 화도인가에는 관계없이, 객체의 모든 필드의 값에, 그 field type의 디폴트의 값이 설정됩니다. <code>ObjectInputStream</code> 의 <code>defaultReadObject</code> 메소드 또는 <code>readFields</code> 메소드를 한 번 (한 번 만) 호출하지 않으면, 대응하는 <code>writeObject</code> 메소드에 의해 기입해진 임의 지정의 데이터를 읽어들일 수 없습니다. 임의 지정의 데이터를 읽어들이지 않는 경우에서도,<code>defaultReadObject</code> 또는 <code>readFields</code> 를 한 번 호출할 필요가 있습니다. 클래스의 <code>readObject</code> 메소드가, 이 클래스의 스트림내에 존재하는 임의 지정 부분보다 많은 데이터를 읽어들이려고 하면(자), 바이트의 read에서는 <code>-1</code> 이 돌려주어져 프리미티브(primitive) 데이터의 read (<code>readInt</code>,<code>readFloat</code> 등)에서는 <code>EOFException</code> 가 throw 되어 객체의 read에서는 <code>eof</code> 필드가 <code>true</code> 로 설정된 <code>OptionalDataException</code> 가 throw 됩니다. <p>
+<a name="6186"><!-- --></a> 이 임의 지정 데이터의 형식, 구조체, 버젼 관리의 책임의 모든 것은, 그 클래스에 있습니다. 임의 지정 데이터의 형식 및 구조를 문서화하는 경우는,<code>readObject</code> 메소드에 대한 javadoc 코멘트내의 <code>@serialData</code> javadoc 태그를 사용할 필요가 있습니다. <p>
+<a name="6108"><!-- --></a>  복원하는 클래스가 읽어들여 스트림내에 존재하지 않는 경우,<code>readObjectNoData</code> 메소드가 정의되고 있으면, (<code>readObject</code> 대신에) 그 메소드가 불려 가 정의되어 있지 않으면, 필드는 적절한 디폴트 값에 초기화됩니다. 자세한 것은,<a href="input.html#6053">「3.5 readObjectNoData 메소드」</a>  를 참조해 주세요. <p>
+<a name="6109"><!-- --></a> <code>ObjectInputStream</code> 로부터의 객체의 read는, 새로운 객체의 작성을 닮아 있습니다. 새로운 객체의 생성자 이 슈퍼 클래스로부터 서브 클래스라고 하는 차례로 불려 가는 것과 같게, 스트림로부터 읽히는 객체는, 슈퍼 클래스로부터 서브 클래스에 직렬화 복원됩니다. 직렬화 복원중에, 각 <code>Serializable</code> 서브 클래스에 대해서, 생성자 은 아니고 <code>readObject</code> 또는 <code>readObjectNoData</code> 메소드가 불려 갑니다.  <p>
+<a name="6012"><!-- --></a>  생성자 과 <code>readObject</code> 메소드로 이제(벌써) 1 개(살) 비슷한 점은, 어느쪽이나, 완전하게 구축되어 있지 않은 객체상에 메소드를 호출할 수가 있는 점입니다. 객체의 구축중에 불려 가는 오버라이드(override) 가능한 메소드 (private, static, final 의 어떤 것도 아닌 것)는, 서브 클래스에 의해 오버라이드(override) 될 가능성이 있습니다. 객체의 구축 단계에 불려 가는 메소드는, 생성자 이나 <code>readObject</code> 또는 <code>readObjectNoData</code> 메소드에 의해 현재 초기화되고 있는 형태는 아니고, 그 객체의 실제의 형태에 의해 해석 처리됩니다. 따라서,<code>readObject</code> 또는 <code>readObjectNoData</code> 메소드내로부터 오버라이드(override) 가능한 메소드를 호출하면(자), 슈퍼 클래스가 완전하게 초기화되기 전에 의도하지 않는 서브 클래스가 불려 갈 가능성이 있습니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6053">3.5	readObjectNoData 메소드</a> </h2>
+
+<blockquote>
+<a name="6054"><!-- --></a>  직렬화 가능 객체에서는, 서브 클래스의 인스턴스가 직렬화 복원되어 직렬화 스트림이 그 클래스를 직렬화 복원된 객체의 슈퍼 클래스로서 리스트 하지 않는 경우,<code>readObjectNoData</code> 메소드를 사용하면(자), 클래스가 스스로의 필드의 초기화를 제어할 수가 있습니다. 이것은, 수취하는 측이, 보내 옆과는 다른 버젼의 직렬화 복원된 인스턴스의 클래스를 사용해, 수취하는 측의 버젼이, 보내 옆의 버젼에 의해 상속되지 않는 클래스를 상속하는 경우에 발생할 가능성이 있습니다. 또, 직렬화 스트림이 개편되었을 경우에도 발생하는 일이 있습니다. 따라서,<code>readObjectNoData</code> 는, 「악의가 있다」또는 부정한 소스 스트림이어도, 직렬화 복원된 객체를 올바르게 초기화하는데 도움이 됩니다. <p>
+<a name="6068"><!-- --></a> 
+<pre>  private void readObjectNoData() throws ObjectStreamException;
+</pre>
+
+
+<a name="6066"><!-- --></a>  직렬화 가능 클래스 마다, 그 클래스 독자적인 <code>readObjectNoData</code> 메소드를 정의할 수가 있습니다. 직렬화 가능 클래스가 <code>readObjectNoData</code> 메소드를 정의하지 않는 경우, 상기의 상황에서는, 클래스의 필드는 디폴트 값 ( 「Java<sup>TM</sup> Language Specification, Second Edition」의 4.5. 5 에 기재)에 초기화됩니다. 이 동작은,<code>readObjectNoData</code> 메소드의 지원가 도입된 Java<sup>TM</sup> 2 SDK, Standard Edition Version 1.4 이전의 <code>ObjectInputStream</code> 의 동작과 일치합니다. 직렬화 가능 클래스가 <code>readObjectNoData</code> 메소드를 정의하는 경우에 전술의 상황이 발생하면(자), 클래스 정의의 <code>readObject</code> 메소드가 불려 갔을 때에, 그 클래스가 스트림에 의해 직렬화 복원하는 인스턴스의 슈퍼 클래스로서 리스트 되고 있으면, 직렬화 복원중의 그 시점에서 <code>readObjectNoData</code> 가 불려 갑니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6014">3.6	 readExternal 메소드</a> </h2>
+
+<blockquote>
+<a name="5177"><!-- --></a> <code>java.io.Externalizable</code> 를 구현하는 객체는,<code>readExternal</code> 메소드를 구현해, 그 객체 상태 전체를 복원하지 않으면 안됩니다. 이 객체는, 그 슈퍼 클래스와 제휴해 그러한 상태를 복원할 필요가 있습니다. <code>ObjectInput</code> 의 모든 메소드가, 그 객체의 원시형의 필드와 객체 필드를 복원하기 위해서(때문에) 사용할 수 있습니다. <p>
+<a name="3410"><!-- --></a> 
+<pre>    public void readExternal(ObjectInput stream)
+        throws IOException;
+</pre>
+
+
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="1234">주 - </a> </b><code>readExternal</code> 메소드는 public 이기 (위해)때문에, 클라이언트가 스트림의 기존 객체를 덧쓰기해 버리는 위험성이 있습니다. 클래스에서 독자적으로 체크를 추가해, 적절한 때에만 불려 가도록(듯이) 할 수도 있습니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<blockquote>
+<a name="5238"><!-- --></a>  JDK<sup>TM</sup> 1.2 에서는,<code>Externalizable</code> 객체의 문제를 수정하기 위해서, 새로운 스트림 프로토콜의 버젼이 도입되었습니다. <code>Externalizable</code> 객체의 이전의 정의에서는, 스트림로부터 <code>Externalizable</code> 객체를 적절히 읽어들일 수 있도록(듯이) 하기 위해서, 로컬의 가상 머신이 <code>readExternal</code> 메소드를 찾을 필요가 있었습니다. 새로운 형식에서는, 충분한 정보가 스트림 프로토콜에 추가되므로, 로컬의 <code>readExternal</code> 메소드를 사용할 수 없는 경우는, 직렬화로 <code>Externalizable</code> 객체를 스킵 할 수가 있습니다. 클래스의 전개 규칙에 의해, 로컬 클래스를 사용한 객체의 매핑이 없는 경우는, 입력 스트림내의 <code>Externalizable</code> 객체는 스킵 할 수 있습니다.  <p>
+<a name="6050"><!-- --></a>  또, 새로운 <code>Externalizable</code> 스트림 형식에서는,<code>ObjectInputStream</code> 에 의해, 이용 가능한 범위를 넘는 외부 데이터의 read 시행을 검출해,<code>readExternal</code> 메소드에 의해 소비되어 있지 않은 데이터를 스킵 할 수 있다고 하는 이점도 있습니다. 외부 데이터의 끝을 지난 읽기에 응답하는 <code>ObjectInputStream</code> 의 동작은, 클래스 정의의 <code>readObject</code> 메소드가 임의 지정 데이터의 끝을 넘어 읽어들이려고 했을 때의 동작과 같습니다. 바이트의 read에서는 <code>-1</code> 을 돌려주어, 프리미티브(primitive)의 read에서는 <code>EOFException</code> 를 throw 해, 객체의 read에서는,<code>eof</code> 필드를 <code>true</code> 로 설정한 <code>OptionalDataException</code> 를 throw 합니다. <p>
+<a name="5325"><!-- --></a>  이 형식의 변경을 위해, JDK<sup>TM</sup> 1.1. 6 이전의 릴리스에서는, 이 새로운 형식을 읽어들일 수가 없습니다. JDK<sup>TM</sup> 1.1. 6 이전으로,<code>PROTOCOL_VERSION_2</code> 에 기입해진 스트림로부터 <code>Externalizable</code> 객체를 읽어들이려고 하면(자),<code>StreamCorruptedException</code> 가 throw 됩니다. 호환성의 문제에 대해서는,<a href="protocol.html#5849">「6.3 스트림 프로토콜의 버젼」</a>을 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5903">3.7 readResolve 메소드</a> </h2>
+
+<blockquote>
+<a name="5904"><!-- --></a>  Serializable 클래스와 Externalizable 클래스의 경우, 클래스는 <code>readResolve</code> 메소드를 사용하는 것에 의해, 호출 측에 돌려주어지기 전에, 스트림로부터 읽어들인 객체를 치환 또는 해석 처리할 수 있습니다. <code>readResolve</code> 메소드를 구현하는 것에 의해, 클래스는, 클래스 자체의 직렬화 복원되고 있는 인스턴스의 형태 및 인스턴스를 직접 제어할 수 있습니다. 이 메소드는, 다음과 같이 정의합니다. <p>
+<a name="5905"><!-- --></a> 
+<pre>	ANY-ACCESS-MODIFIER Object readResolve()
+    		throws ObjectStreamException;
+</pre>
+
+
+<a name="5906"><!-- --></a> <code>readResolve</code> 메소드는,<code>ObjectInputStream</code> 가 스트림로부터 객체를 읽어들여, 호출 측에 돌려줄 준비를 하고 있을 때 불려 갑니다. <code>ObjectInputStream</code> 는, 객체의 클래스에 의해 <code>readResolve</code> 메소드가 정의될지 어떨지를 확인합니다. 이 메소드가 정의되는 경우는,<code>readResolve</code> 메소드가 불려 가, 스트림내의 객체는, 객체가 돌려주어지도록(듯이) 지정할 수 있게 됩니다. 반환되는 객체는, 모든 사용 장면에서 호환성이 있는 형태가 아니면 안됩니다. 호환성이 없는 경우는, 형태의 불일치가 발견된 시점에서 <code>ClassCastException</code> 가 throw 됩니다. <p>
+<a name="5907"><!-- --></a>  예를 들어,<code>Symbol</code> 클래스는, 가상 머신내에서 각 심볼 바인딩에 인스턴스가 1 개만 존재하는 <code>Symbol</code> 클래스를 생성할 수도 있습니다. 그 심볼이 벌써 정의되고 있는지 어떤지, 및 아이덴티티의 제약을 지키기 위해서, 이전부터 존재하는 <code>Symbol</code> 객체를 그 심볼에 바꿀지 어떨지를 결정하는 <code>readResolve</code> 메소드를 구현합니다. 이와 같이 해, 직렬화에 있어서의 <code>Symbol</code> 객체의 일의성을 지킬 수가 있습니다.  <p>
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="5981">주 - </a> </b>객체가 완전하게 구축될 때까지는 <code>readResolve</code> 메소드는 객체에 불려 가지 않기 때문에, 그 객체의 객체 그래프에의 참조는,<code>readResolve</code> 에 의해 지정된 새로운 객체에 갱신되지 않습니다. 그러나,<code>writeReplace</code> 메소드에 의한 객체의 직렬화의 사이에, 치환 객체의 객체 그래프에 있는 원의 객체에의 참조는 모두, 치환 객체에의 참조로 옮겨집니다. 따라서, 직렬화 된 객체가 치환 객체를 지정해, 그 치환 객체의 객체 그래프가 원의 객체에의 참조를 가지는 경우, 직렬화 복원을 실시하면, 부정한 객체 그래프가 작성됩니다. 게다가<code>writeReplace</code> 에 의해 지정된 read 대상의 객체와 원의 객체의 참조 타입에 호환성이 없는 경우, 객체 그래프를 구축할 때에 <code>ClassCastException</code> 가 발생합니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="output.html">전의 항목</a>  | <a href="class.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:37 2005 -->
+ 
+
+
+</body>
+</html>

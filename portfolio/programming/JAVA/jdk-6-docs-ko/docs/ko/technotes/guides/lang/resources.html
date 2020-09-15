@@ -1,0 +1,287 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title>자원에의 액세스 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#000077" alink="#ff0000">
+
+<h1>위치에 의존하지 않는 방법에서의 자원에의 액세스</h1>
+
+<ul>
+<li><a href="#overview">개요</a> 
+<li><a href="#res_name_context">자원, 이름, 문맥</a> 
+<li><a href="#sys_res">system resource</a> 
+<li><a href="#nonsys_res">system resource 이외</a> 
+<li><a href="#res_names">자원명</a> 
+<li><a href="#class">java.lang.Class 의 메소드의 사용</a> 
+<li><a href="#classloader">java.lang.ClassLoader 의 메소드의 사용</a> 
+<li><a href="#security">시큐리티</a> 
+<li><a href="#examples">례</a> 
+<li><a href="#refs">레퍼런스</a> 
+</ul>
+
+<a name="overview"></a> <h2>개요</h2>
+<P>
+자원이란, 프로그램의 코드의 위치와는 무관계한 방법으로 프로그램이 액세스 할 필요가 있는 데이터 (이미지, 오디오, 텍스트 등)입니다. Java 프로그램에서는, 2 개의 기구로 자원에 액세스 할 수 있습니다. 애플릿의 경우는,<code>Applet.getCodeBase()</code> 를 사용해 애플릿 코드의 베이스 URL 를 취득해, 그 베이스 URL 를 상대 패스로 전개해, 예를 들어 <code>Applet.getAudioClip(url)</code> 등의 함수를 사용해 필요한 자원을 로드합니다. 어플리케이션의 경우는,<code>System.getProperty("user.home")</code> 나 <code>System.getProperty("java.home")</code> 등의 「잘 알려진 장소」를 사용해, 「/lib/<i>resource</i>」를 부가해, 그 파일을 엽니다.
+
+<p>클래스 <code>Class</code> 및 <code>ClassLoader</code> 의 메소드에서는, 자원을 특정하기 위해서, 위치에 의존하지 않는 방법을 제공합니다. 예를 들어 다음과 같은 경우의 자원을 특정할 수 있습니다.
+</p>
+
+<UL>
+<LI>복수의 HTTP 접속을 사용해 인터넷으로부터 로드 된 애플릿
+<LI>JAR 파일을 사용해 로드 된 애플릿
+<LI>CLASSPATH 에 로드 또는 인스톨 된 Java Bean
+<LI>CLASSPATH 에 인스톨 된 「라이브러리」
+</UL>
+
+<p>이러한 메소드에서는, 로컬라이즈 된 자원의 위치를 특정할 수 없습니다. 로컬라이즈 된 자원은,<a href="../intl/index.html">국제화</a>에 의해 지원됩니다.
+
+<a name="res_name_context"></a> <h2>자원, 이름, 문맥</h2>
+
+<p>자원은 캐릭터 라인으로 특정되어 이 캐릭터 라인은 slash (/)로 단락지어진 일련의 서브 캐릭터 라인과 말미의 자원명으로 구성됩니다. 각 서브 캐릭터 라인은, 유효한 Java 식별자일 필요가 있습니다. 자원명은,<code><i>shortName</i></code> 또는 <code><i>shortName.extension</i></code> 라고 하는 형식입니다. <code><i>shortName</i></code> 와 <code><i>extension</i></code> 는, 어느쪽이나 Java 식별자일 필요가 있습니다.
+
+</p><p>자원의 이름은 Java 의 구현에는 의존하지 않습니다.  특히, 패스의 단락 문자는 반드시 slash (/)입니다. 다만, 자원의 내용이, 파일, 데이타베이스, 그 외 실제의 자원을 포함한 객체에 어떻게 맵 될까에 대해서는, Java 의 구현이 제어합니다.
+
+</p><p>자원명의 해석은, 클래스 로더의 인스턴스와 관련합니다. <code>ClassLoader</code> 클래스에 의해 구현되는 메소드가 이 해석을 실시합니다.
+
+</p>
+
+<a name="sys_res"></a> <h2>system resource</h2>
+
+<p>
+system resource란, 시스템에 짜넣어지고 있는 자원, 또는 호스트의 구현에 짜넣어지고 있는 자원으로, 로컬 파일 시스템이 그 일례입니다. 프로그램이 system resource에 액세스 하려면 ,<code>ClassLoader</code> 의 메소드인 <code>getSystemResource</code> 및 <code>getSystemResourceAsStream</code> 를 사용합니다.
+
+</p><p>예를 들어, 일부의 구현 기능에서는, system resource를 찾아내기 위해서(때문에) CLASSPATH 내의 항목을 검색해야 하는 것이 있습니다. ClassLoader</code> 메소드에 의해 CLASSPATH 내의 디렉토리, ZIP 파일, 또는 JAR 파일의 각각의 엔트리로 resource file가 검색되어 파일이 발견되면(자),<code>InputStream</code> 또는 자원의 이름이 돌려주어집니다. 파일이 발견되지 않았던 경우는, null 가 돌려주어집니다. 자원은, 클래스 파일을 로드한 위치와 같은 CLASSPATH 항목에 있다고는 할 수 없습니다.
+</p>
+
+<a name="nonsys_res"></a> <h2>system resource 이외</h2>
+<p>
+클래스 로더에서의 <code>getResource</code> 의 구현 방법은,<code>ClassLoader</code> 클래스의 상세하게 따라 다릅니다. <code>AppletClassLoader</code> 의 경우는 다음과 같이 됩니다.
+
+<ul>
+<li>우선, system resource로서 자원을 찾는다.  발견되지 않았던 경우는,
+
+</li><li>이 CODEBASE 에 벌써 로드 되고 있는 어카이브(archive) (JAR 파일) 내에서 자원을 찾는다.  발견되지 않았던 경우는,
+
+</li><li>CODEBASE 를 사용해, 자원의 검색을 시도한다 (원격 사이트에 접속하는 일도 있다)
+</li></ul>
+
+<p> 모든 클래스 로더는, 클래스 파일을 찾는 것과 같이, 자원을 우선 system resource로서 찾습니다. 이 때문에, 모든 자원을 로컬에 덧쓰기하는 것이 가능하게 됩니다. 자원명에는 일의의 이름을 선택할 필요가 있습니다 (접두사로서 회사명이나 패키지명등을 사용한다).
+</p>
+
+<a name="res_names"></a> <h2>자원명</h2>
+
+<p> 각 클래스는 일반적으로, 자원명을 나타낼 때에, 클래스의 패키지의 완전 수식명을 사용해, 모든 피리어드 (. )(을)를 slash (/)로 변환해, 자원명을 <code><i>name.extension</i></code> 의 형식에서 추가한다고 하는 규칙을 사용합니다. 이 규칙을 지원해, 시스템 클래스 (<code>getClassLoader</code> 가 <b>null</b> 를 돌려주는 클래스)의 상세한 처리를 간략화하기 위해서,<code>Class</code> 클래스에는 2 개의 편리한 메소드를 제공합니다.
+
+</p><p> <code>Class</code> 클래스의 메소드에게 건네지는 자원명은, 선두가 「/」으로 시작되는 것이 있습니다.  이것은 「절대」명을 나타냅니다. 선두가 「/」이 아닌 자원명은 「상대」명입니다.
+
+</p><p>자원을 찾을 때, 절대명은, 선두의 「/」이 제거되었을 뿐 상태로, 적절한 <code>ClassLoader</code> 의 메소드에게 건네집니다. 상대명은, 전술의 규칙에 따라 수정된 뒤,<code>ClassLoader</code> 의 메소드에게 건네집니다.
+</p>
+
+<a name="class"></a> <h2>java.lang.Class 의 메소드의 사용</h2>
+
+<p><code>Class</code> 클래스에서는, 자원을 로드하기 위한 메소드를 몇개인가 구현하고 있습니다.
+</p>
+
+<p> <code>getResource()</code> 메소드는 자원의 URL 를 돌려줍니다. 이 URL 및 그 표현은, 구현 및 JVM 에 고유합니다.  즉, 어느 실행시 인스턴스로 취득된 URL 는, 다른 실행시 인스턴스에서는 동작하지 않을 가능성이 있습니다. 프로토콜은 일반적으로, 자원을 로드하는 <code>ClassLoader</code> 에 특유입니다. 자원이 존재하지 않는 경우나, 시큐리티상의 이유로써 불가시인 경우, 메소드는 null 를 돌려줍니다.
+
+</p><p> 클라이언트 코드로 자원의 내용을 <code>InputStream</code> 로서 읽어들이려면 , 그 URL 에 <code>openStream()</code> 메소드를 적용합니다. <code>getResourceAsStream()</code> 를 <code>Class</code> 와 <code>ClassLoader</code> 에 추가하는 것은, 일반적으로은 올바른 일로 여겨집니다. <code> getResourceAsStream()</code> 는, 입출력 예외가 캐치 되어 null 의 <code>InputStream</code> 를 반환되는 것을 제외해,<code>getResource(). openStream()</code> 를 호출하는 것으로 동일합니다.
+
+</p><p>클라이언트 코드는, URL 에 대해서 <code>java.net.URL.getContent()</code> 메소드를 적용하는 것에 의해, 자원의 내용을 객체로서 요구할 수도 있습니다. 이 메소드는, 자원내에 이미지 데이터가 포함되어 있는 경우 등에 편리합니다. 이미지의 경우, 결과는 <code>Image</code> 객체는 아니고,<code>awt.image.ImageProducer</code> 객체가 됩니다.
+</p>
+
+<p>
+<code>getResource</code> 및 <code>getResourceAsStream</code> 메소드는, 지정된 이름의 자원을 검색합니다. 이러한 메소드는, 지정된 이름의 자원이 발견되지 않으면 null 를 돌려줍니다. 지정된 클래스에 관련하는 자원을 검색하기 위한 규칙은, 그 클래스의 ClassLoader 에 의해 구현됩니다. <code>Class</code> 의 메소드는, 명명 규칙의 적용 후에 <code>ClassLoader</code> 메소드에 위양 됩니다. 자원명이 「/」으로 시작되는 경우는, 그 이름이 그대로 사용됩니다. 그렇지 않은 경우는, 모든 피리어드 (. )(이)가 slash (/)에 변환되고 나서, 패키지명이 선두에 부가됩니다.
+</p>
+
+<pre>
+public InputStream getResourceAsStream(String name) {
+  name = resolveName(name);
+  ClassLoader cl = getClassLoader();
+  if (cl==null) {
+    return ClassLoader.getSystemResourceAsStream(name); // A system class.
+  }
+  return cl.getResourceAsStream(name);
+}
+
+public java.net.URL getResource(String name) {
+  name = resolveName(name);
+  ClassLoader cl = getClassLoader();
+  if (cl==null) {
+    return ClassLoader.getSystemResource(name);  // A system class.
+  }
+  return cl.getResource(name);
+}
+</pre>
+
+<P>
+<code>resolveName</code> 메소드에 의해, 이름이 절대 패스가 아닌 경우는 패키지명의 접두사가 추가되어 절대 패스의 경우는 선두의 「/」이 삭제됩니다. 일반적이지는 않습니다만, 같은 자원을 공유하는 클래스를 다른 패키지에 포함할 수도 있습니다.
+</P>
+
+<pre>
+private String resolveName(String name) {
+  if (name == null) {
+    return name;
+  }
+  if (! name.startsWith("/")) {
+    Class c = this;
+    while (c.isArray()) {
+      c = c.getComponentType();
+    }
+    String baseName = c.getName();
+    int index = baseName.lastIndexOf('. ');
+    if (index ! = -1) {
+      name = baseName.substring(0, index). replace('. ', '/') + "/" + name;
+    }
+  } else {
+    name = name.substring(1);
+  }
+  return name;
+}
+</pre>
+
+<a name="classloader"></a> <h2>java.lang.ClassLoader 의 메소드의 사용</h2>
+
+<p><code>ClassLoader</code> 클래스에는, 2 조의 자원에 액세스 하는 메소드가 있습니다. 이 중의 한편은, 자원의 <code>InputStream</code> 를 돌려줍니다. 이제(벌써) 한편은, URL 를 돌려줍니다. InputStream</code> 를 돌려주는 각 메소드는, 사용하기 쉽게, 용도도 많이 있습니다.  이제(벌써) 한편의 URL 를 돌려주는 각 메소드를 사용하면(자), Image 객체나 AudioClip 객체 등, 한층 더 복잡한 정보에 액세스 할 수가 있습니다.
+</p>
+
+<p><code>ClassLoader</code> 는, 클래스를 관리하는 것과 같은 방법으로, 자원을 관리합니다. <code>ClassLoader</code> 는 자원명과 그 내용의 맵 방법을 제어합니다. 또 시스템 클래스의 경우와 같이,<code>ClassLoader</code> 에는, system resource에 액세스하기 위한 메소드도 제공합니다. <code>Class</code> 클래스에는, 기능을 <code>ClassLoader</code> 클래스의 각 메소드에 맡긴다고 하는 편리한 메소드가 있습니다.
+
+</p><p>많은 Java 프로그램은, 국제화 API 를 사용해 이러한 메소드에 간접적으로 액세스 합니다. <code>Class</code> 의 메소드를 개입시켜 액세스 하는 프로그램도 있습니다. <code>ClassLoader</code> 클래스의 메소드를, 직접 호출하는 것은 거의 없습니다.
+
+</p><p><code>ClassLoader</code> 의 메소드는, 받은 String 를 자원명으로서 사용합니다.  절대명과 상대명과의 변환은 실시하지 않습니다 (Class 의 메소드를 참조). 이름의 선두에는 「/」을 붙일 필요는 없습니다.
+</p>
+
+<p>
+system resource는, 호스트 구현에 의해 직접 처리되는 자원입니다. For example, they may be located in the CLASSPATH. </p>
+<p>
+자원의 이름은, 일련의 식별자를 「/」으로 단락지은 형식입니다. <code>Class</code> 클래스에서는, 자원에 액세스 하는 편리한 메소드를 제공하고 있습니다.  이러한 메소드에서는, 패키지명을 자원의 쇼트명에 접두사로서 추가하기 위한 규칙을 구현하고 있습니다. </p>
+<p>
+자원은 <code>InputStream</code> 또는 URL 로서 액세스 할 수 있습니다.
+
+<p>
+<code>getSystemResourceAsStream</code> 메소드는, 지정된 system resource에 대한 InputStream 를 돌려줍니다.  그 자원이 발견되지 않는 경우는, null 를 돌려줍니다. 자원명은, 임의의 system resource입니다.
+</p>
+
+<p>
+<code>getSystemResource</code> 메소드는, 지정된 이름을 가지는 system resource를 검색합니다. 이 메소드는, 자원에의 URL 를 돌려줍니다.  자원이 발견되지 않는 경우는 null 를 돌려줍니다. 그 URL 를 사용해 <code>java.net.URL.getContent()</code> 를 호출하면(자),<code>ImageProducer</code>,<code>AudioClip</code>,<code>InputStream</code> 등의 객체를 돌려줍니다. </p>
+<p></p>
+
+<p>
+<code>getResourceAsStream</code> 메소드는, 지정된 자원에 대한 <code>InputStream</code> 를 돌려줍니다.  그 자원이 발견되지 않는 경우는, null 를 돌려줍니다.  </p>
+
+<p>
+<code>getResource</code> 메소드는, 지정된 이름을 가지는 자원을 검색합니다. 이 메소드는, 자원에의 URL 를 돌려줍니다.  자원이 발견되지 않는 경우는 null 를 돌려줍니다. 그 URL 를 사용해 <code>java.net.URL.getContent()</code> 를 호출하면(자),<code>ImageProducer</code>,<code>AudioClip</code>,<code>InputStream</code> 등의 객체를 돌려줍니다. </p>
+
+<a name="security"></a> <h2>시큐리티</h2>
+<p>
+<code>getResource()</code> 는, 정보에의 액세스를 제공하기 위해(때문에), 시큐리티의 규칙이 적절히 정의 및 구축되고 있을 필요가 있습니다. 시큐리티상의 배려에 의해, 어느 시큐리티 문맥인 자원에의 액세스가 허가되어 있지 않은 경우는,<code>getResource()</code> 메소드는, 마치 그 자원이 존재하지 않는 것처럼 실패하는 것 (null 를 돌려주는 것) 같게 되어 있습니다.  이것은, 존재성 공격에 대한 배려입니다.
+</p>
+<!-- The semantics are described only for <code>ClassLoader.getResource</code> and <code>ClassLoader.getSystemResource()</code> and extend to the <code>AsStream</code> methods as defined in the previous section.  -->
+
+<p>
+클래스 로더는, 시큐리티 및 퍼포먼스상의 이유로부터,. class 파일의 내용에의 액세스는 제공하지 않습니다.. class 파일의 URL 를 취득할 수 있을지 어떨지는, 다음에 나타내는 상세하게 따라 다릅니다.
+</p><p>
+시스템 이외의 클래스 로더에 의해 검색되는 자원에 관한, 시큐리티의 문제 또는 제한은 지정되고 있지 않습니다. AppletClassLoader</code> 는, 어느 소스의 장소에서 로드 된 정보에의 개개의 액세스 또는 JAR 파일에 의한 그룹에서의 액세스를 제공합니다.  이 때문에,<code>AppletClassLoader</code> 는,<code>getResource()</code> 를 사용해 복수의 URL 를 취급할 때는, 같은 <code>checkConnect()</code> 를 적용할 필요가 있습니다.
+</p><p>
+시스템의 <code>ClassLoader</code> 는, CLASSPATH 의 정보에의 액세스를 제공합니다. CLASSPATH 에는, 디렉토리나 JAR 파일이 있습니다. JAR 파일은 의도적으로 작성되므로, 의도하지 않고 생성되는 디렉토리와는 중요성이 다르다고 말할 수 있습니다. 특히, 디렉토리로부터 정보를 취득하는 경우는, JAR 파일로부터 취득하는 경우보다 엄밀하게 실시합니다.
+</p><p>
+자원이 디렉토리내에 있는 경우는, 이하와 같이 됩니다.
+</p>
+
+  <ul>
+<li><code>getResource()</code> 의 호출로, 해당하는 파일을 사용자로부터 액세스 가능하게 할지 어떨지를 결정하기 위해서(때문에) <code>File.exists()</code> 를 사용합니다. <code>File.exists()</code> 에서는, 시큐리티 매니저의 <code>checkRead()</code> 가 사용됩니다.
+
+</li><li><code>getResourceAsStream()</code> 의 경우도 같습니다.
+  </li></ul>
+<p>
+자원이 JAR 파일내에 있는 경우는, 이하와 같이 됩니다.
+  </p><ul>
+<li>호출이 시스템 클래스내로부터 행해지고 있기에는  관계없이, 모든 파일에 대한 <code>getResource()</code> 의 호출이 성공합니다.
+
+</li><li>. class 이외의 자원에 대한 <code>getResourceAsStream()</code> 의 호출은 성공합니다.  대응하는 URL 에 대한 <code>java.net.URL.getContent()</code> 에 대해서도 같습니다.
+  </li></ul>
+
+<a name="examples"></a> <h2>례</h2>
+
+<p>이 섹션에서는, 클라이언트 코드의 예에 대해 설명합니다. 1 번째의 예에서는 「절대 자원」명과 종래의 기구를 사용해 <code>Class</code> 클래스의 객체를 취득하고 있습니다.
+</p>
+<pre>
+package pkg;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+class Test {
+
+  private static final String absName = "/pkg/mumble.baf";
+
+  public static void test1() {
+    Class c=null;
+    try {
+      c = Class.forName("pkg.Test");
+    } catch (Exception ex) {
+      // This should not happen.
+    }
+    InputStream s = c.getResourceAsStream(absName);
+    // do something with it.
+  }
+
+  public void test2() {
+    InputStream s = this.getClass(). getResourceAsStream(absName);
+  // do something with it.
+  }
+}
+</pre>
+
+<p>이 예에서는 「상대 자원」명과 기구를 사용해 <code>Class</code> 의 객체를 취득하고 있습니다.  이 기구는, 컴파일시에 <code>-experimental</code> 플래그를 사용하면(자) 이용할 수 있습니다.
+
+</p><pre>
+package pkg;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+class Test {
+  private static final String relName = "mumble.baf";
+  public static void test1() {
+  InputStream s = Test.class.getResourceAsStream(relName);
+  // do something with it.
+}
+
+  public void test2() {
+    InputStream s = Test.class.getResourceAsStream(relName);
+    // do something with it.
+  }
+</pre>
+
+<a name="refs"></a>  <h2>API 의 참조처</h2>
+
+<ul>
+<li><a href=../../../api/java/lang/Class.html>java.lang.Class</a> 
+<li><a href=../../../api/java/lang/ClassLoader.html>java.lang.ClassLoader </a> 
+<li><a href=../../../api/java/net/URLClassLoader.html>java.net.URLClassLoader</a> 
+<li><a href=../../../api/java/util/ResourceBundle.html>java.util.ResourceBundle</a> 
+<li><a href=../../../api/java/lang/SecurityManager.html>java.lang.SecurityManager</a> 
+<li><a href=../../../api/java/security/package-summary.html>java.security</a> 
+</ul>
+
+
+<!-- <p> <font size="-1"><b>*As used on this web site, the terms "Java Virtual Machine"  or "JVM" mean a virtual machine for the Java platform. </b></font> </p>  -->
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<p></p><hr size="3" noshade="noshade">
+<table summary="layout" border="0" width="100%">
+<tbody><tr valign="top">
+<td> <small><small><a href="../../../legal/SMICopyright.html">Copyright c</a>  1996-98 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </small> <!--     Please send comments to: --></small></td>
+<td align="right">
+<img src="../../../images/sunlogo64x30.gif" alt=" Sun Microsystems, Inc " width="64" height="30"> <br> <big><i>Java Software</i></big>
+</td>
+</tr>
+</tbody></table>
+
+
+</body></html>

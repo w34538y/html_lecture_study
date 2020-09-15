@@ -1,0 +1,405 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title>다이나믹 프록시 클래스
+ - xrath.com 에서 번역됨</title></head>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT =88>
+</TD>
+
+<TD>
+<center>
+<h1>다이나믹 프록시 클래스</h1>
+</center>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<!-- ====================== Body text begins here ====================== -->
+
+<h2>목차</h2>
+<blockquote><strong><a href=#intro>처음에</a> <br> <a href=#api>다이나믹 프록시의 API</a> <br> <a href=#serial>직렬화</a> <br> <a href=#examples> 례</a>  </strong></blockquote>
+
+<a name=intro>
+<h2>처음에</h2></a> 
+<blockquote>
+<p>다이나믹 프록시 클래스란, 실행시로 지정된 인터페이스의 리스트를 구현하는 클래스입니다.  다이나믹 프록시 클래스를 사용하면(자), 메소드가 불려 갈 때, 그 인스턴스의 몇개의 인터페이스를 개입시켜 encode 되어 통일 인터페이스를 개입시켜 다른 객체에 발송 됩니다. 이 때문에, 인터페이스의 리스트에 대해서 형태 보증된 프록시 객체를 작성할 수 있습니다.  컴파일시에 툴을 사용하는 등, 프록시 클래스를 사전에 생성할 필요가 없어집니다. 다이나믹 프록시 클래스의 인스턴스상에서 메소드를 호출하면(자), 인스턴스의 호출 핸들러내의 1 개의 메소드에 발송 되어 불려 간 메소드를 식별하는 <code>java.lang.reflect.Method</code> 객체, 및 인수를 포함한 <code>Object</code> 형의 배열을 사용해 encode 됩니다.
+
+<p>다이나믹 프록시 클래스는, 인터페이스 API 를 제공하는 객체상에서 호출을 실시할 때, 어플리케이션 또는 라이브러리로부터 형태 보증된 리플렉트발송를 실시할 필요가 있는 경우에 사용합니다. 예를 들어, 다이나믹 프록시 클래스를 어플리케이션으로 사용하면(자), 복수의 임의의 이벤트 청취자 인터페이스 (<code>java.util.EventListener</code> 를 상속하는 인터페이스)를 구현하는 객체를 작성해, 모든 이벤트 로그를 파일에 기록하는 등, 다양한 타입의 이벤트가 통일된 방식에서 처리할 수 있습니다.
+</blockquote>
+<p>
+
+<a name=api>
+<h2>다이나믹 프록시 클래스의 API
+</h2></a> 
+<blockquote>
+<p>다이나믹 프록시 클래스 (이하 「프록시 클래스」)는, 클래스를 작성할 경우에, 실행시로 지정된 인터페이스의 리스트를 구현하는 클래스입니다.
+
+<p>프록시 인터페이스는, 프록시 클래스에 의해 구현되는 인터페이스입니다.
+
+<p>프록시 인스턴스는, 프록시 클래스의 인스턴스입니다.
+
+<h3>프록시 클래스의 작성
+</h3>
+
+<p>프록시 클래스는, 프록시 인스턴스와 같게,<tt><a href=../../../api/java/lang/reflect/Proxy.html>java.lang.reflect.Proxy</a> </tt> 클래스의 static 메소드를 사용해 작성합니다.
+
+
+
+<p><code>Proxy.getProxyClass</code> 메소드는, 클래스 로더 및 인터페이스의 배열이 건네받으면(자), 프록시 클래스의 <code>java.lang.Class</code> 객체를 돌려줍니다. 프록시 클래스는, 특정의 클래스 로더내에 정의되고 있어 제공된 모든 인터페이스를 구현합니다. 같은 편성의 인터페이스를 가지는 프록시 클래스가, 클래스 로더내에 벌써 정의되고 있는 경우는, 기존의 프록시 클래스를 돌려줍니다.  기존의 프록시 클래스가 존재하지 않는 경우는, 클래스 로더내에 프록시 클래스를 동적으로 생성해, 정의합니다.
+
+<p><code>Proxy.getProxyClass</code> 에 건네줄 수 있는 파라미터에는, 몇개의 제약이 있습니다.
+
+<ul>
+
+<li><code>interfaces</code> 배열의 모든 <code>Class</code> 객체는, 클래스 또는 원시형은 아니고 인터페이스를 나타내지 않으면 안 된다
+
+<li><code>interfaces</code> 배열의 복수의 요소가, 같은 <code>Class</code> 객체를 참조해서는 안 된다
+
+<li>모든 형태의 인터페이스는, 대응하는 클래스 로더로부터 이름으로 참조할 수 없으면 안 된다. 즉, 클래스 로더가 <code>cl</code>, 각 인터페이스가 <code>i</code> 의 경우는, 다음의 식이 true 가 아니면 안된다
+
+<pre>
+	Class.forName(i.getName(), false, cl) == i
+</pre>
+
+<li>public 이외의 인터페이스는, 모두 같은 패키지내에 없으면 안 된다.  같은 패키지내에 없는 경우는, 인터페이스가 정의되고 있는 패키지 에 관계없이, 프록시 클래스는 모든 인터페이스를 구현할 수 없다
+
+<li>지정된 인스턴스가 같은 서명을 가지는 경우, 그러한 메소드의 임의의 조에 대해서
+<ul>
+<li>임의의 메소드의 반환값의 형태가 원시형 또는 void 의 경우, 그러한 메소드는 모두 반환값의 형태가 같지 않으면 안 된다
+<li>그렇지 않은 경우, 몇개의 메소드에 의한 반환값의 형태는, 나머지의 메소드에 의한 반환값의 형태 모두에 대해서 할당하고 가능하지 않으면 안 된다
+</ul>
+
+<li>프록시 클래스를 작성할 때는, Virtual Machine 에 정의되고 있는 클래스의 제한을 넘어서는 안 된다. 예를 들어, VM 가, 클래스를 구현할 수 있는 인터페이스수를 65535 에 제한하고 있는 경우는,<code>interfaces</code> 배열의 사이즈는 65535 를 넘어서는 안 된다
+
+</ul>
+
+<p>이러한 제약에 대해서 위반이 발생했을 경우는,<code>Proxy.getProxyClass</code> 에 의해 <code>IllegalArgumentException</code> 가 throw 됩니다. <code>interfaces</code> 배열의 인수 또는 요소가 <code>null</code> 의 경우는,<code>NullPointerException</code> 가 throw 됩니다.
+
+<p>프록시 인터페이스는, 차례가 구별됩니다. 프록시 클래스를 2 회 요구했을 때에, 인터페이스의 편성이 같아 차례가 다른 경우는, 2 개(살)이 다른 프록시 클래스가 작성됩니다. 프록시 클래스는, 프록시 인터페이스의 차례가 구별됩니다.  이것은, 복수의 프록시 인터페이스로, 이름 및 파라메이타시그니챠를 공유하는 메소드가 사용되고 있는 경우에, 메소드 호출의 인코딩이 올바르게 행해지도록(듯이) 하기 (위해)때문에입니다.  자세한 것은,<a href=#methods><b>「복수의 프록시 인터페이스로 중복 하는 메소드」</b></a> 를 참조해 주세요.
+
+<p>동일한 클래스 로더와 인터페이스의 리스트를 사용해 <code>Proxy.getProxyClass</code> 를 호출했을 때에, 새로운 프록시 클래스가 재생성되지 않게 하려면 , 다이나믹 프록시 클래스 API 를 구현했을 때에, 대응하는 로더 및 인터페이스의 리스트를 키로 해, 생성된 프록시 클래스를 캐쉬에 포함할 필요가 있습니다. 그 구현에 대해서는, 클래스 로더 및 그 클래스가 적시 가베지 컬렉트되는 것을 방해하는 것 같은 방법으로, 클래스 로더, 인터페이스, 및 프록시 클래스를 참조하지 않게 주의할 필요가 있습니다.
+
+<h3>프록시 클래스의 특성
+</h3>
+
+<p>프록시 클래스에는, 다음의 특성이 있습니다.
+
+<ul>
+
+<li>프록시 클래스는 public 또는 final 로, abstract 가 아닙니다.
+
+<li>프록시 클래스의 수식되어 있지 않은 이름은 지정되지 않습니다. 다만, 캐릭터 라인<code>「$Proxy」</code>로 시작되는 클래스명의 빈 곳은, 프록시 클래스용으로 예약되고 있습니다.
+
+<li>프록시 클래스는,<code><a href=../../../api/java/lang/reflect/Proxy.html>java.lang.reflect.Proxy</a> </code> 를 상속합니다.
+
+<li>프록시 클래스는, 작성시로 지정된 차례로 인터페이스를 구현합니다.
+
+<li>public 이외의 인터페이스를 구현하는 경우는, 그 인터페이스와 같은 패키지에 정의됩니다. public 인터페이스를 구현하는 경우는, 프록시 클래스의 패키지는 지정되지 않습니다. 패키지의 실링을 행했을 경우에서도, 프록시 클래스는 실행시에 특정의 패키지에 적절히 정의됩니다.  클래스 및 특정의 서명자가, 동일한 클래스 로더 및 패키지에 벌써 정의되고 있는 경우도, 같습니다.
+
+<li>프록시 클래스는, 작성시로 지정된 모든 인터페이스를 구현합니다.  이 때문에,<code>Class</code> 객체상에서 <code>getInterfaces</code> 를 호출했을 경우는, 같은 인터페이스의 리스트를 포함한 배열이, 작성시로 지정된 차례로 돌려주어집니다. <code> Class</code> 객체상에서 <code>getMethods</code> 를 호출했을 경우는, 그러한 인터페이스내의 모든 메소드를 포함한 <code>Method</code> 객체의 배열이 돌려주어집니다. <code> getMethod</code> 를 호출했을 경우는, 프록시 인터페이스내에서 목적의 메소드가 검색됩니다.
+
+<li><code>Proxy.isProxyClass</code> 메소드는, 프록시 클래스 (<code>Proxy.getProxyClass</code> 에 의해 반환되는 클래스, 또는 <code>Proxy.newProxyInstance</code> 에 의해 반환되는 객체의 클래스)가 건네받았을 경우는 true, 그 이외의 경우는 false 를 돌려줍니다. 시큐리티를 판정할 경우에 이 메소드를 사용하는 경우는, 신뢰성이 중요하게 됩니다.  이 때문에, 건네받은 클래스가 <code>java.lang.reflect.Proxy</code> 를 상속하고 있을지 어떨지를 검사하고 나서, 추가의 검사를 실시할 필요가 있습니다.
+
+<li>프록시 클래스의 <code>java.security.ProtectionDomain</code> 는,<code>java.lang.Object</code> 등의, bootstrap 클래스 로더에 의해 로드 되는 시스템 클래스의 <code>java.security.ProtectionDomain</code> 와 같습니다.  프록시 클래스의 코드는, 신뢰된 시스템 코드에 의해 생성되기 (위해)때문에입니다. 표준에서는, 이 보호 도메인에 대해서 <code>java.security.AllPermission</code> 가 주어집니다.
+
+</ul>
+
+<h3> 프록시 인스턴스의 작성
+</h3>
+
+<p>각 프록시 클래스에는, public 생성자 이 1 개 짜넣어지고 있습니다.  인수에는,<code><a href="../../../api/java/lang/reflect/InvocationHandler.html">InvocationHandler</a> </code> 인터페이스의 구현을 지정합니다.
+
+<p>각 프록시 인스턴스에는, 생성자 에게 건네진 호출 핸들러 객체를 관련지을 수 있습니다. 프록시 인스턴스는, 리플렉션 API 를 개입시켜 public 생성자 에 액세스 하지 않아도,<code>Proxy.newProxyInstance</code> 메소드를 호출하는 것에 의해도 작성할 수 있습니다. <code>Proxy.newProxyInstance</code> 메소드에서는,<code>Proxy.getProxyClass</code> 를 호출하는 액션이라고 호출해 핸들러를 사용해 생성자 을 호출하는 액션을 합니다. <code>Proxy.newProxyInstance</code> 는,<code>Proxy.getProxyClass</code> 의 경우와 같은 이유로써,<code>IllegalArgumentException</code> 를 throw 합니다.
+
+<h3> 프록시 인스턴스의 특성
+</h3>
+
+<p>프록시 인스턴스에는, 다음의 특성이 있습니다.
+
+<ul>
+
+<li><code>proxy</code> 프록시 인스턴스, 및 그 <code>Foo</code> 프록시 클래스에 의해 구현된 인터페이스에 대해서 다음의 식을 실행하면(자), true 가 돌려주어집니다.
+
+<pre>
+	<code>proxy instanceof Foo</code>
+</pre>
+
+다음의 캐스트 조작은, 정상 종료해,<code>ClassCastException</code> 는 throw 되지 않습니다.
+
+<pre>
+	<code>(Foo) proxy</code>
+</pre>
+
+<p><li>static <code>Proxy.getInvocationHandler</code> 메소드는, 인수로서 건네받은 프록시 인스턴스에 관련지을 수 있었던 호출 핸들러를 돌려줍니다. <code>Proxy.getInvocationHandler</code> 에게 건네지는 객체가 프록시 인스턴스가 아닌 경우는,<code>IllegalArgumentException</code> 가 throw 됩니다.
+
+<p><li>프록시 인스턴스상에서 인터페이스 메소드를 호출하면(자), encode 되어 전술한 것처럼 호출 핸들러의 <code>invoke</code> 메소드에 발송 됩니다.
+
+<p>프록시 인스턴스 자체는,<code>invoke</code> 의 제 1 인수로서<code>Object</code> 형으로 건네받습니다.
+
+<p><code>invoke</code> 에게 건네지는 제 2 인수는, 프록시 인스턴스상에서 호출한 인터페이스 메소드에 대응하는 <code>java.lang.reflect.Method</code> 인스턴스입니다. <code>Method</code> 객체의 선언 클래스는, 이 메소드가 선언된 인터페이스입니다.  프록시 클래스가 메소드를 상속하는 프록시 인터페이스의 슈퍼 인터페이스도 있습니다.
+
+<p><code>invoke</code> 에게 건네지는 제 3 인수는, 프록시 인스턴스상의 메소드 호출로 건네받은 인수의 값이 포함되는 객체의 배열입니다. 원시형의 인수는,<code>java.lang.Integer</code>,<code>java.lang.Boolean</code> 등, 적절한 프리미티브(primitive) 래퍼 클래스의 인스턴스내에 랩 됩니다. <code>invoke</code> 메소드의 구현을 사용해, 이 배열의 내용을 임의로 변경할 수가 있습니다.
+
+<p><code>invoke</code> 메소드로부터 반환된 값은, 프록시 인스턴스상의 메소드 호출의 반환값이 됩니다. 인터페이스 메소드의 선언 끝난 반환값이 원시형의 경우는,<code>invoke</code> 로부터 반환된 값은, 대응하는 프리미티브(primitive) 래퍼 클래스의 인스턴스가 아니면 안됩니다.  원시형 이외의 경우는, 선언 끝난 반환값의 형태에 할당할 수가 있는 형태가 아니면 안됩니다. <code>invoke</code> 로부터 반환된 값이 <code>null</code> 로, 인터페이스 메소드의 반환값의 형태가 프리미티브(primitive)의 경우는, 프록시 인스턴스상의 메소드 호출로부터 <code>NullPointerException</code> 가 throw 됩니다. <code>invoke</code> 에 의해 반환된 값이, 전술과 같이 메소드의 선언 끝난 반환값의 형태와 호환성이 없는 경우는, 프록시 인스턴스로부터 <code>ClassCastException</code> 가 throw 됩니다.
+
+<p><code>invoke</code> 메소드로부터 예외가 throw 되었을 경우는, 그 예외는 프록시 인스턴스상의 메소드 호출로부터도 throw 됩니다. 예외의 형태는, 인터페이스 메소드의 시그니챠내에 선언되고 있는 예외의 형태인가, 체크되지 않는 <code>java.lang.RuntimeException</code> 또는 <code>java.lang.Error</code> 예외형에 할당할 수가 없으면 안됩니다. 체크되는 예외가 <code>invoke</code> 로부터 throw 되었을 때에, 그 예외가 인터페이스 메소드의 <code>throws</code> 구로 선언되고 있는 예외의 형태의 어느 것에도 할당할 수가 없는 경우는, 프록시 인스턴스상의 메소드 호출로부터 <code><a href="../../../api/java/lang/reflect/UndeclaredThrowableException.html">UndeclaredThrowableException</a> </code> 가 throw 됩니다. <code>UndeclaredThrowableException</code> 는,<code>invoke</code> 메소드로부터 throw 된 예외를 사용해 구축됩니다.
+
+<p><li>프록시 인스턴스상의 <code>java.lang.Object</code> 에 선언되고 있는 <code>hashCode</code>,<code>equals</code> 또는 <code>toString</code> 호출은, 전술한 것처럼 인터페이스 메소드 호출과 같은 방법으로, encode 되어 호출 핸들러의 <code>invoke</code> 메소드에 발송 됩니다. <code>invoke</code> 에게 건네지는 <code>Method</code> 객체의 선언 클래스는,<code>java.lang.Object</code> 입니다. <code>java.lang.Object</code> 로부터 상속되는 프록시 인스턴스의 그 외의 public 메소드는, 프록시 클래스에 의해 오버라이드(override) 되지 않습니다.  이 때문에, 이러한 메소드의 호출은,<code>java.lang.Object</code> 의 인스턴스에 대한 호출과 같게 행해집니다.
+
+</ul>
+<a name=methods>
+<h3>복수의 프록시 인터페이스로 중복 하는 메소드
+</h3></a> 
+
+<p>복수의 인터페이스에, 같은 이름과 파라메이타시그니챠를 가지는 메소드가 포함되는 경우는, 프록시 클래스의 인터페이스의 차례가 구별됩니다. 프록시 인스턴스상에서 「중복 하는 메소드」가 불려 갔을 경우, 호출 핸들러에게 건네지는 <code>Method</code> 객체로, 프록시 메소드의 호출에 사용된 인터페이스의 참조형으로부터 선언 클래스를 할당하지 못하는 것이 있습니다. 이러한 제약이 존재하는 것은, 생성된 프록시 클래스내의 대응하는 메소드의 구현으로부터, 그 구현이 불려 갔을 때에 사용된 인터페이스를 특정할 수 없기 때문입니다. 이 때문에, 프록시 인스턴스상에서 중복 하는 메소드가 불려 갔을 경우는, 메소드 호출에 사용된 참조형 에 관계없이, 프록시 클래스의 인터페이스 리스트로 그 메소드 (직접 또는 슈퍼 인터페이스로부터 상속)를 포함한 인터페이스 가운데, 최초의 인터페이스의 메소드의 <code>Method</code> 객체가 호출해 핸들러의 <code>invoke</code> 메소드에게 건네집니다.
+
+<p>프록시 인터페이스에,<code>java.lang.Object</code> 의 <code>hashCode</code>,<code>equals</code>, 또는 <code>toString</code> 메소드와 같은 이름 및 파라메이타시그니챠를 가지는 메소드가 포함되는 경우는, 프록시 인스턴스상에서 그 메소드가 불려 가면(자), 호출 핸들러에게 건네지는 <code>Method</code> 객체의 선언 클래스는 <code>java.lang.Object</code> 가 됩니다. 즉, public 로 비 final 인 <code>java.lang.Object</code> 의 메소드는, 호출 핸들러에 건네주는 <code>Method</code> 객체를 결정할 때, 논리적으로 다른 프록시 인터페이스보다 우선됩니다.
+
+<p>중복 하는 메소드가 호출해 핸들러에 발송 되었을 경우는,<code>invoke</code> 메소드로부터 throw 할 수 있는 예외의 형태는, 체크되는 형태 가운데, 불려 가는 모든 프록시 인터페이스의 메소드로 지정되고 있는,<code>throws</code> 구의 예외의 형태에 할당할 수가 있는 것으로 한정됩니다. <code>invoke</code> 메소드가, 체크되는 예외 가운데, 불려 가는 프록시 인터페이스의 메소드로 선언되고 있는 예외의 형태에 할당할 수가 없는 것을 throw 했을 경우는, 프록시 인스턴스상의 호출에 의해, 체크되지 않는 <code>UndeclaredThrowableException</code> 가 throw 됩니다. 즉,<code>invoke</code> 메소드에게 건네진 <code>Method</code> 객체상에서,<code>getExceptionTypes</code> 를 호출해 예외의 형태를 취득해도,<code>invoke</code> 메소드로부터 정상적으로 throw 되지 않는 것이 있습니다.
+</blockquote>
+
+<a name=serial>
+<h2>직렬화
+</h2></a> 
+<blockquote>
+<p><code>java.lang.reflect.Proxy</code> 는,<code>java.io.Serializable</code> 를 구현하기 위해(때문에), 이 마디로 설명하도록(듯이), 프록시 인스턴스를 직렬화할 수가 있습니다. 다만, 프록시 인스턴스에 <code>java.io.Serializable</code> 에 할당할 수가 없는 호출 핸들러가 포함되어 있는 경우는, 인스턴스가 <code>java.io.ObjectOutputStream</code> 에 기입해지면(자) <code>java.io.NotSerializableException</code> 가 throw 됩니다. 프록시 클래스의 경우,<code>java.io.Externalizable</code> 를 구현하는 것은, 직렬화라고 하는 점에서는,<code>java.io.Serializable</code> 를 구현하는 것으로 같은 효과가 있습니다. 즉, 직렬화의 과정에서,<code>Externalizable</code> 인터페이스의 <code>writeExternal</code> 및 <code>readExternal</code> 메소드가, 프록시 인스턴스 (또는 호출해 핸들러) 상에 불려 갈 것은 없습니다. 프록시 클래스의 <code>Class</code> 객체는, 모든 <code>Class</code> 객체와 같게 항상 직렬화할 수가 있습니다.
+
+
+<p>프록시 클래스에는, 직렬화 가능한 필드 및 <code>0L</code> 의 <code>serialVersionUID</code> 가 없습니다. 즉, 프록시 클래스의 <code>Class</code> 객체가 <code>java.io.ObjectStreamClass</code> 의 static <code>lookup</code> 메소드에게 건네졌을 때에, 반환되는 <code>ObjectStreamClass</code> 인스턴스에는 다음의 특성이 있습니다.
+
+<ul>
+
+<li><code>getSerialVersionUID</code> 메소드를 호출하면(자),<code>0L</code> 가 반환된다
+
+<li><code>getFields</code> 메소드를 호출하면(자), 길이 제로의 배열이 반환된다
+
+<li>임의의 <code>String</code> 인수를 사용해 <code>getField</code> 메소드를 호출하면(자),<code>null</code> 가 반환된다
+
+</ul>
+
+<p>객체의 직렬화에 사용되는 스트림 프로토콜에서는,<code>TC_PROXYCLASSDESC</code> 라는 이름의 형태 코드가 지원되고 있습니다. <code> TC_PROXYCLASSDESC</code> 는, 스트림 형식의 구문으로 사용하는 끝 기호입니다.  이 형태와 값은,<code>java.io.ObjectStreamConstants</code> 인터페이스의 다음의 정수 필드에 정의되고 있습니다.
+
+<pre>
+    final static byte TC_PROXYCLASSDESC = (byte) 0x7D;
+</pre>
+
+<p>이 구문에는, 다음의 2 개의 규칙도 적용됩니다.  최초의 규칙은, 원의 <i>newClassDesc</i> 규칙의 확장으로서 대신에 적용됩니다.
+
+<p><i>newClassDesc</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>TC_PROXYCLASSDESC</code> <i>newHandle</i> <i>proxyClassDescInfo</i>
+<p><i>proxyClassDescInfo</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>(int) &lt;count&gt;</code> <i>proxyInterfaceName[count]</i> <i>classAnnotation</i> <i>superClassDesc</i>
+<p><i>proxyInterfaceName</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>(utf)</code>
+
+<p><code>ObjectOutputStream</code> 를 사용해 프록시 클래스의 클래스 기술자를 직렬화하는 경우는,<code>Class</code> 객체가 <code>Proxy.isProxyClass</code> 메소드에게 건네지기 (위해)때문에, 상기의 규칙에 따라 형태 코드 <code>TC_CLASSDESC</code> 대신에 <code>TC_PROXYCLASSDESC</code> 가 사용됩니다. <i>proxyClassDescInfo</i> 이 전개되었을 때에,<i>proxyInterfaceName</i> 항목의 순서는, 프록시 클래스에 의해 구현된 모든 인터페이스의 이름으로 구성되어 있어<code>Class</code> 객체상에서 <code>getInterfaces</code> 메소드의 호출로부터 반환된 차례로 줄지어 있습니다. <i>classAnnotation</i> 와 <i>superClassDesc</i> 는,<i>classDescInfo</i> 규칙의 대응하는 항목과 같은 의미를 가집니다. 프록시 클래스의 경우는,<i>superClassDesc</i> 는 <code>java.lang.reflect.Proxy</code> 슈퍼 클래스의 클래스 기술자입니다.  이 기술자를 지정하면(자), 프록시 인스턴스에 대해서 직렬화 된 <code>Proxy</code> 클래스를 전개할 수가 있습니다.
+
+<p>프록시 클래스 이외의 경우는,<code>ObjectOutputStream</code> 로부터 protected <code>annotateClass</code> 메소드가 불려 가 서브 클래스로부터 특정의 클래스의 스트림에 커스텀 데이터를 기입할 수가 있습니다. 프록시 클래스의 경우는,<code>annotateClass</code> 는 아니고, 그 프록시 클래스의 <code>Class</code> 객체에 의해 <code>java.io.ObjectOutputStream</code> 내의 다음의 메소드가 불려 갑니다.
+
+<pre>
+    protected void annotateProxyClass(Class cl) throws IOException;
+</pre>
+
+<p><code>ObjectOutputStream</code> 내의 <code>annotateProxyClass</code> 의 디폴트의 구현은, 처리를 실시하지 않습니다.
+
+<p><code>ObjectInputStream</code> 는, 형태 코드 <code>TC_PROXYCLASSDESC</code> 를 검출하면(자), 프록시 클래스의 클래스 기술자를 스트림로부터 상기의 형식에서 직렬화 복원합니다. 클래스 기술자의 <code>Class</code> 객체를 해결하기 위해서,<code>resolveClass</code> 메소드가 불려 가는 대신에, 다음의 <code>java.io.ObjectInputStream</code> 의 메소드가 불려 갑니다.
+
+<pre>
+    protected Class resolveProxyClass(String[] interfaces)
+	throws IOException, ClassNotFoundException;
+</pre>
+
+<p>프록시 클래스 기술자에게 직렬화 복원된 인터페이스명의 리스트는,<code>interfaces</code> 인수로서 <code>resolveProxyClass</code> 에게 건네집니다.
+
+<p><code>ObjectInputStream</code> 내의 <code>resolveProxyClass</code> 의 디폴트의 구현은,<code>interfaces</code> 파라미터로 지정된 인터페이스의 <code>Class</code> 객체의 리스트를 사용해,<code>Proxy.getProxyClass</code> 를 호출한 결과를 돌려줍니다. 각 인터페이스명 <code>i</code> 에 대해서 사용되는 <code>Class</code> 객체는, 다음의 호출에 의해 반환된 값입니다.
+
+<pre>
+	Class.forName(i, false, loader)
+</pre>
+
+<code>loader</code> 는, 실행 스택에 포함되는 <code>null</code> 가 아닌 최초의 클래스 로더입니다.  다만,<code>null</code> 가 아닌 클래스 로더가 스택상에 없는 경우는,<code>null</code> 입니다. 이 클래스 로더는,<code>resolveClass</code> 메소드에 의해 디폴트로 선택되는 클래스 로더와 같습니다. 이 <code>loader</code> 의 값은,<code>Proxy.getProxyClass</code> 에게 건네지는 클래스 로더가 됩니다. <code>Proxy.getProxyClass</code> 로부터 <code>IllegalArgumentException</code> 가 throw 되었을 경우는,<code>resolveClass</code> 로부터,<code>IllegalArgumentException</code> 가 포함되는 <code>ClassNotFoundException</code> 가 throw 됩니다.
+
+<p>프록시 클래스에는 독자적인 직렬화 필드가 존재하지 않기 때문에, 프록시 인스턴스의 스트림 표현내의 <i>classdata[]</i> 는, 모두 <code>java.lang.reflect.Proxy</code> 슈퍼 클래스의 인스턴스 데이터로 구성됩니다. <code>Proxy</code> 에는,<code>h</code> 라고 하는 직렬화 필드가 1 개 있습니다.  이 필드에는, 프록시 인스턴스의 호출 핸들러가 포함되어 있습니다.
+</blockquote>
+
+<a name=examples>
+<h2>례
+</h2></a> 
+<blockquote>
+<p>임의의 인터페이스의 리스트를 구현하는 객체상에서, 메소드를 호출하는 전후에 메세지를 출력하는 간단한 예를 나타냅니다.
+
+<pre>
+public interface Foo {
+    Object bar(Object obj) throws BazException;
+}
+
+public class FooImpl implements Foo {
+    Object bar(Object obj) throws BazException {
+        // ...
+    }
+}
+
+public class DebugProxy implements java.lang.reflect.InvocationHandler {
+
+    private Object obj;
+
+    public static Object newInstance(Object obj) {
+	return java.lang.reflect.Proxy.newProxyInstance(
+	    obj.getClass(). getClassLoader(),
+	    obj.getClass(). getInterfaces(),
+	    new DebugProxy(obj));
+    }
+
+    private DebugProxy(Object obj) {
+	this.obj = obj;
+    }
+
+    public Object invoke(Object proxy, Method m, Object[] args)
+	throws Throwable
+    {
+        Object result;
+	try {
+	    System.out.println("before method " + m.getName());
+	    result = m.invoke(obj, args);
+        } catch (InvocationTargetException e) {
+	    throw e.getTargetException();
+        } catch (Exception e) {
+	    throw new RuntimeException("unexpected invocation exception: " +
+				       e.getMessage());
+	} finally {
+	    System.out.println("after method " + m.getName());
+	}
+	return result;
+    }
+}
+</pre>
+
+<p><code>Foo</code> 인터페이스의 구현에 대해서 <code>DebugProxy</code> 를 구축해, 특정의 메소드를 호출합니다.
+
+<pre>
+    Foo foo = (Foo) DebugProxy.newInstance(new FooImpl());
+    foo.bar(null);
+</pre>
+
+<p>유틸리티 호출 핸들러 클래스의 예를 나타냅니다. <code> java.lang.Object</code> 로부터 상속되는 메소드의 디폴트의 프록시 동작을 제공해, 불려 간 메소드의 인터페이스에 응해, 특정의 프록시 메소드 호출을 각 객체에 위양 합니다.
+
+<pre>
+import java.lang.reflect. *;
+
+public class Delegator implements InvocationHandler {
+
+    // preloaded Method objects for the methods in java.lang.Object
+    private static Method hashCodeMethod;
+    private static Method equalsMethod;
+    private static Method toStringMethod;
+    static {
+	try {
+	    hashCodeMethod = Object.class.getMethod("hashCode", null);
+	    equalsMethod =
+		Object.class.getMethod("equals", new Class[] { Object.class });
+	    toStringMethod = Object.class.getMethod("toString", null);
+        } catch (NoSuchMethodException e) {
+	    throw new NoSuchMethodError(e.getMessage());
+	}
+    }
+
+    private Class[] interfaces;
+    private Object[] delegates;
+
+    public Delegator(Class[] interfaces, Object[] delegates) {
+	this.interfaces = (Class[]) interfaces.clone();
+	this.delegates = (Object[]) delegates.clone();
+    }
+
+    public Object invoke(Object proxy, Method m, Object[] args)
+	throws Throwable
+    {
+	Class declaringClass = m.getDeclaringClass();
+
+	if (declaringClass == Object.class) {
+	    if (m.equals(hashCodeMethod)) {
+		return proxyHashCode(proxy);
+	    } else if (m.equals(equalsMethod)) {
+		return proxyEquals(proxy, args[0]);
+	    } else if (m.equals(toStringMethod)) {
+		return proxyToString(proxy);
+	    } else {
+		throw new InternalError(
+		    "unexpected Object method dispatched: " + m);
+	    }
+	} else {
+	    for (int i = 0; i < interfaces.length; i++) {
+		if (declaringClass.isAssignableFrom(interfaces[i])) {
+		    try {
+			return m.invoke(delegates[i], args);
+		    } catch (InvocationTargetException e) {
+			throw e.getTargetException();
+		    }
+		}
+	    }
+
+	    return invokeNotDelegated(proxy, m, args);
+	}
+    }
+
+    protected Object invokeNotDelegated(Object proxy, Method m,
+				        Object[] args)
+	throws Throwable
+    {
+	throw new InternalError("unexpected method dispatched: " + m);
+    }
+
+    protected Integer proxyHashCode(Object proxy) {
+	return new Integer(System.identityHashCode(proxy));
+    }
+
+    protected Boolean proxyEquals(Object proxy, Object other) {
+	return (proxy == other ?  Boolean.TRUE : Boolean.FALSE);
+    }
+
+    protected String proxyToString(Object proxy) {
+	return proxy.getClass(). getName() + '@' +
+	    Integer.toHexString(proxy.hashCode());
+    }
+}
+</pre>
+
+<p><code>Delegator</code> 의 서브 클래스는,<code>invokeNotDelegated</code> 를 오버라이드(override) 합니다.  이 결과, 프록시 메소드 호출의 동작이 구현되어 다른 객체에 직접 위양 되는 것이 없어집니다.  또,<code>proxyHashCode</code>,<code>proxyEquals</code>, 및 <code>proxyToString</code> 를 오버라이드(override) 합니다.  이 결과,<code>java.lang.Object</code> 로부터 프록시가 상속하는 메소드의 디폴트의 동작이 오버라이드(override) 됩니다.
+
+<p><code>Foo</code> 인터페이스의 구현에 대해서,<code>Delegator</code> 를 구축합니다.
+
+<pre>
+    Class[] proxyInterfaces = new Class[] { Foo.class };
+    Foo foo = (Foo) Proxy.newProxyInstance(Foo.class.getClassLoader(),
+	proxyInterfaces,
+	new Delegator(proxyInterfaces, new Object[] { new FooImpl() }));
+</pre>
+
+<p>상기의 <code>Delegator</code> 클래스의 구현은, 알기 쉽게 하기 위해서, 최적화되고 있지 않습니다.  예를 들어,<code>hashCode</code>,<code>equals</code>, 및 <code>toString</code> 메소드의 <code>Method</code> 객체를 캐쉬해 비교하는 대신에, 캐릭터 라인명으로 조합할 수도 있습니다.  이러한 메소드명은,<code>java.lang.Object</code> 내에서 overload 되지 않기 때문입니다.
+
+</blockquote>
+<br><HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1999-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+</body>
+</html>

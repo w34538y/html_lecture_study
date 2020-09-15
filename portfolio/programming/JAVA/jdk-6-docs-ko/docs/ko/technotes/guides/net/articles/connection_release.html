@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Java 에 있어서의 정상형 ( 및 방폐형)의 접속 해제 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<hr>
+<h1>Java 에 있어서의 정상형과 방폐형의 접속 해제</h1>
+<hr>
+<br>
+<p>이 문서에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#overview">개요</a> </li>
+<li><a href="#description">문제의 설명</a> </li>
+<li><a href="#how_to_avoid">문제의 회피 방법</a> </li>
+</ul>
+<h2><a name="overview"></a> 개요 </h2>
+<p> TCP 접속을 정상적으로 해제하는 것을 보증하는 것은, TCP 네트워크 어플리케이션의 과제입니다. 특별한 주위를 기울이지 않으면 방폐형의 해제이 됩니다. Java 에서는, 예기치 않은 방폐형 해제은, 소켓에 대해서 읽고 쓰기했을 때에 <code>java.net.SocketException</code> 를 어플리케이션을 받는 것으로 압니다.  일반적으로,<code>read()</code> 및 <code>write()</code> 는 각각 수신 또는 송신한 바이트수를 나타내는 수치를 돌려줍니다. 그러나 그 대신에 예외를 받았을 경우는, 접속이 중단되어 데이터가 없어졌는지 파기된 가능성이 있다고 하는 것입니다. 이 문서에서는, 소켓 접속이 중단되는 원인과 그러한 상황을 회피하기 위한 힌트를 설명합니다.  다만, 어플리케이션이 접속을 중단하려고 하는 경우에 대해서는 취급하지 않습니다. </p>
+<p>&nbsp;</p>
+<h2><a name="description"></a> 문제의 설명</h2>
+<p>우선, 방폐형과 정상형의 접속 해제에 대해, 그 차이를 인식할 필요가 있습니다. 이 차이를 이해하기 위해서, TCP 프로토콜 레벨로 행해지는 것을 설명합니다. 반독립 관계에 있다, 실제로는 다른 2 개의 데이터 스트림으로서 확립된 TCP 접속을 생각해 보겠습니다. 2 개의 피어를 A 와 B 로 했을 때, 한편의 스트림에서는 데이터를 A 로부터 B 에 전달해, 이제(벌써) 한편의 스트림에서는 B 로부터 A 에 전달한다고 합니다.  정상형 해제은, 2 개의 국면에서 행해집니다. 우선 한편 (A)이 데이터 송신의 정지를 결정해 B 에 대해서 <code>FIN</code> 메세지를 송신합니다.  B 측의 TCP 스택이 <code>FIN</code> 를 수신하면(자), B 에서는 A 로부터는 더 이상 데이터가 오지 않는다고 판단합니다.  B 에서는 지금까지의 데이터를 소켓으로부터 모두 읽어내면(자), 그것 이후의 읽기에서는 end-of-file 를 나타내는 값 <code>-1</code> 을 돌려줍니다. 이 순서는, 접속의 다른 한쪽만이 닫기 (위해)때문에, TCP 반폐쇄 (half-close)로 불립니다. 이제(벌써) 한편측의 순서도, 완전히 같습니다. B 는 <code>FIN</code> 메세지를 A 에 송신합니다.  B 는 A 가 송신한 지금까지의 데이터를 소켓으로부터 모두 읽어내면(자), 마지막에 <code>-1</code> 를 수신합니다. </p>
+<p>이것과 대조적으로, 방폐형 폐쇄에서는, RST (Reset) 메세지를 사용합니다. 어느 쪽인지가 RST 를 발행하면(자), 접속 전체가 중단되어 쌍방의 어플리케이션이 송신 또는 수신하지 않고 큐에 남아 있는 데이터는 TCP 스택에 의해 파기됩니다. </p>
+<p>그러면, Java 어플리케이션에서는 어떻게 해 정상형과 방폐형의 해제을 실행하는 것일까요. 우선, 방폐형 해제으로부터 생각합니다.  A convention that has existed since the days of the original BSD sockets is that the &quot;linger&quot; socket option can be used to force an abortive connection release. 어느 쪽의 어플리케이션에서도 <code>Socket.setLinger</code> (true, 0)를 호출해, 이 소켓이 닫으면(자) 방폐형 (RST)의 순서가 사용되는 것을 TCP 스택에 통지할 수 있습니다. linger 옵션을 설정해도, 곧바로 영향은 없습니다.  다만, 설정 후에 <code>Socket.close()</code> 가 불려 가면(자), 접속은 중단해 RST 메세지가 발행됩니다. 후술 하는 대로, 접속을 중단하는 방법은 그 밖에도 있습니다만, 이 방법이 제일 간단합니다. </p>
+<p><code>close()</code> 메소드는, 방폐형 뿐만이 아니라, 정상형 해제의 실행에도 사용됩니다. 즉 제일 간단한 방법에서는, 정상형 해제과 방폐형 해제의 차이는,<code>Socket.close()</code> 를 호출하기 전에, 전술과 같이 linger(0) 옵션을 설정하지 않는 것 뿐입니다. 접속된 2 개의 피어 A 와 B 의 예로 생각해 보겠습니다. A 가 <code>Socket.close()</code> 를 호출하면(자), A 로부터 B 에 <code>FIN</code> 메세지가 송신됩니다.  B 가 <code>Socket.close()</code> 를 호출했을 경우는, B 로부터 A 에 <code>FIN</code> 가 송신됩니다.  실제는 linger 옵션의 디폴트의 설정에서는, 방폐형 폐쇄를 사용하지 않게 되어 있습니다.  그 때문에 <code>Socket.close()</code> 를 사용해 양쪽 모두의 어플리케이션으로 접속을 종료했을 경우는, 정상형 해제이 될 것입니다. 그럼, 무엇이 문제일까요. </p>
+<p>문제는,<code>Socket.close()</code> 의 시멘틱스와 TCP <code>FIN</code> 메세지의 사이에 있어요 두일까 불일치입니다.  Sending a TCP <code>FIN</code> message means &quot;I am finished sending&quot;, whereas <code>Socket.close()</code> means &quot;I am finished sending and receiving. &quot;Socket.close()</code> 를 호출했을 때는, 데이터를 송신할 수 없게 될 뿐만 아니라, 데이터의 수신도 할 수 없게 됩니다. 그럼, 예를 들어 A 가 소켓을 닫아 정상형 해제을 시도했는데, B 가 데이터를 계속 송신하면(자) 무엇이 일어날까요. 이것은, TCP 스펙에 의해 문제 없게 허가됩니다.  TCP 에서는 접속의 한편이 닫은 것만이 고려되기 (위해)때문에입니다. 그러나, A 의 소켓이 닫고 있기 (위해)때문에, B 가 송신해 계속해도 데이터를 읽어내는 상대가 없습니다. 이 때 A 의 TCP 스택은, 강제적으로 접속을 종료하기 위해서 RST 를 송신하지 않으면 안됩니다. </p>
+<p>자주 있는 다른 시나리오로서 예기치 않은 <code>SocketException</code> 가 발생하는 경우는 다음과 같습니다. A 가 B 에 데이터를 송신했는데, B 는 데이터를 모두 읽어내지 않고 소켓을 닫았다고 합니다. 이 때 B 의 TCP 소켓은, 데이터가 실제로 없어진 것을 인식해, 정상형의 <code>FIN</code> 순서를 사용하는 것이 아니라 RST 를 발행해, 강제적으로 종료합니다. A 는, 소켓으로 데이터를 송신 또는 수신하려고 하면(자),<code>SocketException</code> 를 받습니다. </p>
+<h2><a name="how_to_avoid"></a> 문제의 회피 방법</h2>
+<p>이 문제에 의한 영향을 회피하는 간단한 방법은 여러 가지 있습니다. </p>
+<ol>
+<li>고차의 프로토콜로 데이터를 구성합니다. TCP 의 최상정도에 있는 HTTP 등의 프로토콜로 이 문제에 대응하려면 , 언제 소켓을 안전하게 닫을 수가 있을까를 양측으로 분명히 합니다. </li>
+<li>소켓을 닫기 전에, 소켓으로부터의 데이터를 반드시 소비합니다. 이렇게 하면(자), 전술의 2 번째의 시나리오를 회피할 수 있습니다. </li>
+<li><code>shutdownOutput()</code> 를 사용합니다. 이 메소드는, 그 피어가 송신을 종료한 것을 나타내기 위해서(때문에) <code>FIN</code> 를 송신한다고 하는 점은 <code>close()</code> 와 같습니다.  그러나, 원격 피어가 <code>FIN</code> 를 송신해 스트림로부터 end-of-file 가 읽어내질 때까지는, 소켓으로부터 데이터를 읽어내는 것이 가능합니다. 다음에 <code>Socket.close()</code> 를 사용해, 소켓을 닫을 수가 있습니다. </li>
+</ol>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

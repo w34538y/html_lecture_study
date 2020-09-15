@@ -1,0 +1,1280 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JavaTM GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+
+<a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="AcnOnly.html" target="_top"><img src="images/NextArrow.gif" width="26"  height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환</H1>
+</center>
+
+<br> <br>
+
+
+<p>이 튜토리얼에서는, 서로 통신하는 어플리케이션간에 안전한 메시지 교환을 실행하기 위한 Java GSS-API 의 사용 방법을 나타내는 2 개의 샘플 어플리케이션을 소개합니다. 여기에서는, 클라이언트 어플리케이션과 서버 어플리케이션을 예로서 사용하고 있습니다.
+
+<p>Java GSS-API 는, 「시큐리티 기구」라고 불리는 기구를 사용해, 이러한 서비스를 제공합니다. Java 2 Standard Edition 플랫폼에서 이용 가능한 GSS-API 구현에는, Kerberos V5 기구의 지원와 벤더 고유의 임의의 선택사항이 포함됩니다. 이 튜토리얼에서는, Kerberos V5 기구를 사용합니다.
+
+<p>클라이언트와 서버간의 인증을 실행해, 안전한 통신용의 암호화열쇠를 확립하기 위해서, GSS-API 기구는, 접속의 양측의 로카르엔티티용의 특정의 쿠레덴샤르에 액세스 할 필요가 있습니다. 이 튜토리얼에서는, 클라이언트측에서 사용하는 쿠레덴샤르는 Kerberos 티켓으로 구성되어 서버측의 쿠레덴샤르는 장기 Kerberos 비밀열쇠로 구성됩니다. Kerberos 티켓에는, 호스트 주소를 옵션으로 짜넣을 수가 있어 IPv4 와 IPv6 의 양쪽 모두의 호스트 주소가 지원되고 있습니다. Java GSS-API 는, 기구가, 이러한 쿠레덴샤르를, thread의 액세스 제어 문맥에 관련지을 수 있었던 주제로부터 취득하는 것을 요구합니다.
+
+<p>일반적으로, 이런 종류의 쿠레덴샤르를 가지는 주제를 생성하기 위해(때문에), 클라이언트 어플리케이션 및 서버 어플리케이션은, Kerberos 모듈을 사용해 JAAS 인증을 실행합니다. 실행 방법의 자세한 것은,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼을 참조해 주세요. 인증된 주제를 thread의 액세스 제어 문맥에 관련짓는 방법에 대해서는,<a href="AcnAndAzn.html">「JAAS 승인」</a>을 참조해 주세요. 이러한 조작을 자동적으로 실행하는 유틸리티도 준비되어 있습니다. Login 유틸리티의 사용 방법에 대해서는,<a href="LoginSample.html">「JAAS Login 유틸리티의 사용」</a>튜토리얼을 참조해 주세요.
+
+<p>이 튜토리얼에서는, 클라이언트 및 서버로 JAAS 인증을 실행하지 않기 때문에, Login 유틸리티는 사용하지 않습니다. 그 대신해, 시스템 프로퍼티 <code>javax.security.auth.useSubjectCredsOnly</code> 를 <code>false</code> 로 설정할 필요가 있습니다. 이 설정에 의해, JAAS 에 의해 설정된 기존의<a href="glossary.html">주제</a>로부터 필요한 쿠레덴샤르를 취득할 때,GSS 기구의 요건이 완화됩니다. <a href="#useSub">「useSubjectCredsOnly 시스템 프로퍼티」</a>을 참조해 주세요.
+
+<p>주:이것은 입문용의 튜토리얼이기 (위해)때문에, 내용은 간략화되고 있습니다. 예를 들어, 정책 파일은 포함되지 않고, 샘플 코드의 실행에 시큐리티 매니저를 사용하고 있습니다. 실제로는, Java GSS-API 를 사용하는 코드는, 시큐리티 매니저를 사용해 실행할 필요가 있습니다. 이 때문에, 필요한 액세스권이 명시적으로 부여되어 있지 않은 한, 시큐리티 관련의 조작은 허가되지 않습니다.
+
+<p>다른 튜토리얼,<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>의 내용은, 이 유틸리티 와 유사합니다만,Login 유틸리티, 정책 파일, 및 보다 복잡한 로그인 구성 파일을 이용하는 점이 다릅니다 (<a href="LoginConfigFile.html">로그인 구성 파일</a>은,JAAS 인증의 실행시에는 항상 필요한 파일로, 사용하는 인증 모듈을 지정한다).
+
+<p>이 일련의 튜토리얼에서는, 인증 및 어플리케이션의 안전한 통신을 지원하는 기반의 기술로서 Kerberos V5 를 사용하고 있습니다. 자세한 것은,<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+
+<ul>
+
+<li><a href="#Overview">클라이언트 및 서버 어플리케이션의 개요</a>  <p>
+
+<li><a href="#Progs">SampleClient 및 SampleServer 코드</a>  <p>
+
+<li><a href="#KerbNames">Kerberos 사용자명 및 서비스 법칙명</a>  <p>
+
+<li><a href="#TheLCF">로그인 구성 파일</a>  <p>
+
+<li><a href="#useSub">useSubjectCredsOnly 시스템 프로퍼티</a>  
+<p>
+
+<li><a href="#RunProgs">SampleClient 및 SampleServer 프로그램의 실행</a>  
+
+</ul>
+
+<p>튜토리얼의 코드를 최초로 실행해 보는 경우,<a href="#RunProgs">「SampleClient 및 SampleServer 프로그램의 실행」</a>을 먼저 읽고 나서, 최초로 돌아와, 학습을 계속해 주세요.
+
+<br> <br> <br>
+
+<a name="Overview"></a> 
+<H1>클라이언트 및 서버 어플리케이션의 개요</H1>
+
+<blockquote>
+
+<p>이 튜토리얼로 사용하는 어플리케이션의 이름은, SampleClient 및 SampleServer 입니다.
+
+<p>다음에, SampleClient 및 SampleServer 어플리케이션의 실행 방법의 개요를 나타냅니다.
+
+<ol>
+
+<li>SampleServer 어플리케이션, SampleServer<p>
+
+<ol>
+
+<li>인수에 주목해, 클라이언트로부터의 접속을 대기하는 포트 번호를 확인합니다.  <p>
+
+<li>지정된 포트상에서 클라이언트 접속을 대기하는 ServerSocket 를 작성합니다.  <p>
+
+<li>접속을 대기합니다.  
+
+</ol>
+<p>
+
+<li>SampleClient 어플리케이션을 실행합니다 (일반적으로별의 머신을 사용). SampleClient<p>
+
+
+<ol>
+
+<li>인수에 주목해, (1) SampleServer 를 나타내는 Kerberos 법칙의 이름(<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조), (2) SampleServer 를 실행중의 호스트 (머신)의 이름, (3) SampleServer 가 클라이언트 접속을 대기하는 포트 번호를 확인합니다.  <p>
+
+<li>인수로서 건네받은 호스트 및 포트를 사용해, SampleServer 에의 소켓 접속을 시도합니다.  
+
+</ol>
+<p>
+
+<li>소켓 접속이 SampleServer 에 의해 받아들여집니다. 양쪽 모두의 어플리케이션이, 소켓 입력 및 출력 스트림로부터의 DataInputStream 및 DataOutputStream 를 초기화해, 장래의 데이터 교환에 사용합니다.  <p>
+
+<li>SampleClient 및 SampleServer 는, 각각 GSSContext 를 인스턴스화해, 이후의 안전한 데이터 교환을 가능하게 하는 공유 문맥을 프로토콜에 따라 확립합니다.  <p>
+
+<li>이것으로, SampleClient 및 SampleServer 는, 메세지를 안전하게 교환할 수 있습니다.
+<p>
+
+<li>SampleClient 및 SampleServer 는, 메시지 교환의 완료 후에, 클린 업 조작을 실행합니다.
+
+</ol>
+
+<p>실제의 코드 및 자세한 것은, 후술의 섹션으로 가리킵니다.
+
+</blockquote>
+
+
+<a name="Progs"></a> 
+<H1>SampleClient 및 SampleServer 코드</H1>
+
+<blockquote>
+
+<p><a href = "SampleClient.java">SampleClient</a>  및 <a href = "SampleServer.java">SampleServer</a>  프로그램의 전체의 코드는,<code>main</code> 메소드내에 배치되고 있어 다음의 구분에 한층 더 분할할 수 있습니다.
+
+<ol>
+
+<li><a href="#GetArgs">커멘드행 인수의 취득</a>  <p>
+
+<li><a href="#SocketConn">SampleClient 와 SampleServer 간의 전송용 소켓 접속의 확립</a>  <p>
+
+<li><a href="#EstContext">시큐리티 문맥의 확립</a>  <p>
+
+<li><a href="#ExchangeMsgs">메세지의 안전한 교환</a>  <p>
+
+<li><a href="#Cleanup">클린 업</a>  
+
+</ol>
+
+<p>주:이러한 프로그램이 사용하는 Java GSS-API 클래스 (GSSManager, GSSContext, GSSName, GSSCredential, MessageProp, 및 Oid)는,<code>org.ietf.jgss</code> 패키지내에 있습니다.
+
+
+<a name="GetArgs"></a> 
+<H2>커멘드행 인수의 취득</H2>
+
+<blockquote>
+
+<p>클라이언트와 서버의 <code>main</code> 메소드가 최초로 실시하는 것은, 커멘드행 인수의 읽기입니다.
+
+
+<H3>SampleClient 가 읽어내는 인수</H3>
+
+<blockquote>
+
+<p>SampleClient 는, 다음의 3 개의 인수를 받아들입니다.
+
+<ol>
+
+<li>서비스 법칙명 -- SampleServer 를 나타내는 Kerberos 법칙의 이름(<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조).  <p>
+
+<li>호스트명 -- SampleServer 를 실행하는 머신 <p>
+
+<li>포트 번호 -- SampleServer 가 접속을 대기하는 포트의 포트 번호
+
+</ol>
+
+<p>다음에, 커멘드행 인수를 읽어내는 코드를 나타냅니다.
+
+<blockquote>
+<pre>
+if (args.length < 3) {
+    System.out.println("Usage: java &lt;options&gt; Login SampleClient "
+       + " &lt;servicePrincipal&gt; &lt;hostName&gt; &lt;port&gt;");
+    System.exit(-1);
+}
+
+String server = args[0];
+String hostName = args[1];
+int port = Integer.parseInt(args[2]);
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3>SampleServer 가 읽어내는 인수</H3>
+
+<blockquote>
+
+<p>SampleServer 가 받아들이는 인수는, 다음의 1 개 뿐입니다.  
+
+<ul>
+
+<li>로컬 포트 번호 -- SampleServer 가 클라이언트로부터의 접속 대기에 사용하는 포트 번호. 이 번호는, SampleClient 프로그램의 실행시로 지정한 포트 번호와 같게 할 필요가 있습니다.
+
+</ul>
+
+<p>다음에, 커멘드행 인수를 읽어내는 코드를 나타냅니다.
+
+<blockquote>
+<pre>
+if (args.length ! = 1) {
+    System.out.println(
+        "Usage: java &lt;options&gt; Login SampleServer &lt;localPort&gt;");
+    System.exit(-1);
+}
+
+int localPort = Integer.parseInt(args[0]);
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="SocketConn"></a> 
+<H2>메시지 교환용 소켓 접속의 확립</H2>
+
+<blockquote>
+
+<p>Java GSS-API 는, 토큰 (불투명한 바이트 데이터)을 작성 및 해석하는 메소드를 제공합니다. 토큰에는 2 개의 피어간에 안전하게 교환되는 메세지가 포함되어 있습니다만, 실제로 토큰을 전송 하는 메소드는 피어에 따라서 다릅니다. SampleClient 및 SampleServer 어플리케이션의 경우, 클라이언트와 서버간의 소켓 접속을 확립해, 소켓 입력 및 출력 스트림을 사용해 데이터의 교환을 실시합니다.
+
+
+<H3>소켓 접속용의 SampleClient 코드</H3>
+
+<blockquote>
+
+<p>SampleClient 에는, 인수로서 SampleServer 를 실행중의 호스트 머신명, SampleServer 가 접속을 대기하는 포트 번호가 건네받았습니다. 이것으로, SampleClient 로부터 SampleServer 에의 소켓 접속 확립에 필요한 모든 것이 갖추어졌습니다. 다음의 코드를 사용해, 접속을 설정해, 장래의 데이터 교환에 대비해 DataInputStream 및 DataOutputStream 를 초기화합니다.
+
+<blockquote>
+<pre>
+Socket socket = new Socket(hostName, port);
+
+DataInputStream inStream = 
+  new DataInputStream(socket.getInputStream());
+DataOutputStream outStream = 
+  new DataOutputStream(socket.getOutputStream());
+
+System.out.println("Connected to server " 
+   + socket.getInetAddress());
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3>소켓 접속용의 SampleServer 코드</H3>
+
+<blockquote>
+
+<p>SampleServer 어플리케이션에는, 인수로서 클라이언트로부터의 접속 대기에 사용하는 포트 번호가 건네받습니다. 이 어플리케이션은, 지정된 포트상에서 대기하는 ServerSocket 를 작성합니다.
+
+<blockquote>
+<pre>
+ServerSocket ss = new ServerSocket(localPort);
+</pre>
+</blockquote>
+
+<p>다음에, ServerSocket 는 클라이언트로부터 접속을 대기 및 받아들여 클라이언트와의 장래의 데이터 교환에 대비해 DataInputStream 및 DataOutputStream 를 초기화합니다.
+
+<blockquote>
+<pre>
+Socket socket = ss.accept();
+
+DataInputStream inStream =
+    new DataInputStream(socket.getInputStream());
+DataOutputStream outStream = 
+    new DataOutputStream(socket.getOutputStream());
+
+System.out.println("Got connection from client "
+    + socket.getInetAddress());
+</pre>
+</blockquote>
+
+<p><code>accept</code> 메소드는, 클라이언트 (여기에서는 SampleClient)가 SampleServer 의 호스트 및 포트상에서 접속을 요구할 때까지 대기합니다. SampleClient 는 이 접속을 개입시켜 조작을 실행합니다.
+
+<blockquote>
+<pre>
+Socket socket = new Socket(hostName, port);
+</pre>
+</blockquote>
+
+<p>접속의 요구 및 확립이 실행되면(자),<code>accept</code> 메소드는 신규 포트에 바인드 된 신규 Socket 객체를 돌려줍니다. 서버는, 이 신규 소켓 경유로 클라이언트와 통신하면서, 원의 포트에 바인드 된 ServerSocket 에 대한 다른 클라이언트로부터의 접속 요구를 대기할 수 있습니다. 이 때문에, 일반적으로, 서버 프로그램은 복수의 접속 요구를 처리 가능한 루프를 보관 유지합니다.  
+
+<p>SampleServer 의 기본적인 루프 구조를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+while (true) {
+
+    Socket socket = ss.accept();
+
+    &lt;Establish input and output streams for the connection&gt; 
+    &lt;Establish a context with the client&gt; 
+    &lt;Exchange messages with the client&gt;;
+    &lt;Clean up&gt;;
+}
+</pre>
+</blockquote>
+
+<p>클라이언트 접속은, 원의 포트로 큐에 넣어집니다. 이 때문에, SampleServer 의 사용하는 프로그램 구조에서는, 접속을 실시하는 최초의 클라이언트와의 교환이 완료하지 않으면, 다음의 접속을 받아들일 수가 없습니다. 실제의 곳, 서버는, 클라이언트 마다 1 개의 thread를 사용하는 것으로, 복수의 클라이언트에 동시에 대응할 수 있습니다. 다음에 그방법을 나타냅니다.
+
+<blockquote>
+<pre>
+while (true) {
+    &lt;accept a connection&gt;;
+    &lt;create a thread to handle the client&gt;;
+}
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+
+
+</blockquote>
+
+
+<a name="EstContext"></a> 
+<H2>시큐리티 문맥의 확립</H2>
+
+<blockquote>
+
+<p>2 개의 어플리케이션이 Java GSS-API 를 이용해 안전하게 메세지를 교환하기 위해서는, 쿠레덴샤르를 사용해, 사전에 Joint 시큐리티 문맥을 확립해 둘 필요가 있습니다. 덧붙여 SampleClient 의 경우, 쿠레덴샤르는, SampleClient 가 자동적으로 실행되어 Login 유틸리티에 의해 사용자가 인증된 시점에서 확립됩니다. SampleServer 의 경우도 같습니다. 시큐리티 문맥은, 공유 상태의 정보 (암호화열쇠등을 포함한다)를 캡슐화합니다. 암호화가 요구되었을 경우, 이러한 열쇠를 사용해, 교환하는 메세지를 암호화할 수 있습니다.
+
+<p>시큐리티 문맥 확립의 일부로서 문맥 이니씨에이터 (여기에서는 SampleClient)가 억셉터 (SampleServer)에 인증되어 그에 대해, 억셉터가 이니씨에이터에게 인증되는 것이 필요하게 되는 경우가 있습니다. 이것을, 「상호 인증」을 한다고 합니다.
+
+<p>양쪽 모두의 어플리케이션이,<b>GSSContext</b> 객체를 작성 및 사용해, 시큐리티 문맥을 구성하는 공유 정보의 확립 및 보수를 실시합니다.
+
+<p>문맥 객체를 인스턴스화하는 방법은, 문맥 이니씨에이터와 문맥 억셉터로 다릅니다. 이니씨에이터는, GSSContext 를 인스턴스화한 후에, 목적의 시큐리티 문맥의 특성을 결정하는 다양한 문맥 옵션 (상호 인증을 실시할지 어떨지 등)을 설정할 수 있습니다. 목적의 특성을 모두 설정하면(자), 이니씨에이터는 <code>initSecContext</code> 메소드를 호출합니다. 이 메소드는, 억셉터의 <code>acceptSecContext</code> 메소드가 필요로 하는 토큰을 생성합니다.  
+
+<p>Java GSS-API 메소드는, 어플리케이션간에 교환되는 토큰을 준비하기 위해서 존재합니다. 다만, 실제로 어플리케이션간에 토큰을 전송 하는 것은, 어플리케이션의 역할입니다. 이 때문에, 이니씨에이터는,<code>initSecContext</code> 의 호출에 의해 토큰을 받으면(자), 그것을 억셉터에 송신합니다. 억셉터는,<code>acceptSecContext</code> 를 호출해 토큰을 건네줍니다. 그에 대해,<code>acceptSecContext</code> 메소드가 토큰을 돌려줄 수가 있습니다. 그 경우, 억셉터는, 토큰을 이니씨에이터에게 송신해, 이니씨에이터는 <code>initSecContext</code> 를 재차 호출해 이 토큰을 건네줍니다. <code>initSecContext</code> 또는 <code>acceptSecContext</code> 가 토큰을 돌려줄 때마다, 메소드를 호출한 어플리케이션은 토큰을 피어에 송신해, 피어는 토큰을 적절한 메소드 (<code>acceptSecContext</code> 또는 <code>initSecContext</code>)에 건네줄 필요가 있습니다. 이 처리는, 문맥이 완전하게 확립되는 (문맥의 <code>isEstablished</code> 메소드가 <code>true</code> 를 돌려준다)까지 계속해 행해집니다.
+
+<p>샘플 어플리케이션용의 문맥 확립 코드에 대해서는, 이하로 설명합니다.
+
+<ul>
+
+<li><a href="#SCFullContextEst">SampleClient 에 의한 문맥 확립</a>  <p>
+
+<li><a href="#SSFullContextEst">SampleServer 에 의한 문맥 확립</a> 
+
+</ul>
+
+
+<a name="SCFullContextEst"></a> 
+<H2>SampleClient 에 의한 문맥 확립</H2>
+
+<blockquote>
+
+<p>이 클라이언트/서버의 시나리오에서는, SampleClient 는 문맥 이니씨에이터입니다. 다음에, 시큐리티 문맥을 확립하기 위한 기본적인 순서를 나타냅니다. It
+
+<ol>
+
+<li><a href="#SCContextInst">GSSContext 를 인스턴스화합니다. </a>  <p>
+
+<li><a href="#SCSetOptions">사용하는 옵션 기능을 문맥상으로 설정합니다. </a>  <p>
+
+<li>문맥이 확립될 때까지<a href="#SCContextEstLoop">루프</a>를 실행합니다. <code>initSecContext</code> 를 호출할 때마다, 반환된 토큰을 모두 SampleServer 에 송신해, SampleServer 로부터 토큰을 받습니다 (토큰이 존재하는 경우).
+
+</ol>
+
+
+<a name="SCContextInst"></a> 
+<H3>SampleClient GSSContext 의 인스턴스화</H3>
+
+<blockquote>
+
+<p><b>GSSContext</b> 는,<b>GSSManager</b> 의 인스턴스화, 및 몇개의 <code>createContext</code> 메소드의 호출에 의해 작성됩니다. GSSManager 클래스는, 다른 중요한 GSS API 클래스의 팩토리로서 기능합니다. 이 클래스는, GSSContext, GSSCredential, 및 GSSName 인터페이스를 구현하는 클래스의 인스턴스를 작성합니다.  
+
+<p>SampleClient 는, GSSManager 의 static 메소드 <code>getInstance</code> 를 호출하는 것으로, 디폴트의 GSSManager 서브 클래스의 인스턴스를 가져옵니다.
+
+<blockquote>
+<pre>
+GSSManager manager = GSSManager.getInstance();
+</pre>
+</blockquote>
+
+<p>디폴트 GSSManager 서브 클래스의 <code>create*</code> 메소드 (<code>createContext</code> 등)가 돌려주는 클래스의 구현은, 기반이 되는 테크놀러지로서 Kerberos 를 지원합니다.  
+
+<p>이니씨에이터측에서 문맥을 작성하는 GSSManager 팩토리 메소드는, 다음의 시그니챠를 보관 유지합니다.
+
+<blockquote>
+<pre>
+GSSContext createContext(GSSName peer, Oid mech, 
+            GSSCredential myCred, int lifetime); 
+</pre>
+</blockquote>
+
+<p>이하로, 이 인수에 대해 설명합니다. 그 후로,<code>createContext</code> 에의 완전한 호출을 나타냅니다.
+
+
+<H4><code>GSSName peer</code> 인수</H4>
+
+<p>클라이언트/서버라고 하는 패러다임(paradigm)에 있어서의 피어는, 서버입니다. <code>peer</code> 인수에는, 서버를 나타내는 서비스 법칙의 <b>GSSName</b> 를 지정할 필요가 있습니다. (<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조). 서비스 법칙명을 나타내는 캐릭터 라인은, SampleClient 의 최초의 인수로서 건네받습니다. SampleClient 는 인수를 <code>server</code> 라는 이름의 로컬의 String 변수에 포함합니다. GSSName 의 인스턴스화에는, GSSManager <code>manager</code> 가 (그 <code>createName</code> 메소드의 어느쪽이든을 호출하는 것으로) 사용됩니다. SampleClient 는, 다음의 서명을 사용해,<code>createName</code> 메소드를 호출합니다.
+
+<blockquote>
+<pre>
+GSSName createName(String nameStr, Oid nameType);
+</pre>
+</blockquote>
+
+<p>SampleClient 는,<code>nameStr</code> 인수로서 <code>server</code> String 를 건네줍니다.  
+
+<p>2 번째의 인수는,<b>Oid</b> 입니다. Oid 는, 범용 객체 식별자 (Universal Object Identifier)를 나타냅니다. Oid 는, 기구와 이름의 형태를 식별하기 위해서 GSS-API 시스템내에서 이용되는, 글로벌로 해석할 수 있는 계층적인 식별자입니다. Oid 의 구조 및 인코딩은, ISOIEC-8824 및 ISOIEC-8825 표준으로 정의되고 있습니다. <code>createName</code> 메소드에게 건네지는 Oid 는, 엄밀하게는 기구 Oid 는 아니고, 이름형 Oid 입니다.
+
+<p>GSS-API 에서는, 캐릭터 라인명은, 자주 기구에 의존하지 않는 형식으로부터 기구 고유의 형식에 매핑 됩니다. 일반적으로, Oid 에서는, 기구가 매핑 방법을 인식할 수 있도록, 캐릭터 라인의 이름 형식이 지정됩니다. <code>null</code> 의 Oid 는, 이름이, 기구의 사용하는 네이티브의 형식이 되어 있는 것을 나타냅니다. 이것이 들어맞는 것은, 적절한 Kerberos Version 5 명의 형식인 <code>server</code> String 의 경우입니다. 이 때문에, SampleClient 는, Oid 로서 <code>null</code> 를 건네줍니다. 다음에, 그 호출을 나타냅니다.
+
+<blockquote>
+<pre>
+GSSName serverName = manager.createName(server, null);
+</pre>
+</blockquote>
+
+
+<H4><code>Oid mech</code> 인수</H4>
+
+<p>GSSManager <code>createContext</code> 메소드의 2 번째의 인수는 Oid 입니다. 이것은, 문맥 확립시의 클라이언트와 서버간의 인증, 및 그 후의 클라이언트와 서버간의 안전한 통신에 사용되는 기구를 나타냅니다.
+
+<p>이 튜토리얼에서는, 시큐리티 기구로서 Kerberos V5 를 사용하고 있습니다. Kerberos V5 기구의 Oid 는,<a href = "http://www.ietf.org/rfc/rfc1964.txt">RFC 1964</a>  로,"1.2. 840.113554. 1.2. 2" 로 정의되고 있으므로, 이 Oid 를 작성합니다.
+
+<blockquote>
+<pre>
+Oid krb5Oid = new Oid("1.2. 840.113554. 1.2. 2");
+</pre>
+</blockquote>
+
+<p>SampleClient 는,<code>createContext</code> 의 2 번째의 인수로서 <code>krb5Oid</code> 를 건네줍니다.
+
+
+<H4><code>GSSCredential myCred</code> 인수</H4>
+
+<p>GSSManager <code>createContext</code> 메소드의 3 번째의 인수는, 호출측의 쿠레덴샤르를 나타내는 <b>GSSCredential</b> 입니다. SampleClient 의 경우와 같이, 이 인수에 <code>null</code> 를 건네주는 경우, 디폴트의 쿠레덴샤르가 사용됩니다.
+
+
+<H4><code>int lifetime</code> 인수</H4>
+
+<p>GSSManager <code>createContext</code> 메소드의 마지막 인수는 <code>int</code> 로, 작성하는 문맥의 라이프 타임을 초에 지정합니다. SampleClient 는,<code>GSSContext.DEFAULT_LIFETIME</code> 를 건네주어, 디폴트의 라이프 타임을 요구합니다.
+
+
+<H4>createContext 의 완전한 호출</H4>
+
+<p>여기까지로, 필요한 인수를 모두 설명했습니다. 여기에서는, GSSContext 를 작성하는 SampleClient 의 호출을 나타냅니다.
+
+<blockquote>
+<pre>
+GSSContext context = 
+    manager.createContext(serverName,
+                          krb5Oid,
+                          null,
+                          GSSContext.DEFAULT_LIFETIME);
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="SCSetOptions"></a> 
+<H3>SampleClient 의 옵션 설정</H3>
+
+<blockquote>
+
+<p>문맥의 인스턴스화가 완료하면(자), 컨셉 억셉터를 사용해 문맥을 확립하기 전에, 문맥 이니씨에이터로, 사용하는 시큐리티 문맥의 특성을 결정하는 다양한 옵션을 설정할 수 있습니다. 각 옵션은, 인스턴스화 된 문맥상에서 <code>request</code> 메소드를 호출하는 것으로 설정할 수 있습니다. 대부분의 <code>request</code> 메소드는, 그 기능을 요구할지 어떨지를 나타내는 <code>boolean</code> 인수를 취합니다. 요구는, 항상 받아들여지는 것은 아닙니다. 이 때문에, 문맥의 확립 후에, 몇개의 <code>get</code> 메소드를 호출해, 요구가 받아들여졌는지의 여부를 확인할 수 있습니다.
+
+<p>SampleClient 는, 다음의 옵션을 요구합니다.
+
+<ol>
+
+<li><b>상호 인증</b>. 문맥 이니씨에이터는, 항상 억셉터에 의해 인증됩니다. 이니씨에이터가 상호 인증을 요구하면(자), 억셉터도 이니씨에이터에게 인증됩니다.  <p>
+
+<li><b>기밀성</b>. 기밀성을 요구한다는 것은,<code>wrap</code> 라는 이름의 문맥 메소드의 암호화를 「유효하게 한다」일을 의미합니다. 암호가 실제로 사용되는 것은,<code>wrap</code> 메소드에게 건네지는 MessageProp 객체에 의해 기밀성이 요구되는 경우만입니다.  <p>
+
+<li><b>무결성</b>. 이것은,<code>wrap</code> 및 <code>getMIC</code> 메소드의 보존성을 요구합니다. 무결성이 요구되면(자), 이러한 메소드의 호출시에, 메세지 정합 코드 (MIC)로서 알려진 암호화 태그가 생성됩니다. <code>getMIC</code> 의 호출에 의해 반환되는 토큰내에, 생성된 MIC 가 포함됩니다. <code>wrap</code> 가 불려 가면(자), MIC 가 메세지 (원의 메세지 또는 메세지 암호화의 결과, 기밀성이 적용되었는지 어떠했는지에 의해 다르다)와 함께 1 개의 토큰의 일부로서 패키지화됩니다. 다음에, 메세지에 대한 MIC 를 검증해, 메세지가 도중에 변경되어 있지 않은 것을 확인할 수 있습니다.
+
+</ol>
+
+<p>GSSException <code>context</code> 에 대해서 이러한 요구를 생성하는 SampleClient 코드를, 다음에 나타냅니다.  
+
+<blockquote>
+<pre>
+context.requestMutualAuth(true);  // Mutual authentication
+context.requestConf(true);  // Will use encryption later
+context.requestInteg(true); // Will use integrity later
+</pre>
+</blockquote>
+
+<p>주:디폴트의 GSSManager 구현 및 Kerberos 기구를 사용하는 경우, 이러한 요구는 항상 허가됩니다.
+
+</blockquote>
+
+
+<a name="SCContextEstLoop"></a> 
+<H3>SampleClient 의 문맥 확립 루프</H3>
+
+<blockquote>
+
+<p>SampleClient 는, GSSContext 의 인스턴스화 및 사용하는 문맥 옵션의 지정 후에, SampleServer 와의 시큐리티 문맥을 실제로 확립할 수 있습니다. 이 때문에, SampleClient 는 루프 구조를 보관 유지합니다. 루프에 의해, 다음의 조작이 반복 실행됩니다.  
+
+<ol>
+
+<li>문맥의 <code>initSecContext</code> 메소드의 호출. 최초의 호출의 경우, 메소드에는 <code>null</code> 의 토큰이 건네받습니다. 그 이외의 경우, SampleServer 로부터 SampleClient 에 직전에 송신된 토큰 (SampleServer 에 의한 <code>acceptSecContext</code> 의 호출로 생성되는 토큰)이 건네받습니다.  <p>
+
+<li><code>initSecContext</code> 에 의해 반환된 토큰 (존재하는 경우)의 SampleServer 에의 송신. <code>initSecContext</code> 에의 최초의 호출에서는, 항상 토큰이 생성됩니다. 마지막 호출에서는, 토큰이 돌려주어지지 않은 경우가 있습니다. <p>
+
+<li>문맥이 확립되었는지 어떠했는지의 확인. 확립되어 있지 않은 경우, SampleClient 는 SampleServer 로부터 다른 토큰을 받아, 다음의 루프 처리를 개시합니다.
+
+</ol>
+
+<p><code>initSecContext</code> 로부터 반환된다, 또는 SampleServer 로부터 받는 토큰은, 바이트 배열에 포함됩니다. 토큰은, SampleClient 및 SampleServer 간에서의 송신시에 불투명한 데이터로서 처리되어 Java GSS-API 메소드에 의해 해석됩니다.
+
+<p><code>initSecContext</code> 인수는, 토큰, 토큰 개시 위치의 배열내의 개시 오프셋(offset), 및 토큰의 길이를 포함한 바이트 배열입니다. 최초의 호출에서는, SampleClient 는, SampleServer 로부터 토큰을 아직 받지 않기 때문에, null 의 토큰을 건네줍니다.
+
+<p>SampleServer 와 토큰을 교환할 때, SampleClient 는, SampleServer 에의 소켓 접속용 입력 및 출력 스트림을 사용해 설정한, DataInputStream <code>inStream</code> 및 DataOutputStream <code>outStream</code> 를 사용합니다. 토큰을 기술하는 경우, 항상, 토큰의 바이트수를 최초로 기술하고 나서, 토큰 자체를 기술해 주세요. 그 이유는,<a href="#SCandSSMsgExchanges">「SampleClient 와 SampleServer 의 메시지 교환」</a>섹션의 도입부에서 설명합니다.
+
+<p>다음에, SampleClient 의 문맥 확립 루프, 및 클라이언트 및 서버의 실체, 상호 인증을 실제로 실시할지 어떨지등의 정보를 표시하는 코드를 나타냅니다.
+
+<blockquote>
+<pre>
+byte[] token = new byte[0];
+
+while (! context.isEstablished()) {
+
+    // token is ignored on the first call
+    token = context. <b>initSecContext</b>(token, 0, token.length);
+
+    // Send a token to the server if one was generated by
+    // initSecContext
+    if (token ! = null) {
+        System.out.println("Will send token of size "
+                   + token.length + " from initSecContext. ");
+        outStream.writeInt(token.length);
+        outStream.write(token);
+        outStream.flush();
+    }
+
+    // If the client is done with context establishment
+    // then there will be no more tokens to read in this loop
+    if (! context.isEstablished()) {
+        token = new byte[inStream.readInt()];
+        System.out.println("Will read input token of size "
+                   + token.length
+                   + " for processing by initSecContext");
+        inStream.readFully(token);
+    }
+}
+
+System.out.println("Context Established!  ");
+System.out.println("Client is " + context.getSrcName());
+System.out.println("Server is " + context.getTargName());
+if (context.getMutualAuthState())
+    System.out.println("Mutual authentication took place! ");
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="SSFullContextEst"></a> 
+<H2>SampleServer 에 의한 문맥 확립</H2>
+
+<blockquote>
+
+<p>이 클라이언트/서버의 시나리오에서는, SampleServer 는 문맥 억셉터입니다. 다음에, 시큐리티 문맥을 확립하기 위한 기본적인 순서를 나타냅니다. It
+
+<ol>
+
+<li><a href="#SSContextInst">GSSContext 를 인스턴스화합니다. </a>  <p>
+
+<li>문맥이 확립될 때까지 <a href="#SSContextEstLoop">루프</a>를 실행합니다. 각 루프에서는, SampleClient 로부터 토큰을 받아,<code>acceptSecContext</code> 를 호출해 토큰을 건네주어, 반환된 토큰을 모두 SampleClient 에 송신합니다.
+
+</ol>
+
+
+<a name="SSContextInst"></a> 
+<H3>SampleServer GSSContext 의 인스턴스화</H3>
+
+<blockquote>
+
+<p><a href="#SCContextInst">「SampleClient GSSContext 의 인스턴스화」</a>로 설명한 것처럼,GSSContext 는, GSSManager 를 인스턴스화해,<code>createContext</code> 메소드의 어느쪽이든을 호출하는 것으로 작성됩니다.  
+
+<p>SampleClient 와 같이, SampleServer 는, GSSManager 의 static 메소드 <code>getInstance</code> 를 호출하는 것으로, 디폴트의 GSSManager 서브 클래스의 인스턴스를 가져옵니다.
+
+<blockquote>
+<pre>
+GSSManager manager = GSSManager.getInstance();
+</pre>
+</blockquote>
+
+<p>억셉터측에서 문맥을 작성하는 GSSManager 팩토리 메소드는, 다음의 시그니챠를 보관 유지합니다.
+
+<blockquote>
+<pre>
+GSSContext createContext(GSSCredential myCred);
+</pre>
+</blockquote>
+
+<p>SampleServer 의 경우와 같이, GSSCredential 인수에 <code>null</code> 를 건네주는 경우, 디폴트의 쿠레덴샤르가 사용됩니다. 문맥은, 다음의 방법으로 인스턴스화 됩니다.
+
+<pre>
+  GSSContext context = manager.createContext((GSSCredential) null);
+</pre>
+
+</blockquote>
+
+
+<a name="SSContextEstLoop"></a> 
+<H3>SampleServer 의 문맥 확립 루프</H3>
+
+<blockquote>
+
+<p>SampleServer 는, GSSContext 를 인스턴스화한 후에, SampleClient 와의 시큐리티 문맥을 확립할 수 있습니다. 이것을 실행하기 위해(때문에), SampleServer 는 문맥이 확립될 때까지 반복하는 루프 구조를 보관 유지합니다. 루프에 의해, 다음의 조작이 반복 실행됩니다.
+
+<ol>
+
+<li>SampleClient 로부터의 토큰의 수취. 이 토큰은, SampleClient <code>initSecContext</code> 호출의 결과입니다.  <p>
+
+<li>문맥의 <code>acceptSecContext</code> 메소드의 호출해, 및 직전에 받은 토큰의 메소드에의 인도해.  <p>
+
+<li><code>acceptSecContext</code> 가 토큰을 돌려주는 경우, SampleServer 는 이 토큰을 SampleClient 에 송신해, 문맥이 아직 확립되어 있지 않은 경우, 다음의 루프 처리를 개시합니다.
+
+</ol>
+
+<p><code>acceptSecContext</code> 로부터 반환된다, 또는 SampleClient 로부터 받는 토큰은, 바이트 배열에 포함됩니다.
+
+<p><code>acceptSecContext</code> 인수는, 토큰, 토큰 개시 위치의 배열내의 개시 오프셋(offset), 및 토큰의 길이를 포함한 바이트 배열입니다.
+
+<p>SampleClient 와 토큰을 교환할 때, SampleServer 는, SampleClient 에의 소켓 접속용 입력 및 출력 스트림을 사용해 설정한, DataInputStream <code>inStream</code> 및 DataOutputStream <code>outStream</code> 를 사용합니다.
+
+<p>다음에, SampleServer 의 문맥 확립 루프를 나타냅니다.
+
+<blockquote>
+<pre>
+byte[] token = null;
+
+while (! context.isEstablished()) {
+
+    token = new byte[inStream.readInt()];
+    System.out.println("Will read input token of size "
+       + token.length
+       + " for processing by acceptSecContext");
+    inStream.readFully(token);
+    
+    token = context. <b>acceptSecContext</b>(token, 0, token.length);
+    
+    // Send a token to the peer if one was generated by
+    // acceptSecContext
+    if (token ! = null) {
+        System.out.println("Will send token of size "
+           + token.length
+           + " from acceptSecContext. ");
+        outStream.writeInt(token.length);
+        outStream.write(token);
+        outStream.flush();
+    }
+}
+
+System.out.print("Context Established!  ");
+System.out.println("Client is " + context.getSrcName());
+System.out.println("Server is " + context.getTargName());
+if (context.getMutualAuthState())
+    System.out.println("Mutual authentication took place! ");
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="ExchangeMsgs"></a> 
+<H2>메세지의 안전한 교환</H2>
+
+<blockquote>
+
+<p>SampleClient 와 SampleServer 간의 시큐리티 문맥이 확립되면(자), 메세지를 안전하게 교환할 수 있습니다.
+
+<ul>
+
+<li><a href="#MsgPrepMethods">메시지 교환용의 GSSContext 메소드</a>  <p>
+
+<li><a href="#SCandSSMsgExchanges">SampleClient 와 SampleServer 의 메시지 교환</a>  
+
+</ul>
+
+
+<a name="MsgPrepMethods"></a> 
+<H2>메시지 교환용의 GSSContext 메소드</H2>
+
+<blockquote>
+
+<p>메세지의 안전한 교환을 가능하게 하는 메소드에는,<code>wrap</code> 와 <code>getMIC</code> 의 2 종류가 있습니다. 실제로는, 2 개의 <code>wrap</code> 메소드 ( 및 2 개의 <code>getMIC</code> 메소드)가 존재합니다. 2 개의 메소드의 차이점은, 입력 메세지의 위치 (바이트 배열 또는 입력 스트림) 및 출력처 (바이트 배열의 반환값 또는 출력 스트림)입니다.
+
+<p>메시지 교환용의 이러한 메소드, 및 대응하는 메소드 (생성되는 토큰의 피어가 해석을 행하기 위한)에 대해, 이하로 설명합니다.
+
+
+<H4>wrap</H4>
+
+<p><code>wrap</code> 메소드는, 메시지 교환용의 주요 메소드입니다.
+
+<p>SampleClient 에 의해 불려 가는 <code>wrap</code> 메소드의 시그니챠는, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+byte[] wrap (byte[] inBuf, int offset, interface len, 
+                MessageProp msgProp)
+</pre>
+</blockquote>
+
+<p><code>wrap</code> 에, 메세지 (<code>inBuf</code> 내), 메세지의 개시 위치 <code>inBuf</code> 에 대한 오프셋(offset) (<code>offset</code>), 및 메세지의 길이 (<code>len</code>)를 건네줍니다. 사용하는 QOP (Quality-of-Protection), 및 기밀성 (암호화)이 필요한가 어떤가를 지정할 때에 사용하는 MessageProp 도 건네줍니다. QOP 치에 의해, 사용하는 암호화 정합 및 암호화 (필요한 경우) 알고리즘이 결정됩니다. 기반이 되는 기구의 프로바이더에 의해, 다양한 QOP 치에 대응하는 알고리즘이 지정됩니다. 예를 들어, Kerberos V5 에 대응하는 값은,<a href="http://www.ietf.org/rfc/rfc1964.txt"> RFC 1964</a>  의 섹션 4.2 로 정의되고 있습니다. 디폴트의 QOP 를 요구하는 경우는, 일반적으로 QOP 치에 0 을 지정합니다.
+
+<p><code>wrap</code> 메소드는, 메세지를 포함한 토큰 및 그 암호화 메세지 정합 코드 (MIC)를 돌려줍니다. MessageProp 에 의해 기밀성이 지정되고 있는 경우, 토큰에 포함된 메세지는 암호화됩니다. 반환되는 토큰은, 불투명한 데이터로서 다루어지기 (위해)때문에, 그 형식에 대해 알 필요는 없습니다. 반환되는 토큰을 피어 어플리케이션에 송신하면(자),<code>unwrap</code> 메소드가 불려 가 토큰의 「랩이 해제」되어 원의 메세지의 취득 및 무결성의 검증을 합니다.
+
+
+<H4>getMIC</H4>
+
+<p>지정된 메세지의 암호화 메세지 정합 코드 (MIC)를 포함한 토큰의 취득만을 실시하는 경우,<code>getMIC</code> 를 호출합니다. 예를 들어, 피어가 같은 데이터를 보관 유지하고 있는 것을 확인하는 경우, 데이터 자체를 서로 전송 하지 않아도, 데이터의 MIC 를 전송 하는 것만으로 목적을 달성할 수 있습니다.
+
+<p>SampleServer 에 의해 불려 가는 <code>getMIC</code> 메소드의 시그니챠는, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+byte[] getMIC (byte[] inMsg, int offset, int len,
+            MessageProp msgProp)
+</pre>
+</blockquote>
+
+<p><code>getMIC</code> 에, 메세지 (<code>inMsg</code> 내), 메세지의 개시 위치 <code>inMsg</code> 에 대한 오프셋(offset) (<code>offset</code>), 및 메세지의 길이 (<code>len</code>)를 건네줍니다. 사용하는 QOP (Quality-of-Protection)의 지정에 사용하는 <b>MessageProp</b> 도 건네줍니다. 디폴트의 QOP 를 요구하는 경우는, 일반적으로 QOP 치에 0 을 지정합니다.  
+
+<p><code>getMIC</code> 에 의해 작성된 토큰 및 MIC 의 계산에 사용하는 메세지 (또는 MIC 를 계산할 예정의 메세지)를 보관 유지하는 경우,<code>verifyMIC</code> 메소드를 호출해, 메세지의 MIC 를 검증할 수 있습니다. 검증이 성공하는 (GSSException 가 throw 되지 않는다) 경우, 메세지가, MIC 계산시의 메세지와 정확하게 일치하는 것이 보증됩니다. 일반적으로, 어플리케이션으로부터 메세지를 받아들이는 피어는, MIC 도 받는 것을 기대합니다. 이 때문에, MIC 를 검증해, 도중에 메세지가 변경 또는 파손하고 있지 않는지 어떤지를 확인할 수 있습니다. 주:메세지에 가세해 MIC 도 필요하다라고 하는 것이 미리 알고 있는 경우는,<code>wrap</code> 및 <code>unwrap</code> 메소드를 사용하는 (분)편이 편리합니다. 다만, 메세지와 MIC 를 별개에 받는 상황도 생각할 수 있습니다.
+
+<p>전술의 <code>getMIC</code> 에 대응하는 <code>verifyMIC</code> 의 시그니챠를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+void verifyMIC (byte[] inToken, int tokOffset, int tokLen,
+        byte[] inMsg, int msgOffset, int msgLen,
+        MessageProp msgProp);
+</pre>
+</blockquote>
+
+<p>이것에 의해,<code>inMsg</code> (길이가 <code>msgLen</code> 로, 오프셋(offset) <code>msgOffset</code> 로부터 시작된다) 내의 메세지에 대응하는,<code>inToken</code> (길이가 <code>tokLen</code> 로, 오프셋(offset) <code>tokOffset</code> 로부터 시작된다) 내의 MIC 의 검증이 실행됩니다. 기반이 되는 기구는, MessageProp 를 사용해 호출 측에 정보 (메세지에 적용된 보호의 강함을 나타내는 QOP 등)를 돌려줍니다.
+
+
+</blockquote>
+
+
+<a name="SCandSSMsgExchanges"></a> 
+<H2>SampleClient 와 SampleServer 의 메시지 교환</H2>
+
+<blockquote>
+
+<p>SampleClient 와 SampleServer 와의 사이의 메시지 교환의 개요를 다음에 나타냅니다. 그 후, 코드의 상세를 나타냅니다.
+
+<p>이러한 스텝은, GSS-API 클라이언트 및 서버의 검증에 사용되는 「표준적인」스텝입니다. GSS-API 라이브러리가 다른 구현간의 상호 운용성을 체크하는, 넓게 보급한 테스트 프로그램이 된 GSS-API 클라이언트 및 GSS-API 서버는, MIT 의 그룹이 기술했습니다. 이러한 GSS-API 샘플 어플리케이션은, MIT 로부터 다운로드 가능한 Kerberos 디스트리뷰션의 일부입니다 (<a href = "http://web.mit.edu/kerberos"> http://web.mit.edu/kerberos</a> ). MIT 로부터 입수 가능한 이 클라이언트 및 서버가 준거하는 프로토콜에서는, 문맥의 확립 후에 클라이언트가 송신한 메세지에, MIC 가 추가되어 돌려주어집니다. GSS-API 라이브러리를 구현하는 경우, 그 라이브러리 구현을 사용하는 클라이언트 또는 서버를, 다른 GSS-API 라이브러리 구현을 사용하는 대응하는 피어 서버 또는 클라이언트에 대해서 실행해, 테스트를 실시하는 것이 일반적인 방법입니다. 양쪽 모두의 라이브러리 구현이 표준에 준거하는 경우, 2 개의 피어의 통신은 성공합니다.
+
+<p>사용하는 클라이언트 또는 서버를, C 언어로 기술된 서버 (MIT 제공의 서버등)에 대해서 테스트하는 경우, 토큰의 교환 방법을 고려할 필요가 있습니다. C 언어에 의한 GSS-API 의 구현에는, 스트림 베이스의 메소드가 포함되지 않습니다. 피어에 스트림 베이스의 메소드가 존재하지 않는 상황으로 토큰을 기술하는 경우, 최초로 바이트수를 기술하고 나서, 토큰을 기술할 필요가 있습니다. 같이 토큰을 읽어낼 때, 바이트수를 읽어내고 나서 토큰을 읽어낼 필요가 있습니다. SampleClient 및 SampleServer 는, 실제로 이 처리를 실시합니다.
+
+<p>SampleClient 및 SampleServer 가 실시하는 메시지 교환의 개요를, 다음에 나타냅니다.
+
+<ol>
+
+<li>SampleClient 가 <code>wrap</code> 를 호출해, 메세지의 MIC 를 암호화 및 계산합니다.  <p>
+
+<li>SampleClient 가,<code>wrap</code> 로부터 반환된 토큰을 SampleServer 에 송신합니다.  <p>
+
+<li>SampleServer 가,<code>unwrap</code> 를 호출해 원의 메세지를 취득해, 무결성을 검증합니다.   <p>
+
+<li>SampleServer 가 <code>getMIC</code> 를 호출해, 복호화한 메세지에 대한 MIC 를 계산합니다.  <p>
+
+<li>SampleServer 가,<code>getMIC</code> 에 의해 반환된 토큰 (MIC 를 포함한다)을 SampleClient 에 송신합니다.  <p>
+
+<li>SampleClient 가 <code>verifyMIC</code> 를 호출해, SampleServer 에 의해 송신된 MIC 가 원의 메세지의 유효한 MIC 화도인지를 검증합니다.
+
+</ol>
+
+
+<H4>메세지의 암호화 및 송신을 실시하는 SampleClient 코드</H4>
+
+<blockquote>
+
+<p>메세지의 암호화, MIC 의 계산, 및 결과의 SampleServer 에의 송신을 실행하는 SampleClient 코드를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+byte[] messageBytes = "Hello There! \0". getBytes();
+
+/*
+ * The first MessageProp argument is 0 to request
+ * the default Quality-of-Protection.
+ * The second argument is true to request
+ * privacy (encryption of the message).
+ */
+MessageProp prop =  new MessageProp(0, true);
+
+/*
+ * Encrypt the data and send it across.  Integrity protection
+ * is always applied, irrespective of encryption.
+ */
+token = context. <b>wrap</b>(messageBytes, 0, messageBytes.length, 
+    prop);
+System.out.println("Will send wrap token of size " 
+    + token.length);
+outStream.writeInt(token.length);
+outStream.write(token);
+outStream.flush();
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H4>토큰의 랩 해제, MIC 의 계산 및 송신을 실시하는 SampleServer 코드</H4>
+
+<blockquote>
+
+<p>다음의 SampleServer 코드는, SampleClient 에 의해 송신된 랩 끝난 토큰을 읽어내, 「랩을 해제」해 원의 메세지를 취득해, 무결성을 검증합니다. 이 경우, 메세지가 암호화되고 있기 (위해)때문에, 랩의 해제에는 복호화도 포함됩니다.
+
+<p>주:여기에서는, 무결성 체크는 성공하는 것이라고 생각할 수가 있습니다. 다만, 일반적으로, 무결성 체크의 실패는, 메세지가 도중에 변경되었던 것이 원인입니다. <code>unwrap</code> 메소드는, 무결성 체크의 실패에 조우하면(자), GSSException 를 주요한 에러 코드 GSSException.BAD_MIC 와 함께 throw 합니다.
+
+<blockquote>
+<pre>
+/*
+ * Create a MessageProp which unwrap will use to return 
+ * information such as the Quality-of-Protection that was 
+ * applied to the wrapped token, whether or not it was 
+ * encrypted, etc.  Since the initial MessageProp values
+ * are ignored, it doesn't matter what they are set to.
+ */
+MessageProp prop = new MessageProp(0, false);
+
+/* 
+ * Read the token.  This uses the same token byte array 
+ * as that used during context establishment.
+ */
+token = new byte[inStream.readInt()];
+System.out.println("Will read token of size " 
+    + token.length);
+inStream.readFully(token);
+
+byte[] bytes = context. <b>unwrap</b>(token, 0, token.length, prop);
+String str = new String(bytes);
+System.out.println("Received data \""
+    + str + "\" of length " + str.length());
+System.out.println("Encryption applied: "
+    + prop.getPrivacy());
+</pre>
+</blockquote>
+
+<p>다음에 SampleServer 는, 복호화 된 메세지의 MIC 를 생성해, SampleClient 에 송신합니다. 이것은, 필수라고 하는 것은 아니고, 복호화 된 메세지의 MIC 의 생성 방법을 나타내기 위한 것입니다. 복호화 된 메세지는, SampleClient 가 랩 해 SampleServer 에 송신한 원의 메세지와 정확하게 같게 될 것입니다. SampleServer 가 이것을 생성해 SampleClient 에 송신해, 그 후 SampleClient 에 의한 검증을 하면(자), SampleServer 가 보관 유지하는 복호화 끝난 메세지는, SampleClient 로부터 송신된 원의 메세지와 정확하게 일치하는 것이 보증됩니다.
+
+<blockquote>
+<pre>
+/*
+ * First reset the QOP of the MessageProp to 0
+ * to ensure the default Quality-of-Protection
+ * is applied.
+ */
+prop.setQOP(0);
+
+token = context. <b>getMIC</b>(bytes, 0, bytes.length, prop);
+
+System.out.println("Will send MIC token of size " 
+                   + token.length);
+outStream.writeInt(token.length);
+outStream.write(token);
+outStream.flush();
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H4>MIC 를 검증하는 SampleClient 코드 </H4>
+
+<blockquote>
+
+<p>다음의 SampleClient 코드는, SampleServer 에 의해 계산된 (복호화가 끝난 메세지에 대한다) MIC 를 읽어내 검증합니다. 이것에 의해, SampleServer 가 보관 유지하는 복호화 된 메세지가, 원의 메세지와 같다라고 하는 것이 보증됩니다.
+
+<blockquote>
+<pre>
+token = new byte[inStream.readInt()];
+System.out.println("Will read token of size " + token.length);
+inStream.readFully(token);
+
+/* 
+ * Recall messageBytes is the byte array containing
+ * the original message and prop is the MessageProp 
+ * already instantiated by SampleClient.
+ */
+context. <b>verifyMIC</b>(token, 0, token.length, 
+          messageBytes, 0, messageBytes.length,
+          prop);
+
+System.out.println("Verified received MIC for message. ");
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+</blockquote>
+
+
+</blockquote>
+
+
+<a name="Cleanup"></a> 
+<H2>클린 업</H2>
+<blockquote>
+
+SampleClient 및 SampleServer 는, 메시지 교환의 완료 후에, 클린 업 조작을 실행할 필요가 있습니다. 어느 쪽에도, 이하의 조작을 실행하는 코드가 포함됩니다.
+
+<ul>
+
+<li>소켓 접속의 클로즈 <p>
+<li>문맥 객체에 포함된 system resource 및 암호화 정보의 해제, 및 문맥의 무효화
+
+</ul>
+
+<blockquote>
+<pre>
+socket.close();
+context.dispose();
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="KerbNames"></a> 
+<H1>Kerberos 사용자명 및 서비스 법칙명</H1>
+
+<blockquote>
+
+<p>이 튜토리얼에서는, 기반이 되는 인증 및 안전한 통신기술로서 Kerberos V5 가 사용되고 있기 (위해)때문에, 사용자 또는 서비스가 요구되는 경우, 항상 Kerberos 스타일의 <a href="glossary.html">법칙</a>명이 사용됩니다.  
+
+<p>예를 들어, SampleClient 를 실행하는 경우, 「사용자명」의 지정이 요구됩니다. Kerberos 스타일의 사용자명은, Kerberos 인증용인 만큼 할당할 수 있었던 사용자명입니다. 이 사용자명은, 베이스 사용자명 (예, mjones), 「@」, 및 영역의 순서로 구성됩니다 (예, mjones@KRBNT-OPERATIONS.ABC.COM).
+
+<p>일반적으로, SampleServer 등의 서버 프로그램은, 「서비스」를 제공해, 특정의 「<b>서비스 법칙</b>」에 대신해 실행되는 프로그램이라고 보여집니다. SampleServer 의 서비스 법칙명이 필요하게 되는 것은, 다음의 경우입니다.  
+
+<ul>
+
+<li>SampleServer 를 실행해, SampleClient 가 SampleServer 에의 접속을 시도하면(자), 기반이 되는 Kerberos 기구에 의해 Kerberos KDC 에의 인증이 시도됩니다. 로그인하도록(듯이) 촉구받으므로, 적절한 서비스 법칙으로서 로그인해 주세요.  <p>
+
+<li>SampleClient 의 실행시에, 인수의 1 개에 서비스 법칙명을 지정합니다. 이것은 필수입니다. 이 때문에, SampleClient 는 적절한 서비스를 사용해 시큐리티 문맥의 확립을 개시할 수 있습니다.  <p>
+
+<li>SampleClient 및 SampleServer 프로그램 (이 튜토리얼용이 아니다)을 시큐리티 매니저와 함께 실행했을 경우, 클라이언트 및 서버 정책 파일은 각각, 서비스 법칙명과 등가인 이름, 및 「initiate」나 「accept」(시큐리티 문맥 확립의 개시 또는 받아들이고)과 등가인 조작을 보관 유지하는 ServicePermission 를 필요로 합니다.
+</ul>
+
+<p>이 문서 및 관련하는 로그인 구성 파일을 통해서,
+
+<blockquote>
+<pre>
+service_principal@your_realm
+</pre>
+</blockquote>
+
+그렇다고 하는 형식에서 기술된 부분은, 자신의 환경에서 사용하는 실제의 이름으로 옮겨놓아 주세요. 서비스 법칙명으로서 「임의의」Kerberos 법칙을 실제로 사용할 수 있습니다. 이 때문에,<b>이 튜토리얼을 실행해 보는 경우, 클라이언트 사용자명과 서비스 법칙명의 양쪽 모두에 자신의 사용자명을 사용할 수 있습니다. </b>
+
+<p>일반적으로, 실전 가동 환경에서는, 시스템 관리 책임자는, 서버를 특정의 법칙만으로 실행해, 특정의 이름을 할당해 사용합니다. 대체로, 할당하는 Kerberos 형식의 서비스 법칙명은, 다음과 같이 됩니다.  
+
+<blockquote>
+<pre>
+service_name/machine_name@realm; 
+</pre>
+</blockquote>
+
+<p>예를 들어, 「KRBNT-OPERATIONS.ABC.COM」라고 하는 영역내의 「raven」라고 하는 이름의 머신으로 nfs 서비스를 실행하는 경우, 서비스 법칙명은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+nfs/raven@KRBNT-OPERATIONS.ABC.COM
+</pre>
+</blockquote>
+
+<p>다만, 이러한 멀티 컴퍼넌트명은 필수가 아닙니다. 사용자 법칙명과 같은, 싱글 컴퍼넌트명도 사용할 수 있습니다. 예를 들어, 인스톨에 의해, 영역내의 모든 ftp 서버로 같은 ftp 서비스 법칙 <code>ftp@realm</code> 를 사용하는 경우와 ftp 서버 마다 다른 ftp 법칙을 사용하는 (예를 들어, 머신 <code>host1</code>,<code>host2</code> 의 ftp 법칙이 각각 <code>ftp/host1@realm</code>,<code>ftp/host2@realm</code> 가 된다) 경우가 있습니다.
+
+
+<H2>법칙명에 영역을 지정할 필요가 있는 경우</H2>
+
+<blockquote>
+
+<p>사용자 또는 서비스 법칙명의 영역이 디폴트 영역의 경우는 (<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조),Kerberos 에 로그인할 때, 사용자명을 요구하는 prompt가 표시된 시점에서, 반드시 영역을 지정할 필요는 없습니다. 이 때문에, 예를 들어 사용자명이 「mjones@KRBNT-OPERATIONS.ABC.COM」로, SampleClient 를 실행하는 경우, 사용자명이 요구되면(자), 영역을 생략 해 「mjones」라고만 입력할 수 있습니다. 이름은 Kerberos 법칙명의 문맥으로 해석되어 필요에 따라서 디폴트의 영역을 붙일 수 있습니다.
+
+<p>GSSManager 의 <code>createName</code> 메소드에 의해, 법칙명이 GSSName 에 변환되는 경우에도, 영역의 지정을 생략 할 수 있습니다. 예를 들어, SampleClient 의 실행시에, 인수의 1 개에 서비스 법칙명을 지정합니다. 이 경우, SampleClient 가 이름을 <code>createName</code> 메소드에 건네주어, 이 메소드가 필요에 따라서 디폴트 영역을 추가하기 위해(때문에), 이름을 지정할 때에 영역을 생략 할 수 있습니다.
+
+<p>법칙명을 로그인 구성 파일 및 정책 파일로 사용하는 경우는, 항상 영역을 포함해 이름을 지정하는 것을 추천합니다. 이유는, 이러한 파일의 퍼서의 동작이 구현에 의존하지 않기 때문에, 법칙명의 사용전에 디폴트 영역이 추가되는 경우와 추가되지 않는 경우가 있기 (위해)때문에입니다. 이름에 영역이 지정되어 있지 않은 경우, 이후의 조작은 실패합니다.  
+
+</blockquote>
+
+
+</blockquote>
+
+
+<a name="TheLCF"></a> 
+<H1>로그인 구성 파일</H1>
+
+<blockquote>
+
+<p>이 튜토리얼에서는, JAAS 메소드를 직접적 (<a href="AcnOnly.html">「JAAS 인증」 </a>및<a href="AcnAndAzn.html">「JAAS 승인」</a>튜토리얼의 경우와 같이) 또는 간접적 (예를 들어,<a href="LoginSample.html">「JAAS Login 유틸리티의 사용」</a>튜토리얼이나<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>튜토리얼로 해설되고 있는 Login 유틸리티를 개입시켜)으로 호출하는 것이 아니라, 기반이 되는 Kerberos 기구가 SampleClient 및 SampleServer 를 실행하는 사용자의 쿠레덴샤르를 취득하도록(듯이) 했습니다.
+
+<p>Sun Microsystems 의 제공하는 Kerberos 기구의 디폴트 구현에서는, Kerberos 명 및 패스워드의 입력이 촉구받습니다. 그 후, Kerberos KDC 에 대해서 지정된 사용자 또는 서비스의 인증을 합니다. 이 인증 처리에는, JAAS 가 사용되고 있습니다.
+
+<p>JAAS 는 플러그 인 가능한 인증 시스템를 지원합니다. 이것은, 호출측 어플리케이션에 임의의 형태의 인증 모듈을 플러그 인 할 수 있다고 하는 것입니다. 특정의 어플리케이션으로 사용되는 로그인 모듈은, 로그인 구성에 의해 지정됩니다. Sun Microsystems 제공의 디폴트의 JAAS 구현에서는, 단일의 파일내에 로그인 구성 정보를 지정할 필요가 있습니다 덧붙여 벤더에 따라서는 파일 베이스의 구현이 제공되지 않는 경우도 있다). 로그인 구성 파일과 그 내용, 및 로그인 구성 파일의 지정 방법에 대해서는,<a href="LoginConfigFile.html">「JAAS 로그인 구성 파일」</a>을 참조해 주세요.
+
+<p>이 튜토리얼에서는, 구성 파일내에 Kerberos 로그인 모듈 <code>com.sun.security.auth.module.Krb5LoginModule</code> 가 지정됩니다. 이 로그인 모듈은, Kerberos 명과 패스워드의 입력을 요구하는 prompt를 표시해, Kerberos KDC 에 대한 인증 처리를 실행하려고 합니다.
+
+<p>로그인 구성 파일에, 클라이언트측이 사용하는 엔트리와 서버측이 사용하는 엔트리의 2 개가 포함되는 경우, SampleClient 와 SampleServer 의 양쪽 모두로 같은 로그인 구성 파일을 사용할 수 있습니다.
+
+<p>이 튜토리얼로 사용하는 로그인 구성 파일 <a href = "bcsLogin.conf">bcsLogin.conf</a>  를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+<b>com.sun.security.jgss.initiate </b> {
+  com.sun.security.auth.module.Krb5LoginModule required;
+};
+
+<b>com.sun.security.jgss.accept </b> {
+  com.sun.security.auth.module.Krb5LoginModule required storeKey=true 
+};
+</pre>
+</blockquote>
+
+<p>Sun 의 GSS-API 기구의 구현에서는, 새로운 쿠레덴샤르가 필요한 경우,<code>com.sun.security.jgss.initiate</code> 라는 이름의 엔트리와 <code>com.sun.security.jgss.accept</code> 라는 이름의 엔트리가 사용됩니다. 이 튜토리얼에서는 Kerberos V5 기구를 사용하기 위해(때문에), 이러한 쿠레덴샤르의 취득에 Kerberos 로그인 모듈의 호출이 필요합니다. 이 때문에, 엔트리내에 Krb5LoginModule 를 필수 모듈로서 기재되어 있습니다. <code>com.sun.security.jgss.initiate</code> 엔트리는 클라이언트측의 구성을 지정해,<code>com.sun.security.jgss.accept</code> 엔트리는 서버측의 구성을 지정합니다.
+
+<p>Krb5LoginModule 가 성공하는 것은, 지정된 엔티티에서의 Kerberos KDC 에의 로그인이 성공했을 경우만입니다. SampleClient 또는 SampleServer 의 실행시, 사용자는 이름과 패스워드의 입력이 요구됩니다.
+
+<p>SampleServer 의 엔트리 <b><code>storeKey=true</code></b> 는, 로그인시로 지정된 패스워드로부터 비밀열쇠를 계산하는 것, 및 로그인에 의해 작성된 주제의 private 쿠레덴샤르에 비밀열쇠를 포함하는 것을 의미합니다. 이 열쇠는, SampleClient 와 SampleServer 와의 사이에 시큐리티 문맥을 확립할 때, 상호 인증에 이용됩니다.
+
+<p>Krb5LoginModule 에 인도해 가능한 모든 옵션의 자세한 것은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule 문서</a>를 참조해 주세요.
+
+</blockquote>
+
+
+<a name="useSub"></a> 
+<H1>useSubjectCredsOnly 시스템 프로퍼티</H1>
+
+<blockquote>
+
+<p>이 튜토리얼에서는, 시스템 프로퍼티 <code>javax.security.auth.useSubjectCredsOnly</code> 를 <code>false</code> 로 설정합니다. 이 설정에 의해, JAAS 에 의해 설정된 기존의<a href="glossary.html">주제</a>로부터 필요한 쿠레덴샤르를 취득할 때,GSS 기구의 요건이 완화됩니다. 이 제한 완화에 의해, 기구가, 벤더 고유의 위치로부터 쿠레덴샤르를 취득할 수 있게 됩니다. 예를 들어,  operating system의 캐쉬 (존재하는 경우)의 사용을 선택하는 벤더나, 디스크상의 보호된 파일로부터 읽기를 선택하는 벤더가 있습니다.  
+
+<p>이 제한이 완화되었을 경우에서도, Sun Microsystem 의 Kerberos thread의 액세스 제어 문맥에 관련지을 수 있었던 주제내의 쿠레덴샤르를 검색합니다. 다만, 쿠레덴샤르가 발견되지 않았던 경우, Kerberos 모듈을 사용해 JAAS 인증을 실행해, 신규 쿠레덴샤르를 가져옵니다. Kerberos 모듈은, Kerberos 법칙명으로 패스워드를 요구하는 prompt를 표시합니다. 다른 벤더가 제공하는 Kerberos 기구의 구현에서는, 이 프로퍼티을 <code>false</code> 로 설정했을 경우의 동작이 다른 경우가 있는 것에 주의해 주세요. 각 구현의 동작에 대해서는, 제공되는 문서를 참조해 주세요.
+
+</blockquote>
+
+
+
+
+<a name="RunProgs"></a> 
+<H1>SampleClient 및 SampleServer 프로그램의 실행</H1>
+
+<blockquote>
+
+<p>SampleClient 및 SampleServer 프로그램을 실행하려면 , 다음의 조작을 실시합니다.
+
+<ul>
+
+<li><a href="#PrepSS">SampleServer 의 실행 준비</a>  <p>
+
+<li><a href="#PrepSC">SampleClient 의 실행 준비</a>  <p>
+
+<li><a href="#ExecSS">SampleServer 의 실행</a>  <p>
+
+<li><a href="#ExecSC">SampleClient 의 실행</a>  <p>
+
+</ul>
+
+
+<a name="PrepSS"></a> 
+<H2>SampleServer 의 실행 준비</H2>
+
+<blockquote>
+
+<p>SampleServer 의 실행 준비에서는, 이하의 조작을 실시합니다.
+
+<ol>
+
+<li>다음의 파일을, SampleServer 를 실행하는 머신으로부터 액세스 가능한 디렉토리에 카피합니다.  <p>
+
+<ul>
+<li><a href = "SampleServer.java">SampleServer.java</a>  원시 파일
+<li><a href = "bcsLogin.conf">bcsLogin.conf</a>  로그인 구성 파일
+</ul>
+
+<p>
+
+<li><code>SampleServer.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac SampleServer.java
+</pre>
+</blockquote>
+
+</ol>
+
+</blockquote>
+
+
+<a name="PrepSC"></a> 
+<H2>SampleClient 의 실행 준비</H2>
+
+<blockquote>
+
+<p>SampleClient 의 실행 준비에서는, 이하의 조작을 실시합니다.
+
+<ol>
+
+<li>다음의 파일을, SampleClient 를 실행하는 머신으로부터 액세스 가능한 디렉토리에 카피합니다.  <p>
+
+<ul>
+<li><a href = "SampleClient.java">SampleClient.java</a>  원시 파일
+<li><a href = "bcsLogin.conf">bcsLogin.conf</a>  로그인 구성 파일
+</ul>
+
+<p>
+
+
+<li><code>SampleClient.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac SampleClient.java
+</pre>
+</blockquote>
+
+</ol>
+
+</blockquote>
+
+
+<a name="ExecSS"></a> 
+<H2>SampleServer 의 실행</H2>
+
+<blockquote>
+
+<p>SampleClient 를 실행하기 전에, 반드시 SampleServer 를 실행해 주세요. SampleClient 는 SampleServer 에의 소켓 접속을 시도하기 (위해)때문에, SampleServer 가 가동하고 있지 않으면 소켓 접속을 받아들일 수 있는 두, 실패합니다.
+
+<p>SampleServer 를 실행하는 경우, SampleServer 를 가동할 예정의 머신으로 실행해 주세요. 이 머신명 (호스트명)은, SampleClient 의 인수로서 지정합니다. 서비스 법칙명은, 로그인 구성 파일이나 정책 파일 등, 몇개의 장소에 표시됩니다.
+
+<p>SampleServer 의 실행용으로 준비한 디렉토리로 이동합니다. 이하를 지정해, SampleServer 를 실행합니다.  <p>
+
+<ul>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) 예를 들어, 영역이 "KRBNT-OPERATIONS.ABC.COM" 의 경우,<code>-Djava.security.krb5.realm=KRBNT-OPERATIONS.ABC.COM</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) 예를 들어, KDC 가 "samplekdc.abc.com" 의 경우,<code>-Djava.security.krb5.kdc=samplekdc.abc.com</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djavax.security.auth.useSubjectCredsOnly=false</code> (기반이 되는 기구에 의한 쿠레덴샤르의 취득 방법의 지정)<a href="#useSub">「useSubjectCredsOnly 시스템 프로퍼티」</a>을 참조해 주세요.
+<p>
+
+<li><code>-Djava.security.auth.login.config=bcsLogin.conf</code> (로그인 구성 파일 <code>bcsLogin.conf</code> 를 사용)
+
+</ul>
+
+<p>SampleServer 에 필요한 인수는, 클라이언트 접속의 대기에 사용하는 포트 번호 뿐입니다. 일반적으로은 사용하지 않는 큰 포트 번호이면, 어느 번호에서도 선택할 수 있습니다(예, 4444).
+
+<p>다음에, Microsoft Windows 및 Unix 시스템의 양쪽 모두로 사용 가능한 모든 커멘드를 나타냅니다.
+
+<p><b>중요:이 커멘드의,<code>&lt;port_number&gt;</code> 를 적절한 포트 번호에,<code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역에,<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 에 각각 옮겨놓아 주세요.
+
+<p>다음에, 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djavax.security.auth.useSubjectCredsOnly=false
+ -Djava.security.auth.login.config=bcsLogin.conf 
+ SampleServer &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>커멘드 전체는, 1 행으로 입력해 주세요. 다만, UNIX 시스템의 경우, 행의 마지막에 행 계속을 나타내는 문자 「\」을 붙이는 것으로 (마지막 행을 제외하다), 복수행으로 나누어 입력할 수 있습니다. 여기에서는, 가독성만을 고려해, 복수행으로 나누어 표시하고 있습니다. 이 커멘드는 매우 길기 때문에,. bat 파일 (Windows) 또는 . sh 파일 (UNIX)에 기술해, 그 파일을 실행하는 것이 필요한 경우가 있습니다.
+
+<p><code>SampleServer</code> 코드는, 지정된 포트상에서 소켓 접속을 대기합니다. 입력이 요구되면(자), 서비스 법칙의 Kerberos 명 및 패스워드를 입력해 주세요. 로그인 구성 파일로 지정된 기반이 되는 Kerberos 인증 기구에 의해, 서비스 법칙의 Kerberos 에의 로그인을 합니다.  
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+
+<a name="ExecSC"></a> 
+<H2>SampleClient 의 실행</H2>
+
+<blockquote>
+
+<p>SampleClient 를 실행하기 위해(때문에), 최초로 SampleClient 의 실행 준비를 행한 디렉토리로 이동합니다. 이하를 지정해, SampleClient 를 실행합니다.  <p>
+
+<ul>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) <p> 
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) <p> 
+
+<li><code>-Djavax.security.auth.useSubjectCredsOnly=false</code> (기반이 되는 기구에 의한 쿠레덴샤르의 취득 방법의 지정) <p>
+
+<li><code>-Djava.security.auth.login.config=bcsLogin.conf</code> (로그인 구성 파일 <code>bcsLogin.conf</code> 를 사용)
+
+</ul>
+
+<p>SampleClient 의 인수는, (1) <a href="#KerbNames">SampleServer 를 나타내는 서비스 법칙의 Kerberos 명</a>, (2) SampleServer 를 실행하는 호스트 (머신)의 이름, (3) SampleServer 가 클라이언트 접속을 대기하는 포트 번호입니다.
+
+<p>다음에, Windows 와 Unix 의 양쪽 모두의 시스템으로 사용 가능한 전커멘드를 나타냅니다.
+
+<p><b>중요:이 커멘드의,<code>&lt;service_principal&gt;</code>,<code>&lt;host&gt;</code>,<code>&lt;port_number&gt;</code>,<code>&lt;your_realm&gt;</code>, 및 <code>&lt;your_kdc&gt;</code> 를, 적절한 값에 옮겨놓아 주세요</b> (포트 번호는, SampleServer 의 인수로서 건네준 포트 번호와 같게 할 필요가 있다). 값을 인용부호로 둘러쌀 필요는 없습니다.
+
+<p>다음에, 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djavax.security.auth.useSubjectCredsOnly=false
+ -Djava.security.auth.login.config=bcsLogin.conf 
+ SampleClient &lt;service_principal&gt; &lt;host&gt; &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>커멘드 전체를 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. SampleServer 를 실행하는 커멘드와 같이, 커멘드 윈도우에 직접 입력하려면  커멘드가 너무 긴 경우,. bat 파일 (Windows) 또는 . sh 파일 (UNIX)에 기술해, 그 파일을 실행해 주세요.
+
+<p>입력이 요구되면(자), Kerberos 사용자명 및 패스워드를 입력합니다. 로그인 구성 파일로 지정된 기반이 되는 Kerberos 인증 기구에 의해, Kerberos 에의 로그인을 합니다. SampleClient 코드는, SampleServer 에의 소켓 접속을 요구합니다. SampleServer 가 접속을 받아들이면(자), SampleClient 및 SampleServer 에 의해, 이 튜토리얼로 해설한 방법으로, 공유 문맥의 확립 및 메세지의 교환을 합니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+</blockquote>
+
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+
+<a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="AcnOnly.html" target="_top"><img src="images/NextArrow.gif" width="26"  height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</body>
+
+</html>
+
+
+

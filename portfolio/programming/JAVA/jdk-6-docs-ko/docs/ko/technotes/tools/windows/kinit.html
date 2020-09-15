@@ -1,0 +1,150 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+
+<title>kinit - Kerberos 툴 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<h1>kinit - <font size="4">Kerberos 티켓 인가 티켓의 취득과 캐쉬</font></h1>
+
+  <blockquote>
+<p>kinit 는, Kerberos 티켓 인가 티켓 (Ticket Granting Ticket, TGT)의 취득과 캐쉬에 사용됩니다. 이 툴의 기능은, SEAM 나 MIT 레퍼런스 구현 등, 다른 Kerberos 구현에 일반적으로 볼 수 있는 kinit 툴 과 유사합니다. </p>
+
+<p>kinit 를 실행하기 전에, Key Distribution Center (KDC)를 사용해 사용자를 주체로서 등록할 필요가 있습니다. </p>
+  </blockquote>
+
+<h2>형식</h2>
+
+  <blockquote>
+<p><b><code>kinit [ <a href="#commands">commands</a>  ] &lt;principal name&gt; [&lt;password&gt;]</code></b></p>
+  </blockquote>
+
+<h2>설명</h2>
+
+  <blockquote>
+<p>Windows 플랫폼에서는 디폴트로,<code>&lt;USER_HOME&gt;\krb5cc_&lt;USER_NAME&gt;</code> 라고 하는 캐쉬 파일이 생성됩니다. <code>&lt;uid&gt;</code> 는, 시스템에 로그인하고 있는 사용자의 사용자 ID 번호입니다. 모든 Unix 플랫폼에서는 디폴트로,<code>/tmp/krb5cc_&lt;uid&gt;</code> 라고 하는 캐쉬 파일이 생성됩니다. </p>
+
+<p><code>&lt;USER_HOME&gt;</code> 은,<code>java.lang.System</code> 프로퍼티 <code>user.home</code> 로부터 취득됩니다. <code>&lt;USER_NAME&gt;</code> 은,<code>java.lang.System</code> 프로퍼티 <code>user.name</code> 로부터 취득됩니다. <code>&lt;USER_HOME&gt;</code> 가 null 의 경우, 캐쉬 파일은, kinit 를 실행한 커런트 디렉토리에 보존됩니다. <code>&lt;USER_NAME&gt;</code> 는,  operating system의 로그인 사용자명입니다. 이 사용자명은, 사용자의 주체명과 다른 이름으로 할 수도 있습니다. 예를 들어 Windows NT 에서는,<code>c:\winnt\profiles\duke\krb5cc_duke</code> 와 같이 됩니다. 이 경우,<code>duke</code> 는 <code>&lt;USER_NAME&gt;</code> 이며,<code>c:\winnt\profiles\duke</code> 는 <code>&lt;USER_HOME&gt;</code> 입니다. </p>
+
+<p>디폴트에서는, 키 탭명은, Kerberos 설정 파일로부터 취득됩니다. Kerberos 구성 파일로 키 탭명이 지정되어 있지 않은 경우, 키 탭명은 <code>&lt;USER_HOME&gt;\krb5.keytab</code> 이다고 보여집니다. </p>
+
+<p>커멘드행으로 <code>password</code> 옵션을 사용하는 경우, 패스워드를 지정하지 않으면 kinit 로부터 패스워드의 입력이 요구됩니다. </p>
+
+    <blockquote>
+<p><b>주</b> -<code>password</code> 는, 테스트 목적에서만 준비되어 있습니다. 스크립트에 패스워드를 기술하거나 커멘드행에 패스워드를 입력하거나 하지 말아 주세요. 이와 같이 했을 경우, 패스워드가 누설 하는 위험성이 있습니다. </p>
+    </blockquote>
+
+<p>자세한 것은,<a href=     "http://docs.sun.com/?q=kinit&amp;p=/doc/816-0210/6m6nb7mck&amp;a=view">kinit 의 메뉴얼 페이지</a>를 참조해 주세요. </p>
+  </blockquote>
+
+<h2><a name="commands" id="commands"></a> 커멘드</h2>
+
+  <blockquote>
+<p><b>사용 방법:<code> kinit [-fp] [-c <&lt;<i><em>cache_name</em></i>&gt;>] [-k] [-t <&lt;<i><em>keytab_filename</em></i>&gt;>] [<&lt;<i><em>principal</em></i>&gt;>] [<&lt;<i><em>password</em></i>&gt;>] [-help]</code></b></p>
+
+    <blockquote>
+      <table width="528" border="1" cellspacing="2" cellpadding="2"
+      summary=
+      "List of kinit Command Line Option Names and Descriptions">
+        <tr>
+<th>커멘드 옵션</th>
+
+<th>설명</th>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-f</code></td>
+
+<td width="65%">전송 가능 티켓을 발행한다</td>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-p</code></td>
+
+<td width="65%">프록시화 가능 티켓을 발행한다</td>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-c <&lt;<i><em>cache_name</em></i>&gt;</code></td>
+
+<td width="65%">캐쉬명 (즉,<code>FILE:d:\temp\mykrb5cc</code>)</td>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-k</code></td>
+
+<td width="65%">키 탭을 사용</td>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-t <&lt;<i><em>keytab_filename</em></i>&gt;</code></td>
+
+<td width="65%">키 탭명 (즉,<code>d:\winnt\profiles\duke\krb5.keytab</code>)</td>
+        </tr>
+
+        <tr>
+          <td width="35%">
+<code>&lt;<i><em>principal</em></i>&gt;</code></td>
+
+<td width="65%">주체명 (즉,<code>duke@java.sun.com</code>)</td>
+        </tr>
+
+        <tr>
+          <td width="35%">
+<code>&lt;<i><em>password</em></i>&gt;</code></td>
+
+<td width="65%">주체의 Kerberos 패스워드. <br />커멘드행 또는 스크립트로 지정하지 않는 것</td>
+        </tr>
+
+        <tr>
+<td width="35%"><code>-help</code></td>
+
+<td width="65%">설명을 표시한다</td>
+        </tr>
+      </table>
+    </blockquote>
+  </blockquote>
+
+<h2>례</h2>
+
+  <blockquote>
+<p>디폴트 서비스에 대해, 현재의 클라이언트 호스트로부터 인증에 대해서 유효한 자격을 요구해, 디폴트의 장소 (<code>c:\winnt\profiles\duke\krb5cc_duke</code>)에 자격 캐쉬를 보존합니다. </p>
+
+    <blockquote>
+<p><code>kinit duke@JAVA.SUN.COM</code></p>
+    </blockquote>
+
+<p>다른 주체 마다 프록시화 가능한 자격을 요구해, 지정한 파일 캐쉬에 이러한 자격을 보존합니다. </p>
+
+    <blockquote>
+<p><code>kinit -p -c FILE:c:\winnt\profiles\duke\credentials\krb5cc_cafebeef cafebeef@JAVA.SUN.COM</code></p>
+    </blockquote>
+
+<p>다른 주체 마다 프록시화 가능 및 전송 가능한 자격을 요구해, 지정한 파일 캐쉬에 이러한 자격을 보존합니다. </p>
+
+    <blockquote>
+<p><code>kinit -f -p -c FILE:c:\winnt\profiles\duke\credentials\krb5cc_cafebeef cafebeef@JAVA.SUN.COM</code></p>
+    </blockquote>
+
+<p>kinit 의 헬프 메뉴를 표시합니다. </p>
+
+    <blockquote>
+<p><code>kinit -help</code></p>
+    </blockquote>
+  </blockquote>
+
+<h2>시큐리티상의 주의</h2>
+
+  <blockquote>
+<p><code>password</code> 플래그는, 테스트용으로 준비되어 있을 뿐입니다. 커멘드행에 패스워드를 입력하지 말아 주세요. 패스워드를 입력하면(자) 시큐리티 홀이 생겨 예를 들어 Unix <code>ps</code> 커멘드를 실행하고 있을 때, 그 패스워드가 공격자가 찾아낼 수 있을 가능성이 있습니다. </p>
+  </blockquote>
+</body>
+</html>

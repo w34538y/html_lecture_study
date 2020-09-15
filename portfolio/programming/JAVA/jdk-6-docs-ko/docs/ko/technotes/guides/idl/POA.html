@@ -1,0 +1,431 @@
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--updated dcarson 10/2001-->
+<TITLE>Java IDL:휴대용 객체 어댑터 (POA) - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER>휴대용 객체 어댑터 (POA)</H1>
+<HR>
+<P>
+
+<H2>휴대용 객체 어댑터 (POA)란</H2>
+
+<P>「객체 어댑터」는, 객체 참조를 사용하는 요구와 적절한 코드를 접속해, 그 요구에 서비스를 제공하는 기구입니다. 휴대용 객체 어댑터 (POA)는, CORBA 스펙에 의해 정의된 특별한 종류의 객체 어댑터입니다. POA 는 다음의 목표를 채우도록(듯이) 설계되고 있습니다.
+<P>
+<UL>
+<LI>프로그래머가, 다른 ORB 제품간에 이식 가능한 객체 구현을 구축할 수 있도록(듯이) 한다
+<LI>지속성이 있는 식별 정보를 가지는 객체를 지원한다
+<LI>객체가 투과적으로 기동하도록(듯이) 지원한다
+<LI>단독의<a href="jidlGlossary.html#servant">서번트</a>가 각각 식별되는 복수의 객체를 동시에 지원할 수 있도록(듯이) 한다
+</UL>
+
+<P>이 문서에서는, Java 2 Platform, Standard Edition 에서의 POA 의 사용법의 개요에 대해 설명합니다. POA 의 상세한 것에 대하여는,<em><a href="http://www.omg.org/docs/formal/99-10-07.pdf">「CORBA 2.3. 1 스펙」</a> </em>의 제 11 장을 참조해 주세요.   
+
+
+<!--  ********** Using the POA  ***************--> <a name="using"></a> 
+<H2>POA 의 작성과 사용</H2>
+
+<P>POA 를 작성해 사용하기 위한 순서는, 개발하는 특정의 어플리케이션에 따라서 다릅니다. POA 의 라이프 사이클에서는, 일반적으로, 다음의 순서를 실행합니다.
+<P>
+<OL>
+<LI><a href="#create">루트 POA 의 취득</a> 
+<LI><a href="#policy">POA 의 정책의 정의</a> 
+<LI><a href="#createpoa">POA 의 작성</a> 
+<LI><a href="#poamanager">POAManager 의 기동</a> 
+<LI><a href="#servant">서번트의 기동</a>  (Tie 의 기동을 포함한 경우가 있다)
+<LI><a href="#objref">POA 로부터의 객체 참조의 작성</a> 
+</OL>
+
+<P>다음에 이러한 각 순서에 대해 자세하게 설명합니다.
+
+
+<!--  **********  Get THE ROOT POA ***************--> <a name="create"></a> 
+<P><FONT SIZE=+1><STRONG>스텝 1:루트 POA 의 취득</STRONG></FONT>
+<BLOCKQUOTE>
+<P>최초의 순서는, 1 번째의 POA 의 취득입니다. 이 POA 는 「루트 POA」라고 불립니다.   
+
+루트 POA 는, ORB 에 의해 관리되어 ORB 초기화 인터페이스를 사용하는 어플리케이션에 「RootPOA」라고 하는 초기 객체명으로 제공됩니다.  
+
+<P>루트 POA 객체를 취득해, 그것을 POA 에 캐스트 하는 코드의 예를 다음에 나타냅니다.
+<P>
+<pre>
+      ORB orb = ORB.init( args, null );
+      POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+</pre>
+</BLOCKQUOTE>
+
+
+<!--  ********** Define the POA's Policies ***************--> <a name="policy"></a>  <FONT SIZE=+1><STRONG>스텝 2:POA 의 정책의 정의</STRONG></FONT>
+
+<BLOCKQUOTE>
+<P>휴대용 객체 어댑터 (POA)는, 복수의 ORB 구현으로 사용할 수 있는 객체 어댑터를 제공하기 위해서 설계되고 있어 다른 벤더의 구현을 취급하는 경우도 고쳐 쓸 필요가 없게 되어 있습니다.   
+
+<P>POA 는, 적어도 클라이언트의 입장으로부터는 지속 객체가 가능하게 되도록(듯이) 하고 있습니다. 즉, 서버가 물리적으로 몇번 재기동되어도, 그 클라이언트가 관계하는 범위에서는, 이러한 객체는 항상 가동하고 있어, 객체에 포함된 데이터값가 유지되고 있습니다.  
+
+<P>POA 를 사용하면(자), 객체의 구현자는, 객체의 식별, 상태, 기억 영역, 및 라이프 사이클에 관해서보다 많은 제어를 실시할 수가 있습니다. POA 는, 사용되는 정책나 디폴트 값를 정의하지 않고 작성할 수 있습니다. 루트 POA 에는 디폴트로 다음의 정책가 정의되고 있습니다.
+<P>
+<UL>
+<LI>thread 정책 :ORB_CTRL_MODEL 
+<LI>라이프 타임 정책 :TRANSIENT
+<LI>객체 ID 일의성 정책 :UNIQUE_ID
+<LI>ID 할당 정책 :SYSTEM_ID
+<LI>서번트 보관 유지 정책 :RETAIN
+<LI>요구 처리 정책 :USE_ACTIVE_OBJECT_MAP_ONLY
+<LI>암묵적 기동 정책 :IMPLICIT_ACTIVATION
+</UL>
+
+<P>다음의 코드는,<a href="../rmi-iiop/rmiiiopexample.html#server">RMI-IIOP 를 사용한 POA</a> 의 예에서의 정책의 설정 방법법을 나타내고 있습니다.
+<P>
+<pre>
+      Policy[] tpolicy = new Policy[3];
+      tpolicy[0] = rootPOA.create_lifespan_policy(
+        LifespanPolicyValue.TRANSIENT );
+      tpolicy[1] = rootPOA.create_request_processing_policy(
+        RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY );
+      tpolicy[2] = rootPOA.create_servant_retention_policy(
+        ServantRetentionPolicyValue.RETAIN);
+</pre>
+
+
+
+<P>다음에 각 정책에 대해 간단하게 설명합니다. POA 정책의 자세한 것은, CORBA/IIOP 2.3. 1 스펙 (<a  href="http://www.omg.org/docs/formal/99-10-07.pdf">http://www.omg.org/docs/formal/99-10-07.pdf</a> )의 제 11 장 「Portable Object Adapter」를 참조해 주세요.
+
+<!--  ********** Thread Policy ***************--> <a name="thread"></a> 
+<H4>thread 정책</H4>
+
+<P>이 정책는, 작성 끝난 POA 와 함께 사용되는 thread 모델을 지정합니다. 디폴트는 <code>ORB_CTRL_MODEL</code> 입니다.  
+
+<P><code>ThreadPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+<P>
+<UL>
+<LI><code>ORB_CTRL_MODEL</code> - ORB 에 의해 제어되는 POA 에 대한 요구의 thread에의 할당을 ORB 가 실시한다 
+<LI><code>SINGLE_THREAD_MODEL</code> - 싱글스 레드 POA 에 대한 요구가 차례차례 처리된다(<STRONG>주: </STRONG> 이 정책는, Sun 의 J2SE v. 1.4. 1 이후에 포함되는 ORB 에서는 지원되어 있지 않다)
+</UL>
+
+<!--  ********** Lifespan Policy ***************--> <a name="lifespan"></a> 
+<H4>라이프 타임 정책</H4>
+
+<P>이 정책는, 작성 끝난 POA 내에서 구현되는 객체의 라이프 타임을 지정합니다. 디폴트는 <code>TRANSIENT</code> 입니다.  
+
+<P><code>LifespanPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+	<UL>
+	 <LI><code>TRANSIENT</code> - POA 로 구현된 객체는, 그 객체가 최초로 작성된 POA 인스턴스보다 길게 지속할 수 없다 
+	 <LI><code>PERSISTENT</code> - POA 로 구현된 객체는, 그 객체가 최초로 작성된 프로세스보다 길게 지속할 수 있다
+	 </UL>
+
+<!--  ********** Object Id Uniqueness Policy ***************--> <a name="oi"></a> 
+<H4>객체 ID 일의성 정책</H4>
+
+<P>이 정책는, 작성 끝난 POA 내에서 기동되는 서번트가 일의의 객체 ID 를 가질 필요가 있을지 어떨지를 지정합니다. 디폴트는 <code>UNIQUE_ID</code> 입니다.  
+
+<P><code>IdUniquenessPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+<P>
+<UL>
+<LI><code>UNIQUE_ID</code> - 그 POA 를 사용해 기동되는 서번트는 객체 ID 를 1 개만 가진다
+<LI><code>MULTIPLE_ID</code> - 그 POA 를 사용해 기동되는 서번트는 1 개 또는 복수의 객체 ID 를 가질 수가 있다 
+</UL>
+
+
+<!--  ********** Id Assignment Policy ***************--> <a name="ia"></a> 
+<H4>ID 할당 정책</H4>
+<P>이 정책는, 작성 끝난 POA 내의 객체 ID 가 어플리케이션 또는 ORB 의 어느 쪽에 의해 생성되는지를 지정합니다. 디폴트는 <code>SYSTEM_ID</code> 입니다.  
+
+<P><code>IdAssignmentPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+<P>
+<UL>
+<LI><code>USER_ID</code> - 그 POA 를 사용해 작성되는 객체에는, 어플리케이션에 의해서만 객체 ID 를 할당할 수 있다 
+<LI><code>SYSTEM_ID</code> - 그 POA 를 사용해 작성되는 객체에는, POA 에 의해 일의의 객체 ID 를 할당할 수 있다. 그 POA 에 <code>PERSISTENT</code> 정책도 정의되고 있는 경우, 할당할 수 있는 객체 ID 는, 같은 POA 에 의해 생성되는 모든 인스턴스로 일의가 될 필요가 있다 
+</UL>
+
+
+
+
+<!--  ********** Servant Retention Policy ***************--> <a name="sr"></a> 
+<H4>서번트 보관 유지 정책</H4>
+
+
+<P>이 정책는, 작성 끝난 POA 가, 액티브 객체 맵내에 액티브한 서번트를 보관 유지할지 어떨지를 지정합니다. 디폴트는 <code>RETAIN</code> 입니다.
+
+<P><code>ServantRetentionPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.  
+	  <UL>
+	  <LI><code>RETAIN</code> - POA 가 액티브 객체 맵내에 액티브한 서번트를 보관 유지하는 것을 나타낸다 
+	  <LI><code>NON_RETAIN</code> - 서번트가 POA 에 의해 보관 유지되지 않는 것을 나타낸다 
+	  </UL>
+
+<!--  ********** Request Processing Policy ***************--> <a name="rp"></a> 
+<H4>요구 처리 정책</H4>
+
+<P>이 정책는, 작성 끝난 POA 에 의한 요구의 처리 방법을 지정합니다. 디폴트는 <code>USE_ACTIVE_OBJECT_MAP_ONLY</code> 입니다.  
+
+<P><code>RequestProcessingPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.   
+	  <UL>
+	  <LI><code>USE_ACTIVE_OBJECT_MAP_ONLY</code> - 객체 ID 가 액티브 객체 맵내에서 발견되지 않는 경우, 클라이언트에 <code>OBJECT_NOT_EXIST</code> 예외가 반환된다. 이 경우,<code>RETAIN</code> 정책도 필요
+	  <LI><code>USE_DEFAULT_SERVANT</code> - 객체 ID 가 액티브 객체 맵내에서 발견되지 않는 경우, 또는 <code>NON_RETAIN</code> 정책가 존재하는 경우,<code>set_servant</code> 오퍼레이션을 사용해 디폴트 서번트가 POA 에 등록되어 있으면, 요구는 디폴트 서번트에게 발송 된다 
+	  <LI><code>USE_SERVANT_MANAGER</code> - 객체 ID 가 액티브 객체 맵내에서 발견되지 않는 경우, 또는 <code>NON_RETAIN</code> 정책가 존재하는 경우,<code>set_servant_manager</code> 오퍼레이션을 사용해 서번트 매니저가 POA 에 등록되어 있으면, 서번트 매니저가 서번트를 검색 또는 기동하든가, 혹은 예외를 발생시킨다 
+	  </UL>
+
+<!--  **********Implicit ActivationPolicy ***************--> <a name="ia"></a> 
+<H4>암묵적 기동 정책</H4>
+
+<P>이 정책는, 작성 끝난 POA 로 서번트의 암묵적인 기동이 지원될지 어떨지를 지정합니다. 디폴트 값는 <code>IMPLICIT_ACTIVATION</code> 입니다.
+
+<P><code>ImplicitActivationPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+<P>
+<UL>
+<LI><code>IMPLICIT_ACTIVATION</code> - 서번트의 암묵적인 기동을 나타낸다. 이 정책를 설정하는 경우는,<code>SYSTEM_ID</code> 정책와 <code>RETAIN</code> 정책를 설정할 필요가 있다
+<LI><code>NO_IMPLICIT_ACTIVATION</code> - 서번트의 암묵적인 기동을 실시하지 않는 것을 나타낸다 
+</UL>
+</BLOCKQUOTE>
+
+<!--  ********** CREATE THE POA  ***************--> <a name="createpoa"></a>  <FONT SIZE=+1><STRONG>스텝 3:POA 의 작성</STRONG></FONT>
+<BLOCKQUOTE>
+<P>어플리케이션 개발자는, 새로운 POA 를 작성하는 것에 의해, 새로운 POA 용으로 선택한 특정의 정책를 선언해, 다른<a href="#adapteractivator">어댑터 activator </a>및<a  href="#servantmanager">서번트 매니저</a>  (이것들은, POA 가 필요한 POA 의 기동과 서번트의 기동을 실시하기 위해서(때문에) 사용하는 콜백 객체)를 제공할 수 있습니다. 객체 ID 는 POA 에 대해서 상대적으로 해석되기 (위해)때문에, 어플리케이션 개발자는, 새로운 POA 를 작성하는 것에 의해 한층 더 객체의 이름 공간의 구분도 실시할 수가 있습니다. 또, 새로운 POA 를 작성하면(자), 개발자는, 복수의 객체세트에 대한 요구의 처리를 개별적으로 제어할 수 있습니다.
+
+<P>POA 는, 부모의 POA 에 대한 <tt>create_POA</tt> 오퍼레이션을 사용해, 기존의 POA 의 아이로서 작성됩니다. 새로운 POA 를 작성하려면 , 이하의 정보를 건네줍니다.  
+<P>
+<UL>
+<LI>POA 의 이름. POA 에 붙이는 이름은, 같은 부모를 가지는 모든 POA 로 일의가 아니면 안된다. 다음의 예에서는, POA 에 <code>childPOA</code> 라는 이름을 붙인다
+<LI>POA 매니저. 새로운 POA 에 관련짓는 POA 매니저를 지정한다. 다음의 예로 가리키도록(듯이), 이 파라미터로서 <tt>null</tt> 를 건네주면(자), 새로운 POA 매니저가 작성된다. 사용자는, 다른 POA 의 POA 매니저를 건네줄 수도 있다
+<LI>정책 리스트. POA 의 동작을 제어하기 위해서 POA 에 관련짓는 정책 리스트를 지정한다. 다음의 예에서는, 이 POA 에 대해서 지속 라이프 타임 정책가 벌써 정의되고 있다  
+</UL>
+
+
+<P>다음의 코드는,<a href="jidlExample2.html#server">지속 서버를 사용한 Hello World </a> 의 예에서의 POA 의 작성 방법을 나타냅니다.
+
+
+<UL><pre>
+// Create a POA by passing the Persistent Policy
+POA persistentPOA = rootPOA.create_POA("childPOA", null, 
+   persistentPolicy ); 
+</pre>
+</UL>
+</BLOCKQUOTE>
+
+
+
+<!--  ********** POA MANAGER ***************--> <a name="poamanager"></a>  <FONT SIZE=+1><STRONG>스텝 4:POAManager 의 기동</STRONG></FONT>
+<BLOCKQUOTE>
+
+<P>각 POA 객체에는 <code>POAManager</code> 객체를 관련지을 수 있습니다. <code>POAManager</code> 객체는, POA 에 대한 요구를 큐에 넣는지 파기하는가 한, 관련 POA 의 처리 상태를 제어합니다. <code>POAManager</code> 는, POA 를 정지할 수도 있습니다. POA 매니저는, 1 개(살) 이상의 POA 객체에 관련지을 수 있는 일이 있습니다.   
+ 
+<P><code>POAManager</code> 에는, 다음 상태를 지정할 수 있습니다.  
+<P>
+<UL>
+<LI>보관 유지 - 이 상태의 경우, 관련하는 POA 는 착신 요구를 큐에 넣는다 
+<LI>기동 - 이 상태의 경우, 관련하는 POA 는 요구의 처리를 개시한다
+<LI>파기 - 이 상태의 경우, 관련하는 POA 는 착신 요구를 파기한다 
+<LI>정지 - 이 상태의 경우, 관련하는 POA 는, 실행이 개시되어 있지 않은 요구와 모든 신규 요구를 거부한다 
+</UL>
+
+<P>이러한 상태의 상세한 것에 대하여는,<a href="../../../api/org/omg/PortableServer/POAManagerOperations.html"><code>POAManagerOperations</code></a>  의 javadoc 를 참조해 주세요.
+
+
+<P>POA 매니저는, 작성시에 자동적으로 기동되지 않습니다. 다음의 코드는,<a href="jidlExample2.html#server">지속속서버를 사용한 Hello World </a> 의 예에서의 <tt>POAManager</tt> 의 기동 방법을 나타냅니다. 이 방법으로 POA 매니저를 기동하지 않으면 POA 매니저는 디폴트에서는 <code>HOLD</code> 상태가 되어 있기 (위해)때문에,<code>Servant</code> 에 대한 모든 호출이 행업 해 버립니다.
+ 
+<P><pre>
+            // Activate PersistentPOA's POAManager.  Without this step,
+            // all calls to Persistent Server will hang because POAManager
+            // will be in the 'HOLD' state.
+            persistentPOA.the_POAManager(). activate( );
+</pre>
+</BLOCKQUOTE>
+<P>
+
+<!--  ********** SERVANTS ***************--> <a name="servant"></a>  <FONT SIZE=+1><STRONG>스텝 5:서번트의 기동</STRONG></FONT>
+<BLOCKQUOTE>
+
+<P>이하의 설명은, CORBA 스펙의 11.2. 5 항으로부터 인용한 것입니다.
+
+<blockquote>CORBA 객체는, 액티브한 서번트가 관련지을 수 있는 경우와 관련지을 수 없는 경우가 있습니다.  
+
+<P>POA 에 <code>RETAIN</code> 정책가 정의되고 있는 경우, 서번트와 서번트가 관련지을 수 있었던 객체 ID 가, 적절한 POA 의 액티브 객체 맵에 입력됩니다. 이러한 기동은, 다음의 어떤 것이나 방법으로 실행할 수 있습니다.
+
+<P>
+<UL>
+<LI>서버 어플리케이션 자체가,<code>activate_object</code> 오퍼레이션 또는 <code>activate_object_with_id</code> 오퍼레이션을 사용해, 개개의 객체를 명시적으로 기동한다<P>
+<LI>서버 어플리케이션이, 사용자 지정의 서번트 매니저를 기동하는 것에 의해 필요한 객체를 기동하도록(듯이) POA 에 지시한다. 서버 어플리케이션은,<code>set_servant_manager</code> 를 사용해 이 서번트 매니저를 등록한다<P>
+<LI><code>IMPLICIT_ACTIVATION</code> 정책가 유효해 한편 언어 바인딩으로 다음과 같은 오퍼레이션이 허가되고 있는 상황에서는, 서버 어플리케이션이, 기동되어 있지 않은 (즉 객체 ID 를 관련지을 수 있지 않았다) 서번트의 참조를 취득하려고 했을 때에, POA 가 객체를 암묵적으로 기동할 수 있다
+</UL>
+
+<P><code>USE_DEFAULT_SERVANT</code> 정책도 유효하게 되어 있는 경우, 서버 어플리케이션은, 객체 ID 에 관계없이, 1 살의 서번트를 기동하는 것에 의해 미지의 객체를 기동하도록(듯이) POA 에 지시합니다. 서버 어플리케이션은,<code>set_servant</code> 를 사용해 이 서번트를 등록합니다.  
+
+<P>POA 에 <code>NON_RETAIN</code> 정책가 정의되고 있는 경우, POA는, 모든 요구에 대해서, 디폴트의 서번트 또는 서번트 매니저를 사용해 액티브한 서번트를 찾을 수가 있습니다. POA 로부터 보면(자), 서번트는, 1 개의 요구의 처리중만 액티브하게 되어 있습니다. POA 는, 서번트와 객체가 관련짓고를 액티브 객체 맵에 입력하지 않습니다.
+</blockquote>
+
+
+<P>RMI-IIOP 테크놀러지를 사용하고 있는 구현은, 그 구현을 인터페이스에 관련짓기 위해서(때문에) 위양 ( 「Tie 모델」이라고 불린다)을 사용합니다. 구현의 인스턴스를 작성했을 때는, 그 인스턴스를 CORBA 인터페이스에 관련짓기 위해서(때문에) Tie 객체를 작성할 필요도 있습니다. 다음의 코드는, POA 정책가 <code>USE_ACTIVE_OBJECT_MAP_ONLY</code> 의 경우에 Tie 를 기동하는 방법을 나타내고 있습니다. 이 샘플 코드는,<a  href="../rmi-iiop/rmiiiopexample.html#server">RMI-IIOP 를 사용한 POA </a>  의 예로 사용되고 있는 것입니다.
+<P>
+<UL>
+<pre>
+_HelloImpl_Tie tie = (_HelloImpl_Tie) Util.getTie( helloImpl );
+String helloId = "hello";
+byte[] id = helloId.getBytes();
+tPOA.activate_object_with_id( id, tie );
+</pre>
+</UL>
+
+<P>CORBA 스펙에는, 객체 참조의 작성 (11.2. 4 항), 객체의 기동 (11.2. 5 항), 및 요구의 처리 (11.2. 6 항)에 관한 자세한 설명이 기재되어 있습니다. 자세한 것은,<em><a href="http://www.omg.org/docs/formal/99-10-07.pdf">「CORBA 2.3. 1 스펙」</a> </em>을 참조해 주세요.
+<P>
+</BLOCKQUOTE>
+
+<!--  **********  OBJECT REFERENCES ***************--> <a name="objref"></a>  <FONT SIZE=+1><STRONG>스텝 6:객체 참조의 작성</STRONG></FONT>
+<BLOCKQUOTE>
+<P>객체 참조는 서버로 작성됩니다. 작성한 객체 참조는 클라이언트에 export 할 수 있습니다. 객체 참조는, 객체의 식별 정보를 캡슐화해, 한층 더 객체에 관련지을 수 있고 있는 서버와 POA 를 식별해 찾기 위해서(때문에) ORB 가 필요로 하는 정보를 캡슐화합니다. 참조는, 다음의 몇개의 방법으로 작성됩니다.
+ 
+ <P>
+ <UL>
+<LI>서번트를 명시적으로 기동해, 객체 참조에 관련짓는다
+ 
+<P>다음의 예는,<a href="jidlExample2.html#server">지속 서버를 사용한 Hello World </a> 의 예로 사용되고 있는 것입니다. 이 예에서는,<code>servant_to_reference</code> 오퍼레이션을 사용해, 기동한 서번트를 대응하는 객체 참조에 매핑 합니다.
+
+<P>
+<UL>
+<pre>
+// Resolve Root Naming context and bind a name for the
+// servant.
+org.omg.CORBA.Object obj = orb.resolve_initial_references(
+  "NameService" );
+NamingContextExt rootContext = NamingContextExtHelper.narrow( obj );
+
+NameComponent[] nc = rootContext.to_name( 
+  "PersistentServerTutorial" );
+rootContext.rebind( nc, persistentPOA. <strong>servant_to_reference</strong>( 
+  servant ) );
+</pre>
+</UL></LI><P>
+
+<LI>서버 어플리케이션이 직접 참조를 작성한다
+
+
+<P>다음의 예는,<a  href="../rmi-iiop/rmiiiopexample.html#server">RMI-IIOP 를 사용한 POA </a>  의 예로 사용되고 있는 것입니다. 이 예에서는, 다음의 코드에 의해 직접 참조를 작성합니다. 그 때문에(위해), 추상 객체를 실체화합니다만, 그 객체를 액티브한 서번트에게는 관련짓지 않습니다.
+<P>
+<ul>
+<pre>
+// Publish the object reference using the same object id
+// used to activate the Tie object.
+Context initialNamingContext = new InitialContext();
+initialNamingContext.rebind("HelloService", 
+tPOA. <strong>create_reference_with_id</strong>(id, 
+  tie. _all_interfaces(tPOA, id)[0]) );
+</pre>
+</ul></LI>
+<P>
+<LI>서버 어플리케이션이 서번트 자체를 암묵적으로 기동시킨다
+
+<P>이 동작은,<code>IMPLICIT_ACTIVATION</code> 정책를 사용해 POA 를 작성했을 경우에만 발생합니다. 이것은 디폴트의 동작입니다.
+
+</UL>
+
+<P>서버로 작성한 참조는, 클라이언트에 제공할 수가 있습니다. 객체 참조의 작성과 클라이언트에의 export의 상세한 것에 대하여는,<em><a href="http://www.omg.org/docs/formal/99-10-07.pdf">「CORBA 2.3. 1 스펙」</a> </em>의 11.2. 4 항을 참조해 주세요.
+</BLOCKQUOTE>
+
+<!--  ********** ADAPTER ACTIVATORS ***************--> <a name="adapteractivator"></a> 
+<H2>어댑터 activator</H2>
+
+<P><UL>
+<STRONG>
+<LI>
+어댑터 activator를 사용한 어플리케이션의 예는,<a  href="adapteractivator.html">「어댑터 activator의 사용」</a>을 참조해 주세요. </strong>
+</UL>
+<P><strong>어댑터 activator</strong>는 옵션입니다. 어댑터 activator는, 요구의 처리중에 POA 를 작성할 필요가 있는 경우에 사용합니다. 어플리케이션의 실행시에, 필요한 POA 가 모두 작성되고 있는 경우는, 어댑터 activator는 필요 없습니다.
+
+
+<P>어댑터 activator를 사용하면(자), POA 는, 필요에 따라서 아이 POA 를 작성할 수 있게 됩니다. 아이 POA 의 작성은, 아이 POA (또는 복수의 아이의 어떤 것인지)를 지정한 요구를 수신했을 때의 부작용으로서 실행되든가, 혹은 기동 파라미터치 TRUE 를 사용해 <code>find_POA</code> 메소드가 불려 갔을 때에 실행됩니다. ORB 는, 존재하고 있지 않는 아이 POA 에의 요구를 받아들이면(자), 어댑터 activator의 오퍼레이션을 호출합니다. 어댑터 activator는 필요한 POA 를 그 자리에서 작성합니다.
+
+<P>요구는, 타겟 객체의 객체 ID 와 타겟 객체 참조를 작성한 POA 의 식별 정보를 전달할 수 있을 필요가 있습니다. 클라이언트로부터 요구가 발행되면(자), ORB 는, 처음에 적절한 서버를 찾아 (필요한 경우는 기동한다), 다음에 그 서버내에서 적절한 POA 를 찾습니다.  
+
+<P>서버 프로세스내에 POA 가 존재하지 않는 경우, 어플리케이션은, 어댑터 activator를 사용해 필요한 POA 를 재작성할 수가 있습니다. 어댑터 activator는, 사용자에 의해 구현되는 객체로, POA 에 관련지을 수가 있습니다. 어댑터 activator는, 존재하고 있지 않는 POA 에의 요구를 받아들였을 경우에, ORB 에 의해 불려 갑니다. 여기서 어댑터 activator에, 필요한 POA 를 작성할 기회가 주어집니다. 어댑터 activator가 POA 를 작성하지 않는 경우, 클라이언트는 <code>ADAPTER_NONEXISTENT</code> 예외를 받습니다.  
+
+<P>ORB 는, 필요한 POA 를 찾아내면(자), 그 POA 에 요구를 건네줍니다. 그 후의 요구의 처리는, POA 에 관련지을 수 있고 있는 정책와 객체의 현재의 기동 상태에 따라서 다릅니다.
+
+
+
+
+<P>어댑터 activator의 상세한 것에 대하여는,<em><a href="http://www.omg.org//docs/formal/99-10-07.pdf">「CORBA 2.3. 1 스펙」</a> </em>의 11.3. 3 항 또는 <a  href="../../../api/org/omg/PortableServer/AdapterActivatorOperations.html"><em>「AdapterActivatorOperations API 문서」</em></a> 를 참조해 주세요.
+
+
+
+<!--  ********** SERVANT MANAGERS ***************--> <a name="servantmanager"></a> 
+<H2>서번트 매니저</H2>
+
+<P>서번트 매니저는 옵션입니다. 서번트 매니저를 사용하면(자), POA 가, 무효인 객체에 대한 요구를 받아들였을 때에, 필요한 서번트를 기동할 수 있게 됩니다. 서버가 기동시에 모든 객체를 로드하는 경우는, 서번트 매니저는 필요 없습니다.   
+
+<P><strong>서번트 매니저</strong> 는, 어플리케이션 개발자가 POA 와 관련지을 수가 있는 콜백 객체입니다. ORB 는 서번트 매니저의 오퍼레이션을 호출해, 필요에 따라서 서번트를 기동하거나 정지하거나 합니다. 서번트 매니저에게는, 객체 ID 치로 특징지워지는 객체 참조와 특정의 서번트의 관련을 관리해, 객체 참조가 존재할지 어떨지를 결정하는 기능이 있습니다. 각 형의 서번트 매니저는 2 개의 오퍼레이션을 실행할 수 있습니다. 1 개(살)은 서번트를 찾아내 돌려주기 위한 오퍼레이션으로, 이제(벌써) 1 개(살)은 서번트를 정지하기 위한 오퍼레이션입니다. 오퍼레이션은, 그 상황으로 사용할 수 있는 정보의 양에 따라서 다릅니다.
+
+<P>서번트 매니저를 사용하려면 ,<code>USE_SERVANT_MANAGER</code> 정책를 설정할 필요가 있습니다. 이 정책를 설정하면(자), POA 내외의 정책에 응해, 특정의 상황으로 사용되는 서번트 매니저의 형태가 정해집니다. 서번트 매니저에게는 다음의 2 개의 형태가 있습니다.
+<P>
+<UL>
+<LI><code><a  href="../../../api/org/omg/PortableServer/ServantActivatorOperations.html">ServantActivator</a> </code>
+<P>POA 에 <code>RETAIN</code> 정책가 정의되고 있는 경우, POA 는,<code>ServantActivator</code> 형의 서번트 매니저를 사용합니다.  
+<P>이 형태는, 일반적으로, 지속 객체를 기동하기 위해서 사용됩니다.  
+<P><UL>
+<LI><STRONG>서번트 activator를 사용한 어플리케이션의 예는,<a href="servantactivator.html">「서번트 activator의 사용」</a>을 참조해 주세요.  </STRONG>
+</UL>
+
+<P>
+<LI><code><a  href="../../../api/org/omg/PortableServer/ServantLocatorOperations.html">ServantLocator</a> </code>
+<P>POA 에 <code>NON_RETAIN</code> 정책가 정의되고 있는 경우, POA 는,<code>ServantLocator</code> 형의 서번트 매니저를 사용합니다. POA 는, 이 서번트 매니저에 의해 반환되는 서번트가 단일의 요구의 처리에만 사용되는 것을 인식하고 있습니다. 그 때문에, POA 는, 서번트 매니저의 오퍼레이션에 추가의 정보를 제공할 수가 있어 서번트 매니저의 복수의 오퍼레이션을 제휴시켜,<code>ServantActivator</code> 와는 다른 처리를 실행할 수 있습니다. POA 가 <code>ServantLocator</code> 인터페이스를 사용하는 경우, 사전 호출에 의해 반환된 서번트의 호출 오퍼레이션을 실행한 직후에, POA 는, 서번트 매니저의 사후 호출을 실행해, ObjectId 치 및 Servant 치를 파라미터의 일부로서 건네줍니다. 이 기능을 사용하면(자), POA 에 관련지을 수 있고 있는 객체에 대한 모든 요구를 확실히 서번트 매니저로 조정할 수 있습니다.  
+<P>이 형태는, 일반적으로, 일시 객체를 기동하기 위해서 사용됩니다.
+<P><UL>
+<LI><STRONG>서번트 locator를 사용한 어플리케이션의 예는,<a href="servantlocators.html">「서번트 locator의 사용」</a>을 참조해 주세요. </STRONG>
+</UL>
+</UL> 
+
+
+<P>서번트 매니저의 상세한 것에 대하여는,<em><a href="http://www.omg.org/docs/formal/99-10-07.pdf">「CORBA 2.3. 1 스펙」</a> </em>의 11.3. 4 항을 참조해 주세요.
+
+
+
+<!--           **** POA Q & A *************** -->
+<H2>POA 에 관한 질문과 회답</H2>
+
+<H3>POA 를 새롭게 작성하는 경우에 <tt>POAManager.activate()</tt> 가 필요합니까. </H3>
+
+<P><tt>POA::createPOA</tt> 에 대한 <tt>POAManager</tt> 파라미터로서 null 를 건네주는 경우는, 새롭게 POA 를 작성할 경우에 <tt>POAManager.activate()</tt> 가 필요합니다. null 를 건네주면(자), 새로운 <tt>POAManager</tt> 가 작성되어 작성되는 POA 에 관련지을 수 있습니다. 이 경우는,<tt>POAManager.activate()</tt> 가 필요합니다.
+
+
+<P>같은 <tt>POAManager</tt> 를 사용해 복수의 POA 를 제어하려면 , 다음의 순서를 실행합니다.
+<P>
+<OL>
+<LI>POA 를 작성하든가 또는 <tt>rootPOA</tt> 를 사용합니다.
+<LI><tt>POA::the_POAManager</tt> 를 사용해 POA 의 매니저를 가져옵니다.
+<LI>그 후의 <tt>createPOA</tt> 의 호출에 <tt>POAManager</tt> 를 건네줍니다.
+</OL>
+
+<P>프로그래머가 상기와 같이 명시적으로 프로그래밍 하지 않는 한, 루트 POA 의 <tt>POAManager</tt> 와 다른 POA 의 사이에 암묵적인 관계는 존재하지 않습니다.
+
+<P>상세한 것에 대하여는,<a  href="http://www.omg.org/docs/formal/99-10-07.pdf">CORBA specification, formal/99-10-07</a>  의 11.3. 2 항을 참조해 주세요.
+
+<!--     ********** FOR  MORE  INFO  **********-->
+ 
+<H2>상세 정보</H2>
+<DL>
+<DT>휴대용 객체 어댑터에 대해서는, Object Management Group 의 사이트에 있는 CORBA/IIOP v2. 3.1 스펙의 제 11 장을 참조해 주세요. 이 문서의 집필 시점에서는, 스펙은 <a  href="http://www.omg.org/docs/formal/99-10-07.pdf">http://www.omg.org/docs/formal/99-10-07.pdf</a>  로부터 다운로드할 수 있습니다. </DT>
+</DL>
+
+
+<P><HR>
+<CENTER><P>
+
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">Java IDL 탑에</A> </TD>
+</TR>
+</TABLE>
+<P>
+<P>
+<!-- server side include for page footer -->
+
+  <!--#include virtual="/share/include/normal.footer.v4.0.html"-->
+
+<!-- end server side include for footer -->
+
+</CENTER>
+</BODY>
+</HTML>

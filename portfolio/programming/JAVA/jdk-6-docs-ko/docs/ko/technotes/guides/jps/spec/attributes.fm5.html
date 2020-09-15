@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 2 - 속성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="attributes.fm4.html">전의 항목</a>  | <a href="attributes.fm6.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="997014"><i></i> 표준 속성</a> </h2>
+
+<blockquote>
+<a name="997217"><!-- --></a>  javax.print.attribute.standard 패키지에는, Java 인쇄 서비스 API 의 표준 속성이 모두 열거되고 있습니다. 표준 속성의 대부분은, IETF IPP (Internet Printing Protocol) 1.1 스펙에 정의되고 있는 속성입니다. 즉, javax.print.attribute.standard 패키지에 정의되고 있는 속성 클래스 (카테고리)는, 모두 IPP 에 준거하고 있어, IPP 속성 카테고리에 대응하고 있습니다. 그 이름 (getName 로부터 반환되는 이름)은, IPP 속성 카테고리의 실제의 IPP 명입니다. 또, 많은 클래스명은, IPP 명을 반영하고 있어, Java 프로그램 언어로 허가되는 코딩 규칙으로 할 수 있을 뿐(만큼) 준거하고 있습니다. 게다가 카테고리에 정의되는 값은, IPP 의 값과 같습니다. 각 속성 카테고리와 IPP 의 호환성에 대해서는, API 스펙을 참조해 주세요. <p>
+<a name="1000912"><!-- --></a>  이 마디에서는, 개발자가 빈번하게 사용하는 속성에 대해 설명합니다. 여기에 올린 속성도 포함해, 빈번하게 사용하는 속성에서는, PrintRequestAttribute 를 구현하고 있습니다. 인쇄 어플리케이션에서는 일반적으로, 인쇄 작업 전체의 인쇄 방법을 지정합니다만, 이것은 PrintRequestAttribute 의 기능에 포함되기 (위해)때문에입니다.  <p>
+</blockquote>
+<br>
+<h3>
+<a name="1000918"><!-- --></a>  <i></i> OrientationRequested
+</h3>
+
+<blockquote>
+<a name="997276"><!-- --></a>  OrientationRequested 속성 카테고리에는, 용지상에서의 인쇄 방향을 지정합니다. 지정할 수 있는 속성치는, PORTRAIT, LANDSCAPE, REVERSE_PORTRAIT, 및 REVERSE_LANDSCAPE 입니다. 일반적으로은, OrientationRequested.PORTRAIT 가 디폴트 값입니다. 다음의 코드예에서는, OrientationRequested 속성을 속성 세트에 추가하고 있습니다. <p>
+<a name="1000787"><!-- --></a> 
+<blockquote><pre>aset.add(OrientationRequested.REVERSE_PORTRAIT);
+</pre></blockquote>
+
+
+<a name="997278"><!-- --></a>  OrientationRequested 객체에는, 형태 보증된 String 치가 열거되고 있습니다. 각 String 치는, 설정 가능한 인쇄 방향으로 대응하고 있습니다. 이러한 String 치는 IPP 키워드입니다. <p>
+<a name="997286"><!-- --></a>  일부의 서식 설정 끝난 문서의 종류 ( 「Postscript」등)에서는, 이 속성 카테고리가 지원되지 않는 것이 있습니다. 서식 설정 끝난 문서의 종류에는, 프린터에 의해 해석되는 프린터 언어 커멘드가 파묻히고 있어 이러한 커멘드는 클라이언트의 요구보다 우선되기 (위해)때문에입니다. <p>
+<a name="997291"><!-- --></a>  특정의 인쇄 서비스로 지원되는 인쇄 방향의 값을 클라이언트로부터 검출하려면 , 다음의 메소드를 호출합니다.  <p>
+<a name="997292"><!-- --></a> 
+<blockquote><pre>PrintService.getSupportedAttributeValues(OrientationRequested.class, ...).
+</pre></blockquote>
+
+
+<a name="997293"><!-- --></a>  이 메소드에 의해, 지원되는 값이 열거된 OrientationRequested 형의 배열이 돌려주어집니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997296"><!-- --></a>  <i></i> Copies
+</h3>
+
+<blockquote>
+<a name="1000798"><!-- --></a>  Copies 속성 카테고리에는, 인쇄하는 부수를 지정할 수 있습니다. Copies 클래스에는, 요구한 부수를 나타내는 정수가 캡슐화됩니다. 다음의 코드예에서는, 부수를 5 로 설정한 Copies 속성을 속성 세트에 추가하고 있습니다. <p>
+<a name="1000799"><!-- --></a> 
+<blockquote><pre>aset.add(Copies(5));
+</pre></blockquote>
+
+
+<a name="998126"><!-- --></a>  인쇄 서비스에 의해 지원되는 인쇄 부수의 범위를 클라이언트 검출하려면 , 다음의 메소드를 호출합니다. <p>
+<a name="998171"><!-- --></a> 
+<blockquote><pre>PrintService.getSupportedAttributeValues(Copies.class, ...) 
+</pre></blockquote>
+
+
+<a name="998145"><!-- --></a>  이 메소드에 의해, CopiesSupported 객체가 돌려주어집니다. 이 객체에는, 인쇄 서비스를 처리할 수 있는 인쇄 부수의 범위를 나타내는, 정수치의 범위가 캡슐화되고 있습니다. getSupportedAttributeValues 를 호출할 때, Copies 대신에 CopiesSupported 를 지정하면(자), 항상 NULL 가 돌려주어집니다. CopiesSupported 객체에는 PrintRequestAttribute 인터페이스가 구현되어 있지 않기 때문에, 클라이언트가 인쇄 요구에 CopiesSupported 속성을 지정할 수 없기 때문입니다. <p>
+<a name="998151"><!-- --></a>  다음의 코드예에서는, 인쇄 서비스가 5 부의 인쇄에 대응하고 있을지 어떨지를 검출해, 5 0 보다 작은 값을 Copies 속성으로 설정해, 그것을 속성 세트에 추가하고 있습니다. <p>
+<a name="1000668"><!-- --></a> 
+<p>
+<a name="998152"><!-- --></a> 
+<blockquote><pre>CopiesSupported copSupp = 
+	(CopiesSupported) service.getSupportedAttributeValues(Copies.class, null,
+										null);
+if (copSupp ! = null &amp;&amp; copSupp.contains(5)) {
+	requestAttrSet.add(new Copies(5));
+} else { ...
+}
+</pre></blockquote>
+
+
+<a name="1000218"><!-- --></a> 
+
+
+</blockquote>
+<br>
+<h3>
+<a name="1000214"><!-- --></a>  <i></i> Media
+</h3>
+
+<blockquote>
+<a name="997345"><!-- --></a>  Media 는, 인쇄처의 매체를 식별하는 IPP 속성입니다. Media 속성은, 중요한 속성입니다만, 조작은 비교적 복잡합니다. <p>
+<a name="1000811"><!-- --></a>  Java 인쇄 서비스 API 에서는, 추상 클래스 Media 에 대해서 3 개의 서브 클래스 (MediaSizeName, MediaName, 및 MediaTray)를 정의해, IPP 스펙내에서 overload 된 Media 속성을 반영합니다. 모든 Media 서브 클래스에는, Media 카테고리를 할당할 수 있고 있습니다. 각 서브 클래스에서는, Media 카테고리에 대해서, 표준 속성치를 개별적으로 정의하고 있습니다. 예를 들어, MediaTray 객체에서는, Media 속성의 값으로 해서 MANUAL 를 설정해, 프린터의 입력 트레이의 용지에 문서를 인쇄하는 것을 지정할 수 있습니다. 다음의 코드예에서는, Media 속성을 속성 세트에 추가하고 있습니다. <p>
+<a name="1000812"><!-- --></a> 
+<blockquote><pre>aset.add(MediaTray.MANUAL);
+</pre></blockquote>
+
+
+<a name="997348"><!-- --></a> 
+<p>
+<a name="997356"><!-- --></a>  Media 속성의 값은, 항상 String 형입니다. 다만, 속성이 overload 되기 (위해)때문에, 속성이 참조하는 매체의 종류는 값의 종류에 의해 결정됩니다. 예를 들어, 정의 끝난 IPP 속성치에는, 「a4」 및 「top-tray」의 값이 포함되어 있습니다. Media 속성의 값이 「a4」로 설정되어 있는 경우는, 용지의 사이즈를 참조합니다만, 「top-tray」로 설정되어 있는 경우는, 급지원을 참조합니다. String 형의 속성치에서는, 다양한 종류의 매체를 참조할 수 있기 (위해)때문에, 어플리케이션으로 속성 세트를 확장할 수가 있습니다.  예를 들어, 「company-letterhead」나 「yellow letter paper」등의 값을 속성 세트에 포함할 수가 있습니다. 이 방법으로 Media 속성을 확장하려면 , 이 매체를 사용해 인쇄하도록(듯이) 구성된 인쇄 서비스를, 어플리케이션상에서 검출할 필요가 있습니다. <p>
+<a name="997369"><!-- --></a>  대부분의 어플리케이션에서는, MediaSizeName 또는 MediaTray 의 어느 쪽인지가 사용됩니다. MediaSizeName 클래스에는, 매체가 사이즈별로 열거되고 있습니다. MediaTray 클래스에는, 프린터의 용지 트레이가 열거되고 있습니다. 일반적으로은, 메인 트레이와 입력 트레이가 포함됩니다. IPP 1.1 의 스펙에서는, 매체의 사이즈와 트레이를 동시에 지정할 수 없습니다. 예를 들어, 어플리케이션으로부터 입력 트레이에 대해서, A4 사이즈의 용지를 요구할 수 없습니다. 향후의 IPP 스펙에서는, 동시에 복수의 종류의 매체를 요구할 방법이 제공될지도 모릅니다. 그 경우는, JSP API 를 확장해, 이 변경을 구현할 예정입니다. <p>
+<a name="997377"><!-- --></a>  JPS API 에는, IPP 속성 이외의 매체 관련의 Attribute 클래스 (MediaSize 및 MediaPrintableArea)도 추가되고 있습니다. <p>
+</blockquote>
+<br> <a name="997380"><!-- --></a>  <a name="997389"></a> 
+<h4><i> MediaSize</i></h4>
+
+<blockquote>
+<a name="1000704"><!-- --></a>  MediaSize 는, 요구 속성이 아닙니다. 페이퍼 사이즈가 열거된 속성으로, MediaSizeName 인스턴스에 대응 붙일 수 있고 있습니다. 각 MediaSizeName 인스턴스는 일반적으로, MediaSizeName 객체에 관련지을 수 있고 있어 MediaSizeName 인스턴스에 정의되고 있는 용지의 치수를 클라이언트로부터 취득할 수 있습니다. MediaSizeName 인스턴스로부터 페이퍼 사이즈를 가져오려면 , 다음의 메소드를 호출합니다. <p>
+<a name="998337"><!-- --></a> 
+<blockquote><pre>MediaSize size = MediaSizeName.getMediaSizeForName(paper);
+</pre></blockquote>
+
+
+</blockquote>
+<br> <a name="997393"><!-- --></a> 
+<h4><i> MediaPrintableArea</i></h4>
+
+<blockquote>
+<a name="1000726"><!-- --></a>  MediaPrintableArea 는, 호환성이 있는 Media 와 함께 인쇄 요구로 사용해, 용지상의 인쇄 영역을 지정합니다. 프린터의 하드웨어에는 일반적으로, 인쇄 가능한 페이지 영역이 정의되고 있어 페이지 전체에 인쇄하는 것은 거의 없습니다. 이 때문에, 어플리케이션에서는, 특정의 사이즈의 매체에 정의되고 있는 인쇄 가능 영역을 인식해, 인쇄 데이터를 그 영역에 넣을 필요가 있습니다. <p>
+<a name="998369"><!-- --></a>  예를 들어, 5 × 7 인치의 용지의 인쇄 가능 영역을 조사하려면 , 이 사이즈의 용지에 대응하는 미디어 사이즈 속성의 값을 선택해, 인쇄 서비스에 대해서 매체 사이즈를 어플리케이션으로부터 조회할 필요가 있습니다. <p>
+<a name="1000733"><!-- --></a> 
+<p>
+<a name="997410"><!-- --></a> 
+<blockquote><pre>PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+aset.add(MediaSizeName.NA_5X7);
+MediaPrintableArea printableArea =
+(MediaPrintableArea) service.
+	getSupportedAttributeValues(MediaPrintableArea.class, null, aset);
+</pre></blockquote>
+
+
+<a name="997416"><!-- --></a>  반환값은, 그 용지 사이즈에 대해서 프린터를 지원할 수 있는 최대 인쇄 가능 영역입니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="997419"><!-- --></a>  <i></i> Destination
+</h3>
+
+<blockquote>
+<a name="997424"><!-- --></a>  Destination 속성을 사용해, 인쇄 데이터를 프린터 장치에 송신하지 않고 , 파일로 전환할 수가 있습니다. 파일에 출력하는 옵션은 사용자 다이얼로그로 일반적입니다만, spool 된 데이터를 항상 사용할 수 있다고는 할 수 없습니다.  디바이스 고유의 라스터가 존재해, 변환처의 디바이스에서는 해석할 수 없는 것이 있기 (위해)때문에입니다. 이 때문에, Java 인쇄 서비스 API 에서는, 클라이언트로부터 인쇄 서비스에 조회해, 출력을 파일로 전환할 수가 있을지 어떨지를 확인할 필요가 있습니다. 인쇄 서비스에 따라서는, 특정의 카테고리를 전혀 지원하지 않는 경우나, 특정의 값만을 지원하는 경우가 있습니다. 예를 들어, JPS API 는, 네트워크 환경에서 사용할 수 있습니다. 이 경우, 인쇄 데이터의 서식 설정이 호스트 컴퓨터상에서 행해지지 않고, 데이터를 서식 설정하는 서비스에 클라이언트의 로컬 파일 시스템에 대한 액세스권이 없을 때는, 로컬 파일을 출력할 수 없는 것이 있습니다. Destination 속성에서는, 출력처의 값으로 해서 URL 가 사용됩니다. 이 때문에, 네트워크 프린터에서는, ftp 등의 프로토콜을 사용해, 서식 설정 끝난 인쇄 데이터를 업 로드할 수가 있습니다. 다만, 이 속성을 지원하는 대부분의 프린터는, 로컬 환경에서 동작하기 위해(때문에), 「file:」프로토콜의 URL 를 사용할 수 있습니다. 다음의 코드예에서는, 「c:」드라이브상의 out.prn 파일에 출력을 바꾸고 있습니다. <p>
+<a name="1000736"><!-- --></a> 
+<p>
+<a name="999258"><!-- --></a> 
+<blockquote><pre>aset.add(new Destination(&#34;file:c:\out.prn&#34;));
+</pre></blockquote>
+
+
+</blockquote>
+<br>
+<h3>
+<a name="997448"><!-- --></a>  <i></i> SheetCollate
+</h3>
+
+<blockquote>
+<a name="997453"><!-- --></a>  SheetCollate 속성을 사용하면, 복수의 페이지로 구성되는 문서를 복수부 인쇄할 경우에, 인쇄 작업을 부 단위로 인쇄할지 어떨지를 지정할 수 있습니다. 예를 들어, 3 페이지의 문서를 부 단위로 2 부 인쇄하는 경우는, (1, 2, 3, 1, 2, 3)로서 인쇄됩니다. 그러나, 같은 문서를 2 부 인쇄할 경우에, 부 단위로 인쇄 없는 경우는, (1, 1, 2, 2, 3, 3)로서 인쇄됩니다. 이 속성은, 버젼 1.1 의 IPP 스펙에 없습니다만, 편리한 속성으로, 대부분의 프린터로 지원됩니다. 다음의 코드예에서는, 부 단위로 인쇄하는 작업을 지정하고 있습니다. <p>
+<a name="1000828"><!-- --></a> 
+<blockquote><pre>aset.add(SheetCollate.COLLATED);
+</pre></blockquote>
+
+
+</blockquote>
+<br>
+<h3>
+<a name="997461"><!-- --></a>  <i></i> Sides
+</h3>
+
+<blockquote>
+<a name="997466"><!-- --></a>  일부의 프린터, 특히 고기능의 프린터에서는, 용지의 양면에 인쇄할 수가 있습니다. Sides 속성을 사용하면(자), 일반적으로의 디폴트 값인 한 면 인쇄 이외에, 양면 인쇄를 지정할 수 있습니다. 양쪽 모두 인쇄는, 「duplex (양면 인쇄)」또는 「tumble (반전 양면 인쇄)」라고 불리는 경우도 있습니다. 이러한 2 개의 값은, 출력의 방향에 의해 구별됩니다. Java 인쇄 서비스 API 에서는, 「duplex (양면 인쇄)」는 장변으로 뒤집는 양면 인쇄로, 「tumble (반전 양면 인쇄)」는 단변으로 뒤집는 양면 인쇄입니다. 상세한 것에 대하여는, Sides 에 관한 API 스펙을 참조해 주세요. 다음의 코드예에서는, 문서의 양면 인쇄를 지정하고 있습니다. <p>
+<a name="1000837"><!-- --></a> 
+
+
+<a name="1000840"><!-- --></a> 
+<blockquote><pre>aset.add(Sides.DUPLEX);
+</pre></blockquote>
+
+
+</blockquote>
+<br>
+<h3>
+<a name="997478"><!-- --></a>  <i></i>Fidelity
+</h3>
+
+<blockquote>
+<a name="998550"><!-- --></a>  Fidelity 속성은, IPP 의 boolean 형 속성입니다. 인쇄 서비스가 인쇄 요구로 지정된 모든 속성을 지원하지 않는 경우에, 인쇄 작업을 거부할지 어떨지를 표현합니다. Fidelity 속성은, 많은 경우, 개발자는 고려할 필요가 없습니다. 다만, JPS API 문맥에서는, 중요한 속성입니다. 디폴트 값는, FIDELITY_FALSE 입니다. 인쇄 서비스가 인쇄 요구로 지정된 속성을 지원하지 않는 경우에서도, 인쇄 작업을 거부하지 않는 것을 나타냅니다. 예를 들어, 어플리케이션으로 횡방향에서의 반전을 지정해, 프린터가 횡방향에서의 반전을 지원하지 않을 때는, Fidelity 속성이 true 의 경우, 그 작업은 거부됩니다. Fidelity 속성이 false 의 경우는, 가로방향 등, 적절한 대체 방식으로 옮겨놓아 작업을 실행합니다. Fidelity 속성을 사용해, 지정했던 대로 문서를 인쇄하는지, 또는 모든 속성을 프린터가 지원하지 않는 경우에서도 인쇄할까를, 어플리케이션으로부터 결정할 수 있습니다. 다음의 코드예에서는, 요구한 속성을 프린터가 지원하지 않는 경우는, 작업을 거부하고 있습니다. <p>
+<a name="1000852"><!-- --></a> 
+<blockquote><pre>aset.add(Fidelity.FIDELITY_TRUE);
+</pre></blockquote>
+
+
+<a name="997498"><!-- --></a>  충실한 인쇄가 중요한 경우는, Java 인쇄 서비스 API 의 다양한 툴을 사용해, 특정의 인쇄 요구에 대해서 충실히 지원되는 속성을 어플리케이션으로부터 조회할 수가 있습니다. PrintService 인터페이스에 대해서는, 각 조회 메소드를 참조해 주세요. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="attributes.fm4.html">전의 항목</a>  | <a href="attributes.fm6.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

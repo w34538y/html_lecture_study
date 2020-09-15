@@ -1,0 +1,64 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title>에러 보고 - xrath.com 에서 번역됨</title></head>
+<body bgcolor="white">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD width=60>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" width=52>
+</TD>
+
+
+<TD align=center>
+
+<h1>에러 보고</h1>
+</TD>
+
+<TD align=right width=60>&nbsp;
+
+</TD>
+</TR>
+</TABLE>
+
+<HR SIZE=3 NOSHADE>
+
+Java 가상 머신 (JVM)이 native code (개발자가 쓴 JNI 코드등)로 크래쉬를 검출했을 경우나, JVM 자체가 크래쉬 했을 경우, JVM 는 크래쉬에 관한 디버그 정보를 출력합니다. 일반적으로, 이 에러 메세지에는, 함수명, 라이브러리명, 원시 파일명, 에러가 발생한 행 번호등의 정보가 포함됩니다. (현단계에서는, 파일명과 행 번호는 Microsoft Windows 플랫폼의 경우에게만 출력됩니다. ) 에러 핸들러가 발행하는 메세지의 예는 <a href="error-example.txt">JNI 에러의 예</a>를 참조해 주세요.
+<p>
+새로운 에러 보고 기구가 제공하는 정보에 의해, 개발자는 어플리케이션의 디버그를 종래보다 간단하게 게다가 효율적으로 실시할 수가 있습니다. 에러 메세지로부터 JVM 코드 자체의 문제를 알면, 개발자는 상세한 버그 리포트를 제출할 수가 있습니다.
+<p>
+에러 보고 기구를 사용해도 크래쉬의 발생원을 특정할 수 없는 것이 있습니다. 에러 핸들러를 최대한으로 활용하기 위해서, 개발자는 다음과 같은 가이드 라인과 제한으로 유의할 필요가 있습니다.
+<p>
+<b>디버그 모드에서의 컴파일</b><br>
+<blockquote>
+환경에 따라서는, 에러 보고 기구가 심볼명을 식별할 수 없는 것이 있습니다. 많은 경우, 크래쉬 한 바이너리코드가 디버그 모드로 컴파일되어 있지 않기 위해(때문에), 심볼 테이블이 없는 것이 원인입니다. 개발자는 디버그 모드로 컴파일 해, 필요한 디버그 정보를 포함하도록(듯이) 할 필요가 있습니다. 예를 들어 Visual Studio 에서는, 프로젝트의 빌드 모드로서 「Release」는 아니고 「Debug」를 선택합니다. Linux 나 Solaris<sup><font size="-2">TM</font></sup> 가 동작하는 환경에서 gcc 나 cc 를 사용하는 경우는,<tt>-g</tt> 커멘드행 옵션을 지정해 컴파일 해 주세요.
+</blockquote>
+<p>
+<b>export되어 있지 않은 함수</b>
+<blockquote>
+바이너리코드에 디버그 정보가 없는 경우에서도, 에러 핸들러는 크래쉬 사이트의 함수명을 출력할 수가 있습니다. 다만, 문제의 함수가 다이나믹 라이브러리로부터 「export」되어 있지 않은 경우, 그 함수명이 반드시 올바르다고는 할 수 없습니다. Linux 나 Solaris 에서는, static 라고 선언된 함수 이외의 모든 함수가 export 됩니다. Microsoft Windows 플랫폼에서는,<tt>JNIEXPORT</tt> 나 <tt>__declspec(dllexport)</tt> 로 명시적으로 선언되지 않는 한, 함수는 export 되지 않습니다<i></i>.  
+</blockquote>
+<p>
+<b>Visual Studio 에서의 제한 (Windows 95/98 및 Windows NT)</b><br>
+<blockquote>
+Windows 98 및 Windows NT 의 플랫폼에서는, 에러 핸들러는 시스템의 <tt>imagehlp.dll</tt> 파일을 사용해 함수명, 원시 파일, 크래쉬 사이트의 행 번호를 식별합니다. (Windows 2000 으로 Windows ME 에서는,<tt>imagehlp.dll</tt> 와 <tt>debughlp.dll</tt> 의 2 개의 파일을 사용해 이 태스크를 실행합니다. ) 다만, Windows 98 및 Windows NT 의 <tt>imagehlp.dll</tt> 파일은, Visual Studio 6.0 으로 작성한 바이너리코드나 DLL 에서는 잘 동작하지 않습니다.  
+<p>
+이 경우, 에러 핸들러가 생성하는 에러 메세지에는 잘못한 함수명, 원시 파일, 크래쉬 사이트의 행 번호가 표시됩니다만, 그 이외의 정보는 올바르게 표시됩니다.
+</blockquote>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<P><FONT SIZE="-2">Copyright &#169; 2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun">
+</TD>
+
+</TR>
+</TABLE>
+</body>
+</html>

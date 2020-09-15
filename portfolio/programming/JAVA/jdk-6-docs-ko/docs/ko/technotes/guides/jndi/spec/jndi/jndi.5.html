@@ -1,0 +1,586 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>5 인터페이스의 개요 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><TABLE summary="layout" WIDTH="100%" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD>
+<A HREF="jndiTOC.html">목차</A>  | <A HREF="jndi.4.html">전의 항목</A>  | <A HREF="jndi.6.html">다음의 항목</A> </TD> 
+    <TD ALIGN="RIGHT">
+<I><FONT COLOR="#707070">JNDI API</FONT></I></TD> 
+  </TR>
+</TABLE><HR ALIGN=LEFT SIZE="8" WIDTH="35%" NOSHADE><p></P>
+
+<H2 CLASS="chapter"><A NAME="pgfId=998631"></A> 5.  인터페이스의 개요</H2>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997932"></A> JNDI API 는, 4 개의 패키지에 짜넣어지고 있습니다. </P>
+</BLOCKQUOTE>
+
+<UL>
+  <UL>
+<LI CLASS="bullet"><A NAME="pgfId=998721"></A> <CODE>javax.naming</CODE> 에는, 네임 서비스에 액세스하기 위한 클래스와 인터페이스가 짜넣어지고 있습니다.
+<LI CLASS="bullet"><A NAME="pgfId=998728"></A> <CODE>javax.naming.directory</CODE> 는,<CODE>javax.naming</CODE> 코어 패키지의 확장으로, 디렉토리에 액세스 할 수 있습니다.
+<LI CLASS="bullet"><A NAME="pgfId=998744"></A> <CODE>javax.naming.event</CODE> 에는, 네임 서비스 및 디렉토리 서비스로 이벤트 통지를 지원하기 위한 클래스와 인터페이스가 짜넣어지고 있습니다.
+<LI CLASS="bullet"><A NAME="pgfId=998745"></A> <CODE>javax.naming.ldap</CODE> 에는, LDAP v3 의 확장 기능 및 컨트롤을 지원하기 위한 클래스와 인터페이스가 짜넣어지고 있습니다.
+  </UL>
+</UL>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998729"></A> JNDI 서비스 프로바이더 인터페이스가 짜넣어지고 있는 패키지는 1 개 뿐입니다. </P>
+</BLOCKQUOTE>
+
+<UL>
+  <UL>
+<LI CLASS="bullet"><A NAME="pgfId=998765"></A> <CODE>javax.naming.spi</CODE> 에는, 다양한 네임 서비스 및 디렉토리 서비스 프로바이더를, JNDI API 의 환경에 동적으로 플러그 인 할 수 있는 클래스 및 인터페이스가 짜넣어지고 있습니다.  자세한 것은, JNDI SPI 의 문서를 참조해 주세요.
+  </UL>
+</UL>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997933"></A> 이후시에에서는, JNDI API 의 개요에 대해 설명합니다. API 에 대한 자세한 것은, 대응하는 javadoc 문서를 참조해 주세요. </P>
+</BLOCKQUOTE>
+
+<DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=997937"></A> 5.1 네이밍 패키지 --<CODE> javax.naming</CODE> <A HREF="#pgfId=997936"  CLASS="footnote">1</A> </H3>
+
+<BLOCKQUOTE>
+<H3 CLASS="section"><A HREF="#pgfId=997936" CLASS="footnote"><IMG    SRC="javax.naming-0.gif" alt="javax.naming 패키지. 이 그래픽의 설명은 <a href="../../../../api/javax/naming/package-summary.html">API documentation. </a> " WIDTH="591" HEIGHT="405" ALIGN="BOTTOM"   BORDER="0" NATURALSIZEFLAG="3"> 을 참조해 주세요. </H3>
+<P CLASS="section"><CENTER><FONT SIZE="-1">(예외 클래스는 가리키고 있지 않습니다)</FONT></CENTER></P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=997944"></A> 5.1. 1 문맥</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997945"></A> <CODE>Context</CODE> 는, 네이밍 문맥을 지정하는 코어 인터페이스입니다. 기본 조작 (이름과 객체의 바인딩의 추가, 특정의 이름에 바인드 끝난 객체의 검색, 바인딩의 일람표시, 이름과 객체의 바인딩의 삭제, 같은 형태의 서브 문맥의 작성과 파기등)을 정의합니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface Context {
+    public Object lookup(Name name) throws NamingException;
+    public void bind(Name name, Object obj) throws NamingException;
+    public void rebind(Name name, Object obj) throws NamingException;
+    public void unbind(Name name) throws NamingException;
+    public void rename(Name old, Name new) throws NamingException;
+    public NamingEnumeration listBindings(Name name) throws NamingException;
+    ...
+    public Context createSubcontext(Name name) throws NamingException;
+    public void destroySubcontext(Name name) throws NamingException;
+    ...
+};</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997959"></A> <CODE>Context</CODE> 내의 모든 네이밍 메소드에는, 이름을 인수로서 지정합니다. 그 이름이 암묵적으로 해결되면(자),<CODE>Context</CODE> 객체가 꺼내집니다.  메소드에 정의한 조작은, 그 <CODE>Context</CODE> 객체로 실행됩니다. 이름이 빈 상태(empty) (&quot;&quot;)의 경우는, 그 문맥으로 직접 실행됩니다. 객체의 이름을 복합명으로 해, 객체의 참조로 사용되는 이름 공간의 배치를 반영할 수가 있습니다. 클라이언트는, 네임 서비스의 구현에는 공개되지 않습니다. 또, 새로운 형태의 네임 서비스를 도입할 경우에, 어플리케이션을 변경하거나 실행중의 어플리케이션을 중단할 필요는 없습니다. </P>
+  <P CLASS="body">&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999065"></A> 5.1. 2 초기 문맥</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997960"></A> JNDI 로 사용되는 이름은, 모두 문맥에 대한 상대명입니다. 「절대명」이라고 하는 개념은 없습니다. 어플리케이션은,<CODE>InitialContext</CODE> 클래스의 최초의 문맥을 취득했을 때에 bootstrap 합니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public class InitialContext implements Context {
+    public InitialContext()...;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997965"></A> 초기 문맥에는, 몇개의 네이밍 시스템으로 사용되고 있는 공용 문맥에, 클라이언트를 접속하기 위한 다양한 바인딩이 포함되어 있습니다.  예를 들어, URL 의 이름 공간, DNS 의 루트등이 포함됩니다. </P>
+  <BLOCKQUOTE>
+    <P CLASS="body">&nbsp;</P>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999071"></A> 5.1. 3 이름</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997966"></A> <CODE>Name</CODE> 인터페이스는, 총칭명을 표현합니다.  총칭명이란, 차례로 늘어놓을 수 있었던 컴퍼넌트의 순서입니다. <CODE>Name</CODE> 인수를 지정하는 각 <CODE>Context</CODE> 메소드에는,<CODE>String</CODE> 로서 그 이름을 받는 메소드가 존재합니다. <CODE>Name</CODE> 를 지정하는 메소드는, 이름의 합성, 컴퍼넌트의 비교 등, 이름을 조작하는 어플리케이션으로 유용합니다. <CODE>String</CODE> 를 지정하는 메소드는, 이름의 읽어들여, 대응하는 객체의 룩 업 등, 단순한 처리를 실시하는 어플리케이션으로 보다 유용합니다. <CODE>String</CODE> 형의 이름 파라미터에는, 복합명을 사용합니다. <CODE>Name</CODE> 파라미터에서도, 복합명을 사용할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1002230"></A> <CODE>CompositeName</CODE> 클래스는, 복수의 이름 공간의 이름 (기본명 또는 복합명)의 순서를 표현합니다. <CODE>Context</CODE> 클래스의 메소드에게 건네지는 <CODE>Name</CODE> 파라미터가 <CODE>CompositeName</CODE> 의 인스턴스의 경우는, 그 이름은 복합명입니다. </P>
+<P CLASS="body"><A NAME="pgfId=1002231"></A> <CODE>Context</CODE> 클래스의 메소드에게 건네진 <CODE>Name</CODE> 파라미터가 <CODE>CompositeName</CODE> 의 인스턴스가 아닌 경우는, 그 이름은 복합명으로,<CODE>CompoundName</CODE> 클래스 또는 그 외의 구현 클래스로 구성되어 있습니다. <CODE>CompoundName</CODE> 클래스는, 1 개의 이름 공간의 계층명입니다. 문맥의 이름 퍼서는, 특정의 문맥에 관련지을 수 있었던 구문에 근거해, 복합명을 조작할 경우에 사용합니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+<CODE>public interface Context {</CODE>
+<CODE>    ...</CODE>
+<CODE>    public NameParser getNameParser(Name name) throws NamingException;</CODE>
+<CODE>    ...</CODE>
+<CODE>}</CODE></pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997974"></A> 이 문맥의 구문에 근거해 이름을 조작하는 어플리케이션의 예로서 이름 공간의 브라우저가 있습니다. 그 외의 대부분의 어플리케이션에서는, 캐릭터 라인 또는 복합명이 사용됩니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=997976"></A> 5.1. 4 바인딩</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997977"></A> <CODE>Context.lookup()</CODE> 는, 사용 빈도가 가장 높은 조작입니다. 이 문맥의 구현은, Java 어플리케이션에 필요한 클래스의 객체를 돌려줄 수가 있습니다. 예를 들어, 클라이언트로부터 프린터의 이름을 사용해, 대응하는 <CODE>Printer</CODE> 객체를 룩 올라가, 직접 그 프린터에 인쇄하려면 , 다음과 같이 합니다. </P>
+  <BLOCKQUOTE>
+<pre>Printer printer = (Printer) ctx.lookup(&quot;treekiller&quot;);
+printer.print(report);</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997980"></A> <CODE>Context.listBindings()</CODE> 는, 이름과 객체의 바인딩의 열거를 돌려줍니다.  각 바인딩은,<CODE>Binding</CODE> 클래스의 객체를 사용해 표현합니다. 바인딩은, 바인드 된 객체의 이름, 객체의 클래스의 이름, 및 객체 자체로 구성됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=997981"></A> <CODE>Context.list()</CODE> 메소드는,<CODE>listBindings()</CODE> 에 유사하고 있습니다만,<CODE>NameClassPair</CODE> 객체의 열거를 돌려주는 점이 다릅니다. <CODE>NameClassPair</CODE> 에는, 객체의 이름 및 그 객체의 클래스의 이름이 포함되어 있습니다. <CODE>list()</CODE> 메소드는, 문맥내에서 바인드 되고 있는 객체의 정보를 검색하는 어플리케이션 (브라우저등의)으로 사용합니다.  다만, 이 경우, 열매 객체의 모든 것이 처리되는 것은 아닙니다. <CODE>listBindings()</CODE> 를 사용하면(자), 모든 정보가 돌려주어집니다만, 꽤 시간이 걸립니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public class NameClassPair ... {
+    public String getName() ...;
+    public String getClassName() ...;
+    ...
+}
+public class Binding extends NameClassPair {
+    public Object getObject() ...;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=997994"></A> 5.1. 5 참조</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=997995"></A> <CODE>Context</CODE> 의 구현 마다, 다른 종류의 객체를 네이티브에 바인드 할 수가 있습니다. <CODE>Reference</CODE> 클래스는, 사용 빈도의 높은 객체로, 범용적으로 사용되는 문맥 구현에서는 모두 지원할 필요가 있습니다. 디렉토리의 외부의 객체는, 참조에 의해 표현됩니다. 참조를 사용하면, JNDI 클라이언트로부터, X. 500 등의 네임 서비스 또는 디렉토리 서비스에 대해서, 사실상 임의의 클래스의 객체를 바인드 할 수가 있습니다.  Java 프로그램 언어로 작성된 객체가, 그 서비스로 네이티브에 지원되고 있을 필요는 없습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1002259"></A> <CODE>Context.lookup()</CODE>,<CODE>Binding.getObject()</CODE> 등의 조작으로부터 <CODE>Reference</CODE> 객체가 돌려주어졌을 경우는, JNDI 에서는, 참조가 표현하고 있는 객체로 변환하고 나서, 클라이언트에 돌려줍니다. 특히, 특정의 네이밍 시스템의 <CODE>Context</CODE> 를 표현하는 참조가, 다른 네이밍 시스템내의 이름에 바인드 되고 있을 때, 이 처리가 발생합니다. 참조에 의해, 복수의 서로 의존하지 않는 네임 서비스가 결합되어 JNDI 의 복합 이름 공간이 구축됩니다. 이 기구에 대한 자세한 것은, JNDI SPI 의 문서를 참조해 주세요. </P>
+<P CLASS="body"><A NAME="pgfId=1002260"></A> 객체를 참조에 의해 표현하려면 ,<CODE>Referenceable</CODE> 인터페이스가 구현되어 있지 않으면 안됩니다. 이 클래스의 <CODE>getReference()</CODE> 메소드에 의해, 객체의 참조가 돌려주어집니다. 이 객체가 임의의 문맥의 이름에 바인드 되고 있을 때, 그 객체를 네이티브에 포함할 수 없는 경우는, 문맥 구현에서는 그 참조를 부하의 시스템에 포함합니다. </P>
+<P CLASS="body"><A NAME="pgfId=997998"></A> 각 참조에는, 참조가 표현하는 객체의 클래스의 이름, 및 객체의 클래스 파일의 위치 (일반적으로은 URL)가 포함되어 있습니다. 또,<CODE>RefAddr</CODE> 클래스의 객체의 순서가 포함되어 있습니다. 각 <CODE>RefAddr</CODE> 에는, 「형태」의 캐릭터 라인, 및 주소 지정 데이터가 포함되어 있습니다. 주소 지정 데이터는 일반적으로, 캐릭터 라인 또는 바이트 배열입니다. </P>
+<P CLASS="body"><A NAME="pgfId=997999"></A> <CODE>LinkRef</CODE> 클래스라고 하는 특별한 <CODE>Reference</CODE> 클래스는, 「상징적」링크를 JNDI 이름 공간에 추가할 경우에 사용합니다. 이 클래스에는, JNDI 객체의 이름이 포함되어 있습니다. 기호 연결은, 디폴트에서는, JNDI 의 이름이 해결되었을 때에 평가됩니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=998933"></A> 5.1. 6 조회</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998934"></A> 일부의 네임 서비스 및 디렉토리 서비스에서는, 「조회 (referral)」라고 하는 개념이 지원되고 있어 클라이언트의 요구를 다른 서버에 리다이렉트(redirect) 할 수가 있습니다. JNDI 클라이언트에서는, 그 조회의 자동적인 추적, 무시, 또는 수동 처리를 요구할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998935"></A> abstract 클래스 <CODE>ReferralException</CODE> 를 사용해, 조회를 표현합니다. </P>
+  <BLOCKQUOTE>
+<pre>public abstract class ReferralException extends NamingException {
+    public abstract Context getReferralContext() throws NamingException;
+    ...
+    public abstract Object getReferralInfo();
+    public abstract void retryReferral();
+    public abstract boolean skipReferral();
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998946"></A> 조회가 검출되었을 경우, 조회를 무시하지 않고 자동적으로 평가하도록(듯이) 클라이언트가 요구하고 있을 때는,<CODE>ReferralException</CODE> 가 throw 됩니다. <CODE>getReferralInfo()</CODE> 메소드를 사용하면(자), 조회의 리다이렉트(redirect)처의 정보가 서비스 프로바이더에 적절한 형식에서 돌려주어집니다. 어플리케이션에서는, 이 정보를 검사할 필요는 없습니다만, 조회에 따를지 어떨지를 사용자가 결정할 수 있도록(듯이), 그 정보를 제시할 수 있습니다. <CODE>skipReferral()</CODE> 메소드를 사용하면(자), 어플리케이션에서는, 조회가 파기되어 존재하는 경우는 다음의 조회가 처리됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=998947"></A> 어플리케이션으로 조작을 계속하는 경우는, 원의 메소드에게 건네진 인수를 사용해, 조회 문맥으로 메소드를 재차 호출합니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=998973"></A> 5.2 디렉토리 패키지 -- <CODE>javax.naming.directory</CODE> <A HREF="#pgfId=999039" CLASS="footnote">2</A> </H3>
+
+<BLOCKQUOTE>
+  <P>&nbsp;</P>
+<P><IMG SRC="javax.naming.directory-0.gif" alt="javax.naming.directory 패키지. 이 그래픽의 설명은 <a href="../../../../api/javax/naming/directory/package-summary.html">API documentation. " WIDTH="1002" HEIGHT="434"   ALIGN="BOTTOM" BORDER="0" NATURALSIZEFLAG="3"> 을 참조해 주세요. </P>
+<P><CENTER><FONT SIZE="-1">(예외 클래스는 가리키고 있지 않습니다)</FONT></CENTER></P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=998010"></A> 5.2. 1 디렉토리 객체</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998011"></A> <CODE>DirContext</CODE>  인터페이스를 사용해, 디렉토리 객체에 관련지을 수 있었던 속성의 검사 및 갱신을 실시하는 메소드를 정의하면(자), 디렉토리의 기능을 유효하게 할 수 있습니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface DirContext extends Context {
+    public Attributes getAttributes(Name name)
+		 throws NamingException;
+    public Attributes getAttributes(Name name, String[] attrIds)
+		 throws NamingException;
+    ...
+    public void modifyAttributes(Name name, int modOp, Attributes attrs)
+		 throws NamingException;
+    public void modifyAttributes(Name name, ModificationItem[] mods)
+		 throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998039"></A> 디렉토리에 대해서 <CODE>getAttributes()</CODE> 조작을 실행하면(자), 속성의 일부 또는 모든 것이 돌려주어집니다. 속성이 변경하려면 , 2 개의 형식의 <CODE>modifyAttributes()</CODE> 를 사용합니다. 어느 쪽의 형식의 경우도, 다음의 몇개의 「변경 조작」이 사용됩니다. </P>
+  <BLOCKQUOTE>
+<pre>ADD_ATTRIBUTE
+REPLACE_ATTRIBUTE
+REMOVE_ATTRIBUTE</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998043"></A> <CODE>ADD_ATTRIBUTE</CODE> 조작에서는, 속성이 벌써 존재하고 있는 경우는, 값이 추가됩니다. <CODE> REPLACE_ATTRIBUTE</CODE> 조작에서는, 임의의 기존의 값이 파기됩니다. 최초의 형식의 <CODE>modifyAttributes()</CODE> 에서는, 속성 세트의 각 요소에 대해서 특정의 조작이 실행됩니다. 2 번째의 형식의 <CODE>modifyAttributes()</CODE> 에서는,<CODE>ModificationItem</CODE> 클래스의 객체의 배열을 받습니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public class ModificationItem {
+    public ModificationItem(int modOp, Attribute attr) ...;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998048"></A> 각 조작은, 대응하는 속성에 대해서, 지정된 순서로 실행됩니다. 가능한 경우는, 문맥 구현에서는,<CODE>modifyAttributes()</CODE> 의 각 호출은, 불가분인 조작으로서 실행해 주세요. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999083"></A> 5.2. 2 속성</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999116"></A> 디렉토리 객체에는, 0 개 이상의 <CODE>Attribute</CODE> 객체가 포함되어 있습니다. 각 속성은, 캐릭터 라인의 식별자로 식별됩니다.  또, 임의의 형태의 값을 0 개 이상 지정할 수 있습니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface Attribute ... {
+    ...
+    public String getID();
+    public Object get(int n) throws NamingException;
+    public boolean isOrdered();
+    public NamingEnumeration getAll()
+           throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999095"></A> 속성의 값을 순서 붙일지 어떨지는, 임의로 지정할 수 있습니다. 값을 순서 붙이지 않은 경우는, 중복은 허가되지 않습니다. 값을 순서 붙였을 경우는, 중복이 허가됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=999126"></A> 속성을 컬렉션에 그룹화 할 때는,<CODE>Attributes</CODE> 인터페이스를 사용합니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface Attributes ... {
+    ...
+    public Attribute get(String attrID);
+    public NamingEnumeration getIDs();
+    public NamingEnumeration getAll();
+    public Attribute put(Attribute attr);
+    public Attribute remove(String attrID);
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999151"></A> JNDI 에서는,<CODE>BasicAttribute</CODE> 및 <CODE>BasicAttributes</CODE> 라고 하는 2 개의 인터페이스의 구현이 제공됩니다. 서비스 프로바이더 및 어플리케이션에서는, 독자적인 구현을 사용할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=999158"></A> 속성 또는 그 값의 추가 또는 삭제 등,<CODE>Attributes</CODE> 및 <CODE>Attribute</CODE> 를 갱신해도, 디렉토리의 속성 또는 그 값은 변경되지 않습니다. 디렉토리에의 변경은,<CODE>DirContext.modifyAttributes()</CODE> 를 사용하지 않는 한, 유효하게는 되지 않습니다. </P>
+  <P CLASS="body">&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=998049"></A> 5.2. 3 네이밍 문맥으로서의 디렉토리 객체</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998050"></A> <CODE>DirContext</CODE> 인터페이스가 <CODE>Context</CODE> 인터페이스를 상속했을 경우는, 네이밍 문맥으로서 동작합니다. 즉, 임의의 디렉토리 객체로부터 네이밍 문맥을 제공할 수 있습니다. 다양한 사용자 정보를 보관 유지하고 있는 디렉토리 객체는, 프린터, 파일 시스템, 달력 등, 개인과 관계되는 자원의 본래의 네이밍 문맥으로도 됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=999053"></A> 하이브리드(hybrid) 조작에서는, 1 개의 불가분 조작내에서, 특정의 네이밍 조작 및 디렉토리 조작이 실행됩니다. </P>
+  <pre>
+public interface DirContext extends Context {
+    ...
+    public void bind(Name name, Object obj, Attributes attrs)
+           throws NamingException;
+    ...
+}</pre>
+<P CLASS="body"><A NAME="pgfId=998063"></A> <CODE>rebind()</CODE> 및 <CODE>createSubcontext()</CODE> 도 하이브리드(hybrid) 조작으로서 사용할 수 있습니다.  이러한 메소드에는,<CODE>Attributes</CODE> 인수를 추가할 수가 있습니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=998065"></A> 5.2. 4 초기 문맥</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999057"></A> 디렉토리 조작을 실행하고 있는 어플리케이션으로 초기 문맥을 작성할 때는,<CODE>javax.naming.InitialContext</CODE> 이외에 <CODE>InitialDirContext</CODE> 를 사용할 수도 있습니다. </P>
+  <pre> 
+public class InitialDirContext 
+       extends InitialContext implements DirContext {
+    public InitialDirContext() ...;
+    ...
+}</pre>
+<P CLASS="body"><A NAME="pgfId=999055"></A> 이 경우, 초기 문맥상에서,<CODE>Context</CODE> 또는 <CODE>DirContext</CODE> 인터페이스의 임의의 메소드를 호출할 수가 있습니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999054"></A> 5.2. 5 검색</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998066"></A> <CODE>DirContext</CODE> 인터페이스에서는, 컨텐츠 베이스의 디렉토리 검색이 지원되고 있습니다. 무엇보다 단순해 사용 빈도의 높은 사용법은, 어플리케이션으로 조합을 위한 속성 세트를 지정하는 방법입니다.  많은 경우, 속성에는 특정의 값을 지정합니다. 이 경우,<CODE>DirContext.search()</CODE> 메소드가 그 디렉토리 객체상에서 불려 가 일치한 디렉토리 객체라고 요구한 속성이 돌려주어집니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface DirContext extends Context {
+    ...
+    public NamingEnumeration search(Name name, Attributes matchingAttributes)
+		 throws NamingException;
+    public NamingEnumeration search(Name name,
+                                    Attributes matchingAttributes,
+                                    String[] attributesToReturn)
+		 throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998079"></A> 검색 결과는,<CODE>SearchResult</CODE> 클래스의 객체의 열거를 포함한 <CODE>NamingEnumeration</CODE> 로서 돌려주어집니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public class SearchResult extends Binding {
+    ...
+    public Attributes getAttributes() ...;
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998085"></A> 보다 상세하게 검색하는 방법으로서 검색 필터를 지정하거나 검색의 범위, 결과의 최대 사이즈등의 제어 정보를 지정하는 방법이 있습니다. 검색 필터에는, LDAP 에 대해 규정되고 있는 Internet RFC 2254 에 준거한 구문을 지정합니다. <CODE>SearchControls</CODE> 인수에는, 검색 범위등을 지정합니다. 검색 범위에는, 디렉토리 계층내의 단일 디렉토리 객체, 모든 아이, 또는 모든 자손을 포함할 수가 있습니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface DirContext extends Context {
+    ...
+    public NamingEnumeration search(Name name, 
+                                    String filter,
+                                    SearchControls ctls)
+           throws NamingException;
+ 
+    public NamingEnumeration search(Name name,
+                                    String filter,
+                                    Object[] filterArgs,
+                                    SearchControls ctls)
+ 		throws NamingException;
+   	...
+}</pre>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=998100"></A> 5.2. 6 schema</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998101"></A> schema에는, 이름 공간의 구조 및 이름 공간에 포함되고 있는 속성을 정의하기 위한 규칙을 작성합니다. schema는, 이름 공간 전체에 대해서 단일의 schema를 작성할 수도 있습니다만, 속성 마다 상세하게 작성할 수도 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998102"></A> schema는 정보의 트리로서 표현할 수 있습니다.  이 때문에, JNDI 로 벌써 정의되고 있는 네이밍 인터페이스 및 디렉토리 인터페이스는, 간단하게 트리로 표현할 수 있습니다. 이름 공간의 schema로부터 어플리케이션에 대해서 통일한 방법으로 액세스 할 수 있는, 강력한 기능입니다. 예를 들어, 브라우저로부터 schema 트리의 정보에 액세스 할 때는, 디렉토리 객체에 액세스 할 때와 같은 방법으로 실시할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998103"></A> 어플리케이션에서는, 부하의 문맥 구현에 적절한 지원가 제공되고 있는 경우는, 디렉토리 객체에 관련지을 수 있었던 schema를 취득할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=999370"></A> 디렉토리 객체에 관련지을 수 있었던 schema 트리의 루트를 취득할 때는,<CODE>DirContext.getSchema()</CODE> 를 사용합니다. 루트의 하위에는, 「ClassDefinition」, 「AttributeDefinition」, 「SyntaxDefinition」등의 아이가 존재해, 다양한 종류의 정의가 기술되고 있습니다. schema의 루트 및 그 자손은,<CODE>DirContext</CODE> 형의 객체입니다. <CODE>DirContext.getSchemaClassDefinition()</CODE> 메소드를 사용하면(자), 특정의 디렉토리 객체의 클래스 기술이 포함되는 <CODE>DirContext</CODE> 가 돌려주어집니다. </P>
+  <BLOCKQUOTE>
+    <pre>
+public interface DirContext extends Context {
+	...
+	public DirContext getSchema(Name name)
+		throws NamingException;
+
+	public DirContext getSchemaClassDefinition(Name name)
+		throws NamingException;
+	...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998904"></A> 속성에 관련지을 수 있고 있는 schema에는,<CODE>Attribute.getAttributeDefinition()</CODE> 및 <CODE>getAttributeSyntaxDefinition()</CODE> 메소드를 사용해 액세스 할 수 있습니다. </P>
+  <BLOCKQUOTE>
+    <pre> 
+public interface Attribute ... {
+    ...
+    public DirContext getAttributeDefinition() throws NamingException;
+    public DirContext getAttributeSyntaxDefinition() 
+    throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998128"></A> <A HREF="#41679"    CLASS="XRef">디렉토리의 schema에의 매핑의 예</a>는, schema 정보에 액세스하기 위한 개개의 관련성에 대해 가리키고 있습니다. </P>
+  <DIV>
+<H4 CLASS="FigureTitle"><A NAME="pgfId=998248"></A> <A NAME="41679"></A> 디렉토리의 schema에의 매핑의 예</H4>
+  <P><MAP NAME="jndi-5" alt="Example mapping Directory to Schema">
+</MAP><IMG SRC="jndi-5.gif" alt="디렉토리의 schema에의 매핑의 예" USEMAP="#jndi12-5" WIDTH="505"    HEIGHT="361" NATURALSIZEFLAG="3" ALIGN="BOTTOM" ISMAP BORDER="0"></P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=999204"></A> 5.3 이벤트 패키지 -- <CODE>javax.naming.event</CODE> <A HREF="#pgfId=999203" CLASS="footnote">3</A> </H3>
+
+<BLOCKQUOTE>
+<P><IMG SRC="javax.naming.event-0.gif" alt="The javax.naming.event 패키지. 이 그래픽의 설명은 <a href="../../../../api/javax/naming/event/package-summary.html">API documentation. " WIDTH="769" HEIGHT="258" ALIGN="BOTTOM" BORDER="0" NATURALSIZEFLAG="3"> 을 참조해 주세요. </P>
+<P CLASS="body"><A NAME="pgfId=999189"></A> <CODE>javax.naming.event</CODE> 패키지에는, 네임 서비스 및 디렉토리 서비스로 이벤트 통지를 지원하기 위한 클래스 및 인터페이스가 포함되어 있습니다. </P>
+  <P CLASS="body">&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999297"></A> 5.3. 1 네이밍 이벤트</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999265"></A> <CODE>NamingEvent</CODE> 는, 네임 서비스 또는 디렉토리 서비스에 의해 생성되는 이벤트를 표현합니다. </P>
+  <BLOCKQUOTE>
+<pre>public class NamingEvent extends java.util.EventObject {
+    ...
+    public int getType();
+    public Binding getOldBinding();
+    public Binding getNewBinding();
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999327"></A> 이벤트의 형태에 의해, 이벤트의 종류를 식별할 수 있습니다. <CODE>NamingEvent</CODE> 클래스에는, 다음의 4 개의 종류의 이벤트가 정의되고 있습니다. </P>
+  <OL>
+<LI><CODE>OBJECT_ADDED</CODE>
+<LI><CODE>OBJECT_REMOVED</CODE>
+<LI><CODE>OBJECT_RENAMED</CODE>
+<LI><CODE>OBJECT_CHANGED</CODE>
+  </OL>
+<P CLASS="body"><A NAME="pgfId=999333"></A> 이러한 종류는, 다음의 2 개의 카테고리로 분류할 수 있습니다. </P>
+</BLOCKQUOTE>
+
+<UL>
+  <UL>
+<LI CLASS="bullet"><A NAME="pgfId=999301"></A> 이름 공간에 영향을 주는 이벤트 (객체의 추가, 삭제, 이름의 변경)
+<LI CLASS="bullet"><A NAME="pgfId=999311"></A> 객체의 내용에 영향을 주는 이벤트
+  </UL>
+</UL>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999312"></A> <CODE>NamingEvent</CODE> 에는, 이벤트의 종류 이외에, 변경 전후의 객체의 정보 등, 변경에 관한 그 외의 정보도 포함되어 있습니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999266"></A> 5.3. 2 네이밍 청취자</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999272"></A> 「네이밍 청취자」는,<CODE>NamingEvent</CODE> 에 등록되는 객체입니다.  이 객체는,<CODE>NamingListener</CODE> 인터페이스에 의해 표현됩니다. <CODE>NamingEvent</CODE> 의 각 카테고리는, 대응하는 <CODE>NamingListener</CODE> 의 subtype에 의해 처리됩니다. <CODE>NamespaceChangeListener</CODE> 인터페이스는, 이름 공간의 변경에 의해 영향을 받는 청취자를 표현합니다. <CODE> ObjectChangeListener</CODE> 인터페이스는, 객체의 내용의 변경에 의해 영향을 받는 청취자를 표현합니다. 청취자의 구현에는, 관련하는 이벤트의 종류에 응해, 이러한 인터페이스의 어느 쪽인지 또는 양쪽 모두가 구현됩니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999273"></A> 5.3. 3 이벤트의 등록과 등록 해제</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999425"></A> <CODE>EventContext</CODE> 및 <CODE>EventDirContext</CODE> 인터페이스는, 각각 <CODE>Context</CODE> 및 <CODE>DirContext</CODE> 인터페이스로부터 상속되고 있어 이벤트의 등록 및 등록 해제를 실시합니다. </P>
+  <BLOCKQUOTE>
+<pre>public interface EventContext extends Context {
+    ...
+    public void addNamingListener(Name target,
+                                  int scope,
+                                  NamingListener l)
+           throws NamingException;
+    public void removeNamingListener(NamingListener l)
+           throws NamingException;
+    public boolean targetMustExist()
+           throws NamingException;
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999466"></A> <CODE>addNamingListener()</CODE> 에는, 대응하는 <CODE>Context</CODE> 인터페이스의 메소드와 같게,<CODE>String</CODE> 형의 이름 인수를 받는 overload가 있습니다. 이름 파라미터는, 「타겟」으로서 참조됩니다. 스코프 파라미터에는, 타겟의 객체에 등록하는지, 타겟의 문맥의 직하의 아이에게 등록하는지, 타겟의 객체를 루트로 하는 서브 트리 전체에 등록하는지를 지정합니다. </P>
+<P CLASS="body"><A NAME="pgfId=999517"></A> 존재하지 않는 타겟으로 대상을 등록할 수도 있습니다만, 서비스 프로바이더 및 부하의 프로토콜 또는 서비스의 지원 범위에 제한됩니다. 어플리케이션에서는,<CODE>targetMustExist()</CODE> 메소드를 사용해, 존재하지 않는 타겟의 등록이 <CODE>EventContext</CODE> 로 지원되고 있는지 어떤지를 검사할 수가 있습니다. </P>
+  <BLOCKQUOTE>
+<pre>public interface EventDirContext extends EventContext, DirContext {
+    public void addNamingListener(Name target,
+                                  String filter, 
+                                  SearchControls ctls, 
+                                  NamingListener l)
+                throws NamingException;
+    public void addNamingListener(Name target,
+                                  String filter,
+                                  Object[] filterArgs,
+                                  SearchControls ctls,
+                                  NamingListener l)
+                throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999459"></A> <CODE>EventDirContext</CODE> 인터페이스는,<CODE>EventContext</CODE> 및 <CODE>DirContext</CODE> 인터페이스의 확장입니다.  청취자는, 검색 필터 (Internet RFC 2254)로 식별되는 객체에 대상을 등록할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=999552"></A> <CODE>addNamingListener()</CODE> 메소드에는, 대응하는 <CODE>DirContext</CODE> 인터페이스의 메소드와 같게,<CODE>String</CODE> 형의 이름의 인수를 받는 overload가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=999572"></A> <CODE>EventContext</CODE> 또는 <CODE>EventDirContext</CODE> 인스턴스는, 내부에서 <CODE>addNamingListener()</CODE> 메소드를 호출하고 있어 생성되는 (가능성이 있다) 이벤트의 「이벤트 소스」가 됩니다. 등록된 청취자로부터 <CODE>getSource()</CODE> 또는 <CODE>getEventContext()</CODE> 가 <CODE>NamingEvent</CODE> 상에서 불려 갔을 경우는,<CODE>EventContext</CODE> 또는 <CODE>EventDirContext</CODE> 인스턴스가 돌려주어집니다. </P>
+<P CLASS="body"><A NAME="pgfId=999581"></A> 예를 들어, 청취자가 다음의 등록을 실시합니다. </P>
+  <BLOCKQUOTE>
+<pre>NamespaceChangeListener listener = ...; 
+src.addNamingListener(&quot;x&quot;, SUBTREE_SCOPE, listener);</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999586"></A> 다음에, 「x/y」라고 하는 이름의 객체가 삭제되면(자),<CODE>listener</CODE> 에는 대응하는 <CODE>NamingEvent</CODE> (<CODE> evt</CODE>)가 배포됩니다.  이 &quot;NamingEvent&quot; 에는, 이벤트 소스로서 <CODE>src</CODE> 가 포함되지 않으면 안됩니다. 다음의 어느 쪽의 형식에서도 괜찮습니다. </P>
+  <BLOCKQUOTE>
+<pre>evt.getEventContext() == src
+evt.getOldBinding(). getName(). equals(&quot;x/y&quot;)</pre>
+  </BLOCKQUOTE>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999277"></A> 5.3. 4 예외의 처리</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999407"></A> 청취자가 문맥에 이벤트를 등록할 때는, 이벤트의 생성에 필요한 정보를 수집하기 위해서, 문맥의 내부에서 처리를 실시할 필요가 있는 경우가 있습니다. 예를 들어, 서버상의 변경의 대상을 등록해, 최종적으로 이벤트로 변환하려면 , 문맥으로부터 서버에 요구를 발행할 필요가 있습니다. 에러가 발생했기 때문에 이벤트의 정보를 수집할 수 없는 경우는, 청취자에게는 이벤트의 통지는 행해지지 않습니다. 이러한 에러가 발생했을 경우는,<CODE>NamingExceptionEvent</CODE> 를 던질 수 있어 청취자에게 통지됩니다.  또, 청취자의 등록은 자동적으로 해제됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=999653"></A> 베이스가 되는 <CODE>NamingListener</CODE> 인터페이스에 <CODE>namingExceptionThrown()</CODE> 메소드를 정의하면(자), 이러한 에러가 청취자에게 통지됩니다. </P>
+  <BLOCKQUOTE>
+<pre>public interface NamingListener extends java.util.EventListener {
+    public void namingExceptionThrown(NamingExceptionEvent evt);
+}</pre>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=999241"></A> 5.4 LDAP 패키지 -- <CODE>javax.naming.ldap</CODE> <A HREF="#pgfId=999240" CLASS="footnote">4</A> </H3>
+
+<BLOCKQUOTE>
+<P><IMG SRC="javax.naming.ldap-0.gif" alt="javax.naming.ldap 패키지. 이 그래픽의 설명은 <a href="../../../../api/javax/naming/ldap/package-summary.html">API documentation. " WIDTH="826" HEIGHT="429"   ALIGN="BOTTOM" BORDER="0" NATURALSIZEFLAG="3"> 을 참조해 주세요. </P>
+  <P>&nbsp;</P>
+<P CLASS="body"><A NAME="pgfId=999251"></A> <CODE>javax.naming.ldap</CODE> 패키지에는, LDAP v3 고유의 기능을 사용하기 위한 클래스 및 인터페이스가 짜넣어지고 있습니다.  이 클래스와 인터페이스는, 총칭적인 <CODE>javax.naming.directory</CODE> 패키지에는 짜넣어지고 있지 않습니다. 실제, LDAP 를 사용하고 있는 대부분의 JNDI 어플리케이션에서는,<CODE>javax.naming.directory</CODE> 패키지로 충분해서, 이 패키지를 사용할 필요는 없습니다. 이 패키지는, 확장 조작, 컨트롤, 또는 요구되어 있지 않은 통지를 사용하는 어플리케이션으로, 주로 사용합니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999666"></A> 5.4. 1 확장 조작</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999820"></A> LDAP v3 프로토콜 (Internet RFC 2251)에는, 검색 및 변경등이 명확하게 정의된 조작 이외에, LDAP 클라이언트와 LDAP 서버간에 미정도리의 조작을 전송 하는 방법도 지정되고 있습니다. 이 미정도리의 조작은, 「확장 조작」이라고 불립니다. 확장 조작은, IETF 등의 표준화 기구 또는 벤더에 의해 정의됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=999870"></A> <CODE>LdapContext</CODE> 인터페이스에는, 확장 조작을 실행하기 위한 메소드가 정의되고 있습니다. </P>
+  <BLOCKQUOTE>
+<pre>public interface LdapContext extends DirContext {
+    public ExtendedResponse extendedOperation(ExtendedRequest request)
+           throws NamingException;
+    ...
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999711"></A> <CODE>ExtendedRequest</CODE> 인터페이스는 확장 조작의 인수를,<CODE>ExtendedResponse</CODE> 인터페이스는 확장 조작의 결과를 각각 표현합니다. <CODE>ExtendedRequest</CODE> 또는 <CODE>ExtendedResponse</CODE> 는, 확장 조작을 식별하는 식별자, 및 ASN. 1 BER 방식에서 encode 된 요구 및 응답이 포함되는 바이트 배열로 구성됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=999716"></A> 어플리케이션에서는, 일반적으로,<CODE>ExtendedRequest</CODE> 및 <CODE> ExtendedResponse</CODE> 인터페이스는 직접 처리되지 않습니다. 대신에, 이러한 인터페이스를 구현하고 있는 클래스가 처리됩니다. 이러한 클래스는, IETF 에 의해 표준화 된 확장 조작의 repertoire의 일부로서 가져옵니다만, 벤더 고유의 확장 조작의 경우는 디렉토리 벤더로부터 가져옵니다. 요구 클래스에는, 형태 보증된 간단한 방법으로 인수를 받는 생성자 이 필요합니다.  또, 응답 클래스에는, 같은 방법으로 응답의 데이터를 취득하는 액세스 메소드가 필요합니다. 요구 및 응답 클래스에서는, BER 치의 encode 및 복호화를 합니다. </P>
+<P CLASS="body"><A NAME="pgfId=999723"></A> 예를 들어, LDAP 서버로, 확장 조작으로서 시각의 취득이 지원되고 있으면(자) 상정합니다. LDAP 서버는 어플리케이션으로 이 기능을 사용할 수 있도록(듯이),<CODE>GetTimeRequest</CODE> 나 <CODE>GetTimeResponse</CODE> 등의 클래스를 제공합니다. 어플리케이션은 이러한 클래스를 다음과 같이 사용합니다. </P>
+  <BLOCKQUOTE>
+<pre>GetTimeResponse resp =
+   (GetTimeResponse) lctx.extendedOperation(new GetTimeRequest());
+long time = resp.getTime();</pre>
+  </BLOCKQUOTE>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999282"></A> 5.4. 2 컨트롤</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999883"></A> LDAP v3 프로토콜 (Internet RFC 2251)을 사용하면, 미정도리의 수식자를 추가해, 임의의 요구 또는 응답을 확장할 수 있습니다. 이 수식자는, 「컨트롤」이라고 불립니다. 요구와 함께 송신되는 컨트롤은, 「요구 컨트롤」이라고 불립니다, 응답과 함께 송신되는 컨트롤은, 「응답 컨트롤」이라고 불립니다. 컨트롤은, IETF 등의 표준화 기구 또는 벤더에 의해 정의됩니다. 요구 컨트롤과 응답 컨트롤을 대응 붙일 필요는 없습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000114"></A> JNDI 에서는, 요구 컨트롤은, 다음의 2 개의 카테고리로 분류됩니다. </P>
+</BLOCKQUOTE>
+
+<UL>
+  <UL>
+<LI CLASS="bullet"><A NAME="pgfId=1000115"></A> 「접속」요구 컨트롤:접속의 확립 방법으로 영향을 주는 컨트롤
+<LI CLASS="bullet"><A NAME="pgfId=1000116"></A> 「문맥」요구 컨트롤:문맥 메소드에 영향을 주는 컨트롤
+  </UL>
+</UL>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000117"></A> 접속 요구 컨트롤은, LDAP 서버와의 접속의 확립 또는 재확립을 실시할 때 사용합니다. 문맥 요구 컨트롤은, 접속 이외의 모든 LDAP 조작을 LDAP 서버에 송신할 경우에 사용합니다. 2 종류의 컨트롤을 사용하는 것은, JNDI 가 고레벨의 API 로, 접속을 직접 처리할 수 없기 때문입니다. 필요한 접속은, 서비스 프로바이더로 관리됩니다. 이 때문에, 1 개의 접속이 복수의 문맥 인스턴스로 공유되는 일이 있습니다.  서비스 프로바이더에서는, 독자적인 알고리즘을 사용해, 접속 및 네트워크 상태를 보관 유지할 수가 있습니다. 이 경우, 문맥 인스턴스상에서 메소드가 불려 갔을 때에, 서비스 프로바이더는, 대응하는 LDAP 조작 이외에, 접속의 관리가 필요하게 되는 일이 있습니다. 접속을 관리하는 경우는 접속 요구 컨트롤을 사용합니다만, 일반적으로의 LDAP 조작의 경우는 문맥 요구 컨트롤을 사용합니다. </P>
+<P CLASS="body"><A NAME="pgfId=999913"></A> <CODE>LdapContext</CODE> 인터페이스에는, 컨트롤을 처리하는 메소드가 정의되고 있습니다. </P>
+  <BLOCKQUOTE>
+<pre>public interface LdapContext extends DirContext { 
+    public void reconnect(Control[] connCtls) throws NamingException; 
+    public Control[] getConnectControls() throws NamingException; 
+    ... 
+    public LdapContext newInstance(Control[] reqCtls)
+           throws NamingException; 
+    public void setRequestControls(Control[] reqCtls) 
+           throws NamingException; 
+    public Control[] getRequestControls() throws NamingException; 
+    ... 
+    public Control[] getResponseControls() throws NamingException; 
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000286"></A> <CODE>Control</CODE> 인터페이스는, 컨트롤을 표현합니다. 이 인터페이스에는, 컨트롤을 식별하는 식별자, 및 ASN. 1 BER 방식에서 encode 된 컨트롤의 내용이 포함되는 바이트 배열로 구성됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000152"></A> 접속 요구 컨트롤은, 초기 문맥 생성자 에 의해 초기화되어 문맥으로부터 파생한 문맥에 상속됩니다. 문맥의 접속 요구 컨트롤을 변경하려면 ,<CODE>reconnect()</CODE> 를 사용합니다. 문맥의 접속 요구 컨트롤을 가져오려면 ,<CODE>getConnectControls()</CODE> 를 사용합니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000010"></A> 문맥 요구 컨트롤을 초기화하려면 ,<CODE>newInstance()</CODE> 를 사용합니다.  변경할 때는,<CODE>setRequestControls()</CODE> 를 사용합니다. <CODE> newInstance()</CODE> 는, multi-thread 액세스를 실시하는 목적으로, 문맥의 새로운 인스턴스를 생성할 경우에 사용하는 편리한 메소드입니다. 예를 들어, 복수의 thread로 개별의 문맥 요구 컨트롤을 사용하는 경우는, thread 마다 이 메소드를 사용해, 문맥의 독자적인 카피의 취득, 및 문맥 요구 컨트롤의 설정과 취득을 실시할 수가 있습니다.  이 때, 다른 thread와 동기화할 필요는 없습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000195"></A> 접속 요구 컨트롤과 달리, 문맥 요구 컨트롤은, 문맥으로부터 파생한 문맥 인스턴스에는 상속되지 않습니다. 파생한 문맥 인스턴스는, 문맥 요구 컨트롤을 사용하지 않고 초기화됩니다. 파생한 문맥 인스턴스의 요구 컨트롤은,<CODE>setRequestControls()</CODE> 를 사용해 명시적으로 설정하지 않으면 안됩니다. 문맥의 문맥 요구 컨트롤을 가져오려면 ,<CODE>getRequestControls()</CODE> 를 사용합니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=999672"></A> 5.4. 3 초기 문맥</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999673"></A> LDAP 확장 조작 또는 컨트롤을 실행하고 있는 어플리케이션으로 초기 문맥을 작성하려면 ,<CODE>javax.naming.InitialContext</CODE> 또는 <CODE>javax.naming.directory.InitialDirContext</CODE> 대신에,<CODE>InitialLdapContext</CODE> 를 사용합니다. </P>
+  <BLOCKQUOTE>
+<pre>public class InitialLdapContext extends InitialDirContext implements LdapContext { 
+    public InitialDirContext() ...; 
+    public InitialDirContext(Hashtable env, Control[] connCtls) ...; 
+}</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=999679"></A> 초기화가 완료하면(자), 초기 문맥으로 <CODE>Context</CODE>,<CODE>DirContext</CODE>, 또는 <CODE>LdapContext</CODE> 인터페이스의 임의의 메소드를 호출할 수가 있습니다. <CODE>connCtls</CODE> 인수를 받는 생성자 을 사용하면, LDAP 서버와의 접속을 확립할 경우에 사용하는 컨트롤을 어플리케이션으로부터 지정할 수 있습니다. </P>
+  <P>&nbsp;</P>
+</BLOCKQUOTE>
+
+<H4 CLASS="subsection"><A NAME="pgfId=1000295"></A> 5.4. 4 요구되어 있지 않은 통지</H4>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000293"></A> LDAP v3 프로토콜에는, 클라이언트와 서버간의 일반적으로의 요구 및 응답형의 대화 이외에, 「요구되어 있지 않은 통지」를 지정할 수 있습니다.  요구되어 있지 않은 통지란, 서버로부터 클라이언트에 비동기에게 송신되는 메세지로, 클라이언트 요구에 대한 응답이 아닙니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000308"></A> JNDI 에서는,<CODE>javax.naming.event</CODE> 패키지에 짜넣어진 이벤트 모델을 사용해, 요구되어 있지 않은 통지를 지원하고 있습니다. JNDI 에는,<CODE>UnsolicitedNotificationEvent</CODE> 클래스와 대응하는 <CODE>UnsolicitedNotificationListener</CODE> 인터페이스가 정의되고 있습니다. <CODE>UnsolicitedNotificationEvent</CODE> 를 수신하도록(듯이) 어플리케이션을 등록하려면 ,<CODE>UnsolicitedNotificationListener</CODE> 를 <CODE>EventContext.addNamingListener()</CODE> 에 건네줍니다. </P>
+</BLOCKQUOTE>
+
+</DIV></DIV><HR ALIGN=LEFT><DIV CLASS="footnotes"><DIV CLASS="footnote">
+
+<P CLASS="Footnote"><FONT SIZE="-1"><SPAN CLASS="footnoteNumber">1. </SPAN> </FONT><A NAME="pgfId=997936"></A> <FONT SIZE="-1"> 클래스의 그림의 범례는,<A HREF="legend.html">「부록 C」</a>를 참조해 주세요. </FONT></P>
+
+</DIV><DIV CLASS="footnote">
+
+<P CLASS="Footnote"><FONT SIZE="-1"><SPAN CLASS="footnoteNumber">2. </SPAN> </FONT><A NAME="pgfId=999039"></A> <FONT SIZE="-1"> 클래스의 그림의 범례는,<A HREF="legend.html">「부록 C」</a>를 참조해 주세요. </FONT></P>
+
+</DIV><DIV CLASS="footnote">
+
+<P CLASS="Footnote"><FONT SIZE="-1"><SPAN CLASS="footnoteNumber">3. </SPAN> </FONT><A NAME="pgfId=999203"></A> <FONT SIZE="-1"> 클래스의 그림의 범례는,<A HREF="legend.html">「부록 C」</a>를 참조해 주세요. </FONT></P>
+
+</DIV><DIV CLASS="footnote">
+
+<P CLASS="Footnote"><FONT SIZE="-1"><SPAN CLASS="footnoteNumber">4. </SPAN> </FONT><A NAME="pgfId=999240"></A> <FONT SIZE="-1"> 클래스의 그림의 범례는,<A HREF="legend.html">「부록 C」</a>를 참조해 주세요. </FONT></P>
+
+</DIV></DIV>
+
+<P><HR ALIGN=LEFT><A HREF="jndiTOC.html">목차</A>  | <A  HREF="jndi.4.html">전의 항목</A>  | <A HREF="jndi.6.html">다음의 항목</A> <HR ALIGN=LEFT><I><FONT  SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright</A>  &COPY;1997-1999 Sun Microsystems, Inc.  All Rights Reserved. </FONT></I>
+
+</BODY>
+</HTML>

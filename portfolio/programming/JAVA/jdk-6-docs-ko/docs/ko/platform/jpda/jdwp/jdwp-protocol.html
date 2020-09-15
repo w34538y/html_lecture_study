@@ -1,0 +1,3780 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title>Java(TM) Debug Wire Protocol - xrath.com 에서 번역됨</title></head>
+<body bgcolor="white">
+<li><a href="#JDWP_VirtualMachine">VirtualMachine</a>  커멘드 세트 (1)
+<ul>
+<li><a href="#JDWP_VirtualMachine_Version">Version</a>  (1)
+<li><a href="#JDWP_VirtualMachine_ClassesBySignature">ClassesBySignature</a>  (2)
+<li><a href="#JDWP_VirtualMachine_AllClasses">AllClasses</a>  (3)
+<li><a href="#JDWP_VirtualMachine_AllThreads">AllThreads</a>  (4)
+<li><a href="#JDWP_VirtualMachine_TopLevelThreadGroups">TopLevelThreadGroups</a>  (5)
+<li><a href="#JDWP_VirtualMachine_Dispose">Dispose</a>  (6)
+<li><a href="#JDWP_VirtualMachine_IDSizes">IDSizes</a>  (7)
+<li><a href="#JDWP_VirtualMachine_Suspend">Suspend</a>  (8)
+<li><a href="#JDWP_VirtualMachine_Resume">Resume</a>  (9)
+<li><a href="#JDWP_VirtualMachine_Exit">Exit</a>  (10)
+<li><a href="#JDWP_VirtualMachine_CreateString">CreateString</a>  (11)
+<li><a href="#JDWP_VirtualMachine_Capabilities">Capabilities</a>  (12)
+<li><a href="#JDWP_VirtualMachine_ClassPaths">ClassPaths</a>  (13)
+<li><a href="#JDWP_VirtualMachine_DisposeObjects">DisposeObjects</a>  (14)
+<li><a href="#JDWP_VirtualMachine_HoldEvents">HoldEvents</a>  (15)
+<li><a href="#JDWP_VirtualMachine_ReleaseEvents">ReleaseEvents</a>  (16)
+<li><a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  (17)
+<li><a href="#JDWP_VirtualMachine_RedefineClasses">RedefineClasses</a>  (18)
+<li><a href="#JDWP_VirtualMachine_SetDefaultStratum">SetDefaultStratum</a>  (19)
+<li><a href="#JDWP_VirtualMachine_AllClassesWithGeneric">AllClassesWithGeneric</a>  (20)
+<li><a href="#JDWP_VirtualMachine_InstanceCounts">InstanceCounts</a>  (21)
+</ul>
+<li><a href="#JDWP_ReferenceType">ReferenceType</a>  커멘드 세트 (2)
+<ul>
+<li><a href="#JDWP_ReferenceType_Signature">Signature</a>  (1)
+<li><a href="#JDWP_ReferenceType_ClassLoader">ClassLoader</a>  (2)
+<li><a href="#JDWP_ReferenceType_Modifiers">Modifiers</a>  (3)
+<li><a href="#JDWP_ReferenceType_Fields">Fields</a>  (4)
+<li><a href="#JDWP_ReferenceType_Methods">Methods</a>  (5)
+<li><a href="#JDWP_ReferenceType_GetValues">GetValues</a>  (6)
+<li><a href="#JDWP_ReferenceType_SourceFile">SourceFile</a>  (7)
+<li><a href="#JDWP_ReferenceType_NestedTypes">NestedTypes</a>  (8)
+<li><a href="#JDWP_ReferenceType_Status">Status</a>  (9)
+<li><a href="#JDWP_ReferenceType_Interfaces">Interfaces</a>  (10)
+<li><a href="#JDWP_ReferenceType_ClassObject">ClassObject</a>  (11)
+<li><a href="#JDWP_ReferenceType_SourceDebugExtension">SourceDebugExtension</a>  (12)
+<li><a href="#JDWP_ReferenceType_SignatureWithGeneric">SignatureWithGeneric</a>  (13)
+<li><a href="#JDWP_ReferenceType_FieldsWithGeneric">FieldsWithGeneric</a>  (14)
+<li><a href="#JDWP_ReferenceType_MethodsWithGeneric">MethodsWithGeneric</a>  (15)
+<li><a href="#JDWP_ReferenceType_Instances">Instances</a>  (16)
+<li><a href="#JDWP_ReferenceType_ClassFileVersion">ClassFileVersion</a>  (17)
+<li><a href="#JDWP_ReferenceType_ConstantPool">ConstantPool</a>  (18)
+</ul>
+<li><a href="#JDWP_ClassType">ClassType</a>  커멘드 세트 (3)
+<ul>
+<li><a href="#JDWP_ClassType_Superclass">Superclass</a>  (1)
+<li><a href="#JDWP_ClassType_SetValues">SetValues</a>  (2)
+<li><a href="#JDWP_ClassType_InvokeMethod">InvokeMethod</a>  (3)
+<li><a href="#JDWP_ClassType_NewInstance">NewInstance</a>  (4)
+</ul>
+<li><a href="#JDWP_ArrayType">ArrayType</a>  커멘드 세트 (4)
+<ul>
+<li><a href="#JDWP_ArrayType_NewInstance">NewInstance</a>  (1)
+</ul>
+<li><a href="#JDWP_InterfaceType">InterfaceType</a>  커멘드 세트 (5)
+<ul>
+</ul>
+<li><a href="#JDWP_Method">Method</a>  커멘드 세트 (6)
+<ul>
+<li><a href="#JDWP_Method_LineTable">LineTable</a>  (1)
+<li><a href="#JDWP_Method_VariableTable">VariableTable</a>  (2)
+<li><a href="#JDWP_Method_Bytecodes">Bytecodes</a>  (3)
+<li><a href="#JDWP_Method_IsObsolete">IsObsolete</a>  (4)
+<li><a href="#JDWP_Method_VariableTableWithGeneric">VariableTableWithGeneric</a>  (5)
+</ul>
+<li><a href="#JDWP_Field">Field</a>  커멘드 세트 (8)
+<ul>
+</ul>
+<li><a href="#JDWP_ObjectReference">ObjectReference</a>  커멘드 세트 (9)
+<ul>
+<li><a href="#JDWP_ObjectReference_ReferenceType">ReferenceType</a>  (1)
+<li><a href="#JDWP_ObjectReference_GetValues">GetValues</a>  (2)
+<li><a href="#JDWP_ObjectReference_SetValues">SetValues</a>  (3)
+<li><a href="#JDWP_ObjectReference_MonitorInfo">MonitorInfo</a>  (5)
+<li><a href="#JDWP_ObjectReference_InvokeMethod">InvokeMethod</a>  (6)
+<li><a href="#JDWP_ObjectReference_DisableCollection">DisableCollection</a>  (7)
+<li><a href="#JDWP_ObjectReference_EnableCollection">EnableCollection</a>  (8)
+<li><a href="#JDWP_ObjectReference_IsCollected">IsCollected</a>  (9)
+<li><a href="#JDWP_ObjectReference_ReferringObjects">ReferringObjects</a>  (10)
+</ul>
+<li><a href="#JDWP_StringReference">StringReference</a>  커멘드 세트 (10)
+<ul>
+<li><a href="#JDWP_StringReference_Value">Value</a>  (1)
+</ul>
+<li><a href="#JDWP_ThreadReference">ThreadReference</a>  커멘드 세트 (11)
+<ul>
+<li><a href="#JDWP_ThreadReference_Name">Name</a>  (1)
+<li><a href="#JDWP_ThreadReference_Suspend">Suspend</a>  (2)
+<li><a href="#JDWP_ThreadReference_Resume">Resume</a>  (3)
+<li><a href="#JDWP_ThreadReference_Status">Status</a>  (4)
+<li><a href="#JDWP_ThreadReference_ThreadGroup">ThreadGroup</a>  (5)
+<li><a href="#JDWP_ThreadReference_Frames">Frames</a>  (6)
+<li><a href="#JDWP_ThreadReference_FrameCount">FrameCount</a>  (7)
+<li><a href="#JDWP_ThreadReference_OwnedMonitors">OwnedMonitors</a>  (8)
+<li><a href="#JDWP_ThreadReference_CurrentContendedMonitor">CurrentContendedMonitor</a>  (9)
+<li><a href="#JDWP_ThreadReference_Stop">Stop</a>  (10)
+<li><a href="#JDWP_ThreadReference_Interrupt">Interrupt</a>  (11)
+<li><a href="#JDWP_ThreadReference_SuspendCount">SuspendCount</a>  (12)
+<li><a href="#JDWP_ThreadReference_OwnedMonitorsStackDepthInfo">OwnedMonitorsStackDepthInfo</a>  (13)
+<li><a href="#JDWP_ThreadReference_ForceEarlyReturn">ForceEarlyReturn</a>  (14)
+</ul>
+<li><a href="#JDWP_ThreadGroupReference">ThreadGroupReference</a>  커멘드 세트 (12)
+<ul>
+<li><a href="#JDWP_ThreadGroupReference_Name">Name</a>  (1)
+<li><a href="#JDWP_ThreadGroupReference_Parent">Parent</a>  (2)
+<li><a href="#JDWP_ThreadGroupReference_Children">Children</a>  (3)
+</ul>
+<li><a href="#JDWP_ArrayReference">ArrayReference</a>  커멘드 세트 (13)
+<ul>
+<li><a href="#JDWP_ArrayReference_Length">Length</a>  (1)
+<li><a href="#JDWP_ArrayReference_GetValues">GetValues</a>  (2)
+<li><a href="#JDWP_ArrayReference_SetValues">SetValues</a>  (3)
+</ul>
+<li><a href="#JDWP_ClassLoaderReference">ClassLoaderReference</a>  커멘드 세트 (14)
+<ul>
+<li><a href="#JDWP_ClassLoaderReference_VisibleClasses">VisibleClasses</a>  (1)
+</ul>
+<li><a href="#JDWP_EventRequest">EventRequest</a>  커멘드 세트 (15)
+<ul>
+<li><a href="#JDWP_EventRequest_Set">Set</a>  (1)
+<li><a href="#JDWP_EventRequest_Clear">Clear</a>  (2)
+<li><a href="#JDWP_EventRequest_ClearAllBreakpoints">ClearAllBreakpoints</a>  (3)
+</ul>
+<li><a href="#JDWP_StackFrame">StackFrame</a>  커멘드 세트 (16)
+<ul>
+<li><a href="#JDWP_StackFrame_GetValues">GetValues</a>  (1)
+<li><a href="#JDWP_StackFrame_SetValues">SetValues</a>  (2)
+<li><a href="#JDWP_StackFrame_ThisObject">ThisObject</a>  (3)
+<li><a href="#JDWP_StackFrame_PopFrames">PopFrames </a>  (4)
+</ul>
+<li><a href="#JDWP_ClassObjectReference">ClassObjectReference</a>  커멘드 세트 (17)
+<ul>
+<li><a href="#JDWP_ClassObjectReference_ReflectedType">ReflectedType</a>  (1)
+</ul>
+<li><a href="#JDWP_Event">Event</a>  커멘드 세트 (64)
+<ul>
+<li><a href="#JDWP_Event_Composite">Composite</a>  (100)
+</ul>
+<li><a href="#JDWP_Error">Error</a>  정수
+<li><a href="#JDWP_EventKind">EventKind</a>  정수
+<li><a href="#JDWP_ThreadStatus">ThreadStatus</a>  정수
+<li><a href="#JDWP_SuspendStatus">SuspendStatus</a>  정수
+<li><a href="#JDWP_ClassStatus">ClassStatus</a>  정수
+<li><a href="#JDWP_TypeTag">TypeTag</a>  정수
+<li><a href="#JDWP_Tag">Tag</a>  정수
+<li><a href="#JDWP_StepDepth">StepDepth</a>  정수
+<li><a href="#JDWP_StepSize">StepSize</a>  정수
+<li><a href="#JDWP_SuspendPolicy">SuspendPolicy</a>  정수
+<li><a href="#JDWP_InvokeOptions">InvokeOptions</a>  정수
+<h4><a name="JDWP_VirtualMachine"> VirtualMachine 커멘드 세트</a>  (1)</h4>
+
+<h5><a name="JDWP_VirtualMachine_Version">Version 커멘드</a>  (1)</h5>
+타겟의 VM 에 의해 구현된 JDWP 의 버젼을 돌려줍니다. 버젼 캐릭터 라인의 서식은, 구현에 의존합니다.  
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>설명</i><td>VM 의 버젼에 관한 텍스트 정보 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>jdwpMajor</i><td>JDWP 의 메이저 버젼 번호 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>jdwpMinor</i><td>JDWP 의 마이너 버젼 번호 &nbsp;
+<tr>
+<td colspan=5>
+string<td><i>vmVersion</i><td>타겟 VM 의 JRE 버젼 (java.version 프로퍼티의 값과 같은) &nbsp;
+<tr>
+<td colspan=5>
+string<td><i>vmName</i><td>타겟 VM 명 (java.vm.name 프로퍼티의 값과 같은) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_ClassesBySignature">ClassesBySignature 커멘드</a>  (2)</h5>
+타겟 VM 에 의해 로드 된 클래스 가운데, 지정된 시그니챠와 일치하는 것 모든 참조형을 돌려줍니다. 복수의 클래스 로더가 동명의 클래스를 로드하고 있는 경우, 복수의 참조형이 돌려주어집니다. 검색은, 로드 된 클래스에만 한정됩니다. 지정된 시그니챠를 가지는 클래스의 로드는 행해지지 않습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>signature</i><td>검색하는 클래스의 JNI 시그니챠 (예를 들어,"Ljava/lang/String;") &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>전참조형의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>typeID</i><td>대응하는 로드 된 참조형 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>status</i><td>현재의 클래스의<a href="#JDWP_ClassStatus">상태</a>  &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_AllClasses">AllClasses 커멘드</a>  (3)</h5>
+타겟 VM 에 의해 현재 로드 되고 있는 클래스 모든 참조형을 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>전참조형의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>typeID</i><td>로드 된 참조형 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>로드 된 참조형의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>status</i><td>현재의 클래스의<a href="#JDWP_ClassStatus">상태</a>  &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_AllThreads">AllThreads 커멘드</a>  (4)</h5>
+타겟 VM 로 실행중의 모든 thread를 돌려줍니다. 반환되는 리스트에는, java.lang.Thread 로 작성된 thread, JNI 를 개입시켜 타겟 VM 에 접속된 모든 네이티브 thread, 및 타겟 VM 에 의해 작성된 시스템 thread가 포함됩니다. 개시되어 있지 않은 thread, 및 실행의 완료한 thread는, 리스트에 포함되지 않습니다.  
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>threads</i><td>나중에 계속되는 thread의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>threads</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+threadID<td><i>thread</i><td>실행중의 thread &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_TopLevelThreadGroups">TopLevelThreadGroups 커멘드</a>  (5)</h5>
+부모를 가지지 않는 thread 그룹을 모두 돌려줍니다. 이 커멘드는, 기존의 thread 그룹의 (1 개(살) 또는 복수의) 트리를 구축하는 최초의 순서로서 사용할 수 있습니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>groups</i><td>나중에 계속되는 thread 그룹의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>groups</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+threadGroupID<td><i>group</i><td>톱 레벨의 thread 그룹 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_Dispose">Dispose 커멘드</a>  (6)</h5>
+이 가상 머신의 밀러를 무효로 합니다. 타겟 VM 에의 통신 채널이 닫혀져 타겟 VM 는, 이 디버거 또는 다른 디버거로부터의 다음의 접속을 받아들일 준비를 합니다. 거기에는, 다음과 같은 작업이 포함됩니다. <ul><li>모든 이벤트 요구가 삭제된다<li>thread 레벨의 <a href="#JDWP_ThreadReference_Resume">Resume</a>  커멘드 또는 VM 레벨의 <a href="#JDWP_VirtualMachine_Resume">Resume</a>  커멘드에 의해 중단된 모든 thread가, 실행에 필요한 회수만 재개된다<li>가베지 컬렉션이<a href="#JDWP_ObjectReference_DisableCollection">무효</a>로 된 모든 상황으로, 재차 유효하게 되는</ul>타겟 VM 로 실행중의 모든 메소드 호출은, 절단 후도 계속됩니다. 그러한 메소드 호출이 완료하면(자), 호출원의 thread는, 원래 정지한 장소로부터 실행을 계속합니다. <p>이 가상 머신을 기원으로 하는 자원 (객체 참조나 참조형등)은, 무효가 됩니다.  
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_IDSizes">IDSizes 커멘드</a>  (7)</h5>
+타겟 VM 내에 존재하는 가변 사이즈의 데이터형의 사이즈를 돌려줍니다. 반환값은, 커멘드 패킷 및 응답 패킷내에서 그 식별자가 사용하고 있는 바이트수를 나타냅니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>fieldIDSize</i><td>fieldID 의 사이즈 (바이트 단위) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>methodIDSize</i><td>methodID 의 사이즈 (바이트 단위) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>objectIDSize</i><td>objectID 의 사이즈 (바이트 단위) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>referenceTypeIDSize</i><td>referenceTypeID 의 사이즈 (바이트 단위) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>frameIDSize</i><td>frameID 의 사이즈 (바이트 단위) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_Suspend">Suspend 커멘드</a>  (8)</h5>
+타겟 VM 로 가동중의 어플리케이션의 실행을 중단합니다. 현재 실행중의 Java thread는, 모두 중단됩니다. <p>java.lang.Thread.suspend 과는 달리, 가상 머신과 개개의 thread 양쪽 모두의 중단이 카운트 됩니다. thread를 다시 실행하기 전에,<a href="#JDWP_VirtualMachine_Resume">VM 레벨의 Resume</a>  커멘드 또는<a href="#JDWP_ThreadReference_Resume">thread 레벨의 Resume</a>  커멘드를 사용해, 중단의 실행 회수와 같은 수만큼 재개를 실행할 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_Resume">Resume 커멘드</a>  (9)</h5>
+Suspend 커멘드의 실행 후, 또는 이벤트에 의한 어플리케이션의 정지 후에, 어플리케이션의 실행을 재개합니다. 가상 머신 및 개개의 thread의 중단은, 카운트 됩니다. 특정의 thread의 중단 회수가 n 회의 경우, 그 thread를 속행하기 전에 n 회재개할 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_Exit">Exit 커멘드</a>  (10)</h5>
+지정된 종료 코드로 타겟 VM 를 종료시킵니다. 플랫폼에 따라서는, 종료 코드가 하위 8 비트 등에 절약할 수 있는 경우가 있습니다. 이전에 타겟 VM 로부터 반환된 ID 는, 모두 무효가 됩니다. VM 로 실행중의 thread는, 그대로 돌연에 정지 당합니다. thread 종료 예외는 throw 되지 않기 때문에, finally 블록은 실행되지 않습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>exitCode</i><td>종료 코드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_CreateString">CreateString 커멘드</a>  (11)</h5>
+타겟 VM 내에 캐릭터 라인 객체를 신규 작성해, 그 ID 를 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>utf</i><td>작성된 캐릭터 라인내에서 사용하는 UTF-8 형식의 문자 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+stringID<td><i>stringObject</i><td>작성된 캐릭터 라인 (java.lang.String 의 인스턴스) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_Capabilities">Capabilities 커멘드</a>  (12)</h5>
+이 VM 의 기능을 가져옵니다. 각 기능은 boolean 치로서 돌려주어져 그 기능이 존재할지 어떨지를 나타냅니다. 각 기능에 관련하는 커멘드는, 그 기능을 이용할 수 없는 경우, NOT_IMPLEMENTED 에러를 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+boolean 형<td><i>canWatchFieldModification</i><td>VM 가 필드의 변경을 감시해, 변경 시계 포인트 이벤트를 송신 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canWatchFieldAccess</i><td>VM 가 필드에의 액세스를 감시해, 액세스 시계 포인트 이벤트를 송신 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetBytecodes</i><td>VM 가, 지정된 메소드의 바이트 코드를 취득할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetSyntheticAttribute</i><td>필드 또는 메소드가 합성인 경우, VM 가 그것을 판별할 수 있을지 어떨지(즉, 메소드 또는 필드가 컴파일러에 의해 생성된 것인 경우, VM 가 그것을 판별할 수 있을지 어떨지) &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetOwnedMonitorInfo</i><td>소유된 thread의 모니터 정보를, VM 가 취득 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetCurrentContendedMonitor</i><td>현재 경합 하고 있는 thread의 모니터를, VM 가 취득 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetMonitorInfo</i><td>지정된 객체의 모니터 정보를, VM 를 취득할 수 있을지 어떨지 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_ClassPaths">ClassPaths 커멘드</a>  (13)</h5>
+타겟 VM 의 classpath 및 bootclasspath 를 가져옵니다. classpath 가 정의되어 있지 않은 경우는, 빈 상태(empty)의 리스트를 돌려줍니다. bootclasspath 가 정의되어 있지 않은 경우는, 빈 상태(empty)의 리스트를 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>baseDir</i><td>다음의 리스트내의 몇개의 상대 패스 해결로 사용되는 베이스 디렉토리 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>classpaths</i><td>classpath 내의 패스의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classpaths</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>path</i><td>classpath 의 1 컴퍼넌트 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>bootclasspaths</i><td>bootclasspath 내의 패스의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>bootclasspaths</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>path</i><td>bootclasspath 의 1 컴퍼넌트 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_DisposeObjects">DisposeObjects 커멘드</a>  (14)</h5>
+객체 ID 의 리스트를 해제합니다. 리스트내의 각 객체에 대해서, 이하의 처리가 적용됩니다. 연구 최종 단계에 의해 보관 유지되고 있는 참조의 회수 (참조 카운트)가, refCnt 에 의해 줄여집니다. 그 후, 참조 카운트가 0 이하이면, 그 ID 는 해제됩니다. 해제된 ID 에 관련지을 수 있었던 연구 최종 단계 자원이 있으면, 그 자원도 해제되어 객체의 가베지 컬렉션이 무효로 되고 있으면, 재차 유효하게 됩니다. 이 커멘드를 보낸 옆은, 해제된 ID 를 참조하는 커멘드를 그 이후는 보내지 않게 하지 않으면 안됩니다. <p>이 커멘드의 사용은, 필수가 아닙니다. 이 커멘드가 보내지지 않는 경우, 각 ID 에 관련지을 수 있었던 자원은, 대응하는 객체의 가베지 컬렉션의 실행 후에, 연구 최종 단계에 의해 해제됩니다. 이 커멘드의 가장 효과적인 이용법은, 대량의 객체 (대규모 배열등)가 연구 최종 단계부터 취득되고 있지만, 곧바로는 가베지 컬렉션을 하지 않는 경우에, 연구 최종 단계의 부하를 경감하는 것입니다. <p>이 커멘드로 해제된 ID 는, 연구 최종 단계에 의해 재사용되는 일이 있습니다. 이 설명에서는, 참조가 카운트 되고 있는 것을 상정하고 있어, 연구 최종 단계는 동등의 동작을 하는 임의의 구현을 사용할 수 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>requests</i><td>나중에 계속되는 객체 파기 요구의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>requests</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>refCnt</i><td>이 객체 ID 가 연구 최종 단계부터 받아들인 패킷에 포함되어 있던 회수. 여기에 정확한 카운트를 지정하는 것으로써, 객체 ID 가 착신 패킷의 일부이며, 아직 프론트엔드에 의해 처리되어 있지 않은 경우에, 객체 ID 가 연구 최종 단계에 해제되는 것을 회피할 수 있는 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_HoldEvents">HoldEvents 커멘드</a>  (15)</h5>
+타겟 VM 에 대해, 이벤트의 송신을 정지하도록(듯이) 전합니다. 이벤트는 파기되는 것이 아니라, 다음에 ReleaseEvents 커멘드가 송신될 때까지 보관 유지됩니다. 대량의 이벤트가 생성되는 상황으로, 디버거 VM 에 송신되는 이벤트의 수를 제어하는 경우에, 이 커멘드는 유용합니다. 이벤트는 디버거 연구 최종 단계에 의해 보관 유지됩니다.  어플리케이션의 실행은, 버퍼가 오버플로우 하지 않게, 디버거 연구 최종 단계에 의해 동결됩니다. 커멘드에의 응답은 보관 유지되지 않기 때문에, 이 커멘드에 의한 영향은 없습니다. 이벤트가 벌써 보관 유지되고 있는 경우, 이 커멘드는 무시됩니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_ReleaseEvents">ReleaseEvents 커멘드</a>  (16)</h5>
+타겟 VM 에 대해, 이벤트의 송신을 계속하도록(듯이) 전합니다. 이 커멘드는, HoldEvents 커멘드의 실행 후에 일반적으로의 액티버티를 복원할 때에 사용됩니다. 현재 유효한 HoldEvents 커멘드가 존재하지 않는 경우, 이 커멘드는 무시됩니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd>(없음)
+</dl>
+<h5><a name="JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew 커멘드</a>  (17)</h5>
+이 VM 의 모든 기능을 가져옵니다. 각 기능은 boolean 치로서 돌려주어져 그 기능이 존재할지 어떨지를 나타냅니다. 각 기능에 관련하는 커멘드는, JDWP 1 버젼 1.4 이후에 그 기능을 이용할 수 없는 경우, NOT_IMPLEMENTED 에러를 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+boolean 형<td><i>canWatchFieldModification</i><td>VM 가 필드의 변경을 감시해, 변경 시계 포인트 이벤트를 송신 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canWatchFieldAccess</i><td>VM 가 필드에의 액세스를 감시해, 액세스 시계 포인트 이벤트를 송신 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetBytecodes</i><td>VM 가, 지정된 메소드의 바이트 코드를 취득할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetSyntheticAttribute</i><td>필드 또는 메소드가 합성인 경우, VM 가 그것을 판별할 수 있을지 어떨지(즉, 메소드 또는 필드가 컴파일러에 의해 생성된 것인 경우, VM 가 그것을 판별할 수 있을지 어떨지) &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetOwnedMonitorInfo</i><td>소유된 thread의 모니터 정보를, VM 가 취득 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetCurrentContendedMonitor</i><td>현재 경합 하고 있는 thread의 모니터를, VM 가 취득 가능한가 어떤가 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetMonitorInfo</i><td>지정된 객체의 모니터 정보를, VM 를 취득할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canRedefineClasses</i><td>VM 가 클래스를 재정의할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canAddMethod</i><td>VM 가 클래스를 재정의할 경우에 메소드를 추가할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canUnrestrictedlyRedefineClasses</i><td>VM 가 클래스를 자유롭게 재정의할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canPopFrames</i><td>VM 가 스택 프레임을 팝 할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canUseInstanceFilters</i><td>VM 가 특정의 객체로 이벤트를 필터 할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetSourceDebugExtension</i><td>VM 가 소스 디버그 확장 기능을 취득할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canRequestVMDeathEvent</i><td>VM 가 VM 종료 이벤트를 요구할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canSetDefaultStratum</i><td>VM 가 디폴트의 층을 설정할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetInstanceInfo</i><td>VM 가 인스턴스, 클래스의 인스턴스수, 참조하는 객체를 돌려줄 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canRequestMonitorEvents</i><td>VM 가 감시 이벤트를 요구할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetMonitorFrameInfo</i><td>VM 가 프레임의 깊이에 관한 정보를 포함한 감시를 취득할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canUseSourceNameFilters</i><td>VM 가 소스명에 근거해 클래스 준비 이벤트를 필터 처리할 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canGetConstantPool</i><td>VM 가 정수 풀 정보를 돌려줄 수 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>canForceEarlyReturn</i><td>VM 가 메소드로부터의 반환값을 조기에 돌려주게 할 수가 있을지 어떨지 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved22</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved23</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved24</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved25</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved26</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved27</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved28</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved29</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved30</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved31</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=5>
+boolean 형<td><i>reserved32</i><td>장래의 기능을 위해서(때문에) 예약이 끝난 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_RedefineClasses">RedefineClasses 커멘드</a>  (18)</h5>
+새로운 클래스 정의를 인스톨 합니다. 타겟 VM 로 재정의된 클래스의 메소드에 액티브한 스택 프레임이 있으면(자), 그 액티브 프레임은 원의 메소드의 바이트 코드의 실행을 속행합니다. 이러한 메소드는, 사용되어 있지 않은 것이라고 보여집니다 (<a href="#JDWP_Method_IsObsolete">IsObsolete</a>  를 참조). 재정의된 클래스의 메소드는, 타겟 VM 의 새로운 호출에 사용됩니다. 원의 메소드 ID 는 재정의된 메소드를 참조합니다. 재정의된 클래스의 모든 breakpoint가 해제됩니다.  스택 프레임을 리셋 하는 경우는,<a href="#JDWP_StackFrame_PopFrames">PopFrames</a>  커멘드를 사용해, 사용되어 있지 않은 메소드와 함께 프레임을 팝 할 수가 있습니다. <p>canRedefineClasses 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조). canRedefineClasses 기능에 가세해 타겟 VM 에는, 클래스를 재정의할 경우에 메소드를 추가하는 canAddMethod 기능, 또는 임의의 방법으로 클래스를 재정의하는 canUnrestrictedlyRedefineClasses 가 필요합니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>전참조형의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>refType</i><td>참조형 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>classfile</i><td>정의하는 클래스의 바이트수 (하) &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=6>
+<i>classfile</i> 회의 반복:
+<tr>
+<td colspan=2>
+<td colspan=3>
+byte<td><i>classbyte</i><td>JVM 클래스 파일 형식의 바이트 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 의 1 개가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 의 1 개가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_UNSUPPORTED_VERSION">UNSUPPORTED_VERSION</a> </td><td>클래스 파일의 버젼이 이 VM 로 지원되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS_FORMAT">INVALID_CLASS_FORMAT</a> </td><td>가상 머신이 클래스 파일을 읽어들이려고 했지만, 파일의 형식이 잘못되어 있는지, 그 외의 이유로써 클래스 파일로서 해석할 수 없는 &nbsp;</td></tr>
+<tr><td><a href="#Error_CIRCULAR_CLASS_DEFINITION">CIRCULAR_CLASS_DEFINITION</a> </td><td>클래스의 초기화중에, 순환 정의가 검출된 &nbsp;</td></tr>
+<tr><td><a href="#Error_FAILS_VERIFICATION">FAILS_VERIFICATION</a> </td><td>클래스 파일의 형식은 올바르지만, 검증 루틴은 어떠한 종류의 내부적인 부정합이나 시큐리티상의 문제를 검출한 &nbsp;</td></tr>
+<tr><td><a href="#Error_NAMES_DONT_MATCH">NAMES_DONT_MATCH</a> </td><td>새로운 클래스 파일내에서 정의된 클래스명이, 구클래스 객체내의 이름과 다른 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 구현되어 있지 않은 (CapabilitiesNew.canRedefineClasses 가 false) &nbsp;</td></tr>
+<tr><td><a href="#Error_ADD_METHOD_NOT_IMPLEMENTED">ADD_METHOD_NOT_IMPLEMENTED</a> </td><td>추가 메소드가 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_SCHEMA_CHANGE_NOT_IMPLEMENTED">SCHEMA_CHANGE_NOT_IMPLEMENTED</a> </td><td>schema의 변경이 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_HIERARCHY_CHANGE_NOT_IMPLEMENTED">HIERARCHY_CHANGE_NOT_IMPLEMENTED</a> </td><td>새로운 클래스의 버젼의 직접 슈퍼 클래스가 다르다, 또는 직접 구현되고 있는 인터페이스가 달라, canUnrestrictedlyRedefineClasses 가 false&nbsp;</td></tr>
+<tr><td><a href="#Error_DELETE_METHOD_NOT_IMPLEMENTED">DELETE_METHOD_NOT_IMPLEMENTED</a> </td><td>새로운 클래스의 버젼에서는, 구클래스의 버젼으로 선언한 메소드를 선언하지 않고, 또 canUnrestrictedlyRedefineClasses 가 false&nbsp;</td></tr>
+<tr><td><a href="#Error_CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED">CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED</a> </td><td>새로운 클래스의 버젼의 수식자가 달라, canUnrestrictedlyRedefineClasses 가 false&nbsp;</td></tr>
+<tr><td><a href="#Error_METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED">METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED</a> </td><td>새로운 클래스의 버젼의 메소드의 수식자가 구클래스의 버젼의 수식자와 달리, canUnrestrictedlyRedefineClasses 가 false&nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_SetDefaultStratum">SetDefaultStratum 커멘드</a>  (19)</h5>
+디폴트의 층을 설정합니다. canSetDefaultStratum 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>stratumID</i><td>디폴트층, 또는 참조형 디폴트를 사용하기 위한 빈 상태(empty)의 캐릭터 라인 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_AllClassesWithGeneric">Interfaces 커멘드</a>  (20)</h5>
+타겟 VM 에 의해 현재 로드 되고 있는 클래스 모든 참조형을 돌려줍니다. 각 클래스에 대해서 JNI 시그니챠와 총칭 시그니챠의 양쪽 모두가 돌려주어집니다. 총칭 시그니챠에 대해서는,<a href="http://java.sun.com/docs/books/vmspec">「Java Virtual Machine Specification, 3rd Edition」</a>의 시그니챠 속성의 마디를 참조해 주세요. 이것은 JDWP 버젼 1.5 이후입니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>전참조형의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>typeID</i><td>로드 된 참조형 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>로드 된 참조형의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>genericSignature</i><td>로드 된 참조형의 총칭 시그니챠, 없는 경우는 빈 상태(empty)의 캐릭터 라인 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>status</i><td>현재의 클래스의<a href="#JDWP_ClassStatus">상태</a>  &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_VirtualMachine_InstanceCounts">InstanceCounts 커멘드</a>  (21)</h5>
+입력 리스트내의 각 참조형의 인스턴스수를 돌려줍니다. 가베지 컬렉트 목적으로 도달 가능한 인스턴스만이 카운트 됩니다. 언로드가 끝난 상태등의 이유로써 참조형이 무효인 경우, 인스턴스 카운트로서 제로가 돌려주어집니다. <p>이것은 JDWP 버젼 1.6 이후입니다. canGetInstanceInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>refTypesCount</i><td>전참조형의 수부가 아닌 수치 &nbsp;
+<tr>
+<td colspan=7>
+<i>refTypesCount</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>counts</i><td>나중에 계속되는 회수 &nbsp;
+<tr>
+<td colspan=7>
+<i>counts</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+long<td><i>instanceCount</i><td>「출력 데이터」내의 참조형의 인스턴스수&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_ILLEGAL_ARGUMENT">ILLEGAL_ARGUMENT</a> </td><td>refTypesCount 가 제로보다 작은 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ReferenceType">ReferenceType 커멘드 세트</a>  (2)</h4>
+
+<h5><a name="JDWP_ReferenceType_Signature">Signature 커멘드</a>  (1)</h5>
+참조형의 JNI 시그니챠를 돌려줍니다. JNI 시그니챠의 형식에 대해서는,<a href="http://java.sun.com/products/jdk/1.2/docs/guide/jni/index.html">Java Native Inteface 스펙</a>을 참조해 주세요. <p>프리미티브(primitive) 클래스의 경우, 반환되는 시그니챠는 대응하는 원시형의 시그니챠입니다. 예를 들어, 「I」는, java.lang.Integer.TYPE 에 의해 나타내지는 클래스의 시그니챠로서 돌려주어집니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>signature</i><td>참조형의 JNI 시그니챠 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_ClassLoader">ClassLoader 커멘드</a>  (2)</h5>
+지정된 참조형을 로드한 java.lang.ClassLoader 의 인스턴스를 돌려줍니다. 그 참조형이 시스템 클래스 로더에 의해 로드 되었을 경우, 반환되는 객체 ID 는 null 가 됩니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classLoaderID<td><i>classLoader</i><td>참조형의 클래스 로더 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Modifiers">Modifiers 커멘드</a>  (3)</h5>
+참조형의 수식자 (액세스 플래그라고도 한다)를 돌려줍니다. 반환되는 비트 마스크에는, 참조형의 선언에 관한 정보가 포함됩니다. 참조형이 배열 또는 프리미티브(primitive) 클래스 (예를 들어, java.lang.Integer.TYPE)인 경우, 반환되는 비트 마스크의 값은 정의되지 않습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>modBits</i><td><a href="http://java.sun.com/docs/books/vmspec/html/ClassFile.doc.html">VM 스펙</a>&nbsp;로 정의된 수식자 비트
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Fields">Fields 커멘드</a>  (4)</h5>
+참조형의 각 필드에 관한 정보를 돌려줍니다. 상속한 필드는 포함되지 않습니다. 필드 리스트에는, 컴파일러에 의해 작성된 모든 합성 필드가 포함됩니다. 필드는, 클래스 파일내에 출현하는 순서로 돌려주어집니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>declared</i><td>선언된 필드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>declared</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>필드 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>필드의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>필드의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>modBits</i><td>필드 선언에 관한 추가 정보를 제공하는 수식자 비트 플래그 (액세스 플래그라고도 한다). 개개의 플래그치는,<a href="http://java.sun.com/docs/books/vmspec/html/ClassFile.doc.html">VM 스펙</a>으로 정의되고 있다. 또, 합성 속성의<a href="#JDWP_VirtualMachine_Capabilities">기능</a>을 이용 가능한 경우에는,<code>0xf0000000</code> 비트는, 그 필드가 합성 필드인 것을 나타내는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_CLASS_NOT_PREPARED">CLASS_NOT_PREPARED</a> </td><td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Methods">Methods 커멘드</a>  (5)</h5>
+참조형의 각 메소드에 관한 정보를 돌려줍니다. 상속된 메소드는, 포함되지 않습니다. 메소드의 리스트에는, 생성자 (이름 「&lt;init&gt;」로 식별된다), 존재하는 경우에는 초기화 메소드 (이름 「&lt;clinit&gt;」로 식별된다), 및 컴파일러에 의해 작성된 모든 합성 메소드가 포함됩니다. 메소드는, 클래스 파일내에 출현하는 순서로 돌려주어집니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>declared</i><td>선언된 메소드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>declared</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+methodID<td><i>methodID</i><td>메소드 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>메소드의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>메소드의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>modBits</i><td>메소드 선언에 관한 추가 정보를 제공하는 수식자 비트 플래그 (액세스 플래그라고도 한다). 개개의 플래그치는,<a href="http://java.sun.com/docs/books/vmspec/html/ClassFile.doc.html">VM 스펙</a>으로 정의되고 있다. 또, 합성 속성의<a href="#JDWP_VirtualMachine_Capabilities">기능</a>을 이용 가능한 경우에는,<code>0xf0000000</code> 비트는, 메소드가 합성 메소드인 것을 나타내는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_CLASS_NOT_PREPARED">CLASS_NOT_PREPARED</a> </td><td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_GetValues">GetValues 커멘드</a>  (6)</h5>
+참조형의 1 개 또는 복수의 static 필드의 값을 돌려줍니다. 각 필드는, 참조형의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 필드의 값을 취득할 수 있습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>fields</i><td>취득하는 값의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>fields</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>취득하는 필드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>반환되는 값의 수.  fields 의 취득하는 값의 수로 항상 동일한 &nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>value</i><td>필드치 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FIELDID">INVALID_FIELDID</a> </td><td>무효인 필드 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_SourceFile">SourceFile 커멘드</a>  (7)</h5>
+참조형이 선언된 원시 파일의 이름을 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>sourceFile</i><td>원시 파일의 이름. 파일의 패스 정보는 포함되지 않는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>원시 파일의 속성이 존재하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_NestedTypes">NestedTypes 커멘드</a>  (8)</h5>
+이 형태의 바로 안쪽에 네스트 한 클래스와 인터페이스를 돌려줍니다. 이러한 형태의 한층 더 안쪽에 네스트 한 타입은 포함되지 않습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>네스트 한 클래스와 인터페이스의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>typeID</i><td>네스트 한 클래스 또는 인터페이스의 ID&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Status">Status 커멘드</a>  (9)</h5>
+참조형의 현재의 상태를 돌려줍니다. <a href="http://java.sun.com/docs/books/vmspec/html/Concepts.doc.html#16491">VM 스펙</a>으로 설명되고 있도록(듯이), 상태는 참조형의 초기화의 정도를 나타냅니다. 클래스가 링크하고 있는 경우는, 반환되는 상태 비트의 PREPARED 및 VERIFIED 비트가 설정됩니다. 클래스가 초기화되고 있는 경우는, 반환되는 상태 비트의 INITIALIZED 비트가 설정됩니다. 초기화중에 에러가 발생했을 경우는, 반환되는 상태 비트의 ERROR 비트가 설정됩니다. 반환되는 상태 비트는, 배열형 및 프리미티브(primitive) 클래스 (java.lang.Integer.TYPE 등)의 경우는 미정도리입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>status</i><td><a href="#JDWP_ClassStatus">상태 </a>비트. <a href="#JDWP_ClassStatus">JDWP.ClassStatus</a> &nbsp; 를 참조
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Interfaces">Interfaces 커멘드</a>  (10)</h5>
+이 클래스에 의한 구현이 선언된 인터페이스를 돌려줍니다. 간접적으로 구현된 (구현 끝난 인터페이스로부터 상속한, 또는 슈퍼 클래스가 구현한) 인터페이스는 포함되지 않습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>인터페이스</i><td>구현한 인터페이스의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>interfaces</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+interfaceID<td><i>interfaceType</i><td>구현된 인터페이스 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_ClassObject">ClassObject 커멘드</a>  (11)</h5>
+이 형태에 대응하는 클래스 객체를 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classObjectID<td><i>classObject</i><td>클래스 객체 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_SourceDebugExtension">SourceDebugExtension 커멘드</a>  (12)</h5>
+SourceDebugExtension 속성의 값을 돌려줍니다. 이것은 JDWP 버젼 1.4 이후입니다. canGetSourceDebugExtension 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>extension</i><td>확장 속성 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>확장 속성이 지정되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_SignatureWithGeneric">SignatureWithGeneric 커멘드</a>  (13)</h5>
+참조형의 JNI 시그니챠를 돌려줍니다.  존재하는 경우는 총칭 시그니챠도 함께 돌려줍니다. 총칭 시그니챠에 대해서는,<a href="http://java.sun.com/docs/books/vmspec">「Java Virtual Machine Specification, 3rd Edition」</a>의 시그니챠 속성의 마디를 참조해 주세요. 이것은 JDWP 버젼 1.5 이후입니다. <p>
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>signature</i><td>참조형의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=5>
+string<td><i>genericSignature</i><td>참조형의 총칭 시그니챠, 없는 경우는 빈 상태(empty)의 캐릭터 라인 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_FieldsWithGeneric">FieldsWithGeneric 커멘드</a>  (14)</h5>
+참조형의 각 필드에 관한 정보 (존재하는 경우는 총칭 시그니챠를 포함한다)를 돌려줍니다. 상속한 필드는 포함되지 않습니다. 필드 리스트에는, 컴파일러에 의해 작성된 모든 합성 필드가 포함됩니다. 필드는, 클래스 파일내에 출현하는 순서로 돌려주어집니다. 총칭 시그니챠에 대해서는,<a href="http://java.sun.com/docs/books/vmspec">「Java Virtual Machine Specification, 3rd Edition」</a>의 시그니챠 속성의 마디를 참조해 주세요. 이것은 JDWP 버젼 1.5 이후입니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>declared</i><td>선언된 필드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>declared</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>필드 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>필드의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>필드의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>genericSignature</i><td>필드의 총칭 시그니챠, 없는 경우는 빈 상태(empty)의 캐릭터 라인 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>modBits</i><td>필드 선언에 관한 추가 정보를 제공하는 수식자 비트 플래그 (액세스 플래그라고도 한다). 개개의 플래그치는,<a href="http://java.sun.com/docs/books/vmspec/html/ClassFile.doc.html">VM 스펙</a>으로 정의되고 있다. 또, 합성 속성의<a href="#JDWP_VirtualMachine_Capabilities">기능</a>을 이용 가능한 경우에는,<code>0xf0000000</code> 비트는, 그 필드가 합성 필드인 것을 나타내는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_CLASS_NOT_PREPARED">CLASS_NOT_PREPARED</a> </td><td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_MethodsWithGeneric">MethodsWithGeneric 커멘드</a>  (15)</h5>
+참조형의 각 메소드에 관한 정보 (존재하는 경우는 총칭 시그니챠를 포함한다)를 돌려줍니다. 상속한 메소드는 포함되지 않습니다. 메소드의 리스트에는, 생성자 (이름 「&lt;init&gt;」로 식별된다), 존재하는 경우에는 초기화 메소드 (이름 「&lt;clinit&gt;」로 식별된다), 및 컴파일러에 의해 작성된 모든 합성 메소드가 포함됩니다. 메소드는, 클래스 파일내에 출현하는 순서로 돌려주어집니다. 총칭 시그니챠에 대해서는,<a href="http://java.sun.com/docs/books/vmspec">「Java Virtual Machine Specification, 3rd Edition」</a>의 시그니챠 속성의 마디를 참조해 주세요. 이것은 JDWP 버젼 1.5 이후입니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>declared</i><td>선언된 메소드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>declared</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+methodID<td><i>methodID</i><td>메소드 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>메소드의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>메소드의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>genericSignature</i><td>메소드의 총칭 시그니챠, 없는 경우는 빈 상태(empty)의 캐릭터 라인 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>modBits</i><td>메소드 선언에 관한 추가 정보를 제공하는 수식자 비트 플래그 (액세스 플래그라고도 한다). 개개의 플래그치는,<a href="http://java.sun.com/docs/books/vmspec/html/ClassFile.doc.html">VM 스펙</a>으로 정의되고 있다. 또, 합성 속성의<a href="#JDWP_VirtualMachine_Capabilities">기능</a>을 이용 가능한 경우에는,<code>0xf0000000</code> 비트는, 메소드가 합성 메소드인 것을 나타내는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_CLASS_NOT_PREPARED">CLASS_NOT_PREPARED</a> </td><td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_Instances">Instances 커멘드</a>  (16)</h5>
+이 참조형의 인스턴스를 돌려줍니다. 가베지 컬렉트 목적으로 도달 가능한 인스턴스만이 돌려주어집니다. <p>이것은 JDWP 버젼 1.6 이후입니다. canGetInstanceInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>참조형 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>maxInstances</i><td>반환되는 인스턴스의 최대수. 부가 아닌 수치 제로의 경우는, 모든 인스턴스가 반환되는 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>instances</i><td>나중에 계속되는 인스턴스의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>instances</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+tagged-objectID<td><i>instance</i><td>이 참조형의 인스턴스 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ILLEGAL_ARGUMENT">ILLEGAL_ARGUMENT</a> </td><td>maxInstances 가 제로보다 작은 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_ClassFileVersion">ClassFileVersion 커멘드</a>  (17)</h5>
+「Java 가상 머신 스펙」의 클래스 파일 형식에서 정의되고 있는 클래스 파일의 메이저 버젼 번호와 마이너 버젼 번호를 돌려줍니다. <p>이것은 JDWP 버젼 1.6 이후입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>majorVersion</i><td>메이저 버젼 번호 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>minorVersion</i><td>마이너 버젼 번호 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>원시형 및 배열형의 클래스 파일 버젼 정보가 존재하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ReferenceType_ConstantPool">ConstantPool 커멘드</a>  (18)</h5>
+「Java 가상 머신 스펙」의 클래스 파일 형식의 설명에 기재되어 있는 constant_pool 항목의 형식에서, 정수 풀의 raw 바이트수를 돌려줍니다. <p>이것은 JDWP 버젼 1.6 이후입니다. canGetConstantPool 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>count</i><td>정수 풀 엔트리의 총수에 1 을 더한 값. 이것은, 「Java 가상 머신 스펙」의 클래스 파일 형식의 설명에 기재되어 있는, constant_pool_count 항목으로 일치합니다.  &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>bytes</i><td>&nbsp;
+<tr>
+<td colspan=7>
+<i>bytes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>cpbytes</i><td>raw 바이트의 정수 풀 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>타겟 가상 머신이 정수 풀 정보의 취득을 지원하고 있지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>원시형 및 배열형의 정수 풀 정보가 존재하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ClassType">ClassType 커멘드 세트</a>  (3)</h4>
+
+<h5><a name="JDWP_ClassType_Superclass">Superclass 커멘드</a>  (1)</h5>
+클래스의 직속의 슈퍼 클래스를 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classID<td><i>clazz</i><td>클래스형 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classID<td><i>superclass</i><td>슈퍼 클래스 (java.lang.Object 의 클래스 ID 가 지정되고 있는 경우는, null) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>clazz 가 클래스의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>clazz 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ClassType_SetValues">SetValues 커멘드</a>  (2)</h5>
+1 개(살) 또는 복수의 static 필드의 값을 설정합니다. 각 필드는, 클래스형의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 필드의 값을 설정할 수 있습니다. 마지막 필드를 설정할 수 없습니다. 프리미티브(primitive)치의 경우, 값의 형태와 필드의 형태는 정확하게 일치하고 있을 필요가 있습니다. 객체치의 경우, 값의 형태로부터 필드의 형태에의 광범위한 참조 변환이 존재해, 한편 필드의 형태가 로드 되고 있을 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classID<td><i>clazz</i><td>클래스형 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>설정하는 필드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>설정하는 필드 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+untagged-value<td><i>value</i><td>필드에 입력하는 값&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>clazz 가 클래스의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_CLASS_NOT_PREPARED">CLASS_NOT_PREPARED</a> </td><td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>clazz 가 기존의 ID 는 아닌, 또는 객체 필드의 값이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FIELDID">INVALID_FIELDID</a> </td><td>무효인 필드 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ClassType_InvokeMethod">InvokeMethod 커멘드</a>  (3)</h5>
+static 메소드를 호출합니다. 메소드는, 클래스형의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 메소드를 호출할 수가 있습니다. <p>메소드 호출은, 지정된 thread로 실행됩니다. 메소드 호출은, 지정된 thread가 이벤트에 의해 중단되고 있는 경우에만 실행됩니다. 타겟 VM 가 프론트엔드에 의해 중단되고 있는 경우의 메소드 호출은 지원되고 있지 않습니다. <p>지정된 메소드는, 지정된 인수 리스트내의 인수를 사용해 불려 갑니다. 메소드 호출은 동기적으로 행해집니다. 그 때문에, 불려 간 메소드가 타겟 VM 내에서 복귀할 때까지, 응답 패킷은 송신되지 않습니다. 반환값 (대체로의 경우, void 치)은 응답 패킷에 포함됩니다. 불려 간 메소드가 예외를 throw 하는 경우, 예외 객체 ID 가 응답 패킷내로 설정됩니다. 그렇지 않은 경우, 예외 객체 ID 는 null 가 됩니다. <p>프리미티브(primitive) 인수의 경우, 인수치의 형태와 인수의 형태는 엄밀하게 일치하고 있을 필요가 있습니다. 객체 인수의 경우, 인수치의 형태로부터 인수의 형태에의 확장 참조 변환이 존재해, 한편 인수의 형태가 로드 되고 있을 필요가 있습니다. <p>디폴트에서는, 타겟 VM 내의 모든 thread가 메소드의 호출중에 재개됩니다 (이벤트 또는 커멘드에 의해 이전에 중단된 thread의 경우). 이것은, 몇개의 thread가, 호출처 메소드가 필요로 하는 모니터를 소유하고 있는 경우에, 데드락이 발생하는 것을 막습니다. breakpoint 또는 다른 이벤트가, 호출중에 발생할 가능성이 있습니다. 다만, 이 암묵의 재개 처리가, ThreadReference 의 Resume 커멘드의 처리와 완전히 같은 것으로 주의해 주세요. 이 때문에, thread의 중단 카운트가 1 보다 크면 호출중도 thread는 중단 상태대로 됩니다. 디폴트에서는, 타겟 VM 내의 모든 thread는, 호출의 완료시에 중단합니다 (호출전의 thread 상태와는 무관계). <p><code>options</code> 필드에 INVOKE_SINGLE_THREADED 비트 플래그를 지정하는 것으로써, 호출중에 다른 thread가 재개하지 않게 할 수 있습니다. 다만, 전술과 같은 데드락에 대한 보호나, 데드락으로부터의 회복을 할 수 없게 되기 (위해)때문에, 이 옵션은 잘 주의해 이용해 주세요. 지정된 thread만이 재개됩니다 (전술한 모든 thread의 경우와 같이). 싱글스 레드 호출이 완료하면(자), 호출원thread는 다시 중단됩니다. 싱글스 레드 호출중에 개시된 모든 thread는, 호출 완료시에도 중단되지 않습니다. <p>타겟 VM 가 호출해 안에 절단 되어도 (예를 들어, VirtualMachine 의 Dispose 커멘드에 의한다), 메소드 호출은 속행됩니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classID<td><i>clazz</i><td>클래스형 ID&nbsp;
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>호출을 실행하는 thread &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>호출처의 메소드 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>arguments</i><td>&nbsp;
+<tr>
+<td colspan=7>
+<i>arguments</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>arg</i><td>인수의 값&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>options</i><td>호출의<a href="#JDWP_InvokeOptions">옵션</a> &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+value<td><i>returnValue</i><td>반환값 &nbsp;
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>exception</i><td>throw 된 예외 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>clazz 가 클래스의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>clazz 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_SUSPENDED">THREAD_NOT_SUSPENDED</a> </td><td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ClassType_NewInstance">NewInstance 커멘드</a>  (4)</h5>
+지정된 생성자 을 호출해, 이 형태의 신규 객체를 작성합니다. 생성자  메소드 ID 는, 클래스형의 멤버가 아니면 안됩니다. <p>인스턴스의 작성은, 지정된 thread로 실행됩니다. 인스턴스의 작성은, 지정된 thread가 이벤트에 의해 중단되고 있는 경우에만 실행됩니다. 타겟 VM 가 프론트엔드에 의해 중단되고 있는 경우의 메소드 호출은 지원되고 있지 않습니다. <p>지정된 생성자 은, 지정된 인수 리스트내의 인수를 사용해 불려 갑니다. 생성자  호출은 동기적으로 행해집니다. 그 때문에, 불려 간 메소드가 타겟 VM 내에서 복귀할 때까지, 응답 패킷은 송신되지 않습니다. 반환값 (대체로의 경우, void 치)은 응답 패킷에 포함됩니다. 생성자 이 예외를 throw 하는 경우, 예외 객체 ID 가 응답 패킷내로 설정됩니다. 그렇지 않은 경우, 예외 객체 ID 는 null 가 됩니다. <p>프리미티브(primitive) 인수의 경우, 인수치의 형태와 인수의 형태는 엄밀하게 일치하고 있을 필요가 있습니다. 객체 인수의 경우, 인수치의 형태로부터 인수의 형태에의 확장 참조 변환이 존재해, 한편 인수의 형태가 로드 되고 있을 필요가 있습니다. <p>디폴트에서는, 타겟 VM 내의 모든 thread가 메소드의 호출중에 재개됩니다 (이벤트 또는 커멘드에 의해 이전에 중단된 thread의 경우). 이것은, 몇개의 thread가, 호출처 메소드가 필요로 하는 모니터를 소유하고 있는 경우에, 데드락이 발생하는 것을 막습니다. breakpoint 또는 다른 이벤트가, 호출중에 발생할 가능성이 있습니다. 다만, 이 암묵의 재개 처리가, ThreadReference 의 Resume 커멘드의 처리와 완전히 같은 것으로 주의해 주세요. 이 때문에, thread의 중단 카운트가 1 보다 크면 호출중도 thread는 중단 상태대로 됩니다. 디폴트에서는, 타겟 VM 내의 모든 thread는, 호출의 완료시에 중단합니다 (호출전의 thread 상태와는 무관계). <p><code>options</code> 필드에 INVOKE_SINGLE_THREADED 비트 플래그를 지정하는 것으로써, 호출중에 다른 thread가 재개하지 않게 할 수 있습니다. 다만, 전술과 같은 데드락에 대한 보호나, 데드락으로부터의 회복을 할 수 없게 되기 (위해)때문에, 이 옵션은 잘 주의해 이용해 주세요. 지정된 thread만이 재개됩니다 (전술한 모든 thread의 경우와 같이). 싱글스 레드 호출이 완료하면(자), 호출원thread는 다시 중단됩니다. 싱글스 레드 호출중에 개시된 모든 thread는, 호출 완료시에도 중단되지 않습니다. <p>타겟 VM 가 호출해 안에 절단 되어도 (예를 들어, VirtualMachine 의 Dispose 커멘드에 의한다), 메소드 호출은 속행됩니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classID<td><i>clazz</i><td>클래스형 ID&nbsp;
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>생성자 을 호출하는 thread &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>호출처의 생성자  &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>arguments</i><td>&nbsp;
+<tr>
+<td colspan=7>
+<i>arguments</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>arg</i><td>인수의 값&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>options</i><td>생성자  호출의<a href="#JDWP_InvokeOptions">옵션</a> &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>newObject</i><td>신규에 작성된 객체, 또는 생성자 이 예외를 throw 하는 경우는 null&nbsp;
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>exception</i><td>throw 된 예외 (존재하는 경우), 또는 null&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>clazz 가 클래스의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>clazz 가 기존의 ID 는 아닌, 또는 객체 파라미터의 값이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_SUSPENDED">THREAD_NOT_SUSPENDED</a> </td><td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ArrayType">ArrayType 커멘드 세트</a>  (4)</h4>
+
+<h5><a name="JDWP_ArrayType_NewInstance">NewInstance 커멘드</a>  (1)</h5>
+이 형태의 배열 객체를, 지정된 길이로 신규 작성합니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+arrayTypeID<td><i>arrType</i><td>신규 인스턴스의 배열형 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>length</i><td>배열의 길이 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>newArray</i><td>신규 작성된 배열 객체 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_ARRAY">INVALID_ARRAY</a> </td><td>배열이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_InterfaceType">InterfaceType 커멘드 세트</a>  (5)</h4>
+
+<h4><a name="JDWP_Method">Method 커멘드 세트</a>  (6)</h4>
+
+<h5><a name="JDWP_Method_LineTable">LineTable 커멘드</a>  (1)</h5>
+존재하는 경우, 메소드의 행 번호 정보를 돌려줍니다. 행 테이블은, 소스행 번호를, 행의 초기 코드 인덱스에 매핑 합니다. 행 테이블은, 코드 인덱스에 의해 (승순으로) 순서 붙이고 됩니다. <a href="#JDWP_VirtualMachine_RedefineClasses">RedefineClasses</a>  를 사용해 새로운 클래스 정의가 인스톨 되지 않는 한, 행 번호는 정수입니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>메소드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+long<td><i>start</i><td>메소드에 대해 유효한 최소의 코드 인덱스.  >=0 또는 -1 (메소드가 네이티브의 경우) &nbsp;
+<tr>
+<td colspan=5>
+long<td><i>end</i><td>메소드에 대해 유효한 최대의 코드 인덱스.  >=0 또는 -1 (메소드가 네이티브의 경우) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>lines</i><td>이 메소드의 행 테이블내의 엔트리수&nbsp;
+<tr>
+<td colspan=7>
+<i>lines</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+long<td><i>lineCodeIndex</i><td>행의 초기 코드 인덱스 (개시 <= lineCodeIndex < 종료) &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>lineNumber</i><td>행 번호 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_Method_VariableTable">VariableTable 커멘드</a>  (2)</h5>
+메소드의 변수 정보를 돌려줍니다. 변수 테이블에는, 메소드내에서 선언된 인수와 국소 변수가 포함됩니다. 인스턴스 메소드의 경우, 「this」참조가 테이블에 포함됩니다. 또, 합성 변수가 존재하는 경우도 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>메소드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>argCnt</i><td>인수로 사용되는 프레임내의 워드수. 8 바이트의 인수는 2 워드를 사용해, 그 외의 인수는 1 워드를 사용하는 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>slots</i><td>변수의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>slots</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+long<td><i>codeIndex</i><td>변수가 가시 상태에 있는 최초의 코드 인덱스 (부호 없음). <code>length</code> 와 함께 사용한다. 현재의 <code>codeIndex</code>  <= 현재의 프레임 코드 인덱스 < <code>codeIndex + length</code> 라고 하는 조건이 채워지는 경우에게만, 변수의 취득 또는 설정이 가능 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>변수의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>변수형의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>length</i><td><code>codeIndex</code> 와 함께 사용하는 부호 없음의 값. 현재의 <code>codeIndex</code>  <= 현재의 프레임 코드 인덱스 < <code>code Index + length</code> 라고 하는 조건이 채워지는 경우에게만, 변수의 취득 또는 설정이 가능 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>slot</i><td>프레임내의 국소 변수의 인덱스 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>메소드의 변수 정보가 존재하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_Method_Bytecodes">Bytecodes 커멘드</a>  (3)</h5>
+메소드의 바이트 코드 (JVM 스펙으로 정의되고 있다)를 가져옵니다.  canGetBytecodes 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>메소드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>bytes</i><td>&nbsp;
+<tr>
+<td colspan=7>
+<i>bytes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>bytecode</i><td>Java 바이트 코드 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>타겟 가상 머신이 바이트 코드의 취득을 지원하고 있지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_Method_IsObsolete">IsObsolete 커멘드</a>  (4)</h5>
+메소드가 이제 사용되어 있지 않은 것 화도인지를 판별합니다. <a href="#JDWP_VirtualMachine_RedefineClasses">RedefineClasses</a>  커멘드를 사용해 메소드가 동등하지 않는 메소드로 옮겨놓을 수 있고 있는 경우, 메소드는 사용되고 있지 않습니다. 쌍방의 메소드의 바이트 코드가 같은 경우 (정수 풀의 인덱스를 제외하다), 참조 정수가 동일한 경우는, 원의 메소드와 재정의한 메소드가 동등으로 간주해집니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>메소드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+boolean 형<td><i>isObsolete</i><td>RedefineClassed 커멘드에 의해, 이 메소드가 동등하지 않은 메소드로 옮겨놓을 수 있고 있는 경우는 true&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>타겟 가상 머신이 이 쿼리를 지원하고 있지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_Method_VariableTableWithGeneric">VariableTableWithGeneric 커멘드</a>  (5)</h5>
+변수의 총칭 시그니챠를 포함한 메소드의 변수 정보를 돌려줍니다. 변수 테이블에는, 메소드내에서 선언된 인수와 국소 변수가 포함됩니다. 인스턴스 메소드의 경우, 「this」참조가 테이블에 포함됩니다. 또, 합성 변수가 존재하는 경우도 있습니다. 총칭 시그니챠에 대해서는,<a href="http://java.sun.com/docs/books/vmspec">「Java Virtual Machine Specification, 3rd Edition」</a>의 시그니챠 속성의 마디를 참조해 주세요. 이것은 JDWP 버젼 1.5 이후입니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>refType</i><td>클래스 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>메소드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>argCnt</i><td>인수로 사용되는 프레임내의 워드수. 8 바이트의 인수는 2 워드를 사용해, 그 외의 인수는 1 워드를 사용하는 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>slots</i><td>변수의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>slots</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+long<td><i>codeIndex</i><td>변수가 가시 상태에 있는 최초의 코드 인덱스 (부호 없음). <code>length</code> 와 함께 사용한다. 현재의 <code>codeIndex</code>  <= 현재의 프레임 코드 인덱스 < <code>codeIndex + length</code> 라고 하는 조건이 채워지는 경우에게만, 변수의 취득 또는 설정이 가능 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>name</i><td>변수의 이름 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>signature</i><td>변수형의 JNI 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+string<td><i>genericSignature</i><td>변수형의 총칭 시그니챠, 없는 경우는 빈 상태(empty)의 캐릭터 라인 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>length</i><td><code>codeIndex</code> 와 함께 사용하는 부호 없음의 값. 현재의 <code>codeIndex</code>  <= 현재의 프레임 코드 인덱스 < <code>code Index + length</code> 라고 하는 조건이 채워지는 경우에게만, 변수의 취득 또는 설정이 가능 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>slot</i><td>프레임내의 국소 변수의 인덱스 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>refType 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>refType 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ABSENT_INFORMATION">ABSENT_INFORMATION</a> </td><td>메소드의 변수 정보가 존재하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_Field">Field 커멘드 세트</a>  (8)</h4>
+
+<h4><a name="JDWP_ObjectReference">ObjectReference 커멘드 세트</a>  (9)</h4>
+
+<h5><a name="JDWP_ObjectReference_ReferenceType">ReferenceType 커멘드</a>  (1)</h5>
+객체의 실행시의 형태를 돌려줍니다. 실행시의 형태는, 클래스 또는 배열입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>typeID</i><td>실행시의 참조형 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_GetValues">GetValues 커멘드</a>  (2)</h5>
+1 개(살) 또는 복수의 인스턴스 필드의 값을 돌려줍니다. 각 필드는, 객체의 형태의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 필드의 값을 취득할 수 있습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>fields</i><td>취득하는 값의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>fields</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>취득하는 필드 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>반환되는 값의 수.  「fields」의 취득하는 값의 수로 항상 동일하다. 응답에서는, 필드의 값은 커멘드내의 대응하는 fieldID 와 같은 순서로 순서 붙이고 되는 &nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>value</i><td>필드치 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FIELDID">INVALID_FIELDID</a> </td><td>무효인 필드 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_SetValues">SetValues 커멘드</a>  (3)</h5>
+1 개(살) 또는 복수의 인스턴스 필드의 값을 설정합니다. 각 필드는, 객체의 형태의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 필드의 값을 설정할 수 있습니다. 프리미티브(primitive)치의 경우, 값의 형태와 필드의 형태는 정확하게 일치하고 있을 필요가 있습니다. 객체치의 경우, 값의 형태로부터 필드의 형태에의 광범위한 참조 변환이 존재해, 한편 필드의 형태가 로드 되고 있을 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>설정하는 필드의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+fieldID<td><i>fieldID</i><td>설정하는 필드 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+untagged-value<td><i>value</i><td>필드에 입력하는 값&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FIELDID">INVALID_FIELDID</a> </td><td>무효인 필드 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_MonitorInfo">MonitorInfo 커멘드</a>  (5)</h5>
+객체의 모니터 정보를 돌려줍니다. VM 내의 모든 thread가 중단되고 있을 필요가 있습니다.  canGetMonitorInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>owner</i><td>모니터의 소유자, 또는 null (현재는 소유되어 있지 않은 경우) &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>entryCount</i><td>모니터가 입력된 회수 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>waiters</i><td>모니터를 대기하고 있는 thread의 수, 현재의 소유자가 존재하지 않는 경우는 0&nbsp;
+<tr>
+<td colspan=7>
+<i>waiters</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+threadID<td><i>thread</i><td>이 모니터를 대기하고 있는 thread &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_InvokeMethod">InvokeMethod 커멘드</a>  (6)</h5>
+인스턴스 메소드를 호출합니다. 메소드는, 객체의 형태의 멤버인가, 그 슈퍼 클래스, 슈퍼 인터페이스, 또는 구현된 인터페이스의 1 살의 멤버가 아니면 안됩니다. 액세스 제어는 실행되지 않습니다. 이 때문에, 예를 들어 private 메소드를 호출할 수가 있습니다. <p>메소드 호출은, 지정된 thread로 실행됩니다. 메소드 호출은, 지정된 thread가 이벤트에 의해 중단되고 있는 경우에만 실행됩니다. 타겟 VM 가 프론트엔드에 의해 중단되고 있는 경우의 메소드 호출은 지원되고 있지 않습니다. <p>지정된 메소드는, 지정된 인수 리스트내의 인수를 사용해 불려 갑니다. 메소드 호출은 동기적으로 행해집니다. 그 때문에, 불려 간 메소드가 타겟 VM 내에서 복귀할 때까지, 응답 패킷은 송신되지 않습니다. 반환값 (대체로의 경우, void 치)은 응답 패킷에 포함됩니다. 불려 간 메소드가 예외를 throw 하는 경우, 예외 객체 ID 가 응답 패킷내로 설정됩니다. 그렇지 않은 경우, 예외 객체 ID 는 null 가 됩니다. <p>프리미티브(primitive) 인수의 경우, 인수치의 형태와 인수의 형태는 엄밀하게 일치하고 있을 필요가 있습니다. 객체 인수의 경우, 인수치의 형태로부터 인수의 형태에의 확장 참조 변환이 존재해, 한편 인수의 형태가 로드 되고 있을 필요가 있습니다. <p>디폴트에서는, 타겟 VM 내의 모든 thread가 메소드의 호출중에 재개됩니다 (이벤트 또는 커멘드에 의해 이전에 중단된 thread의 경우). 이것은, 몇개의 thread가, 호출처 메소드가 필요로 하는 모니터를 소유하고 있는 경우에, 데드락이 발생하는 것을 막습니다. breakpoint 또는 다른 이벤트가, 호출중에 발생할 가능성이 있습니다. 다만, 이 암묵의 재개 처리가, ThreadReference 의 Resume 커멘드의 처리와 완전히 같은 것으로 주의해 주세요. 이 때문에, thread의 중단 카운트가 1 보다 크면 호출중도 thread는 중단 상태대로 됩니다. 디폴트에서는, 타겟 VM 내의 모든 thread는, 호출의 완료시에 중단합니다 (호출전의 thread 상태와는 무관계). <p><code>options</code> 필드에 INVOKE_SINGLE_THREADED 비트 플래그를 지정하는 것으로써, 호출중에 다른 thread가 재개하지 않게 할 수 있습니다. 다만, 전술과 같은 데드락에 대한 보호나, 데드락으로부터의 회복을 할 수 없게 되기 (위해)때문에, 이 옵션은 잘 주의해 이용해 주세요. 지정된 thread만이 재개됩니다 (전술한 모든 thread의 경우와 같이). 싱글스 레드 호출이 완료하면(자), 호출원thread는 다시 중단됩니다. 싱글스 레드 호출중에 개시된 모든 thread는, 호출 완료시에도 중단되지 않습니다. <p>타겟 VM 가 호출해 안에 절단 되어도 (예를 들어, VirtualMachine 의 Dispose 커멘드에 의한다), 메소드 호출은 속행됩니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>호출을 실행하는 thread &nbsp;
+<tr>
+<td colspan=5>
+classID<td><i>clazz</i><td>클래스의 형태 &nbsp;
+<tr>
+<td colspan=5>
+methodID<td><i>methodID</i><td>호출처의 메소드 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>arguments</i><td>인수의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>arguments</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>arg</i><td>인수의 값&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>options</i><td>호출의<a href="#JDWP_InvokeOptions">옵션</a> &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+value<td><i>returnValue</i><td>반환값, 또는 null (예외가 throw 되었을 경우) &nbsp;
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>exception</i><td>throw 된 예외 (존재하는 경우) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>clazz 가 참조형의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>methodID 가 메소드의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_SUSPENDED">THREAD_NOT_SUSPENDED</a> </td><td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_DisableCollection">DisableCollection 커멘드</a>  (7)</h5>
+지정된 객체의 가베지 컬렉션이 실행되지 않게 합니다. 디폴트에서는, 연구 최종 단계 응답내의 모든 객체는, 타겟 VM 의 실행중에 언제라도 가베지 컬렉트가 가능합니다. 이 커멘드를 호출하면(자), 객체가 가베지 컬렉트되지 않는 것이 보증됩니다. 가베지 컬렉션을 재차 유효하게 하려면 ,<a href="#JDWP_ObjectReference_EnableCollection">EnableCollection</a>  커멘드를 사용합니다. <p>타겟 VM 의 중단중은, 모든 thread가 중단하고 있기 (위해)때문에, 가베지 컬렉션은 행해지지 않습니다. 중단중에 변수, 필드, 및 배열을 조사한다고 하는 일반적인 조작의 경우는, 명시적으로 가베지 컬렉션을 무효로 하지 않아도 안전합니다. <p>이 메소드를 사용하면(자), 타겟 VM 내의 가베지 컬렉션의 패턴이 바뀌기 (위해)때문에, 어플리케이션의 동작이 디버거 실행시와 디버거비실행시로 다른 결과가 될 가능성이 있습니다. 그 때문에, 이 메소드의 사용에는 신중을 기해 주세요.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_EnableCollection">EnableCollection 커멘드</a>  (8)</h5>
+이 객체의 가베지 컬렉션을 허가합니다. 디폴트에서는, JDWP 에 의해 반환되는 모든 객체는, 타겟 VM 로 액세스 불가능하게 되기 (위해)때문에, 가베지 컬렉트가 가능합니다. 이 커멘드의 호출이 필요하게 되는 것은,<a href="#JDWP_ObjectReference_DisableCollection">DisableCollection</a>  커멘드를 사용해 가베지 컬렉션을 무효로 했을 경우만입니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_IsCollected">IsCollected 커멘드</a>  (9)</h5>
+객체가, 타겟 VM 내에서 가베지 컬렉트되었는지의 여부를 판정합니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+boolean 형<td><i>isCollected</i><td>객체가 가베지 컬렉트되었을 경우는 true, 그렇지 않은 경우는 false&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ObjectReference_ReferringObjects">ReferringObjects 커멘드</a>  (10)</h5>
+이 객체를 직접 참조하는 객체를 돌려줍니다. 가베지 컬렉트 목적으로 도달 가능한 객체만이 돌려주어집니다. 객체는, 그 외의 방법에서도 참조 가능합니다. 예를 들어 스택 프레임내에서 로컬 변수를 사용하는 방법, JNI 글로벌 참조를 사용하는 방법등이 있습니다. 이 커멘드에서는, 이러한, 객체를 참조하지 않는 객체는 돌려주어지지 않습니다. <p>이것은 JDWP 버젼 1.6 이후입니다. canGetInstanceInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>object</i><td>객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>maxReferrers</i><td>반환되는 참조 객체의 최대수. 부가 아닌 수치 제로의 경우는, 모든 참조 객체가 반환되는 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>referringObjects</i><td>나중에 계속되는 객체의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>referringObjects</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+tagged-objectID<td><i>instance</i><td>이 객체를 참조하는 객체 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>객체가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_ILLEGAL_ARGUMENT">ILLEGAL_ARGUMENT</a> </td><td>maxReferrers 가 제로보다 작은 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_StringReference">StringReference 커멘드 세트</a>  (10)</h4>
+
+<h5><a name="JDWP_StringReference_Value">Value 커멘드</a>  (1)</h5>
+캐릭터 라인에 포함되는 문자를 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+objectID<td><i>stringObject</i><td>String 객체의 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>stringValue</i><td>캐릭터 라인의 값의 UTF-8 표현 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_STRING">INVALID_STRING</a> </td><td>캐릭터 라인이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ThreadReference">ThreadReference 커멘드 세트</a>  (11)</h4>
+
+<h5><a name="JDWP_ThreadReference_Name">Name 커멘드</a>  (1)</h5>
+thread명을 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>threadName</i><td>thread의 이름 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Suspend">Suspend 커멘드</a>  (2)</h5>
+thread를 중단합니다. <p>java.lang.Thread.suspend() 과는 달리, 가상 머신과 개개의 thread 양쪽 모두의 중단이 카운트 됩니다. thread를 재실행하기 전에, 중단된 회수와 같은 수의 재개를 하지 않으면 안됩니다. <p>커멘드를 사용해 단일의 thread를 중단하는 것에는, java.lang.Thread.suspend()의 경우와 같은 위험이 있습니다. 중단된 thread가 실행중의 다른 thread에 필요한 모니터를 보관 유지하고 있는 경우, 타겟 VM 로 데드락이 발생할 가능성이 있습니다 (적어도, 중단된 thread가 재개될 때까지). <p>중단된 thread는, 전술의 JDI 재개 메소드의 1 개를 사용해 재개될 때까지 중단 상태를 유지하는 것이 보증됩니다.  타겟 VM 내의 어플리케이션이, 중단한 thread를 java.lang.Thread#resume 를 사용해 재개할 수 없습니다. <p>이것에 의해, thread의 상태가 변화할 것은 없는 점에 주의해 주세요 (<a href="#JDWP_ThreadReference_Status">ThreadStatus</a>  를 참조). 예를 들어, 이 thread가 실행중이었던 경우, 다른 thread로부터는 여전히 실행중으로 보입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Resume">Resume 커멘드</a>  (3)</h5>
+지정된 thread의 실행을 재개합니다. 이전에 이 thread가 프론트엔드에 의해 중단되었던 적이 없는 경우에는, 이 커멘드를 호출해도 효과는 없습니다. 그 이외의 경우, 이 thread에 대해 보류중의 중단의 카운트가 감소합니다. 카운트가 0 까지 감소하면(자), thread는 실행을 계속합니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Status">Status 커멘드</a>  (4)</h5>
+thread의 현재의 상태를 돌려줍니다. thread 상태의 응답은, 마지막에 실행되고 있던 시점에서의 thread 상태를 나타냅니다. 중단 상태는, thread의 중단에 관한 정보 (존재하는 경우)를 제공합니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>threadStatus</i><td>thread 상태 코드의 1 개. <a href="#JDWP_ThreadStatus">JDWP.ThreadStatus</a> &nbsp; 를 참조
+<tr>
+<td colspan=5>
+int<td><i>suspendStatus</i><td>thread 상태 코드의 1 개. <a href="#JDWP_SuspendStatus">JDWP.SuspendStatus</a> &nbsp; 를 참조
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_ThreadGroup">ThreadGroup 커멘드</a>  (5)</h5>
+지정된 thread를 포함한 thread 그룹을 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadGroupID<td><i>group</i><td>이 thread의 thread 그룹 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Frames">Frames 커멘드</a>  (6)</h5>
+중단된 thread의 현재의 호출 스택을 돌려줍니다. 프레임 순서는, 현재 실행중의 프레임으로부터 시작되어, 다음에 그 호출원의 프레임, 이라고 계속됩니다. thread는 중단되어 있지 않으면 안되어, 반환되는 frameID 는, thread가 중단되고 있는 동안만 유효합니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>startFrame</i><td>취득하는 최초의 프레임의 인덱스 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>length</i><td>취득하는 프레임의 카운트 (-1 는 「남아 모든 것」의 의미) &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>frames</i><td>취득된 프레임수&nbsp;
+<tr>
+<td colspan=7>
+<i>frames</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+frameID<td><i>frameID</i><td>이 프레임의 ID &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+location<td><i>location</i><td>이 프레임의 현재 위치 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_FrameCount">FrameCount 커멘드</a>  (7)</h5>
+이 thread 스택의 프레임 카운트를 돌려줍니다. thread는 중단되어 있지 않으면 안되어, 반환되는 카운트는 thread가 중단되고 있는 동안만 유효합니다. thread가 중단되어 있지 않은 경우는, JDWP.Error.errorThreadNotSuspended 를 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>frameCount</i><td>이 thread 스택의 프레임 카운트 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_OwnedMonitors">OwnedMonitors 커멘드</a>  (8)</h5>
+객체의 모니터가 이 thread로부터 들어갔다는 객체를 돌려줍니다. thread는 중단되어 있지 않으면 안되어, 반환되는 정보는 thread가 중단되고 있는 동안만 유효합니다. canGetOwnedMonitorInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>owned</i><td>소유되는 모니터의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>owned</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+tagged-objectID<td><i>monitor</i><td>소유되는 모니터 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_CurrentContendedMonitor">CurrentContendedMonitor 커멘드</a>  (9)</h5>
+이 thread가 대기중의 객체를 돌려줍니다 (존재하는 경우). thread는, 모니터에 들어가는 것을 대기하고 있는지, java.lang.Object.wait 메소드를 사용해 다른 thread가 notify 메소드를 호출하는 것을 대기하고 있을 가능성이 있습니다. thread는 중단되어 있지 않으면 안되어, 반환되는 정보는 thread가 중단되고 있는 동안만 유효합니다. canGetCurrentContendedMonitor 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>monitor</i><td>경합 하는 모니터, 또는 null (경합 하는 모니터가 현재는 존재하지 않는 경우) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Stop">Stop 커멘드</a>  (10)</h5>
+비동기의 예외를 throw 해 thread를 정지합니다 (java.lang.Thread.stop 를 사용했을 경우와 같이).  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+objectID<td><i>throwable</i><td>비동기의 예외. 이 객체는, java.lang.Throwable 의 인스턴스 또는 서브 클래스가 아니면 안되는 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 는 아닌, 또는 비동기의 예외가 가베지 컬렉트되고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_Interrupt">Interrupt 커멘드</a>  (11)</h5>
+thread에 대해 인터럽트를 실행합니다 (java.lang.Thread.interrupt 를 실행했을 경우와 같이).  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_SuspendCount">SuspendCount 커멘드</a>  (12)</h5>
+이 thread의 중단 카운트를 가져옵니다. 중단 카운트는, thread 레벨 또는 VM 레벨의 중단 커멘드에 의해 thread가 중단된 회수 (대응하는 재개 커멘드가 실행된 것은 제외하다)입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>suspendCount</i><td>이 thread의 미처리의 중단의 회수 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_OwnedMonitorsStackDepthInfo">OwnedMonitorsStackDepthInfo 커멘드</a>  (13)</h5>
+thread의 소유하는 모니터 객체, 및 모니터가 취득된 스택 심도를 돌려줍니다. 구현이 스택 심도를 판별할 수 없는 경우 (JNI MonitorEnter 에 의해 취득된 모니터등)는, 스택 심도 -1 가 돌려주어집니다. thread는 중단되고 있을 필요가 있습니다. 반환되는 정보가 유효한 것은, thread가 중단되고 있는 경우만입니다. canGetMonitorFrameInfo 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조). <p>이것은 JDWP 버젼 1.6 이후입니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>owned</i><td>소유되는 모니터의 수&nbsp;
+<tr>
+<td colspan=7>
+<i>owned</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+tagged-objectID<td><i>monitor</i><td>소유되는 모니터 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>stack_depth</i><td>모니터가 취득된 스택 심도의 위치 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadReference_ForceEarlyReturn">ForceEarlyReturn 커멘드</a>  (14)</h5>
+return 문에 도달하기 전에 강제적으로 메소드를 복귀시킵니다. <p>조기 복귀하는 메소드를 「피호방편 메소드」라고 부릅니다. 피호방편 메소드는, 「Java 가상 머신 스펙」의 「Frames」의 섹션에 정의되고 있는 대로, 이 커멘드의 수신시에, 지정된 thread의 현재의 메소드가 됩니다. <p>지정되는 thread는, 중단되고 있을 필요가 있습니다. 메소드의 복귀는, Java 프로그램 언어의 코드의 실행이 이 thread상에서 재개되었을 때에 행해집니다. 이 커멘드가 송신되고 나서 thread의 실행이 재개될 때까지 , 스택 상태는 미정도리입니다. <p>피호방편 메소드에서는, 더 이상의 명령은 실행되지 않습니다. 특히, 최종적으로 블록은 실행되지 않습니다. 주:이것에 의해, 어플리케이션내에서 무결성이 없는 상태가 발생하는 일이 있습니다. <p>피호방편 메소드를 호출하는 것에 의해 획득된 락 (이것이 synchronized 메소드의 경우)과 피호방편 메소드내의 synchronized 블록에 들어가는 것에 의해 획득된 락은 해제됩니다. 주:이것은, JNI 락이나 java.util.concurrent.locks 락에는 적용되지 않습니다. <p>일반적으로 복귀의 경우와 같게, MethodExit 등의 이벤트가 생성됩니다. <p>피호방편 메소드는, 비네이티브의 Java 프로그램 언어의 메소드로 합니다. 스택상에 프레임이 1 개만 있는 상태로 thread에의 강제 복귀를 행했을 경우, thread가 재개시에 종료합니다. <p>void 메소드의 경우, 값은 void 치일 필요가 있습니다. 프리미티브(primitive)치를 돌려주는 메소드의 경우, 값의 형태와 반환값의 형태는 정확하게 일치하고 있을 필요가 있습니다. 객체치의 경우, 치 형으로부터 반환값의 형태에의 광범위한 참조 변환이 존재해, 한편 반환값의 형태가 로드 되고 있을 필요가 있습니다. <p>이것은 JDWP 버젼 1.6 이후입니다. canForceEarlyReturn 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+value<td><i>value</i><td>돌려주는 값 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread 또는 값이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_SUSPENDED">THREAD_NOT_SUSPENDED</a> </td><td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_ALIVE">THREAD_NOT_ALIVE</a> </td><td>thread가 개시되어 있지 않은지, 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_OPAQUE_FRAME">OPAQUE_FRAME</a> </td><td>네이티브 메소드에 대응하는 프레임으로부터의 조기 복귀가 시도되었다. 또는, 구현이 이 프레임상에서 이 기능을 제공할 수 없는 &nbsp;</td></tr>
+<tr><td><a href="#Error_NO_MORE_FRAMES">NO_MORE_FRAMES</a> </td><td>호출 스택에 Java 또는 JNI 프레임이 없어진 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_TYPE_MISMATCH">TYPE_MISMATCH</a> </td><td>치의 형태가 메소드의 반환값에 적합하지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ThreadGroupReference">ThreadGroupReference 커멘드 세트</a>  (12)</h4>
+
+<h5><a name="JDWP_ThreadGroupReference_Name">Name 커멘드</a>  (1)</h5>
+thread 그룹의 이름을 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadGroupID<td><i>group</i><td>thread 그룹의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+string<td><i>groupName</i><td>thread 그룹의 이름 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD_GROUP">INVALID_THREAD_GROUP</a> </td><td>thread 그룹이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>그룹이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadGroupReference_Parent">Parent 커멘드</a>  (2)</h5>
+지정된 thread 그룹을 포함한 thread 그룹 (존재하는 경우)을 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadGroupID<td><i>group</i><td>thread 그룹의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadGroupID<td><i>parentGroup</i><td>친thread 그룹 객체, 또는 null (지정된 thread 그룹이 톱 레벨의 thread 그룹의 경우) &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD_GROUP">INVALID_THREAD_GROUP</a> </td><td>thread 그룹이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>그룹이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ThreadGroupReference_Children">Children 커멘드</a>  (3)</h5>
+이 thread 그룹에 직접 포함되는 thread 및 thread 그룹을 돌려줍니다. 아이 thread 그룹내의 thread 및 thread 그룹은, 돌려주어지지 않습니다. thread는 개시되면(자), 정지될 때까지, 활동 상태에 있습니다. 액티브한 ThreadGroup 에 대해서는, 「<a href=../../../api/java/lang/ThreadGroup.html>java.lang.ThreadGroup </a> 」를 참조해 주세요.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadGroupID<td><i>group</i><td>thread 그룹의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>childThreads</i><td>자 thread의 수  &nbsp;
+<tr>
+<td colspan=7>
+<i>childThreads</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+threadID<td><i>childThread</i><td>직접적인 아이 thread ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>childGroups</i><td>자 thread 그룹의 수  &nbsp;
+<tr>
+<td colspan=7>
+<i>childGroups</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+threadGroupID<td><i>childGroup</i><td>직접적인 아이 thread 그룹의 ID&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD_GROUP">INVALID_THREAD_GROUP</a> </td><td>thread 그룹이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>그룹이 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ArrayReference">ArrayReference 커멘드 세트</a>  (13)</h4>
+
+<h5><a name="JDWP_ArrayReference_Length">Length 커멘드</a>  (1)</h5>
+지정된 배열내의 컴퍼넌트의 수를 돌려줍니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+arrayID<td><i>arrayObject</i><td>배열의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>arrayLength</i><td>배열의 길이 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>arrayObject 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_ARRAY">INVALID_ARRAY</a> </td><td>배열이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ArrayReference_GetValues">GetValues 커멘드</a>  (2)</h5>
+배열 컴퍼넌트의 범위를 돌려줍니다. 지정된 범위는, 배열의 경계내에 있을 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+arrayID<td><i>arrayObject</i><td>배열의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>firstIndex</i><td>취득하는 최초의 인덱스 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>length</i><td>취득하는 컴퍼넌트의 수&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+arrayregion<td><i>values</i><td>취득한 값. 값이 객체의 경우, 태그 붙이고 된 값이 된다.  그 이외의 경우는, 태그 붙이고되어 있지 않은 값이 되는 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_LENGTH">INVALID_LENGTH</a> </td><td>인덱스가 배열의 마지막을 넘기고 있는 경우 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>arrayObject 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_ARRAY">INVALID_ARRAY</a> </td><td>배열이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_ArrayReference_SetValues">SetValues 커멘드</a>  (3)</h5>
+배열 컴퍼넌트의 범위를 설정합니다. 지정된 범위는, 배열의 경계내에 있을 필요가 있습니다. 프리미티브(primitive)치의 경우, 각 치의 형태와 배열 컴퍼넌트의 형태는 정확하게 일치하고 있을 필요가 있습니다. 객체치의 경우, 치 형으로부터 배열 컴퍼넌트형에의 광범위한 참조 변환이 존재해, 한편 배열 컴퍼넌트형이 로드 되고 있을 필요가 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+arrayID<td><i>arrayObject</i><td>배열의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>firstIndex</i><td>설정하는 최초의 인덱스 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>설정하는 값의 수 &nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+untagged-value<td><i>value</i><td>설정하는 값 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_LENGTH">INVALID_LENGTH</a> </td><td>인덱스가 배열의 마지막을 넘기고 있는 경우 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>arrayObject 가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_ARRAY">INVALID_ARRAY</a> </td><td>배열이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ClassLoaderReference">ClassLoaderReference 커멘드 세트</a>  (14)</h4>
+
+<h5><a name="JDWP_ClassLoaderReference_VisibleClasses">VisibleClasses 커멘드</a>  (1)</h5>
+이 클래스 로더에 대해서 로드하도록(듯이) 요구된 모든 클래스의 리스트를 돌려줍니다. 이 클래스 로더는, 반환된 리스트내의 각 클래스의 기동 클래스 로더라고 보여집니다. 이 리스트에는, 이 로더에 의해 정의된 각 참조형, 및 이 클래스 로더에 의해 다른 클래스 로더에 로드가 위양 된 모든 형태가 포함됩니다. <p>가시 클래스 리스트에는, 형태의 이름 공간에 관해서, 편리한 특성이 있습니다. 특정의 형태의 이름은, 리스트중에 최고 1 회 밖에 출현하지 않습니다. 이 클래스 로더에 의해 정의된 클래스의 형명을 사용해 선언된 필드 또는 변수는 각각, 그 단일의 형태에 해결될 필요가 있습니다. <p>반환되는 리스트의 차례는 보증되고 있지 않습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classLoaderID<td><i>classLoaderObject</i><td>클래스 로더의 객체 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>classes</i><td>가시 클래스의 수 &nbsp;
+<tr>
+<td colspan=7>
+<i>classes</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+referenceTypeID<td><i>typeID</i><td>이 클래스 로더에 대한 가시 클래스 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS_LOADER">INVALID_CLASS_LOADER</a> </td><td>클래스 로더가 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_EventRequest">EventRequest 커멘드 세트</a>  (15)</h4>
+
+<h5><a name="JDWP_EventRequest_Set">Set 커멘드</a>  (1)</h5>
+이벤트 요구를 설정합니다. 이 요구로 지정된 이벤트가 발생하면(자), 타겟 VM 로부터<a href="#JDWP_Event">이벤트</a>가 송신됩니다. 요구되어 있지 않은 이벤트가 발생했을 경우, 이벤트는 타겟 VM 로부터 송신되지 않습니다. 이것에 대한 2 개의 예외는, VM 개시 이벤트와 VM 종료 이벤트입니다.  이것들은 자동적으로 생성되는 이벤트입니다.  상세한 것에 대하여는,<a href="#JDWP_Event_Composite">Composite 커멘드</a>를 참조해 주세요.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+byte<td><i>eventKind</i><td>요구하는 이벤트의 종류. 요구할 수 있는 이벤트의 전리스트는,<a href="#JDWP_EventKind">JDWP.EventKind</a>  를 참조 &nbsp;
+<tr>
+<td colspan=5>
+byte<td><i>suspendPolicy</i><td>이 이벤트의 발생시에 어느 thread를 중단할까. 이벤트 및 커멘드 응답의 순서는, thread가 중단 및 재개되는 순서를 정확하게 반영하므로 요주의. 예를 들어, VM 를 중단하는 이벤트의 발생전에,<a href="#JDWP_VirtualMachine_Resume">VM 전체의 재개</a>가 처리되는 경우, 그 재개 커멘드에의 응답은, 중단 이벤트보다 전에 트랜스폴트에 기입해지는&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>modifiers</i><td>생성되는 이벤트수의 제어에 사용되는 제약.  수식자는, 이벤트가 이벤트 큐에 배치되기 전에 채울 필요가 있는 추가의 조건을 지정한다. 이 컬렉션으로 지정된 순서로 각 수식자를 이벤트에 적용하는 것으로써, 이벤트는 필터에 걸칠 수 있다. 모든 수식자의 조건을 채우는 이벤트만이 리포트되는 0 의 값은, 요구에 수식자가 존재하지 않는 것을 의미하는<p>타겟 VM 로부터 디버거 VM 에 송신되는 이벤트 트래픽의 양을 줄이는 것으로, 필터 처리로 디버거의 퍼포먼스를 극적으로 향상시키는 것이 가능합니다.  &nbsp;
+<tr>
+<td colspan=7>
+<i>modifiers</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>modKind</i><td>수식자의 종류 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case Count - <i>modKind</i> 가 1 의 경우:
+<td>요구된 이벤트의 리포트를, 지정된 회수만 발생한 후, 최고 1 회에 제한한다. 이 필터가 최초로 <code>count - 1</code> 회에 이르는 시점까지는, 이벤트는 리포트되지 않는다. 1 회 한정의 이벤트를 요구하려면 , 이 메소드를 카운트 1 으로 호출하면 좋은<p>카운트가 0 에 이른 뒤는, 이 요구내가 계속되는 필터가 적용된다. 그러한 필터가 모두 이벤트를 억제하지 않는 경우, 그 이벤트는 리포트된다. 그렇지 않은 경우, 이벤트는 리포트되지 않는다. 어느 쪽의 경우에도, 이 요구에 대해서, 그 이후의 이벤트가 리포트될 것은 없다. 이 수식자는, 어떤 종류의 이벤트에도 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>count</i><td>이벤트를 발생시키기 전의 카운트. 1 회 한정의 이벤트로 사용하는 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case Conditional - <i>modKind</i> 가 2 의 경우:
+<td>식에 의한 조건 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>exprID</i><td>장래의 사용을 위해서(때문에) 예약이 끝난 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ThreadOnly - <i>modKind</i> 가 3 의 경우:
+<td>리포트되는 이벤트를, 지정된 thread내의 것에 제한한다. 이 수식자는, 클래스의 언로드를 제외한, 모든 종류의 이벤트에 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>요구된 thread &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ClassOnly - <i>modKind</i> 가 4 의 경우:
+<td>클래스 준비 이벤트의 경우에, 이 요구로 생성된 이벤트를 제한해, 지정된 참조형 및 임의의 subtype의 준비가 되도록(듯이) 합니다. 모니터 대기 및 모니터 대기 종료 이벤트의 경우, 이 요구로 생성되는 이벤트를, 지정된 참조형 또는 그 임의의 subtype인 모니터 객체를 보관 유지하는 이벤트로 한정한다. 그 이외의 이벤트의 경우, 이 요구로 생성되는 이벤트를, 지정된 참조형 또는 그 임의의 subtype내에서 발생한 것으로 한정한다. 이벤트는, 지정된 참조형에 안전하게 캐스트 할 수 있는 참조형 중(안)에서 있으면, 임의의 위치에서 생성된다. 이 수식자는, 클래스의 언로드, thread 개시, 및 thread 종료를 제외한, 모든 종류의 이벤트로 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>clazz</i><td>요구된 클래스 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ClassMatch - <i>modKind</i> 가 5 의 경우:
+<td>리포트되는 이벤트를, 지정된 한정적인 정규 표현에 이름이 일치하는 클래스의 이벤트로 한정한다. 클래스 준비 이벤트의 경우, 준비된 클래스명으로 판정된다. 클래스의 언로드 이벤트의 경우, 언로드된 클래스명으로 판정된다. 모니터 대기 및 대기 종료 이벤트의 경우, 모니터 객체의 클래스명이 일치한다. 그 이외의 이벤트의 경우, 이벤트가 발생한 위치의 클래스명으로 판정된다. 이 수식자는, thread 개시 및 thread 종료를 제외한, 모든 종류의 이벤트로 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+string<td><i>classPattern</i><td>요구된 클래스 패턴. 매치 조건은, 지정된 클래스 패턴에 정확하게 일치하는 경우와 패턴의 최초 또는 최후가 「*」인 경우 (예를 들어, 「*. Foo」, 「java. *」)로 한정되는 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ClassExclude - <i>modKind</i> 가 6 의 경우:
+<td>리포트되는 이벤트를, 지정된 한정적인 정규 표현에 이름이 일치하지 않는 클래스의 이벤트로 한정한다. 클래스 준비 이벤트의 경우, 준비된 클래스명으로 판정된다. 클래스의 언로드 이벤트의 경우, 언로드된 클래스명으로 판정된다. 모니터 대기 및 대기 종료 이벤트의 경우, 모니터 객체의 클래스명이 일치한다. 그 이외의 이벤트의 경우, 이벤트가 발생한 위치의 클래스명으로 판정된다. 이 수식자는, thread 개시 및 thread 종료를 제외한, 모든 종류의 이벤트로 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+string<td><i>classPattern</i><td>허가되지 않는 클래스 패턴. 매치 조건은, 지정된 클래스 패턴에 정확하게 일치하는 경우와 패턴의 최초 또는 최후가 「*」인 경우 (예를 들어, 「*. Foo」, 「java. *」)로 한정되는 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case LocationOnly - <i>modKind</i> 가 7 의 경우:
+<td>리포트되는 이벤트를, 지정된 장소에서 발생하는 이벤트로 한정한다. 이 수식자는, breakpoint, 필드 액세스, 필드 변경, 스텝, 및 예외의 각 이벤트로 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>loc</i><td>요구되는 장소 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ExceptionOnly - <i>modKind</i> 가 8 의 경우:
+<td>리포트되는 예외를, 클래스와 그것이 캐치 될지 어떨지를 기준으로 해 한정한다. 이 수식자는, 예외 이벤트에서만 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>exceptionOrNull</i><td>리포트되는 예외. null (0)는, 모든 종류의 예외를 리포트한다고 하는 의미. null 이외의 경우는, 리포트되는 예외 이벤트를, 지정된 형태 또는 그 임의의 subtype으로 한정하는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+boolean 형<td><i>caught</i><td>캐치 된 예외를 리포트하는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+boolean 형<td><i>uncaught</i><td>캐치 되지 않았던 예외를 리포트한다. 예외가 캐치 되었는지 어떠했는지는, 예외가 throw 된 시점에서 언제나 판단할 수 있다고는 할 수 없다. 자세한 것은,<a href="#JDWP_Event_Composite">복합 이벤트</a>의 예외 이벤트의 캐치 위치에 관한 설명을 참조 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case FieldOnly - <i>modKind</i> 가 9 의 경우:
+<td>리포트되는 이벤트를, 지정된 필드에서 발생하는 이벤트로 한정한다. 이 수식자는, 필드 액세스 및 필드 변경 이벤트에서만 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>declaring</i><td>필드가 선언되고 있는 형태 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+fieldID<td><i>fieldID</i><td>요구된 필드 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case Step - <i>modKind</i> 가 10 의 경우:
+<td>리포트되는 스텝 이벤트를, 깊이 및 사이즈의 제한을 채우는 것으로 한정한다. 이 수식자는, 스텝 이벤트에서만 사용할 수 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>스텝 실행을 실시하는 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>size</i><td>각 스텝의 사이즈. <a href="#JDWP_StepSize">JDWP.StepSize</a> &nbsp; 를 참조
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>depth</i><td>상대 호출 스택의 제한. <a href="#JDWP_StepDepth">JDWP.StepDepth</a> &nbsp; 를 참조
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case InstanceOnly - <i>modKind</i> 가 11 의 경우:
+<td>리포트되는 이벤트를, 지정된 객체가 액티브한 「this」객체인 이벤트로 한정한다. static 메소드의 경우의 매치 조건은, null 객체. 이 수식자는, 클래스 준비, 클래스의 언로드, thread 개시, 및 thread 종료를 제외한, 모든 종류의 이벤트로 사용할 수 있다. 이 수식자는, JDWP 버젼 1.4 로 도입된 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+objectID<td><i>instance</i><td>요구된 「this」객체 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case SourceNameMatch - <i>modKind</i> 가 12 의 경우:
+<td>리포트되는 클래스 준비 이벤트를, 지정된 한정적인 정규 표현에 일치하는 소스명을 가지는 참조형으로 한정한다. 소스명은, 참조형의 <a href="#JDWP_ReferenceType_SourceDebugExtension"> SourceDebugExtension</a>  에 의해 결정된다. 이 수식자는, 클래스 준비 이벤트에서만 사용할 수 있다. 이것은 JDWP 버젼 1.6 이후입니다. canUseSourceNameFilters 기능이 필요 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조) &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+string<td><i>sourceNamePattern</i><td>요구된 소스명 패턴. 매치 조건은, 지정된 패턴에 정확하게 일치하는 경우와 패턴의 최초 또는 최후가 「*」인 경우 (예를 들어, 「*. Foo」, 「java. *」)로 한정되는 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>requestID</i><td>작성된 요구의 ID&nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_CLASS">INVALID_CLASS</a> </td><td>무효인 클래스 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_STRING">INVALID_STRING</a> </td><td>캐릭터 라인이 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_COUNT">INVALID_COUNT</a> </td><td>카운트가 무효 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FIELDID">INVALID_FIELDID</a> </td><td>무효인 필드 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_METHODID">INVALID_METHODID</a> </td><td>무효인 메소드 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_LOCATION">INVALID_LOCATION</a> </td><td>무효인 위치 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_EVENT_TYPE">INVALID_EVENT_TYPE</a> </td><td>지정된 이벤트형의 ID 가 인식되지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_EventRequest_Clear">Clear 커멘드</a>  (2)</h5>
+이벤트 요구를 해제합니다. 해제할 수 있는 이벤트의 전리스트는,<a href="#JDWP_EventKind">JDWP.EventKind</a>  를 참조해 주세요. 지정한 이벤트의 종류 및 requestID 에 일치하는 이벤트 요구만이 해제됩니다. 일치하는 이벤트 요구가 존재하지 않는 경우, 커멘드는 무조작으로, 에러가 되지 않습니다. 자동적으로 생성되는 이벤트에는, 대응하는 이벤트 요구가 없기 때문에, 이 커멘드로 해제되지 않는 경우가 있습니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+byte<td><i>eventKind</i><td>해제하는 이벤트 타입 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>requestID</i><td>해제하는 요구의 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_EVENT_TYPE">INVALID_EVENT_TYPE</a> </td><td>지정된 이벤트형의 ID 가 인식되지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_EventRequest_ClearAllBreakpoints">ClearAllBreakpoints 커멘드</a>  (3)</h5>
+설정 떠날 수 있어 모든 breakpoint를 삭제합니다.  설정되어 있는 breakpoint가 존재하지 않는 경우는 무조작입니다.
+<dl>
+<dt>출력 데이터
+<dd>(없음)
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_StackFrame">StackFrame 커멘드 세트</a>  (16)</h4>
+
+<h5><a name="JDWP_StackFrame_GetValues">GetValues 커멘드</a>  (1)</h5>
+지정된 프레임내의 1 개 또는 복수의 국소 변수의 값을 돌려줍니다. 각 변수는, 프레임의 코드 인덱스로 가시일 필요가 있습니다. 국소 변수의 정보를 이용할 수 없어도, 프론트엔드가 올바른 국소 변수 인덱스를 판별할 수 있는 경우는, 값의 취득이 가능합니다. 일반적으로, 국소 변수 테이블의 정보에 액세스 하지 않아도, 메소드시그니챠로부터 메소드 인수에 대해 변수의 인덱스를 판별할 수 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>프레임의 thread &nbsp;
+<tr>
+<td colspan=5>
+frameID<td><i>frame</i><td>프레임 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>slots</i><td>취득하는 값의 수 &nbsp;
+<tr>
+<td colspan=7>
+<i>slots</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>slot</i><td>프레임내의 국소 변수의 인덱스 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>sigbyte</i><td>변수의 형태를 식별하는<a href="#JDWP_Tag">태그</a> &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+int<td><i>values</i><td>취득된 값의 수.  slots 의 취득하는 값의 수로 항상 동일한 &nbsp;
+<tr>
+<td colspan=7>
+<i>values</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>slotValue</i><td>국소 변수의 값 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FRAMEID">INVALID_FRAMEID</a> </td><td>무효인 jframeID&nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_SLOT">INVALID_SLOT</a> </td><td>무효인 슬롯 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_StackFrame_SetValues">SetValues 커멘드</a>  (2)</h5>
+1 개(살) 또는 복수의 국소 변수의 값을 설정합니다. 각 변수는, 현재의 프레임 코드 인덱스로 가시일 필요가 있습니다. 프리미티브(primitive)치의 경우, 값의 형태와 변수의 형태는 정확하게 일치하고 있을 필요가 있습니다. 객체치의 경우, 값의 형태로부터 변수의 형태에의 광범위한 참조 변환이 존재해, 한편 변수의 형태가 로드 되고 있을 필요가 있습니다. <p>국소 변수의 정보를 이용할 수 없어도, 프론트엔드가 올바른 국소 변수 인덱스를 판별할 수 있는 경우는, 값의 설정이 가능합니다. 일반적으로, 국소 변수 테이블의 정보에 액세스 하지 않아도, 메소드시그니챠로부터 메소드 인수에 대해 변수의 인덱스를 판별할 수 있습니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>프레임의 thread &nbsp;
+<tr>
+<td colspan=5>
+frameID<td><i>frame</i><td>프레임 ID&nbsp;
+<tr>
+<td colspan=5>
+int<td><i>slotValues</i><td>설정하는 값의 수 &nbsp;
+<tr>
+<td colspan=7>
+<i>slotValues</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+int<td><i>slot</i><td>슬롯 ID&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=4>
+value<td><i>slotValue</i><td>설정하는 값 &nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FRAMEID">INVALID_FRAMEID</a> </td><td>무효인 jframeID&nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_StackFrame_ThisObject">ThisObject 커멘드</a>  (3)</h5>
+이 프레임에 대한 「this」참조의 값을 돌려줍니다. 프레임의 메소드가 static 또는 네이티브의 경우, 응답에는 null 객체 참조가 포함됩니다.  
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>프레임의 thread &nbsp;
+<tr>
+<td colspan=5>
+frameID<td><i>frame</i><td>프레임 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+tagged-objectID<td><i>objectThis</i><td>이 프레임에 대한 「this」객체 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FRAMEID">INVALID_FRAMEID</a> </td><td>무효인 jframeID&nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h5><a name="JDWP_StackFrame_PopFrames">PopFrames 커멘드</a>  (4)</h5>
+thread 스택의 맨 위의 스택 프레임을 「프레임」까지 팝 합니다. 이 커멘드를 실행하려면 , thread가 중단되고 있을 필요가 있습니다. 맨 위의 스택 프레임은 파기되어 「프레임」의 전의 스택 프레임이 현재의 프레임이 됩니다. 오퍼랜드 스택은 회복합니다.  인수가 재차 추가되어 호출이 <code>invokestatic</code> 는 아니었던 경우,<code>objectref</code> 도 재차 추가됩니다. Java 가상 머신 프로그램 카운터는, 호출 명령의 조작 코드에 되돌려집니다. <p>이것은 JDWP 버젼 1.4 이후입니다. canPopFrames 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조).
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+threadID<td><i>thread</i><td>thread의 객체 ID&nbsp;
+<tr>
+<td colspan=5>
+frameID<td><i>frame</i><td>프레임 ID&nbsp;
+</table>
+<dt>응답 데이터
+<dd>(없음)
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_THREAD">INVALID_THREAD</a> </td><td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>thread가 기존의 ID 가 아닌 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FRAMEID">INVALID_FRAMEID</a> </td><td>무효인 jframeID&nbsp;</td></tr>
+<tr><td><a href="#Error_THREAD_NOT_SUSPENDED">THREAD_NOT_SUSPENDED</a> </td><td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_NO_MORE_FRAMES">NO_MORE_FRAMES</a> </td><td>호출 스택에 Java 또는 JNI 프레임이 없어진 &nbsp;</td></tr>
+<tr><td><a href="#Error_INVALID_FRAMEID">INVALID_FRAMEID</a> </td><td>무효인 jframeID&nbsp;</td></tr>
+<tr><td><a href="#Error_NOT_IMPLEMENTED">NOT_IMPLEMENTED</a> </td><td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_ClassObjectReference">ClassObjectReference 커멘드 세트</a>  (17)</h4>
+
+<h5><a name="JDWP_ClassObjectReference_ReflectedType">ReflectedType 커멘드</a>  (1)</h5>
+이 클래스 객체에 의해 리플렉트 된 참조형을 돌려줍니다.
+<dl>
+<dt>출력 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+classObjectID<td><i>classObject</i><td>클래스 객체 &nbsp;
+</table>
+<dt>응답 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+byte<td><i>refTypeTag</i><td>나중에 계속되는 참조형의<a href="#JDWP_TypeTag">종류</a>  &nbsp;
+<tr>
+<td colspan=5>
+referenceTypeID<td><i>typeID</i><td>리플렉트 된 참조형 &nbsp;
+</table>
+<dt>에러 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary="">
+<tr><td><a href="#Error_INVALID_OBJECT">INVALID_OBJECT</a> </td><td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp;</td></tr>
+<tr><td><a href="#Error_VM_DEAD">VM_DEAD</a> </td><td>가상 머신이 동작하고 있지 않는 &nbsp;</td></tr>
+</table>
+</dl>
+<h4><a name="JDWP_Event">Event 커멘드 세트</a>  (64)</h4>
+
+<h5><a name="JDWP_Event_Composite">Composite 커멘드</a>  (100)</h5>
+타겟 VM 에서는, 특정의 시점에서 몇개의 이벤트가 발생합니다. 예를 들어, 특정의 장소에 대해서 복수의 breakpoint 요구가 존재하는지, breakpoint 요구와 같은 장소에 대해서 스텝 실행을 실시하는 경우를 생각해 봅시다. 이러한 이벤트는, 복합 이벤트로 해 정리해 전달됩니다. 일관성을 유지하기 (위해)때문에, 리포트하는 이벤트가 1 개 뿐이어도, 이벤트의 전달에는 항상 복합 이벤트가 사용됩니다. <P>복합 이벤트로서 그룹화 되는 이벤트에는, 다음의 방법으로 제한이 부과됩니다. <P><UL><LI>동일 thread에 대한 다른 thread 개시 이벤트라는 보고 함께 된다:<UL>    <LI>thread 개시 이벤트</UL><LI>동일 thread에 대한 다른 thread 종료 이벤트라는 보고 함께 된다:<UL>    <LI>thread 종료 이벤트</UL><LI>동일 클래스에 대한 다른 클래스 준비 이벤트라는 보고 함께 된다:<UL>    <LI>클래스 준비 이벤트</UL><LI>동일 클래스에 대한 다른 클래스 언로드 이벤트라는 보고 함께 된다:<UL>    <LI>클래스 언로드 이벤트</UL><LI>동일 필드 액세스에 대한 액세스 시계 포인트 이벤트라는 보고 함께 된다:<UL>    <LI>액세스 시계 포인트 이벤트</UL><LI>동일 필드 변경에 대한 다른 변경 시계 포인트 이벤트라는 보고 함께 된다:<UL>    <LI>변경 시계 포인트 이벤트</UL><LI>동일 모니터 객체에 대한 다른 경합 하는 모니터 개시 이벤트라는 보고 함께 된다:<UL>    <LI>경합 하는 모니터 개시 이벤트</UL><LI>동일 모니터 객체에 대한 다른 경합 하는 모니터 개시가 끝난 이벤트라는 보고 함께 된다:<UL>    <LI>경합 하는 모니터 개시가 끝난 이벤트</UL><LI>동일 모니터 객체의 모니터 대기 이벤트라는 보고 함께 된다:<UL>    <LI>모니터 대기 이벤트</UL><LI>동일 모니터 객체의 모니터 대기 종료 이벤트라는 보고 함께 된다:<UL>    <LI>모니터 대기 종료 이벤트</UL><LI>동일한 예외 발생에 대한 다른 예외 이벤트라는 보고 함께 된다:<UL>    <LI>예외 이벤트</UL><LI>동일 위치 및 동일 thread내의, 이 그룹의 다른 멤버라는 보고 함께 된다:<UL>    <LI>breakpoint 이벤트<LI>스텝 이벤트<LI>메소드 엔트리 이벤트<LI>메소드 종료 이벤트</UL></UL><P>VM 개시 이벤트와 VM 종료 이벤트는 자동적으로 생성되는 이벤트입니다. 즉,<a href="#JDWP_EventRequest_Set">EventRequest.Set</a>  커멘드를 사용해 이러한 이벤트를 요구할 필요는 없습니다. VM 개시 이벤트는, VM 의 초기화의 완료를 나타냅니다. VM 종료 이벤트는, VM 의 종료를 나타냅니다.  자동적으로 생성되는 이벤트가 발생했을 때에 디버거가 접속되고 있는 경우, 그 이벤트는 타겟 VM 로부터 송신됩니다. 자동적으로 생성되는 이벤트는, EventRequest.Set 커멘드를 사용해 요구할 수도 있습니다.  따라서, 이벤트의 발생시에 같은 이벤트의 종류의 복수의 이벤트가 타겟 VM 로부터 송신됩니다.  자동적으로 생성되는 이벤트는, 이벤트 데이터의 requestID 필드가 0 으로 설정된 상태로 송신됩니다.  이벤트 데이터의 suspendPolicy 필드의 값은, 이벤트에 따라서 다릅니다. 자동적으로 생성되는 VM 개시 이벤트의 경우, suspendPolicy 의 값은 정의되지 않기 때문에, 구현 고유 또는 설정 고유하게 됩니다. 예를 들어, Sun 의 구현에서는, suspendPolicy 는 기동시의 JDWP 에이전트의 옵션으로서 지정됩니다.  자동적으로 생성되는 VM 종료 이벤트의 suspendPolicy 는 NONE 로 설정됩니다.
+<dl>
+<dt>이벤트 데이터
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="4%"><th width="15%"><th width="65%">
+
+<tr>
+<td colspan=5>
+byte<td><i>suspendPolicy</i><td>이 복합 이벤트에 의해 어느 thread가 중단될까 &nbsp;
+<tr>
+<td colspan=5>
+int<td><i>events</i><td>세트내의 이벤트 &nbsp;
+<tr>
+<td colspan=7>
+<i>events</i> 회의 반복:
+<tr>
+<td colspan=1>
+<td colspan=4>
+byte<td><i>eventKind</i><td>이벤트의 종류의 셀렉터 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case VMStart - <i>eventKind</i> 가 JDWP.EventKind.VM_START 의 경우:
+<td>타겟 VM 의 초기화의 통지. 이 이벤트는, 메인 thread의 개시전, 한편 어플리케이션 코드의 실행전에 수취된다. 이 이벤트가 발생하기 전에, 대량의 시스템 코드가 실행되어 다수의 시스템 클래스가 로드 된다. 이 이벤트는, 명시적으로 요구되어 있지 않아도, 항상 타겟 VM 에 의해 생성되는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 (이벤트가 자동적으로 생성되었을 경우는 0) &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>초기 thread &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case VMStart - <i>eventKind</i> 가 JDWP.EventKind.SINGLE_STEP 의 경우:
+<td>타겟 VM 의 스텝 완료의 통지. 그 위치의 코드가 실행되기 전에, 스텝 이벤트가 생성되는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>스텝 실행이 행해진 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>스텝 실행이 행해진 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case Breakpoint - <i>eventKind</i> 가 JDWP.EventKind.BREAKPOINT 의 경우:
+<td>타겟 VM 의 breakpoint의 통지. 그 위치의 코드가 실행되기 전에, breakpoint 이벤트가 생성되는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>breakpoint를 히트 한 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>히트 한 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MethodEntry - <i>eventKind</i> 가 JDWP.EventKind.METHOD_ENTRY 의 경우:
+<td>타겟 VM 의 메소드 호출의 통지. 이 이벤트는, 불려 간 메소드내의 코드가 실행되기 전에 생성된다. 메소드 엔트리 이벤트는, 네이티브 및 비네이티브의 메소드의 양쪽 모두로 생성되는<P>몇개의 VM 에서는, 메소드가 thread의 초기화의 일부로서 불려 갔을 경우, 특정의 thread의 thread 개시 이벤트가 발생하기 전에, 그 thread에 대한 메소드 엔트리 이벤트가 발생하는 일이 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>메소드에 들어간 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>메소드내의 초기 실행 가능 파일의 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MethodExit - <i>eventKind</i> 가 JDWP.EventKind.METHOD_EXIT 의 경우:
+<td>타겟 VM 의 메소드 복귀의 통지. 이 이벤트는, 메소드내의 모든 코드가 실행된 후에 생성된다. 다만, 이 이벤트의 위치는, 메소드내에서 마지막에 실행된 위치가 된다. 메소드 종료 이벤트는, 네이티브 및 비네이티브의 메소드의 양쪽 모두로 생성된다. 메소드가 예외를 throw 해 종료했을 경우, 메소드 종료 이벤트는 생성되지 않는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>메소드로부터 나온 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>종료의 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MethodExitWithReturnValue - <i>eventKind</i> 가 JDWP.EventKind.METHOD_EXIT_WITH_RETURN_VALUE 의 경우:
+<td>타겟 VM 의 메소드 복귀의 통지. 이 이벤트는, 메소드내의 모든 코드가 실행된 후에 생성된다. 다만, 이 이벤트의 위치는, 메소드내에서 마지막에 실행된 위치가 된다. 메소드 종료 이벤트는, 네이티브 및 비네이티브의 메소드의 양쪽 모두로 생성된다. 메소드가 예외를 throw 해 종료했을 경우, 메소드 종료 이벤트는 생성되지 않는<p>이것은 JDWP 버젼 1.6 이후입니다.  &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>메소드로부터 나온 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>종료의 위치 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+value<td><i>value</i><td>메소드로부터 반환되는 값&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MonitorContendedEnter - <i>eventKind</i> 가 JDWP.EventKind.MONITOR_CONTENDED_ENTER 의 경우:
+<td>타겟 VM 내의 thread가 다른 thread에 의해 벌써 획득되고 있는 모니터에 들어가려고 했을 때에 송신되는 통지. <p>이것은 JDWP 버젼 1.6 이후입니다.  &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>모니터에 들어가려 하고 있는 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>모니터 객체 참조 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>경합 하는 모니터 개시의 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MonitorContendedEntered - <i>eventKind</i> 가 JDWP.EventKind.MONITOR_CONTENDED_ENTERED 의 경우:
+<td>타겟 VM 내의 thread가, 다른 thread에 의해 획득된 모니터가 해제되는 것을 기다려 모니터에 들어갈 때 송신되는 통지. <p>이것은 JDWP 버젼 1.6 이후입니다.  &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>모니터에 들어간 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>모니터 객체 참조 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>경합 하는 모니터 개시의 위치 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MonitorWait - <i>eventKind</i> 가 JDWP.EventKind.MONITOR_WAIT 의 경우:
+<td>모니터 객체상에서 대기하려고 하고 있는 thread의 통지. <p>이것은 JDWP 버젼 1.6 이후입니다.  &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>모니터에 들어간 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>모니터 객체 참조 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>경합 하는 모니터가 들어가는 위치 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+long<td><i>timeout</i><td>thread 대기 시간 (단위는 밀리 세컨드) &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case MonitorWaited - <i>eventKind</i> 가 JDWP.EventKind.MONITOR_WAITED 의 경우:
+<td>타겟 VM 내의 thread가 모니터 객체상에서의 대기를 종료할 경우에 송신되는 통지. <p>이것은 JDWP 버젼 1.6 이후입니다.  &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>모니터에 들어간 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>모니터 객체 참조 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>경합 하는 모니터가 들어가는 위치 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+boolean 형<td><i>timed_out</i><td>타임 아웃 했을 경우 true&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case Exception - <i>eventKind</i> 가 JDWP.EventKind.EXCEPTION 의 경우:
+<td>타겟 VM 의 예외 통지. 예외가 비네이티브 메소드로부터 throw 되었을 경우, 예외 이벤트는 예외가 throw 된 위치에서 생성된다. 예외가 네이티브 메소드로부터 throw 되었을 경우, 예외가 throw 된 후의 최초의 비네이티브 위치에서 예외 이벤트가 생성되는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>예외 첨부의 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>예외가 throw 된 위치 (또는, 네이티브 메소드로부터 throw 되었을 경우는, throw 된 후의 최초의 비네이티브의 위치) &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>exception</i><td>throw 된 예외 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>catchLocation</i><td>캐치 된 위치, 또는 0 (캐치 되지 않았던 경우). 예외가 캐치 되었다고 보여지는 것은, throw의 시점에서, 그 예외를 처리하는 try 문으로 현재의 위치가 동적으로 둘러싸여 있는 경우. 자세한 것은, JVM 스펙을 참조. 그러한 try 문이 존재하는 경우, 캐치의 위치는, 해당하는 catch 절내의 최초의 위치가 되는<p>예외의 발생시에 호출해 스택내에 네이티브 메소드가 존재하는 경우는, 반환되는 캐치 위치에 도착해 중요한 제약이 있으므로 요주의. 그러한 경우, 호출 스택상의 어떠한 네이티브 메소드에 의해 예외가 처리될지 어떨지는 예측할 수 없다. 그 때문에, 여기서 캐치 되지 않았다고 보여진 예외가, 실은 네이티브 메소드에 의해 처리되고 있어, 타겟 VM 를 종료시키지 않다고 하는 상황이 일어날 수 있다. 게다가 여기서 반환되는 캐치 위치에, 예외를 throw 한 thread가 반드시 도달한다고 보는 일도 할 수 없다. 현재 위치와 캐치 위치와의 사이에 네이티브 프레임이 존재하는 경우에는, 예외가 네이티브 메소드내에서 처리되어 클리어 될 가능성이 있는<p>원시 코드내에 try-catch 블록이 명시적으로 기술되어 있지 않은 경우, 컴파일러가 try-catch 블록을 생성할 수 있는 것에 주의. 예를 들어,<code>synchronized</code> 및 <code>finally</code> 블록에 대해 생성되는 코드에는, 암묵의 try-catch 블록이 포함되는 일이 있다. 예외의 throw시에 그 종의 암묵적으로 생성된 try-catch 블록이 호출해 스택상에 존재하는 경우는, 원시 코드상에서는 예외가 캐치 되지 않는 것 처럼 보인다고 해도, 예외는 캐치 되었다고 보여지는 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ThreadStart - <i>eventKind</i> 가 JDWP.EventKind.THREAD_START 의 경우:
+<td>타겟 VM 로 새로운 thread가 실행되는 것의 통지. 신규 thread는,<code>java.lang.Thread.start</code> 를 호출한 결과적으로, 또는 JNI 를 개입시켜 VM 에 신규 thread를 접속한 결과적으로 실행되게 된다. 이 통지는, 신규 thread에 의해, 그 실행이 개시되는 조금 전에 생성된다. 이 타이밍의 영향으로, 이 이벤트가 수신되기 전에, 그 thread에 대해 다른 이벤트가 수신될 가능성이 있다. 특히, 메소드 엔트리 이벤트 및 메소드 종료 이벤트는, thread의 초기화중에 발생하는 일이 있다. 또,<a href="#JDWP_VirtualMachine_AllThreads">VirtualMachine AllThreads</a>  커멘드가, 어느 thread를, 그 thread의 thread 개시 이벤트가 수신되기 전에 돌려줄 가능성도 있는<p>이 이벤트는, thread 객체의 작성에 대해서는 어떤 정보도 제공하고 있지 않고, 디버그 대상의 VM 에 따라서는, 훨씬 이전에 작성된 thread일 가능성도 있으므로, 주의를 필요로 하는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>개시한 thread &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ThreadDeath - <i>eventKind</i> 가 JDWP.EventKind.THREAD_DEATH 의 경우:
+<td>타겟 VM 의 완료 thread의 통지. 이 통지는, 종료하려고 하고 있는 thread에 의해 종료전에 생성된다. 이 타이밍이기 때문에, VirtualMachine.allThreads 는, 이 이벤트의 수신 후에, 이 thread를 돌려줄 수가 있습니다. <p>이 이벤트는, thread 객체의 수명에 대해서는 어떤 정보도 제공하지 않는다. 타겟 VM 에 어떤 참조가 존재할까에 응해, 곧바로 가베지 컬렉트되는 일도, 되지 않는 것도 있는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>종료하는 thread &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ClassPrepare - <i>eventKind</i> 가 JDWP.EventKind.CLASS_PREPARE 의 경우:
+<td>타겟 VM 의 클래스 준비의 통지. 클래스 준비의 정의에 대해서는, JVM 스펙을 참조. 프리미티브(primitive) 클래스 (예를 들어, java.lang.Integer.TYPE)의 경우, 클래스 준비 이벤트는 생성되지 않는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>준비를 하고 있는 thread. 보기 드물게, 타겟 VM 내의 디버거 시스템 thread로 이 이벤트가 발생하는 일이 있다. 디버거 thread는 이러한 이벤트의 발생을 막기 위한 예방 조치를 강의(강구)하지만, 어느 상황하, 특히 java.lang.Error 의 몇개의 서브 클래스에서는 회피할 수 없다. 이 이벤트가 디버거 시스템 thread에 의해 생성되었을 경우, 이 메소드가 돌려주는 값은 null 가 된다. 또, 이 이벤트에 대해 요구된<a href="#JDWP_SuspendPolicy">중단 정책</a>가 EVENT_THREAD 인 경우는, 그 정책에 반해 모든 thread가 중단 당해 복합 이벤트의 중단 정책도 그 변경을 리플렉트 하는<p>전술의 설명은, 일반적으로의 (디버그 이외의) 조작중에 타겟 VM 에 의해 작성된 시스템 thread에는 들어맞지 않는 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+byte<td><i>refTypeTag</i><td>참조형의 종류. <a href="#JDWP_TypeTag">JDWP.TypeTag</a> &nbsp; 를 참조해 주세요.
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>typeID</i><td>준비중의 형태 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+string<td><i>signature</i><td>형의 시그니챠 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>status</i><td>형의 상태. <a href="#JDWP_ClassStatus">JDWP.ClassStatus</a> &nbsp; 를 참조
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case ClassUnload - <i>eventKind</i> 가 JDWP.EventKind.CLASS_UNLOAD 의 경우:
+<td>타겟 VM 의 클래스 언로드의 통지<p>가베지 컬렉션의 실행중에는 디버거의 연구 최종 단계에 어려운 제약이 있기 (위해)때문에, 언로드 정보는 큰폭으로 제한되고 있는	&nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+string<td><i>signature</i><td>형의 시그니챠 &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case FieldAccess - <i>eventKind</i> 가 JDWP.EventKind.FIELD_ACCESS 의 경우:
+<td>타겟 VM 의 필드 액세스의 통지. 필드의 변경은, 필드 액세스라고는 보여지지 않는 canWatchFieldAccess 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조). &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>액세스중의 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>액세스의 위치 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+byte<td><i>refTypeTag</i><td>참조형의 종류. <a href="#JDWP_TypeTag">JDWP.TypeTag</a> &nbsp; 를 참조해 주세요.
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>typeID</i><td>필드의 형태 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+fieldID<td><i>fieldID</i><td>액세스 되고 있는 필드 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>액세스 되고 있는 객체 (static 의 경우는 null=0) &nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case FieldModification - <i>eventKind</i> 가 JDWP.EventKind.FIELD_MODIFICATION 의 경우:
+<td>타겟 VM 의 필드 변경의 통지 canWatchFieldModification 기능이 필요합니다 (<a href="#JDWP_VirtualMachine_CapabilitiesNew">CapabilitiesNew</a>  를 참조). &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+threadID<td><i>thread</i><td>변경중의 thread &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+location<td><i>location</i><td>변경의 위치 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+byte<td><i>refTypeTag</i><td>참조형의 종류. <a href="#JDWP_TypeTag">JDWP.TypeTag</a> &nbsp; 를 참조해 주세요.
+<tr>
+<td colspan=2>
+<td colspan=3>
+referenceTypeID<td><i>typeID</i><td>필드의 형태 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+fieldID<td><i>fieldID</i><td>변경되고 있는 필드 &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+tagged-objectID<td><i>object</i><td>변경되고 있는 객체 (static 의 경우는 null=0) &nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+value<td><i>valueToBe</i><td>할당할 수 있는 값&nbsp;
+<tr>
+<td colspan=1>
+<td colspan=5>
+Case VMDeath - <i>eventKind</i> 가 JDWP.EventKind.VM_DEATH 의 경우:
+<td>&nbsp;
+<tr>
+<td colspan=2>
+<td colspan=3>
+int<td><i>requestID</i><td>이벤트를 생성시킨 요구 &nbsp;
+</table>
+</dl>
+<h4><a name="JDWP_Error">Error 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="Error_NONE"></a> 
+<tr><td>NONE<td>0<td>에러는 발생하지 않았다.  &nbsp; <a NAME="Error_INVALID_THREAD"></a> 
+<tr><td>INVALID_THREAD<td>10<td>건네받은 thread가 null, 무효, 또는 벌써 종료하고 있는 &nbsp; <a NAME="Error_INVALID_THREAD_GROUP"></a>  &nbsp; <a NAME="Error_INVALID_THREAD_GROUP"></a> 
+<tr><td>INVALID_THREAD_GROUP<td>11<td>thread 그룹이 무효 &nbsp; <a NAME="Error_INVALID_PRIORITY"></a> 
+<tr><td>INVALID_PRIORITY<td>12<td>무효인 우선 순위 &nbsp; <a NAME="Error_THREAD_NOT_SUSPENDED"></a> 
+<tr><td>THREAD_NOT_SUSPENDED<td>13<td>지정된 thread는, 이벤트에 의해 중단되어 있지 않은 &nbsp; <a NAME="Error_THREAD_SUSPENDED"></a> 
+<tr><td>THREAD_SUSPENDED<td>14<td>thread는 벌써 중단되고 있는 &nbsp; <a NAME="Error_THREAD_NOT_ALIVE"></a> 
+<tr><td>THREAD_NOT_ALIVE<td>15<td>thread가 개시되어 있지 않은지, 벌써 종료하고 있는 &nbsp; <a NAME="Error_INVALID_OBJECT"></a> 
+<tr><td>INVALID_OBJECT<td>20<td>이 참조형은 벌써 언로드되어 가베지 컬렉트된 &nbsp; <a NAME="Error_INVALID_CLASS"></a> 
+<tr><td>INVALID_CLASS<td>21<td>무효인 클래스 &nbsp; <a NAME="Error_CLASS_NOT_PREPARED"></a> 
+<tr><td>CLASS_NOT_PREPARED<td>22<td>클래스가 로드 되고 있지만, 아직 준비되어 있지 않은 &nbsp; <a NAME="Error_INVALID_METHODID"></a> 
+<tr><td>INVALID_METHODID<td>23<td>무효인 메소드 &nbsp; <a NAME="Error_INVALID_LOCATION"></a> 
+<tr><td>INVALID_LOCATION<td>24<td>무효인 위치 &nbsp; <a NAME="Error_INVALID_FIELDID"></a> 
+<tr><td>INVALID_FIELDID<td>25<td>무효인 필드 &nbsp; <a NAME="Error_INVALID_FRAMEID"></a> 
+<tr><td>INVALID_FRAMEID<td>30<td>무효인 jframeID &nbsp; <a NAME="Error_NO_MORE_FRAMES"></a> 
+<tr><td>NO_MORE_FRAMES<td>31<td>호출 스택에 Java 또는 JNI 프레임이 없어진 &nbsp; <a NAME="Error_OPAQUE_FRAME"></a> 
+<tr><td>OPAQUE_FRAME<td>32<td>프레임에 관한 정보를 입수할 수 없는 &nbsp; <a NAME="Error_NOT_CURRENT_FRAME"></a> 
+<tr><td>NOT_CURRENT_FRAME<td>33<td>조작은 현재의 프레임으로 밖에 실행할 수 없는 &nbsp; <a NAME="Error_TYPE_MISMATCH"></a> 
+<tr><td>TYPE_MISMATCH<td>34<td>사용한 함수와 변수의 형태가 맞지 않는 &nbsp; <a NAME="Error_INVALID_SLOT"></a> 
+<tr><td>INVALID_SLOT<td>35<td>무효인 슬롯 &nbsp; <a NAME="Error_DUPLICATE"></a> 
+<tr><td>DUPLICATE<td>40<td>벌써 설정된 항목 &nbsp; <a NAME="Error_NOT_FOUND"></a> 
+<tr><td>NOT_FOUND<td>41<td>목적의 요소가 발견되지 않는 &nbsp; <a NAME="Error_INVALID_MONITOR"></a> 
+<tr><td>INVALID_MONITOR<td>50<td>무효인 모니터 &nbsp; <a NAME="Error_NOT_MONITOR_OWNER"></a> 
+<tr><td>NOT_MONITOR_OWNER<td>51<td>이 thread는 모니터를 소유하고 있지 않는 &nbsp; <a NAME="Error_INTERRUPT"></a> 
+<tr><td>INTERRUPT<td>52<td>호출의 완료전에 끼어들어진 &nbsp; <a NAME="Error_INVALID_CLASS_FORMAT"></a> 
+<tr><td>INVALID_CLASS_FORMAT<td>60<td>가상 머신이 클래스 파일을 읽어들이려고 했지만, 파일의 형식이 잘못되어 있는지, 그 외의 이유로써 클래스 파일로서 해석할 수 없는 &nbsp; <a NAME="Error_CIRCULAR_CLASS_DEFINITION"></a> 
+<tr><td>CIRCULAR_CLASS_DEFINITION<td>61<td>클래스의 초기화중에, 순환 정의가 검출된 &nbsp; <a NAME="Error_FAILS_VERIFICATION"></a> 
+<tr><td>FAILS_VERIFICATION<td>62<td>클래스 파일의 형식은 올바르지만, 검증 루틴은 어떠한 종류의 내부적인 부정합이나 시큐리티상의 문제를 검출한 &nbsp; <a NAME="Error_ADD_METHOD_NOT_IMPLEMENTED"></a> 
+<tr><td>ADD_METHOD_NOT_IMPLEMENTED<td>63<td>추가 메소드가 구현되어 있지 않은 &nbsp; <a NAME="Error_SCHEMA_CHANGE_NOT_IMPLEMENTED"></a> 
+<tr><td>SCHEMA_CHANGE_NOT_IMPLEMENTED<td>64<td>schema의 변경이 구현되어 있지 않은 &nbsp; <a NAME="Error_INVALID_TYPESTATE"></a> 
+<tr><td>INVALID_TYPESTATE<td>65<td>thread 상태가 변경되었기 때문에, 부정합이 생기고 있는 &nbsp; <a NAME="Error_HIERARCHY_CHANGE_NOT_IMPLEMENTED"></a> 
+<tr><td>HIERARCHY_CHANGE_NOT_IMPLEMENTED<td>66<td>새로운 클래스의 버젼의 직접 슈퍼 클래스가 다르다, 또는 직접 구현되고 있는 인터페이스가 달라, canUnrestrictedlyRedefineClasses 가 false &nbsp; <a NAME="Error_DELETE_METHOD_NOT_IMPLEMENTED"></a> 
+<tr><td>DELETE_METHOD_NOT_IMPLEMENTED<td>67<td>새로운 클래스의 버젼에서는, 구클래스의 버젼으로 선언한 메소드를 선언하지 않고, 또 canUnrestrictedlyRedefineClasses 가 false &nbsp; <a NAME="Error_UNSUPPORTED_VERSION"></a> 
+<tr><td>UNSUPPORTED_VERSION<td>68<td>클래스 파일의 버젼이 이 VM 로 지원되어 있지 않은 &nbsp; <a NAME="Error_NAMES_DONT_MATCH"></a> 
+<tr><td>NAMES_DONT_MATCH<td>69<td>새로운 클래스 파일내에서 정의된 클래스명이, 구클래스 객체내의 이름과 다른 &nbsp; <a NAME="Error_CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED"></a> 
+<tr><td>CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED<td>70<td>새로운 클래스의 버젼의 수식자가 달라, canUnrestrictedlyRedefineClasses 가 false &nbsp; <a NAME="Error_METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED"></a> 
+<tr><td>METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED<td>71<td>새로운 클래스의 버젼의 메소드의 수식자가 구클래스의 버젼의 수식자와 달리, canUnrestrictedlyRedefineClasses 가 false &nbsp; <a NAME="Error_NOT_IMPLEMENTED"></a> 
+<tr><td>NOT_IMPLEMENTED<td>99<td>이 기능은 이 가상 머신에 구현되어 있지 않은 &nbsp; <a NAME="Error_NULL_POINTER"></a> 
+<tr><td>NULL_POINTER<td>100<td>무효인 포인터 &nbsp; <a NAME="Error_ABSENT_INFORMATION"></a> 
+<tr><td>ABSENT_INFORMATION<td>101<td>목적의 정보를 입수할 수 없는 &nbsp; <a NAME="Error_INVALID_EVENT_TYPE"></a> 
+<tr><td>INVALID_EVENT_TYPE<td>102<td>지정된 이벤트형의 ID 가 인식되지 않는 &nbsp; <a NAME="Error_ILLEGAL_ARGUMENT"></a> 
+<tr><td>ILLEGAL_ARGUMENT<td>103<td>부정한 인수 &nbsp; <a NAME="Error_OUT_OF_MEMORY"></a> 
+<tr><td>OUT_OF_MEMORY<td>110<td>함수로 메모리의 할당이 필요하게 되었지만, 더 이상 할당할 수 있는 메모리가 없었던 &nbsp; <a NAME="Error_ACCESS_DENIED"></a> 
+<tr><td>ACCESS_DENIED<td>111<td>이 가상 머신에서는 디버그가 유효하게 되지 않았다. JVMTI 를 사용할 수 없는 &nbsp; <a NAME="Error_VM_DEAD"></a> 
+<tr><td>VM_DEAD<td>112<td>가상 머신이 동작하고 있지 않는 &nbsp; <a NAME="Error_INTERNAL"></a> 
+<tr><td>INTERNAL<td>113<td>예기치 않은 내부 에러가 발생한 &nbsp; <a NAME="Error_UNATTACHED_THREAD"></a> 
+<tr><td>UNATTACHED_THREAD<td>115<td>이 함수의 호출에 사용되고 있는 thread가, 가상 머신에 접속되어 있지 않다. 호출은, 접속된 thread로부터 실시할 필요가 있는 &nbsp; <a NAME="Error_INVALID_TAG"></a> 
+<tr><td>INVALID_TAG<td>500<td>객체형 ID 또는 쿠라스타그 &nbsp; <a NAME="Error_ALREADY_INVOKING"></a> 
+<tr><td>ALREADY_INVOKING<td>502<td>이전의 호출이 미완료 &nbsp; <a NAME="Error_INVALID_INDEX"></a> 
+<tr><td>INVALID_INDEX<td>503<td>인덱스가 무효 &nbsp; <a NAME="Error_INVALID_LENGTH"></a> 
+<tr><td>INVALID_LENGTH<td>504<td>길이가 무효 &nbsp; <a NAME="Error_INVALID_STRING"></a> 
+<tr><td>INVALID_STRING<td>506<td>캐릭터 라인이 무효 &nbsp; <a NAME="Error_INVALID_CLASS_LOADER"></a> 
+<tr><td>INVALID_CLASS_LOADER<td>507<td>클래스 로더가 무효 &nbsp; <a NAME="Error_INVALID_ARRAY"></a> 
+<tr><td>INVALID_ARRAY<td>508<td>배열이 무효 &nbsp; <a NAME="Error_TRANSPORT_LOAD"></a> 
+<tr><td>TRANSPORT_LOAD<td>509<td>트랜스폴트를 로드할 수 없는 &nbsp; <a NAME="Error_TRANSPORT_INIT"></a> 
+<tr><td>TRANSPORT_INIT<td>510<td>트랜스폴트를 초기화할 수 없는 &nbsp; <a NAME="Error_NATIVE_METHOD"></a> 
+<tr><td>NATIVE_METHOD<td>511<td> &nbsp; <a NAME="Error_INVALID_COUNT"></a> 
+<tr><td>INVALID_COUNT<td>512<td>카운트가 무효 &nbsp;
+</table>
+<h4><a name="JDWP_EventKind">EventKind 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="EventKind_SINGLE_STEP"></a> 
+<tr><td>SINGLE_STEP<td>1<td> &nbsp; <a NAME="EventKind_BREAKPOINT"></a> 
+<tr><td>BREAKPOINT<td>2<td> &nbsp; <a NAME="EventKind_FRAME_POP"></a> 
+<tr><td>FRAME_POP<td>3<td> &nbsp; <a NAME="EventKind_EXCEPTION"></a> 
+<tr><td>EXCEPTION<td>4<td> &nbsp; <a NAME="EventKind_USER_DEFINED"></a> 
+<tr><td>USER_DEFINED<td>5<td> &nbsp; <a NAME="EventKind_THREAD_START"></a> 
+<tr><td>THREAD_START<td>6<td> &nbsp; <a NAME="EventKind_THREAD_DEATH"></a> 
+<tr><td>THREAD_DEATH<td>7<td> &nbsp; <a NAME="EventKind_THREAD_END"></a> 
+<tr><td>THREAD_END<td>7<td>폐지 - jvmdi 로 사용되고 있던 &nbsp; <a NAME="EventKind_CLASS_PREPARE"></a> 
+<tr><td>CLASS_PREPARE<td>8<td> &nbsp; <a NAME="EventKind_CLASS_UNLOAD"></a> 
+<tr><td>CLASS_UNLOAD<td>9<td> &nbsp; <a NAME="EventKind_CLASS_LOAD"></a> 
+<tr><td>CLASS_LOAD<td>10<td> &nbsp; <a NAME="EventKind_FIELD_ACCESS"></a> 
+<tr><td>FIELD_ACCESS<td>20<td> &nbsp; <a NAME="EventKind_FIELD_MODIFICATION"></a> 
+<tr><td>FIELD_MODIFICATION<td>21<td> &nbsp; <a NAME="EventKind_EXCEPTION_CATCH"></a> 
+<tr><td>EXCEPTION_CATCH<td>30<td> &nbsp; <a NAME="EventKind_METHOD_ENTRY"></a> 
+<tr><td>METHOD_ENTRY<td>40<td> &nbsp; <a NAME="EventKind_METHOD_EXIT"></a> 
+<tr><td>METHOD_EXIT<td>41<td> &nbsp; <a NAME="EventKind_METHOD_EXIT_WITH_RETURN_VALUE"></a> 
+<tr><td>METHOD_EXIT_WITH_RETURN_VALUE<td>42<td> &nbsp; <a NAME="EventKind_MONITOR_CONTENDED_ENTER"></a> 
+<tr><td>MONITOR_CONTENDED_ENTER<td>43<td> &nbsp; <a NAME="EventKind_MONITOR_CONTENDED_ENTERED"></a> 
+<tr><td>MONITOR_CONTENDED_ENTERED<td>44<td> &nbsp; <a NAME="EventKind_MONITOR_WAIT"></a> 
+<tr><td>MONITOR_WAIT<td>45<td> &nbsp; <a NAME="EventKind_MONITOR_WAITED"></a> 
+<tr><td>MONITOR_WAITED<td>46<td> &nbsp; <a NAME="EventKind_VM_START"></a> 
+<tr><td>VM_START<td>90<td> &nbsp; <a NAME="EventKind_VM_INIT"></a> 
+<tr><td>VM_INIT<td>90<td>폐지 - jvmdi 로 사용되고 있던 &nbsp; <a NAME="EventKind_VM_DEATH"></a> 
+<tr><td>VM_DEATH<td>99<td> &nbsp; <a NAME="EventKind_VM_DISCONNECTED"></a> 
+<tr><td>VM_DISCONNECTED<td>100<td>JDWP 를 넘어 송신될 것은 없습니다. &nbsp;
+</table>
+<h4><a name="JDWP_ThreadStatus">ThreadStatus 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="ThreadStatus_ZOMBIE"></a> 
+<tr><td>ZOMBIE<td>0<td> &nbsp; <a NAME="ThreadStatus_RUNNING"></a> 
+<tr><td>RUNNING<td>1<td> &nbsp; <a NAME="ThreadStatus_SLEEPING"></a> 
+<tr><td>SLEEPING<td>2<td> &nbsp; <a NAME="ThreadStatus_MONITOR"></a> 
+<tr><td>MONITOR<td>3<td> &nbsp; <a NAME="ThreadStatus_WAIT"></a> 
+<tr><td>WAIT<td>4<td> &nbsp;
+</table>
+<h4><a name="JDWP_SuspendStatus">SuspendStatus 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="SuspendStatus_SUSPEND_STATUS_SUSPENDED"></a> 
+<tr><td>SUSPEND_STATUS_SUSPENDED<td>0x1<td> &nbsp;
+</table>
+<h4><a name="JDWP_ClassStatus">ClassStatus 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="ClassStatus_VERIFIED"></a> 
+<tr><td>VERIFIED<td>1<td> &nbsp; <a NAME="ClassStatus_PREPARED"></a> 
+<tr><td>PREPARED<td>2<td> &nbsp; <a NAME="ClassStatus_INITIALIZED"></a> 
+<tr><td>INITIALIZED<td>4<td> &nbsp; <a NAME="ClassStatus_ERROR"></a> 
+<tr><td>ERROR<td>8<td> &nbsp;
+</table>
+<h4><a name="JDWP_TypeTag">TypeTag 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="TypeTag_CLASS"></a> 
+<tr><td>CLASS<td>1<td>참조형은 클래스  &nbsp; <a NAME="TypeTag_INTERFACE"></a> 
+<tr><td>INTERFACE<td>2<td>참조형은 인터페이스  &nbsp; <a NAME="TypeTag_ARRAY"></a> 
+<tr><td>ARRAY<td>3<td>참조형은 배열  &nbsp;
+</table>
+<h4><a name="JDWP_Tag">Tag 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="Tag_ARRAY"></a> 
+<tr><td>ARRAY<td>91<td>'[' - 배열 객체 (objectID 사이즈)  &nbsp; <a NAME="Tag_BYTE"></a> 
+<tr><td>BYTE<td>66<td>'B' - 바이트치 (1 바이트) &nbsp; <a NAME="Tag_CHAR"></a> 
+<tr><td>CHAR<td>67<td>'C' - 문자치 (2 바이트) &nbsp; <a NAME="Tag_OBJECT"></a> 
+<tr><td>OBJECT<td>76<td>'L' - 객체 (objectID 사이즈) &nbsp; <a NAME="Tag_FLOAT"></a> 
+<tr><td>FLOAT<td>70<td>'F' - 부동 소수점치 (4 바이트) &nbsp; <a NAME="Tag_DOUBLE"></a> 
+<tr><td>DOUBLE<td>68<td>'D' - 배정밀도치 (8 바이트) &nbsp; <a NAME="Tag_INT"></a> 
+<tr><td>INT<td>73<td>'I' - 정수치 (4 바이트) &nbsp; <a NAME="Tag_LONG"></a> 
+<tr><td>LONG<td>74<td>'J' ?  장 정수치 (8 바이트) &nbsp; <a NAME="Tag_SHORT"></a> 
+<tr><td>SHORT<td>83<td>'S' ?  단정수치 (2 바이트) &nbsp; <a NAME="Tag_VOID"></a> 
+<tr><td>VOID<td>86<td>'V' - void 치 (바이트 없음) &nbsp; <a NAME="Tag_BOOLEAN"></a> 
+<tr><td>BOOLEAN<td>90<td>'Z' - 불리언 값 (1 바이트) &nbsp; <a NAME="Tag_STRING"></a> 
+<tr><td>STRING<td>115<td>'s' - String 객체 (objectID 사이즈)  &nbsp; <a NAME="Tag_THREAD"></a> 
+<tr><td>THREAD<td>116<td>'t' - Thread 객체 (objectID 사이즈)  &nbsp; <a NAME="Tag_THREAD_GROUP"></a> 
+<tr><td>THREAD_GROUP<td>103<td>'g' - ThreadGroup 객체 (objectID 사이즈)  &nbsp; <a NAME="Tag_CLASS_LOADER"></a> 
+<tr><td>CLASS_LOADER<td>108<td>'l' - ClassLoader 객체 (objectID 사이즈)  &nbsp; <a NAME="Tag_CLASS_OBJECT"></a> 
+<tr><td>CLASS_OBJECT<td>99<td>'c' - 클래스 객체 (objectID 사이즈)  &nbsp;
+</table>
+<h4><a name="JDWP_StepDepth">StepDepth 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="StepDepth_INTO"></a> 
+<tr><td>INTO<td>0<td>스텝의 종료전에, 메소드 호출이 있으면, 그 중에 접어드는  &nbsp; <a NAME="StepDepth_OVER"></a> 
+<tr><td>OVER<td>1<td>스텝의 종료전에, 메소드 호출이 있으면, 그 메소드를 모두 실행하는  &nbsp; <a NAME="StepDepth_OUT"></a> 
+<tr><td>OUT<td>2<td>현재의 메소드로부터 출스텝 아웃 하는  &nbsp;
+</table>
+<h4><a name="JDWP_StepSize">StepSize 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="StepSize_MIN"></a> 
+<tr><td>MIN<td>0<td>가능한 최소의 양 (많은 경우, 바이트 코드 명령)만 스텝 실행하는  &nbsp; <a NAME="StepSize_LINE"></a> 
+<tr><td>LINE<td>1<td>차의 소스행까지 스텝 실행한다.  행 번호 정보가 존재하지 않는 경우는, MIN 스텝이 실행되는 &nbsp; &nbsp;
+</table>
+<h4><a name="JDWP_SuspendPolicy">SuspendPolicy 정수</a> </h4>
+
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="SuspendPolicy_NONE"></a> 
+<tr><td>NONE<td>0<td>이 이벤트의 만남시에 thread를 중단하지 않는  &nbsp; <a NAME="SuspendPolicy_EVENT_THREAD"></a> 
+<tr><td>EVENT_THREAD<td>1<td>이 이벤트의 만남시에 이벤트 thread를 중단하는  &nbsp; <a NAME="SuspendPolicy_ALL"></a> 
+<tr><td>ALL<td>2<td>이 이벤트의 만남시에 모든 thread를 중단하는  &nbsp;
+</table>
+<h4><a name="JDWP_InvokeOptions">InvokeOptions 정수</a> </h4>
+호출 옵션은, 다음의 비트 플래그 가운데, 0 개 이상의 비트를 조합한 것
+<dd><table border=1 cellpadding=3 cellspacing=0 width="90%" summary=""><tr>
+<th width="20%"><th width="5%"><th width="65%">
+<a NAME="InvokeOptions_INVOKE_SINGLE_THREADED"></a> 
+<tr><td>INVOKE_SINGLE_THREADED<td>0x01<td>그 이외의 경우, 개시한 모든 thread  &nbsp; <a NAME="InvokeOptions_INVOKE_NONVIRTUAL"></a> 
+<tr><td>INVOKE_NONVIRTUAL<td>0x02<td>그 이외의 경우, 일반적으로의 가상 호출 (인스턴스 메소드만) &nbsp;
+</table>
+</body></html>

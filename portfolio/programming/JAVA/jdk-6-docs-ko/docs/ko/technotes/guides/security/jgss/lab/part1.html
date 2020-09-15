@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>고도의 JGSS 시큐리티 프로그래밍 - xrath.com 에서 번역됨</title>
+  
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="keywords" value="">
+  <meta name="description" value="">
+ <!-- <link rel="stylesheet"  href="index-j1_files/default.css">stopindex  . style1 { 	color: #FF0000; 	font-style: italic; 	font-weight: bold; } . style8 {font-size: 12pt} . style10 {color: #594fbf} -->
+
+<style type="text/css">
+
+. style1 {
+	color: #FF0000;
+	font-style: italic;
+	font-weight: bold;
+}
+. style8 {font-size: 12pt}
+. style10 {color: #594fbf}
+
+p, li,  ul li { margin-left: 40pt;
+                   font-family: Helvetica, Arial, sans-serif;
+			    font-size: medium; 
+			    }
+
+h2  { margin-left: 40pt;
+      margin-top:32pt;
+      font-family: Helvetica, Arial, sans-serif;
+	 font-size: larger; }
+	 
+h3	{ font-family: helvetica, arial, sans-serif;
+       font-size: medium;
+       font-weight: bold; 
+ 
+	  margin-left: 40pt;
+	  }
+			    
+</style>
+
+
+<meta name="author" content="Seema Malkani">
+<meta name="author" content="Seema Malkani"></head>
+
+<body leftmargin="0" topmargin="0" style="background-color: rgb(255, 255, 255);" marginheight="0" marginwidth="0">
+
+
+
+
+<!-- part I -->
+
+
+ <a name="PART1">
+ 
+<h2 style="margin-top:32px; margin-bottom:32px;" >제 I 부 :Java Authentication and Authorization Service (JAAS)를 사용한 안전한 인증</h2>
+</a> 
+
+
+<h2 class="main1"><a name="JAAS" href="#JAAS"></a> 과제 1:JAAS API 의 사용</h2>
+
+
+<h3>이 과제의 목표: </h3>
+
+<p>이 과제의 목표는, Java Authentication and Authorization (JAAS) API 를 사용해 인증을 실시하는 방법에 대해 학습하는 것입니다. <br>
+</p>
+
+<h3>이 과제의 내용:</h3>
+
+
+<p>JAAS 는, Java 플랫폼용의 표준의 플러그 인 가능 인증 시스템 (PAM)를 제공하고 있습니다. 어플리케이션은, JAAS API 를 사용해 「인증」을 실시합니다. 인증이란, 이 어플리케이션을 사용하고 있는 사용자의 아이덴티티를 확인해, 그 사용자의 아이덴티티 정보를 「피인증자」라고 불리는 컨테이너에 수집하는 프로세스입니다. 다음에, 그 어플리케이션은, JAAS API 와 함께 이 피인증자의 아이덴티티 정보를 사용해 「인증」판단을 실시해, 인증된 사용자가 보호되고 있는 자원에 액세스 하거나 제한되고 있는 액션을 실행 가능한가 어떤가를 판단합니다. 이 과제에서는, JAAS 인증에 대해 설명합니다. JAAS 승인에 대해서는 설명하지 않습니다.  </p>
+
+
+<h3>이 과제의 자원:</h3>
+
+
+<ol>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS 레퍼런스 가이드</a> </li>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS 튜토리얼</a> </li>
+<li>JAAS javadocs:<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/package-summary.html">javax.security.auth</a> ,<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/callback/package-summary.html">javax.security.auth.callback</a> ,<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/kerberos/package-summary.html">javax.security.auth.kerberos</a> ,<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/login/package-summary.html">javax.security.auth.login</a> ,<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/spi/package-summary.html">javax.security.auth.spi</a> ,<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/x500/package-summary.html">javax.security.auth.x500</a> 
+  </li>
+<li><a href="http://java.sun.com/security/jaas/doc/acsac.html">JAAS white paper</a> <br>
+  </li>
+</ol>
+
+<h3>실행 순서:</h3>
+
+
+<ol>
+<li>다음의 샘플 코드를 참조해 주세요. 이것은 <a href  ="src/Jaas.java">src/Jaas.java</a>  에 있습니다. 이 코드에서는, 다음의 태스크가 실행됩니다. </li>
+</ol>
+
+
+<ol>
+  <ol type="a">
+<li>콜백 핸들러를 정의하는지, 또는 사전 정의되고 있는 핸들러를 사용합니다. (행 2)</li>
+<li>어느 JAAS 구성 엔트리를 사용할지를 아는 이름으로 LoginContext 를 작성합니다. (행 5)</li>
+<li>인증을 실행합니다. (행 8)</li>
+<li>인증된 사용자가 실행하는 태스크를 정의합니다. (행 11)</li>
+<li>인증된 사용자로서 액션을 실행합니다. (행 14 에서 15)</li>
+<li>로그아웃 합니다. <br>
+    </li>
+  </ol>
+  
+  
+<p> <tt>Subject.doAs</tt> 는,<tt>MyAction</tt> 에 정의되고 있는 코드가 인증된 사용자로서 실행합니다 (행 14 에서 15). 이것은, 다음의 2 개의 목적을 위해서(때문에) 행해집니다. 최초로, 서비스를 인증하기 위해서 아이덴티티 정보를 필요로 하는 <tt>MyAction</tt> 내의 코드는, 피인증자로부터 그 정보를 가져옵니다. 이 과제에서는, 이것에 대해 설명합니다. 다음에,<tt>MyAction</tt> 가 보호되고 있는 자원 또는 조작에 액세스 하는 경우, 현재의 피인증자의 아이덴티티 정보를 사용해, 대응하는 액세스 제어가 결정됩니다. 이 2 번째의 점은, 이 과제에서는 설명하지 않습니다.  </p>
+  <a name="JAAScode"></a> 
+  <div style="margin-left: 40px;">
+  
+<p><code>Jaas.java</code> 의 코드 리스트</p>
+  
+  <br>
+  <table style="width: 100%; text-align: left;" border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"> <br>
+        <ol>
+<li><code>// Create a callback handler</code></li>
+<li><code>CallbackHandler callbackHandler = new TextCallbackHandler();</code></li>
+          <li>&nbsp;</li>
+<li><code>// Create LoginContext with a callback handler</code></li>
+<li><code>LoginContext context = new LoginContext(name, callbackHandler);</code></li>
+          <li>&nbsp;</li>
+<li><code>// Perform authentication</code></li>
+<li><code>context.login();</code></li>
+          <li>&nbsp;</li>
+<li><code>// Create action to perform</code></li>
+<li><code>PrivilegedAction action = new MyAction();</code> </li>
+          <li>&nbsp;</li>
+<li><code>// Perform action as authenticated user</code></li>
+<li><code>Subject subject = context.getSubject();</code></li>
+<li><code>Subject.doAs(subject, action);</code></li>
+          <li>&nbsp;</li>
+<li><code>// Logout</code></li>
+<li><code>context.logout();</code></li>
+        </ol>
+        <br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</ol>
+
+<ol start="2">
+<li><code>%JAVA_HOME%/bin</code> 가 패스에 포함되어 있어,<code>%JAVA_HOME%</code> 변수에 의해 포인트 되고 있는 JDK 가 Java SE 6 을 포인트 하고 있는 것을 확인합니다. </li><br>
+<li>변경한 샘플 코드를 컴파일 합니다.  <br>
+    <pre><b>
+% cd auth/src
+% javac Jaas.java
+</b></pre>
+몇개의 설정을 실시한 뒤, 후속의 과제로 이 코드를 실행합니다. 이것으로 이 과제는 종료입니다.  </li>
+</ol>
+
+<h3>통계:</h3>
+
+
+<p>이 과제에서는, JAAS API 의 주된 클래스인 <code>LoginContext</code> 및 <code>Subject</code> 가 사용되고 있습니다. <code>LoginContext</code> 를 사용해 사용자를 인증해,<code>Subject</code> 에 그 사용자의 아이덴티티 정보를 수집하는 방법에 대해 학습했습니다. 다음에,<code>Subject</code> 를 사용해 인증된 사용자로서 액션을 실행하는 방법에 대해서도 학습했습니다. </p>
+
+
+<h3>다음의 순서</h3>
+
+
+<ol>
+<li><a href="#JAASKRB5">과제 2</a>  에 진행되어, 인증용으로 Kerberos 를 사용하기 위해서 샘플 어플리케이션을 구성하는 방법에 대해 학습합니다. </li>
+</ol>
+<br>
+
+<hr>
+<h2><a name="JAASKRB5" href="#JAASKRB5"></a> 과제 2:Kerberos 인증용의 JAAS 의 구성</h2>
+
+
+<h3>이 과제의 목표:</h3>
+
+
+<p>이 과제의 목표는, 인증용으로 Kerberos 를 사용하기 위해서 JAAS 어플리케이션을 구성하는 방법에 대해 학습하는 것입니다.
+
+<a name="KRB5BG"></a> 
+<h3>이 과제의 Kerberos 의 내용:</h3>
+
+
+<p>Kerberos 는,<a href="http://www.ietf.org/rfc/rfc4120.txt">RFC 4120</a>  에 정의되고 있는, 신뢰할 수 있는 제삼자의 인증을 행하기 위한 인터넷 표준 프로토콜입니다.  
+
+Kerberos 는, Solaris, Windows XP, Linux 등, 최근의 대부분의 컴퓨팅 플랫폼에서 사용할 수 있습니다. </p>
+
+
+<p class="pBody"><span style="font-family: helvetica,arial,sans-serif;">Kerberos 아키텍쳐(architecture)에서는, Key Distribution Center (KDC)로 불리는 신뢰할 수 있는 인증 서비스가 축이 됩니다. Kerberos 환경내의 사용자 및 서비스는 「주체」라고 불립니다. 각 주체는, KDC 를 사용해 패스워드등의 비밀을 공유합니다. 주체는, 공유의 비밀을 알고 있는 것을 KDC 에 대해서 증명하는 것에 의해,<span style="font-style: italic;"></span>Kerberos 에 대한 인증을 실시합니다. 인증이 정상적으로 행해지면(자), KDC 는 주체에 「Ticket-Granting-Ticket」(TGT)을 발행합니다. 주체는, 그 후, 디렉토리 서비스나 파일 서비스등의 네트워크상의 서비스에의 인증을 실시하는 경우 (즉, 서비스의 「클라이언트」로서 동작하는 경우), TGT 를 KDC 에 건네주어 「서비스 티켓」을 취득해, 서비스와의 통신을 실시합니다. 서비스 티켓은, 클라이언트와 서비스의 주체의 아이덴티티를 나타낼 뿐만 아니라, 그 후 안전한 통신을 확립하기 위해서 클라이언트와 서비스를 사용할 수 있는 세션 키도 포함합니다. 서비스에 대해서 인증을 실시하기 위해서(때문에), 클라이언트는 서비스 티켓을 서비스에 송신합니다. 서비스는, 그 티켓을 수신한 후, KDC 와 공유하는 비밀을 사용해 그 티켓을 복호화 합니다. <br><br>이 아키텍쳐(architecture)에서는, 주체는 KDC 에 대해서 직접 (1 회만) 인증을 실시합니다. 주체는, 서비스 티켓을 사용해 다른 모든 서비스에 대해서 간접적으로 인증을 실시합니다. KDC 에서는, 서비스 티켓에 의해 주체의 아이덴티티가 보증됩니다. 명시적인 인증을 1 회만 가, 주체가 복수의 안전한 서비스에 액세스 할 수 있는 기능을, 「싱글 싸인온」이라고 부릅니다. <br></span></p>
+<p class="pBody"><span style="font-family: helvetica,arial,sans-serif;"></span><br> <span style="font-weight: bold; text-decoration: underline;">이 과제의 JAAS 의 내용:<br></span><span style="font-family: helvetica,arial,sans-serif;"><br>JAAS 에서는, 클라이언트 주체의 경우, 「Kerberos 에 로그인한다」란, TGT 를 취득해, 클라이언트가 액세스 하는 서비스에의 인증에 사용할 수 있도록(듯이) <code>Subject</code> 에 그 TGT 를 배치하는 것을 의미합니다. 서비스 주체의 경우, 「Kerberos 에 로그인한다」란, 착신하는 클라이언트 인증 요구를 복호화 할 경우에 서비스가 필요로 하는 비밀열쇠를 취득하는 것을 의미합니다. </span></p>
+<p class="pBody"><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;">이 과제의 자원:<br></span></span></p>
+<ol>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASLMDevGuide.html">JAAS 로그인 모듈 개발자 가이드</a> </li>
+<li><a href="http://www.ietf.org/rfc/rfc4120.txt">The Kerberos Network Authentication Service (v5)</a> </li>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASRefGuide.html#AppendixB">샘플 로그인 구성</a> </li>
+<li>로그인 모듈 패키지 javadocs:<a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/spec/com/sun/security/auth/module/package-summary.html">com.sun.security.auth.module</a> 
+  </li>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/index.html">JAAS 및 Java GSS-API 튜토리얼</a> </li>
+</ol>
+<span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;"></span></span> <span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;"></span></span>
+<p><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;">실행 순서:</span></span></p>
+<p><span style="font-family: helvetica,arial,sans-serif;"> </span></p>
+<ol>
+<li>JAAS 구성 파일을 조사합니다. 이것은 <a href="src/jaas-krb5.conf"><code>src/jaas-krb5.conf</code></a>  에 있습니다. </li>
+</ol>
+<div>
+
+<p>이 파일에는, 「클라이언트」 및 「서버」의 2 개의 엔트리가 있습니다. 「클라이언트」엔트리는,<code>LoginContext</code> 는 <strong><code>com.sun.security.auth.module.Krb5LoginModule</code></strong> 를 사용할 필요가 있는 것을 나타내고 있습니다. 「서버」엔트리는, LoginContext 은 같은 로그인 모듈을 사용해, 주체 <code><strong>host/machineName</strong></code> 에 대해서 <code><strong>sample.keytab</strong></code> 파일의 키를 사용할 필요가 있는 것을 나타내고 있습니다. </p>
+
+</div>
+<br>
+
+
+<p><code>jaas-krb5.conf</code> 의 코드 리스트</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>client {</code></li>
+<li><code>&nbsp; &nbsp; com.sun.security.auth.module.Krb5LoginModule required</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;principal="<span style="color: rgb(255, 0, 0);">test</span>";</code></li>
+        <li><code>};</code></li>
+<li><code>server {</code></li>
+<li><code>&nbsp;&nbsp; com.sun.security.auth.module.Krb5LoginModule required</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;useKeyTab=true</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;storeKey=true</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;keyTab=<span style="color: rgb(255, 0, 0);">sample.keytab</span></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;principal="host/<span style="color: rgb(255, 0, 0);">machineName</span>";</code></li>
+        <li><code>};</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br> <br>
+<ol style="list-style-type: decimal;" start="2">
+<li>hostname 커멘드를 사용해, 머신의 호스트명을 판별합니다. </li>
+</ol>
+<div style="margin-left: 72pt;"><span style="font-weight: bold; font-family: courier new,courier,monospace;">% hostname</span></div>
+<ol style="list-style-type: decimal;" start="3">
+<li>이 파일을 편집해, 사용중의 머신의 이름을 사용하기 위해서 서버 주체의 엔트리를 변경합니다. 예를 들어, 머신의 이름이 j1hol-001 의 경우는, 구성 파일의 해당하는 행을 다음과 같이 변경합니다. </li>
+</ol>
+<div style="margin-left: 72pt;"><span style="font-weight: bold; font-family: courier new,courier,monospace;">principal="host/j1hol-001"<br></span></div>
+<ol style="list-style-type: decimal;" start="4">
+<li>다음을 입력해 클라이언트 인증을 실시합니다. <span style="font-weight: bold; font-family: courier new;"></span></li>
+</ol>
+<div style="margin-left: 72pt;"><span style="font-weight: bold; font-family: courier new;">% java -Djava.security.auth.login.config=jaas-krb5.conf\<br> &nbsp; &nbsp; &nbsp;Jaas client</span><span style="font-family: helvetica,arial,sans-serif;"> </span><br> <span style="font-family: helvetica,arial,sans-serif;"></span></div>
+<div style="margin-left: 72pt;"><span style="font-family: helvetica,arial,sans-serif;"><br>패스워드의 입력이 요구됩니다. 「<span style="font-weight: bold; font-family: courier new,courier,monospace;">changeit</span>」를 입력합니다. 다음의 출력이 표시됩니다. </span><br>
+</div>
+<span style="font-weight: bold;"><span style="color: rgb(0, 0, 0);"></span></span><br>
+
+<P><code>jaas-krb5.conf</code> 의 「클라이언트」엔트리를 사용해 JAAS 샘플을 실행했을 때의 출력</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Kerberos password for test:changeit</code></li>
+<li><code>Authenticated principal:[test@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Performing secure action...</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<ol start="5">
+<li> 다음을 입력해 서버 인증을 실시합니다. <span style="font-weight: bold; font-family: courier new;"></span></li>
+</ol>
+<div style="margin-left: 72pt;"><span style="font-weight: bold; font-family: courier new;">% java -Djava.security.auth.login.config=jaas-krb5.conf\<br> &nbsp; &nbsp; &nbsp;Jaas server</span><span style="font-family: helvetica,arial,sans-serif;"> </span><br> <span style="font-family: helvetica,arial,sans-serif;"></span></div>
+<div style="margin-left: 40px;"><span style="font-family: helvetica,arial,sans-serif;"><br> 다음의 출력이 표시됩니다. </span><br>
+</div>
+<br>
+<P><code>jaas-krb5.conf</code> 의 「서버」엔트리를 사용해 JAAS 샘플을 실행했을 때의 출력</p>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Authenticated principal:[host/j1hol-001@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Performing secure action...</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><span style="color: rgb(0, 0, 0);"><big><br></big></span></span><br>
+<p><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;">통계:</span><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;"></span></span></p>
+<p><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;"></span></span></p>
+<span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;"></span></span>
+
+<P><span style="color: rgb(0, 0, 0);">이 과제에서는, 사용자명과 패스워드를 대화식에 입력하는 클라이언트 주체, 및 키 탭 파일로부터 키를 취득하는 서비스 주체로서 Kerberos 로그인 모듈<span style="font-family: courier new,courier,monospace;"></span>을 사용하기 위해서 JAAS 어플리케이션을 구성하는 방법에 대해 학습했습니다. </p>
+
+<br> <br></span>
+<h3>다음의 순서</h3>
+<ol>
+<li><a href="part2.html">제 II 부</a>로 나아가,Java Security API 를 사용해 안전한 통신 채널을 확립하는 방법에 대해 학습합니다. <br>
+  </li>
+</ol>
+<hr>
+
+</body></html>

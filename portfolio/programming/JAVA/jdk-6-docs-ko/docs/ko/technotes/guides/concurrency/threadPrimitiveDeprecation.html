@@ -1,0 +1,262 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 추천 되지 않는 thread 프리미티브(primitive) - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink=
+"#000077" alink="#FF0000">
+  <table summary="layout" border="0" width="100%">
+    <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif" alt=       "Java" border="0" width="52" height="88" /></td>
+
+      <td>
+        <center>
+<h1>Java 추천 되지 않는 thread 프리미티브(primitive)</h1>
+        </center>
+      </td>
+    </tr>
+  </table>
+  <hr size="3" noshade="noshade" />
+
+<h3><code>Thread.stop</code> 가 추천 되지 않는 것은 왜입니까</h3>
+
+<p>본질적으로 안전하지 않기 때문입니다. thread지 하면(자), 그 thread가 잠근 모든 모니터의 락이 해제됩니다. (<code>ThreadDeath</code> 예외가 스택까지 전해지면(자), 모니터의 락이 해제된다. ) 이러한 모니터에 의해 이전 보호되고 있던 객체가 무결성의 없는 상태가 되면(자), 다른 thread도, 이러한 객체가 무결성의 없는 상태에 있다고 봅니다. 그러한 객체는, 「망가졌다」객체로 불립니다. 망가진 객체에 대해서 thread가 조작을 실행하면(자), 예기치 않은 결과가 될 가능성이 있습니다. 이 동작은, 미묘해 검출이 곤란한 경우와 분명히 통지되는 경우가 있습니다. 체크되지 않는 것 외의 예외와는 달라,<code>ThreadDeath</code> 는, thread를 그대로 강제적으로 종료합니다. 이 때문에, 사용자는, 프로그램이 망가질 가능성이 경고되는 일이 없습니다. 프로그램이 망가져 있는 것은, 실제로 손상을 받았고 장미구 나중에 밝혀져, 그것이 수시간 후 또는 몇일후가 될 수도 있습니다. </p>
+  <hr />
+
+<h3><code>ThreadDeath</code> 예외를 캐치 해, 망가진 객체를 수복할 수 없습니까</h3>
+
+<p>이론적으로는, 아마 가능합니다. 다만, 올바른 multi-thread 코드를 기술하는 것은 「매우」복잡한 작업입니다. 이것이 거의 실행 불가능한 작업인 것은, 다음의 2 개의 이유에 의합니다. </p>
+
+  <ol>
+<li>thread는,<code>ThreadDeath</code> 예외를 「거의 모든 장소에서」throw 한다. 이것을 염두에 두어, 모든 동기화 된 메소드 및 블록을 상세하게 조사할 필요가 있다</li>
+
+<li>thread는, 1 번째의 예외의 클린 업중 (<code>catch</code> 또는 <code>finally</code> 절)에, 2 번째의 <code>ThreadDeath</code> 를 throw 하는 일이 있다. 클린 업은, 정상적으로 종료할 때까지 반복 실행될 필요가 있다. 이 동작을 확실히 실시하는 코드는 매우 복잡하게 된다</li>
+</ol>따라서, 이 처리는 현실적이지는 않습니다.
+  <hr />
+
+<h3><code>Thread.stop(Throwable)</code> 에 대해서는 어떻습니까</h3>
+
+<p>위에서 설명한 문제 모두에 가세해, 이 메소드는, 대상으로 하는 thread의 처리 준비가 되어 있지 않다고 하는 예외 (이 메소드가 없었다면 thread가 throw 할 수 없어야 할, 체크되는 예외를 포함한다)를 발생시키는데 사용되는 일이 있습니다. 예를 들어, 다음의 메소드의 동작은, Java 의 <code>throw</code> 조작과 같습니다만, 호출측의 메소드가 throw 할 가능성이 있는 체크되는 예외 모든 것이 선언되고 있는 것을 보증하려고 하는 컴파일러를 속여 실패시킵니다. </p>
+  <pre>
+    static void sneakyThrow(Throwable t) {
+        Thread.currentThread(). stop(t);
+    }
+</pre>
+  <hr />
+
+<h3><code>Thread.stop</code> 대신에 무엇을 사용해야 합니다인가</h3>
+
+<p><code>stop</code> 의 대신으로서는, 많은 경우, 타겟 thread의 실행을 정지해야 할 일을 나타내는 어떠한 변수를 단지 변경하는 코드를 사용합니다. 타겟 thread는, 이 변수를 정기적으로 검사해, 실행을 정지해야 할 일을 변수가 가리키고 있는 경우에는, thread의 run 메소드로부터 일반적으로의 방법으로 복귀할 필요가 있습니다. 정지 요구의 즉시 통신을 확실히 하려면 , 변수를 <tt>volatile</tt> 로 할 (또는, 변수에의 액세스를 동기화할) 필요가 있습니다. </p>
+
+<p>예를 들어, 애플릿에 다음의 <code>start</code>,<code>stop</code>, 및 <code>run</code> 메소드가 포함되어 있다고 합니다. </p>
+  <pre>
+    private Thread blinker;
+
+    public void start() {
+        blinker = new Thread(this);
+        blinker.start();
+    }
+
+    public void stop() {
+        blinker.stop();  // UNSAFE!
+    }
+
+    public void run() {
+        Thread thisThread = Thread.currentThread();
+        while (true) {
+            try {
+                thisThread.sleep(interval);
+            } catch (InterruptedException e){
+            }
+            repaint();
+        }
+    }
+</pre>애플릿의 <code>stop</code> 및 <code>run</code> 메소드를 다음의 코드와 옮겨놓는 것으로 <code>Thread.stop</code> 를 사용하지 않고 끝납니다.
+  <pre>
+    private volatile Thread blinker;
+
+    public void stop() {
+        blinker = null;
+    }
+
+    public void run() {
+        Thread thisThread = Thread.currentThread();
+        while (blinker == thisThread) {
+            try {
+                thisThread.sleep(interval);
+            } catch (InterruptedException e){
+            }
+            repaint();
+        }
+    }
+</pre>
+  <hr />
+
+<h3>오랫동안 (입력 등을) 대기하고 있는 thread를 어떻게 하면 정지할 수 있습니까</h3>
+
+<p>그 목적으로는,<code>Thread.interrupt</code> 를 사용합니다. 위와 같은 「상태에 근거했다」시그널 기구를 사용할 수 있습니다만, 상태 변경 (전의 예에서는 <code>blinker = null</code>)의 후에,<code>Thread.interrupt</code> 를 호출해 대기 상태에 끼어들 수가 있습니다. </p>
+  <pre>
+    public void stop() {
+        Thread moribund = waiter;
+        waiter = null;
+        moribund.interrupt();
+    }
+</pre>이 방법에서는, 인터럽트 예외를 캐치 하지만 그것을 처리할 준비가 되어 있지 않은 메소드는 그 예외를 즉시 재선언하는 것이 중요합니다. 여기서 「재throw」는 아니고 「재선언」이라고 쓴 것은, 예외를 언제나 재throw 할 수 있다고는 할 수 없기 때문입니다. <code>InterruptedException</code> 를 캐치 한 메소드가, 이 (확인 끝난) 예외를 throw 하도록(듯이) 선언되어 있지 않은 경우는, 다음과 같은 정해진 쓰는 법에 의해 「스스로에 재할인 붐비어 한다」필요가 있습니다.
+  <pre>
+    Thread.currentThread(). interrupt();
+</pre>이것에 의해, thread는, 가능한 한 빨리 <code>InterruptedException</code> 를 재발행할 수 있게 됩니다.
+  <hr />
+
+<h3>thread가 <code>Thread.interrupt</code> 에 응답하지 않으면 어떻게 됩니까</h3>
+
+<p>어플리케이션 독자적인 기법이 사용 가능한 경우도 있습니다. 예를 들어, thread가 기존의 소켓상에서 대기하고 있는 경우는, 소켓을 닫는 것으로 thread를 즉시 복귀 지난 일이 생깁니다. 그러나, 유감스럽지만, 범용적으로 사용할 수 있는 기법은 없습니다. <B>대기하고 있는 thread가 <code>Thread.interrupt</code> 에 응답하지 않는 모든 상황에서는, 그 thread는 <code>Thread.stop</code> 에도 응답하지 않는 것에 주의해 주세요. </B>그러한 상황으로서는, 의도적인 서비스 방해 공격이나, thread.stop 와 thread.interrupt 가 적절히 기능하지 않는 입출력 조작등이 있습니다. </p>
+  <hr />
+
+<h3><code>Thread.suspend</code> 및 <code>Thread.resume</code> 가 추천 되지 않는 것은 왜입니까</h3>
+
+<p><code>Thread.suspend</code> 는, 본질적으로 데드락을 일으키는 경향이 있습니다. 타겟 thread가, 중단되는 시점에서, 중요한 system resource를 보호하는 모니터를 잠그고 있는 경우, 타겟 thread가 재개될 때까지 어느 thread도 그 자원에 액세스 할 수 없습니다. 이 때, 타겟 thread를 재개하는 thread가,<code>resume</code> 를 호출하기 전에 이 모니터를 잠그려고 하면(자), 데드락이 발생합니다. 일반적으로, 이러한 데드락은, 프로세스의 「동결」에 의해 밝혀집니다. </p>
+  <hr />
+
+<h3><code>Thread.suspend</code> 와 <code>Thread.resume</code> 대신에 무엇을 사용해야 합니다인가</h3>
+
+<p><code>Thread.stop</code> 의 경우와 같이, 현명한 어프로치는, thread의 바람직한 상태 (실행중 또는 중단중)를 나타내는 변수를 「타겟 thread」에 폴링 지난 일입니다. 바람직한 상태가 중단중인 경우, thread는 <code>Object.wait</code> 를 사용해 대기합니다. thread가 재개되었을 때는, 타겟 thread는 <code>Object.notify</code> 를 사용해 통지를 받습니다. </p>
+
+<p>예를 들어, 애플릿에 다음과 같은 mousePressed 이벤트 핸들러가 포함되어 있어 그것이 <code>blinker</code> 라고 하는 thread 상태를 바꾼다고 합니다. </p>
+  <pre>
+    private boolean threadSuspended;
+
+    Public void mousePressed(MouseEvent e) {
+        e.consume();
+
+        if (threadSuspended)
+            blinker.resume();
+        else
+            blinker.suspend();  // DEADLOCK-PRONE!
+
+        threadSuspended = ! threadSuspended;
+    }
+</pre>위의 이벤트 핸들러를 다음의 코드로 옮겨놓으면(자),<code>Thread.suspend</code> 및 <code>Thread.resume</code> 를 사용하지 않아도 됩니다.
+  <pre>
+    public synchronized void mousePressed(MouseEvent e) {
+        e.consume();
+
+        threadSuspended = ! threadSuspended;
+
+        if (! threadSuspended)
+            notify();
+    }
+</pre>그리고 다음의 코드를 「실행 루프」에 추가합니다.
+  <pre>
+                synchronized(this) {
+                    while (threadSuspended)
+                        wait();
+                }
+</pre><code>wait</code> 메소드는,<code>InterruptedException</code> 를 throw 하기 위한(해), 이 메소드를 <code>try ... catch</code> 절의 내부에 둘 필요가 있습니다. 이 메소드를 <code>sleep</code> 와 같은 마디에 넣으면(자) 효과적입니다. 체크는 <code>sleep</code> 의 전은 아니고 나중에 행해지므로, thread가 「재개」되면(자) 즉시 윈도우가 재draw 됩니다. 이와 같이 기술한 <code>run</code> 메소드는, 다음과 같이 됩니다.
+  <pre>
+    public void run() {
+        while (true) {
+            try {
+                Thread.currentThread(). sleep(interval);
+
+                synchronized(this) {
+                    while (threadSuspended)
+                        wait();
+                }
+            } catch (InterruptedException e){
+            }
+            repaint();
+        }
+    }
+</pre><code>mousePressed</code> 메소드의 <code>notify</code>, 및 <code>run</code> 메소드의 <code>wait</code> 는,<code>synchronized</code> 블록의 내부에 있는 것에 주목해 주세요. 이것은 언어의 문법으로 요구되고 있기 때문 뿐만이 아니고,<code>wait</code> 및 <code>notify</code> 가 적절히 직렬화 되는 것을 보증합니다. 이 경우는, 이것에 의해 경합 상태가 회피됩니다. 즉, 「중단되었다」thread가 <code>notify</code> 를 검출하지 못하고 , 쭉 중단된 채로 있는 사태를 피할 수 있습니다.
+
+<p>Java 에 대해 동기화에 필요로 하는 코스트는, 플랫폼이 성숙하는 것에 따라 감소하고 있습니다만, 전혀 없어질 것은 없습니다. 간단한 기법을 사용해, 위의 「실행 루프」의 반복 처리에 추가한 동기 처리를 생략할 수가 있습니다. 추가된 동기 블록은, thread가 실제로 중단되고 있는 경우에게만 동기 블록을 입력하는, 조금 복잡한 코드로 옮겨집니다. </p>
+  <pre>
+                if (threadSuspended) {
+                    synchronized(this) {
+                        while (threadSuspended)
+                            wait();
+                    }
+                }
+</pre>
+
+<p>명시적인 동기화를 실시하지 않는 경우는,<tt>threadSuspended</tt> 를 <tt>volatile</tt> 로 설정해, 일시지요구의 통신이 신속하게 행해지도록 해 주세요. </p>결과의 <code>run</code> 메소드는 다음과 같이 됩니다.
+  <pre>
+    private boolean volatile threadSuspended;
+
+    public void run() {
+        while (true) {
+            try {
+                Thread.currentThread(). sleep(interval);
+
+                if (threadSuspended) {
+                    synchronized(this) {
+                        while (threadSuspended)
+                            wait();
+                    }
+                }
+            } catch (InterruptedException e){
+            }
+            repaint();
+        }
+    }
+</pre>
+  <hr size="3" noshade="noshade" />
+
+<h3>지금까지의 2 개의 수법을 조합하면, 안전하게 「지」또는 「중단」시킬 수 있는 thread를 생성할 수 있습니까</h3>네, 꽤 간단하게 생성할 수 있습니다. 1 개(살)만 문제가 되는 것은, 다른 thread가 타겟 thread를 지 그와 같이로 하는 시점에서, 타겟 thread가 벌써 중단되고 있을 가능성이 있다고 하는 점입니다. <tt>stop</tt> 메소드가 상태 변수 (<tt>blinker</tt>)를 null 로 설정하는 것 뿐이라면, 타겟 thread는 종료 (본래의 동작)하지 않고 , 중단된 채로 (모니터를 대기한 상태) 있습니다. 애플릿이 재기동되면(자), 복수의 thread가 동시에 모니터를 대기한 상태로 종료하기 위해(때문에), 동작이 이상하게 됩니다.
+
+<p>이 상황을 바로잡으려면 ,<tt>stop</tt> 메소드로, 타겟 thread가 중단되고 있는 경우에, 그 thread를 즉시 재개하는 처리를 확실히 실행하지 않으면 안됩니다. 타겟 thread는, 재개한 후, 자신이 중지해진 것을 즉시 인식해, 적절한 방법으로 종료하지 않으면 안됩니다. 그러한 처리를 더한 <tt>run</tt> 및 <tt>stop</tt> 메소드는, 다음과 같이 됩니다. </p>
+  <pre>
+    public void run() {
+        Thread thisThread = Thread.currentThread();
+        while (blinker == thisThread) {
+            try {
+                thisThread.sleep(interval);
+
+                synchronized(this) {
+                    while (threadSuspended &amp;&amp; blinker==thisThread)
+                        wait();
+                }
+            } catch (InterruptedException e){
+            }
+            repaint();
+        }
+    }
+
+    public synchronized void stop() {
+        blinker = null;
+        notify();
+    }
+</pre><tt>stop</tt> 메소드로 <tt>Thread.interrupt</tt> 를 호출하는 경우 (이전에 설명한 방법)는,<tt>notify</tt> 를 호출할 필요는 없습니다만, 동기화는 실시할 필요가 있습니다. 그것에 의해, 경합 상태를 위해서(때문에) 타겟 thread가 인터럽트를 검출해 해치는 것을 막을 수 있습니다.
+  <hr />
+
+<h3><code>Thread.destroy</code> 에 대해서는 어떻습니까</h3><code>Thread.destroy</code> 는, 지금까지 구현되었던 적이 없습니다. 만약 구현되었다고 하면(자),<code>Thread.suspend</code> 의 경우와 같게, 데드락을 발생시키기 쉬운 경향이 있습니다. 실제,<code>Thread.suspend</code> 는,<code>Thread.resume</code> 가 계속될 가능성이 없는 <code>Thread.suspend</code> 와 거의 같습니다. 현시점에서 <code>Thread.destroy</code> 는 구현되고 있지 않습니다만, 이것을 추천 하지 않는 것이기도 하지 않습니다 (장래 그것이 구현되었을 경우). <code>Thread.destroy</code> 에는 확실히 데드락을 발생시키기 쉬운 경향이 있습니다. 그러나, 프로그램이 즉석에서 종료하는 것보다도 데드락의 위험을 무릅써도 괜찮다고 하는 상황이 있는 것은 아닐것인가 라고 하는 점이, 지금까지 논의의 대상이 되어 왔습니다.
+  <hr />
+
+<h3><code>Runtime.runFinalizersOnExit</code> 가 추천 되지 않는 것은 왜입니까</h3>본질적으로 안전하지 않기 때문입니다. 파이나라이자가 라이브 객체에 대해서 불려 가는 결과가 될 가능성이 있어, 그 때 다른 thread가 그러한 객체를 동시에 조작하고 있으면(자), 동작이 이상하게 되는지, 데드락이 발생합니다. 이 문제는, 객체가 finalize 되는 클래스가 이 호출에 대해서 「방어된다」같게 코딩 되고 있으면 막을 수가 있습니다만, 대부분의 프로그래머는, 이 호출에 대해서 방어하지 않습니다. 대부분의 프로그래머는, 파이나라이자가 불려 가는 시점에서 그 객체는 죽어 있으면(자) 상정합니다.
+
+<p>게다가 그 호출은, VM 글로벌 플래그를 설정한다고 하는 의미로, 「thread에 대해서 안전」이 아닙니다. 이것은, 파이나라이자를 가지는 모든 클래스를, 라이브 객체의 finalize에 대해서 방어하도록(듯이) 코딩 해야 하는 것에 연결됩니다. </p>
+
+  <p><!-- Body text ends here --> <!-- ============================================================== --></p>
+  <hr size="3" noshade="noshade" />
+
+  <table summary="layout" border="0" width="100%">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../../legal/SMICopyright.html">Copyright &copy;</a>  1995-99 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p><font size=         "-1"><a href=         "http://www.java.sun.com/cgi-bin/feedback.pl">기능의 제안 또는 코멘트의 발송지</a> </font>
+      </td>
+
+      <td align="right">
+<img src="../../../images/sunlogo64x30.gif" alt="Sun" border=         "0" width="64" height="30" />
+
+<p><font size="+1"><i>Java Software</i></font></p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

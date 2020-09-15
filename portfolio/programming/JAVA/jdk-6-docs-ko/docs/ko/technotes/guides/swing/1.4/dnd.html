@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Swing 의 데이터 전송 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body bgcolor="white">
+
+<h1 align=center>Swing 의 데이터 전송</h1>
+
+<p>
+Java<sup><font size="-2">TM</font></sup> 2 Platform, Standard Edition, v 1.4 의 릴리스에서는, Swing 에 어플리케이션간에서의 데이터 전송의 지원가 더해졌습니다. 드래그 &amp; 드롭 조작은 데이터 전송의 요구이며, 그래피컬 pointing device를 사용한 제스처(gesture)로 지정합니다. 카피나 페이스트는, 많은 경우, 키보드에 의해 데이터 전송이 지정됩니다. 데이터 전송에는, 다음의 2 개의 형식이 있습니다.
+<ul>
+<li>드래그 &amp; 드롭 (DnD)의 지원
+<li>컷, 카피, 페이스트에 의한 클립보드를 사용한 전송
+</ul>
+데이터 전송의 지원를 Swing 에 추가할 경우에, 클립보드 전송과 같게 드래그 &amp; 드롭도, 개발자가 Swing 컴퍼넌트를 사용해 간단하게 추가할 수 있도록(듯이) 하는 것이 목표였습니다. 드래그 &amp; 드롭에 대하기 이전의 AWT 지원는 매우 유연성이 있었습니다만, 구현하려면  상당한 복잡함이 있었습니다. 또, 클립보드 전송에 대한 AWT 지원는, 자연스러운 방법으로 Swing 에 통합되고 있지 않았습니다. 이 릴리스에서는, 데이터 전송의 지원가 구현되었으므로, 개발자는 용이하게 이러한 강력한 기능을 이용할 수가 있습니다.
+
+<p>
+각 Swing 컴퍼넌트 상태는 데이터 모델의 정의와는 독립하고 있기 (위해)때문에, 데이터 자체의 상세 부분을 신경쓰는 일 없이, 컴퍼넌트간에서의 데이터 이동의 기구를 구현하는 것이 간단했습니다. 데이터 전송은 사실상, 어느 모델로부터 다른 모델에의 부분 전송입니다. (컷, 카피, 페이스트의 경우는, 모델과 클립보드간에 데이터가 전송 된다. ) 데이터 전송을 지원하기 위해(때문에), 다음의 변경을 했습니다.
+<ul>
+<li>
+API 를 몇개인가 추가해, 몇 안 되는 메소드 호출로 데이터 전송이 생기도록(듯이) 했다.
+<li>
+Swing DnD 의 구현을 무효로 할 수 있도록(듯이) 해, 사용자가 AWT 제공의 지원를 사용해 특수한 동작을 커스터마이즈 할 수 있도록(듯이) 한다.
+<li>
+제공되고 있는 Look &amp; Feel 에 필요한 변경을 구현했다.
+</ul>
+
+
+<h4 align=center>
+퀵 레퍼런스: DnD 를 지원하는 컴퍼넌트</h4>
+<table summary="components that support DnD" align = center border=1>
+<tr><th>Component<th>드래그의 지원<th>드롭의 지원
+
+<tr><th align=left><code>JColorChooser</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JEditorPane</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JFileChooser</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td><img src="../../../../images/emptyImage.gif" width=10>
+
+<tr><th align=left><code>JFormattedTextField</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JLabel</code>
+<td align=center><a href="#AddingSupport">여기</a>를 참조
+<td align=center><a href="#AddingSupport">여기</a>를 참조
+
+<tr><th align=left><code>JList</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td><img src="../../../../images/emptyImage.gif" width=10>
+
+<tr><th align=left><code>JPasswordField</code>
+<td><img src="../../../../images/emptyImage.gif" width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JTable</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td><img src="../../../../images/emptyImage.gif" width=10>
+
+<tr><th align=left><code>JTextArea</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JTextField</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JTextPane</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+
+<tr><th align=left><code>JTree</code>
+<td align=center><img src="../../../../images/cross.gif" alt="0"  width=10>
+<td><img src="../../../../images/emptyImage.gif" width=10>
+</table>
+
+<p>이 문서에는 다음의 마디가 있습니다.
+<ul>
+<li><a href="#DataTransferSupport">데이터 전송의 지원</a> 
+<ul>
+<li><a href="#DefaultTransferHandlerSupport">디폴트의 TransferHandler 의 지원</a> 
+<li><a href="#AddingSupport">JLabel 에의 지원 추가의 예</a> 
+</ul>
+<li><a href="#DragSupport">드래그의 지원</a> 
+<ul>
+<li><a href="#DefaultDragSupport">디폴트의 드래그의 지원</a> 
+<li><a href="#DragSupportExtendSwing">Swing 클래스의 서브 클래스에의 드래그의 지원의 추가</a> 
+<li><a href="#TransferHandler.exportAsDrag">TransferHandler.exportAsDrag 의 조작</a> 
+</ul>
+<li><a href="#DropSupport">드롭의 지원</a> 
+<ul>
+<li><a href="#DefaultDropSupport">디폴트의 드롭의 지원</a> 
+<li><a href="#DropSupportExtendSwing">Swing 클래스의 서브 클래스내에서의 드래그 지원의 사용</a> 
+</ul>
+<li><a href="#ClipboardTransferSupport">클립보드 전송의 지원</a> 
+<ul>
+<li><a href="#DefaultClipboardTransfer">디폴트의 클립보드 전송</a> 
+<li><a href="#ClipboardTransferSupportExtendSwing">Swing 클래스의 서브 클래스내에서의 클립보드 전송 지원의 사용</a> 
+</ul>
+<li><a href="#Implementation">구현의 상세</a> 
+<li><a href="#ChangesToBeta">Beta 이후의 변경점</a> 
+<li><a href="#KnownBugs">기존의 버그</a> 
+</ul>
+
+<h2><a name="DataTransferSupport">데이터 전송의 지원</a> </h2>
+
+<p>
+데이터 전송의 기본은, 데이터를 컴퍼넌트에, 또는 컴퍼넌트로부터 전송 하는 처리의 지원입니다. 컴퍼넌트로 이 기능이 이용 가능한 경우는, 드래그 &amp; 드롭의 관리 기구가 자동적으로 제공됩니다. 게다가 컷, 카피, 페이스트의 지원도 자동적으로 제공됩니다. 이 구현에서 가장 중요한 점은,<a href="../../../../api/javax/swing/TransferHandler.html"><code>TransferHandler</code></a>  신규 클래스의 구현입니다. <a href="../../../api/javax/swing/JComponent.html"><code><a href="../../../../api/javax/swing/JComponent.html"><code>JComponent</code></a>  프로퍼티 메소드,<a href="../../../api/javax/swing/JComponent.html#setTransferHandler(javax.swing.TransferHandler)"><code>setTransferHandler</code></a>  및 <a href="../../../api/javax/swing/JComponent.html#getTransferHandler()"><code>getTransferHandler</code></a>  로,<code>JComponent</code> 를 확장하는 모든 컴퍼넌트에 대한 데이터 전송 기구의 엔트리 포인트가 제공됩니다.
+
+<p>
+<code>null</code> 이외의 <code>TransferHandler</code> 가 인스톨 되고 있을 때, 각 컴퍼넌트에 대해서 지원되는 「컷」, 「카피」, 「페이스트」, 및 「드롭」의 범위를 다음의 겉(표)에 나타냅니다. 이 지원는, Look &amp; Feel 코드에 의해 유효하게 됩니다. 처음은 드래그의 지원가 무효로 되고 있습니다만, 컴퍼넌트상에서 <code>setDragEnabled(true)</code> 를 호출해 유효하게 할 수가 있습니다. 컴퍼넌트에 이러한 메소드가 없는 경우는, 어떠한 제스처(gesture)를 바인드 해, 드래그를 유효하게 할 수 있습니다.
+
+<h3><a name="DefaultTransferHandlerSupport">디폴트의 TransferHandler 의 지원</a> </h3>
+
+다음에 든 컴퍼넌트에 대해서는, Swing 가 <code>TransferHandler</code> 의 디폴트의 구현을 인스톨 합니다. 디폴트의 Swing 지원가 있는 컴퍼넌트에서는,<code>transferHandler</code> 프로퍼티의 값이 <code>null</code> 인지, 또는 <code>UIResource</code> 인터페이스에 의해 마크 되고 있는 경우는,<code>TransferHandler</code> 가 <code>ComponentUI</code> 에 의해 인스톨 됩니다. <code>ComponentUI</code> 에 인스톨 된 디폴트의 <code>TransferHandler</code> 구현은, 개발자가 디폴트의 <code>TransferHandler</code> 를 오버라이드(override) 할 수 있도록(듯이) 해,<code>UIResource</code> 인터페이스에 의해 마크 됩니다. 다음의 겉(표)에 제공되는 지원를 나타냅니다.
+
+<p>
+<h4 align=center><a name="DefaultSupport">DnD 를 지원하는 컴퍼넌트</a> </h4>
+<table summary="components that support DnD" border=1>
+<tr>
+<th>Component<th>export (드래그, 컷, 카피)
+<th>임포트 (드롭, 페이스트) 
+
+<tr>
+<th align=left><code>JColorChooser</code>
+<td>선택한 칼라가,<code>TransferHandler</code> 의 JavaBeans<sup><font size="-2">TM</font></sup> 프로퍼티 처리를 통해서 제시된다. 제시된 후레이바는,<code>application/x-java-jvm-local-objectref; class=java.awt.Color</code> 이다. 전송 되는 값은 <code>getColor</code> 에 의해 결정된다.
+<td><code>Color</code> 형의 삽입을 받아들인다. 데이터는, Bean 의 프로퍼티 처리로부터 <code>setColor</code> 를 사용해 임포트 된다. <code>class=java.awt.Color</code> 또는 <code>java.awt.Color</code> 의 서브 클래스를 가지는 모든 후레이바가 받아들여진다.
+
+<tr>
+<th align=left><code>JEditorPane</code>
+<td><b>1.4</b>: <code>JEditorPane</code> 의 <code>content-type</code> 가 <code>text/plain</code> 인 경우, 선택한 텍스트는,<code>EditorKit</code> 의 <code>write</code> 를 통해서 <code>text/plain</code> 로서 표시된다. <code><code>content-type</code> 가 <code>OTHER</code> 인 경우는,<code>getSelectedText</code> 메소드를 사용해 <code>text/plain</code> 로서 및,<code>EditorKit</code> 의 <code>write</code> 메소드를 사용해 <code>OTHER</code> 로서 export 됩니다.
+
+<p><b>1.4. 1</b>: 선택한 텍스트로 <code>getSelectedText</code> 메소드에 의해 반환된 텍스트가,<code>text/plain</code> 로서 export 된다. 게다가<code>JEditorPane</code> 의 <code>content-type</code> 가 <code>text/plain</code> 이외의 경우, 선택한 내용은,<code>EditorKit</code> 의 <code>write</code> 메소드를 사용해 다른 후레이바에서도 제시된다
+
+
+<td><b>1.4</b>: <code>text/plain</code> 형의 삽입 및 <code>getContentType</code> 로부터 반환된 현재의 형태를 모두 받아들인다. 현재의 형태 (<code>text/plain</code> 도 포함한다)에 일치하는 형태가 발견되면(자),<code>EditorKit</code> 의 <code>read</code> 메소드를 사용해 임포트 된다. 그 이외의 경우는,<code>replaceSelection</code> 메소드를 통해 <code>text/plain</code> 가 임포트 됩니다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 드롭 - caret의 위치에 데이터가 삽입된다.
+
+<p><b>1.4</b>: <code>text/plain</code> 형의 삽입 및 <code>getContentType</code> 로부터 반환된 현재의 형태를 모두 받아들인다. 현재의 형태 (<code>text/plain</code> 를 제외한다)에 일치하는 형태가 발견되면(자),<code>EditorKit</code> 의 <code>read</code> 메소드를 사용해 임포트 된다. 그 이외의 경우는,<code>replaceSelection</code> 메소드를 통해 <code>text/plain</code> 가 임포트 됩니다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 드롭 - caret의 위치에 데이터가 삽입된다.
+
+<tr>
+<th align=left><code>JFileChooser</code>
+<td>네이티브의 파일 츄-더와 같은 방법으로 선택 범위가 제시된다.
+<td>임포트는 받아들여지지 않는다. 마우스가 리스트상으로 이동하면(자), 커서아래의 파일이나 디렉토리가 강조 표시되어, 「잠재적인」드롭 포인트가 나타난다. <a href="#DefaultDropSupport">「디폴트의 드롭의 지원」</a>를 참조.
+
+<tr>
+<th align=left><code>JFormattedTextField</code>
+<td>선택한 텍스트가 <code>text/plain</code> 로서 제시된다.
+<td><code>text/plain</code> 형의 삽입을 받아들인다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 아무것도 선택하고 있지 않는 경우는, caret의 위치에 데이터가 삽입된다. 드롭 - caret의 위치에 데이터가 삽입된다. 「페이스트」와「드롭」은, 키보드로부터의 입력시와 같은 코드 패스를 채용하므로, 코드의 검증이 보존된다.
+
+<tr>
+<th align=left><code>JList</code>
+<td>1 항목이 선택되었을 경우는,<code>text/plain</code> 로서 제시된다. 복수의 항목이 선택되었을 경우는,<code>text/html</code> 로서 제시된다. <code>text/html</code> 의 형식은,<code>&lt;UL&gt;</code> 태그의 후에, 각각이 <code>&lt;LI&gt;</code> 태그로 시작되는 선택한 리스트 항목이 계속된다.
+<td>임포트는 받아들여지지 않는다. 마우스가 리스트상으로 이동하면(자), 커서아래의 리스트 항목이 강조 표시되어, 「잠재적인」드롭 포인트가 나타난다. <a href="#DefaultDropSupport">「디폴트의 드롭의 지원」</a>를 참조.
+
+<tr>
+<th align=left><code>JPasswordField</code>
+<td>시큐리티상의 이유로부터, 컷, 카피, 및 드래그는 지원되지 않는다.
+<td><code>text/plain</code> 형의 삽입을 받아들인다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 아무것도 선택하고 있지 않는 경우는, caret의 위치에 데이터가 삽입된다. 드롭 - caret의 위치에 데이터가 삽입된다.
+
+<tr>
+<th align=left><code>JTable</code>
+<td>1 항목이 선택되었을 경우는,<code>text/plain</code> 로서 제시된다. 복수의 항목이 선택되었을 경우는,<code>text/html</code> 로서 제시된다. <code>text/html</code> 의 형식은,<code>&lt;TABLE&gt;</code> 태그의 후에 각 행에는 <code>&lt;TR&gt;</code> 태그, 각 셀에는 <code>&lt;TD&gt;</code> 태그가 계속된다.
+<td>임포트는 받아들여지지 않는다. 마우스가 겉(표) 위로 이동하면(자), 커서아래의 셀이 강조 표시되어, 「잠재적인」드롭 포인트가 나타난다. <a href="#DefaultDropSupport">「디폴트의 드롭의 지원」</a>를 참조.
+
+<tr>
+<th align=left><code>JTextArea</code>
+<td>선택한 텍스트가 <code>text/plain</code> 로서 제시된다.
+<td><code>text/plain</code> 형의 삽입을 받아들인다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 아무것도 선택하고 있지 않는 경우는, caret의 위치에 데이터가 삽입된다. 드롭 - caret의 위치에 데이터가 삽입된다.
+
+<tr>
+<th align=left><code>JTextField</code>
+<td>선택한 텍스트가 <code>text/plain</code> 로서 제시된다.
+<td><code>text/plain</code> 형의 삽입을 받아들인다. 페이스트 - 선택하고 있는 내용이 있으면, 그것이 치환된다. 아무것도 선택하고 있지 않는 경우는, caret의 위치에 데이터가 삽입된다. 드롭 - caret의 위치에 데이터가 삽입된다.
+
+<tr>
+<th align=left><code>JTextPane</code>
+<td><code>JEditorPane</code> 와 같다
+<td><code>JEditorPane</code> 와 같다
+
+<tr>
+<th align=left><code>JTree</code>
+<td>1 항목이 선택되었을 경우는,<code>text/plain</code> 로서 제시된다. 복수의 항목이 선택되었을 경우는,<code>text/html</code> 로서 제시된다. <code>text/html</code> 의 형식은,<code>JList</code> 에 사용되는 형식과 닮은, 상자 된 리스트이다.
+<td>임포트는 받아들여지지 않는다. 마우스가 겉(표) 위로 이동하면(자), 커서아래의 트리 노드가 강조 표시되어, 「잠재적인」드롭 포인트가 나타난다. <a href="#DefaultDropSupport">「디폴트의 드롭의 지원」</a>를 참조.
+</table>
+
+
+<h3><a name="AddingSupport"><code>JLabel</code> 에의 지원 추가의 예</a> </h3>
+
+<p>특히 지정하지 않는 한,<a href="../../../../api/javax/swing/JLabel.html"><code>JLabel</code></a>  컴퍼넌트로 DnD 는 지원되지 않습니다. 다음의 코딩에 의해, 「텍스트」의 프로퍼티 (<code>String</code>)으로 드래그 &amp; 드롭을 지원하는 <code>JLabel</code> 가 작성됩니다.
+
+<pre>
+JLabel componentType = new JLabel();
+componentType.setTransferHandler(new TransferHandler("text"));
+MouseListener ml = new MouseAdapter() {
+    public void mousePressed(MouseEvent e) {
+        JComponent c = (JComponent) e.getSource();
+        TransferHandler th = c.getTransferHandler();
+        th.exportAsDrag(c, e, TransferHandler.COPY);
+    }
+};
+componentType.addMouseListener(ml);
+</pre>
+
+<p><code>JTextField</code> 와 <code>JLabel</code> 를 사용해 드래그 &amp; 드롭을 구현한 작은 예도 포함해 있습니다. 텍스트 필드에 값을 입력해, 텍스트를 강조 표시한 후에, 텍스트 필드 위에 mouse button를 두어 아래에 눌러 픽셀을 드래그 할 수가 있습니다. 아이콘은 커서아래에 표시됩니다. <code>JLabel</code>  위의 아이콘을 해제해, 텍스트가 「Drop Here」텍스트에 옮겨진 것을 확인해 주세요. 드롭 하는 것과 동시에, 소스의 텍스트 필드로부터 텍스트가 삭제됩니다. 드래그 &amp; 드롭의 디폴트의 동작은 <code>MOVE</code> 입니다. 이 동작을 <code>COPY</code> 로 변경하려면 , 텍스트를 선택할 경우에 Ctrl 키를 누릅니다. Windows 에서는, 아이콘내에 플러스 기호가 표시됩니다. 텍스트가 타겟상에 붙일 수 있어도, 소스내의 텍스트는 그대로 남습니다. 같이<code>JLabel</code> 로부터 텍스트 필드에 드래그 할 수도 있습니다. <code>JLabel</code> 에는 카피 및 페이스트의 바인드가 없고, 이 기능을 지원하기 위해서 필요한 포커스를 취득하지 못하는 것에 유의해 주세요.
+
+<p><b>JLabelDragNDrop.java</b> 의<a href="JLabelDragNDrop.java">여기</a>의 예를 참조해 주세요.
+
+<p>
+<h2><a name = "DragSupport">드래그의 지원</a> </h2>
+
+<p>
+텍스트 필드등의 컴퍼넌트는, 선택 범위를 지원합니다. 이런 종류의 컴퍼넌트의 경우, 드래그 조작은 일반적으로, 기존의 선택 범위를 마우스로 드래그 하는 것으로 개시됩니다. 이 형태의 컴퍼넌트의 콘트롤러가 이 상태를 인식할 수가 있어 드래그를 개시합니다. 선택 범위가 없는 컴퍼넌트에서는, Swing 가 드래그를 자동적으로 개시할 수 없습니다만,<a href="#AddingSupport"><code>JLabel</code> 의 예</a>에 있도록(듯이) 드래그가 시행되면(자), 드래그의 「기구」를 처리할 수 있습니다.
+
+<p>
+이 레벨의 드래그 지원로, Swing 의 개발자는, 실행하고 싶은 전송을 표현하는 <code>TransferHandler</code> 의 구현, 및 Swing 컴퍼넌트에서의 프로퍼티의 설정에 집중할 수가 있습니다. 이것으로, 어플리케이션내에서 드래그를 지원하려고 하는 Swing 개발자의 부담이 경감됩니다.   
+
+<p>현재는, 드래그의 다양한 시각상의 표현 방법 (API 내의 <code>Icon</code> 에의 참조)을 조사중입니다. 향후의 진전에 주의하고 있어 주세요.
+
+
+<h3><a name="DefaultDragSupport">디폴트의 드래그의 지원</a> </h3>
+<p>
+지원의 가장 단순한 레벨은, 개발자가 디폴트의 지원가 유효하게 되는 것을 바라고 있는 것을 나타내는 플래그의 설정입니다. 드래그의 디폴트의 지원를 제시하는 컴퍼넌트에 대해서는,<a href="#DefaultSupport">「DnD 를 지원하는 컴퍼넌트」</a>의 겉(표)의<b>export</b>의 란에 설명이 있습니다만, 요약하면(자),<a href="../../../../api/javax/swing/JFileChooser.html#setDragEnabled(boolean)"><code>setDragEnabled</code></a>  및 <a href="../../../../api/javax/swing/JFileChooser.html#getDragEnabled()"><code>getDragEnabled</code></a>  를 직접 구현하는 이하의 클래스가 있습니다. <a href="../../../../api/javax/swing/JColorChooser.html"><code>JColorChooser</code></a> ,<a href="../../../../api/javax/swing/JFileChooser.html"><code>JFileChooser</code></a> ,<a href="../../../../api/javax/swing/JList.html"><code>JList</code></a> ,<a href="../../../../api/javax/swing/JTable.html"><code>JTable</code></a> ,<a href="../../../../api/javax/swing/JTree.html"><code>JTree</code></a> , 및 <a href="../../../../api/javax/swing/text/JTextComponent.html"><code>JTextComponent</code></a>  가 그 클래스입니다. 드래그의 제스처(gesture)는, 선택 범위 위에서 마우스의 왼쪽 버튼을 눌러, 몇개의 픽셀을 드래그 하는 것으로 정의됩니다. 그 때문에,<code>dragEnabled</code> 프로퍼티을 <code>true</code> 로 설정하면(자), 마우스의 동작에 관해서 미묘한 효과가 있습니다.
+
+<p>
+드래그가 컴퍼넌트상에서 유효하게 되면(자), 대응하는 <code>ComponentUI</code> 서브 클래스내의 Swing 콘트롤러가 드래그의 제스처(gesture)의 검색을 개시해,<code>transferHandler</code> 프로퍼티이 <code>null</code> 인지,<a href="../../../../api/javax/swing/plaf/UIResource.html"><code>UIResource</code></a>  인터페이스에 의해 마크 되고 있으면(자), 디폴트의 구현이 인스톨 됩니다. Swing 에 의해 제공된 구현이 <code>UIResource</code> 인터페이스로 마크 되므로, 개발자는, 디폴트의 <code>TransferHandler</code> 프로퍼티을 커스텀의 구현으로 옮겨놓아, 새로운 <code>TransferHandler</code> 를 삽입할 수가 있습니다. 드래그의 제스처(gesture)가 인식되면(자), 드래그 기구를 개시하는 <a href="../../../../api/javax/swing/TransferHandler.html"><code>TransferHandler</code></a>  상에서 <a href="../../../../api/javax/swing/TransferHandler.html#exportAsDrag(javax.swing.JComponent,%20java.awt.event.InputEvent,%20int)"><code>exportAsDrag</code></a>  메소드가 불려 갑니다. 실제의 전송은 <a href="../../../../api/java/awt/dnd/package-summary.html"><code>java.awt.dnd</code></a>  기구에 의해 처리되어 개발자에게 있어 더 이상의 노력은 필요 없습니다.
+
+<a name="DragSupportExtendSwing"></a> 
+<h3>Swing 클래스의 서브 클래스에의 드래그의 지원의 추가</h3>
+<p>
+Swing 에 제공되는 드래그의 지원는,<code>TransferHandler.exportAsDrag</code> 메소드에 의해 기동합니다. 이것에 의해, 다음과 같이 간단하게 드래그의 지원를 추가할 수가 있습니다.
+<ol>
+<li>
+<code>setTransferHandler</code> 메소드를 호출해 (드래그의 대상이 있는 경우),<code>TransferHandler</code> 의 구현을 인스톨 한다.
+<li>
+드래그의 제스처(gesture)를 인식한다.
+<li>
+<code>exportAsDrag</code> 메소드를 호출한다.
+</ol>
+<p>
+이것을 실시하는 시나리오에는, 다음과 같은 것이 있습니다.
+<ul>
+<li>
+대상의 제스처(gesture)를 감시하는 <code>MouseListener</code> 를 추가해, 다음에 컴퍼넌트상에서 <code>getTransferHandler</code> 를 호출해, 드래그의 제스처(gesture)가 검출되면(자) <code>exportAsDrag</code> 를 호출한다. <a href="#AddingSupport">「JLabel 에의 지원 추가의 예」</a>를 참조해 주세요.
+<li>
+서브 클래스내에 <code>processMouseEvent</code> 메소드를 재구현해, 드래그의 제스처(gesture)가 검출되었을 때에 ComponentUI 변수상에서 <code>exportAsDrag</code> 메소드를 호출한다. 그렇지 않을 때는, 슈퍼 클래스의 동작을 실행한다.
+<li>
+커스텀 UI 가 구현되고 있는 컴퍼넌트내에서, 드래그의 제스처(gesture)가 인식되었을 때에 콘트롤러가 <code>exportAsDrag</code> 를 호출하도록(듯이) 한다.
+</ul>
+
+<a name="TransferHandler.exportAsDrag"></a> 
+<h3>TransferHandler.exportAsDrag 의 조작</h3>
+<p>
+<code>exportAsDrag</code> 메소드가 <code>TransferHandler</code> 상에서 불려 가면(자), Swing 제공의 기능에 의해 드래그가 처리됩니다. 이 메소드가 불려 가는 경우는, 유효한 드래그 제스처(gesture)가 인식되었다고 보입니다. 이 메소드에서는, 다음의 순서가 실행됩니다.
+<ol>
+<li>
+<code>DragSource</code> 및 <code>DragListener</code> 의 Swing 구현을 사용해, 데이터 전송 객체로서 <code>createTransferable</code> 로부터 반환된 <a href="../../../../api/java/awt/datatransfer/Transferable.html"><code>Transferable</code></a>  구현을 사용하는 드래그를 개시합니다.   
+<li>
+드롭이 종료하면(자),<code>exportDone</code> 메소드가 <code>TransferHandler</code> 상에서 불려 간다. <code>MOVE</code> 등의 몇개의 조작의 경우는, 소스로부터 데이터를 삭제하는 것이 필요한 경우도 있다. 예를 들어, 텍스트 베이스의 컴퍼넌트에서의 디폴트의 동작은, 표준적인 드래그에 <code>MOVE</code> 의 동작이 구현된다 (드롭에 이어, 선택한 텍스트는 소스 컴퍼넌트로부터 삭제된다). 텍스트를 드래그용으로 선택할 경우에 Ctrl 키를 눌러 내리면(자), 이 동작을 오버라이드(override) 할 수 있다. Windows 에서는, 작은 플러스 기호가 붙은 드래그 아이콘에 의해, 카피 동작이 시각적으로 나타난다.
+</ol>
+
+<h2><a name="DropSupport">드롭의 지원</a> </h2>
+
+<p>
+드롭을 취급하는 주요한 지원는, 페이스트 조작, 즉 <code>TransferHandler</code> 의 <a href="../../../../api/javax/swing/TransferHandler.html#importData(javax.swing.JComponent,%20java.awt.datatransfer.Transferable)"><code>importData</code></a>  메소드에서의 경우와 같습니다. 컴퍼넌트에의 데이터 삽입의 시멘틱스는, 일반적으로, 툴 킷의 레벨에 비해 어플리케이션 레벨에서의 의미 쪽이 많아지고 있습니다. 아플리케? 숀의 사용자는, Swing 툴 킷에 있어 전혀 미지의 컴퍼넌트상에서 모든 종류의 <code>Transferable</code> 구현을 드롭 할 수 있습니다. 디폴트의 <code>TransferHandler</code> 가 불충분한 경우는, 의미가 많은 임포트의 시멘틱스로 <code>TransferHandler</code> 를 제공하는 것이 Swing 개발자의 책임입니다.
+<p>
+다만, 드롭의 조작은 페이스트와 다소 다릅니다.
+<ul>
+<li>일반적으로, 드롭 조작의 잠재성이 있는 사이트에서는, 데이터가 받아들여지는 장소의 피드백이 제공됩니다.
+<li>선택 기능이 있는 컴퍼넌트의 경우, 삽입 포인트가 이동되어, 데이터가 놓여지는 장소가 나타납니다.
+</ul>
+
+<h3><a name="DefaultDropSupport">디폴트의 드롭의 지원</a> </h3>
+<p>
+드롭의 지원의 어플리케이션에의 추가로 Swing 개발자를 지원하기 위해서, Swing 에 의해, Swing 컴퍼넌트상에서 <code>TransferHandler</code> 프로퍼티을 사용하는 <code>DropTarget</code> 의 구현이 제공됩니다. <code>null</code> 이외의 값의 <code>TransferHandler</code> 프로퍼티이 있는 컴퍼넌트에서는,<code>dropTarget</code> 프로퍼티의 값이 <code>null</code> 인지, 또는 <code>UIResource</code> 인터페이스의 존재에 의해 마크 되고 있으면, 드롭 타겟이 <code>ComponentUI</code> 에 의해 인스톨 됩니다. <code>ComponentUI</code> 에 의해 인스톨 된 디폴트의 <code>DropTarget</code> 구현은, 개발자가 디폴트의 <code>DropTarget</code> 를 오버라이드(override) 할 수 있도록(듯이),<code>UIResource</code> 인터페이스에 의해 마크 됩니다.
+
+<p>
+드롭의 완전한 구현을 디폴트로 제공하는 컴퍼넌트는,<a href="#DefaultSupport">「DnD 를 지원하는 컴퍼넌트」</a>표의 「임포트」란에 나타나고 있습니다. 드롭을 일부만 지원하고 있는 컴퍼넌트는 4 개 있습니다. <code>JFileChooser</code>,<code>JList</code>,<code>JTable</code>, 및 <code>JTree</code> 에는, 잠재적인 삽입 포인트를 나타내는 <code>DropTarget</code> 가 디폴트로 인스톨 되고 있습니다. 다만, 데이터의 임포트를 완전하게 지원하려면 , 개발자가 커스텀의 <code>TransferHandler</code> 를 작성해 인스톨 할 필요가 있습니다.
+
+<a name="DropSupportExtendSwing"></a> 
+<h3>Swing 클래스의 서브 클래스내에서의 드래그 지원의 사용</h3>
+<p>
+DropTarget 가 잘 동작하는 구현에서는, 드롭을 실행하기 위해서 <code>JComponent</code> 로 <code>transferHandler</code> 프로퍼티이 사용되고 있습니다. <code>transferHandler</code> 프로퍼티이 설정되어<code>dropTarget</code> 프로퍼티이 <code>null</code> 의 경우에, Swing 의 개발자는, 드롭을 <code>TransferHandler</code> 에 링크시키는 단순한 <code>DropTarget</code> 구현을 자동적으로 가져옵니다.
+
+
+<h2><a name="ClipboardTransferSupport">클립보드 전송의 지원</a> </h2>
+
+<p>
+컷, 카피, 및 페이스트 조작은, 일반적으로은 키보드로부터 기동되기 (위해)때문에, 마우스를 사용하지 않고에 의해 유용한 데이터 전송을 실행합니다. 이러한 조작은, 드래그 &amp; 드롭의 지원와 같은 <code>TransferHandler</code> 서비스를 사용할 수 있습니다. 이것에 의해 데이터 전송의 쓰기 쉬움이 향상해, Swing 로 실제의 클립보드간과의 데이터 전송을 할 수 없는 경우여도, 이러한 조작을 위한 키보드바인드를 Swing 로 제공할 수 있게 됩니다. 클립보드용의 키보드바인드는, 인스톨 되고 있는 현재의 Look &amp; Feel 기능에 의존하고 있습니다.   
+
+<h3><a name="DefaultClipboardTransfer">디폴트의 클립보드 전송</a> </h3>
+<p>
+드래그 &amp; 드롭과 같게, 클립보드에 의한 전송은, 선택 범위를 지원하는 컴퍼넌트에 있어 가장 도움이 됩니다. <a href="#DefaultSupport">「DnD 를 지원하는 컴퍼넌트」</a>표의 「export」란에 나타낸 컴퍼넌트의 리스트에는, 컴퍼넌트의 입력 맵내의 키보드바인드에 관한 LAF 에 의존하는 세트에 가세해, 컴퍼넌트의 액션 맵내에 「컷」, 「카피」, 및 「페이스트」의 액션이 있습니다. Swing 로 이러한 바인드가 제공되므로, 개발자는, 현재의 Look &amp; Feel 의 추적과 바인드의 변경을 하지 않고 끝납니다.
+
+
+<a name="ClipboardTransferSupportExtendSwing"></a> 
+<h3>Swing 클래스의 서브 클래스내에서의 클립보드 전송 지원의 사용</h3>
+<p>
+컷, 카피, 및 페이스트가 잘 동작하는 구현에서는, 전송을 실행하기 위해서 <code>JComponent</code> 로 <code>transferHandler</code> 프로퍼티이 사용되고 있습니다. <code>transferHandler</code> 프로퍼티이 <code>JComponent</code> 상으로 설정되어 있으면(자), 현재 인스톨 되고 있는 액션이 아무것도 없으면,<a href="../../../../api/java/awt/datatransfer/Clipboard.html"><code>Clipboard</code></a>  와 <code>TransferHandler</code> 간의 전송에 링크하는 단순한 <code>Action</code> 구현이, 컴퍼넌트의 액션 맵내의 <code>cut</code>,<code>copy</code>, 및 <code>paste</code> 키아래에 인스톨 됩니다.
+
+<h2><a name="Implementation">구현의 상세</a> </h2>
+
+<p><b>주</b> -이하의 설명은, 비공개의 구현의 상세한 것에 대하여라고 변경의 주제에 대해입니다. 이 정보는, 원시 코드에 액세스 해, 특히 흥미를 가지고 계신 분들에 대해서만 제공합니다.
+<p>
+<code>TransferHandler</code> 가 <code>JComponent</code> 에 인스톨 되고 있는 경우, Look &amp; Feel 는, 다음의 <code>TransferHandler</code> 메소드를 사용한 「컷」, 「카피」, 및 「페이스트」처리를 유효하게 합니다.  
+<ul>
+<li><a href="../../../../api/javax/swing/TransferHandler.html#getCutAction()"><code>getCutAction</code></a> 
+<li><a href="../../../../api/javax/swing/TransferHandler.html#getCopyAction()"><code>getCopyAction</code></a> 
+<li><a href="../../../../api/javax/swing/TransferHandler.html#getPasteAction()"><code>getPasteAction</code></a> 
+</ul>
+이벤트를 <code>TransferHandler.exportAsDrag</code> 에 바인드 했을 경우는, 「드래그」지원도 입수할 수 있습니다. 이 처리는,<code>TransferHandler</code> 클래스 내부의 패키지 전용의 상자 클래스내에 있습니다.
+
+<p>
+이하의 패키지 전용의 클래스가, 디폴트의 지원를 작성하기 위해서 <code>javax.swing.plaf.basic</code> 패키지에 추가되었습니다.
+
+<dl>
+<dt><b><code>BasicTransferable</code></b>
+<dd>다양한 <code>Transferable</code> 구현의 기본
+
+<dt><b><code>BasicDropTargetListener</code></b>
+<dd>선택 범위를 지원하는 컴퍼넌트용으로 스크롤의 지원와 드롭 타겟의 피드백을 추가
+
+<dt><b><code>BasicDragGestureRecognizer</code></b>
+<dd>「수픽셀의 선택과 이동」의 드래그 제스처(gesture)의 인식의 지원
+</dl>
+
+<p>
+DnD 를 지원하는 각 <code>ComponentUI</code> 클래스에는, 이하의 추가된 상자의 클래스가 있습니다.
+<p><b><code>BasicTreeUI</code></b>:
+<blockquote>
+<dl>
+<dt><b><code>TreeTransferHandler</code></b>
+<dd>디폴트의 임포트/export의 지원
+<dt><b><code>TreeTransferable</code></b>
+<dd>실제의 트리 구조의 데이터
+<dt><b><code>TreeDragGestureRecognizer</code></b>
+<dd><code>JTree.setDragEnabled</code> 에 의해 유효하게 되는, 트리 드래그 제스처(gesture)의 인식
+<dt><b><code>TreeDropHandler</code></b>
+<dd>드래그 타겟의 위치의 표시
+</dl>
+</blockquote>
+
+<p>
+<b><code>BasicListUI</code></b>,<b><code>BasicTableUI</code></b>, 및 <b><code>BasicTextUI</code></b> 는 모두,<code>BasicTreeUI</code> 와 닮은 패턴을 가지고 있습니다.
+
+<p>
+<dl>
+<dt><b><code>BasicFileChooserUI</code></b>
+<dd>리스트 지원를 사용하지만,<code>FileTransferHandler</code> 가 있어, 파일 전송으로 사용되는 후레이바로 <code>ListTransferable</code> 를 확장하는 <code>FileTransferable</code> 를 작성한다.
+<dt><b><code>BasicColorChooserUI</code></b>
+<dd><code>TransferHandler</code> 의 Bean 지원를 사용해, 칼라에 관한 프로퍼티을 바인드 한다. 마우스 청취자가, 마우스로 누른 것을 <code>TransferHandler</code> 상의 <code>exportAsDrag</code> 메소드에 바인드 하는 프리뷰 영역에 추가된다.
+</dl>
+
+<h2><a name="ChangesToBeta"><font color=red>Beta 이후의 변경점</font></a> </h2>
+  <blockquote>
+
+<H3>TransferHandler 의 액션은 UI 로 등록하게 되었다</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4460011.html">4460011</A> .  </P>
+<p>드래그＆드롭을 구현하기 위해서,<code>Action</code> 클래스에서 바인딩을 제공해, 데이터의 카피와 페이스트를 지원하고 있었습니다. <code>Action</code> 가 <code>TransferHandler</code> 로 자동적으로 인스톨 되지 않게 되었기 때문에, Look &amp; Feel 등의 코드로 이러한 <code>Action</code> 를 오버라이드(override) 하려면 , UI 를 통해 이러한 액션을 인스톨 할 필요가 있습니다. <a href="../../../../api/javax/swing/TransferHandler.html"><code>TransferHandler</code></a>  의 <a href="../../../../api/javax/swing/TransferHandler.html#getCutAction()"><code>getCutAction</code></a> ,<a href="../../../../api/javax/swing/TransferHandler.html#getCopyAction()"><code>getCopyAction</code></a> , 및 <a href="../../../../api/javax/swing/TransferHandler.html#getPasteAction()"><code>getPasteAction</code></a>  의 각 메소드는, package-private 로부터 public 로 변경되었습니다.  
+    </blockquote>
+
+<H3>DropTarget 를 무효로 하는 기능</H3>
+    <blockquote>
+<P> 이 변경에 관련하는 버그 추적 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4485914.html">4485914</A> .  </P>
+<p>드래그＆드롭을 구현하면(자),<code>JComponent</code> 에 <code>TransferHandler</code> 가 인스톨 되고 있는 경우, JComponent 에 <code>DropTarget</code> 가 추가됩니다. 수동으로 <code>DropTarget</code> 를 추가하고 있는 어플리케이션은, 이것에 의해 영향을 받을 가능성이 있습니다.  그 때문에,<code>suppressSwingDropSupport</code> 라고 하는 시스템 프로퍼티이 추가되었습니다. <a href="../../../api/javax/swing/JComponent.html"><code><a href="../../../../api/javax/swing/JComponent.html"><code>JComponent</code></a>  의 <a href="../../../../api/javax/swing/JComponent.html#setTransferHandler(javax.swing.TransferHandler)"><code>setTransferHandler(TransferHandler)</code></a>  메소드와 <a href="../../../../api/javax/swing/JComponent.html#getTransferHandler()"><code>getTransferHandler</code></a>  메소드를 사용해, 이 프로퍼티을 유효하게 하거나 무효로 하거나 할 수 있습니다.
+    </blockquote>
+  </blockquote>
+
+<h2><a name="KnownBugs"><font color=red>기존의 버그</font></a> </h2>
+  <blockquote>
+<h3><a name=4513715>JTextComponent 으로 선택한 텍스트를 드롭 하면(자) 텍스트가 망가진다</a> </h3>
+  <blockquote>
+<P> 이 문제에 관련하는 버그 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4513715.html">4513715</A> .  </P>
+<p>텍스트를 선택해, 같은 텍스트 컴퍼넌트의 선택 영역안에 드래그＆드롭 하면(자), 선택한 텍스트가 망가져 아무것도 페이스트 되지 않습니다. 릴리스 1.4. 1 에서는 이 버그는 수정되었습니다.
+  </blockquote>
+
+<h3>컴퍼넌트로부터 나올 때 caret의 복원 에러가 발생한다</h3>
+  <blockquote>
+<P> 이 문제에 관련하는 버그 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4513720.html">4513720</A> .  </P>
+<p>편입의 드롭 지원에 의해, Swing 텍스트 컴퍼넌트는, 드래그＆드롭의 드래그 오버로 반응해,<code>Caret</code> 를 가시로 설정해, 그 caret를 사용해 잠재적인 삽입 포인트를 나타냅니다. 드래그가 컴퍼넌트의 밖에 나오면(자),<code>Caret</code> 의 가시성은 원 상태에 복원됩니다. 그런데 ,<code>Caret</code> 로 사용하는 <code>visible</code> 프로퍼티은, 이것 1 개(살)로 일반적으로의 「가시」라고 하는 의미와 점멸 상태와의 양쪽 모두를 나타내기 (위해)때문에, Caret 의 가시성은 올바르게 복원되지 않는 것이 있습니다.
+  </blockquote>
+
+<h3><a name=4513638>RTFEditorKit 의 설정된 JEditorPane 에 대한 컷, 카피, 드래그가 무효가 되었다</a> </h3>
+  <blockquote>
+<P> 이 문제에 관련하는 버그 리포트: <A href="http://developer.java.sun.com/developer/bugParade/bugs/4513638.html">4513638</A> .  </P>
+<p><code>JEditorPane</code> 에 <code>RTFEditorKit</code> 를 설정하려면 , 명시적으로 <code>setEditorKit</code> 를 사용하는 방법이나,<code>content-type</code> 에 <code>text/rtf</code> 를 지정하는 방법이 있습니다. 이와 같이 해 설정된 RTFEditorKit 를 사용할 때, 컷, 카피, 및 드래그는 동작하지 않게 되었습니다. 이와 같이 해 설정된 RTFEditorKit 를 사용할 때, 컷, 카피, 및 드래그는 동작하지 않게 되었습니다.
+  </blockquote>
+  </blockquote>
+
+</body>
+</html>
+

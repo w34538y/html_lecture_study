@@ -1,0 +1,350 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<title>2D(TM) 테크놀러지의 시스템 프로퍼티 - xrath.com 에서 번역됨</title>
+<meta name="date" content="2004-06-06">
+
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH=60>
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+   <h1>
+Java 2D<font size=4><sup>TM</sup></font> 테크놀러지<br>의 시스템 프로퍼티</h1>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP> <font size=-1><a href="index.html"><font size=-1><a href="index.html">2 D&nbsp;목차</a> </font></a> </font> 
+    </TD>
+
+</TR>
+
+</TABLE>
+
+
+<!-- Body text begins here -->
+<blockquote> 
+<p> 이 문서에서는, 2D painting 시스템의 동작 방법을 커스터마이즈 하기 위해서 사용하는, 지원되어 있지 않은 프로퍼티에 대해 설명합니다. 이러한 프로퍼티은, 퍼포먼스의 향상, 올바르지 않은 draw의 수정, 또는 특정의 구성하에서의 시스템 크래쉬의 회피를 목적으로 해 사용되는 일도 있습니다. 예를 들어, 불량인 DirectDraw 또는 Direct3D 드라이버를 탑재한 Microsoft Windows 컴퓨터의 소규모의 세트로 하드웨어 고속화 draw를 사용하면(자), 시스템 크래쉬가 발생할 가능성이 있습니다. 이러한 경우는, 2D 프로퍼티을 사용해, 그러한 컴퓨터로 Java 2D 시스템이 DirectDraw 또는 Direct3D 를 사용하지 않게 지정할 수 있습니다.  </p>
+  <blockquote> 
+    <hr>
+<strong>경고:</strong> 이러한 프로퍼티을 사용할 때는 주의가 필요합니다. 프로퍼티안에는, 실용적인 이유로써 지원되지 않는 것이 몇개인가 있습니다. 예를 들어, 드라이버가 불안정하기 때문에에 디폴트로 몇개의 동작이 무효가 되어 있는 경우, 이러한 동작을 유효하게 하면(자), 일부의 구성으로 시스템이 불안정하게 되는 일이 있습니다. <br><br> <br> 이러한 프로퍼티은, 구현에 고유의 동작을 유효하게 하거나 무효로 하거나 하는 것을 유일한 목적으로 하고 있기 (위해)때문에, 통지없이 변경 또는 폐지되는 일이 있습니다. 또, 일부의 프로퍼티은, 문서에 기재된 특정의 제품 릴리스로 밖에 동작하지 않는 것도 있습니다.  
+    <hr>
+  </blockquote>
+<p>2D 프로퍼티에는, 접두사 <code>sun.java2d. </code> 하지만 붙습니다. 2D 프로퍼티을 지정하는 경우는, 커멘드행 플래그를 사용하는 일도,<code>_JAVA_OPTIONS</code> 환경 변수를 사용할 수도 있습니다. 예를 들어 다음과 같이, 어플리케이션의 실행시에 2D <code>trace</code> 프로퍼티을 지정할 수 있습니다.  </p>
+  <blockquote> 
+    <pre>
+java -Dsun.java2d.trace=log SomeApp
+</pre>
+  </blockquote>
+혹은 다음과 같이, 어플리케이션의 실행전에 <code>_JAVA_OPTIONS</code> 를 설정해 프로퍼티을 지정할 수도 있습니다.  
+  <blockquote> 
+    <pre>
+export _JAVA_OPTIONS='-Dsun.java2d.trace=log' <em>(UNIX 의 bash 쉘)</em>
+java SomeApp
+</pre>
+  </blockquote>
+<p>일부의 시스템 프로퍼티은, 환경 변수를 사용해도 설정할 수 있습니다. 예를 들어,<code>d3d</code> 프로퍼티에는 동등의 환경 변수 <code>J2D_D3D</code> 가 있습니다. 프로퍼티의 설명에서는, 동등의 환경 변수가 있는 경우는 그것도 가리킵니다.  </p>
+  <blockquote>
+    <hr>
+<b>주:</b> 프로퍼티의 설명으로 사용되는 용어에 대해서는,<a href="http://java.sun.com/products/java-media/2D/perf_graphics.html">「High Performance Graphics」화이트 페이퍼</a>를 참조해 주세요.  
+    <hr>
+  </blockquote>
+<p> 이 문서에서는, 다음의 프로퍼티에 대해 설명합니다.  </p>
+  <ul>
+<li> <a href="#all">모든 플랫폼에 공통의 시스템 프로퍼티</a>  
+      <ul>
+<li> <a href="#opengl"><code>opengl</code></a>  </li>
+<li><code><a href="#trace">trace</a> </code> </li>
+<li><code><a href="#aaFonts">awt.useSystemAAFontSettings</a> </code></li>
+      </ul>
+    </li>
+<li> <a href="#win">Microsoft Windows 플랫폼의 시스템 프로퍼티</a>  
+      <ul>
+<li> <a href="#accthreshold"><code>accthreshold</code></a>  </li>
+<li> <a href="#d3d"><code>d3d</code></a>  </li>
+<li> <a href="#d3dtexbpp"><code>d3dtexbpp</code></a>  </li>
+<li> <a href="#ddforcevram"><code>ddforcevram</code></a>  </li>
+<li> <a href="#ddoffscreen"><code>ddoffscreen</code></a>  </li>
+<li> <a href="#ddscale"><code>ddscale</code></a>  </li>
+<li> <a href="#noddraw"><code>noddraw</code></a>  </li>
+<li> <a href="#translaccel"><code>translaccel</code></a>  </li>
+      </ul>
+    </li>
+<li> <a href="#ix">Linux 와 Solaris 플랫폼의 시스템 프로퍼티</a>  
+      <ul>
+<li> <a href="#NO_J2D_DGA"><code>NO_J2D_DGA</code></a> </li>
+<li><a href="#pixmaps"><code>J2D_PIXMAPS</code></a>  </li>
+<li> <a href="#pmoffscreen"><code>pmoffscreen</code></a>  </li>
+      </ul>
+    </li>
+  </ul>
+  <HR SIZE=3 NOSHADE>
+  <!-------------------------------- ALL ------------------------------------->
+  <p> 
+<h3><a name="all">모든 플랫폼에 공통의 시스템 프로퍼티</a> </h3>
+<h4> <code><a name="opengl">opengl</a> </code> </h4>
+  <blockquote> 
+<p> <b>사용 목적:</b> OpenGL 베이스의 파이프라인을 유효하게 해, 하드웨어의 고속화를 꾀합니다. <br> <b>도입된 시스템:</b> J2SE 5.0 Beta 1 (Solaris/Linux), J2SE 5.0 Beta 2 (Microsoft Windows)<br> <b>디폴트 값:</b>false <br> <b>사용 방법:</b>OpenGL 베이스의 파이프라인을 통지없이 유효하게 하려면 , 이 프로퍼티을 <code>true</code> 로 설정합니다.  </p>
+    <blockquote> 
+      <pre>
+-Dsun.java2d.opengl=true
+</pre>
+    </blockquote>
+<p> OpenGL 베이스의 파이프라인이 특정의 스크린에 대해서 정상적으로 초기화되었는지 어떠했는지에 관한, 콘솔에의 상세한 출력을 실시하려면 , 대문자의 「T」를 사용해, 이 프로퍼티을 <code>True</code> 로 설정합니다.  </p>
+    <blockquote> 
+      <pre>
+-Dsun.java2d.opengl=True 
+</pre>
+    </blockquote>
+<p> Java 2D 용의 OpenGL 베이스의 파이프라인은, Solaris/Linux 플랫폼의 J2SE 5.0 Beta 1 으로 Microsoft Windows 플랫폼의 J2SE 5.0 Beta 2 에 도입되었습니다. 현시점에서는, 이 파이프라인은 디폴트로 무효가 되어 있습니다. 이 파이프라인에 의해, 텍스트, 이미지, 라인, 칠해의 프리미티브(primitive)등이 단순한 draw 조작 뿐만이 아니라, 복잡한 변환, 페인트, 합성 및 클리핑등의 조작에도 하드웨어의 고속화가 적용됩니다.  </p>
+<p> <b>관련 정보</b><a href="new_features.html">Java 2 Platform Standard Edition 5.0 의 Java 2D 의 신기능</a>의<a href="new_features.html#ogl">OpenGL</a> 에 관한 마디.  </p>
+  </blockquote>
+<h4><code><br> <a name="trace">trace</a> </code> </h4>
+  <blockquote> 
+<p><b>사용 목적:</b> 그래픽스 성능을 낮은으로 하는 것이 좋은 원인을 조사합니다. <br> <b>도입된 시스템:</b> 1.4<br> <b>사용 방법:</b>어플리케이션의 성능을 낮은으로 하는 것이 좋은 경우는,<code>trace</code> 실행시 플래그를 사용해 그 문제의 원인을 조사할 수가 있습니다. 이 플래그에는, 몇개의 옵션을 지정할 수 있습니다. </p>
+<pre>    -Dsun.java2d.trace=[log[, timestamp]],[count],[out:<i>&lt;filename&gt;</i>],[help],[verbose]
+</pre>
+<p>옵션을 다음에 나타냅니다. </p>
+    <dl> 
+<dt><code>log</code><br>
+      </dt>
+<dd>각 프리미티브(primitive)이 실행되었을 때에 그 이름을 출력한다</dd>
+<dt><code>timestamp</code><br>
+      </dt>
+<dd>각 로그 엔트리의 전에 <code>currentTimeMillis()</code> 를 붙인다</dd>
+<dt><code>count</code><br>
+      </dt>
+<dd>종료시에, 사용된 각 프리미티브(primitive)의 총수를 출력한다</dd>
+<dt><code>out:<i>&lt;filename&gt;</i></code><br>
+      </dt>
+<dd>출력 (로그나 총수)이 지정된 파일에 송신한다</dd>
+<dt><code>help</code><br>
+      </dt>
+<dd>사용 방법에 관한 간단한 설명을 출력한다</dd>
+<dt><code>verbose</code><br>
+      </dt>
+<dd>이 실행용으로 선택된 옵션의 개요를 출력한다</dd>
+    </dl>
+<p><code>log</code> 옵션을 사용하면(자), Java 실행 환경에 의해, 실행된 프리미티브(primitive)의 이름이 대부분 다음의 형식에서 출력됩니다. </p>
+<pre>    <i>&lt;classname&gt;</i>. <i>&lt;methodname&gt;</i>(<i>&lt;src&gt;</i>,<i>&lt;composite&gt;</i>,<i>&lt;dst&gt;</i>)</pre>
+<p><i><code>methodname</code></i> 는,<code>Graphics</code> 메소드 호출의 실제의 draw 작업에 사용되는 기본적인 그래픽스 조작을 나타냅니다. 이러한 메소드명이 반드시 <code>Graphics</code> 객체에 대한 메소드에 직접 맵 된다고는 할 수 없습니다.  같이<code>Graphics</code> 객체에 대해서 행해진 호출의 수가 실행된 프리미티브(primitive)의 조작의 수에 직접 맵 된다고는 할 수 없습니다. </p>
+<p><code><i>src</i></code> 와 <code><i>dst</i></code> 는, 조작에 관계하는 표면 또는 소스 데이터의 타입을 나타냅니다. </p>
+<p><code><i>composite</i></code> 명은,<code>AlphaComposite</code> 클래스에 포함되는 이름에 접미사(suffix) 「<code>NoEa</code>」를 붙인 것과 정확하게 일치해,<code>AlphaComposite</code> 인스턴스에 「특별한 알파」속성 1.0 이 설정되어 있는 것을 의미합니다. 「SrcNoEa」타입은 가장 자주(잘) 사용되는 합성 타입이며, 혼합을 필요로 하지 않는 가장 간단한 픽셀의 전송 방법을 나타냅니다. 불투명한 색이나 이미지가 draw 될 때는, 디폴트의 합성이 「SrcOver」여도, 내부에서는 「SrcNoEa」가 빈번하게 사용됩니다. 이것은, 불투명한 소스 픽셀의 경우는, 그러한 2 개의 조작의 분간할 수 없기 때문입니다. </p>
+<p>플랫폼의 draw 파이프라인은, X11, GDI, DirectDraw 등의 플랫폼의 드로잉 그래픽 소프트웨어를 액세스 할 수 있는 표면에 대해서 불투명한 조작을 실시하기 위해서(때문에) 사용되는 일이 있습니다. 현재로서는, 그러한 이름은, 간략화된 이름부 형식에 따라, 플랫폼의 드로잉 그래픽 소프트웨어를 나타내는 접두사와 조작의 명칭으로부터 구성되어 클래스명이나 오퍼랜드 타입의 리스트는 포함하지 않습니다. 예를 들어, 「X11DrawLine」, 「GDIFillOval」, 「DXFillRect」라고 됩니다. 향후는, 이러한 이름은 다른 프리미티브(primitive)의 이름과 매우 자주(잘) 닮은 것이 될 예정입니다. </p>
+  </blockquote>
+<h4><code><br> <a name="aaFonts">awt.useSystemAAFontSettings</a> </code> </h4>
+<p><b>사용 목적:</b>에일리어징 제거 설정이 「데스크탑의 설정」으로서 인식되고 있는 텍스트를 덧쓰기합니다. <br><b>도입된 시스템:</b> 1.6<br> <b>디폴트 값:</b>true<br><b>사용 방법:</b>커멘드행 또는 Web Start 의 jnlp 파일에, 이하의 지정의 값의 어느쪽이든을 설정해, Swing 텍스트로 렌더링 힌트를 제어합니다.
+<p>
+엄밀하게 말하면, 이 플래그가 Java 2D 를 제어하는 것은 아닙니다만, 이러한 값이 Java 2D 텍스트 평활화 렌더링 힌트의 값에 직접 매핑 되기 (위해)때문에, 여기에서는 그처럼 설명하고 있습니다.
+<p>
+플래그가 실제로 실시하는 것은, JRE가, 사용자의 데스크탑 평활화 텍스트의 설정 내용을, 사용자의 데스크탑 설정으로부터 읽어내는 것을 덧쓰기하는 것입니다. Swing 는, Java 2D 에 Swing 텍스트를 렌더링 하도록 지시해, 그 설정에 맞춥니다. 즉, 덧쓰기하는 것으로, Swing 텍스트를 제어할 수 있습니다. 이것은, Metal L&F (별명 Java L&F)나 네이티브 (Windows, GTK) Swing L&F 의 표준 Swing 컴퍼넌트에 들어맞읍니다 (JTextArea, JButton). 또, 커스텀 컴퍼넌트나 같은 프로퍼티을 취득하는 L&F 에도 들어맞읍니다.
+<p>
+이 덧쓰기하는 데스크탑 설정의 상세한 것에 대하여는,<a href="../../../api/java/awt/doc-files/DesktopProperties.html">「AWT Desktop Properties」</a>  를 참조해 주세요.
+<p>
+이 프로퍼티을 지정하는 몇개의 이유로서 다음의 것을 들 수 있습니다.
+<ul>
+<li>필요한 데스크탑 설정이 사용하고 있는 데스크탑으로 지원되어 있지 않다 (Windows 2000 에 LCD 텍스트가 필요 등)
+<li>사용하고 있는 데스크탑 설정을 JRE 가 인식하지 않는다 (KDE 등)
+<li>다음과 같은 상태로, 테스트를 자동화하는 경우
+</ul>
+<pre>
+System Property Value   | java.awt.RenderingHint value
+"off"|"false"|"default" : VALUE_TEXT_ANTIALIAS_DEFAULT
+"on"                    : VALUE_TEXT_ANTIALIAS_ON
+"gasp"                  : VALUE_TEXT_ANTIALIAS_GASP
+"lcd"|"lcd_hrgb"        : VALUE_TEXT_ANTIALIAS_LCD_HRGB
+"lcd_hbgr"              : VALUE_TEXT_ANTIALIAS_LCD_HBGR
+"lcd_vrgb"              : VALUE_TEXT_ANTIALIAS_LCD_VRGB
+"lcd_vbgr"              : VALUE_TEXT_ANTIALIAS_LCD_VBGR
+</pre>
+
+      <p></p>
+  </blockquote> 
+  <!-------------------------------- WIN -------------------------------------> <br>
+  <p> 
+<h3><a name="win">Microsoft Windows 플랫폼의 시스템 프로퍼티</a> </h3>
+<h4> <code><a name="accthreshold">accthreshold</a> </code></h4>
+  <blockquote> 
+<p><b>사용 목적:</b> VRAM 버젼의 이미지가 자동적으로 작성되기 전에, 관리되는 이미지로부터 행해지는 카피수를 지정합니다. <br> <b>도입된 시스템:</b> 1.4. 1_02<br> <b>디폴트 값:</b> 1<br> <b>사용 방법:</b>이미지의 초기화중에 고속화 처리된 표면을 강제적으로 작성하려면 , 다음과 같이, 이 값을 0 으로 설정합니다. </p>
+    <blockquote> 
+      <pre>
+-Dsun.java2d.accthreshold=0
+</pre>
+    </blockquote>
+<p> 이 프로퍼티을 사용하면(자), 최초로 몇개의 카피를 한 후에, 이미지가 VRAM 에 카피되고 있을 때, draw의 초기 지연을 해소할 수가 있습니다. 초기 지연은, 사실상 이미지 작성 시간에 쉬프트 됩니다.  </p>
+<p> 이 동작은, 어플리케이션이 이미지 관리를 잘 이용할 수 있는 것, 즉, 개시 조속히 속도의 늦은 카피 처리에 번거롭게 해져 나중에 되어 카피의 오버헤드를 지는 것이 아니라, 개시시에 카피의 오버헤드를 정리할 수 있는 것을 알 수 있고 있는 경우에는 유효합니다. </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="d3d">d3d</a> </code></h4>
+<blockquote> <b>사용 목적:</b>Java 2D 시스템에 의한 Direct3D 의 사용을 오프로 합니다. <br> <b>도입된 시스템:</b> 1.4. 1_02<br> <b>동등의 환경 변수:</b><code>J2D_D3D</code> <br> <b>사용 방법:</b>버그가 있는 Direct3D 드라이버를 탑재한 Windows 2000 시스템의 소규모의 부분집합으로 Direct3D 를 사용하면(자), 시스템 크래쉬가 발생하는 일이 있습니다. Direct3D 의 사용을 오프로 하려면 , 이 프로퍼티을 false 로 설정합니다.  
+    <blockquote> 
+      <pre>
+-Dsun.java2d.d3d=false
+</pre>
+    </blockquote>
+계속 문제가 발생하고 있는 경우는,<a href="#ddoffscreen"><code>ddoffscreen</code></a>  프로퍼티을 false 로 설정해 보세요. 그런데도 문제가 해결되지 않는 경우는,<a href="#noddraw"><code>noddraw</code></a>  를 true 로 설정해 보세요.  </blockquote>
+  <br>
+<h4> <code><a name="d3dtexbpp">d3dtexbpp</a> </code> </h4>
+  <blockquote> 
+<p> <b>사용 목적:</b> 관리되는 이미지 또는 반투명의 이미지의 고속화 처리된 표면의 형식을 16 비트 (4444)로 하는 것을 지정합니다.  이것에 의해, VRAM 와 시스템메모리를 보존할 수 있습니다만, 품질은 저하합니다. <br> <b>도입된 시스템:</b> 1.4. 1_02<br> <b>디폴트 값:</b> 32 <br> <b>사용 방법:</b>4444 형식을 온으로 하려면 , 이 프로퍼티을 16 으로 설정합니다.  </p>
+    <blockquote> 
+      <pre>
+-Dsun.java2d.d3dtexbpp=16
+</pre>
+    </blockquote>
+    <blockquote> 
+      <hr>
+<b>주:</b> OpenGL 파이프라인을 사용하고 있는 경우,<code>d3dtexbpp</code> 프로퍼티은 효과가 없습니다.  
+      <hr>
+    </blockquote>
+<p>이 프로퍼티을 16 으로 설정하면(자), 관리되는 이미지 (<code>GraphicsConfiguration.createCompatibleImage(w, h, TRANSLUCENT)</code> 로 작성된 이미지) 또는 <code>Toolkit.getImage</code> 로 로드 된 반투명인 이미지의 고속화 처리된 표면의 형식이 강제적으로 4444 가 됩니다. 같이 이러한 이미지의 시스템메모리 표면도 4444 형식이 됩니다.  </p>
+<p> 이 옵션은, 다수의 이미지를 VRAM 에 보존하는 경우에 유효합니다. 다만, 품질은 열화 합니다.  
+<p> 이 옵션은, 32 비트의 texture를 지원하고 있지 않는 비디오 보드 (3dfx Voodoo3 등)를 탑재한 컴퓨터에도 유효합니다. Java 2D 시스템이 32 비트의 texture를 사용하는 경우 (디폴트로 그렇게 되고 있을 때), 32 비트의 texture를 지원하고 있지 않는 카드를 검출하면(자), 고속화 처리된 반투명의 이미지의 지원가 무효가 됩니다. 32 비트의 texture를 지원하지 않는 비디오 보드로 반투명의 이미지의 고속화 처리를 실시할 필요가 있는 경우는,<code>d3dtexbpp</code> 프로퍼티을 16 으로 설정합니다.  
+    </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="ddforcevram">ddforcevram</a> </code></h4>
+<blockquote> <b>사용 목적:</b><code>VolatileImages</code> 를 VRAM 에 보존해 둘지 어떨지를 지정합니다. <br><b>도입된 시스템:</b> 1.4. 1_02<br> <b>디폴트 값:</b>1.4 에서는 false.  J2SE 5.0 Beta 1 이후는,<a href="#translaccel"><code>translaccel</code></a>  가 true 의 경우는 true, 그 이외는 false <br> <b>사용 방법:</b>일반적으로, 2D 시스템이 DirectDraw 또는 Direct3D 파이프라인을 사용하고 있는 경우, 비데오메모리내의 이미지가 너무 빈번하게 읽어내지는 (조작에 걸리는 부하가 크다) 때는, 그 이미지를 시스템메모리 표면에 팬트 해, 빠르게 읽어낼 수 있도록(듯이) 합니다. 나중에 되어, 사용자가 이 표면으로부터 고속화 처리된 표면에 다시 카피하고 있는 것이 검출되었을 경우, 시스템은 그 이미지를 비데오메모리에 카피하도록(듯이) 유발 (prompt)합니다. 이 프로퍼티을 true 로 설정하면(자), 팬트 기구가 무효가 되어, 항상 이미지가 비데오메모리에 보존되게 됩니다.  
+    <blockquote> 
+      <hr>
+<b>주:</b> OpenGL 파이프라인을 사용하고 있는 경우,<code>ddforcevram</code> 프로퍼티은 효과가 없습니다.  
+      <hr>
+    </blockquote>
+<p> 이 프로퍼티은 <a href="#translaccel"><code>translaccel</code></a>  프로퍼티과 조합해 사용되는 일이 자주 있습니다만, 단독으로도 사용할 수 있습니다. 이 프로퍼티을 true 로 설정하는 경우, 5.0 릴리스에서는 <code>translaccel</code> 도 true 로 설정하는지, 이 프로퍼티을 단독으로 설정해 주세요.  
+    <blockquote> 
+      <pre>
+-Dsun.java2d.ddforcevram=true
+</pre>
+    </blockquote>
+  </blockquote>
+<h4> <code><a name="ddoffscreen">ddoffscreen</a> </code></h4>
+  <blockquote> 
+<p><b>사용 목적:</b> Swing 백 버퍼등의 오프 스크린 표면에 대한 Java 2D 시스템에 의한 DirectDraw 와 Direct3D 의 사용을 오프로 합니다.  도입된 시스템:<br> <b>도입된 시스템:</b> 1.4<br> <b>디폴트 값:</b>true<br> <b>사용 방법:</b>이 플래그를 false 로 설정하면(자), DirectDraw 의 오프 스크린 표면의 고속화 처리가 오프가 됩니다. </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="ddscale">ddscale</a> </code></h4>
+  <blockquote> 
+<p><b>사용 목적:</b> DirectDraw 또는 Direct3D 파이프라인을 사용하고 있을 때, 하드웨어 고속화 처리된 슬캘링을 온으로 합니다. <br> <b>도입된 시스템:</b> 1.2<br> <b>디폴트 값:</b>false <br> <b>사용 방법:</b>이 플래그를 true 로 설정하면(자), DirectDraw 또는 Direct3D 파이프라인을 사용하고 있는 경우에 하드웨어 고속화 처리된 슬캘링이 유효하게 됩니다. DirectDraw 또는 Direct3D 의 하드웨어 슬캘링은, 기존의 어플리케이션의 draw 기능에 악영향을 미치지 않게 디폴트로 무효가 되어 있습니다. 이러한 draw 기능에의 악영향은, 소프트웨어의 슬캘링 조작으로 사용되는  (최근옆의) 슬캘링 메소드와 비디오 카드가 사용하는 다양한 슬캘링 메소드와의 부정합에 의해 발생합니다. 어플리케이션의 실행중에 발생하는 몇개의 이벤트에 의해, 확대 축소된 이미지는 부분적으로 하드웨어의 슬캘링 조작으로 draw 되거나 소프트웨어의 슬캘링 조작으로 draw 되거나 하기 (위해)때문에, 표시의 무결성이 유지되지 않는 것이 있습니다. 현시점에서는,<code>ddscale</code> 플래그를 true 로 설정하는 것으로써, 고속화 처리를 유효하게 할 수 있습니다.  </p>
+    <blockquote> 
+      <hr>
+<b>주:</b> OpenGL 파이프라인을 사용하고 있는 경우,<code>ddscale</code> 프로퍼티은 효과가 없습니다.  
+      <hr>
+    </blockquote>
+<p><b>관련 정보</b> <a href="http://java.sun.com/products/java-media/2D/perf_graphics.html">「High Performance Graphics」화이트 페이퍼</a>  </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="noddraw">noddraw</a> </code></h4>
+  <blockquote> 
+<p><b>사용 목적:</b> Java 2D 시스템에 의한 DirectDraw 와 Direct3D 의 사용을 완전하게 오프로 합니다. <br> <b>도입된 시스템:</b> 1.2<br> <b>디폴트 값:</b>false <br> <b>사용 방법:</b>이 플래그를 true 로 설정하면(자), DirectDraw 의 사용이 오프가 되어, Win32 의 draw에 관한 문제가 해소되는 일이 있습니다. </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="translaccel">translaccel</a> </code> </h4>
+  <blockquote> 
+<p><b>사용 목적:</b> DirectDraw 또는 Direct3D 파이프라인을 사용하고 있을 때, 반투명의 이미지를 하드웨어 고속화 처리할지 어떨지를 지정합니다. <br> <b>도입된 시스템:</b> 1.4. 1_02<br> <b>디폴트 값:</b>false <br> <b>사용 방법:</b>DirectDraw 또는 Direct3D 파이프라인을 사용하고 있을 때는, 고속화 처리되는 반투명의 이미지에 대해서 <code>translaccel</code> 와 <a href="#ddforcevram"><code>ddforcevram</code></a>  를 true 로 설정할 필요가 있습니다.  </p>
+    <blockquote> 
+      <hr>
+<b>주:</b> OpenGL 파이프라인을 사용하고 있는 경우,<code>translaccel</code> 프로퍼티은 효과가 없습니다.  
+      <hr>
+    </blockquote>
+<p> 1.4 로 5.0 으로 반투명의 이미지의 고속화 처리를 온으로 하는 경우 
+    <blockquote> 
+      <pre>
+-Dsun.java2d.translaccel=true
+-Dsun.java2d.ddforcevram=true <em>//J2SE 5.0 Beta 1 이후는 필요 없습니다</em>
+</pre>
+    </blockquote>
+<p> 이러한 프로퍼티이 어느쪽이나 true 인 경우, Java 2D 시스템은 반투명의 이미지를 VRAM 에 보존해, Direct3D 를 사용해 그러한 이미지를 화면 또는 <code>VolatileImage</code> 에 draw (합성) 합니다. 평행이동 변환만이 지원되고 있습니다 (회전이나 확대 축소 등은 실시할 수 없습니다). 5.0 보다 전으로 고속화 처리를 실시하려면 , 다음의 어느 쪽인가의 방법으로 반투명인 이미지를 작성할 필요가 있습니다.  
+    <ul>
+<li> <code>GraphicsConfiguration.createCompatibleImage(w, h, Transparency.TRANSLUCENT)</code> 
+      </li>
+<li> 반투명인 칼라 모델을 가지는 <code>Toolkit.getImage()</code> 를 사용해 이미지를 로드한다 </li>
+    </ul>
+5.0 이후에서는,<code>BufferedImage</code> 생성자 을 사용해 작성된 반투명인 이미지도 고속화 처리할 수 있습니다. 특정의 디바이스상에서 이미지를 고속화 처리할 수 있을지 어떨지를 조사하려면 ,<code>Image</code> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Image.html#getCapabilities(java.awt.GraphicsConfiguration)"><code>getCapabilities</code></a>  메소드 (5.0 으로 추가)를 사용해 <code>ImageCapabilities</code> 객체를 취득해,<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/ImageCapabilities.html#isAccelerated()"><code>isAccelerated</code></a>  메소드를 사용해 그 객체를 문의할 수가 있습니다. 관리되는 이미지는, 화면 또는 다른 고속화 처리된 표면에 몇부나 카피된 후에 마셔 고속화 처리될테니 주의해 주세요.  
+<p>다음의 코드는, 고속화 처리된 이미지의 사용법을 나타내고 있습니다. 이 코드에서는, 백 버퍼가 <code>VolatileImage</code> 인 것으로 합니다. 게다가<code>BufferStrategy</code> 도 사용할 수 있습니다. </p>
+    <blockquote> 
+      <pre>
+Image translucentImage = gc.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
+//...
+Graphics2D g2 = (Grahics2D) backBuffer.getGraphics();
+g2.drawImage(translucentImage, x, y, null);
+</pre>
+    </blockquote>
+<p> SRC_OVER 규칙 (디폴트의 Graphics2D 합성 규칙)을 가지는 특별한 알파와의 합성이 고속화 처리되기 (위해)때문에, 다음의 코드에서는 합성에 하드웨어를 사용할 수 있게 됩니다. 코드:</p>
+    <blockquote> 
+      <pre>
+Image translucentImage = gc.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
+// ...
+float ea = 0.5;
+Graphics2D g2 = (Grahics2D) backBuffer.getGraphics();
+g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ea));
+g2.drawImage(translucentImage, x, y, null);
+</pre>
+    </blockquote>
+  </blockquote>
+  <!-------------------------------- *IX -------------------------------------> <br>
+  <p> 
+<h3><a name="ix">Linux 와 Solaris 플랫폼의 시스템 프로퍼티</a> </h3>
+<h4> <code><a name="NO_J2D_DGA">NO_J2D_DGA</a> </code> </h4>
+<blockquote> <b>사용 목적:</b> Solaris Sparc 에서의 DGA 지원와 하드웨어의 고속화를 오프로 합니다.  이것에 의해 draw 기능에의 악영향이 경감하는 일이 있습니다. <br> <b>도입된 시스템:</b> 1.2<br> <b>디폴트 값:</b>(설정되어 있지 않다)<br> <b>사용 방법:</b>이 프로퍼티은, 환경 변수로서의 보고 설정할 수 있습니다.  즉, 동등의 커멘드행 플래그는 없습니다. Solaris Sparc 에서의 DGA 지원와 하드웨어의 고속화를 오프로 하려면 , 다음의 변수를 정의합니다.  
+    <blockquote> 
+<pre>setenv NO_J2D_DGA</pre>
+    </blockquote>
+<p> 이 변수가 자동적으로 설정되면(자), 픽스맙을 사용할 수 있게 되어,<a href="#pmoffscreen"><code>pmoffscreen</code></a>  가 true 로 설정됩니다. 다만, 역의 경우는 들어맞지 않습니다. 즉,<code>pmoffscreen</code> 를 true 로 설정해도 DGA 는 무효가 되지 않습니다.  </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="pixmaps">J2D_PIXMAPS</a> </code> </h4>
+<blockquote> <b>사용 목적:</b> 빈번하게 읽어내지는 이미지를 보존하기 위해서 2D 시스템이 로컬 표시 환경에서 공유 메모리픽스맙을 사용할지 어떨지를 지정합니다. <br> <b>도입된 시스템: </b> 1.4 Beta 3 <br> <b>디폴트 값:</b>(설정되어 있지 않다)<br> <b>사용 방법:</b>이 프로퍼티은, 환경 변수로서의 보고 설정할 수 있습니다.  즉, 동등의 커멘드행 플래그는 없습니다. 1.4 Beta 3 이후, Java 2D 는 이미지의 보존에 표준의 픽스맙을 사용하게 되었습니다만, 빈번하게 읽어내지는 이미지의 보존에는 로컬 표시 환경의 공유 메모리픽스맙을 사용하도록(듯이) 변경이 되었습니다. <code>J2D_PIXMAPS</code> 환경 플래그를 사용하면(자), 이 디폴트의 동작을 무효로 해, 강제적으로 어느 쪽인가의 타입의 픽스맙만이 사용되도록 할 수 있습니다.  
+    <p> 
+<pre>    setenv J2D_PIXMAPS=shared<br>    setenv J2D_PIXMAPS=server</pre>
+<p>이 플래그를 <code>shared</code> 로 설정하면(자), 로컬 표시 환경에서 작업하고 있는 경우에 모든 이미지가 공유 메모리픽스맙에 보존됩니다. 이것에 대해, 이 플래그를 <code>server</code> 로 설정하면(자), 모든 이미지가 공유 메모리픽스맙은 아니고, 표준의 픽스맙에 보존됩니다.  표준의 픽스맙은, 디바이스 드라이버의 지정에 근거해 VRAM 에 보존할 수 있습니다. </p>
+<p><b>관련 정보</b> <a href="http://java.sun.com/products/java-media/2D/perf_graphics.html">「High Performance Graphics」화이트 페이퍼</a>  </p>
+  </blockquote>
+  <br>
+<h4> <code><a name="pmoffscreen">pmoffscreen</a> </code> </h4>
+  <blockquote> 
+<p> <b>사용 목적:</b> DGA 를 사용할 수 없을 때에, Java 2D 가 디폴트로 픽스맙에 이미지를 보존할지 어떨지를 지정합니다. <br> <b>도입된 시스템: </b> 1.4 Beta 3 <br> <b>디폴트 값:</b>(설정되어 있지 않다)<br> <b>사용 방법:</b>1.4 Beta 3 이후, DGA 를 사용할 수 없을 때는, 로컬 또는 원격의 어느 쪽의 표시 환경에서 작업하고 있어도, Java 2D 는 디폴트로 픽스맙에 이미지를 보존합니다. <code>pmoffscreen</code> 플래그를 사용하면(자), 이 동작을 변경할 수 있습니다. </p>
+    <p> 
+<pre>    -Dsun.java2d.pmoffscreen=true<br>    -Dsun.java2d.pmoffscreen=false</pre>
+    <p></p>
+<p>이 플래그를 false 로 설정하면(자), 오후스크리픽스맙의 지원가 무효가 되어, draw에 관한 문제가 해결하는 일이 있습니다. 이 플래그를 true 로 설정하면(자), DGA 를 사용할 수 있는 경우에서도 오후스크리픽스맙의 지원가 유효하게 됩니다.  </p>
+<p><b>관련 정보</b> <a href="http://java.sun.com/products/java-media/2D/perf_graphics.html">「High Performance Graphics」화이트 페이퍼</a>  </p>
+  </blockquote>
+  <!-- Body text ends here --> <!-- ============================================================== -->
+  <HR SIZE=3 NOSHADE>
+  <TABLE summary="layout" BORDER="0" WIDTH=100%>
+    <TR VALIGN=TOP> 
+      <TD> 
+<P><FONT SIZE="-2"> <A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+<FONT SIZE="-1"><a href="http://java.sun.com/products/java-media/2D/mail/java2d-comments.html">「Java 2D Feedback」</a>페이지를 사용해 코멘트를 송부해 주세요.  </FONT> </TD>
+<TD ALIGN=RIGHT> <IMG SRC="../../../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"> <i>Java Software</i> </FONT> </TD>
+    </TR>
+  </TABLE>
+
+</BODY>
+
+</HTML>
+

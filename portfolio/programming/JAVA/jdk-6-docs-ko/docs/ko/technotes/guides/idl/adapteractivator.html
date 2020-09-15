@@ -1,0 +1,382 @@
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--updated dcarson 7/2002-->
+<TITLE>Java IDL:Using Adapter Activators - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER>Using Adapter Activators</H1>
+<HR>
+
+<P>어플리케이션 개발자는, 새로운 <a href="POA.html">POA</a>  를 작성할 경우에, 새로운 POA 용으로 선택한 특정의 정책를 선언해, 다른 어댑터 activator 및<a  href="POA.html#servantmanager">서번트 매니저</a>  (이것들은, 필요에 따라서 POA 의 기동이나 서번트의 기동을 실시하기 위해서(때문에) POA 가 사용하는 콜백 객체)를 제공할 수 있습니다. 객체 ID 는 POA 에 대해서 상대적으로 해석되기 (위해)때문에, 어플리케이션 개발자는, 새로운 POA 를 작성하는 것에 의해 한층 더 객체의 이름 공간의 구분도 실시할 수가 있습니다. 또, 새로운 POA 를 작성하면(자), 개발자는, 복수의 객체세트에 대한 요구의 처리를 개별적으로 제어할 수 있습니다.
+
+<P><strong>어댑터 activator</strong>는 옵션입니다. 어댑터 activator는, 요구의 처리중에 POA 를 작성할 필요가 있는 경우에 사용합니다. 어플리케이션의 초기화시에, 필요한 POA 가 모두 작성되고 있는 경우는, 어댑터 activator는 필요 없습니다.
+
+
+<P>어댑터 activator를 사용하면(자), POA 는, 필요에 따라서 아이 POA 를 작성할 수 있게 됩니다. 아이 POA 의 작성은, 아이 POA (또는 복수의 아이의 어떤 것인지)를 지정한 요구를 수신했을 때의 부작용으로서 실행되든가, 혹은 기동 파라미터치 TRUE 를 사용해 <code>find_POA</code> 메소드가 불려 갔을 때에 실행됩니다. ORB 는, 존재하고 있지 않는 아이 POA 에의 요구를 받아들이면(자), 어댑터 activator의 오퍼레이션을 호출합니다. 어댑터 activator는 필요한 POA 를 그 자리에서 작성합니다.
+
+<P>요구는, 타겟 객체의 객체 ID 와 타겟 객체 참조를 작성한 POA 의 식별 정보를 전달할 수 있을 필요가 있습니다. 클라이언트로부터 요구가 발행되면(자), ORB 는, 처음에 적절한 서버를 찾아 (필요한 경우는 기동한다), 다음에 그 서버내에서 적절한 POA 를 찾습니다.  
+
+<P>서버 프로세스내에 POA 가 존재하지 않는 경우, 어플리케이션은, 어댑터 activator를 사용해 필요한 POA 를 재작성할 수가 있습니다. 어댑터 activator는, 사용자에 의해 구현되는 객체로, POA 에 관련지을 수가 있습니다. 어댑터 activator는, 존재하고 있지 않는 POA 에의 요구를 받아들였을 때에, ORB 에 의해 불려 갑니다. 여기서 어댑터 activator에, 필요한 POA 를 작성할 기회가 주어집니다. 어댑터 activator가 POA 를 작성하지 않는 경우, 클라이언트는 <code>ADAPTER_NONEXISTENT</code> 예외를 받습니다.  
+
+<P>ORB 는, 필요한 POA 를 찾아내면(자), 그 POA 에 요구를 건네줍니다. 그 후의 요구의 처리는, POA 에 관련지을 수 있고 있는 정책와 객체의 현재의 기동 상태에 따라서 다릅니다.
+
+<H1>어댑터 activator의 사용예</H1>
+
+<P>다음의 코드는, 요구의 처리중에 POA 를 작성할 수 있도록(듯이) 하기 위해서 어댑터 activator를 사용하는 어플리케이션의 예를 나타내고 있습니다. 이 어플리케이션은,<a  href="GShome.html">「Hello World」</a>의 예를 기본으로 해 작성한 것입니다. 이 예에는 다음의 파일이 포함되어 있습니다.
+<P>
+<UL>
+<LI><code><a href="#client">Client.java</a> </code>
+<LI><code><a href="#server">Server.java</a> </code>
+<LI><code><a href="#helloidl">Hello.idl</a> </code>
+<LI><code><a href="#HelloServant">HelloServant.java</a> </code>
+<LI><code><a href="#makefile">Makefile</a> </code>
+<LI><code><a href="#runbat">run.bat</a> </code>
+</UL>
+<P>이 예를 실행하는 방법에 대해서는,<a href="#running">「어댑터 activator의 어플리케이션 예의 실행」</a>을 참조해 주세요. <P>
+
+
+<H2><a name="client">Client.java</a> </H2>
+<P>샘플 클라이언트를 위한 코드로, ORB 를 초기화해,<code>HelloServant</code> 를 해석 처리해,<tt>sayHello()</tt> 메소드를 호출합니다.
+<P>
+
+
+<UL><pre><HR>
+<strong>//Client.java</strong>
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextHelper;
+import org.omg.CosNaming.NameComponent;
+
+public class Client {
+
+    public void run(String[] args) {
+        try {
+            //initialize the orb
+            ORB orb = ORB.init(args, null);
+            System.out.println("ORB initialized");
+
+            NamingContext namingContext = NamingContextHelper.narrow(
+                orb.resolve_initial_references("NameService"));
+            NameComponent[] nc = { new NameComponent("HelloServer", "") };
+
+            //resolve HelloServant and invoke sayHello()
+            Hello helloRef = HelloHelper.narrow(namingContext.resolve(nc));
+            System.out.println("Resolved HelloServant");
+
+            System.out.println(helloRef.sayHello());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new Client(). run(args);
+    }
+}
+<HR></pre></UL>
+
+
+<H2><a name="server">Server.java</a> </H2>
+
+<P>서버를 위한 코드로, 다음과 같은 처리를 실시합니다.
+<P>
+<UL>
+<LI>ORB 를 초기화한다
+<LI><tt>RootPOA</tt> 를 해석 처리한다
+<LI>어댑터 activator를 <tt>rootPOA</tt> 에 등록해, 필요에 따라서 아이 POA 를 작성할 수 있도록(듯이) 한다
+<LI>기동 파라미터 <tt>TRUE</tt> 를 지정해 <tt>find_POA</tt> 를 실행해, 「HelloPOA」가 존재하지 않는 경우에 <tt>rootPOA</tt> 에 관련지을 수 있었던 어댑터 activator가 불려 가도록(듯이) 한다
+<LI><tt>HelloServant</tt> 의 객체 참조를 작성해, 네임 서비스에 등록한다
+<LI>「HelloPOA」를 파기한다. 이 POA 는,<tt>HelloPOA</tt> 에 대한 요구를 ORB 가 받았을 때에,<tt>RootPOA</tt> 에 등록한 어댑터 activator를 사용해 투과적으로 재작성된다
+<LI><tt>RootPOA</tt> 를 기동한다.
+<LI>착신 요구를 대기한다
+<LI>적절한 정책를 갖춘 POA 를 작성하기 위해서 <tt>MyAdapterActivator</tt> 를 작성해, 서번트를 새로운 POA 에 관련지어, 새로운 POA 를 기동한다
+</UL>
+
+
+<UL><pre><HR>
+<strong>//Server.java</strong>
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.LocalObject;
+import org.omg.CORBA.Policy;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.AdapterActivator;
+import org.omg.PortableServer.IdAssignmentPolicyValue;
+import org.omg.PortableServer.LifespanPolicyValue;
+import org.omg.PortableServer.ImplicitActivationPolicyValue;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextHelper;
+import org.omg.CosNaming.NameComponent;
+
+public class Server {
+
+    public void run(String[] args) {
+        try {
+            //initialize the orb
+            ORB orb = ORB.init(args, null);
+            System.out.println("ORB initialized");
+
+            //resolve RootPOA
+            POA rootPOA = POAHelper.narrow(
+                orb.resolve_initial_references("RootPOA"));
+
+            //register adapter activator with rootPOA so that child POAs can
+            //be created on demand
+            rootPOA.the_activator(new MyAdapterActivator());
+
+            //find_POA with an activate parameter TRUE would cause the
+            //adapter activator associated with rootPOA to be invoked if
+            //'HelloPOA' does not exist
+            POA childPOA = rootPOA.find_POA("HelloPOA", true);
+
+            //Create the object reference for HelloServant
+            //and register with naming service
+            org.omg.CORBA.Object obj = childPOA.id_to_reference(
+                "abcd". getBytes());
+            Hello helloRef = HelloHelper.narrow(obj);
+
+            NamingContext namingContext = NamingContextHelper.narrow(
+                orb.resolve_initial_references("NameService"));
+            NameComponent[] nc = { new NameComponent("HelloServer", "") };
+            namingContext.rebind(nc, helloRef);
+
+            //Destroy 'HelloPOA'.  This POA will be transparently recreated when
+            //ORB receives a request on HelloPOA using the adapter activator we
+            //registered with the RootPOA
+            childPOA.destroy(true, true);
+
+            //activate rootPOA
+            rootPOA.the_POAManager(). activate();
+
+            //wait for incoming requests
+            System.out.println("Server ready and running....");
+            orb.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new Server(). run(args);
+    }
+}
+
+class MyAdapterActivator extends LocalObject implements AdapterActivator {
+
+    public boolean unknown_adapter(POA parent, String name) {
+        System.out.println("unknown_adapter() invoked for POA - " + name);
+        try {
+            // create the POA with appropriate policies
+            // this sample uses PERSISTENT, NO_IMPLICIT_ACTIVATION
+            // and USER_ID policies
+            Policy[] policy = new Policy[3];
+            policy[0] = parent.create_lifespan_policy(
+                LifespanPolicyValue.PERSISTENT);
+            policy[1] = parent.create_id_assignment_policy(
+                IdAssignmentPolicyValue.USER_ID);
+            policy[2] = parent.create_implicit_activation_policy(
+                ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION);
+
+            POA child = parent.create_POA(name, null, policy);
+
+            //Associate the servant with the new POA
+            HelloServant hello = new HelloServant();
+            child.activate_object_with_id("abcd". getBytes(), hello);
+
+            //activate the new POA
+            child.the_POAManager(). activate();
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
+<HR></pre></UL>
+
+
+<H2><a name="helloidl">Hello.idl</a> </H2>
+
+이 인터페이스 정의 언어 (IDL) 파일은, 이 사이트상의 「Hello World」샘플의 모든 변화(variation)으로 사용됩니다. 이 IDL 파일이 기술하고 있는 CORBA 객체의 <tt>sayHello()</tt> 조작이 캐릭터 라인을 돌려줍니다.
+
+<UL><pre><HR>
+interface Hello {
+   string sayHello();
+};
+<HR></pre></UL>
+
+
+<H2><a name="HelloServant">HelloServant.java</a> </H2>
+이 서번트는, Hello IDL 인터페이스를 구현한 것입니다. <tt> Hello</tt> 의 각 인스턴스는,<tt>HelloServant</tt> 의 인스턴스에 의해 구현됩니다. 서번트는,<tt>idlj</tt> 컴파일러에 의해 예의 IDL 로부터 생성되는 <tt>HelloPOA</tt> 의 서브 클래스입니다. 서번트에게는, IDL 조작 마다 1 개의 메소드가 포함됩니다.  이 예에서는,<tt>sayHello()</tt> 메소드입니다. 서번트 메소드는, Java 의 일반적으로의 메소드와 변화는 없습니다. ORB 의 처리, 인수나 결과의 정렬화등을 실시하는 코드는, 스켈리턴으로 구현합니다.
+ 
+<UL><pre><HR>
+<strong>//HelloServant.java</strong>
+public class HelloServant extends HelloPOA {
+
+    public String sayHello() {
+        return "Hello :)";
+    }
+}
+<HR></pre></UL>
+
+
+<H2><a name="makefile">Makefile</a> </H2>
+<P>make 프로그램은, UNIX 쉘이 실행하는 일련의 커멘드를 생성합니다.
+
+ 
+<UL><pre><HR>
+JAVA_HOME=&lt;<em>path_to_your_Java_installation_bin_directory</em>&gt;
+
+#setup tools
+JAVA=$(JAVA_HOME) /bin/java
+JAVAC=$(JAVA_HOME) /bin/javac
+IDLJ=$(JAVA_HOME) /bin/idlj
+ORBD=$(JAVA_HOME) /bin/orbd
+
+all	: clean build run
+
+clean	:
+	- rm -rf classes orb.db
+
+build	:
+	mkdir -p classes
+	$(IDLJ) -fall -td classes Hello.idl
+	$(JAVAC) -classpath classes -d classes HelloServant.java Server.java Client.java
+
+run	: runorbd register runclient
+
+runorbd :
+	$(ORBD) -ORBInitialPort 10001 &
+	sleep 20
+
+register:
+	#servertool does not support script based register due to a bug
+	#using class instead
+	#<strong>Please note that the name of the <code>servertool</code> 
+	#class may change in future releases</strong>.
+	$(JAVA) com.sun.corba.se.internal.Activation.ServerTool \
+	-ORBInitialPort 10001 -cmd \
+	register -server Server -classpath classes
+
+runclient :
+	$(JAVA) -classpath classes Client -ORBInitialPort 10001
+
+
+<HR></pre></UL>
+
+
+<H2><a name="runbat">run.bat</a> </H2>
+<P>bat 유틸리티는, Microsoft Windows 의 커멘드 쉘이 실행하는 일련의 커멘드를 생성합니다.
+ 
+<UL><pre><HR>
+SET JAVA_HOME=&lt;<em>path_to_your_Java_installation_build_directory</em>&gt;
+
+mkdir classes
+
+%JAVA_HOME%\bin\idlj -fall -td classes Hello.idl
+%JAVA_HOME%\bin\javac -classpath classes -d classes HelloServant.java Server.java Client.java
+
+REM - Start the ORB daemon
+
+start %JAVA_HOME%\bin\orbd -ORBInitialPort 10001 -ORBDebug orbd
+@echo Wait 10-15 seconds for the orbd to start
+@pause
+
+REM - Register the persistent server with orbd using servertool
+REM - <strong>Please note that the name of the <code>servertool</code> 
+REM - class may change in future releases</strong>.
+%JAVA_HOME%\bin\java com.sun.corba.se.internal.Activation.ServerTool -ORBInitialPort 10001 -cmd register -server Server -classpath classes
+
+%JAVA_HOME%\bin\java -classpath classes Client -ORBInitialPort 10001
+
+<HR></pre></UL>
+
+
+<H2><a name="running">어댑터 activator의 어플리케이션 예의 실행</a> </H2>
+
+<P>이 예를 실행하려면 , 다음과 같이 합니다.
+<P>
+<UL>
+<LI>위에서 설명한 코드를 사용해 파일을 작성합니다.
+<LI>다음의 몇개의 방법으로, 예를 실행합니다. <P>
+	<UL>
+	<LI>Make 유틸리티를 가지고 있는 경우는,<a href="#makefile"><code>Makefile</code></a>  를 사용해 어플리케이션을 실행
+	<P><CODE>make all</CODE></P>
+	<LI>배치 유틸리티를 가지고 있는 경우는,<a href="#runbat"><code>run.bat</code></a>  를 사용해 어플리케이션을 실행. 어플리케이션 디렉토리로부터, 다음과 같이 입력한다
+	 <P><CODE>run</CODE></P>
+	 </UL>
+</UL>
+
+<P>Makefile 를 실행하면(자), 단말 윈도우에 다음의 예의 같은 출력이 표시됩니다.
+
+<P>
+<UL><pre><HR>
+rm -rf classes orb.db
+mkdir -p classes
+/j2sdk1. 5.0/bin/idlj -fall -td classes Hello.idl
+/j2sdk1. 5.0/bin/javac -classpath classes -d classes HelloServant.java Server.java Client.java
+/j2sdk1. 5.0/bin/orbd -ORBInitialPort 10001 &
+sleep 20
+#servertool does not support script based register due to a bug
+#using class instead
+#<strong>Please note that the name of the <code>servertool</code> 
+#class may change in future releases</strong>.
+/j2sdk1. 5.0/bin/java com.sun.corba.se.internal.Activation.ServerTool \
+-ORBInitialPort 10001 -cmd \
+register -server Server -classpath classes
+
+        server registered (serverid = 257).
+
+/j2sdk1. 5.0/bin/java -classpath classes Client -ORBInitialPort 10001
+ORB initialized
+Resolved HelloServant
+Hello :)
+<HR></pre></UL>
+
+
+이 예를 실행 끝마치면(자), ORDB 를 종료 합니다.
+
+<UL>
+<LI>UNIX  operating system를 사용하고 있는 경우는, 단말 윈도우에 <code>pkill orbd</code> 라고 입력
+<LI>Microsoft Windows 를 사용하고 있는 경우는, 커멘드 prompt 윈도우에  <code>Ctrl+C</code> 라고 입력
+</UL>
+
+
+
+
+<H1>관련 정보</H1>
+
+<P>어댑터 activator의 상세한 것에 대하여는,<em><a href="http://www.omg.org/docs/formal/99-10-07.pdf">CORBA 2.3. 1 스펙</a> </em> 의 11.3. 3 항 또는<a  href="../../../api/org/omg/PortableServer/AdapterActivatorOperations.html"><em>「AdapterActivatorOperations API 문서」</em></a> 를 참조해 주세요.
+
+
+
+
+
+
+<P><HR>
+<CENTER><P>
+
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">Java IDL 탑에</A> </TD>
+</TR>
+</TABLE>
+<P>
+<P>
+<!-- server side include for page footer -->
+
+  <!--#include virtual="/share/include/normal.footer.v4.0.html"-->
+
+<!-- end server side include for footer -->
+
+</CENTER>
+</BODY>
+</HTML>

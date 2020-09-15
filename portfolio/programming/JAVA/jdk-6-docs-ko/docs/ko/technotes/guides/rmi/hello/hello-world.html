@@ -1,0 +1,333 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>Java RMI 입문 - xrath.com 에서 번역됨</title>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+&nbsp;
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"></td>
+
+<td>
+<ul>
+<center>
+<h1>
+Java<sup><font size=-2>TM</font></sup> RMI 입문</h1></center>
+</ul>
+</td>
+
+<td width="15%" align="center" valign="top">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+&nbsp;
+<P>이 튜토리얼에서는, 친숙한 Hello World 프로그램의 분산 시스템판을 Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI)를 사용해 작성하는 순서를 설명합니다. 이 튜토리얼을 학습하는 동안에, 관련하는 많은 의문에 직면하겠지요. <a href="../faq.html">Java RMI FAQ</a>  및 <A    HREF="http://archives.java.sun.com/archives/rmi-users.html">RMI-USERS 메일링리스트의 어카이브(archive)</a>에는, 다양한 의문에 대한 회답이 있습니다.  RMI-USERS 메일링리스트를 구독하려면 ,<A HREF="../subscribe.html">여기</a>를 클릭해 주세요.
+
+<P>여기서 예로서 소개하는 분산형의 Hello World 프로그램에서는, 단순한 클라이언트를 사용해, 원격 호스트상에서 가동하고 있는 서버에의 원격 메소드 호출을 실시합니다. 클라이언트에서는, 서버로부터 「Hello, world!」메세지를 수신합니다.
+
+<P>이 튜토리얼에서는, 다음의 순서를 실행합니다.
+<uL>
+	<LI><A HREF="#1">원격 인터페이스의 정의</A> 
+	<LI><A HREF="#2">서버의 구현</A> 
+	<LI><A HREF="#3">클라이언트의 구현</A> 
+	<LI> <A HREF="#4">원시 파일의 컴파일</A> 
+	<LI> <A HREF="#5">Java RMI 레지스트리, 서버, 및 클라이언트의 기동</A> 
+</uL>
+
+이 튜토리얼의 실행에 필요한 파일은, 다음과 같습니다.
+<UL>
+	<LI> <A HREF="Hello.java"> <code>Hello.java</code></A>  -  원격 인터페이스
+
+	<LI> <code><A HREF="Server.java">Server.java</A> </code> -  원격 인터페이스를 구현하는 원격 객체의 구현
+
+	<LI><code><A HREF="Client.java">Client.java</A> </code> -  원격 인터페이스의 메소드를 호출하는 단순한 클라이언트
+
+</UL>
+
+<B>주:</B> 이후의 튜토리얼로, 「원격 객체의 구현」 및 「구현 클래스」라고 말했을 경우는 모두, 원격 인터페이스를 구현하는 클래스 <code>example.hello.Server</code> 를 가리킵니다.
+
+<p>
+
+</p><hr>
+<h2>
+<a name="1"></a> 원격 인터페이스의 정의</h2>
+<blockquote>
+
+원격 객체는, 「원격 인터페이스」를 구현하는 클래스의 인스턴스입니다. <i></i>원격 인터페이스는 <code>java.rmi.Remote</code> 인터페이스를 확장해, 1조의 「원격 메소드」를 선언합니다. 각 「원격 메소드」는, 어플리케이션 고유의 예외 외에,<code>throws</code> 절내에서 <code>java.rmi.RemoteException</code> (또는 <code>RemoteException</code> 의 슈퍼 클래스)를 선언할 필요가 있습니다.
+	
+
+<P>이하는, 이 예로 사용되는 <code>examples.hello.Hello</code> 원격 인터페이스의, 인터페이스 정의입니다. 이 예에서는, 호출 측에 캐릭터 라인을 돌려주는 <code>sayHello</code> 메소드만이 선언되고 있습니다.
+
+<blockquote>
+<pre>
+package example.hello;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface Hello extends Remote {
+    String sayHello() throws RemoteException;
+}
+</pre>
+</blockquote>
+
+원격 메소드 호출에서는, 로컬 메소드 호출과 비교해 많은 과정에서 에러가 발생하는 일이 있습니다 (네트워크 통신상의 문제나, 서버의 문제 등). 이 때문에 원격 메소드는,<code>java.rmi.RemoteException</code> 를 throw 하는 것에 의해 통신상의 장해를 보고합니다. 분산 시스템상에서의 장해 및 복원의 상세한 것에 대하여는,<A HREF="http://research.sun.com/research/techrep/1994/abstract-29.html">「A Note on Distributed Computing」</a>를 참조해 주세요.
+
+</blockquote>
+
+<h2>
+<a name="2">서버의 구현</a> </h2>
+<blockquote>
+이 튜토리얼에서의 「서버」클래스에는,<code>main</code> 메소드가 있습니다.  이 메소드는, 원격 객체의 구현 인스턴스를 생성해, 원격 객체를 export 해, 그 인스턴스를 Java RMI 레지스트리내의 이름에 바인드 합니다. 이 <code>main</code> 메소드를 포함한 클래스는, 구현 클래스 그 자체인 경우도, 완전히 별개의 클래스인 경우도 있습니다.
+
+<P>이 예의 서버용의 <code>main</code> 메소드는,<code>Hello</code> 원격 인터페이스의 구현도 실시하는 <code>Server</code> 클래스내에 정의되고 있습니다.
+
+서버의 <code>main</code> 메소드로, 다음의 조작이 실행됩니다.  
+<ul>
+<li><a href="#21">원격 객체를 작성해 export 한다</a> 
+<li><a href="#22">원격 객체를 Java RMI 레지스트리에 등록한다</a> 
+</ul>
+
+다음은,<code>Server</code> 클래스의 원시 코드입니다. 이 서버 클래스를 작성할 때의 설명은, 원시 코드의 후에 있습니다.
+<blockquote>
+<pre>
+package example.hello;
+	
+import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+	
+public class Server implements Hello {
+	
+    public Server() {}
+
+    public String sayHello() {
+	return "Hello, world! ";
+    }
+	
+    public static void main(String args[]) {
+	
+	try {
+	    Server obj = new Server();
+	    Hello stub = (Hello) UnicastRemoteObject.exportObject(obj, 0);
+
+	    // Bind the remote object's stub in the registry
+	    Registry registry = LocateRegistry.getRegistry();
+	    registry.bind("Hello", stub);
+
+	    System.err.println("Server ready");
+	} catch (Exception e) {
+	    System.err.println("Server exception: " + e.toString());
+	    e.printStackTrace();
+	}
+    }
+}
+</pre>
+</blockquote>
+
+<p><code>Server</code> 구현 클래스는,<code>sayHello</code> 원격 메소드를 구현해,<code>Hello</code> 원격 인터페이스를 구현합니다. <code>sayHello</code> 메소드에서는, 메소드가 예외를 throw 하는 것을 선언할 필요는 없습니다.  메소드의 구현 자체가 <code>RemoteException</code> 나 그 외의 검사필의 어떠한 예외도 throw 하지 않기 때문입니다.
+
+<p><b>주:</b> 클래스는, 원격 인터페이스로 지정되어 있지 않은 메소드를 정의할 수 있습니다만, 이러한 메소드는, 서비스를 실행하는 가상 머신내에서 밖에 호출하지 못하고, 원격로부터 호출할 수 없습니다.
+
+<a name="21"></a> <h3>원격 객체를 작성해 export 한다</h3>
+
+서버의 <code>main</code> 메소드에서는, 서비스를 제공하는 원격 객체를 작성할 필요가 있습니다. 게다가 착신하는 원격 호출을 수신할 수 있도록(듯이), 원격 객체가 Java RMI 런타임에 export 될 필요가 있습니다. 이것은, 다음과 같이 해 실행할 수 있습니다.
+<blockquote>
+<pre>
+Server obj = new Server();
+Hello stub = (Hello) UnicastRemoteObject.exportObject(obj, 0);
+
+</pre>
+</blockquote>
+<code>UnicastRemoteObject.exportObject</code> static 메소드는, 지정된 원격 객체를 export 합니다.  이것에 의해, 착신하는 원격 메소드 호출을 익명 TCP 포트로 수신해, 그 원격 객체의 Stub를 클라이언트에 건네주기 위해서(때문에) 돌려줄 수가 있게 됩니다. <code>exportObject</code> 호출의 결과로서, 런타임에서는, 원격 객체를 요구하는 착신 원격 호출을 받기 위해서(때문에), 신규의 서버 소켓상에서 대기를 개시하는지, 공유 서버 소켓을 사용할 수 있게 됩니다. 반환된 Stub에는, 원격 객체의 클래스와 같은 원격 인터페이스세트가 구현되어 원격 객체에 연락할 수 있는 호스트명으로 포트가 포함되어 있습니다.
+
+<p><b>주:</b> J2SE 5.0 릴리스에서는, 원격 객체가 5.0 VM 보다 전을 실행하고 있는 클라이언트를 지원할 필요가 없는 한,<code>rmic</code> Stub 컴파일러를 사용해 원격 객체의 Stub 클래스를 사전에 생성해 둘 필요가 없어졌습니다. 사용하고 있는 어플리케이션이 이러한 클라이언트를 지원할 필요가 있는 경우는, 그 어플리케이션내에서 사용되는 원격 객체의 Stub 클래스를 생성해, 클라이언트가 다운로드하도록(듯이) Stub 클래스를 배치할 필요가 있습니다. Stub 클래스를 생성하는 방법의 상세한 것에 대하여는,<code>rmic</code> 의 툴 문서 (<a href="../../../tools/solaris/rmic.html">Solaris</a>  용,<a href="../../../tools/windows/rmic.html">Windows</a>  용)를 참조해 주세요. 사전에 생성한 Stub 클래스 첨부로 어플리케이션을 배치하는 방법의 상세한 것에 대하여는,<a href="../codebase.html">Java RMI 의 사용에 의한 동적인 코드의 다운로드에 관한 튜토리얼</a>을 참조해 주세요.
+
+<a name="22"></a> <h3>원격 객체를 Java RMI 레지스트리에 등록한다</h3>
+
+<p>호출측 (클라이언트, 피어, 또는 애플릿)이 원격 객체의 메소드를 호출하기 위해서(때문에), 호출측은 최초로 원격 객체의 Stub를 취득할 필요가 있습니다. bootstrapping용으로, 어플리케이션이 이름을 원격 객체의 Stub에 바인드 해, 클라이언트가 그 Stub를 취득하기 위해서 원격 객체를 이름으로 검색할 수 있도록(듯이) 하기 위해서, Java RMI 에는 레지스트리 API 가 준비되어 있습니다.
+
+<P>Java RMI 레지스트리는 단순한 네임 서비스이며, 이 서비스에 의해, 클라이언트는 원격 객체에의 참조 (Stub)를 취득할 수가 있습니다. 일반적으로, 레지스트리는, 클라이언트가 사용할 필요가 있는 최초의 원격 객체의 장소를 특정하기 위해서만 사용됩니다. 그 후, 일반적으로은 그 최초의 객체에 의해, 그 외의 객체를 검출하기 위한 어플리케이션 고유의 지원가 제공됩니다. 예를 들어, 참조는, 다른 원격 메소드 호출에 건네주는 파라미터, 또는 원격 메소드 호출로부터의 반환값으로서 취득할 수 있습니다. 자세한 것은,<a href="../Factory.html">「Java RMI 에 팩토리 패턴을 적용한다」</a>를 참조해 주세요.
+
+<P>원격 객체가 서버에 등록되면(자), 호출측은, 그 객체를 이름으로 검색해, 원격 객체에의 참조를 취득할 수 있습니다.  그 후, 그 객체의 원격 메소드를 호출할 수가 있습니다.
+
+<P>서버내의 다음의 코드로, 로컬 호스트와 디폴트의 레지스트리 포트의 레지스트리에 대응하는 Stub를 취득해, 그 레지스트리의 Stub를 사용해, 「Hello」라고 하는 이름을 레지스트리내의 원격 객체의 Stub에 바인드 합니다.
+
+<blockquote>
+<pre>
+Registry registry = LocateRegistry.getRegistry();
+registry.bind("Hello", stub);
+</pre>
+</blockquote>
+
+인수를 취하지 않는 <code>LocateRegistry.getRegistry</code> static 메소드는,<code>java.rmi.registry.Registry</code> 원격 인터페이스를 구현하는 Stub를 돌려주어, 디폴트의 <code>1099</code> 레지스트리 포트상의 서버에 있는 로컬 호스트의 레지스트리에, 호출을 송신합니다. 다음에, 원격 객체의 Stub를 레지스트리내의 <code>Hello</code> 와 바인드 하기 위해서,<code>bind</code> 메소드가 <code>registry</code> Stub로 불려 갑니다.
+
+<p><b>주:</b><code>LocateRegistry.getRegistry</code> 의 호출에서는, 단순하게, 레지스트리에 대응하는 적절한 Stub를 돌려줍니다. 이 소환에서는, 레지스트리가 실제로 실행되고 있을지 어떨지는 체크되지 않습니다. <code>bind</code> 메소드가 불려 갈 때 로컬 호스트의 TCP 포트 1099 로 레지스트리가 실행되어 있지 않은 경우는, 서버가 <code>RemoteException</code> 이 되어, 실패합니다.
+
+</blockquote>
+
+<h2>
+<a name="3">클라이언트의 구현</a> </h2>
+<blockquote>
+
+<p>클라이언트 프로그램에서는, 서버의 호스트상의 레지스트리에 대응하는 Stub를 취득해, 레지스트리내의 이름으로 원격 객체의 Stub를 검색해, 그 후 그 Stub를 사용해, 원격 객체의 <code>sayHello</code> 메소드를 호출합니다.
+
+<p>클라이언트의 원시 코드는, 다음과 같습니다.
+<blockquote>
+<pre>
+package example.hello;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+public class Client {
+
+    private Client() {}
+
+    public static void main(String[] args) {
+
+	String host = (args.length &lt; 1) ?  null : args[0];
+	try {
+	    Registry registry = LocateRegistry.getRegistry(host);
+	    Hello stub = (Hello) registry.lookup("Hello");
+	    String response = stub.sayHello();
+	    System.out.println("response: " + response);
+	} catch (Exception e) {
+	    System.err.println("Client exception: " + e.toString());
+	    e.printStackTrace();
+	}
+    }
+}
+</pre>
+</blockquote>
+
+<p>이 클라이언트는, 커멘드행으로 지정된 호스트명을 사용해 <code>LocateRegistry.getRegistry</code> static 메소드를 호출하는 것으로, 레지스트리에 대응하는 Stub를 최초로 가져옵니다. 호스트명이 지정되어 있지 않은 경우는, 호스트명에 <code>null</code> 가 사용되어 로컬 호스트의 주소를 사용할 필요가 있는 것을 지시받습니다.
+
+<p>다음에 클라이언트는, 서버의 레지스트리로부터 원격 객체에 대응하는 Stub를 취득하기 위해서, 레지스트리 Stub로 <code>lookup</code> 원격 메소드를 호출합니다.
+
+<p>마지막에 클라이언트는, 원격 객체의 Stub로 <code>sayHello</code> 메소드를 호출해, 이 호출에 의해 다음의 조작이 발생합니다.
+<ul>
+<li>클라이언트측의 런타임은, 원격 객체의 Stub내의 호스트 및 포트 정보를 사용해 서버에의 접속을 열어, 호출 데이터를 직렬화한다
+<li>서버측의 런타임은, 착신하는 호출을 받아들여 그 호출을 원격 객체에 발송 해, 응답 캐릭터 라인의 「Hello, world!」인 결과를 클라이언트에 직렬화한다 
+<li> 클라이언트측의 런타임은, 결과를 수신해, 직렬화 복원을 실시해, 그 결과를 호출해 측에 돌려준다 
+</ul>
+<p>원격 객체의 원격 호출로부터 반환되는 응답 메세지는, 그 후 <code>System.out</code> 에 출력됩니다.
+
+</blockquote>
+
+<h2>
+<a name="4">원시 파일의 컴파일</a> </h2>
+
+<blockquote>
+
+<p>이 예의 원시 파일은, 다음과 같이 해 컴파일 할 수 있습니다.
+
+<blockquote>
+<pre>
+javac -d <b><i>destDir</i></b> Hello.java Server.java Client.java
+</pre>
+</blockquote>
+<b>destDir</b> 는, 클래스 파일을 배치하는 목적지 디렉토리입니다.
+
+<p><b>주:</b> 5.0 VM 이전에 실행되는 클라이언트를 서버가 지원할 필요가 있는 경우는,<code>rmic</code> 컴파일러를 사용해 사전에 원격 객체의 구현 클래스에 대응하는 Stub 클래스를 생성할 필요가 있어, 그 Stub 클래스를 클라이언트를 다운로드할 수 있도록(듯이) 할 필요가 있습니다. 자세한 것은<a href="../codebase.html">Java RMI 의 사용에 의한 동적인 코드의 다운로드에 관한 튜토리얼</a>을 참조해 주세요.
+
+</blockquote>
+
+<h2>
+<a name="5"></a> Java RMI 레지스트리, 서버, 및 클라이언트의 기동</h2>
+<blockquote>
+
+<p>이 예를 실행하려면 , 다음의 조작을 실시할 필요가 있습니다.
+<ul>
+<li><a href="#51">Java RMI 레지스트리를 기동한다</a> 
+<li><a href="#52">서버를 기동한다</a> 
+<li><a href="#53">클라이언트를 실행한다</a> 
+</ul>
+
+<a name="51"></a> <h3>Java RMI 레지스트리를 기동하는</h3> <p>레지스트리를 기동하려면 , 서버의 호스트로 <code>rmiregistry</code> 커멘드를 실행합니다. 이 커멘드로부터는 성공시에 무슨 출력도 없습니다. 일반적으로, 백그라운드에서 실행됩니다. 자세한 것은,<code>rmiregistry</code> 의 툴 문서 (<a href="../../../tools/solaris/rmiregistry.html">Solaris</a>  용,<a href="../../../tools/windows/rmiregistry.html">Windows</a>  용)를 참조해 주세요.
+
+<P>이 예의 경우, Solaris (TM)  operating system에서는 다음의 커멘드를 실행합니다.
+<blockquote>
+<pre>rmiregistry &amp;</pre>
+</blockquote>
+<P>Windows 플랫폼에서는, 다음의 커멘드를 실행합니다.
+<blockquote>
+<pre>start rmiregistry </pre>
+</blockquote>
+
+<P>디폴트에서는, 레지스트리는 TCP 포트 번호 1099 로 실행됩니다.  다른 포트상에서 레지스트리를 실행하려면 , 커멘드행으로 포트 번호를 지정합니다. 예를 들어, Windows 플랫폼상의 포트 2001 으로 레지스트리를 기동하려면 , 다음과 같이 합니다.
+
+<blockquote>
+<pre>start rmiregistry 2001</pre>
+</blockquote>
+
+<p>
+레지스트리가 1099 이외의 포트로 실행되는 경우는,<code>Server</code> 및 <code>Client</code> 클래스내의 <code>LocateRegistry.getRegistry</code> 의 호출해에, 포트 번호를 지정할 필요가 있습니다. 예를 들어, 이 예로 레지스트리를 포트 번호 2001 으로 실행하는 경우, 서버내의 <code>getRegistry</code> 의 호출은 다음과 같이 됩니다.
+<blockquote>
+<pre>Registry registry = LocateRegistry.getRegistry(2001);
+</pre>
+</blockquote>
+<p>
+
+<a name="52"></a> <h3>서버를 기동한다</h3>
+<p>서버를 기동하려면 , 다음의 <code>java</code> 커멘드를 사용해 <code>Server</code> 클래스를 실행합니다.
+<p>Solaris  operating system의 경우:
+<blockquote>
+<pre>
+java -classpath <i><b>classDir</b></i> -Djava.rmi.server.codebase=file:<i><b>classDir</b></i>/ example.hello.Server &amp;
+</pre>
+</blockquote>
+<p>Windows 플랫폼의 경우:
+<blockquote>
+<pre>
+start java -classpath <i><b>classDir</b></i> -Djava.rmi.server.codebase=file:<i><b>classDir</b></i>/ example.hello.Server
+</pre>
+</blockquote>
+
+<p><b>classDir</b> 는, 클래스 파일 트리의 루트 디렉토리입니다 (<a href="#4">「원시 파일을 컴파일 한다」</a>마디의 <b>destDir</b> 를 참조). <code>java.rmi.server.codebase</code> 시스템 프로퍼티을 설정하는 것으로, 레지스트리가 원격 인터페이스 정의를 로드할 수 있게 됩니다(말미의 slash가 중요한 것으로 주의해 주세요). 이 프로퍼티을 사용하는 상세한 것에 대하여는,<a href="../codebase.html">Java RMI 의 사용에 의한 동적인 코드의 다운로드에 관한 튜토리얼</a>을 참조해 주세요.
+
+<p>서버로부터의 출력은, 다음과 같이 됩니다.
+<blockquote>
+<pre>
+Server ready
+</pre>
+</blockquote>
+<p>사용자에 의해 종료 당하는 (일반적으로은 프로세스의 강제 종료)까지, 서버는 실행을 계속합니다. <a name="53"></a> <a name="53"></a> <h3>클라이언트를 실행한다</h3>
+<p>서버의 준비를 할 수 있으면(자), 다음과 같이 해 클라이언트를 실행할 수 있습니다.
+<blockquote>
+<pre>
+java  -classpath <i><b>classDir</b></i> example.hello.Client
+</pre>
+</blockquote>
+<p><b>classDir</b> 는, 클래스 파일 트리의 루트 디렉토리입니다 (<a href="#4">「원시 파일을 컴파일 한다」</a>마디의 <b>destDir</b> 를 참조).
+
+<p>클라이언트로부터 출력되는 것은, 다음의 메세지입니다.
+<blockquote>
+<pre>
+response: Hello, world!
+</pre>
+</blockquote>
+<br>
+</blockquote>
+<p>
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

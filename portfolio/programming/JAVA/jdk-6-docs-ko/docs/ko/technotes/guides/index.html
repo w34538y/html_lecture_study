@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<link type="text/css" rel="stylesheet" href="../css/guide.css">
+<title>Java(TM) 2 Platform Standard Edition 6 - xrath.com 에서 번역됨</title>
+
+<STYLE type="text/css">
+<!--
+.SansSerif   { font-family: Arial, Helvetica, sans-serif; }
+.Indent      { margin-left: 2em; }
+h2           { font-family: Arial, Helvetica, sans-serif; text-align: left; }
+h3           { font-family: Arial, Helvetica, sans-serif; text-align: left; }
+-->
+</STYLE>
+
+</head>
+
+<body>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+  <center>
+<h1><span style="font-size: 90%;">Java<sup><font size="-2">TM</font></sup> Platform Standard Edition 6<br> 개요</span></h1>
+  </center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<a href="../../index.html" style="font-size:80%;">목차</a> 
+</TD>
+
+</TR>
+</TABLE>
+<br>
+
+<ul class="SansSerif" style="font-size: 90%;">
+<li><a href="#jre-jdk">JRE 와 JDK</a> 
+<li><a href="#javalanguage">Java 프로그램 언어</a> 
+<li><a href="#javavm">Java 가상 머신</a> 
+<li><a href="#base">기본 라이브러리</a> 
+<li><a href="#integration">통합 라이브러리</a> 
+<li><a href="#userinterface">사용자 인터페이스 라이브러리</a> 
+<li><a href="#deployment">배치</a> 
+<li><a href="#toolspecs">툴의 스펙</a> 
+<li><a href="#toolsupport">JDK 툴 및 유틸리티</a> 
+<li><a href="#platform">플랫폼</a> 
+</ul>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="jre-jdk"></a> 
+<h2>JRE 와 JDK</h2>
+
+<div class=Indent>
+
+Sun Microsystems 에서는, Java<sup><font size="-2">TM</font></sup> Platform Standard Edition (Java<sup><font size="-2">TM</font></sup> SE) 패밀리의 주체가 되는 소프트웨어 제품으로서 다음의 2 개의 소프트웨어를 제공하고 있습니다.
+<p>
+
+<h3>Java SE Runtime Environment (JRE)</h3>
+<p>
+JRE 는, Java 프로그램 언어로 기술된 애플릿이나 어플리케이션을 실행하는데 필요한 라이브러리, Java 가상 머신, 그 외의 컴퍼넌트를 제공합니다. 이 실행 환경은, 작성한 어플리케이션을 독립해 실행할 수 있도록(듯이) 하기 위한(해), 어플리케이션과 함께 재배포할 수가 있습니다.
+<p>
+
+<h3>Java SE Development Kit (JDK)</h3>
+<p>
+JDK 에는, JRE 외, 애플릿이나 어플리케이션을 개발하는데 필요 또는 편리한 컴파일러 및 디버거등의 커멘드행 개발툴이 포함되어 있습니다.
+<p>
+
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="javalanguage"></a> 
+<h2>Java 프로그램 언어</h2>
+
+<div class=Indent>
+
+<p>
+Java 프로그램 언어는, 동시 처리가 가능해, 강하고 형지를 무늬를 박아서 염색한 것 된다고 하는 특징을 갖추어 클래스를 베이스로 한, 범용의 객체 지향 언어입니다. 일반적으로은, Java 가상 머신 스펙으로 정의된 바이트 코드 명령 세트 및 바이너리 형식에 컴파일 됩니다.
+
+자세한 것은,<a href="language/index.html">「언어의 특징」</a>을 참조해 주세요.
+
+</p>
+
+
+
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="javavm"></a> 
+<h2>Java 가상 머신</h2>
+
+<div class=Indent>
+
+<p>
+Java 가상 머신은 추상적인 계산기로, 명령 세트를 갖추어 실행시에 메모리를 조작합니다. Java 가상 머신은 다양한 플랫폼에 이식되고 있기 (위해)때문에, 하드웨어 및  operating system에 의존하지 않는다고 하는 특징이 있습니다.
+
+<p>
+Java Platform Standard Edition 는, 다음의 2 개의 Java VM (가상 머신)를 제공하고 있습니다.  
+</p>
+
+<h3>Java HotSpot Client VM</h3>
+<p>
+클라이언트 VM 는, 주로 클라이언트 어플리케이션용으로 플랫폼을 사용하기 위해서 개발된 구현입니다. 클라이언트 VM 는 기동 시간을 단축해, 메모 리사이즈를 축소하도록(듯이) 조정되고 있습니다. 이 VM 를 기동하려면 , 어플리케이션의 기동시에 <code>-client</code> 커멘드행 옵션을 사용합니다.  </p>
+
+<h3>Java HotSpot Server VM</h3>
+ 
+<p>
+서버 VM 는, 실행 속도를 최대화하도록(듯이) 설계된 구현입니다만, 그 대신에 기동 시간이 길어져, 메모리 사용량도 많아지고 있습니다. 이 VM 를 기동하려면 , 어플리케이션의 기동시에 <code>-server</code> 커멘드행 옵션을 사용합니다.
+
+
+<p> 자세한 것은,<a href="vm/index.html">VM 의 문서</a>를 참조해 주세요.  
+</p>
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<a name="base"></a> <a name="core"></a> 
+<h2>기본 라이브러리</h2>
+
+<div class=Indent>
+
+<p>Java 플랫폼에 기본적인 기능을 제공하는 클래스와 인터페이스입니다.  
+  </p>
+
+<a name="langutil"></a> 
+<h3>Lang 및 Util 패키지</h3>
+
+<p>
+기본적인 <tt>Object</tt> 및 <tt>Class</tt> 클래스외, 원시형을 위한 래퍼 클래스, 기본 수치 연산을 위한 클래스, 그 외를 제공합니다. 자세한 것은,<a href="lang/index.html">Lang 및 Util 의 문서</a>를 참조해 주세요.  
+ 
+<p>
+<b>Math</b>
+<p>
+Math 의 기능에는, 부동 소수점 라이브러리와 임의 정밀도의 수치 연산이 포함되어 있습니다. 자세한 것은,<a href="math/index.html">Math 의 문서</a>를 참조해 주세요.
+<p>
+<b>감시와 관리</b>
+<p>
+Java 플랫폼전용의 포괄적인 감시 및 관리의 지원로서는, Java 가상 머신용의 감시 및 관리 API, 로그 기능용의 감시 및 관리 API, jconsole 나 그 외의 감시 유틸리티, 곧바로 이용할 수 있는 감시 및 관리 기능인 Java Management Extensions (JMX), 그리고 Sun 의 플랫폼 확장 기능이 있습니다. 자세한 것은,<a href="management/index.html">감시 및 관리의 문서</a>를 참조해 주세요.  
+<p>
+<b>패키지의 버젼 ID</b>
+<p>
+패키지의 버젼 관리 기능에 의해, 패키지 레벨에서의 버젼 관리가 가능하게 되어, 어플리케이션 및 애플릿은, 특정의 Java 실행시 환경, 가상 머신, 및 클래스 패키지의 버젼을 실행시에 식별할 수 있게 됩니다. 상세한 것에 대하여는,<a href="versioning/index.html">패키지의 버젼 ID 의 문서</a>를 참조해 주세요.  
+<p>
+<b>참조 객체</b>
+<p> 참조 객체를 사용하는 것으로, 한정된 레벨에서의 가비지 컬렉터와의 대화가 가능하게 됩니다. 다른 있는 객체가 가비지 컬렉터에 의해 벌써 재생되고 있어도, 그 객체를 가리키는 참조를 유지하고 싶은 경우에, 프로그램은 참조 객체를 사용할 수 있습니다. 게다가 프로그램은, 어느 객체에의 도달 가능성이 바뀌었다고 가비지 컬렉터가 판단한 후에, 통지를 받도록(듯이) 할 수가 있습니다. 이 때문에, 참조 객체는, 다음의 경우에 도움이 됩니다.  단순한 캐쉬와 같게 메모리가 얼마 남지 않게 되었을 때에 플래시 되는 캐쉬를 구축하거나 재생될 때 키나 값을 유지하지 않는 매핑을 구현하거나 Java 의 finalize 기구보다 유연한 방법으로 사전의 클린 업 동작을 스케줄 하거나 하는 경우등이 있습니다. 자세한 것은,<a href="../../api/java/lang/ref/package-summary.html">참조 객체의 문서</a>를 참조해 주세요.  
+  <p>
+<b>리플렉션</b>
+<p>
+리플렉션에 의해 Java 코드는, 로드한 클래스의 필드, 메소드, 및 생성자 에 관한 정보를 검출해, 리플렉트 된 필드, 메소드, 및 생성자 을 사용해, 객체상에서 이러한 기본으로 있는 대응 부분을 조작하는 것이, 시큐리티의 제약의 아래에서 가능하게 됩니다. 이 API 에 의해, (실행시의 클래스에 근거한다) 타겟 객체의 public 멤버 또는 주어진 클래스가 선언한 멤버에게로의 액세스를 필요로 하는 어플리케이션의 작성이 가능하게 됩니다. 프로그램에서는, 디폴트의 리플렉션 액세스 제어를 억제할 수가 있습니다. 자세한 것은,<a href="reflection/index.html">리플렉션의 문서</a>를 참조해 주세요.  
+<p>
+<b>Collections Framework</b>
+<p>
+「컬렉션」이란, 객체의 그룹을 나타내는 객체입니다. Collections Framework 는, 컬렉션을 표현하기 위한 통일된 아키텍쳐(architecture)로, 컬렉션의 표현의 상세하게 의존하는 일 없이 컬렉션을 조작할 수 있습니다. 이것에 의해, 프로그래밍의 노력이 경감되어 퍼포먼스가 향상합니다. Collections Framework 에 의해, 서로 관련하고 있지 않는 복수의 API 간의 상호 운용이 가능하게 됩니다.  이 때문에, 새로운 API 를 배우거나 설계하거나 하는 노력이 경감되어 소프트웨어의 재사용이 촉진됩니다. 이 때문에, 새로운 API 를 배우거나 설계하거나 하는 노력이 경감되어 소프트웨어의 재사용이 촉진됩니다.  자세한 것은,<a href="collections/index.html">Collections Framework 의 문서</a>를 참조해 주세요.
+<p>
+<b>동시성 처리 유틸리티</b>
+<p>
+동시성 처리 유틸리티 패키지는, thread 풀이나 블록 큐 등, 퍼포먼스의 높은 thread 유틸리티를 위한 강력해 확장 가능한 시스템를 제공합니다. 이 패키지를 이용하는 프로그래머는, 이러한 유틸리티를 스스로 작성하는 수고로부터 해제됩니다.  정확히, Collections Framework 의 덕분에 데이터 구조를 구축하는 노력이 경감된 것과 같습니다. 게다가 이러한 패키지는, 고도의 동시성 처리 프로그래밍에 이용할 수 있는 하위 레벨의 프리미티브(primitive) 기능도 제공합니다. 자세한 것은,<a href="concurrency/index.html">동시성 처리 유틸리티의 문서</a>를 참조해 주세요.
+<p>
+<b>Java Archive (JAR) 파일</b>
+<p>
+JAR (Java ARchive)는, 다수의 파일을 1 개의 파일에 수용하기 위한 , 플랫폼으로부터 독립한 파일 형식입니다. 복수의 Java 애플릿 및 그 외에 필요하게 되는 컴퍼넌트 (. class 파일, 이미지와 음성)은, JAR 파일에 포함되어 단일의 HTTP 트랜잭션(transaction)로 브라우저에 다운로드됩니다.  이것에 의해 다운로드의 속도는 크게 개선됩니다. JAR 포맷은, 압축을 지원합니다.  이것에 의해, 파일 사이즈가 축소되어 한층 더 다운로드 시간이 개선됩니다. 더해, 애플릿의 저자는 JAR 파일중의 개별의 엔트리에 전자적인 서명을 부가하는 것으로써 배포원을 보증할 수가 있습니다. 또, 완전하게 확장 가능합니다. 자세한 것은,<a href="jar/index.html">Java Archive 의 문서</a>를 참조해 주세요.  
+<p>
+<b>로그 기능 </b>
+<p>
+로깅 API 를 이용하면(자), 최종 사용자, 시스템 관리 책임자, 필드 서비스 엔지니어, 및 소프트웨어의 개발 팀이 분석하는데 적합한 로그 리포트를 생성할 수 있으므로, 소프트웨어의 서비스 제공이나 고객 사이트에서의 보수가 용이하게 됩니다. Logging API 에서는, 어플리케이션 또는 플랫폼에서 발생한 시큐리티의 실패, 구성 에러, 퍼포먼스의 장해, 버그등의 정보를 수중에 넣습니다. 자세한 것은,<a href="logging/index.html">로깅의 문서</a>를 참조해 주세요.  설정의 변경 
+<p>
+<b>Preferences API</b>
+<p>
+Preferences API 는, 사용자 및 시스템의 설정이나 구성 데이터를, 어플리케이션이 포함 및 취득하는 수단을 제공합니다. 이 데이터는, 구현 마다 다른 배킹 스토어에 지속적으로 보존됩니다. 설정 노드는 2 개의 개별의 트리로 구성됩니다. 한편은 사용자 설정용, 이제(벌써) 한편은 시스템 설정용입니다. 자세한 것은,<a href="preferences/index.html">Preferences API 의 문서</a>를 참조해 주세요.
+<p>
+
+<a name="otherbase"></a> 
+<h3>그 외의 패키지</h3>
+<p>
+<b>I/O</b>
+<p>
+<code>java.io</code> 및 <code>java.nio</code> 패키지는, 어플리케이션의 I/O 를 관리하기 위한 풍부한 API 세트를 제공합니다. 그 기능에는, 파일 및 디바이스의 입출력, 객체 직렬화, 버퍼 관리, 캐릭터 세트의 지원가 포함됩니다. 그 외 API 는, 다중화 된 비블록 입출력, 메모리맙핑, 파일의 락 등, 측정할 수 있는 서버의 기능을 지원합니다. 자세한 것은,<a       href="io/index.html">I/O 의 문서</a>를 참조해 주세요.
+<p>
+<b>객체 직렬화</b>
+<p>
+객체 직렬화는, 코어 Java 의 입출력 클래스를, 객체를 지원하도록(듯이) 확장하는 것입니다. 객체 직렬화는, 객체와 거기로부터 참조되고 있는 객체를, 바이트 스트림에 코드화합니다.  그리고, 그 스트림로부터 객체 그래프의 완전한 복원을 실시합니다. 직렬화는, 간단하고 쉬운 지속성의 실현이나, 소켓이나 Remote Method Invocation (RMI)에 의한 통신을 위해서(때문에) 사용됩니다. 자세한 것은,<a href="serialization/index.html">객체 직렬화의 문서</a>를 참조해 주세요.
+<p>
+<b>네트워크 기능</b>
+<p>
+네트워크 기능을 위한 클래스를 제공합니다.  예를 들어, 주소 지정, URL 나 URI 를 사용하기 위한 클래스, 서버에 접속하기 위한 소켓 클래스, 네트워크세큐리티 기능등이 있습니다. 자세한 것은,<a href="net/index.html">네트워크 기능의 문서</a>를 참조해 주세요.  
+<p>
+<b>시큐리티</b>
+<p>
+설정 변경이 가능한 액세스 제어, 디지털 서명, 인증과 승인, 암호화, 안전한 인터넷 통신 등, 시큐리티 관련 기능을 위한 API 입니다. 자세한 것은,<a href="security/index.html">시큐리티의 문서</a>를 참조해 주세요.  
+<p>
+<b>국제화 </b>
+<p>
+국제화 한 어플리케이션의 개발을 가능하게 하는 API 입니다. 국제화란, 기술적인 변경을 하지 않고 어플리케이션을 다양한 언어 및 지역에 적합시키기 위한, 어플리케이션의 설계 프로세스입니다. 자세한 것은,<a href="intl/index.html">국제화의 문서</a>를 참조해 주세요.  
+<p>
+<b>JavaBeans<sup><font size="-2">TM</font></sup> Component API</b>
+<p>
+Bean (JavaBeans<sup><font size="-2">TM</font></sup> 아키텍쳐(architecture)에 근거한 컴퍼넌트로, 어플리케이션의 개발 과정에서 부품으로서 어플리케이션에 짜넣을 수가 있다)의 개발에 관련한 클래스가 들어가 있습니다. 자세한 것은,<a href="beans/index.html">JavaBeans 의 문서</a>를 참조해 주세요.  
+<p>
+<b>Java Mangement Extensions (JMX)</b>
+<p>
+Java Management Extensions (JMX) API 는, 어플리케이션, 디바이스, 서비스, Java 가상 머신등의 자원을 관리 및 감시하기 위한 표준 API 입니다. 전형적인 용도로서 어플리케이션 설정의 조사라고 변경, 어플리케이션의 동작에 관한 통계 정보의 수집, 상태 변화나 에러 조건의 통지등을 생각됩니다. JMX API 에는 원격 접근이 포함되어 있기 (위해)때문에, remote administration 프로그램이 이러한 목적으로 실행중의 어플리케이션이라고 대화하는 것이 가능합니다. 자세한 것은,<a href="jmx/index.html">Java Management Extensions 의 문서</a>를 참조해 주세요.  </p>
+<p>
+<b>XML (JAXP) </b>
+<p>
+Java 플랫폼은, XML 문서 및 데이터를 처리하기 위한 API 를 풍부하게 제공하고 있습니다. 자세한 것은, Java SE 의 <a href="xml/index.html">「XML 에 관한 문서」</a>를 참조해 주세요.  
+<p>
+<b>Java Native Interface (JNI)</b>
+<p>
+Java Native Interface (JNI)는, Java 네이티브 메소드를 기술하거나 Java 가상 머신을 네이티브 어플리케이션에 짜넣거나하기 위한 표준 프로그래밍 인터페이스입니다. 주된 목적은, 주어진(given) 플랫폼상의 모든 Java 가상 머신의 구현간으로, 네이티브 메소드 라이브러리를 binary level compatibility로 하는 것에 있습니다. 자세한 것은,<a href="jni/index.html">Java Native Interface 의 문서</a>를 참조해 주세요.  
+<p>
+<b>확장 기능 기구</b>
+<p>
+옵션 패키지는, Java 클래스와 거기에 관련하는 native code의 패키지입니다.  확장 기능을 사용하는 것으로, 어플리케이션의 개발자는 코어 플랫폼의 기능을 확장할 수 있습니다. 확장 기능 기구에 의해, Java 플랫폼을 사용하는 경우와 같이, Java 가상 머신으로부터 옵션의 확장 기능 클래스를 이용할 수 있습니다. 확장 기능 기구에 의해, 필요한 옵션 패키지가 JDK 또는 Runtime Environment 에 인스톨되어 있지 않은 경우는, 지정된 URL 로부터 취득할 수도 있습니다. 자세한 것은,<a href="extensions/index.html">「Java 확장 기능 기구」</a>문서를 참조해 주세요.  </p>
+<p>
+<b>추천 표준 우선 기구</b>
+<p>
+추천 표준은, Java Community ProcessSM (JCPSM) 이외의 표준화 과정에서 정의된 Java API 입니다. 추천 표준은 JCP 의 외부에서 정의되기 (위해)때문에, Java Platform 의 릴리스의 사이에 개정될 가능성이 있습니다. 개발자나 소프트웨어 벤더는, 추천 표준 우선 기구를 사용해, Sun Microsystems 가 릴리스 한 Java Platform 에 짜넣어지고 있는 것보다 새로운 버젼의 추천 표준을 제공할 수가 있습니다. 자세한 것은,<a href="standards/index.html">추천 표준 우선 기구에 관한 문서</a>를 참조해 주세요.  </p>
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="integration"></a> 
+<h2>통합 라이브러리</h2>
+
+<div class=Indent>
+
+<h3>Java Database Connectivity (JDBC) API</h3>
+
+<p>JDBC<sup><font size="-2">TM</font></sup> API 는, Java 프로그램 언어로부터의 범용적인 데이터 액세스를 제공합니다. JDBC 3.0 API 를 사용하면(자), 개발자는 RDB, 스프레드쉬트, 플랫 파일 등, 실질상 모든 데이터 소스에 액세스 할 수 있는 어플리케이션을 기술할 수 있습니다. JDBC 테크놀러지는, 툴과 대체 인터페이스를 구축할 수 있는 공통의 베이스도 제공하고 있습니다. 자세한 것은,<a href="jdbc/index.html">JDBC 의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>Remote Method Invocation (RMI)</h3>
+
+<p>Remote Method Invocation (RMI, 원격 메소드 호출)를 사용하면(자), Java 프로그램 언어로 기술된 프로그램간에서의 원격 통신이 가능하게 되기 (위해)때문에, 분산 어플리케이션을 개발할 수 있습니다. RMI 에서는, 1 개의 Java 가상 머신으로 실행중의 객체로부터, 다른 Java VM (다른 호스트상에 있어도 괜찮다)로 실행중의 객체에 있는 메소드를 호출할 수가 있습니다. 자세한 것은, Java SE <a href="rmi/index.html">RMI 의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>Java IDL (CORBA)</h3>
+
+<p>Java IDL 테크놀러지는, Java 플랫폼에 CORBA (Common Object Request Broker Architecture) 기능을 추가하는 것으로써, 표준 규격에 준거한 상호 운용성 및 접속 기능을 제공합니다. Java IDL 를 사용하면(자), Web 대응의 분산형 Java 어플리케이션으로부터, Object Management Group 에 의한 업계표준의 IDL (Object Management Group Interface Definition Language)나 IIOP (Internet Inter-ORB Protocol) 경유로, 원격 네트워크 서비스상의 오퍼레이션을 투과적으로 호출할 수가 있습니다. 런타임 컴퍼넌트에는, IIOP 통신을 사용한 만큼 산컴퓨팅용의 Java ORB 가 포함되어 있습니다. 자세한 것은,<a href="idl/index.html">Java IDL 의 문서</a>를 참조해 주세요.
+  </p>
+
+<h3>RMI-IIOP</h3>
+<p>이것은, Java Remote Method Invocation over Internet Inter-ORB Protocol 테크놀러지의 약어입니다.  RMI 프로그래밍 모델에 의해, RMI API 를 이용한 CORBA 서버 및 어플리케이션의 프로그래밍이 가능하게 됩니다. Java Remote Method Protocol (JRMP)를 트랜스폴트로서 사용해 Java 프로그램 언어만으로 작업하는 일도, Internet InterORB Protocol (IIOP)를 사용해 다른 CORBA 대응 프로그램 언어를 병용 해 작업할 수도 있습니다. CORBA 준거의 언어로 기술된 다른 어플리케이션에 Internet InterORB Protocol (IIOP) 경유로 접속하는데 필요한 코드를 생성하려면 , rmic 컴파일러를 사용합니다. 다른 언어로 기술된 CORBA 어플리케이션을 사용하는 경우의 IDL 는, -idl 옵션을 지정한 rmic 컴파일러를 사용해 Java 프로그램 언어 인터페이스로부터 생성할 수 있습니다. IIOP Stub 및 Tie 클래스를 생성하려면 , -iiop 옵션을 지정한 rmic 컴파일러를 사용합니다. 자세한 것은,<a href="rmi-iiop/index.html">RMI-IIOP 의 문서</a>를 참조해 주세요.
+   </p>
+
+<h3>Scripting for the Java Platform</h3>
+<p>Java SE 6 에는,<a      href="http://jcp.org/en/jsr/detail?id=223">JSR 223: Scripting for the Java<sup>TM</sup> Platform</a>  API 가 포함되어 있습니다. 이것은 Java 어플리케이션으로 스크립트 엔진을 「수용」가능한 시스템입니다. Java SE 6 의 Sun 의 구현에는,<a href="http://www.mozilla.org/rhino/">Mozilla Rhino:java_script for Java</a>  에 근거하는 스크립트 엔진의 샘플이 포함되어 있습니다. 스크립트 작성 시스템는, jar 「서비스 발견」기구에 의해, 서드 파티의 스크립트 엔진을 지원합니다. JSR-223 에 준거한 스크립트 엔진을 CLASSPATH 에 「넣으며」, 사용하고 있는 Java 어플리케이션으로부터 같은 스크립트 엔진에 액세스 할 수가 있습니다. 자세한 것은,<a href="scripting/index.html">Scripting 의 문서</a>를 참조해 주세요.
+</p>
+ 
+<h3>Java Naming and Directory Interface<sup><font size="-2">TM</font></sup> (JNDI) API</h3>
+
+<p>Java Naming and Directory Interface<font size="-2"><sup>TM</sup></font> (JNDI)는, Java 프로그램 언어로 기술된 어플리케이션에, 네이밍 및 디렉토리 기능을 제공합니다. 다른 네임 및 디렉토리 서비스의 구현과 독립해 동작하도록(듯이) 설계되고 있습니다. 새로운 서비스, 전개되고 있는 서비스, 벌써 전개되고 있는 서비스 등, 다양한 서비스에 대해서 공통의 방법으로 액세스 할 수가 있습니다. JNDI 아키텍쳐(architecture)는, API 및 SPI (Service Provider Interface)로부터 구성됩니다. 이 API 를 사용해, Java 어플리케이션으로부터 다양한 네임 및 디렉토리 서비스에 액세스 할 수가 있습니다. SPI 에 의해, 다양한 네임 및 디렉토리 서비스가 투과적으로 플러그 인 됩니다. 이러한 서비스에는, JNDI API 를 사용해 Java 어플리케이션으로부터 액세스 할 수가 있습니다. 자세한 것은,<a href="jndi/index.html">JNDI 의 문서</a>를 참조해 주세요.  
+  </p>
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="userinterface"></a> 
+<h2>사용자 인터페이스 라이브러리</h2>
+
+<div class=Indent>
+
+<h3>Input Method Framework</h3>
+
+<p>Input Method Framework 는, 텍스트 편집시에, 텍스트 편집 컴퍼넌트와 입력 메소드간의 공동 작업을 가능하게 합니다. 입력 메소드는, 키보드에 의한 단순 입력 이외 방법으로 텍스트를 입력하기 위한 소프트웨어 컴퍼넌트입니다. 입력 메소드는, 많은 종류의 문자가 필요한 일본어, 중국어, 또는 한국어를, 문자수보다 아득하게 키수가 적은 키보드로부터 입력하는 방식으로서 보급되어 있습니다. 이 시스템에서는, 이 3 언어 이외의 입력 메소드도 지원하고 있어, 자필, 음성인식등의 다른 입력 기구에도 사용할 수 있습니다. 자세한 것은,<a href="imf/index.html">Input Method Framework</a>  의 문서를 참조해 주세요.  </p>
+
+<h3>Accessibility</h3>
+
+<p>Java Accessibility API 에 의해, 개발자는, 몸의 부자유스러운 (분)편이 이용 가능한 Java 어플리케이션을 작성할 수 있습니다. Accessibility 를 이용 가능한 Java 어플리케이션은, 화면 리더, 음성인식 시스템, 및 점자 단말등의 사용자 보조 기능에 대응하고 있습니다. 자세한 것은,<a href="access/index.html">Accessibility 의 문서</a>를 참조해 주세요.  </p>
+  <p> 
+
+<h3>인쇄 서비스</h3>
+<p>Java<sup><font size="-2">TM</font></sup> 인쇄 서비스 API 를 사용하면(자), Java ME 프로파일 등, 사이즈가 제한되는 플랫폼을 포함해 모든 Java 플랫폼에서 인쇄가 가능하게 됩니다. 자세한 것은,<a href="jps/index.html">Java 인쇄 서비스의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>사운드</h3>
+
+<p>Java 플랫폼에는, 오디오 및 MIDI (Musical Intstrument Digital Interface) 데이터의 수중에 넣어, 처리, 및 재생용의 강력한 API 가 포함되어 있습니다. 이 API 는, 이 플랫폼에서의 고품질인 오디오 믹싱 및 MIDI 합성을 보증하는 효과적인 사운드 엔진에 의해 지원되고 있습니다. 자세한 것은,<a href="sound/index.html">Java Sound 의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>드래그＆드롭에 의한 데이터 전송</h3>
+
+<p>드래그＆드롭에 의해, Java 프로그램 언어와 네이티브 어플리케이션의 사이, 다른 Java 프로그램 언어 어플리케이션의 사이, 및 동일한 Java 프로그램 언어 어플리케이션내에서의 데이터 전송이 가능합니다. 자세한 것은,<a href="draganddrop/index.html">「드래그＆드롭 전송」</a>을 참조해 주세요.  
+  </p>
+
+<h3>Image I/O</h3>
+<p>Java Image I/O API 는, 파일에 포함된 이미지나, 네트워크 경유로 액세스 하는 이미지를 처리하기 위한 , 플러그 인 가능한 아키텍쳐(architecture)를 제공합니다. 이 API 는, 이미지의 형식에 특유의 플러그 인을 추가하기 위한 시스템를 제공합니다. 자주(잘) 사용되는 몇개의 이미지 형식용의 플러그 인이 Java Image I/O 에 짜넣어지고 있습니다만, 서드 파티가 특수한 이미지 형식용의 독자적인 플러그 인을 작성하기 위해서 이 API 를 이용할 수도 있습니다. 자세한 것은,<a href="imageio/index.html">「Image I/O」</a>를 참조해 주세요.  
+  </p>
+
+<h3>Java 2D<sup><font size="-2">TM</font></sup> 의 그래픽스와 이미징</h3>
+
+<p>Java 2D<sup><font size="-2">TM</font></sup> API 는, 2 차원의 고도의 그래픽스와 이미징을 처리하는 클래스의 모임입니다. 라인 아트, 텍스트, 및 화상이, 1 개의 종합 모델안에 포함되어 있습니다. 이 API 는, 이미지의 합성과 알파 채널 이미지, 정확한 칼라 영역의 정의와 변환용의 클래스 세트, 및 표시용 이미징 연산자의 풍부한 세트를 폭넓게 지원합니다. 자세한 것은,<a href="2d/index.html">Java 2D 의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>AWT</h3>
+
+<p>Java<sup><font size="-2">TM</font></sup> 플랫폼의 Abstract Windowing Toolkit (AWT)는, 메뉴, 버튼, 텍스트 필드, 다이알로그 박스, 체크 박스등의 사용자 인터페이스 컴퍼넌트를 구축해, 이러한 컴퍼넌트로부터의 사용자 입력을 처리하기 위한 API 를 제공하고 있습니다. 게다가 AWT 를 사용하면(자), 타원이나 다각형등이 간단한 도형을 draw 하거나 어플리케이션으로 사용하는 사용자 인터페이스의 레이아웃이나 폰트를 개발자가 제어하거나 할 수도 있습니다. 자세한 것은,<a href="awt/index.html">AWT 의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>Swing</h3>
+
+<p> Swing API 도, 사용자 인터페이스에 사용하는 그래피컬 컴퍼넌트 (GUI)를 제공하는 것입니다. Swing API 는, Java 프로그램 언어로 기술되고 있어 기초가 되는  operating system로부터 제공되는 GUI 기능에 고유의 코드에는 의존하지 않습니다. 그 때문에, Swing GUI 컴퍼넌트는, 어플리케이션의 실행중으로 전환할 수 있는, 「플러그 인 가능한」Look & Feel 를 갖추고 있습니다. 자세한 것은, Java SE <a href="swing/index.html">Swing 의 문서</a>를 참조해 주세요.
+  </p>
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="deployment"></a> 
+<h2>배치</h2>
+
+<div class=Indent>
+
+<h3>Java 의 배치</h3>
+ 
+<p>
+인스톨, 셋업, 갱신, 재배포, 및 관련 토픽:</p>
+<dl>
+  <ul>
+<li>컴퓨터에의 Java 플랫폼의 인스톨</li>
+<li>Java 컨트롤 패널의 설정 옵션</li>
+<li>Java 프로그램 언어에서의 어플리케이션이나 애플릿의 작성</li>
+<li>애플릿을 호출하거나 어플리케이션을 다운로드해 기동하거나하기 위한 Web 페이지의 작성</li>
+<li>Web 서버로 Java 관련 파일을 이용 가능하게 한다</li>
+<li>컴퓨터상의 Java 플랫폼의 갱신</li>
+  </ul>
+</dl>
+<p>자세한 것은,<a href="deployment/index.html">배치 전반</a>,<a href="plugin/index.html">Java Plug-in</a> , 및 <a href="javaws/index.html">Java Web Start</a>  의 문서를 참조해 주세요.
+</p>
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="toolspecs"></a> 
+<h2>툴의 스펙</h2>
+
+<div class=Indent>
+ 
+<h3>디버거의 아키텍쳐(architecture)</h3>
+<p>
+개발 환경에서 사용하는 디버거의 아키텍쳐(architecture) 및 스펙입니다. 자세한 것은,<a href="jpda/index.html">Java Platform Debugger Architecture (JPDA)의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>VM Tool 인터페이스</h3>
+<p>
+Java Virtual Machine Tool Interface (JVMTI)는, JVM 내에서 실행되고 있는 어플리케이션 상태를 검사해, 실행을 제어하기 위한 스펙입니다. Java Virtual Machine Profiler Interface (JVMPI)는, 현재는 추천 되고 있지 않습니다. 자세한 것은,<a href="jvmti/index.html">Java Virtual Machine Tool Interface (JVMTI)의 문서</a>를 참조해 주세요.  
+  </p>
+
+<h3>Javadoc 툴</h3>
+<p>
+Javadoc 는, 원시 파일의 선언과 다큐멘테이션 코멘트를 해석해, 프로그램 요소에 대해 기술한 일식의 HTML 페이지를 생성하는 툴입니다. 도크 렛 API 에 의해, 프로그램이나 라이브러리의 소스 레벨의 구조 (소스에 파묻힌 javadoc 코멘트를 포함한다)를 조사하기 위한 기구가 클라이언트에 제공됩니다. 도크 렛은, 이 API 를 사용해 문서를 생성할 수 있습니다. 자세한 것은,<a href="javadoc/index.html">Javadoc 의 문서</a>를 참조해 주세요.
+  </p>
+
+<h3>주석 처리</h3>
+<p>
+apt 툴은, 주석 처리를 위한 커멘드행 유틸리티입니다. 이 툴에는 일식의 리플렉트 API 가 포함되어 있어 프로그램의 주석을 처리하기 위한 인프라스트럭쳐(infrastructure)를 지원하고 있습니다. 이러한 관련하는 API 에 의해, 프로그램 구조를, 빌드시에, 소스 베이스 또 읽어내 전용으로 보는 것이 가능하게 됩니다. 그리고, 총칭이 추가된 후의 Java 프로그램 언어의 형태 시스템을 명료하게 모델화할 수 있도록(듯이) 설계되고 있습니다. 자세한 것은,<a href="apt/index.html">apt 의 문서</a>를 참조해 주세요.
+</p>
+
+<h3>Dynamic Attach</h3>
+<p>
+com.sun.tools.attach 패키지에는, Sun Microsystems 의 Java Platform 에의 확장 기능이 포함되어 있습니다. 이것에 의해, 기동하고 있는 Java 가상 머신에 어플리케이션을 접속할 수가 있습니다. 일단 접속하면(자), 타겟 가상 머신으로 툴 에이전트가 기동시킬 수가 있습니다. 자세한 것은,<a href="attach/index.html">접속의 문서</a>를 참조해 주세요.
+</p>
+
+<h3>JConsole API</h3>
+<p>
+com.sun.tools.jconsole 패키지에는, Sun Microsystems 의 Java Platform 에의 확장 기능이 포함되어 있습니다. 이것에 의해, JConsole 에 액세스하기 위한 프로그램 인터페이스를 제공합니다. 자세한 것은,<a href="management/jconsole.html">「JConsole 의 사용」</a>  을 참조해 주세요.
+</p>
+
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="toolsupport"></a> 
+<h2>JDK 툴 및 유틸리티</h2>
+
+<div class=Indent>
+
+<p> JDK 에는, 툴 및 유틸리티의 문서가 포함되어 있습니다. 그러한 문서에서는, 기본 툴 (javac, java, javadoc, apt, appletviewer, jar, jdb, javah, javap, extcheck), 시큐리티 툴, 국제화 툴, RMI 툴, IDL 및 RMI-IIOP 툴, 배치 툴, Java Plug-in 툴, Java Web Start 툴, 감시 및 관리툴, 트러블 슈팅 툴에 대해 설명되고 있습니다.
+
+자세한 것은,<a href="../tools/index.html">「JDK 툴과 유틸리티」</a>를 참조해 주세요.  
+</p>
+<!-- <p> Refer to the <a href="../../../1.6/pdf/jdk60_ts_guide.pdf"> Java <sup><font size="-2">TM</font></sup> Platform, Standard Edition 6 Trouble-Shooting and Diagnostic Guide</a>  which provides descriptions of tools, options, and other items for use in analyzing problems.   This document contains suggestions about what to try before submitting a bug report and what data to collect for a report.  </p> <p> -->
+</div>
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<a name="platform"></a> 
+<h2>플랫폼</h2>
+
+<div class=Indent>
+
+<p>Sun 는, Microsoft Windows, Linux, Solaris 의 각  operating system용의 JDK 및 Java Runtime Environment 의 구현을 제공하고 있습니다. 이러한 플랫폼의 어느 버젼이 지원되고 있을까에 관한 정보는,<a href="http://java.sun.com/javase/6/webnotes/install/system-configurations.html">「Supported System Configurations」</a>를 참조해 주세요.  </p>
+  <p>
+Macintosh 나 AIX 등, 그 외의  operating system에 대해서는, 타사가 Java 플랫폼의 구현을 제공하고 있는 일이 있습니다.  </p>
+
+<!--   <p> <a href="http://java.sun.com/cgi-bin/java-ports.cgi">Non-Sun Implementations      of the Java Platform</a>  - Contains links to third-party implementations of      the Java platform for operating systems other than Microsoft Windows, Solaris,      and Linux. </p> --> <br>
+</div>
+
+<HR SIZE=3 NOSHADE>
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+    <TR VALIGN=TOP> 
+      <TD> 
+<FONT SIZE="-2"> <A HREF="../../legal/SMICopyright.html">Copyright</A>  &#169; 2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+      </TD>
+<TD ALIGN=RIGHT> <IMG SRC="../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"> <i>Java Software</i> </FONT> </TD>
+    </TR>
+  </TABLE>
+
+</body>
+</html>

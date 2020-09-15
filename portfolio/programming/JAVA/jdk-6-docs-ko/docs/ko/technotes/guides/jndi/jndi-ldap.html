@@ -1,0 +1,1677 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JNDI/LDAP 서비스 프로바이더
+    - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+
+<hr SIZE=3 NOSHADE WIDTH="100%"></h1>
+
+<center>
+<h1>
+LDAP 네임 서비스 프로바이더<br> Java Naming and Directory Interface<font size=4><sup>TM</sup></font> (JNDI)
+</h1></center>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<p><font size=-1>코멘트의 송부처: <font color="#CC0000"><a href="mailto:jndi@eng.sun.com">jndi@java.sun.com</a> </font></font>
+
+<P>
+<P><I>목차</I>
+
+<ol>
+<li>
+<a href="#INTRO">처음에</a> 
+
+<li>
+<a href="#CONFORMANCE">적합성</a> 
+
+<li>
+<a href="#PROP">환경 프로퍼티</a> 
+
+<li>
+<a href="#NAME">이름</a> 
+
+<li>
+<a href="#ATTRIBUTES">속성</a> 
+
+<li>
+<a href="#URLs">URL</a> 
+
+<li>
+<a href="#OBJECTS">Java 객체</a> 
+
+<li>
+<a href="#SCHEMA">schema</a> 
+
+<li>
+<a href="#EXCEPTIONS">예외</a> 
+
+<li>
+<a href="#API">API 매핑</a> 
+
+<li>
+<a href="#FEDERATION">연합</a> 
+
+<li>
+<a href="#EVENT">이벤트의 통지</a> 
+
+<li>
+<a href="#SASL">SASL 인증</a> 
+
+<li>
+<a href="#SSL">SSL 및 Start TLS</a> 
+
+<li>
+<a href="#POOL">접속 풀</a> 
+
+<li>
+<a href="#SEC">시큐리티에 대해</a> 
+
+</ol>
+
+<br>
+<p>
+<hr>
+<br><a NAME="INTRO"></a> 
+<h2>
+1.  처음에</h2>
+
+Lightweight Directory Access Protocol (LDAP)는, 디렉토리 서비스에 액세스 할 때의 인터넷 표준입니다. JNDI/LDAP 서비스 프로바이더를 사용해, LDAP 의 프로토콜이 구현되고 있는 서버에 액세스 할 수가 있습니다.
+<p>
+
+이 문서에서는, LDAP 서비스 프로바이더의 기능에 대해 설명합니다. 주로, LDAP 서비스 프로바이더의 동작을 중심으로 설명합니다. 자세한 것은,<a href="jndi-ldap-gl.html">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요. 예 및 사용 방법에 대해서는,<a href=http://java.sun.com/products/jndi/tutorial>JNDI 튜토리얼</a>을 참조해 주세요.
+
+<p>
+LDAP 서비스 프로바이더에는, LDAP 액세스의 기본 기능이 구현됩니다. 다수의 일반적인 LDAP 컨트롤의 지원, RMI 객체와 CORBA 객체의 포함 및 read에 대한 지원등을 기본 프로바이더에 추가하려면 , 「부스터 팩」을 인스톨 합니다. 「부스터 팩」은,<a href=http://java.sun.com/products/jndi/#download>JNDI 의 Web 사이트</a>로부터 다운로드할 수 있습니다.
+
+<p>
+<hr><a NAME="CONFORMANCE"></a> 
+<h2>
+2.  적합성</h2>
+LDAP 서비스 프로바이더는, 다음의 표준에 준거하고 있습니다.  <br>&nbsp;
+<center><table summary="service provider standards" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>표준</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>LDAPv3 (<a href="http://www.ietf.org/rfc/rfc2251.txt">RFC 2251</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>LDAPv3 속성 (<a href="http://www.ietf.org/rfc/rfc2252.txt">RFC 2252</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>LDAPv3 식별명 (<a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td>LDAP 검색 필터 (<a href="http://www.ietf.org/rfc/rfc2254.txt">RFC 2254</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td>LDAP URL 형식 (<a href="http://www.ietf.org/rfc/rfc2255.txt">RFC 2255</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td>LDAPv3 schema (<a href="http://www.ietf.org/rfc/rfc2256.txt">RFC 2256</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>LDAPv2 (<a href="http://www.ietf.org/rfc/rfc1777.txt">RFC 1777</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>LDAP 인증 (<a href="http://www.ietf.org/rfc/rfc2829.txt">RFC 2829</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>Start TLS 확장 기능 (<a href="http://www.ietf.org/rfc/rfc2830.txt">RFC 2830</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>DIGEST-MD5 (<a href="http://www.ietf.org/rfc/rfc2831.txt">RFC 2831</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>Manage Referral Control (참조 컨트롤) (<a href="http://www.ietf.org/rfc/rfc3296.txt">RFC 3296</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>Paged Results Control (페이징 결과 컨트롤) (<a href="http://www.ietf.org/rfc/rfc2696.txt">RFC 2696</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>Sort Control (소트 컨트롤) (<a href="http://www.ietf.org/rfc/rfc2891.txt">RFC 2891</a> )</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+</table></center>
+
+<p>
+<hr><a NAME="PROP"></a> 
+<h2>
+3.  환경 프로퍼티</h2>
+<a NAME="JNDIPROPS"></a>  JNDI, LDAP 고유, 및 SASL 고유의 프로퍼티에 대한 자세한 것은,<a href="jndi-ldap-gl.html#PROP">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+
+<h3>
+3.1 JNDI 프로퍼티</h3>
+LDAP 서비스 프로바이더에서는, 다음의 JNDI 환경 프로퍼티이 지원됩니다.  <br>&nbsp;
+<table summary="supported JNDI environment properties" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th>프로퍼티</th>
+
+<th NOSAVE>지원</th>
+
+<th>비고</th>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#batchsize">java.naming.batchsize</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>디폴트 값는 <tt>1</tt></td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#control">java.naming.factory.control</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td><tt>&nbsp;</tt></td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#initial">java.naming.factory.initial</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>
+LDAP 서비스 프로바이더를 초기 문맥으로서 사용할 때는,<tt>com.sun.jndi.ldap.LdapCtxFactory</tt> 를 지정한다
+</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#object">java.naming.factory.object</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;
+</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#state">java.naming.factory.state</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;
+</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#language">java.naming.language</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>아니오</td>
+
+<td>무시된다</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#url">java.naming.provider.url</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>
+Java 2 SDK, v 1.4. 1 이전의 시스템에서는, 단일의 URL 마셔 포함된다. Java 2 SDK, v 1.4. 2 는 LDAPS URL 를 포함할 수 없다
+</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#referral">java.naming.referral</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#authentication">java.naming.security.authentication</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td><tt>simple</tt>,<tt>none</tt>, SASL 기구의 리스트
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#credentials">java.naming.security.credentials</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#principal">java.naming.security.principal</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#protocol">java.naming.security.protocol</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td><tt>ssl</tt></td>
+</tr>
+</table>
+<a NAME="LDAPPROPS"></a> 
+<h3>
+3.2 LDAP 고유의 프로퍼티</h3>
+LDAP 서비스 프로바이더에서는, 다음의 LDAP 고유의 환경 프로퍼티이 지원됩니다.  <br>&nbsp;
+<table summary="supported LDAP-specific environment properties" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>프로퍼티</th>
+
+<th NOSAVE>지원</th>
+
+<th>비고</th>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#binary">java.naming.ldap.attributes.binary</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#connect">java.naming.ldap.control.connect</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#deleteRDN">java.naming.ldap.deleteRDN</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#derefAliases">java.naming.ldap.derefAliases</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#socket">java.naming.ldap.factory.socket</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td><tt><a href="jndi-ldap-gl.html#protocol">java.naming.security.protocol</a> </tt> 프로퍼티에 <tt>ssl</tt> 가 설정되어 있을 때의 디폴트 값는 <tt>javax.net.ssl.SSLSocketFactory</tt>. 자세한 것은,<a href=#SSL>「SSL」</a>를 참조
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#separator">java.naming.ldap.ref.separator</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#limit">java.naming.ldap.referral.limit</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#typesOnly">java.naming.ldap.typesOnly</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#version">java.naming.ldap.version</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table>
+
+<a NAME="SASLPROPS"></a> 
+<h3>
+3.3 SASL 고유의 프로퍼티</h3>
+이 서비스 프로바이더에서는, 다음의 SASL 고유의 환경 프로퍼티이 지원됩니다.  <br>&nbsp;
+<table summary="supported SASL-specific environment properties" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>프로퍼티</th>
+
+<th NOSAVE>지원</th>
+
+<th>비고</th>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#authorizationId">java.naming.security.sasl.authorizationId</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#callback">java.naming.security.sasl.callback</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#realm">java.naming.security.sasl.realm</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#qop">javax.security.sasl.qop</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#strength">javax.security.sasl.strength</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>
+Java 플랫폼의 <a href=http://java.sun.com/products/jce/>Java 암호화 확장 기능 (JCE) 서비스 프로바이더로 이용 가능한 암호에 근거해 선택된 암호
+</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#maxbuffer">javax.security.sasl.maxbuffer</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#mutual">javax.security.sasl.server.authentication</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_forward">javax.security.sasl.policy.forward</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_creds">javax.security.sasl.policy.credentials</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_noplain">javax.security.sasl.policy.noplaintext</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_noactive">javax.security.sasl.policy.noactive</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_nodictionary">javax.security.sasl.policy.nodictionary</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td><tt><a href="jndi-ldap-gl.html#policy_noanonymous">javax.security.sasl.policy.noanonymous</a> </tt></td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+</table>
+
+
+<p><a NAME="SPIPROPS"></a> 
+
+<h3>
+3.4 프로바이더 고유의 프로퍼티</h3>
+LDAP 서비스 프로바이더는, 다음의 프로바이더 고유의 환경 프로퍼티을 정의하고 있습니다.  <br>&nbsp;
+
+<a NAME=POOLPROP></a> 
+<dt>
+<b><tt>com.sun.jndi.ldap.connect.pool</tt></b></dt>
+<blockquote>
+이 프로퍼티을 사용해, 초기 문맥 인스턴스를 작성할 경우에, 풀 된 접속을 사용할 필요가 있는 것을 지정합니다. 이 값이 「true」의 경우, 접속을 작성하기 위한 파라미터 (<em>connection request</em> 로 불린다)가, 접속 풀 설정으로 규정되는 기준에 일치하면, 프로바이더는 풀 된 접속을 사용합니다. 이 프로퍼티이 설정되어 있지 않은 경우, 또는 다른 값으로 설정되어 있는 경우, 혹은 접속 요구가 기준에 일치하지 않는 경우, 프로바이더는 풀 된 접속을 사용하지 않습니다. 접속 풀의 자세한 것은,<a href=#POOL>「접속 풀」</a>을 참조해 주세요.
+
+<p>다음에 예를 나타냅니다.
+<blockquote>
+<tt>env.put("com.sun.jndi.ldap.connect.pool", "true");</tt>
+</blockquote>
+LDAP 프로바이더에, 초기 문맥의 작성시에 풀 된 접속을 사용하도록(듯이) 지시합니다.
+
+<p><b>주 - </b>Java 2 SDK, v 1.4. 1 보다 전의 시스템에서는, 접속 풀은 지원되고 있지 않습니다. 그 때문에, 이 프로퍼티은 무시됩니다.
+
+</blockquote>
+
+<dt>
+<b><tt>com.sun.jndi.ldap.connect.timeout</tt></b></dt>
+
+<blockquote>
+
+이 프로퍼티의 값은, 접속 타임 아웃의 밀리 세컨드수를 나타내는 정수를 캐릭터 라인으로 표현한 것입니다. LDAP 프로바이더가 이 값의 기간중에 접속을 확립할 수 없으면 접속의 시행은 중지됩니다. 정수는 0 보다 클 필요가 있습니다. 0 이하의 정수를 지정했을 경우는, TCP 등의 네트워크 프로토콜의 타임 아웃치가 사용됩니다.
+
+<p>이 프로퍼티이 지정되지 않는 경우는, 접속이 확립되는 것을 대기하는지, 또는 기본이 되는 네트워크의 타임 아웃까지 대기합니다.
+<p>다음에 예를 나타냅니다.
+<blockquote><tt>env.put("com.sun.jndi.ldap.connect.timeout", "500");</tt></blockquote>
+0.5 초 이내에 접속이 확립되지 않는 경우, LDAP 서비스 프로바이더에 의한 접속 시행이 중지됩니다.
+
+<p>접속을 위해서(때문에) 접속 풀이 요구되고 있는 경우, 풀내의 모든 접속이 사용되어 한편 최대 풀 사이즈에 도달하고 있을 때의, 접속의 최대 대기 시간이 이 프로퍼티에 의해 결정됩니다. 이러한 상황하로, 이 프로퍼티의 값이 제로 이하로 설정되어 있는 경우, 프로바이더는 접속이 가능하게 될 때까지 무한하게 대기하게 됩니다.  그 이외의 값으로 설정되어 있는 경우는, 프로바이더는 최대 대기 시간을 넘은 시점에서, 대기를 중단합니다. 자세한 것은,<a href=#POOL>「접속 풀」</a>을 참조해 주세요.
+
+<p><b>주 - </b>Java 2 SDK 의 v 1.4 보다 전의 시스템에서는, 접속 타임 아웃이 SDK 로 지원되지 않기 때문에, 이 프로퍼티은 무시됩니다.
+
+
+</blockquote>
+
+<dt>
+<a name=timeout><b><pre>com.sun.jndi.ldap.read.timeout</pre></b><a>
+
+<blockquote>
+
+이 프로퍼티의 값은, LDAP 조작을 위한 읽어내 타임 아웃의 밀리 세컨드수를 나타내는 정수를 캐릭터 라인으로 표현한 것입니다. LDAP 프로바이더가 이 값의 기간중에 LDAP 응답을 취득할 수 없으면 읽기의 시행은 중지됩니다. 정수는 0 보다 클 필요가 있습니다. 0 이하의 정수는, 읽기 타임 아웃이 지정되어 있지 않은 것을 나타내, 응답이 있을 때까지 무한하게 대기한다고 하는 것입니다.
+
+<p>이 프로퍼티을 지정하지 않으면 디폴트는 응답이 있을 때까지 기다린다고 하는 설정이 됩니다.
+<p>다음에 예를 나타냅니다.
+<blockquote><tt>env.put("com.sun.jndi.ldap.read.timeout", "5000");</tt></blockquote>
+서버가 5 초 이내에 응답하지 않는 경우, LDAP 서비스 프로바이더에 의한 읽기 시행이 중지됩니다.
+
+<p><b>주 - </b>Java 2 SDK 의 v 6.0 보다 전의 시스템에서는, 읽기 타임 아웃이 SDK 로 지원되지 않기 때문에, 이 프로퍼티은 무시됩니다.
+
+</blockquote>
+
+<dt>
+<b><tt>com.sun.jndi.ldap.netscape.schemaBugs</tt></b></dt>
+
+<blockquote>
+Netscape Directory Server 4.0 이전의 릴리스에서는, RFC 2252 에 준거하고 있는 schema 엔트리는 지원되고 있지 않습니다. 특히, Netscape 서버에서는 RFC 2252 와 달리, OID (SUP 및 SYNTAX 의 OID 등)는 단일 인용부호로 단락지어, MUST/MAY 리스트는 괄호로 둘러쌀 필요가 있습니다. Netscape Directory Server 4.0 의 schema를 갱신할 때는, 이 문제에 대처하기 위해서, 이 <tt>com.sun.jndi.ldap.netscape.schemaBugs</tt> 프로퍼티을 사용할 필요가 있습니다.
+<p>
+다음의 값은, 이 프로퍼티용으로 정의된 것입니다.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>true</tt> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 회피책을 유효하게 한다 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>false</tt> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 회피책을 무효로 한다
+<p>이 프로퍼티이 설정되지 않는 경우, 디폴트 값는 <tt>false</tt> 가 됩니다.
+<p>다음에 예를 나타냅니다.
+<blockquote>
+<pre>env.put("com.sun.jndi.ldap.netscape.schemaBugs", "true");</pre>
+</blockquote>
+이 경우는, 회피책이 유효하게 됩니다.
+<p><b>주 1</b>:이 프로퍼티은, 초기 문맥에만 건네받아 그 프로바이더로 고정됩니다. <tt>addToEnvironment</tt> 또는 <tt>removeFromEnvironment</tt> 메소드에는 영향을 받지 않습니다.
+<p><b>주 2</b>:Netscape Directory Server 4.1 을 사용하고 있는 경우, 이 프로퍼티을 사용하지 말아 주세요. 4.1 서버에서는, 괄호가 붙지 않는 MUST/MAY 구를 포함한 객체 클래스 정의를 구문 분석 할 때에 문제가 발생합니다. 단일의 MUST/MAY 항목을 포함한 객체 클래스 정의를 작성 또는 변경하는 경우, MUST/MAY 리스트에 여분의 값 (objectClass 등)을 추가하는 것으로써, 이 버그를 회피해 주세요.
+<p>
+</blockquote>
+<dt>
+<b><tt>com.sun.jndi.ldap.trace.ber</tt></b></dt>
+
+<blockquote>이 프로퍼티의 값은,<tt>java.io.OutputStream</tt> 객체입니다. 이 객체에 대해서, LDAP ASN. 1 BER 의 송수신 패킷의 16 진덤프가 기입해집니다.
+<p>이 프로퍼티의 디폴트는 정의되고 있지 않습니다.
+<p>다음에 예를 나타냅니다.
+<blockquote><tt>env.put("com.sun.jndi.ldap.trace.ber", System.out);</tt></blockquote>
+이 경우, LDAP 프로토콜 트레이스는 표준의 출력 스트림에 기입해집니다.
+<p><b>주 - </b>이 프로퍼티은, 초기 문맥에만 건네받아 그 프로바이더로 고정됩니다. <tt>addToEnvironment</tt> 또는 <tt>removeFromEnvironment</tt> 메소드에는 영향을 받지 않습니다. </blockquote>
+
+<p>
+<hr><a NAME="NAME"></a> 
+<h2>
+4.  이름</h2>
+
+LDAP 서비스 프로바이더의 이름에 대한 자세한 것은,<a href="jndi-ldap-gl.html#NAME">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+
+다음의 형식의 LDAP 식별명이 지원되고 있습니다.  <br>&nbsp;
+<table summary="distinguished name formats" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>식별명의 형식</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>String</tt></td>
+
+<td ALIGN=LEFT NOSAVE>복합명으로 간주해진다. 복합명의 최초의 컴퍼넌트는, 식별명으로서 처리된다. 나머지의 컴퍼넌트는 연합 된다
+</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>이름</tt></td>
+
+<td ALIGN=LEFT NOSAVE>
+<tt>CompositeName</tt> 의 인스턴스의 경우는, 복합명으로 간주해진다. 즉, 최초의 복합명의 컴퍼넌트는, 식별명으로서 처리되어 나머지의 컴퍼넌트는 연합 된다. <tt>CompositeName</tt> 의 인스턴스가 아닌 경우는, 해석 끝난 LDAP 명으로 간주해진다. 이 경우,<tt>Name</tt> 의 각 컴퍼넌트는,<a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a>  에 정의되고 있는 LDAP 명의 컴퍼넌트가 된다
+</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>LDAP URL 캐릭터 라인</td>
+
+<td ALIGN=LEFT NOSAVE>
+
+LDAP URL 캐릭터 라인이 초기 문맥에게 건네지면(자),<a href="http://www.ietf.org/rfc/rfc2255.txt">RFC 2255</a>  에 근거해 해석되어 그 식별명 컴퍼넌트는 <a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a>  에 근거해 해석된다
+</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>LDAPS URL 캐릭터 라인</td>
+
+<td ALIGN=LEFT NOSAVE>
+
+LDAPS URL 캐릭터 라인은, 초기 문맥에게 건네지면(자), 서버와의 통신에 SSL 접속이 사용되는 점을 제외해, LDAP URL 와 같이 해석된다
+
+<p><b>주 - </b>Java 2 SDK, v.  1.4. 2 보다 전의 시스템에서는, LDAP 서비스 프로바이더는 LDAPS URL 를 인식하지 않는다.
+</td>
+</tr>
+
+</table>
+<p>
+<tt>getNameParser()</tt> 호출로부터 반환된 이름 퍼서에 의해 퍼서가 돌려주어집니다. 이 퍼서는, 캐릭터 라인명을 받으면(자) <a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a>  에 근거해 캐릭터 라인명을 해석해, 컴퍼넌트에 건네줍니다.
+<p>
+<hr><a NAME="ATTRIBUTES"></a> 
+<h2>
+5.  속성</h2>
+
+LDAP 서비스 프로바이더의 속성에 대해 자세한 것은,<a href="jndi-ldap-gl.html#ATTRS">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+
+LDAP 서비스 프로바이더에서는, 속성치를 지정할 경우에 다음의 형식이 사용됩니다.  <br>&nbsp;
+<table summary="attribute value formats" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>속성치의 형식</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>String </tt>치</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>byte[] </tt>치</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table>
+
+<p>
+일부의 LDAP 서버에서는, 속성치에 대해서 언어의 우선 순위를 지정할 경우에, 속성의 부분형, 속성명의 유어, 및 언어 코드를 사용할 수가 있습니다. 이 경우, LDAP 서버로부터 반환된 속성명은, 요구한 속성명과 다른 일이 있습니다.
+<p>LDAP 에서는, 속성명의 대문자 소문자가 구별됩니다. 이 때문에, 파라미터로서 JNDI 조작에 건네주는 속성의 정리를 작성할 때는, 대문자 소문자가 구별되는 속성 클래스를 사용하는 것을 추천합니다. 다음에 예를 나타냅니다.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>Attributes attrs = new BasicAttributes(true); // ignoreCase=true</tt>
+
+<p>
+속성치를 사용할 때는,<tt>String</tt> 및 <tt>byte[]</tt> 의 어느 쪽의 경우도, 그 속성치의 구문과 형식의 정보가 필요합니다. 속성치의 구문과 형식은, 이러한 정보가 정의되고 있는 schema 문서로 확인할 수 있습니다.
+<p>속성을 JNDI 호출에 인수로서 건네줄 때는, 그 속성은 LDAP 디렉토리에 적용되어 모든 schema에 준거하고 있지 않으면 안됩니다. &nbsp;특히, 새로운 LDAP 를 작성할 때는 (<a href="../../../api/javax/naming/Context.html#bind(java.lang.String,%20java.lang.Object)">Context.bind</a> ,<a href="../../../api/javax/naming/Context.html#rebind(java.lang.String,%20java.lang.Object)">Context.rebind</a> , 또는 <a href="../../../api/javax/naming/directory/DirContext.html#createSubcontext(java.lang.String,%20javax.naming.directory.Attributes)">DirContext.createSubcontext</a>  를 사용할 때 등), 일반적으로 <tt>objectClass</tt> 속성이 필요합니다.
+<p>
+<hr><a NAME="URLs"></a> 
+<h2>
+6.  URL</h2>
+
+<h3>6.1 사용법</h3>
+
+LDAP 서비스 프로바이더의 URL 에 대한 자세한 것은,<a href="jndi-ldap-gl.html#URLS">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요. LDAP 와 LDAPS 의 양쪽 모두의 URL 를 사용할 수 있습니다.
+
+<p>
+URL 는, 다음의 방법으로 사용할 수 있습니다.  <br>&nbsp;
+<table summary="URL usage" BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>URL 의 사용법</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr NOSAVE>
+<td>LDAP URL 와 LDAPS URL 를 사용해 LDAP 서비스 프로바이더를 설정한다</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td ALIGN=LEFT NOSAVE>URL 를 <tt>InitialDirContext</tt> 메소드에 이름으로서 건네준다</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td ALIGN=LEFT NOSAVE>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td>LDAP 소개로 URL 를 사용한다</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>LDAP/LDAPS URL 의 스코프 컴퍼넌트는 지원된다. 속성, 필터, 및 확장 컴퍼넌트는 무시된다</td>
+</tr>
+
+<tr NOSAVE>
+<td>URL 가,<tt>list</tt>,<tt>listBindings</tt>, 및 <tt>search</tt> 열거의 이름으로서 반환된다</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td ALIGN=LEFT NOSAVE>연합 된 이름 공간에 URL 를 링크한다</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td ALIGN=LEFT NOSAVE>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>주 - </b>Java 2 SDK, v.  1.4. 2 보다 전의 시스템에서는, LDAP 서비스 프로바이더는 LDAPS URL 를 인식하는 일도 돌려줄 것도 없다.
+
+
+<h3>6.2 LDAP 서비스의 자동 검출</h3>
+
+LDAP 서비스 프로바이더는, DNS 설정을 사용한 LDAP 서비스의 자동 검출을 지원합니다. 상기의 사용 예의 LDAP/LDAPS URL 로 호스트명과 포트가 결핍 해, 식별명이 지정되고 있는 경우,<a href="jndi-ldap-gl.html#URLS">「서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>으로 설명했던 대로,LDAP 서비스 프로바이더는 사용하는 LDAP 서버의 검출을 시도합니다.
+<p>
+예를 들어, URL <tt>ldap:///dc=example, dc=com</tt> 가 지정되고 있는 경우, 서비스 프로바이더는 DNS SRV 레코드로 <tt>_ldap. _tcp.example.com</tt> 를 찾으려고 시도합니다. 프로바이더가 이러한 레코드를 검출했을 경우, 이 레코드로부터 LDAP 서버의 호스트명과 포트를 추출해, 이것들을 사용합니다. 프로바이더가 이러한 레코드를 사용하는 순서는, 인터넷 문서 <a href="http://www.ietf.org/internet-drafts/draft-ietf-ldapext-locate-08.txt">draft-ietf-ldapext-locate-08.txt</a>  로 설명하는 알고리즘에 따릅니다.
+
+<p>
+LDAP 서비스의 DNS SRV 레코드를 검출하는 경우, LDAP 서비스 프로바이더는 기본 플랫폼으로 설정된 DNS 서비스를 사용합니다 (예를 들어, Solaris 또는 Linux 에서는, DNS 클라이언트 설정은 /etc/resolv.conf 파일로부터 읽힌다). 기본 플랫폼에 DNS 가 설정되어 있지 않은 경우, LDAP 서비스 프로바이더는 DNS 서버의 호스트명과 포트에 <tt>localhost</tt> 와 53 을 사용합니다. DNS 서비스를 사용할 수 없는 경우, 또는 DNS 서비스에 LDAP 서비스의 SRV 레코드가 없는 경우, LDAP 서비스 프로바이더는 호스트명에 <tt>localhost</tt> 를 사용해, 포트에는 프레인인 접속의 경우는 389 를, SSL 접속의 경우는 636 을 사용합니다.
+
+<p><b>주 1</b>:Java 2 SDK, v 1.4. 1 보다 전의 시스템에서는, 호스트명과 포트가 지정되지 않는 경우, 항상 디폴트의 <tt>localhost</tt> 와 389 가 사용되어 DNS 를 사용하는 시도 하행 깨지지 않습니다.
+
+<p><b>주 2</b>:Java 2 SDK, v 1.4. 2 보다 전의 시스템에서는, SSL 의 사용과는 관계없이, 디폴트의 포트는 항상 389 입니다.
+
+<p>
+<hr>
+<br><a NAME="OBJECTS"></a> 
+<h2>
+7.  Java 객체</h2>
+
+LDAP 서비스 프로바이더에서는, 다음의 종류의 객체의 포함 및 read를 실시할 수가 있습니다. 자세한 것은,<a href="jndi-ldap-gl.html#OBJ">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+
+<br>&nbsp;
+<table summary="supported storable/readable objects" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>포함 및 read가 가능한 객체</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>Reference</tt> 객체</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>Referenceable</tt> 객체</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>Serializable</tt> 객체</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>DirContext</tt> 객체</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table>
+<p>
+예에 대해서는,<a href=http://java.sun.com/products/jndi/tutorial/objects>JNDI 튜토리얼</a>을 참조해 주세요.
+
+<p>
+<hr><a NAME="SCHEMA"></a> 
+<h2>
+8.  schema</h2>
+LDAP 서비스 프로바이더의 schema 바인딩에 대한 자세한 것은,<a href="jndi-ldap-gl.html#SCHEMA">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+
+<br>&nbsp;
+<table summary="supported schema bindings" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>schema 트리</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td ALIGN=CENTER NOSAVE>AttributeDefinition</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td ALIGN=LEFT NOSAVE>
+<!--Attribute definitions may be added or deleted but not modified.--> &nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td ALIGN=CENTER NOSAVE>ClassDefinition</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td ALIGN=LEFT NOSAVE>
+<!--Class definitions may be added or deleted but not modified.--> &nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td ALIGN=CENTER NOSAVE>SyntaxDefinition</td>
+
+<td ALIGN=CENTER NOSAVE>네</td>
+
+<td ALIGN=LEFT NOSAVE>
+<!--Syntax definitions may be added or deleted but not modified.--> &nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>MatchingRule</td>
+
+<td>네</td>
+
+<td ALIGN=LEFT NOSAVE>
+<!--Matching rules may be added or deleted but not modified.--> &nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>ExtensionDefinition</td>
+
+<td>아니오</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>ControlDefinition</td>
+
+<td>아니오</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>SASLMechanism</td>
+
+<td>아니오</td>
+
+<td>&nbsp;</td>
+</tr>
+</table>
+
+<p>
+<hr><a NAME="EXCEPTIONS"></a> 
+<h2>
+9.  예외</h2>
+LDAP 서비스 프로바이더의, LDAP 에러 코드의 JNDI 예외에의 매핑에 대한 자세한 것은,<a href="jndi-ldap-gl.html#EXCEPT">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.  <br>&nbsp; <!-- <center><table summary="mapped LDAP error codes" BORDER COLS=3 WIDTH="100%" NOSAVE > <tr NOSAVE> <th NOSAVE>Mapping for LDAP error code</th>  <th NOSAVE>Supported</th>  <th NOSAVE>Comments</th> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>success (0)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>operationsError (1)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>protocolError (2)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>timeLimitExceeded (3)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>sizeLimitExceeded (4)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>compareFalse (5)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>compareTrue (6)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>authMethodNotSupported (7)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>strongAuthRequired (8)</td>  <td>Yes</td>  <td NOSAVE>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>partialResults (9)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>referral (10)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>adminLimitExceeded (11)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>unavailableCriticalExtension (12)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>confidentialityRequired (13)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>saslBindInProgress (14)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>noSuchAttribute (16)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>undefinedAttributeType (17)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>inappropriateMatching (18)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>constraintViolation (19)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>attributeOrValueExists (20)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>invalidAttributeSyntax (21)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>noSuchObject (32)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>aliasProblem (33)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>invalidDNSyntax (34)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>aliasDereferencingProblem (36)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>inappropriateAuthentication (48)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>invalidCredentials (49)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>insufficientAccessRights (50)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>busy (51)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>unavailable (52)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>unwillingToPerform (53)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>loopDetect (54)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>namingViolation (64)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>objectClassViolation (65)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>notAllowedOnNonLeaf (66)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>notAllowedOnRDN (67)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>entryAlreadyExists (68)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>objectClassModsProhibited (69)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>affectsMultipleDSAs (71)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr>  <tr ALIGN=CENTER NOSAVE> <td NOSAVE>other (80)</td>  <td>Yes</td>  <td>&nbsp;</td> </tr> </table></center> -->
+
+<p>
+<hr><a NAME="API"></a> 
+<h2>
+10.  API 매핑</h2>
+LDAP 서비스 프로바이더에서는, 다음의 JNDI API 메소드가 LDAP 에 매핑 됩니다. 자세한 것은,<a href="jndi-ldap-gl.html#API">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.  <br>&nbsp;
+<center><table summary="supported mapping for Context methods" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE><tt>Context</tt> 메소드의 매핑</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>addToEnvironment</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>bind</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>close</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>composeName</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>destroySubcontext</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getEnvironment</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getNameInNamespace</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getNameParser</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>list</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>listBindings</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>lookup</tt></td>
+
+<td>네</td>
+
+<td><tt>LinkRef</tt> 는 대상외
+</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>lookupLink</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>rebind</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>removeFromEnvironment</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td><tt>rename</tt></td>
+
+<td NOSAVE>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>unbind</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table></center>
+
+<center><table summary="supported mapping for DirContext methods" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE><tt>DirContext</tt> 메소드의 매핑</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>bind</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>createSubcontext</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>destroySubcontext</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getAttributes</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getSchema</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getSchemaClassDefinition</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>modifyAttributes</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>rebind</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>search</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table></center>
+
+<center><table summary="supported mapping for LdapContext methods" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE><tt>LdapContext</tt> 메소드의 매핑</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>extendedOperation</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getRequestControls</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>getResponseControls</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>newInstance</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>reconnect</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>setRequestControls</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table></center>
+
+<center><table summary="supported mapping for EventDirContext methods" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE><tt>EventDirContext</tt> 메소드의 매핑</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>addNamingListener</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>removeNamingListener</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE><tt>targetMustExist</tt></td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table></center>
+
+<p>
+<hr><a NAME="FEDERATION"></a> 
+<h2>
+11.  연합</h2>
+LDAP 서비스 프로바이더의 연합에 대한 자세한 것은,<a href="jndi-ldap-gl.html#FED">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요. 다음의 연합 방법이 지원됩니다.
+
+<br>&nbsp;
+<center><table summary="supported federation techniques" BORDER COLS=3 NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>연합 방법</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>연결</td>
+
+<td>네</td>
+
+<td NOSAVE>하위의 네임 시스템이 다른 LDAP 시스템의 경우는 제외하다</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>암묵적인 다음의 네임 시스템 포인터</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table></center>
+
+&nbsp;<p>
+LDAP 서비스 프로바이더에서는, 복합명은 「강하게 구분되고 있다」라고 보입니다. 즉, 복합명의 최초의 컴퍼넌트가 식별명으로서 처리되어 나머지의 컴퍼넌트는 다음의 네임 시스템의 이름으로서 처리됩니다. 예를 들어, 다음의 예에서는, 다음의 네임 시스템의 루트의 리스트를 출력하고 있습니다. 이 네임 시스템은, LDAP 문맥을 넘어 연합 되고 있습니다. 다음에, 멀티 컴퍼넌트의 복합명을 사용해 이름이 참조됩니다.
+<blockquote>
+<pre>
+// List the root of the nns, 
+// Note use of the trailing slash to indicate traversal into the nns
+NamingEnumeration enum = ctx.list("cn=objects, ou=Sales/");
+
+// A composite name lookup
+Object obj = ctx.lookup("cn=objects, ou=Sales/some/x/y/z");
+</pre>
+</blockquote>
+
+<p>
+<hr><a NAME="EVENT"></a> 
+<h2>
+12.  이벤트의 통지</h2>
+
+LDAP 서비스 프로바이더의 이벤트의 통지에 대한 자세한 것은,<a href="jndi-ldap-gl.html#EVENT">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요. 다음의 이벤트가 지원됩니다.  <br>&nbsp;
+<table summary="supported event notification" BORDER COLS=3 WIDTH="100%" NOSAVE >
+<tr NOSAVE>
+<th NOSAVE>이벤트</th>
+
+<th NOSAVE>지원</th>
+
+<th NOSAVE>비고</th>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>이름 공간의 변경의 통지</td>
+
+<td>네</td>
+
+<td NOSAVE>지속적 검색 컨트롤을 사용 (*)</td>
+</tr>
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>객체의 변경의 통지</td>
+
+<td>네</td>
+<td NOSAVE>지속적 검색 컨트롤을 사용 (*)</td>
+</tr>
+
+
+
+<tr ALIGN=CENTER NOSAVE>
+<td NOSAVE>임의의 통지</td>
+
+<td>네</td>
+
+<td>&nbsp;</td>
+</tr>
+</table>
+
+<p>
+* 지속적 검색 컨트롤은, 「IETF 인터넷 드래프트 <tt>draft-ietf-ldapext-psearch-03.txt</tt> 로 정의되고 있습니다.
+</p>
+
+<p>
+<hr><a NAME="SASL"></a> 
+<h2>
+13.  SASL 인증</h2>
+
+LDAP 서비스 프로바이더의 SSL 인증에 대한 자세한 것은,<a href="jndi-ldap-gl.html#SASL">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요.
+<p>
+LDAP 서비스 프로바이더에서는, 다음의 SASL 기구가 지원됩니다.
+<ul>
+<li>EXTERNAL (<A HREF="ftp://ftp.isi.edu/in-notes/rfc2222.txt">RFC 2222</A> ). 이 기구는, SSL/TSL 나 IPsec 등의 외부 소스로부터 인증 정보를 취득한다.
+<li>DIGEST-MD5 (<a href=ftp://ftp.isi.edu/in-notes/rfc2831.txt>RFC 2831</a> )는, 다이제스트 인증용.
+<li>GSSAPI (<A HREF="ftp://ftp.isi.edu/in-notes/rfc2222.txt">RFC 2222</A> )는, Kerberos V5 인증용.
+</ul>
+
+이 프로바이더에서는, 상기의 기구에 가세해, Java SASL API (<a href=http://www.worldspot.com/jsr28/publicreview/doc/index.html>JSR 28 Public Review Draft</a> )에 정의된 시스템 경유로 이용할 수 있는 SASL 기구가 지원됩니다. 다만 예외로서 패키지의 이름은 <tt>javax.security.sasl</tt> 가 아니고 <tt>com.sun.security.sasl.preview</tt> 가 됩니다.
+
+<p>
+<hr><a NAME="SSL"></a> 
+<h2>
+14.  SSL 및 Start TLS</h2>
+
+<h3>14.1 SSL</h3>
+
+LDAP 서비스 프로바이더의 SSL 에 대한 자세한 것은,<a href="jndi-ldap-gl.html#SSL">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>을 참조해 주세요. java.naming.ldap.factory.socket</a> </tt>&nbsp; 프로퍼티이 다른 소켓 팩토리의 클래스명으로 설정되어 있지 않은 경우는, 디폴트의 <a href="../../../api/javax/net/ssl/SSLSocketFactory.html"><tt>javax.net.ssl.SSLSocketFactory</tt></a>  소켓 팩토리가 사용됩니다.
+
+<p>SSL 가 사용되어 포트가 지정되어 있지 않은 경우, 디폴트 포트로서 636 이 사용됩니다.  
+
+<p><b>주 - </b>Java 2 SDK, v 1.4. 1 보다 전의 시스템에서는, SSL 의 사용과는 관계없이, 디폴트의 포트는 항상 389 입니다.
+
+<p>
+<h3>14.2 TLS 의 기동</h3>
+
+LDAP 프로바이더에서는,<a href=../../../api/javax/naming/ldap/StartTlsResponse.html><tt>StartTlsResponse</tt></a>  추상 클래스의 고정 구현에 의해,<a href="http://www.ietf.org/rfc/rfc2830.txt">「Start TLS」확장 기능</a>  ( 「1.3. 6.1. 4.1. 1466.20037」)이 지원됩니다. 호스트명의 검증은,<a href="jndi-ldap-gl.html#SSL">「LDAP 서비스 프로바이더에 대한 JNDI 구현측의 가이드 라인」</a>에 따라 실행됩니다.
+<p>
+
+<hr>
+<A name=POOL><h2>15.  접속 풀</h2></a> 
+
+<p><b>주 - </b>접속 풀은, Java 2 SDK, v 1.4. 1 이후의 릴리스에서만 지원됩니다.
+
+<h3>15.1 개요</h3>
+
+<p>
+LDAP 서비스 프로바이더는, 이전에 사용된 접속의 풀을 유지하는 것으로 접속 풀을 지원합니다. LDAP 프로바이더가 접속을 필요로 하는 경우는 항상 ( 및 어플리케이션으로부터 풀이 요구되고 있는 경우), 풀로부터 접속을 가져옵니다. 기존의 접속을 사용할 수 있는 경우는, 이것이 사용됩니다. 기존의 접속을 사용할 수 없는 경우, 새로운 접속이 작성되어 사용됩니다. 프로바이더가 접속을 종료하면(자), 접속은 아이돌의 마크를 붙일 수 있어 재사용할 수 있습니다.
+<p>
+어플리케이션은, 초기 문맥 생성자 에게 건네지는 환경 프로퍼티에 프로퍼티 <a href=#POOLPROP><tt>com.sun.jndi.ldap.connect.pool</tt></a>  를 추가해, 접속 풀을 요구합니다. 어플리케이션은,<em></em>「문맥별」로 풀을 사용하는지 아닌지를, 환경 프로퍼티에 이 프로퍼티을 사용할지 어떨지에 의해 지정할 수가 있습니다. 초기 문맥에게 건네지는 LDAP/LDAPS 의 양 URL 의 참조 처리에, 풀 된 접속을 사용할지 어떨지도, 같은 기구를 사용해 제어됩니다. 예를 들어, 프로바이더가 참조를 처리하는 경우에, 환경 프로퍼티에 이 프로퍼티이 포함되어 있을 때, 프로바이더는 참조에 풀 된 접속을 사용합니다.
+<p>
+다음의 코드예에서는, 새로운 초기 문맥과 여기로부터 도출되는 모든 문맥에 접속 풀을 사용하도록(듯이) 요구하고 있습니다.
+
+<blockquote><pre>
+Hashtable env = new Hashtable();
+env.put("com.sun.jndi.ldap.connect.pool", "true");
+env.put(Context.PROVIDER_URL, url);
+env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+DirContext ctx = new InitialDirContext(env);
+...
+</pre></blockquote>
+
+<p>
+프로퍼티 <tt>com.sun.jndi.ldap.connect.pool</tt> 의 추가만이 필요합니다.  이외의 어플리케이션의 변경은 필요 없습니다.
+
+<p>
+LDAP 프로바이더는, 어플리케이션으로부터의 정보를 바탕으로 접속이 사용되고 있는지 어떤지를 추적합니다. 어플리케이션의 문맥 핸들이 열려 있는 경우, 그 어플리케이션이 접속을 사용하고 있는 것이라고 봅니다. 따라서, LDAP 프로바이더가 풀 된 접속을 올바르게 관리하기 위해서는, 문맥이 불필요하게 되면 반드시 어플리케이션으로 <tt>Context.close()</tt> 를 호출하도록(듯이) 할 필요가 있습니다.
+
+<p>
+무효인 접속은 자동적으로 검출되어 풀로부터 삭제됩니다. 문맥이 무효인 접속에 의해 종료하는 확률은, 접속 풀을 사용하고 있을지 어떨지에 관계없이 같습니다.
+
+<h3>15.2 풀을 사용하지 않는 경우</h3>
+
+풀 된 접속은 재사용을 목적으로 하고 있습니다. 따라서, 문맥으로 기본 접속 상태를 바꾸는 것 같은 조작을 실행하는 것이 예정되는 어플리케이션에서는, 문맥에 접속 풀을 사용해야 하지는 않습니다. 특히, 문맥에 대해서 Start TLS 확장 기능 조작을 사용할 예정이 있는 어플리케이션의 경우, 또는 초기 문맥의 작성 후에 시큐리티 관련의 프로퍼티 (<tt>java.naming.security.principal</tt> 나 <tt>java.naming.security.protocol</tt> 등)을 변경할 예정이 있는 어플리케이션의 경우, 그 문맥에 접속 풀을 사용해야 하지는 않습니다. 이러한 상황으로 접속 풀을 사용했을 경우, 어플리케이션의 시큐리티가 손상되거나 예기치 않은 동작이 일어나는 경우가 있습니다.
+
+
+<h3>15.3 글로벌 설정</h3>
+
+접속 풀은, Java 런타임 마다 설정 및 관리됩니다. 접속은 다른 런타임간에 공유되지 않습니다. 접속 풀을 사용하는 경우, 설정을 변경할 필요는 없습니다. 설정이 필요하게 되는 것은, 풀의 사이즈의 제어, 및 풀 되는 접속의 지정 등, 풀의 설정을 커스터마이즈 하는 경우만입니다.
+<p>
+접속 풀은, 런타임 기동시에 몇개의 시스템 프로퍼티에 의해 설정됩니다. 설정에 사용되는 것은 환경 프로퍼티은 아니고<em></em>「시스템」프로퍼티이며, 시스템 프로퍼티은 모든 접속 풀 요구에 적용되는 것에 주의해 주세요.
+
+<p>
+다음에 시스템 프로퍼티의 개요를 나타냅니다. 이후에서는 시스템 프로퍼티에 대해 상세하게 설명합니다.  
+<p>
+
+<center><table summary="system properties" BORDER COLS=3 WIDTH="100%" NOSAVE>
+<tr NOSAVE>
+<th NOSAVE>시스템 프로퍼티명</th>
+
+<th NOSAVE>설명</th>
+
+<th NOSAVE>디폴트 설정</th>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.authentication</tt></td>
+<td NOSAVE>풀 할 수 있는 접속의, 스페이스 단락의 인증 타입의 리스트. 「none」, 「simple」, 「DIGEST-MD5」의 몇개의 타입을 사용할 수 있다
+</td>
+<td NOSAVE><tt>「none simple」</tt></td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.debug</tt></td>
+<td NOSAVE>생성되는 디버그 출력의 레벨을 나타내는 캐릭터 라인. 값에는 <tt>「fine」</tt> (접속의 작성과 삭제를 트레이스)과 「all」 (모든 디버그 정보)을 사용할 수 있다
+</td>
+<td NOSAVE>&nbsp;</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.initsize</tt></td>
+<td NOSAVE>ID 에 대해서 접속을 최초로 작성할 때의 접속수를, 접속 ID 별로 나타내는 정수를 캐릭터 라인으로 표현한 것  
+</td>
+<td NOSAVE>1</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.maxsize</tt></td>
+<td NOSAVE>동시에 유지할 수 있는 접속 ID 별의 최대 접속수를 나타내는 정수를, 캐릭터 라인으로 표현한 것</td>
+<td NOSAVE>없음</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.prefsize</tt></td>
+<td NOSAVE>동시에 유지해야 하는 접속 ID 별의 우선적 접속수를 나타내는 정수를, 캐릭터 라인으로 표현한 것</td>
+<td NOSAVE>없음</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.protocol</tt></td>
+<td NOSAVE>풀 할 수 있는 접속의, 스페이스 단락의 프로토콜 타입의 리스트. 「plain」와「ssl」의 타입이 유효
+</td>
+<td NOSAVE><tt>「plain」</tt></td>
+</tr>
+
+
+<tr NOSAVE>
+<td NOSAVE><tt>com.sun.jndi.ldap.connect.pool.timeout</tt></td>
+<td NOSAVE>IDLE 상태의 접속이 절단 되지 않고, 풀로부터 제외되는 일 없이 풀내에 존재할 수 있는 기간 (밀리 세컨드)을 나타내는 정수를, 캐릭터 라인으로 표현한 것
+</td>
+<td NOSAVE>없음</td>
+</tr>
+
+</table>
+</center>
+
+<p>
+다음의 풀 된 접속의 예에서는, 최대 풀 사이즈를 20, 우선적인 풀 사이즈를 10, 아이들타임 아웃을 5 분으로 설정해 있습니다.
+<blockquote><pre>
+# java -Dcom.sun.jndi.ldap.connect.pool.maxsize=20 \
+       -Dcom.sun.jndi.ldap.connect.pool.prefsize=10 \
+       -Dcom.sun.jndi.ldap.connect.pool.timeout=300000 \
+    YourProgram
+</pre></blockquote>
+
+<h4>15.3. 1 풀의 결과</h4>
+
+LDAP 프로바이더는, 어플리케이션으로부터 요구되어 접속의 요구가 「풀 기준」에 적합하는 경우에게만 풀 된 접속을 사용합니다. <em></em>어플리케이션은,<tt>com.sun.jndi.ldap.connect.pool</tt> 환경 프로퍼티을 사용한 접속의 풀을 요구합니다. 디폴트의 풀 기준에서는, 간단한 인증을 사용하는지, 전혀 인증을 이용하지 않는 프레인인 (비 SSL) 접속의 풀이 허가되고 있습니다. 시스템 프로퍼티을 사용해 풀 기준을 변경해, SSL 접속 및 DIGEST-MD5 인증 타입을 추가하는 일도 가능합니다. 프로토콜 트레이스가 유효하게 되어 있는 접속 (<tt>com.sun.jndi.ldap.trace.ber</tt> 환경 프로퍼티에 의해)은 풀 할 수 없습니다. 커스텀 소켓 팩토리의 풀 접속에 대해서는,<a href=#pooling>「풀 커스텀 소켓 팩토리 접속」</a>을 참조해 주세요.  
+<p>
+SSL 접속을 풀 하는 경우,<tt>com.sun.jndi.ldap.connect.pool.protocol</tt> 시스템 프로퍼티에 캐릭터 라인 「<tt>ssl</tt>」를 추가합니다. 예를 들어, 프레인 접속과 SSL 접속을 풀 하는 경우는, 시스템 프로퍼티을 캐릭터 라인 「<tt>plain ssl</tt>」로 설정합니다.
+<p>
+DIGEST-MD5 접속을 풀 하는 경우,<tt>com.sun.jndi.ldap.connect.pool.authentication</tt> 시스템 프로퍼티에 캐릭터 라인 「<tt>DIGEST-MD5</tt>」를 추가합니다. 예를 들어, 인증 타입이 anonymous, simple, 및 DIGEST-MD5 의 접속을 풀 하는 경우는, 이 시스템 프로퍼티을 캐릭터 라인 「<tt>none simple DIGEST-MD5</tt>」로 설정합니다.
+
+<a name=identity><h4>15.3. 2 접속의 풀 방법</h4><a>
+
+LDAP 프로바이더는, 재사용할 수 있도록(듯이) 풀 된 접속을 관리합니다. 어플리케이션으로부터 풀 된 접속의 사용이 요구되었을 경우, LDAP 프로바이더는 기존의 풀 된 접속으로 요구를 채우는 것이 가능한가 어떤가를 판단할 필요가 있습니다. 이 경우, 풀 된 각 접속에 「접속 ID」를 할당해 도착한 요구의 접속 ID 가 풀 된 접속의 언젠가와 같은가 어떤가를 체크합니다. <em></em>
+<p>
+<p>
+접속 ID 는 인증이 예측되는 LDAP 접속을 작성하는데 필요한 파라미터 세트입니다. 그 구성은, 다음의 겉(표)에 나타내도록(듯이) 요구의 인증 타입에 의해 다릅니다.
+<p>
+<table summary="authentication type and connection identity contents" BORDER CELLPADDING=3 WIDTH="70%" NOSAVE >
+<tr>
+<th>
+인증 타입
+</th>
+<th>접속 ID 의 내용</th>
+</tr>
+
+<tr>
+<td>none</td>
+<td>
+<ul>
+<li>접속 컨트롤
+<li>호스트명, 포트 번호, schema는, 초기 문맥으로 지정된 <tt>java.naming.provider.url</tt> 프로퍼티, 참조, 또는 URL 에 따른다
+<li>
+다음의 프로퍼티의 내용:
+<blockquote><pre>
+java.naming.security.protocol
+java.naming.ldap.version
+</pre></blockquote>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td>simple</td>
+<td>
+<ul>
+<li>anonymous 에 리스트 된 모든 정보
+<li>다음의 프로퍼티의 내용:
+<blockquote><pre>
+java.naming.security.principal
+java.naming.security.credentials
+</pre></blockquote>
+</ul></td>
+
+</tr>
+
+<tr>
+<td>DIGEST-MD5</td>
+<td>
+<ul>
+<li>simple 에 리스트 된 모든 정보
+<li>다음의 프로퍼티의 내용:
+<blockquote><pre>
+java.naming.security.sasl.authorizationId
+java.naming.security.sasl.realm
+javax.security.sasl.qop
+javax.security.sasl.strength
+javax.security.sasl.server.authentication
+javax.security.sasl.maxbuffer
+javax.security.sasl.policy.noplaintext
+javax.security.sasl.policy.noactive
+javax.security.sasl.policy.nodictionary
+javax.security.sasl.policy.noanonymous
+javax.security.sasl.policy.forward
+javax.security.sasl.policy.credentials
+</pre></blockquote>
+</ul>
+</td>
+</table>
+
+
+
+<p>
+
+
+<a name=pooling><h4>15.3. 3 풀 커스텀 소켓 팩토리 접속 </h4><a>
+
+<tt><a href="jndi-ldap-gl.html#socket">java.naming.ldap.factory.socket</a> </tt>&nbsp;환경 프로퍼티이 설정되어 있는 경우, 커스텀 소켓 팩토리로부터의 접속의 풀은 인정됩니다. 커스텀 소켓 팩토리를 풀 하는 경우, 소켓 팩토리 클래스는 <a href=../../../api/java/util/Comparator.html><tt>Comparator</tt></a>  인터페이스를 구현할 필요가 있습니다. LDAP 서비스 프로바이더는, 소켓 팩토리의 동등성을 비교하기 위해(때문에) <a href="../../../api/java/util/Comparator.html#compare(Object,Object)"><tt>Comparator.compare()</tt></a>  메소드를 호출합니다. 소켓 팩토리의 접속의 동등성은 풀 기구에 의해 체크됩니다. 소켓 팩토리의 비교에서는 반드시, 접속의 동등성에 영향을 미치는 소켓 팩토리의 파라미터가 비교되도록(듯이) 합니다. 이 비교는,<a href=#identity>「접속의 풀 방법」</a>으로 설명한 접속의 동일성 비교와 합해 행해집니다. 커스텀 소켓 팩토리 클래스는, 그 접속이 풀 되는 경우, 반드시 다음과 같은 구조가 됩니다.
+<p>
+<pre>
+    public class CustomSocketFactory extends SocketFactory
+                implements Comparator&lt;SocketFactory&gt; { 
+       :
+       :
+       public int compare(SocketFactory sf1, SocketFactory sf2) {
+	   :
+	   :
+	   // do whatever comparison that's required
+       }
+    }
+</pre>
+<p>
+소켓 팩토리 클래스가 Comparator 인터페이스를 구현하지 않는 경우, 소켓 팩토리 클래스의 접속은 풀 할 수 없습니다. 이 Comparator 인터페이스의 구현 요건은, LDAP 서비스 프로바이더가 구현을 인식하고 있지 않는 다른 소켓 팩토리의 접속을 비교하는 경우, 반드시 LDAP 서비스 프로바이더가 필요한 체크를 실시하는 것입니다.  
+
+<h4>15.3. 4 풀의 사이즈</h4>
+
+LDAP 프로바이더는 접속의 풀을 관리합니다.  각 풀에는 같은 접속 ID 를 가지는 (사용중이나 아이돌중의) 접속이 포함됩니다. 각 풀의 3 개의 사이즈에 의해, 관리 방식이 다릅니다. 이러한 사이즈는 글로벌이며, 모든 풀에 영향을 줍니다.
+<p>
+
+「초기 사이즈」는, LDAP 서비스 프로바이더가 최초로 풀을 작성할 경우에 작성하는, 접속 ID 별의 접속수입니다 (어플리케이션으로부터, 해당의 접속 ID 에 대해서 풀 된 접속을 최초로 요구되었을 때의 접속수와 같다). <em></em>풀내의 각 접속의 인증은, 접속이 사용되는 시점에서 실행됩니다. 디폴트에서는, 초기 풀 사이즈는 1 입니다만, 시스템 프로퍼티 <tt>com.sun.jndi.ldap.connect.pool.initsize</tt> 를 사용해 변경할 수가 있습니다. 일반적으로, 이 사이즈는 어플리케이션의 기동시에, 일정한 수의 서버 접속을 풀에 확보하기 위해서 사용됩니다.
+
+<p>
+「최대 풀 사이즈」는, LDAP 서비스 프로바이더를 동시에 유지할 수 있는 접속 ID 별의 최대 접속수입니다. <em></em>이 사이즈에는, 사용중의 접속과 IDLE 상태의 접속이 관계합니다. 풀 사이즈가 이 수에 이르렀을 경우, 풀내의 접속이 삭제될 때까지 (즉 물리적인 접속이 절단 될 때까지), 대응하는 접속 ID 의 접속이 신규에 작성될 것은 없습니다. 풀 사이즈가 최대에 이르러, 풀내의 모든 접속이 사용중의 경우, 풀내의 접속이 IDLE 상태가 될까 삭제될 때까지, 그 풀의 접속에 대한 어플리케이션의 요구는 거절됩니다. 최대 풀 사이즈를 0 으로 하면(자), 최대 사이즈가 없어집니다. 풀 된 접속에의 요구가 있으면, 풀 된 기존의 IDLE 상태의 접속인가, 신규에 작성되고 풀 된 접속이 사용됩니다.
+
+<p>
+「우선적 풀 사이즈」는, LDAP 서비스 프로바이더가 유지할 필요가 있는 접속 ID 별의 우선적 접속수입니다. <em></em>이 사이즈에는, 사용중의 접속과 IDLE 상태의 접속이 관계합니다. 어플리케이션이 풀 된 접속의 사용을 요구해, 풀 사이즈가 우선적 사이즈보다 작은 경우, LDAP 프로바이더는 IDLE 상태의 접속을 이용할 수 있을지 어떨지에 관계없이, 새롭게 접속을 작성해, 새롭고 풀 된 접속을 사용합니다. 어플리케이션이 접속을 공유하는 모든 문맥으로 <tt>Context.close()</tt> 를 호출해 풀 된 접속의 사용을 종료한 시점에서, 풀의 사이즈가 우선적 사이즈보다 큰 경우, LDAP 프로바이더는 풀 된 접속을 절단 해, 풀로부터 삭제합니다. 우선적 풀 사이즈를 0 으로 하면(자), 우선적 사이즈가 없어집니다. 풀 된 접속에의 요구가 있으면, IDLE 상태의 접속을 사용할 수 없는 경우에 한정해, 접속이 신규에 작성됩니다.
+<p>
+최대 풀 사이즈는 초기 풀 사이즈 및 우선적 풀 사이즈보다 우선되는 것에 주의해 주세요. 예를 들어, 우선적 풀 사이즈를 최대 풀 사이즈보다 크게 설정해도, 실제로는 최대 풀 사이즈로 설정됩니다.
+
+
+<h4>15.3. 5 아이돌 접속</h4>
+
+어플리케이션이 접속을 공유하는 모든 문맥으로 <tt>Context.close()</tt> 를 호출해 풀 된 접속의 사용을 종료하면(자), 기본으로 되는 풀 접속에 아이돌의 마크를 붙일 수 있어 재사용을 대기합니다. 디폴트에서는, 아이돌 접속은 쓰레기 컬렉트될 때까지 풀내에 무한하게 계속 존재합니다. <tt>com.sun.jndi.ldap.connect.pool.timeout</tt>」시스템 프로퍼티이 설정되어 있는 경우, LDAP 프로바이더는 지정된 기간을 지나도 IDLE 상태가 되어 있는 풀 접속을, 자동적으로 절단 해, 삭제합니다.
+
+
+<h3>15.4 문맥별 설정
+
+<h4>15.4. 1 풀의 유효화</h4>
+
+풀을 사용하는 경우, 초기 문맥 생성자 에게 건네지는 환경 프로퍼티으로,<tt>com.sun.jndi.ldap.connect.pool</tt> 프로퍼티을 「<tt>true</tt>」로 설정합니다. 프로바이더는 설정된 환경 프로퍼티에 풀 기준을 적용해, 그 문맥에 풀을 사용할지 어떨지를 판단합니다. 프로바이더가 접속을 풀 할 수 없다고 판단했을 경우, 그 문맥에 대해서, 풀되어 있지 않은 접속을 작성해, 사용합니다.
+<p>
+이 프로퍼티을 생략 했을 경우, 문맥으로 접속 풀이 사용되지 않습니다.
+
+
+<h4>15.4. 2 접속 타임 아웃</h4>
+
+<tt>com.sun.jndi.ldap.connect.timeout</tt> 환경 프로퍼티은, LDAP 접속을 확립할 때의 타임 아웃 기간의 지정에 사용됩니다. 이 프로퍼티은, LDAP 서버에의 접속을 개시하는 경우에는 TCP 타임 아웃에 영향을 줍니다. 접속 풀이 요구되고 있는 경우, 풀내의 모든 접속이 사용되어 최대 풀 사이즈에 도달하고 있을 때의 최대 대기 시간도 이 프로퍼티에 의해 결정됩니다.
+<p>
+이 프로퍼티이 지정되어 있지 않은 경우, LDAP 프로바이더는 풀 된 접속을 이용할 수 있을 때까지 무한하게 대기합니다.  또 새로운 접속을 작성할 경우에는 디폴트의 TCP 타임 아웃이 유효하게 되는 것을 대기합니다.
+<p>
+이 프로퍼티은, IDLE 상태의 풀 접속의 삭제에 관련하는 시스템 프로퍼티 <tt>com.sun.jndi.ldap.connect.pool.timeout</tt> 와는 다른 것에 주의해 주세요.
+
+<p>
+<hr>
+<A name=SEC><h2>16.  시큐리티에 대해</h2></a> 
+
+시큐리티 매니저가 인스톨 되고 있는 경우는, JNDI 를 사용하는 어플리케이션 및 LDAP 서비스 프로바이더에 대해서, 다음의 액세스권을 할당할 필요가 있습니다.
+
+<p>
+<pre>permission java.net.SocketPermission "<em>host</em>[:<em>port</em>]", "connect";</pre>
+<blockquote>
+문맥 메소드에게 건네진 <tt>java.naming.factory.initial</tt> 프로퍼티 및 URL 캐릭터 라인명으로 지정되고 있는 각 호스트 또는 포트에 대해서, 할당할 수 있습니다.
+</blockquote>
+
+
+<pre>permission java.net.SocketPermission "<em>host</em>[:<em>port</em>]", "connect, accept";</pre>
+<blockquote>
+<tt>Serializable</tt> 객체를 사용해 포함된 <tt>References</tt> 및 <tt>javaCodebase</tt> 속성의 URL 캐릭터 라인으로 지정되고 있는 각 호스트 또는 포트에 대해서, 할당할 수 있습니다.
+</blockquote>
+
+SASL 인증을 사용중에 SASL 클라이언트 팩토리를 프로그램에 의해 설정하는 경우는, 어플리케이션에 다음의 액세스권을 할당해 주세요.
+<pre>
+permission java.lang.RuntimePermission "setFactory"
+</pre>
+
+
+게다가 「GSSAPI」 SASL 기구를 사용하는 경우는, 다음의 액세스권도 필요하게 됩니다.
+
+<pre>permission javax.security.auth.AuthPermission "createLoginContext. <em>appClassName</em>";
+permission javax.security.auth.AuthPermission "doAsPrivileged";</pre>
+<blockquote>
+로그인해 <tt>doAsPrivileged</tt> 메소드를 호출하려 하고 있는 어플리케이션 클래스용의 액세스권입니다.
+</blockquote>
+
+<pre>permission java.net.SocketPermission "<em>host</em>[:<em>port</em>]", "connect";</pre>
+<blockquote>
+Kerberos Key Distribution Center (KDC)의 호스트/포트용의 액세스권입니다.
+</blockquote>
+
+<pre>permission javax.security.auth.kerberos.ServicePermission "krbtgt/<em>realm</em>@<em>realm</em>", "initiate";
+permission javax.security.auth.kerberos.ServicePermission "ldap/<em>fully-qualified-hostname</em>@<em>realm</em>", "initiate";</pre>
+<blockquote>
+LDAP 서비스와 KDC 의 범위와 호스트용의 액세스권입니다.
+</blockquote>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<br><i>Copyright &copy; 2002 Sun Microsystems, Inc.  All rights reserved. </i>
+</h3></body>
+</html>

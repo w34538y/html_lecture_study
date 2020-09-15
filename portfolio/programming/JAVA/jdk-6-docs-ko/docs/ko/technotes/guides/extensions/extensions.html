@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>옵션 패키지의 개요 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body bgcolor="#ffffff">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT= 88>
+</TD>
+
+<TD>
+<center>
+<H1>옵션 패키지 - 개요</h1>
+</center>
+</TD>
+
+
+</TR>
+
+</TABLE>
+
+
+<h2>목차</h2>
+<ul>
+<li><a href="#what">옵션 패키지에 대해</a> 
+<li><a href="#installed">인스톨형 옵션 패키지</a> 
+<li><a href="#download">다운로드형 옵션 패키지</a> 
+</ul>
+
+<a name="what"></a> 
+<h2>옵션 패키지에 대해</h2>
+<em>주:</em> 지금까지, 옵션 패키지는, 「표준 확장 기능」또는 단지 「확장 기능」으로서 알려져 있었습니다.
+<p>
+옵션 패키지는, Java 클래스와 거기에 관련하는 native code의 패키지입니다.  확장 기능을 사용하는 것으로, 어플리케이션의 개발자는 코어 플랫폼의 기능을 확장할 수 있습니다. 확장 기능 기구에 의해, bootstrap 클래스와 거의 똑같이 Java Virtual Machine 로부터 옵션 패키지 클래스를 이용할 수 있습니다. bootstrap 클래스는, 코어 플랫폼을 구현하고 있는 클래스이며,<tt>jre/lib/rt.jar</tt> 및 다른 몇개의 중요한 jar 파일에 있습니다. 이러한 jar 파일에는,<tt>java.lang</tt>,<tt>java.io</tt> 등의 public API 의 클래스, 및 플랫폼의 국제화 및 로컬라이제이션의 기능을 지원하는 클래스가 포함됩니다. bootstrap 클래스와 같게, 옵션 패키지의 클래스는 클래스 패스에 둘 필요는 없습니다. 확장 기능 기구에 의해, 필요한 옵션 패키지가 Java 2 Runtime Environment 또는 JDK 에 인스톨되어 있지 않은 경우는, 지정된 URL 로부터 취득할 수도 있습니다.
+<p>
+옵션 패키지는,<a href="../jar/jarGuide.html">JAR</a>  파일의 형태로 제공되어 모든 JAR 파일은 옵션 패키지가 될 수 있습니다. JAR 파일이 옵션 패키지의 역할을 완수하는 것은, 다음의 2 개의 경우입니다.
+
+<ul>
+<li>Java 2 Runtime Environment 또는 JDK 의 디렉토리 구조중의 특별한 장소에 놓여졌을 경우.  이러한 옵션 패키지를 <a href="#installed">「인스톨형」옵션 패키지</a>라고 말한다
+<li>애플릿 또는 어플리케이션이 포함되는 JAR 파일의 Manifest로부터 지정된 방법으로 참조되었을 경우.  이러한 옵션 패키지를<a href="#download">「다운로드형」옵션 패키지</a>라고 말한다
+</ul>
+VM 는, 어느 이름의 클래스를 찾을 때, 최초로 bootstrap 클래스를 검색합니다. bootstrap 클래스안에 목적의 클래스가 없는 경우는, 다음에 인스톨형 옵션 패키지로부터 그 클래스를 검색합니다. bootstrap 클래스로부터도 인스톨형 옵션 패키지로부터도 발견되지 않는 경우는, 어플리케이션 또는 애플릿이 참조하고 있는 다운로드형 옵션 패키지를 검색합니다. bootstrap 클래스와 옵션 패키지 클래스의 어디라도 클래스를 검색할 수 없는 경우는, VM 는 클래스 패스만을 검색합니다.
+
+<a name="installed"></a> 
+<h2>인스톨형 옵션 패키지</h2>
+인스톨형 옵션 패키지는, 다음의 디렉토리에 놓여진 JAR 파일입니다.  
+<blockquote><pre>
+lib/ext       [in the JRE]
+jre/lib/ext   [in the JDK]
+</pre></blockquote>
+이 디렉토리에 JAR 파일을 놓아두면, CLASSPATH 에 명시적으로 포함하지 않아도, 안에 포함되는 클래스를 bootstrap 클래스의 일부인것 같이 애플릿 및 어플리케이션으로부터 사용할 수 있습니다.
+<p>
+인스톨형 옵션 패키지의 native code 바이너리는, 존재하는 경우에는 다음의 디렉토리에 둡니다.  
+<blockquote><pre>
+jre\bin         [Microsoft Windows]
+jre/lib/&lt;arch&gt;  [Solaris operating environment]
+</pre></blockquote>
+<code>&lt;arch&gt;</code> 는, Solaris 프로세서 아키텍쳐(architecture)로,<code>sparc</code> 나 <code>i386</code> 입니다. 또, 네이티브 라이브러리는, Microsoft Windows 와 Solaris 오퍼레이팅(operating) 환경의 양쪽 모두로 <TT>jre/lib/ext/&lt;arch&gt;</TT> 디렉토리에 놓여집니다.  Microsoft Windows 시스템에서는 <TT>&lt;arch&gt;</TT> 는 <TT>i386</TT> 입니다. <tt>jre/lib/ext/&lt;arch&gt;</tt> 디렉토리는,<tt>jre\bin</tt> 또는 <tt>jre/lib/&lt;arch&gt;</tt> 의 「다음에」검색됩니다.
+<p>
+Java VM 는, 특정의 이름의 클래스를 찾을 때, 최초로 실행 환경에서 그 클래스를 검색합니다. 표준의 실행 환경의 클래스로부터 검출할 수 없었던 경우는, VM 는 옵션 패키지의 디렉토리에 두어져 모든 JAR 파일로부터 검색합니다.
+<p>
+JAR 파일이나, 거기에 포함되는 클래스는,<code>jre/lib/ext</code> 에 놓여지는 것에 의해 인스톨형 옵션 패키지가 되는 것에서 만나며, 인스톨형 옵션 패키지가 되는 특별한 JAR 파일이 있는 것은 아닙니다.
+<p>
+인스톨형 옵션 패키지의 JAR 파일의 Manifest 속성에는, 그 옵션 패키지 클래스를 사용하는 애플릿으로 이용할 수 있는 버젼과 벤더의 정보가 지정되고 있을 필요가 있습니다. 버젼과 벤더의 정보를 지정하는 속성에 대해서는,<a href=versioning.html><b>「옵션 패키지의 버젼 관리」</b></a>  로 설명합니다. Manifest의 예를 다음에 나타냅니다.
+<blockquote><pre>
+Manifest-version: 1.0 
+Extension-Name: javax.extension
+Specification-Version: 1.0
+Specification Vendor: Sun Microsystems, Inc.
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor-Id: com.sun
+Sealed: true 
+</pre></blockquote>
+Java Plug-in 에서는, 애플릿의 실행시에 이 버젼과 벤더의 정보를 사용해, 애플릿에 필요한 옵션 패키지가 인스톨 되고 있는 것, 최신의 버젼인 것, 애플릿에 적절한 벤더의 옵션 패키지인 것이 확인됩니다. 인스톨되어 있지 않은 경우, 또는 인스톨이 부정한 경우는, 적절한 옵션 패키지의 다운로드를 요구하는 prompt가 표시됩니다. 자세한 것은,<a href=versioning.html><b>「옵션 패키지의 버젼 관리」</b></a> 를 참조해 주세요.
+<p>
+목적의 클래스가 시스템 클래스로부터도 인스톨형 옵션 패키지내의 클래스로부터도 발견되지 않는 경우는, 다운로드형 옵션 패키지내의 클래스가 검색됩니다.
+
+<a name="download"></a> 
+<h2>다운로드형 옵션 패키지</h2>
+다운로드형 옵션 패키지는, 다른 JAR 파일의 Manifest내의 <tt>Class-Path</tt> 헤더 필드에서 지정되는 JAR 파일입니다. 다운로드형 옵션 패키지의 클래스는, 참조하는 JAR 파일의 클래스에서 사용됩니다. 어느 JAR 파일에 애플릿이 포함되어 있어, 그 JAR 파일의 Manifest로, 그 애플릿의 옵션 패키지가 되는 JAR 파일 (복수의 경우도 있어)을 참조하고 있다는 것이 전형적인 예입니다. 같이 옵션 패키지끼리로 서로 서로 참조하는 경우도 있습니다.
+<p>
+<tt>Class-Path</tt> 헤더의 예를 다음에 나타냅니다.
+<blockquote><pre>
+Class-Path: servlet.jar infobus.jar acme/beans.jar
+</pre></blockquote>
+이 경우, 파일 <code>servlet.jar</code>,<code>infobus.jar</code>, 및 <code>acme/beans.jar</code> 에 포함되는 클래스가, Manifest에 이 헤더가 포함되는 JAR 파일의 클래스의 옵션 패키지가 됩니다. Class-Path 필드에 URL 를 지정했을 경우, 그 URL 는, 애플릿 또는 어플리케이션이 포함되는 JAR 파일의 URL 로부터의 상대 URL 가 됩니다.
+<p>
+인스톨형 옵션 패키지와 달리, 다운로드형 옵션 패키지가 되는 JAR 파일이 놓여지는 위치에는 무슨 의미도 없습니다. 다운로드형 옵션 패키지는, 특정의 장소에 놓여지기 때문은 아니고, 다른 JAR 파일의 Manifest의 <tt>Class-Path</tt> 헤더의 값으로 해서 지정되기 때문에 옵션 패키지인 것입니다.
+<p>
+인스톨형 옵션 패키지와 다운로드형 옵션 패키지의 이제(벌써) 1 개의 차이는, JAR 파일에 포함되어 있는 애플릿이나 어플리케이션만이 다운로드형 옵션 패키지를 이용할 수 있다고 하는 점입니다. JAR 파일에 포함되지 않은 애플릿이나 어플리케이션은, 다운로드형 옵션 패키지를 참조하는 Manifest를 가지지 않습니다.
+<p>
+VM 는, 특정의 클래스를 찾을 때, 최초로 시스템 클래스와 인스톨형 옵션 패키지를 검색합니다. 목적의 클래스가 시스템 클래스로부터도 인스톨형 옵션 패키지내의 클래스로부터도 발견되지 않는 경우는, 어플리케이션 또는 애플릿의 Manifest로 참조하고 있는 다운로드형 옵션 패키지를 검색합니다. 목적의 클래스가 인스톨형 옵션 패키지중에서 발견되었을 경우는, 애플릿이나 어플리케이션의 Manifest 파일로 다운로드형 옵션 패키지를 참조하고 있어도, 다운로드형 옵션 패키지는 다운로드되지 않습니다.  
+<p>
+확장 기능 기구에서는, 다운로드형 옵션 패키지는 JRE 또는 JDK 의 디렉토리 구조에 인스톨 되지 않습니다. 다운로드형 옵션 패키지는, 다운로드되어도 인스톨형 옵션 패키지로는 되지 않습니다.
+<p>
+다운로드형 옵션 패키지의 경우, 인스톨형 옵션 패키지와는 달라, native code를 포함할 수 없습니다.
+<p>
+
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<FONT SIZE="-2">Copyright &#169; 1997, 1998 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30 > <BR> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+  </body>
+</html>

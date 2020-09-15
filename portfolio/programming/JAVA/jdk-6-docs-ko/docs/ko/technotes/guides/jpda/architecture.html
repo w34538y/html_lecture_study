@@ -1,0 +1,211 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Mozilla/4.02 [en] (X11; U; SunOS 5.5.1 sun4u) [Netscape]">
+<TITLE>Java(TM) Platform Debugger Architecture - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+&nbsp;
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR>
+<TD WIDTH="60"><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+<TD><CENTER><H1>Java Platform Debugger Architecture</H1></CENTER></TD>
+<TD ALIGN="RIGHT" VALIGN="TOP"><P ALIGN="RIGHT"><A HREF="index.html"><FONT SIZE="2">홈 페이지에 돌아온다</FONT></A> </TD>
+</TR>
+</TABLE>
+<!-- Body text begins here -->
+<P>
+
+<CENTER>
+<H1>구성의 개요</H1></CENTER>
+Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture 의 구성은 다음과 같습니다.
+<pre>
+             <FONT COLOR="#009900">컴퍼넌트</FONT>                         <FONT COLOR="#009900">디버거 인터페이스</FONT>
+
+                /    |--------------|
+               /     |     <A HREF="#vm">VM</A>        |
+ <A HREF="#debuggee">debuggee</A>  ----(      |--------------|  &lt;------- <A HREF="#jvmti">JVM TI</A>  - Java VM Tool Interface
+               \     | <A HREF="#back-end">연구 최종 단계</A>  |
+                \    |--------------|
+                /           |
+ <A HREF="#channel">통신 채널</A>  -(            |  &lt;--------------- <A HREF="#jdwp">JDWP</A>  - Java Debug Wire Protocol
+                \           |
+                     |--------------|
+                     |<A HREF="#front-end">프론트엔드</A> |
+                     |--------------|  &lt;------- <A HREF="#jdi">JDI</A>  - Java Debug Interface
+                     |      <A HREF="#ui">UI</A>       |
+                     |--------------|
+
+</pre>
+
+<H2>Java Platform Debugger Architecture (JPDA)란 무엇인가</H2>
+
+JPDA 는, 복수의 플랫폼,<A HREF="#vm">가상 머신 (VM)</A>  구현, 및 JDK 버젼간에 높은 이식성을 가지는 디버거 어플리케이션을, 툴 개발자가 용이하게 작성할 수 있도록(듯이) 하는 다층 디버그 아키텍쳐(architecture)입니다.
+<P>
+JPDA 는, 다음의 3 개의 계층으로 구성됩니다.
+<DL>
+<DT> <A HREF="#jvmti">JVM TI</A>  - Java VM Tool Interface
+<DD> JVM TI 는, JVMDI 에 옮겨지는 것으로서 J2SE 5.0 에 도입된 새로운 인터페이스입니다. VM 가 제공하는 디버그 서비스를 정의합니다.
+
+<DT> <A HREF="#jdwp">JDWP</A>  - Java Debug Wire Protocol
+<DD>      <A HREF="#debuggee">debuggee</A>  와 디버거의 프로세스간에 행해지는 통신을 정의합니다.
+
+<DT> <A HREF="#jdi">JDI</A>  - Java Debug Interface
+<DD>      고레벨의 Java 언어 인터페이스를 정의합니다. 이것을 사용하는 것으로써, 툴 개발자는, 원격 디버거 어플리케이션을 용이하게 기술할 수 있습니다.
+</DL>
+
+<H2>레퍼런스 구현</H2>
+
+이러한 인터페이스의 스펙에 가세해 Sun Microsystems 는 레퍼런스 구현도 제공합니다. 레퍼런스 구현은, 다음과 같은 컴퍼넌트로 구성됩니다.
+<UL>
+<LI>복수의 Sun VM (<a href="../vm/index.html">「VM 의 문서」</a>를 참조) 상에서의 JVM TI 구현.
+
+<LI>JVM TI 를 사용해 JDWP 의 debuggee 측을 구현하는<A HREF="#back-end">연구 최종 단계</A> .
+
+<LI>JDWP 의 디버거측을 사용해 JDI 를 구현하는<A HREF="#front-end">프론트엔드</A> 
+
+<LI>JDI 상에 구축된 2 개(살)의 간단한 샘플 디버거 어플리케이션
+</UL>
+결과적으로, 임의의 층을 치환가능인 다층 구현이 제공됩니다.
+
+<H2>JPDA 의 사용</H2>
+
+디버거 개발자는, 임의의 층에서 JPDA 에 액세스 할 수 있습니다. JDI 는 가장 고레벨 한편 사용하기 쉬운 인터페이스이기 (위해)때문에, JDI 를 사용하는 것을 개발자  여러분에게 추천합니다. 기업이 JDI 를 사용해 디버거를 개발하는 경우를 생각해 봅시다. JDI 는, 레퍼런스 구현과 함께 사용할 수 있어 또 VM 및 Sun 가 지원하는 플랫폼에서 자동적으로 기능합니다. 게다가 예를 들어, 레퍼런스 구현의 프론트엔드와 JDWP 를 구현하는 것 외 회사의 VM (JVM TI 를 사용해도 생략 해도 괜찮다)로 동작하고 있는 debuggee 에서도 기능합니다.   
+<P>
+디버거안에는, 보다 낮은 층인 JDWP (프론트엔드가 Java 로 기술되어 있지 않은 경우)나 JVM TI (저레벨의 기능을 필요로 하는 특수한 디버거의 경우) 위에 구축되는 것도 있습니다.
+<P>
+
+
+<HR WIDTH="100%">
+
+<CENTER>
+<a name="components"></a> 
+<H1>컴퍼넌트</H1></CENTER>
+
+<A NAME="debuggee"></A> 
+<H2>
+debuggee</H2>
+
+<UL>debuggee 란, 디버그 하고 있는 프로세스입니다. 디버그 하고 있는 어플리케이션 (표시되어 있지 않다), 어플리케이션이 동작하고 있는 <A HREF="#vm">VM</A> , 및 디버거의<A HREF="#back-end">연구 최종 단계</a>로 구성됩니다. </UL>
+
+<A NAME="vm"></A> 
+<H2>
+Java 가상 머신 (VM)</H2>
+
+<UL>디버그 하고 있는 어플리케이션이 동작하고 있는 VM 입니다.
+
+<P>이 디버거의 아키텍쳐(architecture)는, 다양한 VM 구현으로 사용할 수 있도록(듯이) 설계되고 있습니다.
+
+<P>이 VM 에서는, Java Virtual Machine Debug Interface (<A HREF="#jvmti">JVM TI</A> )가 구현됩니다. </UL>
+
+<A NAME="back-end"></A> 
+<H2>
+연구 최종 단계</H2>
+
+<UL>디버거의 연구 최종 단계로는, 디버거의<A HREF="#front-end">프론트엔드</a>로부터 debuggee <A HREF="#vm">VM</A>  에 대해서 요구가 송신되어 한층 더 요구 (필요한 이벤트등)에 대한 응답이 프론트엔드에 답신됩니다. &nbsp;연구 최종 단계와 프론트엔드와의 통신은, Java Debug Wire Protocol (<A HREF="#jdwp">JDWP</A> )를 사용해,<A HREF="#channel">통신 채널</a>을 개입시켜 행해집니다. 연구 최종 단계와 debuggee VM 와의 통신에는, Java Virtual Machine Debug Interface (<A HREF="#jvmti">JVM TI</A> )를 사용합니다.
+
+<P>Java 로 기술된 디버거 지원 코드를 debuggee 상에서 실행했을 경우, debuggee 와의 경합이 발생해, 행업 및 그 외의 예기치 않은 동작을 할 가능성이 있습니다. 이 때문에, 연구 최종 단계는 native code로 기술되고 있어<A HREF="#jvmti">JVM TI</A>  는 순수한 네이티브 인터페이스가 되어 있습니다. </UL>
+
+<A NAME="channel"></A> 
+<H2>
+통신 채널</H2>
+
+<blockquote>
+<p>통신 채널은, 디버거의<a href="#front-end">프론트엔드 </a>및<a href="#back-end">연구 최종 단계</a>간의 링크입니다. 이것은, 다음의 2 개의 기구로 구성되어 있다고 생각할 수가 있습니다. </p>
+<ol>
+<li> 연결기. 연결기는, 프론트엔드와 연구 최종 단계간에 접속을 확립하는 수단으로서 사용되는 JDI 객체입니다.  <p></p>
+
+<p>JPDA 에서는, 다음의 3 개의 연결기가 정의되고 있습니다. </p>
+
+<ul>
+<li>대기 연결기:프론트엔드가, 연구 최종 단계부터의 착신 접속을 대기한다
+	</li><li>접속 연결기:프론트엔드가, 벌써 실행중의 연구 최종 단계에 접속한다
+	</li><li>기동 연결기:프론트엔드가, debuggee 코드 및 연구 최종 단계를 실행하는 Java 프로세스를 실제로 기동한다
+	</li></ul>
+<p>
+<li> 트랜스폴트. 트랜스폴트는, 프론트엔드와 연구 최종 단계간에서의 비트의 이동에 사용되는, 기반이 되는 기구입니다. <br><br><br> 사용되는 트랜스폴트 기구는 지정되고 있지 않습니다만, 소켓, 시리얼 회선, 및 공용 메모리가 사용됩니다. 다만, 채널을 개입시켜 전송 되는 직렬화 비트 스트림의 형식 및 시멘틱스는, Java Debug Wire Protocol (JDWP)로 지정되고 있습니다. <br>
+</ol>
+J2SE 5.0 으로부터, JPDA 에는 서비스 프로바이더 인터페이스가 포함되어 있어 이것을 사용하면(자), 연결기나 트랜스폴트의 구현을 개발 및 배치할 수 있습니다. 이러한 서비스 프로바이더 인터페이스에 의해, 디버거나 다른 툴 벤더로 새로운 연결기 구현을 개발해, Sun 가 제공하는 소켓 및 공용 메모리트란스포트를 넘는 다른 트랜스폴트 기구를 제공할 수가 있습니다. JDI 의 서비스 프로바이더 인터페이스는,<a href="../../../jdk/api/jpda/jdi/com/sun/jdi/connect/spi/package-summary.html">com.sun.jdi.connect.spi</a>  패키지로 지정됩니다.  <p></p>
+<p>JDI 의 서비스 프로바이더 인터페이스에 가세해 JPDA 에는 <a href="jdwpTransport.html">Java <sup><font size="-2">TM</font></sup>Debug Wire Protocol Transport Interface</a>  라고 하는 트랜스폴트 라이브러리 인터페이스도 포함되어 있습니다. 트랜스폴트 라이브러리는, 타겟 VM 의 JDWP 에이전트에 의해 로드 되어 디버거와의 접속의 확립, 및 디버거와 VM 간의 JDWP 패킷의 트랜스폴트에 사용됩니다.  </p>
+이러한 SPI 의 사용 방법의 자세한 것은,<a href="jpda_spis.html">「Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture - 서비스 프로바이더 인터페이스」</a>를 참조해 주세요.
+</blockquote>
+
+<A NAME="front-end"></A> 
+<H2>
+프론트엔드</H2>
+
+<UL>디버거의 프론트엔드에는, 고레벨의 Java Debug Interface (<A HREF="#jdi">JDI</A> )가 구현되고 있습니다. 이 프론트엔드에서는, 저레벨의 Java Debug Wire Protocol (<A HREF="#jdwp">JDWP</A> )의 정보가 사용됩니다.
+</UL>
+
+<A NAME="ui"></A> 
+<H2>
+사용자 인터페이스 (UI)</H2>
+
+<UL>디버거의 사용자 인터페이스는 지정되고 있지 않습니다. 툴 벤더로부터, 사용하기 쉬운 구현이 제공될 예정입니다. 다만, 간단한 그래피컬 사용자 인터페이스 (GUI)의 예는 제공되고 있습니다. 이 GUI 예를, 테스트 툴, 또는보다 고도의 GUI 를 개발하기 위한 모형으로서 사용할 수가 있습니다. JDB 버젼도, 예로서 사용할 수 있습니다.  
+
+<P>이러한 UI 의 예는, Java Debug Interface (<A HREF="#jdi">JDI</A> )의 클라이언트가 되어 있습니다. </UL>
+&nbsp;
+<CENTER>
+<H1>
+
+<HR><A NAME="interfaces"></A> 디버거 인터페이스</H1></CENTER>
+
+<A NAME="jvmti">
+<H2>
+Java Virtual Machine Tool Interface (JVM TI)</H2></A> 
+
+<UL>JVMDI 는,<A HREF="#vm">VM</A>  에 의해 구현되고 있는 네이티브 인터페이스입니다.
+
+<P>디버그를 위해서(때문에) VM 로부터 제공할 필요가 있는 서비스를 정의합니다. 거기에는, 정보 (예를 들어, 현재의 스택 프레임)의 요구, 액션 (예를 들어, breakpoint의 설정), 통지 (예를 들어, breakpoint에 도달했을 때)등의 서비스가 포함됩니다. 디버거에서는, JVMDI 이외의 VM 정보 (Java Native Interface (JNI)등)도 사용됩니다만, JVMDI 는 모든 디버거 고유 정보의 소스가 됩니다.
+
+<P>VM 인터페이스를 지정하면(자), VM 구현측으로부터 디버그 아키텍쳐(architecture)에 간단하게 플러그 인 할 수가 있습니다. 또, 대체 통신 채널을 구현할 수도 있습니다. 이 인터페이스에 준거하지 않는 VM 구현을 사용했을 경우에서도, Java Debug Wire Protocol (<A HREF="#jdwp">JDWP</A> )를 개입시켜 액세스 할 수가 있습니다.
+
+<P>관련 항목:
+<UL><A HREF="../jvmti/index.html">JVM TI 의 스펙</A> </UL>
+&nbsp;</UL>
+
+<A NAME="jdwp">
+<H2>
+Java Debug Wire Protocol (JDWP)</H2></A> 
+
+<UL><A HREF="#debuggee">debuggee</A>  프로세스와 디버거의<A HREF="#front-end">프론트엔드</a>와의 사이에 전송 되는 정보와 요구의 형식을 정의합니다. 다만, 트랜스폴트 기구 (소켓, 시리얼 회선, 공용 메모리등)는 정의하지 않습니다.
+
+<P>이 프로토콜의 스펙에 의해, debuggee 와 디버거의 프론트엔드를, 다른 VM 구현 또는 다른 플랫폼 (그 양쪽 모두가 달라도 상관없다)에서 실행할 수 있게 됩니다. 게다가 Java 이외의 언어로 기술된 프론트엔드, 또는 네이티브 이외의 debuggee (Java 등)도 사용할 수 있게 됩니다.
+
+<P>정보 및 요구는, 많은 경우, Java Virtual Machine Debug Interface (<A HREF="#jvmti">JVM TI</A> ) 층의 것입니다. 그러나, 대역폭의 문제가 발생했을 경우에는, 필요한 정보 및 요구가 추가되는 일이 있습니다. 예를 들어, 정보의 필터 처리나 배치처리 등입니다.
+
+<P>관련 항목:
+<UL><A HREF="jdwp-spec.html">JDWP 의 스펙</A> </UL>
+
+<UL>
+<a href="jdwpTransport.html">JDWP 의 스펙</a> 
+</UL>
+&nbsp;</UL>
+
+<A NAME="jdi">
+<H2>Java Debug Interface (JDI)</H2></A> 
+
+<UL><A HREF="#front-end">프론트엔드</a>에 의해 구현되는 100% Pure Java 인터페이스입니다.
+
+<P>사용자 코드 레벨에서의 정보 및 요구를 정의합니다.  
+
+<P>디버거의 구현측에서는, Java Debug Wire Protocol (<A HREF="#jdwp">JDWP</A> )가 직접 사용되는지, Java Virtual Machine Debug Interface (<A HREF="#jvmti">JVM TI</A> )가 사용됩니다만, 이 JDI 인터페이스를 사용하면(자), 디버그 기능을 개발 환경에 간단하게 통합할 수가 있습니다. 모든 디버거 개발로 JDI 층을 사용하는 것을 추천합니다.
+
+<P>관련 항목:
+<UL><A HREF="../../../jdk/api/jpda/jdi/index.html">JDI 의 스펙</A> </UL>
+</UL>
+
+<P>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR VALIGN=TOP>
+<TD><A HREF="../../../legal/SMICopyright.html"><FONT SIZE="1">Copyright &copy;</FONT></A> <FONT SIZE="1"> 2005 </FONT><A HREF="http://www.sun.com/"><FONT SIZE="1">Sun Microsystems, Inc. </FONT></A> <FONT SIZE="1">All Rights Reserved. <BR><BR></FONT><FONT SIZE="2"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/jpda/index.html&category=j2se&mailsubject=Java Platform Debugger Architecture">피드백</A> </font></TD>
+
+<TD ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><I><FONT SIZE="+1"> Java Software </FONT></I><FONT SIZE="+1">&nbsp;</FONT></TD>
+</TR>
+</TABLE>
+
+</BODY>
+</HTML>

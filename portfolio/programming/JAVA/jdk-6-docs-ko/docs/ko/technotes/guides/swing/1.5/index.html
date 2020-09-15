@@ -1,0 +1,1858 @@
+<html><head>
+<meta name="collection" content="exclude">
+
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8-jp">
+</head>
+  <body>
+<h2>JDK 5.0 에서의 Swing API 의 변경점</h2>
+    <p>
+J2SE 5.0 에 있어서의 Swing API 의 변경점에 대해, 다음의 마디로 자세하게 설명합니다.
+      </p><ol>
+<li><a href="#swingMajor">주요한 변경점</a> 
+</li><li><a href="#swingText">텍스트 클래스의 변경점</a> 
+</li><li><a href="#swingMisc">그 외의 변경</a> 
+</li><li><a href="#swingIncompatibilities">비호환성</a> 
+    </li></ol>
+
+<h2><a name="swingMajor">Swing 의 주요한 변경점</a> </h2>
+
+  <!-- 4607364 -->
+<h3><a name="4607364"></a> <a href="http://developer.java.sun.com/developer/bugParade/bugs/4607364.html">4607364</a> : Swing 의 디폴트의 Look & Feel 의 개선</h3>
+<h4>설명:</h4>
+    <p>
+Swing 의 5.0 에서 가장 큰 변경점입니다. Java Look & Feel 를 사용했을 경우, 사용의 어플리케이션은, 5.0 으로 자동적으로 Ocean 로 불리는 새로운 외관이 됩니다. Ocean 는 위젯의 추천 사이즈를 변경하지 않게, 호환성을 고려해 설계되었습니다. 외관과 몇 안 되는 쓰기만이 변경되고 있습니다. 시스템 프롭퍼티 <code>swing.metalTheme=steel</code> 를 설정하면(자), 종래의 외관이 됩니다.
+    </p><p>
+Ocean 는, 현재 비공개인 커스텀 <a href="../../../../api/javax/swing/plaf/metal/MetalTheme.html">MetalTheme</a>  로서 구현되고 있습니다. 이 수법의 이점으로서는, 사용자가 커스텀 <code>MetalTheme</code> 를 작성했을 경우에, Ocean 에 의한 영향을 전혀 받지 않는다고 하는 점입니다. 즉, 작성한 어플리케이션은 1.4 의 경우와 같게 됩니다.
+    </p>
+
+<h4>스펙</h4>
+    <p>
+<a href="../../../../api/javax/swing/AbstractButton.html">AbstractButton</a>  서브 클래스의 무효인 아이콘이 UI 로부터 생성되게 되었습니다. 이것에 의해,<a href="../../../../api/javax/swing/AbstractButton.html#getDisabledIcon">getDisabledIcon</a>  의 스펙이 다음과 같이 개정되었습니다.
+  </p><pre>    /**
+     * Returns the icon used by the button when it's disabled.
+     * If no disabled icon has been set this will forward the call to
+     * the ui to construct an appropriate disabled Icon.
+     * &lt;p&gt;
+     * Some look and feels might not render the disabled Icon, in which
+     * case they will ignore this.
+     *
+     * @return the &lt;code&gt;disabledIcon&lt;/code&gt; property
+     * @see #getPressedIcon
+     * @see #setDisabledIcon
+     * @see javax.swing.plaf.ButtonUI#getDisabledIcon
+     */
+    public Icon getDisabledIcon();
+</pre>
+    <p>
+또, 메소드 <a href="../../../../api/javax/swing/plaf/ButtonUI.html#getDisabledIcon">getDisabledIcon</a>  가 <a href="../../../../api/javax/swing/plaf/ButtonUI.html">ButtonUI</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Returns the icon to display when the developer has not specified
+     * a disabled icon.
+     * &lt;p&gt;
+     * Some look and feels might not render the disabled Icon, in which
+     * case they will ignore this.
+     *
+     * @param button AbstractButton requesting the Icon
+     * @return Disabled icon, or null.
+     * @see javax.swing.AbstractButton#setIcon
+     * @see javax.swing.AbstractButton#setDisabledIcon
+     * @throws NullPointerException if &lt;code&gt;button&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public Icon getDisabledIcon(AbstractButton button);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/JButton.html">JButton</a>  의 무효인 아이콘의 외형을 커스터마이즈 하려면 ,<a href="../../../../api/javax/swing/plaf/metal/MetalButtonUI.html">MetalButtonUI</a>  으로 <a href="../../../../api/javax/swing/plaf/metal/MetalButtonUI.html#getDisabledIcon">getDisabledIcon</a>  를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * Returns the icon to display when the button is disabled.
+     *
+     * @param button AbstractButton requesting the Icon
+     * @return Disabled icon, or null.
+     * @see javax.swing.AbstractButton#setIcon
+     * @see javax.swing.AbstractButton#setDisabledIcon
+     * @throws NullPointerException if &lt;code&gt;button&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public Icon getDisabledIcon(AbstractButton button);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/JComboBox.html">JComboBox</a>  의 외형을 커스터마이즈 하려면 ,<a href="../../../../api/javax/swing/plaf/metal/.html">MetalCombBoxUI</a>  로 다음의 메소드를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * If necessary paints the currently selected item.
+     *
+     * @param g Graphics to paint to
+     * @param bounds Region to paint current value to
+     * @param hasFocus whether or not the JComboBox has focus
+     * @throws NullPointerException if any of the arguments are null.
+     * @since 1.5
+     */
+    public void paintCurrentValue(Graphics g, Rectangle bounds,
+                                  boolean hasFocus);
+
+    /**
+     * If necessary paints the background of the currently selected item.
+     *
+     * @param g Graphics to paint to
+     * @param bounds Region to paint background to
+     * @param hasFocus whether or not the JComboBox has focus
+     * @throws NullPointerException if any of the arguments are null.
+     * @since 1.5
+     */
+    public void paintCurrentValueBackground(Graphics g, Rectangle bounds,
+                                            boolean hasFocus);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/JButton.html">JButton</a>  의 외형을 커스터마이즈 하려면 ,<a href="../../../../api/javax/swing/plaf/metal/MetalButtonUI.html">MetalButtonUI</a>  로 다음의 메소드를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * If necessary paints the background of the component, then
+     * invokes &lt;code&gt;paint&lt;/code&gt;.
+     *
+     * @param g Graphics to paint to
+     * @param c JComponent painting on
+     * @throws NullPointerException if &lt;code&gt;g&lt;/code&gt; or &lt;code&gt;c&lt;/code&gt; is
+     *         null
+     * @see javax.swing.plaf.ComponentUI#update
+     * @see javax.swing.plaf.ComponentUI#paint
+     * @since 1.5
+     */
+    public void update(Graphics g, JComponent c);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/JMenuBar.html">JMenuBar</a>  의 외형을 커스터마이즈 하기 위해서,<a href="../../../../api/javax/swing/plaf/metal/MetalMenuBarUI.html">MetalMenuBarUI</a>  가 준비되었습니다.
+    </p><p>
+<a href="../../../../api/javax/swing/JToolBar.html">JToolBar</a>  의 외형을 커스터마이즈 하려면 ,<a href="../../../../api/javax/swing/plaf/metal/MetalToolBarUI.html">MetalToolBarUI</a>  로 <a href="../../../../api/javax/swing/plaf/metal/MetalToolBarUI.html#update">update</a>  를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * If necessary paints the background of the component, then invokes
+     * &lt;code&gt;paint&lt;/code&gt;.
+     *
+     * @param g Graphics to paint to
+     * @param c JComponent painting on
+     * @throws NullPointerException if &lt;code&gt;g&lt;/code&gt; or &lt;code&gt;c&lt;/code&gt; is
+     *         null
+     * @see javax.swing.plaf.ComponentUI#update
+     * @see javax.swing.plaf.ComponentUI#paint
+     * @since 1.5
+     */
+    public void update(Graphics g, JComponent c);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/JToggleButton.html">JToggleButton</a>  의 외형을 커스터마이즈 하려면 ,<a href="http://javaweb/swing/tiger/docs/api/javax/swing/plaf/metal/MetalToggleButtonUI.html">MetalToggleButtonUI</a>  으로 다음의 메소드를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * If necessary paints the background of the component, then invokes
+     * &lt;code&gt;paint&lt;/code&gt;.
+     *
+     * @param g Graphics to paint to
+     * @param c JComponent painting on
+     * @throws NullPointerException if &lt;code&gt;g&lt;/code&gt; or &lt;code&gt;c&lt;/code&gt; is
+     *         null
+     * @see javax.swing.plaf.ComponentUI#update
+     * @see javax.swing.plaf.ComponentUI#paint
+     * @since 1.5
+     */
+    public void update(Graphics g, JComponent c);
+
+    /**
+     * Paints the appropriate icon of the button &lt;code&gt;b&lt;/code&gt; in the
+     * space &lt;code&gt;iconRect&lt;/code&gt;.
+     *
+     * @param g Graphics to paint to
+     * @param b Button to render for
+     * @param iconRect space to render in
+     * @throws NullPointerException if any of the arguments are null.
+     * @since 1.5
+     */
+    protected void paintIcon(Graphics g, AbstractButton b, Rectangle iconRect);
+
+    /**
+     * Returns the icon to display when the button is disabled.
+     *
+     * @param button AbstractButton requesting the Icon
+     * @return Disabled icon, or null.
+     * @see javax.swing.AbstractButton#setIcon
+     * @see javax.swing.AbstractButton#setDisabledIcon
+     * @throws NullPointerException if &lt;code&gt;button&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public Icon getDisabledIcon(AbstractButton button);
+</pre>
+
+
+  <!-- 4632193 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4632193.html">4632193</a> : Swing 의 Look & Feel 를 스킨화</h3>
+<h4>설명:</h4>
+    <p>
+Swing 에 있어서의 초기의 설계 목표에는, 코드를 변경하지 않고 , 어플리케이션으로 복수의 Look & Feel 를 지원할 수 있도록(듯이) 하는 일이 있었습니다. 이 기능에 의해, 개발자는 어플리케이션을 다양한 Look & Feel 로 심리스에 실행할 수 있습니다. <a href="http://www.incors.org/">Alloy Look and Feel</a>  나 <a href="http://javootoo.l2fprod.com/plaf/skinlf/index.php">L2F's Skinnable Look and Feel</a>  를 시작해로서 많은 커스텀 Look & Feel 가 있습니다만, 새로운 Look & Feel 를 작성하려면  프로그래밍과 Swing 의 플러그 인 가능한 Look & Feel 에 대한 광범위한 지식이 필요합니다. 그 때문에 대부분의 경우, 이 기능의 대상은 경험 풍부한 개발자에게 한정되어 있었습니다. 5.0 에서는, Synth 로 불리는 스킨 설정 가능한 Look & Feel 가 Swing 에 추가되었습니다. Synth 는 코드를 고쳐 쓰는 일 없이 완전한 커스터마이즈가 가능해, 프로그래머가 아니어도 새로운 Look & Feel 를 작성할 수 있습니다.
+    </p><p>
+Synth 는 <a href="../../../../api/javax/swing/plaf/synth/package-summary.html">javax.swing.plaf.synth</a>  패키지에 포함되어 있습니다. <a href="../../../../api/javax/swing/plaf/synth/package-summary.html">패키지 </a>레벨 javadoc 에는, Synth 의 간단한 개요가 기술되고 있습니다. Synth 는<a href="../../../../api/javax/swing/plaf/synth/package-summary.html">파일</a>의 형식에서 커스터마이즈 할 수 있습니다. Synth 로 <a href="../../../../api/javax/swing/plaf/basic/package-summary.html">javax.swing.plaf.basic</a>  를 확장할 수 있도록(듯이) 하기 위해서, 다음의 변경이 더해졌습니다.
+    </p><p>
+다음의 메소드는 불필요하기 때문에 (구현이 슈퍼 클래스와 동일하다), 삭제되었습니다. <a href="../../../../api/javax/swing/plaf/basic/BasicOptionPaneUI.html">BasicOptionPaneUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicOptionPaneUI.html">BasicOptionPaneUI</a>  의 getMaximumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicTabbedPaneUI.html">BasicTabbedPaneUI</a>  의 getPreferredSize,<a href="../../../../api/javax/swing/plaf/basic/BasicMenuBarUI.html">BasicMenuBarUI</a>  의 getPreferredSize,<a href="../../../../api/javax/swing/plaf/basic/BasicPopupMenuUI.html">BasicPopupMenuUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicPopupMenuUI.html">BasicPopupMenuUI</a>  의 getPreferredSize,<a href="../../../../api/javax/swing/plaf/basic/BasicPopupMenuUI.html">BasicPopupMenuUI</a>  의 getMaximumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.html">BasicScrollPaneUI</a>  의 getPreferredSize,<a href="../../../../api/javax/swing/plaf/basic/BasicScrollPaneUI.html">BasicScrollPaneUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicListUI.html">BasicListUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicListUI.html">BasicListUI</a>  의 getMaximumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicScrollBarUI.html">BasicScrollBarUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarSeparatorUI.html">BasicToolBarSeparatorUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarSeparatorUI.html">BasicToolBarSeparatorUI</a>  의 getMaximumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarUI.html">BasicToolBarUI</a>  의 getMinimumSize,<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarUI.html">BasicToolBarUI</a>  의 getPreferredSize,<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarUI.html">BasicToolBarUI</a>  의 getMaximumSize
+    </p><p>
+<a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  서브 클래스가 많게는, 프리미티브(primitive) 프롭퍼티가 있습니다. UI 에 이러한 프롭퍼티의 값을 인스톨 하는 필요성이 있습니다만, 그 프롭퍼티를 개발자가 설정했는지의 여부를 판별할 방법이 없기 위해(때문에), 개발자가 지정한 값을 재설정해 버리는 일도 있습니다. 개발자가 값을 지정하지 않았던 경우에만 UI 로 값을 설정할 수 있도록(듯이) 하려면 , 모든 프리미티브(primitive) 설정 메소드를 <a href="../../../../api/javax/swing/.html">LookAndFeel</a>  내의 메소드 경유로 합니다.
+</p><pre>    /**
+     * Convenience method for installing a property with the specified name
+     * and value on a component if that property has not already been set
+     * by the client program.   This method is intended to be used by
+     * UI delegate instances that need to specify a default value for a
+     * property of primitive type (boolean, int, ..), but do not wish
+     * to override a value set by the client.   Since primitive property
+     * values cannot be wrapped with the UIResource marker, this method
+     * uses private state to determine whether the property has been set
+     * by the client.
+     * @throws IllegalArgumentException if the specified property is not
+     *         one which can be set using this method
+     * @throws ClassCastException May be thrown if the propertyValue is not
+     *         of the expected type.
+     * @throws NullPointerException May be thrown if the JComponent is null,
+     *         or the propertyValue is null.
+     * @param c the target component for installing the property
+     * @param propertyName String containing the name of the property to be set
+     * @param propertyValue Object containing the value of the property
+     * @since 1.5
+     */
+    public static void installProperty(JComponent c, 
+				       String propertyName, Object propertyValue)
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicTabbedPaneUI.html">BasicTabbedPaneUI</a>  의 서브 클래스에서 독자적인 버튼을 작성할 수 있도록(듯이) 하기 위해서, 다음의 메소드가 추가되었습니다.
+</p><pre>    /**
+     * Creates and returns a JButton that will provide the user
+     * with a way to scroll the tabs in a particular direction.  The
+     * returned JButton must be instance of UIResource.
+     *
+     * @param direction One of the SwingConstants constants:
+     * SOUTH, NORTH, EAST or WEST
+     * @return Widget for user to 
+     * @see javax.swing.JTabbedPane#setTabPlacement
+     * @see javax.swing.SwingConstants
+     * @throws IllegalArgumentException if direction is not one of
+     *         NORTH, SOUTH, EAST or WEST
+     * @since 1.5
+     */
+    protected JButton createScrollButton(int direction);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicTabbedPaneUI.html">BasicTabbedPaneUI</a>  의 서브 클래스에서 포커스가 있는 탭을 판별할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Returns the index of the tab that has focus.
+     *
+     * @return index of tab that has focus
+     * @since 1.5
+     */
+    protected int getFocusIndex();
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicTabbedPaneUI.html">BasicTabbedPaneUI</a>  의 서브 클래스에서 롤 오버 효과를 제공할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Sets the tab the mouse is currently over to <code>index</code>.
+     * <code>index</code> will be -1 if the mouse is no longer over any
+     * tab.  No checking is done to ensure the passed in index identifies a
+     * valid tab.
+     *
+     * @param index Index of the tab the mouse is over.
+     * @since 1.5
+     */
+    protected void setRolloverTab(int index);
+
+    /**
+     * Returns the tab the mouse is currently over, or -1 if the mouse is no
+     * longer over any tab.
+     *
+     * @param index Index of the tab the mouse is over.
+     * @since 1.5
+     */
+    protected int getRolloverTab();
+</pre>
+    <p>
+다음의 필드가 <a href="../../../../api/javax/swing/plaf/basic/BasicColorChooserUI.html">BasicColorChooserUI</a>  에 추가되었습니다.
+</p><pre>    /**
+     * JColorChooser this BasicColorChooserUI is installed on.
+     *
+     * @since 1.5
+     */
+    protected JColorChooser chooser;
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicSpinnerUI.html">BasicSpinnerUI</a>  의 서브 클래스에서 독자적인 키보드 액션을 도입할 수 있도록(듯이) 하기 위해서, 다음의 메소드가 추가되었습니다.
+</p><pre>    /**
+     * Installs the keyboard Actions onto the JSpinner.
+     *
+     * @since 1.5
+     */
+    protected void installKeyboardActions();
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicSpinnerUI.html">BasicSpinnerUI</a>  의 서브 클래스에서 독자적인 스핀 버튼을 제공할 수 있도록(듯이) 하기 위해서, 다음의 메소드가 추가되었습니다.
+</p><pre>    /**
+     * Installs the necessary listeners on the next button, <code>c</code>,
+     * to update the <code>JSpinner</code> in response to a user gesture.
+     *
+     * @param c Component to install the listeners on
+     * @throws NullPointerException if <code>c</code> is null.
+     * @see #createNextButton
+     * @since 1.5
+     */
+    protected void installNextButtonListeners(Component c);
+
+    /**
+     * Installs the necessary listeners on the previous button, <code>c</code>,
+     * to update the <code>JSpinner</code> in response to a user gesture.
+     *
+     * @param c Component to install the listeners on.
+     * @throws NullPointerException if <code>c</code> is null.
+     * @see #createPreviousButton
+     * @since 1.5
+     */
+    protected void installPreviousButtonListeners(Component c);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicScrollBarUI.html">BasicScrollBarUI</a>  의 서브 클래스에서 롤 오버 피드백을 제공할 수 있도록(듯이) 하기 위해서, 다음의 메소드가 추가되었습니다.
+</p><pre>    /**
+     * Sets whether or not the mouse is currently over the thumb.
+     *
+     * @param active True indicates the thumb is currently active.
+     * @since 1.5
+     */
+    protected void setThumbRollover(boolean active);
+
+    /**
+     * Returns true if the mouse is currently over the thumb.
+     *
+     * @return true if the thumb is currently active
+     * @since 1.5
+     */
+    public boolean isThumbRollover();
+
+    /**
+     * Indicates whether the user can absolutely position the thumb with
+     * a mouse gesture (usually the middle mouse button).
+     *
+     * @return true if a mouse gesture can absolutely position the thumb
+     * @since 1.5
+     */
+    public boolean getSupportsAbsolutePositioning();
+</pre>
+    <p>
+클래스의 로드를 큰폭으로 단축하기 위해서, 다음이 <a href="../../../../api/javax/swing/plaf/basic/BasicComboPopup.html">BasicComboPopup</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Gets the AccessibleContext associated with this BasicComboPopup.
+     * The AccessibleContext will have its parent set to the ComboBox.
+     *
+     * @return an AccessibleContext for the BasicComboPopup
+     * @since 1.5
+     */
+    public AccessibleContext getAccessibleContext();
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicSplitPaneDivider.html">BasicSplitPaneDivider</a>  의 서브 클래스에서 마우스 오버 피드백을 제공할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Sets whether or not the mouse is currently over the divider.
+     *
+     * @param mouseOver whether or not the mouse is currently over the divider
+     * @since 1.5
+     */
+    protected void setMouseOver(boolean mouseOver);
+
+    /**
+     * Returns whether or not the mouse is currently over the divider
+     *
+     * @param Returns whether or not the mouse is currently over the divider
+     */
+    public boolean isMouseOver();
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicTreeUI.html">BasicTreeUI</a>  의 서브 클래스에서 특정의 행의 위치를 변경할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Returns the location, along the x-axis, to render a particular row
+     * at.  The return value does not include any Insets specified on the JTree.
+     * This does not check for the validity of the row or depth, it is assumed
+     * to be correct and will not throw an Exception if the row or depth
+     * doesn't match that of the tree.
+     *
+     * @param row Row to return x location for
+     * @param depth Depth of the row
+     * @return amount to indent the given row.
+     * @since 1.5
+     */
+    protected int getRowX(int row, int depth);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html">BasicProgressBarUI</a>  의 서브 클래스에서 진척 바의 사이즈를 변경할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**                                                             
+     * Used to hold the location and size of the bouncing box (returned
+     * by getBox) to be painted.
+     *
+     * @since 1.5
+     */                                                             
+    protected Rectangle boxRect;
+
+    /**
+     * Returns the length
+     * of the "bouncing box" to be painted.
+     * This method is invoked by the 
+     * default implementation of &lt;code&gt;paintIndeterminate&lt;/code&gt;
+     * to get the width (if the progress bar is horizontal)
+     * or height (if vertical) of the box.
+     * For example:
+     * &lt;blockquote&gt;
+     * &lt;pre&gt;
+     *boxRect.width = getBoxLength(componentInnards.width,
+     *                             componentInnards.height);
+     * &lt;/pre&gt;
+     * &lt;/blockquote&gt;
+     *
+     * @param availableLength  the amount of space available
+     *                         for the bouncing box to move in;
+     *                         for a horizontal progress bar,
+     *                         for example,
+     *                         this should be
+     *                         the inside width of the progress bar
+     *                         (the component width minus borders)
+     * @param otherDimension   for a horizontal progress bar, this should be
+     *                         the inside height of the progress bar; this
+     *                         value might be used to constrain or determine
+     *                         the return value 
+     *
+     * @return the size of the box dimension being determined; 
+     *         must be no larger than &lt;code&gt;availableLength&lt;/code&gt;
+     *
+     * @see javax.swing.SwingUtilities#calculateInnerArea
+     * @since 1.5
+     */
+    protected int getBoxLength(int availableLength, int otherDimension);
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicSliderUI.html">BasicSliderUI</a>  의 서브 클래스에서 슬라이더 상태에 응해 페인트를 특수화 할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Returns true if the user is dragging the slider.
+     *
+     * @return true if the user is dragging the slider
+     * @since 1.5
+     */
+    protected boolean isDragging();
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/plaf/basic/BasicToolBarUI.html">BasicToolBarUI</a>  의 서브 클래스에서 드래그에 사용되는 윈도우가 페인트 되는 방법을 특수화 할 수 있도록(듯이) 하기 위해서, 다음이 추가되었습니다.
+</p><pre>    /**
+     * Paints the contents of the window used for dragging.
+     *
+     * @param g Graphics to paint to.
+     * @throws NullPointerException is <code>g</code> is null
+     * @since 1.5
+     */
+    protected void paintDragWindow(Graphics g);
+</pre>
+    <p>
+      To allow subclasses of <a href="../../../../api/javax/swing/plaf/basic/BasicDesktopIconUI.html">BasicDesktopIconUI</a> 
+      to get a handle to the iconPane the following was added:
+</p><pre>    /**
+     * The title pane component used in the desktop icon.
+     *
+     * @since 1.5
+     */
+    protected JComponent iconPane;
+</pre>
+
+
+  <!-- 4634626 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4634626.html">4634626</a> : 컴퍼넌트의 문맥 pop-up menu의 구현</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JPopupMenu.html">JPopupMenu</a>  에서는, pop-up menu를 작성할 수 있습니다. 5.0 보다 전에서는,<code>JPopupMenu</code> 를 사용하는 개발자는,<code>JPopupMenu</code> 를 표시하기 위해서, 필요한 청취자를 인스톨 해, 적절한 키 바인딩을 등록할 필요가 있었습니다. 5.0 에서는, 적절한 청취자와 키 바인딩을 등록하기 위한 기구가 추가되었습니다. 이 결과, 다음의 메소드가 <a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Sets whether or not &lt;code&gt;getComponentPopupMenu&lt;/code&gt; should delegate
+     * to the parent if this component does not have a &lt;code&gt;JPopupMenu&lt;/code&gt;
+     * assigned to it.
+     * &lt;p&gt;
+     * The default value for this is false, but some &lt;code&gt;JComponent&lt;/code&gt;
+     * subclasses that are implemented as a number of &lt;code&gt;JComponent&lt;/code&gt;s
+     * may set this to true.
+     * &lt;p&gt;
+     * This is a bound property.
+     *
+     * @param value whether or not the JPopupMenu is inherited
+     * @see #setComponentPopupMenu
+     * @beaninfo
+     *        bound: true
+     *  description: Whether or not the JPopupMenu is inherited
+     * @since 1.5
+     */
+    public void setInheritsPopupMenu(boolean value);
+
+    /**
+     * Returns true if the JPopupMenu should be inherited from the parent.
+     *
+     * @see #setComponentPopupMenu
+     * @since 1.5
+     */
+    public boolean getInheritsPopupMenu();
+
+    /**
+     * Sets the &lt;code&gt;JPopupMenu&lt;/code&gt; for this &lt;code&gt;JComponent&lt;/code&gt;.
+     * The UI is responsible for registering bindings and adding the necessary
+     * listeners such that the &lt;code&gt;JPopupMenu&lt;/code&gt; will be shown at
+     * the appropriate time.  When the &lt;code&gt;JPopupMenu&lt;/code&gt; is shown
+     * depends upon the look and feel: some may show it on a mouse event,
+     * some may enable a key binding.
+     * &lt;p&gt;
+     * If &lt;code&gt;popup&lt;/code&gt; is null, and &lt;code&gt;getInheritsPopupMenu&lt;/code&gt;
+     * returns true, then &lt;code&gt;getComponentPopupMenu&lt;/code&gt; will be delegated
+     * to the parent.  This provides for a way to make all child components
+     * inherit the popupmenu of the parent.
+     * &lt;p&gt;
+     * This is a bound property.
+     *
+     * @param popup - the popup that will be assigned to this component
+     *                may be null
+     * @see #getComponentPopupMenu
+     * @beaninfo
+     *        bound: true
+     *    preferred: true
+     *  description: Popup to show
+     * @since 1.5
+     */
+    public void setComponentPopupMenu(JPopupMenu popup);
+
+    /**
+     * Returns &lt;code&gt;JPopupMenu&lt;/code&gt; that assigned for this component.
+     * If this component does not have a &lt;code&gt;JPopupMenu&lt;/code&gt; assigned
+     * to it and &lt;code&gt;getInheritsPopupMenu&lt;/code&gt; is true, this
+     * will return &lt;code&gt;getParent(). getComponentPopupMenu() &lt;/code&gt; (assuming
+     * the parent is valid. )
+     *
+     * @return &lt;code&gt;JPopupMenu&lt;/code&gt; assigned for this component
+     *         or &lt;code&gt;null&lt;/code&gt; if no popup assigned
+     * @see #setComponentPopupMenu
+     * @since 1.5
+     */
+    public JPopupMenu getComponentPopupMenu();
+</pre>
+    <p>
+다음이 <a href="../../../../api/javax/swing/plaf/basic/BasicLookAndFeel.html">BasicLookAndFeel</a>  에 추가되었습니다.
+</p><pre>     /**
+      * UIManager.setLookAndFeel calls this method before the first call
+      * (and typically the only call) to getDefaults().
+      *
+      * @since 1.5
+      */
+     public void initialize() {
+
+     /**
+      * UIManager.setLookAndFeel calls this method just
+      * before we're replaced by a new default look and feel.
+      *
+      * @since 1.5
+      */
+     public void uninitialize() {
+</pre>
+
+
+  <!-- 4791650 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4791650.html">4791650</a> : JTable 로 인쇄 지원가 필요</h3>
+<h4>설명:</h4>
+    <p>
+상기 개요대로입니다. 다음이 <code>JTable</code> 에 추가되었습니다.
+</p><pre>    /**
+     * Printing modes, used in printing &lt;code&gt;JTable&lt;/code&gt;s.
+     *
+     * @see #print(JTable.PrintMode, MessageFormat, MessageFormat,
+     *             boolean, PrintRequestAttributeSet, boolean)
+     * @see #getPrintable
+     * @since 1.5
+     */
+    public enum PrintMode {
+
+        /**
+         * Printing mode that prints the table at its current size,
+         * spreading both columns and rows across multiple pages if necessary.
+         */
+        NORMAL,
+        
+        /**
+         * Printing mode that scales the output smaller, if necessary,
+         * to fit the table's entire width (and thereby all columns) on each page;
+         * Rows are spread across multiple pages as necessary.
+         */
+        FIT_WIDTH
+    }
+    /**
+     * A convenience method that displays a printing dialog, and then prints
+     * this &lt;code&gt;JTable&lt;/code&gt; in mode &lt;code&gt;PrintMode.FIT_WIDTH&lt;/code&gt;,
+     * with no header or footer text.  A modal progress dialog, with an abort
+     * option, will be shown for the duration of printing.
+     * &lt;p&gt;
+     * Note: In headless mode, no dialogs will be shown.
+     *
+     * @return true, unless printing is cancelled by the user
+     * @throws PrinterException if an error in the print system causes the job
+     *                          to be aborted
+     * @see #print(JTable.PrintMode, MessageFormat, MessageFormat,
+     *             boolean, PrintRequestAttributeSet, boolean)
+     * @see #getPrintable
+     *
+     * @since 1.5
+     */
+    public boolean print() throws PrinterException;
+
+    /**
+     * A convenience method that displays a printing dialog, and then prints
+     * this &lt;code&gt;JTable&lt;/code&gt; in the given printing mode,
+     * with no header or footer text.  A modal progress dialog, with an abort
+     * option, will be shown for the duration of printing.
+     * &lt;p&gt;
+     * Note: In headless mode, no dialogs will be shown.
+     *
+     * @param  printMode        the printing mode that the printable should use
+     * @return true, unless printing is cancelled by the user
+     * @throws PrinterException if an error in the print system causes the job
+     *                          to be aborted
+     * @see #print(JTable.PrintMode, MessageFormat, MessageFormat,
+     *             boolean, PrintRequestAttributeSet, boolean)
+     * @see #getPrintable
+     *
+     * @since 1.5
+     */
+    public boolean print(PrintMode printMode) throws PrinterException;
+
+    /**
+     * A convenience method that displays a printing dialog, and then prints
+     * this &lt;code&gt;JTable&lt;/code&gt; in the given printing mode,
+     * with the specified header and footer text.  A modal progress dialog,
+     * with an abort option, will be shown for the duration of printing.
+     * &lt;p&gt;
+     * Note: In headless mode, no dialogs will be shown.
+     *
+     * @param  printMode        the printing mode that the printable should use
+     * @param  headerFormat     a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text
+     *                          to be used in printing a header,
+     *                          or null for none
+     * @param  footerFormat     a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text
+     *                          to be used in printing a footer,
+     *                          or null for none
+     * @return true, unless printing is cancelled by the user
+     * @throws PrinterException if an error in the print system causes the job
+     *                          to be aborted
+     * @see #print(JTable.PrintMode, MessageFormat, MessageFormat,
+     *             boolean, PrintRequestAttributeSet, boolean)
+     * @see #getPrintable
+     *
+     * @since 1.5
+     */
+    public boolean print(PrintMode printMode,
+                         MessageFormat headerFormat,
+                         MessageFormat footerFormat) throws PrinterException;
+
+    /**
+     * Print this &lt;code&gt;JTable&lt;/code&gt;.  Takes steps that the majority of
+     * developers would take in order to print a &lt;code&gt;JTable&lt;/code&gt;.
+     * In short, it prepares the table, calls &lt;code&gt;getPrintable&lt;/code&gt; to
+     * fetch an appropriate &lt;code&gt;Printable&lt;/code&gt;, and then sends it to the
+     * printer.
+     * &lt;p&gt;
+     * A &lt;code&gt;boolean&lt;/code&gt; parameter allows you to specify whether or not
+     * a printing dialog is displayed to the user.  When it is, the user may
+     * use the dialog to change printing attributes or even cancel the print.
+     * Another parameter allows for printing attributes to be specified
+     * directly.  This can be used either to provide the initial values for the
+     * print dialog, or to supply any needed attributes when the dialog is not
+     * shown.
+     * &lt;p&gt;
+     * A second &lt;code&gt;boolean&lt;/code&gt; parameter allows you to specify whether
+     * or not to perform printing in an interactive mode.  If &lt;code&gt;true&lt;/code&gt;,
+     * a modal progress dialog, with an abort option, is displayed for the
+     * duration of printing .  This dialog also prevents any user action which
+     * may affect the table.  However, it can not prevent the table from being
+     * modified by code (for example, another thread that posts updates using
+     * &lt;code&gt;SwingUtilities.invokeLater&lt;/code&gt;).  It is therefore the
+     * responsibility of the developer to ensure that no other code modifies
+     * the table in any way during printing (invalid modifications include
+     * changes in: size, renderers, or underlying data).  Printing behavior is
+     * undefined when the table is changed during printing.
+     * &lt;p&gt;
+     * If &lt;code&gt;false&lt;/code&gt; is specified for this parameter, no dialog will
+     * be displayed and printing will begin immediately on the event-dispatch
+     * thread.  This blocks any other events, including repaints, from being
+     * processed until printing is complete.  Although this effectively prevents
+     * the table from being changed, it doesn't provide a good user experience.
+     * For this reason, specifying &lt;code&gt;false&lt;/code&gt; is only recommended when
+     * printing from an application with no visible GUI.
+     * &lt;p&gt;
+     * Note: Attempting to show the printing dialog or run interactively, while
+     * in headless mode, will result in a &lt;code&gt;HeadlessException&lt;/code&gt;.
+     * &lt;p&gt;
+     * Before fetching the printable, this method prepares the table in order
+     * to get the most desirable printed result.  If the table is currently
+     * in an editing mode, it terminates the editing as gracefully as
+     * possible.  It also ensures that the the table's current selection and
+     * focused cell are not indicated in the printed output.  This is handled on
+     * the view level, and only for the duration of the printing, thus no
+     * notification needs to be sent to the selection models.
+     * &lt;p&gt;
+     * See {@link #getPrintable} for further description on how the
+     * table is printed.
+     *
+     * @param  printMode        the printing mode that the printable should use
+     * @param  headerFormat     a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text
+     *                          to be used in printing a header,
+     *                          or null for none
+     * @param  footerFormat     a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text
+     *                          to be used in printing a footer,
+     *                          or null for none
+     * @param  showPrintDialog  whether or not to display a print dialog
+     * @param  attr             a &lt;code&gt;PrintRequestAttributeSet&lt;/code&gt;
+     *                          specifying any printing attributes,
+     *                          or null for none
+     * @param  interactive      whether or not to print in an interactive mode
+     * @return true, unless printing is cancelled by the user
+     * @throws PrinterException if an error in the print system causes the job
+     *                          to be aborted
+     * @throws HeadlessException if the method is asked to show a printing
+     *                           dialog or run interactively, and
+     *                           &lt;code&gt;GraphicsEnvironment.isHeadless&lt;/code&gt;
+     *                           returns true
+     * @see #getPrintable
+     * @see java.awt.GraphicsEnvironment#isHeadless
+     *
+     * @since 1.5
+     */
+    public boolean print(PrintMode printMode,
+                         MessageFormat headerFormat,
+                         MessageFormat footerFormat,
+                         boolean showPrintDialog,
+                         PrintRequestAttributeSet attr,
+                         boolean interactive) throws PrinterException,
+                                                     HeadlessException;
+    /**
+     * Return a &lt;code&gt;Printable&lt;/code&gt; for use in printing this JTable.
+     * &lt;p&gt;
+     * The &lt;code&gt;Printable&lt;/code&gt; can be requested in one of two printing modes.
+     * In both modes, it spreads table rows naturally in sequence across
+     * multiple pages, fitting as many rows as possible per page.
+     * &lt;code&gt;PrintMode.NORMAL&lt;/code&gt; specifies that the table be
+     * printed at its current size.  In this mode, there may be a need to spread
+     * columns across pages in a similar manner to that of the rows.  When the
+     * need arises, columns are distributed in an order consistent with the
+     * table's &lt;code&gt;ComponentOrientation&lt;/code&gt;.
+     * &lt;code&gt;PrintMode.FIT_WIDTH&lt;/code&gt; specifies that the output be
+     * scaled smaller, if necessary, to fit the table's entire width
+     * (and thereby all columns) on each page.  Width and height are scaled
+     * equally, maintaining the aspect ratio of the output.
+     * &lt;p&gt;
+     * The &lt;code&gt;Printable&lt;/code&gt; heads the portion of table on each page
+     * with the appropriate section from the table's &lt;code&gt;JTableHeader&lt;/code&gt;,
+     * if it has one.
+     * &lt;p&gt;
+     * Header and footer text can be added to the output by providing
+     * &lt;code&gt;MessageFormat&lt;/code&gt; arguments.  The printing code requests
+     * Strings from the formats, providing a single item which may be included
+     * in the formatted string: an &lt;code&gt;Integer&lt;/code&gt; representing the current
+     * page number.
+     * &lt;p&gt;
+     * You are encouraged to read the documentation for
+     * &lt;code&gt;MessageFormat&lt;/code&gt; as some characters, such as single-quote,
+     * are special and need to be escaped.
+     * &lt;p&gt;
+     * Here's an example of creating a &lt;code&gt;MessageFormat&lt;/code&gt; that can be
+     * used to print "Duke's Table: Page - " and the current page number:
+     * &lt;p&gt;
+     * &lt;pre&gt;
+     *     // notice the escaping of the single quote
+     *     // notice how the page number is included with "{0}"
+     *     MessageFormat format = new MessageFormat("Duke''s Table: Page - {0}");
+     * &lt;/pre&gt;
+     * &lt;p&gt;
+     * The &lt;code&gt;Printable&lt;/code&gt; constrains what it draws to the printable
+     * area of each page that it prints.  Under certain circumstances, it may
+     * find it impossible to fit all of a page's content into that area.  In
+     * these cases the output may be clipped, but the implementation
+     * makes an effort to do something reasonable.  Here are a few situations
+     * where this is known to occur, and how they may be handled by this
+     * particular implementation:
+     * &lt;ul&gt;
+     *   &lt;li&gt;In any mode, when the header or footer text is too wide to fit
+     *       completely in the printable area -- print as much of the text as
+     *       possible starting from the beginning, as determined by the table's
+     *       &lt;code&gt;ComponentOrientation&lt;/code&gt;.
+     *   &lt;li&gt;In any mode, when a row is too tall to fit in the
+     *       printable area -- print the upper-most portion of the row
+     *       and paint no lower border on the table.
+     *   &lt;li&gt;In &lt;code&gt;PrintMode.NORMAL&lt;/code&gt; when a column
+     *       is too wide to fit in the printable area -- print the center
+     *       portion of the column and leave the left and right borders
+     *       off the table.
+     * &lt;/ul&gt;
+     * &lt;p&gt;
+     * It is entirely valid for this &lt;code&gt;Printable&lt;/code&gt; to be wrapped
+     * inside another in order to create complex reports and documents.  You may
+     * even request that different pages be rendered into different sized
+     * printable areas.  The implementation must be prepared to handle this
+     * (possibly by doing its layout calculations on the fly).  However,
+     * providing different heights to each page will likely not work well
+     * with &lt;code&gt;PrintMode.NORMAL&lt;/code&gt; when it has to spread columns
+     * across pages.
+     * &lt;p&gt;
+     * It is important to note that this &lt;code&gt;Printable&lt;/code&gt; prints the
+     * table at its current visual state, using the table's existing renderers.
+     * &lt;i&gt;Before&lt;/i&gt; calling this method, you may wish to &lt;i&gt;first&lt;/i&gt; modify
+     * the state of the table (such as to change the renderers, cancel editing,
+     * or hide the selection).
+     * &lt;p&gt;
+     * You must not, however, modify the table in any way &lt;i&gt;after&lt;/i&gt;
+     * this &lt;code&gt;Printable&lt;/code&gt; is fetched (invalid modifications include
+     * changes in: size, renderers, or underlying data).  The behavior of the
+     * returned &lt;code&gt;Printable&lt;/code&gt; is undefined once the table has been
+     * changed.
+     * &lt;p&gt;
+     * Here's a simple example that calls this method to fetch a
+     * &lt;code&gt;Printable&lt;/code&gt;, shows a cross-platform print dialog, and then
+     * prints the &lt;code&gt;Printable&lt;/code&gt; unless the user cancels the dialog:
+     * &lt;p&gt;
+     * &lt;pre&gt;
+     *     // prepare the table for printing here first (for example, hide selection)
+     *
+     *     // wrap in a try/finally so table can be restored even if something fails
+     *     try {
+     *         // fetch the printable
+     *         Printable printable = table.getPrintable(JTable.PrintMode.FIT_WIDTH,
+     *                                                  new MessageFormat("My Table"),
+     *                                                  new MessageFormat("Page - {0}"));
+     *
+     *         // fetch a PrinterJob
+     *         PrinterJob job = PrinterJob.getPrinterJob();
+     *
+     *         // set the Printable on the PrinterJob
+     *         job.setPrintable(printable);
+     *
+     *         // create an attribute set to store attributes from the print dialog
+     *         PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+     *
+     *         // display a print dialog and record whether or not the user cancels it
+     *         boolean printAccepted = job.printDialog(attr);
+     *
+     *         // if the user didn't cancel the dialog
+     *         if (printAccepted) {
+     *             // do the printing (may need to handle PrinterException)
+     *             job.print(attr);
+     *         }
+     *     } finally {
+     *         // restore the original table state here (for example, restore selection)
+     *     }
+     * &lt;/pre&gt;
+     *
+     * @param  printMode     the printing mode that the printable should use
+     * @param  headerFormat  a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text to
+     *                       be used in printing a header, or null for none
+     * @param  footerFormat  a &lt;code&gt;MessageFormat&lt;/code&gt; specifying the text to
+     *                       be used in printing a footer, or null for none
+     * @return a &lt;code&gt;Printable&lt;/code&gt; for printing this JTable
+     * @see Printable
+     * @see PrinterJob
+     *
+     * @since 1.5
+     */
+    public Printable getPrintable(PrintMode printMode,
+                                  MessageFormat headerFormat,
+                                  MessageFormat footerFormat);
+</pre>
+
+
+<!-- ZZZZZZZZZZZZZZZZZ END MAJOR -->
+
+<h2><a name="swingText">Swing 의 텍스트 클래스에 대한 변경점</a> </h2>
+
+  <!-- 4201999 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4201999.html">4201999</a> : JTextArea 에 ()를 추가하면(자) 자동적으로 스크롤 하지 않는다</h3>
+<h4>설명:</h4>
+    <p>
+Swing 의 텍스트 컴퍼넌트 메소드의 일부, 특히 텍스트 컴퍼넌트의 내용을 변경하는 메소드는, thread 세이프입니다. 5.0 보다 전에서는, 이벤트의 발송쓰레드로 변경이 일어났을 경우에만 caret의 위치가 갱신되었습니다. 상황에 따라서는, 변경이 일어난 thread의 종류에 관계없이, 위치가 갱신되는 것이 필요합니다. 그 때문에,<code>updatePolicy</code> 프롭퍼티가 <a href="../../../../api/javax/swing/text/DefaultCaret.html">DefaultCaret</a>  에 추가되었습니다. 이 프롭퍼티를 사용하면(자), 내용이 변경되었을 경우로 위치가 변경될 때를 지정할 수 있습니다. 하위 호환성을 위해서(때문에), 정책는, 이벤트발송쓰레드로 변경이 일어났을 경우에만 위치를 변경한다, 라고 하는 대로입니다.
+    </p><p>
+결과, 다음의 필드와 메소드가 <a href="../../../../api/javax/swing/text/DefaultCaret.html">DefaultCaret</a>  에 추가되었습니다.
+  </p><pre>     /**
+      * Indicates that the caret position is to be updated only when
+      * document changes are performed on the Event Dispatching Thread.
+      * @see #setUpdatePolicy
+      * @see #getUpdatePolicy
+      * @since 1.5
+      */
+     public static final int UPDATE_WHEN_ON_EDT = 0;
+ 
+     /**
+      * Indicates that the caret should remain at the same
+      * absolute position in the document regardless of any document
+      * updates, except when the document length becomes less than
+      * the current caret position due to removal.  In that case the caret
+      * position is adjusted to the end of the document.
+      *
+      * @see #setUpdatePolicy
+      * @see #getUpdatePolicy
+      * @since 1.5
+      */
+     public static final int NEVER_UPDATE = 1;
+ 
+     /**
+      * Indicates that the caret position is to be &lt;b&gt;always&lt;/b&gt;
+      * updated accordingly to the document changes regardless whether
+      * the document updates are performed on the Event Dispatching Thread
+      * or not.
+      *
+      * @see #setUpdatePolicy
+      * @see #getUpdatePolicy
+      * @since 1.5
+      */
+     public static final int ALWAYS_UPDATE = 2;
+ 
+     /**
+      * Sets the caret movement policy on the document updates.  Normally
+      * the caret updates its absolute position within the document on
+      * insertions occurred before or at the caret position and
+      * on removals before the caret position.  'Absolute position'
+      * means here the position relative to the start of the document.
+      * For example if
+      * a character is typed within editable text component it is inserted
+      * at the caret position and the caret moves to the next absolute
+      * position within the document due to insertion and if
+      * &lt;code&gt;BACKSPACE&lt;/code&gt; is typed then caret decreases its absolute
+      * position due to removal of a character before it.  Sometimes
+      * it may be useful to turn off the caret position updates so that
+      * the caret stays at the same absolute position within the
+      * document position regardless of any document updates.
+      * &lt;p&gt;
+      * The following update policies are allowed:
+      * &lt;ul&gt;
+      *   &lt;li&gt;&lt;code&gt;NEVER_UPDATE&lt;/code&gt;: the caret stays at the same
+      *       absolute position in the document regardless of any document
+      *       updates, except when document length becomes less than
+      *       the current caret position due to removal.  In that case caret
+      *       position is adjusted to the end of the document.
+      *       The caret doesn't try to keep itself visible by scrolling
+      *       the associated view when using this policy.  &lt;/li&gt;
+      *   &lt;li&gt;&lt;code&gt;ALWAYS_UPDATE&lt;/code&gt;: the caret always tracks document
+      *       changes.  For regular changes it increases its position
+      *       if an insertion occurs before or at its current position,
+      *       and decreases position if a removal occurs before
+      *       its current position.  For undo/redo updates it is always
+      *       moved to the position where update occurred.  The caret
+      *       also tries to keep itself visible by calling
+      *       &lt;code&gt;adjustVisibility&lt;/code&gt; method. &lt;/li&gt;
+      *   &lt;li&gt;&lt;code&gt;UPDATE_WHEN_ON_EDT&lt;/code&gt;: acts like &lt;code&gt;ALWAYS_UPDATE&lt;/code&gt;
+      *       if the document updates are performed on the Event Dispatching Thread
+      *       and like &lt;code&gt;NEVER_UPDATE&lt;/code&gt; if updates are performed on
+      *       other thread.  &lt;/li&gt;
+      * &lt;/ul&gt; &lt;p&gt;
+      * The default property value is &lt;code&gt;UPDATE_WHEN_ON_EDT&lt;/code&gt;.
+      *
+      * @param policy one of the following values : &lt;code&gt;UPDATE_WHEN_ON_EDT&lt;/code&gt;,
+      * &lt;code&gt;NEVER_UPDATE&lt;/code&gt;, &lt;code&gt;ALWAYS_UPDATE&lt;/code&gt;
+      * @throws IllegalArgumentException if invalid value is passed
+      *
+      * @see #getUpdatePolicy
+      * @see #adjustVisibility
+      * @see #UPDATE_WHEN_ON_EDT
+      * @see #NEVER_UPDATE
+      * @see #ALWAYS_UPDATE
+      *
+      * @since 1.5
+      */
+     public void setUpdatePolicy(int policy)
+ 
+     /**
+      * Gets the caret movement policy on document updates.
+      *
+      * @return one of the following values : &lt;code&gt;UPDATE_WHEN_ON_EDT&lt;/code&gt;,
+      * &lt;code&gt;NEVER_UPDATE&lt;/code&gt;, &lt;code&gt;ALWAYS_UPDATE&lt;/code&gt;
+      *
+      * @see #getUpdatePolicy
+      * @see #UPDATE_WHEN_ON_EDT
+      * @see #NEVER_UPDATE
+      * @see #ALWAYS_UPDATE
+      *
+      * @since 1.5
+      */
+     public int getUpdatePolicy()
+ </pre>
+
+
+  <!-- 4473401 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4473401.html">4473401</a> : 폼은 데이터를 직접 송신 또는 수신하는 것이 아니라, 하이퍼 링크 이벤트를 생성해야 한다</h3>
+<h4>설명:</h4>
+    <p>
+<code>JEditorPane</code> 는, HTML 텍스트의 표시에 사용할 수 있습니다. 사용자가 링크를 클릭하면(자), 무엇이 일어나는지를 개발자가 커스터마이즈 할 수 있는 이벤트가 생성됩니다. 현시점에서는, HTML 페이지에 폼이 포함되어 있어 사용자가 송부를 방아쇠 하면(자) 포스트가 발생합니다. 이 경우, 개발자는 동작을 변경할 수 없습니다. 개발자가 이 동작을 커스터마이즈 할 수 있도록(듯이) 하기 위해서, 다음의 메소드가 <a href="../../../../api/javax/swing/text/html/HTMLEditorKit.html">HTMLEditorKit</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Indicates whether an html form submission is processed automatically
+     * or only &lt;code&gt;FormSubmitEvent&lt;/code&gt; is fired.
+     *
+     * @return true  if html form submission is processed automatically,
+     *         false otherwise.
+     *
+     * @see #setAutoFormSubmission
+     * @since 1.5
+     */
+    public boolean isAutoFormSubmission();
+
+    /**
+     * Specifies if an html form submission is processed
+     * automatically or only &lt;code&gt;FormSubmitEvent&lt;/code&gt; is fired.
+     * By default it the property is set to true.
+     *
+     * @see #isAutoFormSubmission
+     * @see FormSubmitEvent
+     * @since 1.5
+     */
+    public void setAutoFormSubmission(boolean isAuto);
+</pre>
+    <p>
+여기서 중요한 부분은, 클래스 <code>FormSubmitEvent</code> 를 public 로 하는 것입니다. 자세한 것은,<a name="#4954126">4954126 을 참조해 주세요.
+
+
+<!-- 4513720 --></a> </p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4513720.html">4513720</a> : DefaultCaret 의 가시 설정은 점멸과는 무관계하지 않으면 안 된다</h3>
+<h4>설명:</h4>
+    <p>
+현재로서는, caret가 액티브해 점멸하고 있는 것을 판별하는 방법은 없습니다. <code>isVisible</code> 메소드는 이 목적을 위해서(때문에) 있습니다만, 구현에서는, 이 메소드가 불려 간 시점에서 caret가 페인트 되고 있는지 어떤지를 돌려줍니다. 즉, caret가 점멸하고 있으면(자), caret의 점멸에 맞추어 <code>isVisible</code> 는 true 와 false 의 사이에 변화합니다. 하위 호환성을 유지하기 위해서 <code>isVisible</code> 메소드의 해석은 변경하지 않는 채,<code>isActive</code> 프롭퍼티를 추가했습니다. 이 메소드에서는 caret가 액티브한지 어떤지를 조사합니다만, 불려 갔을 때에 가시 상태일지 어떨지는 관계 없습니다.
+    </p><p>
+다음의 메소드가 <a href="../../../../api/javax/swing/text/DefaultCaret.html">DefaultCaret</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Determines if the caret is currently active.
+     * &lt;p&gt;
+     * This method returns whether or not the &lt;code&gt;Caret&lt;/code&gt;
+     * is currently in a blinking state.  It does not provide
+     * information as to whether it is currently blinked on or off.
+     * To determine if the caret is currently painted use the
+     * &lt;code&gt;isVisible&lt;/code&gt; method.
+     *
+     * @return &lt;code&gt;true&lt;/code&gt; if active else &lt;code&gt;false&lt;/code&gt;
+     * @see #isVisible
+     *
+     * @since 1.5
+     */
+    public boolean isActive()
+
+
+     * Sets the caret visibility, and repaints the caret.
+     * It is important to understand the relationship between this method,
+     * &lt;code&gt;isVisible&lt;/code&gt; and &lt;code&gt;isActive&lt;/code&gt;.
+     * Calling this method with a value of &lt;code&gt;true&lt;/code&gt; activates the
+     * caret blinking.  Setting it to &lt;code&gt;false&lt;/code&gt; turns it completely off.
+     * To determine whether the blinking is active, you should call
+     * &lt;code&gt;isActive&lt;/code&gt;.  In effect, &lt;code&gt;isActive&lt;/code&gt; is an
+     * appropriate corresponding "getter" method for this one.
+     * &lt;code&gt;isVisible&lt;/code&gt; can be used to fetch the current
+     * visibility status of the caret, meaning whether or not it is currently
+     * painted.  This status will change as the caret blinks on and off.
+     * &lt;p&gt;
+     * Here's a list showing the potential return values of both
+     * &lt;code&gt;isActive&lt;/code&gt; and &lt;code&gt;isVisible&lt;/code&gt;
+     * after calling this method:
+     * &lt;p&gt;
+     * &lt;b&gt;&lt;code&gt;setVisible(true) &lt;/code&gt;&lt;/b&gt;:
+     * &lt;ul&gt;
+     *     &lt;li&gt;isActive(): true&lt;/li&gt;
+     *     &lt;li&gt;isVisible(): true or false depending on whether
+     *         or not the caret is blinked on or off&lt;/li&gt;
+     * &lt;/ul&gt;
+     * &lt;p&gt;
+     * &lt;b&gt;&lt;code&gt;setVisible(false) &lt;/code&gt;&lt;/b&gt;:
+     * &lt;ul&gt;
+     *     &lt;li&gt;isActive(): false&lt;/li&gt;
+     *     &lt;li&gt;isVisible(): false&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param e the visibility specifier
+     * @see #isActive
+     * @see Caret#setVisible
+     */
+    public void setVisible(boolean e)
+</pre>
+    <p>
+<a href="../../../../api/javax/swing/text/DefaultCaret.html">DefaultCaret</a>  의 <a href="../../../../api/javax/swing/text/DefaultCaret.html#isVisible">isVisible</a>  의 문서는, 이 2 개의 프롭퍼티의 차이를 나타내도록(듯이) 갱신되었습니다.
+</p><pre>    /**
+     * Indicates whether or not the caret is currently visible.  As the
+     * caret flashes on and off the return value of this will change
+     * between true, when the caret is painted, and false, when the
+     * caret is not painted.  &lt;code&gt;isActive&lt;/code&gt; indicates whether
+     * or not the caret is in a blinking state, such that it &lt;b&gt;can&lt;/b&gt;
+     * be visible, and &lt;code&gt;isVisible&lt;/code&gt; indicates whether or not
+     * the caret &lt;b&gt;is&lt;/b&gt; actually visible.
+     * &lt;p&gt;
+     * Subclasses that wish to render a different flashing caret
+     * should override paint and only paint the caret if this method
+     * returns true.
+     *
+     * @return true if visible else false
+     * @see Caret#isVisible
+     * @see #isActive
+     */
+    public boolean isVisible()
+</pre>
+
+
+  <!-- 4530474 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4530474.html">4530474</a> : HTML font 태그의 CSS 속성 background-color 가 스타일에서는 기능하지만, 클래스에서는 기능하지 않는다</h3>
+<h4>설명:</h4>
+    <p>
+css 스타일 시트의 background 속성은, HTML 텍스트의 draw시에 무시됩니다. 이 속성을 기능시키기 위해서(때문에), 다음의 메소드가 <a href="../../../../api/javax/swing/text/LabelView.html">LabelView</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Sets the background color for the view.  This method is typically
+     * invoked as part of configuring this &lt;code&gt;View&lt;/code&gt;.  If you need
+     * to customize the background color you should override
+     * &lt;code&gt;setPropertiesFromAttributes&lt;/code&gt; and invoke this method.  A
+     * value of null indicates no background should be rendered, so that the
+     * background of the parent &lt;code&gt;View&lt;/code&gt; will show through.
+     *
+     * @param bg background color, or null
+     * @see #setPropertiesFromAttributes
+     * @since 1.5
+     */
+    protected void setBackground(Color bg);
+</pre>
+
+
+  <!-- 4829622 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4829622.html">4829622</a> : TabSet 클래스가 equals 를 오버라이드(override) 하지 않는다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/TabSet.html">TabSet</a>  로 <code>equals</code> 메소드가 오버라이드(override) 되지 않기 때문에,<code>TabStop</code> 배열에 동일한 <code>TabStop</code> 가 포함되어 있는 경우, 비교에 실패합니다. 다른 점이 <code>TabSet</code> 의 다른 객체의 인스턴스만이라고 해도,<code>AttributeSet</code> 는 동일하게는 되지 않습니다.
+    </p><p>
+<code>TabSet</code> 로 <code>equals</code> 및 <code>hashCode</code> 가 오버라이드(override) 되게 되었습니다.
+  </p><pre>/**
+     * Indicates whether this &lt;code&gt;TabSet&lt;/code&gt; is equal to another one.
+     * @param o the &lt;code&gt;TabSet&lt;/code&gt; instance which this instance
+     *  should be compared to.
+     * @return &lt;code&gt;true&lt;/code&gt; if &lt;code&gt;o&lt;/code&gt; is the instance of
+     * &lt;code&gt;TabSet&lt;/code&gt;, has the same number of &lt;code&gt;TabStop&lt;/code&gt;s
+     * and they are all equal, &lt;code&gt;false&lt;/code&gt; otherwise.
+     *
+     * @since 1.5
+     */
+    public boolean equals(Object o)
+
+    /**
+     * Returns a hashcode for this set of TabStops.
+     * @return  a hashcode value for this set of TabStops.
+     *
+     * @since 1.5
+     */
+    public int hashCode()
+</pre>
+
+
+  <!-- 4838730 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4838730.html">4838730</a> : 리그렛션 :JTextArea 로 setEditable(...)에 의해 포커스 traversal 키가 파손한다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JTextArea.html">JTextArea.setEditable</a>  를 호출하면(자), 포커스 traversal 키가 재설정됩니다. 이것은, 포커스 traversal 키의 커스텀 세트를 제공해, 편집 가능한 프롭퍼티를 조건부로 변경하고 싶은 개발자에게 있어 문제입니다.
+    </p><p>
+수정하기 위해서,<code>JComponent</code> 는 다음과 같이 오버라이드(override) 되었습니다.
+</p><pre>    /**
+     * Sets the focus traversal keys for a given traversal operation for this
+     * Component.
+     * Refer to
+     * {@link java.awt.Component#setFocusTraversalKeys}
+     * for a complete description of this method.
+     *
+     * @param id one of KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+     *        KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, or
+     *        KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS
+     * @param keystrokes the Set of AWTKeyStroke for the specified operation
+     * @see java.awt.KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
+     * @see java.awt.KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
+     * @see java.awt.KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
+     * @throws IllegalArgumentException if id is not one of
+     *         KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+     *         KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, or
+     *         KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS, or if keystrokes
+     *         contains null, or if any Object in keystrokes is not an
+     *         AWTKeyStroke, or if any keystroke represents a KEY_TYPED event,
+     *         or if any keystroke already maps to another focus traversal
+     *         operation for this Component
+     * @since 1.5
+     * @beaninfo
+     *       bound: true
+     */
+    public void setFocusTraversalKeys(int id, Set keystrokes);
+</pre>
+
+
+  <!-- 4954126 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4954126.html">4954126</a> : FormSubmitEvent 클래스와 그 액세스용 메소드를 public 로 한다</h3>
+<h4>설명:</h4>
+    <p>
+요망에 있던 것처럼,<a href="../../../../api/javax/swing/text/html/FormSubmitEvent.html">FormSubmitEvent</a>  는 public 가 아니었습니다.
+
+
+<!-- ZZZZZZZZZZZZZZZZZ END TEXT -->
+
+
+</p><h2><a name="swingMisc">그 외의 Swing 의 변경</a> </h2>
+  <!-- 4198834 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4198834.html">4198834</a> : ListDataEvent.getIndex0()는 getIndex1() 이하가 아니면 안된다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/event/ListDataEvent.html"></a> ListDataEvent 의 생성자 은,<a href="../../../../api/javax/swing/event/ListDataEvent.html#getIndex0">getIndex0</a>  의 반환값이 항상 <a href="../../../../api/javax/swing/event/ListDataEvent.html#getIndex1">getIndex1</a>  의 반환값 이하가 되도록(듯이), 2 개의 인덱스를 교환하도록(듯이) 변경되었습니다.
+</p><h4>스펙</h4>
+  <pre>   /**
+    * Constructs a ListDataEvent object.  If index0 is &gt;
+    * index1, index0 and index1 will be swapped such that
+    * index0 will always be &lt;= index1.
+    *
+    * @param source  the source Object (typically &lt;code&gt;this&lt;/code&gt;)
+    * @param type    an int specifying {@link #CONTENTS_CHANGED},
+    *                {@link #INTERVAL_ADDED}, or {@link #INTERVAL_REMOVED}
+    * @param index0  one end of the new interval
+    * @param index1  the other end of the new interval
+    */
+public ListDataEvent(Object source, int type, int index0, int index1) {
+</pre>
+
+
+  <!-- 4303294 -->
+<h3><a name="4303294"></a> <a href="http://developer.java.sun.com/developer/bugParade/bugs/4303294.html">4303294</a> : 리스트계 컴퍼넌트에 대한 키보드에 의한 불연속 선택의 구현</h3>
+<h4>설명:</h4>
+    <p>
+JTable 및 JList 에서는, 키보드를 사용해 불연속 선택할 방법이 현재로서는 없습니다. 불연속에 선택할 수 있도록(듯이) 하기 위해서, 다음이 <a href="../../../../api/javax/swing/DefaultListSelectionModel.html">DefaultListSelectionModel</a>  에 추가되었습니다.
+</p><pre>/**
+ * Set the lead selection index, leaving all selection values unchanged.
+ * If leadAnchorNotificationEnabled is true, send a notification covering
+ * the old and new lead cells.
+ *
+ * @param leadIndex the new lead selection index
+ *
+ * @see #setAnchorSelectionIndex
+ * @see #setLeadSelectionIndex
+ * @see #getLeadSelectionIndex
+ *
+ * @since 1.5
+ */
+public void moveLeadSelectionIndex(int leadIndex)
+</pre>
+    <p>
+게다가<a href="../../../../api/javax/swing/DefaultListSelectionModel.html">DefaultListSelectionModel</a>  의 <a href="../../../../api/javax/swing/DefaultListSelectionModel.html#isLeadAnchorNotificationEnabled%28%29">isLeadAnchorNotificationEnabled</a>  및 <a href="../../../../api/javax/swing/DefaultListSelectionModel.html#changeSelection%28int,%20int,%20boolean,%20boolean%29">changeSelection</a>  메소드가 개정되었습니다.
+
+
+  <!-- 4621323 -->
+</p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4621323.html">4621323</a> : 일부의 Swing 정수가 일정이 아니다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JDesktopPane.html#LIVE_DRAG_MODE">JDesktopPane.LIVE_DRAG_MODE</a> ,<a href="../../../../api/javax/swing/JDesktopPane.html#OUTLINE_DRAG_MODE">JDesktopPane.OUTLINE_DRAG_MODE</a> , 및 <a href="../../../../api/javax/swing/text/html/parser/DTD.html#FILE_VERSION">DTD.FILE_VERSION</a>  의 static 필드는, static final 가 되었습니다.
+
+
+
+  <!-- 4664885 -->
+</p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4664885.html">4664885</a> : BevelBorder 의 상하에 의해 그림자의 색이 교환된다</h3>
+<h4>설명:</h4>
+    <p>
+경사면의 경계에서는, 게다가 아래에 의해 <code>shadowInner</code> 및 <code>shadowOuter</code> 의 색이 교환됩니다. 그러나, BorderFactory 및 BevelBorder 에서는 그대로가 되지 않습니다. 오른 경사면의 경계에 대해서만 기술됩니다. 이것에 의해, 다음이 <a href="../../../../api/javax/swing/border/BevelBorder.html#BevelBorder(int,%20java.awt.Color,%20java.awt.Color,%20java.awt.Color,%20java.awt.Color)">BevelBorder 의 생성자  </a>및 <a href="../../../../api/javax/swing/BorderFactory#createBevelBorder(int,%20java.awt.Color,%20java.awt.Color,%20java.awt.Color,%20java.awt.Color)">BorderFactory 의 createBevelBorder</a>  메소드에 추가되었습니다.
+</p><pre>     * Note: The shadow inner and outer colors are
+     * switched for a lowered bevel border.
+</pre>
+
+
+  <!-- 4665148 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4665148.html">4665148</a> : javax.swing.JScrollPane.isValidateRoot 의 javadoc 는 완전한 잘못</h3>
+<h4>설명:</h4>
+<a href="../../../../api/javax/swing/JScrollPane.html#isValidateRoot()">JScrollPane.isValidateRoot</a>  의 javadoc 는 완전하게 잘못하고 있어 오해 받기 (위해)때문에, 다음과 같이 변경되었습니다.
+<pre>    /**
+     * Overridden to return true so that any calls to &lt;code&gt;revalidate&lt;/code&gt;
+     * on any descendants of this &lt;code&gt;JScrollPane&lt;/code&gt; will cause the
+     * entire tree beginning with this &lt;code&gt;JScrollPane&lt;/code&gt; to be
+     * validated.
+     *
+     * @return true
+     * @see java.awt.Container#validate
+     * @see JComponent#revalidate
+     * @see JComponent#isValidateRoot
+     *
+     * @beaninfo
+     *    hidden: true
+     */
+</pre>
+
+
+  <!-- 4682386 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4682386.html">4682386</a> : SwingPropertyChangeSupport 및 PropertyChangeSupport 의 재고</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/java/beans/PropertyChangeSupport.html">PropertyChangeSupport</a>  클래스는, JavaBean 프롭퍼티가 변경된 것을 통지하는 <a href="../../../../api/java/beans/PropertyChangeEvent/.html">PropertyChangeEvent</a>  의 등록과 발행을 간단하게 실시하기 위한 유틸리티입니다. <a href="../../../../api/javax/swing/event/SwingPropertyChangeEvent.html">SwingPropertyChangeSupport</a>  는 <code>PropertyChangeSupport</code> 의 서브 클래스이며, 장황한 메소드가 많이 있습니다. 게다가 1.2 의 타임 프레임에서는, 프롭퍼티 변경의 지원가 <a href="../../../../api/java/awt/Component/.html">Component</a>  에 추가되었습니다. <code>SwingPropertyChangeSupport</code> 에 의존하는 것이 아니라,<code>Component</code> 에서는 <code>PropertyChangeSupport</code> 를 사용합니다. <a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  에서는 <code>SwingPropertyChangeSupport</code> 의 인스턴스를 보관 유지해,<code>Component</code> 에서는 <code>PropertyChangeSupport</code> 의 인스턴스를 보관 유지합니다. 그 결과,<code>JComponent</code> 에는 <code>PropertyChangeSupport</code> 의 인스턴스가 있습니다. 그 중의 1 개(살)은, 휴지 상태에 있습니다. <code>Component</code> 와 <code>JComponent</code> 의 중복 부분, 또 <code>PropertyChangeSupport</code> <code>SwingPropertyChangeSupport</code> 의 중복 부분을 줄이기 위해서(때문에), 다음의 변경이 더해졌습니다.
+    </p><p>
+다음의 메소드가 <code>JComponent</code> 로부터 <code>Component</code> 에 옮겨졌습니다.
+</p><pre>    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a byte)
+     * @param newValue the new value of the property (as a byte)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+    public void firePropertyChange(String propertyName, byte oldValue, byte newValue);
+
+    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a char)
+     * @param newValue the new value of the property (as a char)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+     public void firePropertyChange(String propertyName, char oldValue, char newValue);
+
+    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a short)
+     * @param newValue the old value of the property (as a short)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+    public void firePropertyChange(String propertyName, short oldValue, short newValue);
+
+    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a long)
+     * @param newValue the new value of the property (as a long)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+    public void firePropertyChange(String propertyName, long oldValue, long newValue);
+
+    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a float)
+     * @param newValue the new value of the property (as a float)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+    public void firePropertyChange(String propertyName, float oldValue, float newValue);
+
+    /**
+     * Reports a bound property change.
+     *
+     * @param propertyName the programmatic name of the property
+     *               that was changed
+     * @param oldValue the old value of the property (as a double)
+     * @param newValue the new value of the property (as a double)
+     * @see #firePropertyChange(java.lang.String, java.lang.Object,
+     *               java.lang.Object)
+     * @since 1.5
+     */
+    public void firePropertyChange(String propertyName, double oldValue, double newValue);
+</pre>
+    <p>
+<code>JComponent</code> 의 대응하는 메소드는 삭제되었습니다.
+    </p><p>
+<code>SwingPropertyChangeSupport</code> 로부터의 메소드는, 생성자 을 제외해 모두 삭제되었습니다.
+
+
+
+  <!-- 4706356 -->
+</p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4706356.html">4706356</a> : Swing 의 디폴트의 CellRenderers 는, 퍼포먼스의 향상을 위해서(때문에) 많은 메소드를 오버라이드(override) 한다</h3>
+<h4>설명:</h4>
+    <p>
+Swing 의 셀 렌더링에서는, 셀 렌더링에 필요없는 많은 메소드를, 아무것도 하지 않게 오버라이드(override) 합니다. 아무것도 하지 않게 불려 가고 있는 메소드가 오버라이드(override) 됩니다.
+    </p><p>
+다음의 메소드가 <a href="../../../../api/javax/swing/table/DefaultTableCellRenderer.html">DefaultTableCellRenderer</a> ,<a href="../../../../api/javax/swing/DefaultListCellRenderer.html">DefaultListCellRenderer</a> , 및 <a href="../../../../api/javax/swing/tree/DefaultTreeCellRenderer.html">DefaultTreeCellRenderer</a>  에 추가되었습니다.
+</p><pre>    /**
+     * Overridden for performance reasons.
+     * See the &lt;a href="#override"&gt;Implementation Note&lt;/a&gt;
+     * for more information.
+     *
+     * @since 1.5
+     */
+    public void invalidate();
+    /**
+     * Overridden for performance reasons.
+     * See the &lt;a href="#override"&gt;Implementation Note&lt;/a&gt;
+     * for more information.
+     *
+     * @since 1.5
+     */
+    public void repaint();
+</pre>
+
+
+  <!-- 4716935 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4716935.html">4716935</a> : JLayeredPane.removeAll 를 호출한다고 리크 한다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JLayeredPane.html">JLayeredPane</a>  는 포함되는 <code>Components</code> 의<code>HashTable</code> 를 보관 유지합니다. 현재로서는 <code>HashTable</code> 를 갱신하기 위해서 <code>removeAll</code> 를 오버라이드(override) 하지 않기 때문에, 리크 할 가능성이 있습니다. <code>JLayeredPane</code> 는 <code>removeAll</code> 를 오버라이드(override) 해, 필요한 클린 업을 실시하게 되었습니다.
+  </p><pre>    /** 
+     * Removes all the components from this container.
+     *
+     * @since 1.5
+     */
+    public void removeAll();
+</pre>
+
+
+  <!-- 4717180 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4717180.html">4717180</a> : 인스톨시에 UI 로 시각상의 프롭퍼티를 변경하는 것의 문서화</h3>
+<h4>설명:</h4>
+    <p>
+Swing 클래스는, 많은 프롭퍼티의 디폴트 값를 문서화합니다. 커스텀 Look & Feel 에 의해, 디폴트 값가 유효하지 않다고 보여지는 값이 변경되기 (위해)때문에, 명확하게 해 둘 필요가 있습니다. 문서화하기 위해서(때문에), 다음이 <a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  의 클래스 레벨 javadoc 에 추가되었습니다.
+</p><pre>     * &lt;code&gt;JComponent&lt;/code&gt; and its subclasses document default values
+     * for certain properties.   For example, &lt;code&gt;JTable&lt;/code&gt; documents the
+     * default row height as 16.   Each &lt;code&gt;JComponent&lt;/code&gt; subclass
+     * that has a &lt;code&gt;ComponentUI&lt;/code&gt; will create the
+     * &lt;code&gt;ComponentUI&lt;/code&gt; as part of its constructor.   In order
+     * to provide a particular look and feel each
+     * &lt;code&gt;ComponentUI&lt;/code&gt; may set properties back on the
+     * &lt;code&gt;JComponent&lt;/code&gt; that created it.   For example, a custom
+     * look and feel may require &lt;code&gt;JTable&lt;/code&gt;s to have a row
+     * height of 24.  The documented defaults are the value of a property
+     * BEFORE the &lt;code&gt;ComponentUI&lt;/code&gt; has been installed.   If you
+     * need a specific value for a particular property you should
+     * explicitly set it.
+</pre>
+
+
+  <!-- 4723745 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4723745.html">4723745</a> : Metal &amp; Windows FileChooserUI 클래스가 ShellFolder 없음으로 사용할 수 없다</h3>
+<h4>설명:</h4>
+    <p>
+1.4 이후,<a href="../../../../api/javax/swing/JFileChooser.html">JFileChooser</a>  코드는 네이티브 레이어에 너무 의존하고 있습니다. 커스터마이즈 된 「가상의」파일 시스템을 사용하는 프로그램에서는, 이 클래스를 우회도로 하도록(듯이) 하고 있습니다만, 알고리즘에 100% 의 신뢰성이 없습니다. 이 동작을 새로 바꾸려면 , 클라이언트 프롭퍼티 <code>FileChooser.useShellFolder</code> 를 사용합니다. 예를 들어 네이티브의 사용을 멈추려면  이 프롭퍼티를 <code>false</code> 로 설정합니다.
+</p><pre>    jFileChooser.putClientProperty("FileChooser.useShellFolder", Boolean.FALSE);
+</pre>
+
+
+  <!-- 4749723 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4749723.html">4749723</a> : Spring 및 SpringLayout 로, 일부의 메소드를 사용하기 쉽게 할 필요가 있다</h3>
+<h4>설명:</h4>
+    <p>
+현재로서는, SpringLayout 를 사용해, 일반적인 레이아웃을 구축하는 것은 약간 곤란합니다. 일반적인 레이아웃을 SpringLayout 를 사용해 간단하게 작성하는 메소드, 및 SpringLayout 를 간단하게 지속하는 메소드가, 개발자로부터 요구되어 왔습니다.
+    </p><p>
+다음이 <a href="../../../../api/javax/swing/Spring.html">Spring</a>  에 추가되었습니다.
+  </p><pre>    /**
+     * Returns a spring whose &lt;em&gt;minimum&lt;/em&gt;, &lt;em&gt;preferred&lt;/em&gt;, &lt;em&gt;maximum&lt;/em&gt;
+     * and &lt;em&gt;value&lt;/em&gt; properties are each multiples of the properties of the
+     * argument spring, &lt;code&gt;s&lt;/code&gt;.  Minimum and maximum properties are
+     * swapped when &lt;code&gt;factor&lt;/code&gt; is negative (in accordance with the
+     * rules of interval arithmetic).
+     * &lt;p&gt;
+     * When factor is, for example, 0.5f the result represents 'the mid-point'
+     * of its input - an operation that is useful for centering components in
+     * a container.
+     *
+     * @param s the spring to scale
+     * @param factor amount to scale by.
+     * @return  a spring whose properties are those of the input spring &lt;code&gt;s&lt;/code&gt;
+     * multiplied by &lt;code&gt;factor&lt;/code&gt;
+     * @throws NullPointerException if &lt;code&gt;s&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public static Spring scale(Spring s, float factor);
+
+    /**
+     * Returns a spring whose &lt;em&gt;minimum&lt;/em&gt;, &lt;em&gt;preferred&lt;/em&gt;, &lt;em&gt;maximum&lt;/em&gt;
+     * and &lt;em&gt;value&lt;/em&gt; properties are defined by the widths of the &lt;em&gt;minimumSize&lt;/em&gt;,
+     * &lt;em&gt;preferredSize&lt;/em&gt;, &lt;em&gt;maximumSize&lt;/em&gt; and &lt;em&gt;size&lt;/em&gt; properties
+     * of the supplied component.  The returned spring is a 'wrapper' implementation
+     * whose methods call the appropriate size methods of the supplied component.
+     * The minimum, preferred, maximum and value properties of the returned spring
+     * therefore report the current state of the appropriate properties in the
+     * component and track them as they change.
+     *
+     * @param c Component used for calculating size
+     * @return  a spring whose properties are defined by the horizontal component
+     * of the component's size methods.
+     * @throws NullPointerException if &lt;code&gt;c&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public static Spring width(Component c);
+
+    /**
+     * Returns a spring whose &lt;em&gt;minimum&lt;/em&gt;, &lt;em&gt;preferred&lt;/em&gt;, &lt;em&gt;maximum&lt;/em&gt;
+     * and &lt;em&gt;value&lt;/em&gt; properties are defined by the heights of the &lt;em&gt;minimumSize&lt;/em&gt;,
+     * &lt;em&gt;preferredSize&lt;/em&gt;, &lt;em&gt;maximumSize&lt;/em&gt; and &lt;em&gt;size&lt;/em&gt; properties
+     * of the supplied component.  The returned spring is a 'wrapper' implementation
+     * whose methods call the appropriate size methods of the supplied component.
+     * The minimum, preferred, maximum and value properties of the returned spring
+     * therefore report the current state of the appropriate properties in the
+     * component and track them as they change.
+     *
+     * @param c Component used for calculating size
+     * @return  a spring whose properties are defined by the vertical component
+     * of the component's size methods.
+     * @throws NullPointerException if &lt;code&gt;c&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public static Spring height(Component c);
+</pre>
+    <p>
+또, 다음이 <a href="../../../../api/javax/swing/SpringLayout.Constraints.html">SpringLayout.Constraints</a>  에 추가되었습니다.
+</p><pre>        /**
+         * Creates a &lt;code&gt;Constraints&lt;/code&gt; object with
+         * suitable &lt;code&gt;x&lt;/code&gt;, &lt;code&gt;y&lt;/code&gt;, &lt;code&gt;width&lt;/code&gt; and
+         * &lt;code&gt;height&lt;/code&gt; springs for component, &lt;code&gt;c&lt;/code&gt;.
+         * The &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; springs are constant
+         * springs  initialised with the component's location at
+         * the time this method is called.  The &lt;code&gt;width&lt;/code&gt; and
+         * &lt;code&gt;height&lt;/code&gt; springs are special springs, created by
+         * the &lt;code&gt;Spring.width() &lt;/code&gt; and &lt;code&gt;Spring.height() &lt;/code&gt;
+         * methods, which track the size characteristics of the component
+         * when they change.
+         *
+         * @param c  the component whose characteristics will be reflected by this Constraints object
+         * @throws NullPointerException if &lt;code&gt;c&lt;/code&gt; is null.
+         * @since 1.5
+         */
+        public Constraints(Component c);
+</pre>
+
+
+  <!-- 4753342 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4753342.html">4753342</a> : Swing 의 톱 레벨 컴퍼넌트는 add 또는 remove 메소드를 ContentPane 에 리다이렉트(redirect) 한다</h3>
+<h4>설명:</h4>
+    <p>
+AWT 프로그래밍과는 달라,<a href="../../../../api/javax/swing/JFrame.html">JFrame</a> /<a href="../../../../api/javax/swing/JDialog.html">JDialg</a> /<a href="../../../../api/javax/swing/JWindow.html">JWindow</a> /<a href="../../../../api/javax/swing/JApplet.html">JApplet</a> /<a href="../../../../api/javax/swing/JInternalFrame.html">JInternalFrame</a>  에서는 <code>Component</code> 를 추가할 수 없습니다. 그 대신해,<code>JRootPane</code> 에 대해 이해해, 아이 Component 를 추가할 필요가 있습니다. 이 때문에, 새로운 개발자에게 쓸데없는 혼란이 생깁니다.
+    </p><p>
+5.0 보다 전은,<code>Component</code> 를 톱 레벨에 대해서 추가 또는 삭제하려고 하면(자),<code>Component</code> 가 예외를 throw 하고 있었습니다. 5.0 에서는, 예외가 throw 되는 것이 아니라,<code>Component</code> 가 콘텐트페인에 대해서 추가 또는 삭제됩니다. 이 결과,<code>JFrame</code>,<code>JDialog</code>,<code>JWindow</code>,<code>JApplet</code>, 및 <code>JInternalFrame</code> 의 javadoc 가 개정되었습니다. 이것에 대해서는,<a href="../../../../api/javax/swing/RootPaneContainer.html">RootPaneContainer</a>  의 javadoc 에 정리하고 있습니다.
+</p><pre>     * For conveniance
+     * &lt;code&gt;JFrame&lt;/code&gt;, &lt;code&gt;JDialog&lt;/code&gt;, &lt;code&gt;JWindow&lt;/code&gt;,
+     * &lt;code&gt;JApplet&lt;/code&gt; and &lt;code&gt;JInternalFrame&lt;/code&gt;, by default,
+     * forward all calls to &lt;code&gt;add&lt;/code&gt; and its variants,
+     * &lt;code&gt;remove&lt;/code&gt; and &lt;code&gt;setLayout&lt;/code&gt; to the
+     * &lt;code&gt;contentPane&lt;/code&gt;.  This means rather than writing:
+     * &lt;pre&gt;
+     * rootPaneContainer.getContentPane(). add(component);
+     * &lt;/pre&gt;
+     * you can do:
+     * &lt;pre&gt;
+     * rootPaneContainer.add(component);
+     * &lt;/pre&gt;
+     * &lt;p&gt;
+     * The behavior of &lt;code&gt;add&lt;/code&gt; and its variants and
+     * &lt;code&gt;setLayout&lt;/code&gt; for
+     * &lt;code&gt;JFrame&lt;/code&gt;, &lt;code&gt;JDialog&lt;/code&gt;, &lt;code&gt;JWindow&lt;/code&gt;,
+     * &lt;code&gt;JApplet&lt;/code&gt; and &lt;code&gt;JInternalFrame&lt;/code&gt; is controlled by
+     * the &lt;code&gt;rootPaneCheckingEnabled&lt;/code&gt; property.  If this property is
+     * true, the default, then &lt;code&gt;add&lt;/code&gt; and its variants and
+     * &lt;code&gt;setLayout&lt;/code&gt; are
+     * forwarded to the &lt;code&gt;contentPane&lt;/code&gt;, if it is false, then these
+     * methods operate directly on the &lt;code&gt;RootPaneContainer&lt;/code&gt;.  This
+     * property is only intended for subclasses, and is therefor protected.
+</pre>
+
+
+  <!-- 4789491 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4789491.html">4789491</a> : JFileChooser 로부터는, 디렉토리의 선택 방법을 모른다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JFileChooser.html">JFileChooser</a>  의 문서에서는, 파일이나 디렉토리가 선택될지 어떨지를, 파일 츄-더의 어디서 지정할지가 불명확입니다. 이 때문에, 다음의 메소드의 문서가 개정되었습니다.
+</p><pre>    /**
+     * Adds a filter to the list of user choosable file filters.
+     * For information on setting the file selection mode, see
+     * {@link #setFileSelectionMode setFileSelectionMode}.
+     *
+     * @param filter the &lt;code&gt;FileFilter&lt;/code&gt; to add to the choosable file
+     *               filter list
+     *
+     * @beaninfo
+     *   preferred: true
+     *       bound: true
+     * description: Adds a filter to the list of user choosable file filters.
+     *
+     * @see #getChoosableFileFilters
+     * @see #removeChoosableFileFilter
+     * @see #resetChoosableFileFilters
+     * @see #setFileSelectionMode
+     */
+    public void addChoosableFileFilter(FileFilter filter);
+
+    /**
+     * Sets the &lt;code&gt;JFileChooser&lt;/code&gt; to allow the user to just
+     * select files, just select
+     * directories, or select both files and directories.   The default is
+     * &lt;code&gt;JFilesChooser.FILES_ONLY&lt;/code&gt;.
+     *
+     * @param mode the type of files to be displayed:
+     * &lt;ul&gt;
+     * &lt;li&gt;JFileChooser.FILES_ONLY
+     * &lt;li&gt;JFileChooser.DIRECTORIES_ONLY
+     * &lt;li&gt;JFileChooser.FILES_AND_DIRECTORIES
+     * &lt;/ul&gt;
+     *
+     * @exception IllegalArgumentException  if &lt;code&gt;mode&lt;/code&gt; is an
+     *                          illegal file selection mode
+     * @beaninfo
+     *   preferred: true
+     *       bound: true
+     * description: Sets the types of files that the JFileChooser can choose.
+     *        enum: FILES_ONLY JFileChooser.FILES_ONLY
+     *              DIRECTORIES_ONLY JFileChooser.DIRECTORIES_ONLY
+     *              FILES_AND_DIRECTORIES JFileChooser.FILES_AND_DIRECTORIES
+     *
+     *
+     * @see #getFileSelectionMode
+     */
+    public void setFileSelectionMode(int mode);
+</pre>
+
+  <!-- 4831322 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4831322.html">4831322</a> : JDesktopPane.setDesktopManager 는 UI 로 데스크탑 매니저를 갱신한다</h3>
+<h4>설명:</h4>
+    <p>
+<a href="../../../../api/javax/swing/JDesktopPane.html#setDesktopManager%28javax.swing.DesktopManager%29">JDesktopPane.setDesktopManager</a>  를 호출해도, UI 를 재로드하지 않으면 유효하게 되지 않습니다.
+    </p><p>
+수정하기 위해서,<a href="../../../../api/javax/swing/plaf/basic/BasicDesktopPaneUI.html">BasicDesktopPaneUI</a>  는 다음의 메소드를 오버라이드(override) 하지 않습니다.
+</p><pre>    /**
+     * Installs the &lt;code&gt;PropertyChangeListener&lt;/code&gt; returned from
+     * &lt;code&gt;createPropertyChangeListener&lt;/code&gt; on the &lt;code&gt;JDesktopPane&lt;/code&gt;.
+     *
+     * @since 1.5
+     * @see #createPropertyChangeListener
+     */
+    protected void installListeners()
+    
+    /**
+     * Uninstalls the &lt;code&gt;PropertyChangeListener&lt;/code&gt; returned from
+     * &lt;code&gt;createPropertyChangeListener&lt;/code&gt; from the &lt;code&gt;JDesktopPane&lt;/code&gt;.
+     *
+     * @since 1.5
+     * @see #createPropertyChangeListener
+     */
+    protected void uninstallListeners()
+    
+    /*
+     * Returns the &lt;code&gt;PropertyChangeListener&lt;/code&gt; to install on
+     * the &lt;code&gt;JDesktopPane&lt;/code&gt;.
+     *
+     * @since 1.5
+     * @return The PropertyChangeListener that will be added to track
+     * changes in the desktop pane.
+     */
+    protected PropertyChangeListener createPropertyChangeListener()
+</pre>
+
+
+  <!-- 4864304 -->
+<h3><a name="4864304"></a> <a href="http://developer.java.sun.com/developer/bugParade/bugs/4864304.html">4864304</a> : Swing 어플리케이션의 메모리 소비의 개선</h3>
+<h4>설명:</h4>
+    <p>
+다양한 <a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  서브 클래스의 인스턴스마다의 사이즈를 줄이기 위해서(때문에), 다음의 변경이 더해졌습니다.
+    </p><p>
+<code>JComponent</code> 의 추천, 최소, 및 최대 사이즈의 기억역이 중복 하지 않게, 다음의 메소드가 <code>Component</code> 에 옮겨졌습니다.
+</p><pre>    /**
+     * Sets the preferred size of this component to a constant
+     * value.   Subsequent calls to &lt;code&gt;getPreferredSize&lt;/code&gt; will always
+     * return this value.   Setting the preferred size to &lt;code&gt;null&lt;/code&gt;
+     * restores the default behavior.
+     *
+     * @param preferredSize The new preferred size, or null
+     * @see #getPreferredSize
+     * @see #isPreferredSizeSet
+     * @since 1.5
+     */
+    public void setPreferredSize(Dimension preferredSize);
+
+    /**
+     * Returns true if the preferred size has been set to a
+     * non-&lt;code&gt;null&lt;/code&gt; value otherwise returns false.
+     *
+     * @return true if &lt;code&gt;setPreferredSize&lt;/code&gt; has been invoked
+     *         with a non-null value.
+     * @since 1.5
+     */ 
+    public boolean isPreferredSizeSet();
+
+    /**
+     * Sets the minimum size of this component to a constant
+     * value.   Subsequent calls to &lt;code&gt;getMinimumSize&lt;/code&gt; will always
+     * return this value.   Setting the minimum size to &lt;code&gt;null&lt;/code&gt;
+     * restores the default behavior.
+     *
+     * @param minimumSize the new minimum size of this component
+     * @see #getMinimumSize
+     * @see #isMinimumSizeSet
+     * @since 1.5
+     */
+    public void setMinimumSize(Dimension minimumSize);
+
+    /**
+     * Returns whether or not &lt;code&gt;setMinimumSize&lt;/code&gt; has been
+     * invoked with a non-null value.
+     *
+     * @return true if &lt;code&gt;setMinimumSize&lt;/code&gt; has been invoked with a
+     *              non-null value.
+     * @since 1.5
+     */
+    public boolean isMinimumSizeSet();
+
+    /**
+     * Sets the maximum size of this component to a constant
+     * value.   Subsequent calls to &lt;code&gt;getMaximumSize&lt;/code&gt; will always
+     * return this value.   Setting the maximum size to &lt;code&gt;null&lt;/code&gt;
+     * restores the default behavior.
+     *
+     * @param maximumSize a &lt;code&gt;Dimension&lt;/code&gt; containing the 
+     *               desired maximum allowable size
+     * @see #getMaximumSize
+     * @see #isMaximumSizeSet
+     * @since 1.5
+     */
+    public void setMaximumSize(Dimension maximumSize);
+
+    /**
+     * Returns true if the maximum size has been set to a non-&lt;code&gt;null&lt;/code&gt;
+     * value otherwise returns false.
+     *
+     * @return true if &lt;code&gt;maximumSize&lt;/code&gt; is non-&lt;code&gt;null&lt;/code&gt;,
+     *               false otherwise
+     * @since 1.5
+     */ 
+    public boolean isMaximumSizeSet();
+</pre>
+    <p>
+자동 스크롤에 필요한 메모리를 개선하기 위해서,<code>JComponent</code> 에서는 다음의 메소드를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * Processes mouse events occurring on this component by
+     * dispatching them to any registered
+     * &lt;code&gt;MouseListener&lt;/code&gt; objects, refer to
+     * {@link java.awt.Component#processMouseEvent(MouseEvent)}
+     * for a complete description of this method.
+     *
+     * @param       e the mouse event
+     * @see         java.awt.Component#processMouseEvent
+     * @since 1.5
+     */
+    protected void processMouseEvent(MouseEvent e);
+</pre>
+    <p>
+      <code>AbstractButton</code> 의 사이즈를 줄이려면 , 다음의 메소드를
+      오버라이드(override) 합니다.
+</p><pre>    /**
+     * Adds the specified component to this container at the specified
+     * index, refer to
+     * {@link java.awt.Container#addImpl(Component, Object, int)}
+     * for a complete description of this method.
+     *
+     * @param     comp the component to be added
+     * @param     constraints an object expressing layout constraints 
+     *                 for this component
+     * @param     index the position in the container's list at which to
+     *                 insert the component, where &lt;code&gt;-1&lt;/code&gt; 
+     *                 means append to the end
+     * @exception IllegalArgumentException if &lt;code&gt;index&lt;/code&gt; is invalid
+     * @exception IllegalArgumentException if adding the container's parent
+     *			to itself
+     * @exception IllegalArgumentException if adding a window to a container
+     * @since 1.5
+     */
+    protected void addImpl(Component comp, Object constraints, int index);
+
+    /** 
+     * Sets the layout manager for this container, refer to
+     * {@link java.awt.Container#setLayout(LayoutManager)}
+     * for a complete description of this method.
+     *
+     * @param mgr the specified layout manager
+     * @since 1.5
+     */
+    public void setLayout(LayoutManager mgr);
+</pre>
+
+  <!-- 4905905 -->
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4905905.html">4905905</a> : Swing 의 키바인데잉맙핑드큐먼트가 유효기간 채 안되어라</h3>
+<h4>설명:</h4>
+    <p>
+Swing 에서는 Key-Index.html, Key-Metal.html, Key-Motif.html 및 Key-Windows.html 파일내의 다양한 컴퍼넌트의 키 바인드가 문서화 되고 있습니다. 이러한 파일은 디렉토리 src/share/classes/javax/swing/doc-files 에 있어, 약간의 Swing 위젯로부터 참조됩니다. 이러한 파일은 매우 낡은 것으로 있어, Swing 의 키 바인딩을 모두 문서화하고 있는 것은 아닙니다. 그 때문에, 이러한 파일과 파일에 대한 모든 참조가 삭제되었습니다.
+
+  <!-- 4908889 -->
+</p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4908889.html">4908889</a> : GTKLookAndFeel 는 Gnome 탑재의 Solaris 의 시스템 Look & Feel 여야 함</h3>
+<h4>설명:</h4>
+    <p>
+Swing 의 <a href="../../../../api/javax/swing/UIManager.html">UIManager</a>  클래스는, 현재의 시스템의 Look & Feel 를 제공하기 위해서 사용되는 클래스의 이름을 조사하기 위해서(때문에), 그 외의 클래스와 함께 사용됩니다. Gnome 를 탑재하는 Solaris 에서는,<code>getSystemLookAndFeelClassName</code> 를 호출하면(자) GTK Look & Feel 의 패키지명이 돌려주어져야 합니다.
+    </p><p>
+이 때문에, 다음의 변경이 <code>UIManager</code> 에 더해졌습니다.
+</p><pre>    /**
+     * Returns the name of the &lt;code&gt;LookAndFeel&lt;/code&gt; class that implements
+     * the native systems look and feel if there is one, otherwise
+     * the name of the default cross platform &lt;code&gt;LookAndFeel&lt;/code&gt;
+     * class.  If the system property &lt;code&gt;swing.systemlaf&lt;/code&gt; has been
+     * defined, it's value will be returned.
+     *
+     * @return the &lt;code&gt;String&lt;/code&gt; of the &lt;code&gt;LookAndFeel&lt;/code&gt;
+     *               class
+     *
+     * @see #setLookAndFeel
+     * @see #getCrossPlatformLookAndFeelClassName
+     */
+    public static String getSystemLookAndFeelClassName();
+
+    /**
+     * Returns the name of the &lt;code&gt;LookAndFeel&lt;/code&gt; class that implements
+     * the default cross platform look and feel -- the Java
+     * Look and Feel (JLF).   If the system property
+     * &lt;code&gt;swing.crossplatformlaf&lt;/code&gt; has been
+     * defined, it's value will be returned.
+     *
+     * @return  a string with the JLF implementation-class
+     * @see #setLookAndFeel
+     * @see #getSystemLookAndFeelClassName
+     */
+    public static String getCrossPlatformLookAndFeelClassName();
+</pre>
+    <p>
+이 작업의 일관으로서<a href="../../../../api/com/sun/java/swing/plaf/windows/WindowsClassicLookAndFeel.html">WindowsClassicLookAndFeel</a>  를 작성했습니다. 사용자가 Windows XP 를 실행하고 있는 경우에서도, 이 클래스에서는 구래의 Windows 의 외관을 사용할 수 있습니다.
+
+
+
+  <!-- 4953840 -->
+</p><h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4953840.html">4953840</a> : getFontMetrics 의 오버라이드(override)를 JComponent 에 추가한다</h3>
+<h4>설명:</h4>
+    <p>
+Swing 로 anti-aliasing 된 텍스트를 사용할 수 있게 되는 전단층으로서<a href="../../../../api/javax/swing/JComponent.html">JComponent</a>  에서는 다음의 메소드를 오버라이드(override) 합니다.
+</p><pre>    /**
+     * Gets the &lt;code&gt;FontMetrics&lt;/code&gt; for the specified &lt;code&gt;Font&lt;/code&gt;.
+     *
+     * @param font the font for which font metrics is to be
+     *          obtained
+     * @return the font metrics for &lt;code&gt;font&lt;/code&gt;
+     * @throws NullPointerException if &lt;code&gt;font&lt;/code&gt; is null
+     * @since 1.5
+     */
+    public FontMetrics getFontMetrics(Font font);
+</pre>
+
+
+<!-- ZZZZZZZZZZZZZZZZZ END MISC -->
+
+
+<h2><a name="swingIncompatibilities">잠재적인 비호환성</a> </h2>
+
+    <p>
+이것들 많은 API 의 변경에 의해, 5.0 으로 그 이전의 릴리스와의 사이에는, 잠재적인 비호환성이 생겼습니다. 그러나, 이러한 변경의 영향을 받는 개발자는 거의 없습니다. 생각되는 비호환성을 다음에 나타냅니다.
+
+    </p><h3><a href="#4607364">4607364</a> </h3>
+    <p>
+Ocean 에서는 버튼상에 그라데이션을 draw 합니다. 그라데이션은 <code>contentAreaFilled</code> 프롭퍼티가 true 인가,<code>background</code> 프롭퍼티가 <code>UIResource</code> 의 인스턴스인 경우만 draw 됩니다. 그라데이션이 불필요한 경우는,<code>contentAreaFilled</code> 프롭퍼티를 false 로 설정하는지, background 를<code>non-UIResource</code> 로 설정합니다. 대부분의 경우는, 다음과 같이 하는 것이 간단합니다.
+</p><pre>    button.setBackground(Color.RED);
+</pre>
+    <p>
+어떠한 이유로써 <code>UIResource</code> 를 채용하고 있는 경우는,<code>UIResource</code> 는 아닌 새로운 <code>Color</code> 를 작성할 필요가 있습니다. 예를 들어 다음과 같이 됩니다.
+</p><pre>    button.setBackground(new Color(oldColor));
+</pre>
+
+
+    <h3><a href="#4303294">4303294</a> </h3>
+    <p>
+<code>JTree</code> 및 <code>JList</code> 는 커서의 움직임을 리드에 상대적으로 해석합니다. 예를 들어 리드가 <code>JTree</code> 의 4 행 째에 있을 때 상 커서 키를 누르면(자), 선택 범위가 3 행 째로 이동합니다. 같이<code>JTree</code> 및 <code>JList</code> 는 인수를 각각의 렌더링에 건네줍니다. 이 인수는 draw중의 항목에 포커스가 있을지 어떨지를 나타냅니다. 이것은, draw중의 항목이 리드일지 어떨지에 근거합니다. <code>JTable</code> 에서는, 5.0 보다 전은 이러한 경우에 엥커를 사용하고 있었습니다만, 5.0 에서는 리드를 사용합니다. 이 때문에, 엥커를 포커스가 있는 셀이다고 생각하고 있던 개발자에게 영향이 있을 가능성이 있습니다. 또, 올바르지 않은 상황으로 포커스 인디케이터(indicator)가 draw 될 가능성이 있습니다.
+
+
+    </p><h3><a href="#4864304">4864304</a> </h3>
+    <p>
+<code>JComboBox</code> 의 pop-up를 draw 하기 위해서, 산의 Look & Feel 에서는 <code>JScrollPane</code> 의 인스턴스를 사용합니다. <code>JScrollPane</code> 는, 수평 스크롤 바를 가지도록(듯이)는 구성되어 있지 않았습니다. 5.0 에서는,<code>setHorizontalScrollBar(null)</code> 가 불려 가게 됩니다.
+  </p></body></html>

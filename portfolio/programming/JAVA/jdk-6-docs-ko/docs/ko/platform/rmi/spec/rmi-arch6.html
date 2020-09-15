@@ -1,0 +1,149 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:3 - RMI 시스템의 개요
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<a href="#skip" title="네비게이션 바를 스킵"></a> 
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-arch5.html">전의 항목</a>  | <a href="rmi-client2a.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">3.5 프록시 경유로 방화벽(fire wall)를 통과하는 RMI</a> </h2>
+
+<blockquote>
+<a name="3749"><!-- --></a>  RMI 의 트랜스폴트층은 일반적으로, 인터넷상의 호스트에게 직접 소켓을 열려고 합니다. 그러나, 많은 인트라넷은 방화벽(fire wall)를 갖추고 있기 (위해)때문에 이것을 할 수 있습니다. 이 때문에, 디폴트의 RMI 트랜스폴트에서는, 이것에 대신하는 2 종류의 HTTP 베이스의 기구를 갖추어, 방화벽(fire wall)의 안쪽에 있는 클라이언트가, 방화벽(fire wall)의 외측에 있는 원격 객체상의 메소드를 호출할 수 있도록(듯이) 하고 있습니다. <p>
+<a name="5659"><!-- --></a> 이 마디로 설명한 것처럼, HTTP 베이스의 기구는, RMI 의 트랜스폴트층이 RMI 호출해에 사용해서 , HTTP 프록시 서버-에 의한 방화벽(fire wall)에만 적용됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="3750"><!-- --></a>  3.5. 1 RMI 호출은 HTTP 프로토콜 중(안)에서 어떻게 패키지 될까
+</h3>
+
+<blockquote>
+<a name="3751"><!-- --></a>  방화벽(fire wall)의 외측에 도달할 수 있도록(듯이), 트랜스폴트층은 방화벽(fire wall) 신임 HTTP 프로토콜에, RMI 호출을 묻어 둡니다. RMI 호출의 데이터는, HTTP POST 요청의 본체로서 외측에 배웅해져 반환되는 정보도 HTTP 에 의한 응답 본체의 일부로서 짜넣어지고 있습니다. 트랜스폴트층은, POST 요청의 형식을 다음의 2 개의 어떤 것이나 방법으로 정돈합니다. <p>
+</blockquote><a name="3752"><!-- --></a> 
+<UL><OL>
+<LI>호스트 머신의 임의의 포트로 향해진 HTTP 요청를 방화벽(fire wall) 프록시가 전송 하는 경우에, 그 요청는 RMI 서버가 수신하고 있는 포트에 직접 전송 됩니다. 서버 머신상의 디폴트의 RMI 트랜스폴트층은, POST 요청안의 RMI 호출을 이해해 디코드할 수 있는 서버 소켓을 사용해 수신합니다.  <BR>
+<LI>방화벽(fire wall) 프록시가 HTTP 요청를 기존의 HTTP 포트에만 전송 하는 경우에는, 그 요청는 호스트 머신상의 포트 번호 80 으로 수신 대기하고 있는 서버에 전송 되어 CGI 스크립트가 실행되어, 그 호출을 같은 머신상의 타겟 RMI 서버의 포트에 전송 합니다.
+</OL>
+</UL>
+
+<br>
+<h3>
+<a name="3754"><!-- --></a>  3.5. 2	 디폴트 소켓 팩토리
+</h3>
+
+<blockquote>
+<a name="3755"><!-- --></a>  RMI 트랜스폴트의 구현에는,<code>java.rmi.server.RMISocketFactory</code> 클래스의 확장이 포함됩니다. 이 클래스는, 클라이언트 소켓 및 서버 소켓이 RMI 호출을 송수신 하기 위해서 사용하는, 디폴트의 자원 프로바이더입니다. 이 디폴트 소켓 팩토리는,<code>java.rmi.server.RMISocketFactory.getDefaultSocketFactory</code> 메소드에 의해 취득할 수 있습니다. 이 디폴트 소켓 팩토리는, 다음에 설명하는 방법으로 투과적인 방화벽(fire wall) 터널링 기구를 갖춘 소켓을 만들어 냅니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="3756"><!-- --></a> 클라이언트의 소켓은, 우선 직접 소켓 접속을 시도합니다. 직접 소켓 접속을 시도한 결과,<code>java.net.NoRouteToHostException</code> 또는 <code>java.net.UnknownHostException</code> 가 throw 되면(자), 클라이언트 소켓은 자동적으로, 직접 소켓에 의해 액세스 할 수 없는 호스트에게로의 HTTP 접속을 시도합니다. 직접 소켓 접속의 결과,<code>java.net.ConnectException</code> 등, 그 외의 <code>java.io.IOException</code> 가 throw 되는 경우, 구현은 HTTP 접속을 시도하는 일이 있습니다.
+</li>
+<li>
+<a name="3757"><!-- --></a>  서버 소켓은, 새롭게 받아들일 수 있었던 접속이 HTTP 의 POST 요청일까를 자동적으로 검출합니다. 그런 경우, 요청의 본체만을 보이는 소켓을 트랜스폴트에 돌려주어, 그 출력을 HTTP 에 의한 응답의 형식에 정돈합니다.
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="3758"><!-- --></a>  이러한 디폴트 동작을 하는 클라이언트측 소켓은, 팩토리의 <code>java.rmi.server.RMISocketFactory.createSocket</code> 메소드가 제공합니다. 이러한 디폴트 동작을 하는 서버측의 소켓은, 팩토리의 <code>java.rmi.server.RMISocketFactory.createServerSocket</code> 메소드가 제공합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="3759"><!-- --></a>  3.5. 3 클라이언트의 구성
+</h3>
+<blockquote>
+<a name="3761"><!-- --></a>  클라이언트는 <code>java.rmi.server.disableHttp</code> 프로퍼티을 불리언 값 <code>true</code> 에 동일하게 설정해 RMI 호출을 HTTP 요청의 형식에 패키지 할 수 없게 할 수가 있습니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="3762"><!-- --></a>  3.5. 4	 서버의 구성
+</h3>
+
+
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="5438">주 - </a> </b>호스트명은, 호스트의 IP 주소로서 지정되지 않습니다.  방화벽(fire wall) 프록시안에는, 그러한 형식의 호스트명을 전송 하지 않는 것이 있기 (위해)때문에입니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<a name="3763"><!-- --></a> 
+<OL><OL>
+<LI>서버 호스트의 도메인의 밖에 있는 클라이언트가, 어느 서버의 원격 객체를 호출할 수 있기 위해서(때문에)는, 클라이언트는 우선 그 서버를 찾아낼 수 없으면 안됩니다. 이 때문에는, 서버가 export 하는 원격 참조가 그 서버의 완전 수식명을 포함하지 않으면 안됩니다. </LI>
+
+<a name="3764"><!-- --></a> 
+<p>서버의 플랫폼과 네트워크 환경에 따라서는, 서버가 실행중의 Java 가상 머신이 이러한 정보를 이용할 수 없는 경우가 있습니다. 이용할 수 없을 때는, 호스트의 완전 수식된 이름은 서버가 스타트 하는 시점에서 <code>java.rmi.server.hostname</code> 프로퍼티으로서 지정되어 있지 않으면 안됩니다.
+<p>
+<a name="3765"><!-- --></a> 예를 들어, 다음의 커멘드로 머신 chatsubo.javasoft.com 상의 RMI 서버 클래스 <code>ServerImpl</code> 를 스타트 시킬 수가 있습니다.
+<p>
+<blockquote><pre>   java -Djava.rmi.server.hostname=chatsubo.javasoft.com ServerImpl
+
+</pre></blockquote><a name="3768"><!-- --></a> 
+
+<LI>서버가, 방화벽(fire wall)의 외측에 있는, 임의의 포트에 전송 가능한 RMI 클라이언트를 지원하지 않는 경우, 다음의 구성을 사용할 수 있습니다.  <a name="3769"><!-- --></a> 
+<OL><p>
+<LI>HTTP 서버는 포트 번호 80 을 수신용으로 사용한다
+<p><a name="3770"><!-- --></a> 
+<LI>CGI 스크립트를 다음의 앨리어스(alias) URL 패스에 둔다 
+<p>
+<blockquote><pre><code>/cgi-bin/java-rmi.cgi</code>
+</pre></blockquote> 
+
+<a name="5637"><!-- --></a>  이 스크립트에 의한 처리 내용을 다음에 나타냅니다.
+</OL></OL>
+<UL><UL><UL>
+<a name="5076"><!-- --></a> 
+<p>
+
+<LI>로컬인 Java 언어용 interpreter를 호출해, 트랜스폴트층안에 있는 클래스를 실행한다. 이것에 의해 요청를 적절한 RMI 서버 포트에 전송 한다</LI>
+<p>
+<a name="3772"><!-- --></a> 
+<LI>Java 가상 머신의 프로퍼티을, CGI 1.0 으로 정의되는 환경 변수와 같은 이름과 값으로 정의한다
+</UL></UL></UL>
+<p><dl>
+<dd><a name="3773"><!-- --></a> 스크립트의 예는 Solaris 와 Win32  operating system의 RMI 디스트리뷰션에 포함되어 있습니다. 스크립트에서는 서버 머신상의 Java 언어용 interpreter에의 완전한 패스를 지정하는 것에 주의해 주세요.
+<p>
+
+</dl>
+</OL>
+<br>
+<h3>
+<a name="3774"><!-- --></a>  3.5. 5	 기능상의 문제와 제한
+</h3>
+
+<blockquote>
+<a name="3775"><!-- --></a>  HTTP 요청를 개입시켜 송신된 호출은, 프록시에 의한 전송의 시간의 차이를 제외했다고 해도, 직접 소켓을 개입시켰을 경우보다 훨씬 늦어집니다. <p>
+<a name="3776"><!-- --></a>  방화벽(fire wall)를 통하는 경우, HTTP 요청는 한방향으로 밖에 개시할 수 없기 때문에, 클라이언트는 자신의 원격 객체를 방화벽(fire wall)의 외측에 export 할 수 없습니다.  이것은, 방화벽(fire wall)의 외측에 있는 호스트가, 안쪽에 있는 클라이언트의 메소드 호출을 개시할 수 없기 때문입니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-arch5.html">전의 항목</a>  | <a href="rmi-client2a.html">다음의 항목</a>  
+
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

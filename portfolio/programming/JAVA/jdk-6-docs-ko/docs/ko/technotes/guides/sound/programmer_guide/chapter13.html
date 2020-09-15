@@ -1,0 +1,107 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 13 장:서비스 프로바이더 인터페이스의 개요</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<table width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bordercolor="#000000" bgcolor="#FFFFCC">
+  <tr>
+    <td>
+<h2><u>주:</u></h2>
+<p>버젼 5.0 의 경우, 신규 생성자 의 <code><a href="../../../../api/javax/sound/sampled/AudioFormat.html">AudioFormat</a> </code>,<code><a href="../../../../api/javax/sound/sampled/AudioFileFormat.html">AudioFileFormat</a> </code>, 및 <code><a href="../../../../api/javax/sound/midi/MidiFileFormat.html">MidiFileFormat</a> </code> 에 의해, 한층 더 고도의 형식에서의 기술이 가능하게 되어 있습니다.  <br>
+    </p></td>
+  </tr>
+</table>
+<br>
+<h3> <a name="what"></a> 서비스란 </h3>
+<p> 서비스란, 응용 프로그램으로 Java<font size="-1"><sup>TM</sup></font> Sound API 의 구현을 사용하면(자) 자동적으로 이용 가능하게 되는 사운드 처리 기능의 총칭입니다. 서비스를 구성하는 것은, 오디오 데이터와 MIDI 데이터의 읽어들여, 기입해, 믹싱, 처리, 변환의 각 작업을 실시하는 객체군입니다. Java Sound API 의 구현에서는, 일반적으로은, 기본 서비스 세트가 제공되고 있습니다만, 게다가 API 에 새로운 기구도 짜넣어져, 서드 파티 개발자 (또는 구현 자체의 벤더)를 대상으로 한 새로운 사운드 서비스의 개발도 지원되고 있습니다. 이러한 새로운 서비스를, 기존의 도입이 끝난 구현에 「플러그 인」의 형태로 짜넣으면(자), 신규 릴리스로 하지 않아도 기능을 확장할 수가 있습니다. Java Sound API 아키텍쳐(architecture)는, 서드 파티 서비스를 시스템에 통합하는 방법으로서 응용 프로그램의 서드 파티 서비스에의 인터페이스를 「빌트인 (편입)」서비스에의 인터페이스와 같게 했습니다. 경우에 따라서는,<code>javax.sound.sampled</code> 패키지나 <code>javax.sound.midi</code> 패키지를 사용하는 어플리케이션 개발자가, 서드 파티 서비스를 사용하고 있는 것에 눈치채지 못한 것도 있습니다.  
+</p>
+<p> 서드 파티의 샘플링 오디오 서비스의 예로서 다음과 같은 것을 들 수 있습니다.  </p>
+<ul>
+<li>사운드 파일의 읽어들여/기입 기능 
+<li>다른 오디오 데이터 형식간의 변환 
+<li>새로운 오디오 믹서와 입출력 디바이스 (소프트웨어에 의한 순수한 구현 또는, 소프트웨어 인터페이스 첨부의 하드웨어 구현) 
+</ul>
+서드 파티의 MIDI 서비스는, 다음과 같은 것입니다.
+<p></p>
+<ul>
+<li>MIDI 파일의 읽어들여/기입 기능 
+<li>다양한 형식의 사운드 뱅크 파일 (많은 경우, 특정의 신디사이저 전용)의 read 기능 
+<li>MIDI 제어의 사운드 신디사이저, 시퀀서, I/O 포트 (소프트웨어에 의한 순수한 구현, 또는 소프트웨어 인터페이스 첨부의 하드웨어 구현)
+</ul>
+<h3> <a name="how"></a> 서비스의 동작</h3>
+<p> <code>javax.sound.sampled</code> 패키지 및 <code>javax.sound.midi</code> 패키지는, 어플리케이션에 사운드 서비스를 부가하는 것을 생각하고 있는 어플리케이션 개발자에게 필요한 기능을 제공하는 것입니다. 이 2 개의 패키지는 사운드 서비스의 「소비자 (컨슈머(consumer))」를 대상으로, 오디오, MIDI 의 양서비스에 관한 정보의 취득, 제어, 및 액세스에 필요한 인터페이스를 제공합니다. <em></em>또, Java Sound API 는, 사운드 서비스의 「제공자 (프로바이더)」를 대상으로, 추상 클래스를 정의하기 위한 패키지인<code>javax.sound.sampled.spi</code> 와 <code>javax.sound.midi.spi</code> 를 제공하고 있습니다.  </p>
+<p> 새로운 사운드 패키지의 개발자는, SPI 패키지안의, 사용하는 클래스의 구상 서브 클래스를 구현합니다. 이러한 구상 서브 클래스와 새로운 서비스의 지원에 필요한 임의의 서브 클래스는, 포함되어 있는 서비스의 설명과 함께, Java<font size="-1"><sup>TM</sup></font> Archive (JAR) archive파일에 놓여집니다. 이 JAR 파일이 사용자의 <code>CLASSPATH</code> 에 인스톨 되면(자), 실행 시스템은, 자동적으로 새로운 서비스를 이용 가능하게 해, Java<font size="-1"><sup>TM</sup></font> 플랫폼의 실행 시스템의 기능성을 확장합니다.  </p>
+<p> 인스톨 된 새로운 서비스에는, 벌써 인스톨 되고 있는 것 외의 서비스와 같게 액세스 할 수 있습니다. 서비스의 소비자는, 새로운 서비스에 관한 정보, 또는 새로운 서비스 클래스 자체의 인스턴스를 취득할 수가 있습니다. 그 때문에(위해)는,<code>AudioSystem</code> 클래스와 <code>MidiSystem</code> 클래스의 메소드군 (전자는 <code>javax.sound.sampled</code> 패키지, 후자는 <code>javax.sound.midi</code> 패키지에 수록)을 호출해, 새로운 서비스에 관한 정보, 혹은 신규 또는 기존의 서비스 클래스 자체의 인스턴스를 되돌립니다. 응용 프로그램은 인스톨 된 서비스를 이용하기 위해서, SPI 패키지내의 클래스 및 그 서브 클래스를 직접 참조할 필요는 없기 때문에, 직접 참조해야 하지는 않습니다.  </p>
+<p> 예를 들어, Acme Software, Inc.  그렇다고 하는 가공의 서비스 프로바이더가, 응용 프로그램으로 새로운 형식의 사운드 파일 (다만, 오디오 데이터는 표준의 데이터 형식)을 읽어들이는 패키지를 제공할 수 없을까 생각했다고 합니다. SPI 클래스 <code>AudioFileReader</code> 은, 예를 들어 <code>AcmeAudioFileReader</code> 라고 하는 클래스에 서브 클래스화할 수 있습니다. 새로운 서브 클래스에서, Acme 는 <code>AudioFileReader</code> 에 정의 떠날 수 있어 모든 메소드의 구현을 제공합니다. 이 경우는,<code>getAudioFileFormat</code> 와 <code>getAudioInputStream</code> 의 2 개의 메소드 (인수 변형 첨부) 뿐입니다. 다음에, 응용 프로그램이 읽어들이려고 한 사운드 파일이 Acme 의 파일 형식이었던 경우는,<code>javax.sound.sampled</code> 내의 <code>AudioSystem</code> 클래스의 메소드를 호출해 파일과 그 파일 정보에 액세스 합니다. <code>AudioSystem.getAudioInputStream</code> 메소드와 <code>AudioSystem.getAudioFileFormat</code> 메소드는, 오디오 스트림을 읽어들이는 표준 API 를 제공합니다. <code>AcmeAudioFileReader</code> 클래스가 인스톨 되고 있는 경우는, 이 인터페이스는 확장되어 새로운 파일 타입을 투과적으로 지원합니다. 어플리케이션 개발자는, 새롭게 등록한 SPI 클래스에 직접 액세스 할 필요는 없습니다. <code>AudioSystem</code> 객체의 메소드가, 인스톨 되고 있는 <code>AcmeAudioFileReader</code> 클래스에 대한 쿼리를 건네줍니다.  </p>
+<p> 이러한 「팩토리」클래스를 가지는 것의 이점은 무엇입니까. 또, 새롭게 제공되는 서비스에의 직접 액세스를 어플리케이션 개발자에게 허가하지 않는 이유는 무엇입니까. 직접 액세스도 가능성으로서는 생각됩니다만, 객체에 서비스의 관리와 인스턴스화를 모두 파스스르 하는 게이트키퍼 시스템이 갖춰지고 있기 (위해)때문에, 어플리케이션 개발자는, 인스톨 되고 있는 각 서비스에 대해 알 필요가 없습니다. 어플리케이션 개발자는, 자각하는 것 신통치 않고, 자신에게 있어 사용가치가 있는 서비스만을 사용합니다. 동시에, 이 아키텍쳐(architecture)에 의해, 서비스 프로바이더는 패키지내의 이용 가능한 자원을 효율적으로 관리할 수가 있습니다.  </p>
+<p> 새로운 사운드 서비스의 사용은, 많은 경우, 응용 프로그램으로부터는 보이지 않습니다. 예를 들어, 어플리케이션 개발자가 파일로부터 오디오의 스트림로 읽어들이는 경우를 생각합니다. <code>thePathName</code> 에 의해 오디오 입력 파일을 식별하면(자) 가정하면(자), 프로그램은 다음과 같이 됩니다.  </p>
+<pre>    File theInFile = new File(thePathName);
+    AudioInputStream theInStream = AudioSystem.getAudioInputStream(theInFile); 
+</pre>
+백그라운드에서,<code>AudioSystem</code> 는, 파일을 읽어들일 수가 있는 인스톨 서비스를 판별해, 그 서비스에 대해서, 데이터를 <code>AudioInputStream</code> 객체로서 제공하도록(듯이) 요청합니다. 개발자는, 입력 오디오 파일이 새로운 파일 형식 (Acme 형식등)이 되어 있어, 인스톨 되고 있는 서드 파티 서비스로 지원되고 있는 것을 알 필요도 신경쓸 필요도 없습니다. 프로그램은, 최초로 <code>AudioSystem</code> 객체를 개입시켜 스트림에 액세스 합니다. 그 후, 스트림과 프로퍼티에는 <code>AudioInputStream</code> 의 메소드를 개입시켜 액세스 합니다. 이것들은 어느쪽이나 <code>javax.sound.sampled</code> API 의 표준 객체이며, 새로운 파일 형식에 필요한 특별한 처리는, 완전하게 숨겨지고 있습니다.  
+<p></p>
+<h3> <a name="how_providers"></a> 프로바이더가 새로운 서비스를 준비하는 방법</h3>
+<p> 서비스 프로바이더는 새로운 서비스를 특별한 형식의 JAR 파일로 제공합니다. 이 파일은, Java 런타임이 JAR 파일을 검색하는 사용자의 시스템상의 디렉토리에 인스톨 됩니다. JAR 파일은 archive파일로, 각 파일에는 어카이브(archive)내에서 계층 디렉토리 구조에 편성되고 있는 파일 세트가 포함됩니다. 이러한 어카이브(archive)에 보존되는 클래스 파일의 준비 방법의 상세한 것에 대하여는, 제 14 장과 제 15 장의 오디오 패키지와 MIDI SPI 패키지의 스펙을 참조해 주세요. 여기에서는, JAR 파일의 작성 프로세스의 개요를 설명합니다.  </p>
+<p> 새로운 서비스에 사용하는 JAR 파일에는, 그 JAR 파일로 지원되는 각 서비스용의 클래스 파일이 포함되지 않으면 안됩니다. Java 플랫폼의 규약에 따라, 각 클래스 파일은 새롭게 정의된 클래스의 이름을 가집니다. 이 새롭게 정의된 클래스는, 서비스 프로바이더의 추상 클래스 가운데 몇개의 구상 서브 클래스입니다. JAR 파일에는, 새로운 서비스의 구현에 필요한 지원 클래스도 포함할 필요가 있습니다. 또, 실행 시스템의 서비스 프로바이더 기구로 새로운 서비스의 위치를 특정할 수 있도록(듯이) 하기 위한(해), JAR 파일에는, 정의되고 있는 새로운 서브 클래스에 SPI 클래스명을 맵 하는 특수 파일 (다음에 설명)도 포함할 필요가 있습니다.  </p>
+<p> 전술의 예의 계속으로, Acme Software, Inc.  (은)는 새로운 샘플링 오디오 서비스의 패키지를 배포하고 있다고 합니다. 이 패키지는, 다음의 2 개의 새로운 서비스에 의해 구성되는 것으로 합니다.  </p>
+<ul>
+<li><code>AudioFileReader</code> 의 서브 클래스인 <code>AcmeAudioFileReader</code> 클래스 (전의 설명을 참조) 
+<li><code>AudioFileWriter</code> 의 서브 클래스이며, Acme 의 새로운 형식의 사운드 파일을 기입하는 <code>AcmeAudioFileWriter</code> 클래스 
+</ul>
+우선, 빌드를 실시하는 <code>/devel</code> 라는 이름의 디렉토리아래에 서브 디렉토리군을 작성해, 거기에 새로운 클래스 파일을 둡니다.  새로운 클래스를 참조할 수 있는 경로명을 사용해 편성할 필요가 있습니다.  
+<p></p>
+<pre>    com/acme/AcmeAudioFileReader.class
+    com/acme/AcmeAudioFileWriter.class
+</pre>
+게다가 서브 클래스화 되고 있는 새로운 각 SPI 클래스용으로,<code>META-INF/services</code> 라고 하는 특별한 이름의 디렉토리에 매핑 파일을 작성합니다. 이 파일명은 서브 클래스화 되고 있는 SPI 클래스의 이름으로, 파일에는, 그 SPI 추상 클래스의 새로운 서브 클래스의 이름이 포함되어 있습니다.  
+<p></p>
+<p> 다음의 내용으로 구성된다 
+<blockquote>
+<p><code>META-INF/services/javax.sound.sampled.spi.AudioFileReader</code> 파일을 작성합니다.  </p>
+  <blockquote>
+    <pre>
+    # Providers of sound file-reading services 
+    # (a comment line begins with a pound sign)
+    com.acme.AcmeAudioFileReader
+</pre>
+  </blockquote>
+</blockquote>
+<p>및, 다음의 내용으로 구성된다 </p>
+<blockquote>
+<p><code>META-INF/services/javax.sound.sampled.spi.AudioFileWriter</code> 파일을 작성합니다.  </p>
+  <blockquote>
+<pre>   # Providers of sound file-writing services 
+    com.acme.AcmeAudioFileWriter
+</pre>
+  </blockquote>
+</blockquote>
+<p>여기서, 임의의 디렉토리로부터, 다음의 커멘드행에 의해 <code>jar</code> 를 실행합니다.  </p>
+<blockquote><pre>jar cvf acme.jar -C /devel .
+</pre></blockquote>
+<code>-C</code> 옵션에 의해,<code>jar</code> 는 커멘드가 실행된 디렉토리를 사용하지 않고,<code>/devel </code> 디렉토리를 사용합니다. 마지막 인수의 피리어드는, 그 디렉토리 (<code>/devel</code>)의 내용을 어카이브(archive) 하도록(듯이) <code>jar</code> 에 지시합니다. 다만, 디렉토리 그 자체는 어카이브(archive) 하지 않습니다.
+<p></p>
+<p> 이것에 의해, 다음의 내용의 <code>acme.jar</code> 파일이 작성됩니다.  
+<blockquote>
+<pre>com/acme/AcmeAudioFileReader.class
+com/acme/AcmeAudioFileWriter.class
+META-INF/services/javax.sound.sampled.spi.AudioFileReader
+META-INF/services/javax.sound.sampled.spi.AudioFileWriter
+META-INF/Manifest.mf
+</pre>
+</blockquote>
+<code>jar</code> 유틸리티 자체에 의해 생성되는 <code>Manifest.mf</code> 파일은, 어카이브(archive)에 포함되는 모든 파일의 리스트입니다.
+<p></p>
+<h3> <a name="how_users"></a> 사용자가 새로운 파일을 인스톨 하는 방법</h3>
+<p> 응용 프로그램으로부터 새로운 서비스에 액세스 하려고 하는 일반의 사용자 또는 시스템 관리 책임자는, 인스톨을 간단하게 실시할 수가 있습니다. 제공된 JAR 파일을 <code>CLASSPATH</code> 내의 디렉토리에 둡니다. 실행중에, Java 런타임은, 필요에 따라서 참조 클래스를 검출합니다.  </p>
+<p> 같은 서비스에 복수의 프로바이더를 인스톨 하는 것은 잘못이 아닙니다. 예를 들어, 2 개(살)이 다른 서비스 프로바이더가 같은 타입의 사운드 파일의 read를 지원하는 경우가 있습니다. 이러한 경우, 시스템은 몇개의 프로바이더를 임의에 선택합니다. 선택하는 프로바이더를 사용자가 결정하는 경우는, 그 프로바이더만을 인스톨 합니다.  </p>
+<p>&nbsp; </p>
+</body>
+</html>

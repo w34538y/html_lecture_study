@@ -1,0 +1,498 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:2 - 객체 출력 클래스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="serial-arch.html">전의 항목</a>  | <a href="input.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="60"><!-- --></a> 
+<h1>
+객체 출력 클래스
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="2702"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 2 장</FONT></B></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="2703"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="2707"><!-- --></a>  <a href="output.html#933">ObjectOutputStream 클래스</a> 
+</li>
+<li>
+<a name="2708"><!-- --></a>  <a href="output.html#5068">ObjectOutputStream.PutField 클래스</a> 
+</li>
+<li>
+<a name="4888"><!-- --></a>  <a href="output.html#861">writeObject 메소드</a> 
+</li>
+<li>
+<a name="3172"><!-- --></a>  <a href="output.html#3146">writeExternal 메소드</a> 
+</li>
+<li>
+<a name="5336"><!-- --></a>  <a href="output.html#5324">writeReplace 메소드</a> 
+</li>
+<li>
+<a name="4933"><!-- --></a>  <a href="output.html#4787">useProtocolVersion 메소드</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="933">2.1	ObjectOutputStream 클래스</a> </h2>
+
+<blockquote>
+<a name="934"><!-- --></a>  클래스 <code>ObjectOutputStream</code> 는, 객체 직렬화를 구현하기 위한의 것입니다. 이 클래스는, 벌써 직렬화 된 객체 세트등의 스트림 상태를 유지합니다. 그 메소드는, 직렬화하는 객체의 traversal를 제어해, 지정된 객체와 참조하는 객체를 보관합니다. <p>
+<a name="5428"><!-- --></a> 
+<pre>package java.io;
+
+public class ObjectOutputStream
+    extends OutputStream
+    implements ObjectOutput, ObjectStreamConstants
+{
+    public ObjectOutputStream(OutputStream out)
+        throws IOException;
+
+    public final void writeObject(Object obj)
+        throws IOException;
+
+    public void writeUnshared(Object obj)
+        throws IOException;
+
+    public void defaultWriteObject()
+        throws IOException, NotActiveException;
+
+    public PutField putFields()
+        throws IOException;
+
+    public writeFields()
+        throws IOException;
+
+    public void reset() throws IOException;
+
+    protected void annotateClass(Class cl) throws IOException;
+
+    protected void writeClassDescriptor(ObjectStreamClass desc)
+        throws IOException;
+
+    protected Object replaceObject(Object obj) throws IOException;
+
+    protected boolean enableReplaceObject(boolean enable)
+        throws SecurityException;
+
+    protected void writeStreamHeader() throws IOException;
+
+    public void write(int data) throws IOException;
+
+    public void write(byte b[]) throws IOException;
+
+    public void write(byte b[], int off, int len) throws IOException;
+
+    public void flush() throws IOException;
+
+    protected void drain() throws IOException;
+
+    public void close() throws IOException;
+
+    public void writeBoolean(boolean data) throws IOException;
+
+    public void writeByte(int data) throws IOException;
+
+    public void writeShort(int data) throws IOException;
+
+    public void writeChar(int data) throws IOException;
+
+    public void writeInt(int data) throws IOException;
+
+    public void writeLong(long data) throws IOException;
+
+    public void writeFloat(float data) throws IOException;
+
+    public void writeDouble(double data) throws IOException;
+
+    public void writeBytes(String data) throws IOException;
+
+    public void writeChars(String data) throws IOException;
+
+    public void writeUTF(String data) throws IOException;
+
+    // Inner class to provide access to serializable fields.
+    abstract static public class PutField
+    {
+        public void put(String name, boolean value)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, char data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, byte data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, short data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, int data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, long data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, float data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, double data)
+            throws IOException, IllegalArgumentException;
+
+        public void put(String name, Object data)
+            throws IOException, IllegalArgumentException;
+    }
+
+    public void useProtocolVersion(int version) throws IOException;
+
+    protected ObjectOutputStream()
+        throws IOException;
+
+     protected writeObjectOverride()
+        throws NotActiveException, IOException;
+}
+</pre>
+
+
+<a name="862"><!-- --></a>  단일 인수의 <code>ObjectOutputStream</code> 생성자 은, 지정된 <code>OutputStream</code> 에 객체를 직렬화하는 <code>ObjectOutputStream</code> 를 작성합니다. 이 생성자 은,<code>writeStreamHeader</code> 를 호출해, 매직 번호와 버젼을 스트림에 기입합니다. 그리고, 이 스트림은, 단일 인수의 <code>ObjectInputStream</code> 생성자 의 대응하는 <code>readStreamHeader</code> 를 호출하는 것에 의해 읽혀 검사됩니다. 시큐리티 매니저가 인스톨 되고 있는 경우, 이 생성자 은,<code>putFields</code> 메소드 또는 <code>writeUnshared</code> 메소드, 혹은 그 양쪽 모두를 오버라이드(override) 하는 서브 클래스의 생성자 에 의해 직접 또는 간접적으로 불려 갔을 때에,<code>&#34;enableSubclassImplementation&#34;</code> <code>SerializablePermission</code> 의 체크를 실시합니다. <p>
+<a name="5058"><!-- --></a>  <code>writeObject</code> 메소드는, 객체를 스트림에 직렬화하기 위해서(때문에) 사용합니다. 객체는, 다음과 같이 직렬화 됩니다. <p>
+</blockquote><a name="5059"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	1. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">서브 클래스가 구현을 오버라이드(override) 하는 경우는,<code>writeObjectOverride</code> 메소드를 호출하고 나서, 복귀합니다. 구현의 오버라이드(override)는, 이 마디의 최후로 설명합니다. </TD>
+</TR>
+</TABLE>
+<a name="5046"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	2. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">블록 데이터 버퍼에 데이터가 있으면, 그것이 스트림에 기입해져 버퍼가 리셋 됩니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3287"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	3. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 null 이면, null 가 스트림에 놓여져<code>writeObject</code> 로부터 돌아옵니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4966"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	4. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">순서 8 에 나타낸 것처럼, 객체가 이전으로 옮겨지고 있으면, 치환의 핸들을 스트림에 기입해,<code>writeObject</code> 로부터 돌아옵니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4996"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	5. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 스트림에 벌써 기입해지고 있으면, 그 핸들이 스트림에 기입해져<code>writeObject</code> 로부터 돌아옵니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3198"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	6. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 <code>Class</code> 이면, 대응하는 <code>ObjectStreamClass</code> 가 스트림에 기입해져 그 클래스의 핸들을 할당할 수 있어<code>writeObject</code> 로부터 돌아옵니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3222"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	7. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 <code>ObjectStreamClass</code> 의 경우, 그 객체는 <a href="class.html#5421">4.3</a>  으로 설명하는 클래스 기술자의 서식의 1 개를 사용해 스트림에 기입해져 핸들을 할당할 수 있습니다. Version 1.3 이후의 Java <sup>TM</sup> 2 SDK, Standard Edition 에서는,<code class="cCode">ObjectStreamClass</code> 이 다이나믹 프록시 클래스 이외의 클래스를 나타내는 경우,<code class="cCode">writeClassDescriptor</code> 메소드가 불려 가 그 클래스를 출력합니다.  다이나믹 프록시 클래스일지 어떨지는, 관련짓고 된 <code class="cCode">Class</code> 객체를 <code class="cCode">java.lang.reflect.Proxy</code> 의 <code class="cCode">isProxyClass</code> 메소드에 건네주는 것으로 판별됩니다. 그 후, 클래스가 다이나믹 프록시 클래스이면 <code>annotateProxyClass</code> 메소드가 불려 가 그렇지 않은 경우는 <code>annotateClass</code> 메소드가 불려 가, 나타내지고 있는 클래스의 주석이 기입해집니다. 그러자(면),<code>writeObject</code> 메소드가 돌려주어집니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3229"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	8. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체의 클래스 또는 <code>ObjectInputStream</code> 의 서브 클래스에 의한 잠재적인 치환을 처리합니다.  </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4875"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	a. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">객체의 클래스가 enum 형이 아니고, 또 적절한 <code>writeReplace</code> 메소드를 정의하는 경우는, 그 메소드가 불려 갑니다. 선택에 의해, 대체 객체를 되돌려 직렬화할 수도 있습니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="5240"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	b. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE"><code>enableReplaceObject</code> 메소드의 호출에 의해 <code>replaceObject</code> 메소드가 유효하게 설정되어 있는 경우, 이 메소드를 호출하는 것으로, 직렬화중의 객체 대신에 <code>ObjectOutputStream</code> 의 서브 클래스를 사용할 수 있습니다. 전의 순서로 원의 객체를 옮겨놓았을 경우는, 치환 객체로 <code>replaceObject</code> 메소드가 불려 갑니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="4983"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">상기의 한편 또는 양쪽 모두의 순서로 원의 객체를 옮겨놓았을 경우, 원의 객체로부터 치환 객체에의 매핑이 (순서 4 로 이용하기 위해서) 기록됩니다. 그 후, 신규 객체에 대해, 순서 3 ?  7 이 반복해집니다. </TD>
+</TR>
+</TABLE>
+<a name="5259"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">치환 객체가, 순서 3 ?  7 을 적용할 수 없는 타입의 경우, 순서 10 으로 치환 객체를 사용한 처리가 재개됩니다. </TD>
+</TR>
+</TABLE>
+<a name="4976"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	9. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 <code>java.lang.String,</code> 의 경우, 캐릭터 라인은 길이의 정보로서 기입해져 그 정보의 후에 변경 후의 UTF-8 로 encode 된 캐릭터 라인의 내용이 계속됩니다.  자세한 것은,<a href="protocol.html#8299">「6.2 스트림 요소」</a>를 참조해 주세요. 핸들을 캐릭터 라인에 할당할 수 있어<code>writeObject</code> 가 돌려주어집니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="4977"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	10. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 배열의 경우,<code>writeObject</code> 가 재귀적으로 불려 가, 배열의 <code>ObjectStreamClass</code> 가 기입해집니다. 배열용의 핸들을 할당할 수 있습니다. 그 직후에, 배열의 길이의 분만큼 계속됩니다. 그 후, 배열의 각 요소가 스트림에 기입해져,<code>writeObject</code> 가 돌려주어집니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3199"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	11. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체가 enum 정수이면,<code>writeObject</code> 를 재귀적으로 호출해, 그 정수의 enum 형에 대한 <code>ObjectStreamClass</code> 가 기입해집니다. 이 스트림에의 기입은, 객체의 최초의 참조시 뿐입니다. 이 enum 정수의 핸들을 할당할 수 있습니다. 다음에, 순서 9 로 설명한 것처럼, enum 정수의 <code>name</code> 메소드로 반환된 값이 <code>String</code> 객체로서 기입해집니다.  이전 스트림에 같은 이름의 캐릭터 라인이 있었을 경우에는, 그 이름에 대한 백 참조가 기입해집니다. 그러자(면),<code>writeObject</code> 메소드가 돌려주어집니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="5552"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	12. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">정규 객체의 경우,<code>writeObject</code> 를 재귀적으로 호출하는 것으로, 객체의 클래스의 <code>ObjectStreamClass </code> 가 기입해집니다. 이 스트림에의 기입은, 객체의 최초의 참조시 뿐입니다. 이 객체용의 핸들을 할당할 수 있습니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3207"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	13. 	</strong></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">객체의 내용이, 스트림에 기입해집니다. </TD>
+</TR>
+</TABLE>
+
+
+
+<a name="3200"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	a. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">직렬화 가능 객체의 경우, 최상정도의 직렬화 가능 클래스가 배치됩니다. 그 클래스, 및 그 클래스로부터 파생한 클래스 마다, 클래스의 필드가 기입해집니다. 클래스가 <code>writeObject</code> 메소드를 보관 유지하지 않는 경우,<code>defaultWriteObject</code> 메소드가 불려 가, 직렬화 가능 필드의 스트림에의 기입을 합니다. 클래스가 <code>writeObject</code> 메소드를 보관 유지하는 경우, 이 메소드가 불려 갑니다. <code>defaultWriteObject</code> 나 <code>putFields</code> 의 어느 쪽인지, 및 <code>writeFields</code> 를 호출해 객체 상태를 보존해, 그 후, 다른 정보를 스트림에 기입할 수가 있습니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="3205"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	b. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">객체가 외부화 가능한 경우, 객체의 <code>writeExternal</code> 메소드가 불려 갑니다.
+</TD>
+</TR>
+</TABLE>
+
+<a name="3206"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="12%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"><strong>	c. 	</strong></TD>
+<TD WIDTH="85%" ALIGN="LEFT" VALIGN="BASELINE">객체가 직렬화 가능해도, 외부화 가능하지도 않은 경우,<code>NotSerializableException</code> 가 throw 됩니다.
+</TD>
+</TR>
+</TABLE>
+
+<blockquote>
+<a name="3163"><!-- --></a>  예외는, traversal중에 발생하는 경우도, 기초 스트림내에서 발생하는 경우도 있습니다. <code>IOException</code> 의 모든 서브 클래스에서, 예외 프로토콜을 사용해 예외가 스트림에 기입해져 스트림 상태가 파기됩니다. 최초의 예외를 스트림에 기입하고 있는 동안에 2 번째의 <code>IOException</code> 가 throw 되면(자), 스트림 상태는 불명인 채로,<code>writeObject</code> 로부터 <code>StreamCorruptedException</code> 가 throw 됩니다. 그 외의 예외의 경우, 스트림은 중지되어 불명해 사용 불능인 상태대로 됩니다.  <p>
+<a name="4434"><!-- --></a>  <code>writeUnshared</code> 메소드는, 「비공유」객체를 <code>ObjectOutputStream</code> 에 기입합니다. 이 메소드는, 지정된 객체를 항상 새로운 일의의 객체로서 스트림에 기입하는 (이전에 직렬화 된 인스턴스에의 백 참조와는 대조적) 점을 제외해서는,<code>writeObject</code> 와 같습니다. 구체적으로는, 다음과 같이 됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="5440"><!-- --></a>  <code>writeUnshared</code> 를 개입시켜 기입해진 객체는, 이전에 기입해졌던 적이 있을지 어떨지에 관계없이, 항상, 새롭게 출현하는 객체 (스트림에 아직 기입해지지 않은 객체)와 같은 방법으로 직렬화 된다
+</li>
+<li>
+<a name="5441"><!-- --></a>  <code>writeUnshared</code> 에 의해 이전에 기입해진 객체를 기입할 때에 <code>writeObject</code> 를 사용하면(자), 이전의 <code>writeUnshared</code> 조작은, 다른 객체의 기입으로서 다루어진다. 즉,<code>ObjectOutputStream</code> 는,<code>writeUnshared</code> 의 호출에 의해 기입해진 객체 데이터의 백 참조를 생성하지 않는다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="5470"><!-- --></a> <code>writeUnshared</code> 를 개입시켜 객체를 기입하는 것 자체는, 객체가 직렬화 복원되었을 때에 그 객체에의 일의 참조를 보증하는 것이 아닙니다만, 1 개의 객체가 스트림내에서 여러 차례 정의되는 것은 가능하게 됩니다. 그 때문에, 수취하는 측이 <code>ObjectInputStream.readUnshared</code> 메소드 (<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조)를 여러 차례 호출해도 충돌이 생기지 않습니다. 여기서 설명한 규칙은,<code>writeUnshared</code> 에 의해 기입해진 기본 레벨의 객체인 만큼 적용되어 직렬화 되는 객체의 그래프내에서 일시적으로 참조되는 서브 객체에는 일절 적용되지 않습니다. <p>
+<a name="5435"><!-- --></a>  <code>defaultWriteObject</code> 메소드는, 현재의 클래스에 대한 디폴트의 직렬화 기구를 구현합니다. 이 메소드의 호출은, 클래스의 <code>writeObject</code> 메소드로부터 마셔 가능합니다. 이 메소드는, 현재의 클래스의 직렬화 가능 필드 모든 것을 스트림에 기입합니다. <code>writeObject</code> 메소드의 외부로부터 이 메소드가 불려 가면(자),<code>NotActiveException</code> 가 throw 됩니다. <p>
+<a name="4497"><!-- --></a>  <code>putFields</code> 메소드는, 스트림내의 직렬화 가능 필드의 값을 설정할 때에 호출측이 사용하는 <code>PutField</code> 객체를 돌려줍니다. 필드는, 임의의 순서로 설정할 수 있습니다. 모든 필드의 설정이 완료하면(자),<code>writeFields</code> 를 호출해 필드치를 규정의 순서로 스트림에 기입할 필요가 있습니다. 필드가 설정되지 않는 경우, 그 field type에 적절한 디폴트 값가 스트림에 기입해집니다. 이 메소드는, 직렬화 가능 클래스의 <code>writeObject</code> 메소드내로부터 밖에 호출할 수가 없습니다. 또, 이 메소드는, 1 회 밖에 호출하지 못하고,<code>defaultWriteObject</code> 가 벌써 불려 가고 있는 경우는 호출할 수 없습니다. <code>writeFields</code> 를 호출한 후에 없으면 다른 데이터를 스트림에 기입할 수 없습니다. <p>
+<a name="4495"><!-- --></a>  <code>reset</code> 메소드는, 스트림 상태를 재설정해, 구성시 상태에 되돌립니다. <code>Reset</code> 에 의해, 그것까지 스트림에 기입해진 모든 객체 상태는 파기됩니다. 스트림내의 현재 위치에 재설정의 마크를 붙일 수 있기 (위해)때문에, 대응하는 <code>ObjectInputStream</code> 도 같은 위치에서 재설정됩니다. 이전에 스트림에 기입해진 객체가, 스트림에 기입해 끝난 객체로서 기억될 것은 없습니다. 이러한 객체는, 스트림에 재차 기입해집니다. 이것은, 객체의 내용이나 객체를 재발송신 해야 하는 경우에 유용합니다. 객체의 직렬화시에 <code>Reset</code> 가 불려 가지 않는 경우도 있습니다. 부정한 방법으로 불려 가면(자),<code>IOException</code> 가 throw 됩니다. <p>
+<a name="5409"><!-- --></a>  Java<sup>TM</sup> 2 SDK, Standard Edition, v1. 3 으로부터,<code>ObjectStreamClass</code> 의 직렬화가 필요하게 되면(자),<code>writeClassDescriptor</code> 가 불려 가게 되었습니다. <code>writeClassDescriptor</code> 는,<code>ObjectStreamClass</code> 표현의 직렬화 스트림에의 기입을 담당합니다. 서브 클래스에서 이 메소드를 오버라이드(override) 하는 것으로써, 클래스 기술자의 직렬화 스트림에의 기입해 방법을 커스터마이즈 할 수 있습니다. 이 메소드를 오버라이드(override) 하는 경우는,<code>ObjectInputStream</code> 내의 대응하는 <code>readClassDescriptor</code> 메소드도 오버라이드(override) 해, 커스텀 스트림 표현으로부터 클래스 기술자를 복구성 할 필요가 있습니다. 디폴트에서는,<code>writeClassDescriptor</code> 는,<a href="protocol.html#10258">「6.4 스트림 형식의 문법」</a>으로 지정된 형식에 따라 클래스 기술자를 기입합니다. 이 메소드는,<code>ObjectOutputStream</code> 가 이전의 직렬화 스트림 형식을 사용하고 있지 않는 경우에게만, 호출해 가능한 점에 유의해 주세요 (<a href="protocol.html#5849">「6.3 스트림 프로토콜의 버젼」</a>을 참조). 직렬화 스트림에 이전의 형식 (<code>ObjectStreamConstants.PROTOCOL_VERSION_1</code>)이 사용되고 있는 경우, 클래스 기술자는 오버라이드(override) 또는 커스터마이즈 불가능한 방법으로 내부에 기입해집니다. <p>
+<a name="963"><!-- --></a>  <code>Class</code> 의 직렬화중, 한편 클래스 기술자의 스트림에의 기입해 후에,<code>annotateClass</code> 메소드가 불려 갑니다. 서브 클래스가 이 메소드를 상속해, 클래스에 관한 다른 정보를 스트림에 기입하는 일도 가능합니다. 이 정보의 읽기는, 대응하는 <code>ObjectInputStream</code> 서브 클래스의 <code>resolveClass</code> 메소드를 사용해 실행할 필요가 있습니다. <p>
+<a name="4999"><!-- --></a>  <code>ObjectOutputStream</code> 서브 클래스는,<code>replaceObject</code> 메소드를 구현하는 것으로써, 직렬화의 과정에서의 객체의 감시 및 치환을 실행할 수 있습니다. 객체를 치환하는 경우, 최초의 치환 대상 객체에 대해 <code>writeObject</code> 를 호출하기 전에,<code>enableReplaceObject</code> 를 호출해 치환을 명시적으로 유효하게 할 필요가 있습니다. 객체의 치환이 유효하게 된 후, 객체를 처음으로 직렬화하기 직전에, 각 객체에 대해서 <code>replaceObject</code> 가 불려 갑니다. <code>replaceObject</code> 메소드는, 특별히 처리되는 클래스인 <code>Class</code>,<code>ObjectStreamClass</code> 의 객체에 대해서는 불려 가지 않습니다. 서브 클래스의 구현이, 원의 객체는 아니고 직렬화 되는 대체 객체를 돌려주는 경우가 있습니다. 대체 객체는, 직렬화 가능하지 않으면 안됩니다. 스트림에 있어서의 원의 객체에의 모든 참조는, 치환 객체에 의해 옮겨놓을 수 있습니다.  <p>
+<a name="4815"><!-- --></a>  객체의 치환중에, 서브 클래스는, 대체 객체와 참조의 포함되는 전필드와의 호환성이 유지되고 있는 것, 또는 직렬화 복원시에 상보 치환을 하는 것을 보증할 필요가 있습니다. 객체의 타입이 필드 또는 배열 요소의 타입의 서브 클래스가 아닌 경우, 그 객체는,<code>ClassCastException</code> 를 throw 하는 것으로써 직렬화 복원을 중지합니다. 참조는 포함되지 않습니다. <p>
+<a name="4168"><!-- --></a>  <code>enableReplaceObject</code> 메소드는, 직렬화 시에, 어느 객체로 다른 객체를 대용하는 것을 가능하게 하기 위해서, 신뢰할 수 있는 <code>ObjectOutputStream</code> 의 서브 클래스가 호출합니다. 객체의 치환은,<code>enableReplaceObject</code> 가 <code>true</code> 치로 불려 갈 때까지는, 사용 불가가 되어 있습니다. 또, 사용 가능하게 한 후에,<code>false</code> 로 설정해, 사용 불가로 되는 경우가 있습니다. 전의 설정이 돌려주어집니다. <code>enableReplaceObject</code> 는, 치환을 요구하는 스트림을 신뢰할 수 있을지 어떨지를 조사합니다. 객체의 private 상태가 의도하지 않고 공개되지 않는 것을 보증하기 위해서, 신뢰할 수 있는 스트림 서브 클래스만이 <code>replaceObject</code> 를 사용하는 것을 허가됩니다. 신뢰되는 클래스는, Serializable 치환을 유효하게 하는 권한을 보관 유지하는, 시큐리티 보호 도메인에 속하는 클래스입니다. <p>
+<a name="4616"><!-- --></a>  <code>ObjectOutputStream</code> 의 서브 클래스가 시스템 도메인의 일부라고는 보이지 않는 경우,<code>SerializablePermission &#34;enableSubstitution&#34;</code> 를 시큐리티 정책 파일에 추가할 필요가 있습니다. <code>ObjectInputStream </code> 의 서브 클래스의 보호 도메인에,<code>enableReplaceObject</code> 의 호출에 의한 <code>&#34;enableSubstitution&#34;</code> 의 권한이 없는 경우는,<code>AccessControlException</code> 가 throw 됩니다. 시큐리티 모델의 자세한 것은, Java<sup>TM</sup> 시큐리티 아키텍쳐(architecture) (JDK1. 2)의 문서를 참조해 주세요. <p>
+<a name="3128"><!-- --></a>  <code>writeStreamHeader</code> 메소드는, 매직 번호와 버젼을 스트림에 기입합니다. 이 정보는,<code>ObjectInputStream</code> 의 <code>readStreamHeader</code> 메소드를 사용해 읽어낼 필요가 있습니다. 스트림의 일의인 형식을 식별하기 위해서, 서브 클래스가 이 메소드를 구현하는 것이 필요한 경우가 있습니다. <p>
+<a name="4449"><!-- --></a>  <code>flush</code> 메소드를 사용해, 스트림이 보관 유지하는 버퍼를 비워, 기초 스트림에 플래시를 전송 합니다. 기초 스트림의 플래시를 강제하지 않고 <code>ObjectOutputStream</code> 의 버퍼만을 비우는 경우, 서브 클래스로부터 <code>drain</code> 메소드를 사용할 수 있습니다. <p>
+<a name="4077"><!-- --></a>  원시형의 기입 메소드는 모두,<code>DataOutputStream</code> 를 사용해 값을 encode 해, 표준 스트림 형식으로 합니다. 바이트가 블록 데이터 레코드에 버퍼링 되는 것으로, 객체의 인코딩과의 구별이 가능하게 됩니다. 이 버퍼링에 의해, 클래스의 버젼 관리가 필요한 경우, 프리미티브(primitive) 데이터의 스킵도 가능하게 됩니다. 또, 클래스 고유의 메소드를 호출하는 일 없이, 스트림의 구문 분석을 실시하는 일도 가능하게 됩니다. <p>
+<a name="5064"><!-- --></a>  직렬화의 구현을 오버라이드(override) 하기 위해서,<code>ObjectOutputStream</code> 의 서브 클래스는, 보호된 인수 없음의 <code>ObjectOutputStream</code> 생성자 을 호출할 필요가 있습니다. <code></code><code>SerializablePermission &#34;enableSubclassImplementation&#34;</code> 의 인수 없음의 생성자 내에는 시큐리티 체크가 있어, 신뢰할 수 있는 클래스에만 디폴트의 구현의 오버라이드(override)를 허가합니다. 이 생성자 은,<code>ObjectOutputStream</code> 에 private 인 데이터를 할당하지 않고, 파이널의 <code>writeObject</code> 메소드는 <code>writeObjectOverride</code> 메소드를 호출하고 나서 복귀하는 것을 나타내는 플래그를 설정합니다. 다른 모든 <code>ObjectOutputStream</code> 메소드는, 파이널은 아니기 때문에, 서브 클래스에 의해 직접 오버라이드(override) 됩니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5068">2.2 ObjectOutputStream.PutField 클래스</a> </h2>
+
+<blockquote>
+<a name="5628"><!-- --></a> <code>PutField</code> 클래스는, 어느 클래스가 디폴트의 직렬화를 사용하지 않는 경우에, 그 클래스의 직렬화 가능 필드의 값을 설정하기 위한 API 를 제공합니다. 각 메소드는, 지정된 이름 첨0 보다 작은 값을 스트림에 배치합니다. <code>name</code> 가 기입해 앞인 클래스의 직렬화 가능 필드의 이름과 일치하지 않는 경우, 또는 명명된 필드의 타입이 불려 가는 <code>put</code> 메소드의 2 번째의 파라미터 타입과 일치하지 않는 경우,<code>IllegalArgumentException</code> 가 throw 됩니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="861">2.3 writeObject 메소드</a> </h2>
+
+<blockquote>
+<a name="1038"><!-- --></a>  Serializable 객체의 경우,<code>writeObject</code> 메소드에 의해, 클래스가 그것 자신의 필드의 직렬화를 제어할 수가 있습니다. 그 시그니챠를 다음에 나타냅니다. <p>
+<a name="855"><!-- --></a> 
+<pre>    private void writeObject(ObjectOutputStream stream)
+        throws IOException;
+</pre>
+
+
+<a name="3243"><!-- --></a>  Serializable 객체의 각 서브 클래스는, 스스로의 <code>writeObject</code> 메소드를 정의할 수가 있습니다. 클래스에 이 메소드가 구현되어 있지 않으면,<code>defaultWriteObject</code> 에 의해 주어지는 디폴트의 직렬화가 사용됩니다. 구현되고 있는 경우는, 그 클래스는, 그 슈퍼타입이나 subtype의 필드는 아니고, 그것 독자적인 필드만을 기입할 책임이 있습니다. <p>
+<a name="3254"><!-- --></a>  클래스의 <code>writeObject</code> 메소드는, 구현되고 있는 경우, 그 클래스 상태를 보관할 책임이 있습니다. <code>ObjectOutputStream</code> 의 <code>defaultWriteObject</code> 메소드 또는 <code>writeFields</code> 메소드를 한 번 (한 번 만) 호출하지 않으면, 대응하는 <code>readObject</code> 메소드로 그 객체 상태를 복원하기 위해서(때문에) 필요하게 되는 임의 지정의 데이터를 기입할 수 없습니다. 임의 지정의 데이터를 기입하지 않는 경우에서도,<code>defaultWriteObject</code> 또는 <code>writeFields</code> 를 한 번 호출할 필요가 있습니다. 임의 지정 데이터 (있는 경우)의 기입전에 <code>defaultWriteObject</code> 나 <code>writeFields</code> 가 불려 가지 않으면,<code>ObjectInputStream</code> 가 그 <code>writeObject</code> 메소드를 정의한 클래스를 해결할 수 없는 경우에, 인스턴스의 직렬화 복원의 동작은 미정도리가 됩니다. <p>
+<a name="5517"><!-- --></a> 이 임의 지정 데이터의 형식, 구조체, 버젼 관리의 책임의 모든 것은, 그 클래스에 있습니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="3146">2.4 writeExternal 메소드</a> </h2>
+
+<blockquote>
+<a name="3134"><!-- --></a> <code>java.io.Externalizable</code> 를 구현하는 객체는,<code>writeExternal</code> 메소드를 구현해, 그 객체 상태 전체를 보존할 필요가 있습니다. 이 객체는, 그 슈퍼 클래스와 협조해, 그러한 상태를 보관하지 않으면 안됩니다. <code>ObjectOutput</code> 의 모든 메소드가, 객체의 원시형 필드와 객체 필드를 보관하기 위해서 사용할 수 있습니다.  <p>
+<a name="4827"><!-- --></a> 
+<pre>    public void writeExternal(ObjectOutput stream)
+        throws IOException;
+</pre>
+
+
+<a name="4952"><!-- --></a> JDK<sup>TM</sup> 1.2 로, 외부화 가능 데이터를 기입하기 위한 디폴트 형식이 도입되었습니다. 새로운 형식에서는, 프리미티브(primitive) 데이터는,<code>writeExternal</code> 메소드에 의해 블록 데이터 모드로 기입해지도록(듯이) 지정되고 있습니다. 게다가<code>writeExternal</code> 메소드로부터 돌아온 뒤에, 스트림의 말미에 외부 객체의 말미를 나타내는 태그가 추가됩니다. 이 형식 변경의 이점에 대해서는,<a href="input.html#6014">「3.6 readExternal 메소드」</a>를 참조해 주세요. 이 변경에 의해 생기는 호환성의 문제의 자세한 것은,<a href="output.html#4787">「2.6 useProtocolVersion 메소드」</a>를 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5324">2.5	 writeReplace 메소드</a> </h2>
+
+<blockquote>
+<a name="5325"><!-- --></a>  Serializable 및 Externalizable 클래스의 경우에는,<code>writeReplace</code> 메소드는, 객체가 기입해지기 전에, 객체의 클래스가 스트림내에서 스스로의 치환을 지정하는 것을 허가합니다. <code>writeReplace</code> 메소드를 구현하는 것으로써, 클래스는, 직렬화 되고 있는 스스로의 인스턴스의 형태 및 인스턴스를 직접 제어할 수 있습니다.  <p>
+<a name="5399"><!-- --></a>  메소드는, 다음과 같이 정의됩니다. <p>
+<a name="5326"><!-- --></a> 
+<pre>	ANY-ACCESS-MODIFIER Object writeReplace() {
+   		 throws ObjectStreamException;
+</pre>
+
+
+<a name="5327"><!-- --></a>  <code>ObjectOutputStream</code> 가 스트림에 객체를 기입할 준비를 하고 있을 때,<code>writeReplace</code> 메소드가 불려 갑니다. <code>ObjectOutputStream</code> 는, 클래스가 <code>writeReplace</code> 메소드를 정의하고 있을지 어떨지를 체크합니다. 이 메소드가 정의되는 경우는,<code>writeReplace</code> 메소드가 불려 가, 객체가 스트림내에서 그 치환을 지정할 수 있도록(듯이) 합니다. 반환되는 객체는, 건네받는 객체와 같은 형태이든가, 혹은 읽어들여 및 해석 처리 후의 형태가, 그 객체에의 모든 참조와 호환성이 없으면 안됩니다. 그렇지 않은 경우, 형태의 불일치가 검출되었을 때에,<code>ClassCastException</code> 가 발생합니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4787">2.6 useProtocolVersion 메소드</a> </h2>
+
+<blockquote>
+<a name="4936"><!-- --></a>  하위 호환성이 없는 스트림 프로토콜에의 변경을 위해, 현재의 가상 머신에서는, 이전의 릴리스가 읽어내 가능한 직렬화 스트림을 기입할 수가 있는 기구가 추가되었습니다. 다만, 하위 호환성이 있는 프로토콜을 사용하는 경우는, 새로운 스트림 형식에서는 수정되고 있는 문제가 발생할 가능성이 있습니다. <p>
+<a name="4934"><!-- --></a>  스트림 프로토콜의 버젼에 대해서는,<a href="protocol.html#5849">「6.3 스트림 프로토콜의 버젼」</a>으로 설명합니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="serial-arch.html">전의 항목</a>  | <a href="input.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:35 2005 -->
+ 
+
+
+</body>
+</html>

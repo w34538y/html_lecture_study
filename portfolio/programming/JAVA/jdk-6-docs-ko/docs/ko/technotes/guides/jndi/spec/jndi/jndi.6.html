@@ -1,0 +1,150 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>6 구성 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><TABLE summary="layout" WIDTH="100%" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD>
+<A HREF="jndiTOC.html">목차</A>  | <A HREF="jndi.5.html">전의 항목</A>  | <A HREF="jndi.7.html">다음의 항목</A> </TD> 
+    <TD ALIGN="RIGHT">
+<I><FONT COLOR="#707070">JNDI API</FONT></I></TD> 
+  </TR>
+</TABLE><HR ALIGN=LEFT SIZE="8" WIDTH="35%" NOSHADE><p></P>
+
+<H2 CLASS="chapter"><A NAME="pgfId=999222"></A> 6.  <A NAME="30460"></A> 구성</H2>
+
+<DIV>
+
+<BLOCKQUOTE>
+<H3 CLASS="section"><A NAME="pgfId=1000620"></A> 6.1 환경 프로퍼티</H3>
+<P CLASS="body"><A NAME="pgfId=1000615"></A> 일부의 JNDI 어플리케이션에서는, 네임 서비스 및 디렉토리 서비스에 액세스 하는 환경을 정의할 경우에, 다양한 설정과 정보를 통신할 필요가 있습니다. 예를 들어, 디렉토리 서비스에 액세스 할 경우에, 시큐리티 레벨을 지정하는 일이 있습니다. 또, 디렉토리 서비스 및 네임 서비스가 분산하고 있는 경우는, 복제, 마스터, 캐쉬 등, 복수의 장소에 정보의 소스가 포함되고 있습니다. 이 경우, 어플리케이션에서는, 인증된 소스의 정보에 액세스 해, JNDI 시스템에 이 정보를 통지할 필요가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000636"></A> 이러한 요건에 대처하기 위해서, JNDI 에는 많은 프로퍼티이 정의되고 있어 개발자 및 사용자가 JNDI 시스템에 구성 정보를 설정할 경우에 사용합니다. 이러한 프로퍼티은, 「환경 프로퍼티」이라고 불리고 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000784"></A> 환경 프로퍼티에는, 다양한 종류가 있습니다. </P>
+</BLOCKQUOTE>
+
+<UL>
+  <UL>
+<LI CLASS="bullet"><A NAME="pgfId=1000776"></A> 표준 JNDI 환경 프로퍼티. JNDI 에 정의되고 있어 모든 서비스 프로바이더로 공통에 사용할 수 있습니다. 비교적 총칭적인 용어로 정의되고 있습니다. 예를 들어, 「java.naming.security.principal」라고 하는 프로퍼티을 사용해, 인증의 시큐리티 주체를 네임 서비스로 지정합니다. 환경 프로퍼티은, 각 서비스 프로바이더에 의해 적절히 해석됩니다. 이 프로퍼티에는, 「java.naming.」라고 하는 접두사가 붙어, 표준 JNDI 환경 프로퍼티의 리스트가 짜넣어집니다. <CODE>Context</CODE> 인터페이스에는, 대부분의 환경 프로퍼티명의 정수가 정의되고 있습니다.
+<LI CLASS="bullet"><A NAME="pgfId=1000777"></A> 서비스 고유의 환경 프로퍼티. 특정의 서비스 또는 프로토콜을 구현하는 모든 서비스 프로바이더로 공통에 사용됩니다. 이 프로퍼티에는, 「java.naming. <EM> service. </EM>」라고 하는 접두사가 붙습니다. 「service」는 서비스의 이름입니다. 예를 들어, LDAP 고유의 환경 프로퍼티에는, 「java.naming.ldap.」라고 하는 접두사가 사용됩니다.
+<LI CLASS="bullet"><A NAME="pgfId=1000728"></A> 기능 고유의 환경 프로퍼티. 특정의 기능을 지원하는 모든 서비스 프로바이더로 공통에 사용됩니다. 이 프로퍼티에는, 「java.naming. <EM> feature</EM>」라고 하는 접두사가 붙습니다. 「feature」는 기능의 이름입니다. 예를 들어, SASL 고유의 환경 프로퍼티에는, 「java.naming.security.sasl.」라고 하는 접두사가 사용됩니다.
+<LI CLASS="bullet"><A NAME="pgfId=1000656"></A> 프로바이더 고유의 환경 프로퍼티. 특정의 서비스 프로바이더에 대해서만 적용됩니다. 이 프로퍼티에는, 일의의 접두사를 붙일 필요가 있습니다. 서비스 프로바이더의 패키지명을 선두에 붙이는 수법이 자주(잘) 사용됩니다. 예를 들어, Sun 의 LDAP 프로바이더는 주로 <CODE>com.sun.jndi.ldap</CODE> 패키지에 포함되므로, Sun 의 LDAP 프로바이더에 고유의 프로퍼티에는, 선두에 「com.sun.jndi.ldap.」(이)가 붙습니다.
+  </UL>
+</UL>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000971"></A> 환경 프로퍼티 사용시의 시큐리티에 대해서는,<A HREF="jndi12.8.html#31601" CLASS="XRef">「문맥 환경」</a>을 참조해 주세요. </P>
+<P CLASS="body"><A NAME="pgfId=1000787"></A> 환경 프로퍼티에 대한 지원는 꽤 광범위하게 미치고 있습니다만, 일반적으로 어플리케이션은, 그 프로퍼티을 취급할 필요는 없습니다. 필요한 경우에서도, 1 개(살)이나 2 개의 프로퍼티을 설정하는 것만으로 충분합니다. 대부분의 프로퍼티에는, 적절한 디폴트 값가 설정되어 있으므로, 특별한 요건을 가지는 어플리케이션 이외는 조정할 필요는 없습니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=1000954"></A> 6.2 문맥의 환경</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000922"></A> 문맥의 환경은,<CODE>java.util.Hashtable</CODE> 또는 그 임의의 서브 클래스 (<CODE>java.util.Properties <A HREF="#pgfId=1000925"  CLASS="footnote">1</A>  </CODE> 등)에서 설정합니다. 일반적으로은,<CODE>InitialContext</CODE>,<CODE>InitialDirContext</CODE>, 또는 <CODE>InitialLdapContext</CODE> 생성자 의 인수를 사용해 지정해, 그 외의 소스의 데이터에 의해 확장됩니다 (이 마디의 설명을 참조). 이러한 설정은, 문맥 메소드에 의해 각 문맥의 처리를 할 때마다, 부모의 문맥으로부터 상속됩니다. 예를 들어, 다음의 코드에서는, 시큐리티 관련의 2 개의 프로퍼티으로 구성되는 환경이 작성되어 그 환경으로부터 초기 문맥이 작성됩니다. </P>
+  <BLOCKQUOTE>
+<PRE>Hashtable env = new Hashtable();
+env.put(Context.SECURITY_PRINCIPAL, &quot;jsmith&quot;);
+env.put(Context.SECURITY_CREDENTIALS, &quot;xxxxxxx&quot;);
+Context ctx = new InitialContext(env);</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001069"></A> 룩 업 된 문맥, 또는 이 초기 문맥으로부터 파생한 문맥에는, 그 환경에 이러한 2 개의 프로퍼티이 상속됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=1001723"></A> 문맥의 환경은,<CODE>Context.getEnvironment()</CODE> 를 사용해 조사할 수가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1001213"></A> 환경 프로퍼티에는, 문맥에 대해서 무효인 것도 포함됩니다. 무효인 환경 프로퍼티은, 그 문맥에서는 무시됩니다만, 파생한 문맥에는 상속됩니다.  예를 들어, 연합 된 문맥으로 유효하게 될 가능성이 있기 (위해)때문에입니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=1000880"></A> 6.3 resource file</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000881"></A> JNDI resource file는, 프로퍼티 파일 형식의 파일입니다 (<CODE>java.util.Properties</CODE> 를 참조). 이 파일에는, 키와 값의 페어의 리스트가 포함되고 있습니다. 키는 ( 「java.naming.factory.object」등의) 프로퍼티의 이름, 값은 그 프로퍼티에 정의되고 있는 형식의 캐릭터 라인입니다. 다음에, JNDI resource file의 예를 나타냅니다. </P>
+  <BLOCKQUOTE>
+<PRE>java.naming.factory.object=com.wiz.jndi.AttrsToCorba:com.wiz.jndi.ToPerson
+java.naming.factory.state=com.wiz.jndi.CorbaToAttrs:com.wiz.jndi.FromPerson
+java.naming.factory.control=com.wiz.jndi.MyResponseControlFactory</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000376"></A> JNDI resource file에는, 어플리케이션과 프로바이더의 2 종류의 resource file가 있습니다. </P>
+  <DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1000408"></A> 어플리케이션 resource file</H4>
+<P CLASS="body"><A NAME="pgfId=1000410"></A> 어플리케이션을 배치하면(자), 일반적으로은, 어플리케이션의 클래스 패스에 몇개의 코드 베이스 디렉토리 및 JAR 파일이 지정됩니다. 같이 애플릿을 배치하면(자), 애플릿의 클래스의 장소를 지정하는 코드 베이스와 어카이브(archive)가 지정됩니다. JNDI 에서는,<CODE>jndi.properties</CODE> 라는 이름의 모든 어플리케이션 resource file가, 클래스 패스로부터 검색됩니다. 또,<CODE>$JAVA_HOME/lib/jndi.properties</CODE> 라고 하는 파일이 지정되어 읽어내 가능한 경우는, JNDI 에서는 추가의 어플리케이션 resource file로서 처리됩니다. ((<CODE>$JAVA_HOME</CODE> 는,<CODE>java.home</CODE> 시스템 프로퍼티으로 지정되고 있는 디렉토리) 이러한 파일에 포함되어 있는 프로퍼티은, 모두 초기 문맥의 환경에 배치됩니다. 이 환경은, 그 외의 문맥에 상속됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000418"></A> 프로퍼티이 복수의 어플리케이션 resource file로 지정되고 있는 경우는, JNDI 에서는, 일반적으로은 최초로 검출한 값을 사용합니다만, 가능한 경우는 모든 값을 연결합니다. 예를 들어,<CODE>java.naming.factory.object</CODE> 프로퍼티이 3 개의 <CODE>jndi.properties</CODE> 자원 팩토리로 지정되고 있는 경우는, 객체 팩토리의 리스트는, 3 개의 파일의 프로퍼티의 값이 모두 연결된 것이 됩니다. 이 경우, export 하는 팩토리의 리스트는, 배치 가능한 컴퍼넌트로 작성됩니다. JNDI 에서는, 팩토리 클래스를 검색했을 때에, 이러한 export 리스트를 자동적으로 수집해 사용합니다. </P>
+<P CLASS="body"><A NAME="pgfId=1000425"></A> 어플리케이션 resource file는, Java 2 Platform 이후의 플랫폼에서 사용할 수 있습니다.  다만,<CODE>$JAVA_HOME/lib</CODE> 의 파일은, 모든 Java 플랫폼에서 사용할 수 있습니다. </P>
+  </DIV><DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1001731"></A> <A NAME="20836"></A> 프로바이더 resource file</H4>
+<P CLASS="body"><A NAME="pgfId=1001732"></A>  서비스 프로바이더에는 각각, 그 프로바이더에 고유의 프로퍼티을 포함한 옵션의 resource file가 있습니다. 이 자원의 이름은 다음과 같이 됩니다. </P>
+  <BLOCKQUOTE>
+<PRE>[<EM>prefix/</EM>]<CODE>jndiprovider.properties</CODE></PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001734"></A> 「prefix」는, 프로바이더의 문맥 구현의 패키지명입니다. 패키지명안의 피리어드 ( 「.」)은, 모두 slash ( 「/」)에 변환됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=1002071"></A> JNDI 라이브러리에서는, 특정의 프로퍼티의 값을 결정할 때, 프로바이더 resource file가 검사됩니다. 이러한 프로퍼티 이외의 프로퍼티은, 서비스 프로바이더의 지정에 근거해, 프로바이더 resource file로 설정됩니다. 서비스 프로바이더의 문서에는, 사용할 수 있는 프로퍼티을 명기할 필요가 있습니다. </P>
+  </DIV></DIV><DIV>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=1001754"></A> 6.4 <A NAME="21515"></A> 어플리케이션 스코프 또는 애플릿 스코프의 JNDI 표준 프로퍼티</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001757"></A> 다음의 JNDI 표준 프로퍼티은, Java Runtime 의 시스템 프로퍼티 또는 애플릿의 파라미터 리스트로 설정할 수 있습니다.  이러한 프로퍼티을 다음에 듭니다. java.naming.factory.initial</P>
+  <BLOCKQUOTE>
+<PRE>java.naming.factory.initial
+java.naming.factory.object
+java.naming.factory.state
+java.naming.factory.control
+java.naming.factory.url.pkgs
+java.naming.provider.url
+java.naming.dns.url</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001765"></A> JNDI 로부터 애플릿의 파라미터에 액세스 하려면 , 애플릿 코드를 사용해,<CODE>java.naming.applet</CODE> 환경 프로퍼티에 그 애플릿의 인스턴스 (<CODE>java.applet.Applet</CODE>)를 설정할 필요가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=1001776"></A> 이러한 프로퍼티이 시스템 프로퍼티 또는 애플릿 파라미터로서 설정되어 있는 경우는, 어플리케이션 또는 애플릿의 모든 문맥에 영향을 줍니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=1001801"></A> 6.5 환경 프로퍼티의 설정 방법법</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1000432"></A> JNDI 에 의해 초기 문맥이 구축되면(자), 그 문맥의 환경은, 생성자 에게 건네진 환경 파라미터 및 모든 어플리케이션 resource file에 정의되고 있는 프로퍼티을 사용해 초기화됩니다. 어플리케이션 스코프 또는 애플릿 스코프의 프로퍼티의 경우는, 시스템 프로퍼티 및 애플릿 파라미터의 값도 사용됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=1001815"></A> JNDI 에 의해, 초기화된 환경이 초기 문맥 구현에게 건네집니다. 이 환경은, 초기 문맥으로부터 파생한 문맥에 상속됩니다. 프로퍼티과 그 값의 머지가 필요한 경우는, JNDI 에 의해 행해지므로, 어플리케이션 또는 문맥 구현으로부터 시스템 프로퍼티 또는 애플릿 파라미터를 직접 조사할 필요는 없습니다. </P>
+  </DIV><DIV>
+</BLOCKQUOTE>
+
+<H3 CLASS="section"><A NAME="pgfId=1001027"></A> 6.6 환경의 변경</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001029"></A> 문맥의 환경은,<CODE>addToEnvironment()</CODE> 및 <CODE>removeFromEnvironment()</CODE> 메소드를 사용해 변경할 수 있습니다. </P>
+  <BLOCKQUOTE>
+<PRE>public interface Context {
+	public Object addToEnvironment(String propName, Object val)
+		throws NamingException;
+	public Object removeFromEnvironment(String propName)
+		throws NamingException;
+	...
+}</PRE>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=1001202"></A> 환경 프로퍼티에는, 문맥에 대해서 무효인 것도 포함됩니다. 무효인 환경 프로퍼티을 변경했을 경우에서도, 변경은 기록되어 파생한 문맥에게 건네집니다. </P>
+  <DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1001032"></A> 스코프</H4>
+<P CLASS="body"><A NAME="pgfId=1001034"></A> <CODE>addToEnvironment()</CODE> 또는 <CODE>removeFromEnvironment()</CODE> 메소드를 사용해 프로퍼티을 변경하면(자), 메소드가 불려 간 문맥 인스턴스에 적용됩니다. 예를 들어, 문맥으로 사용되는 새로운 자격을 지정했을 경우는, 그 문맥으로 불려 가는 후속의 메소드로 서버와의 통신을 할 때, 새로운 자격이 사용됩니다. 내부적으로는, 최초로 서버에 새로운 접속이 확립될 때 사용됩니다. 갱신된 환경 프로퍼티은, 갱신이 적용된 문맥 인스턴스로부터 파생한 문맥 인스턴스에 상속됩니다. 다만, 갱신 이전에 생성된 문맥 인스턴스에는 상속되지 않습니다. </P>
+  </DIV><DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1001043"></A> 적용의 타이밍</H4>
+<P CLASS="body"><A NAME="pgfId=1001045"></A> 환경 프로퍼티을 변경한 후에,<CODE>addToEnvironment()</CODE> 또는 <CODE>removeFromEnvironment()</CODE> 메소드가 불려 가도, 그 변경의 검증 및 적용은 즉시 행해지지 않습니다. 그 프로퍼티을 사용하는 조작이 다음에 불려 갔을 때에, 변경이 유효하게 됩니다. </P>
+  </DIV><DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1001050"></A> 디폴트</H4>
+<P CLASS="body"><A NAME="pgfId=1001052"></A> 일부의 환경 프로퍼티에는, JNDI 에 의해 디폴트 값가 정의되고 있습니다 (부록 A 를 참조). 그 외의 환경 프로퍼티은, 몇개의 서비스 프로바이더에 의해 디폴트 값가 결정됩니다. 문맥의 환경에 특정의 프로퍼티이 지정되어 있지 않은 경우는, 그 환경 프로퍼티에 디폴트 값가 지정되고 있다고 봐 동작합니다. </P>
+<P CLASS="body"><A NAME="pgfId=1001056"></A> 문맥의 환경으로부터 프로퍼티을 삭제했을 때는, 그 프로퍼티으로 지정되고 있던 디폴트 값에 근거해 동작합니다. 다만, 프로퍼티의 값으로 해서 디폴트 값를 지정해야 한다고 하는 의미가 아닙니다. 문맥의 환경에 프로퍼티이 존재하지 않는 경우도, 삭제라고 보여집니다. </P>
+  </DIV><DIV>
+<H4 CLASS="subsection"><A NAME="pgfId=1001061"></A> 설정할 수 있는 값</H4>
+<P CLASS="body"><A NAME="pgfId=1001063"></A> 환경 프로퍼티에는, 설정치가 고정되고 있는 것과 특정의 구문에 따라 값을 설정하는 것이 있습니다. 설정할 수 없는 값을 지정했을 경우는,<CODE>ConfigurationException</CODE>,<CODE>IllegalArgumentException</CODE>,<CODE>AuthenticationNotSupportedException</CODE> 등, 프로퍼티 고유의 예외가 throw 됩니다. 이 경우, 서비스 프로바이더로 설정할 수 있는 값에, 정의된 값 이외의 값을 추가하는 (분)편이 적절한 일이 있습니다. 추가하는 경우는, 그러한 값을 문서에 명기할 필요가 있습니다. </P>
+</BLOCKQUOTE>
+
+</DIV></DIV><HR ALIGN=LEFT><DIV CLASS="footnotes"><DIV CLASS="footnote">
+
+<P CLASS="Footnote">추가하는 경우는, 그러한 값을 문서에 명기할 필요가 있습니다.  <SPAN CLASS="footnoteNumber"> 1. </SPAN> <A NAME="pgfId=1000925"></A> 프로퍼티을 사용하는 경우는, 환경으로부터 엔트리를 꺼낼 때 <CODE>Hashtable.get()</CODE> 가 사용되기 (위해)때문에, 최상정도의 프로퍼티만이 검사되어 디폴트 값는 검사되지 않습니다. 자세한 것은,<CODE>java.util.Properties</CODE> 를 참조해 주세요. </P>
+
+</DIV></DIV>
+
+<P><HR ALIGN=LEFT><A HREF="jndiTOC.html">목차</A>  | <A  HREF="jndi.5.html">전의 항목</A>  | <A HREF="jndi.7.html">다음의 항목</A> <HR ALIGN=LEFT><I><FONT  SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright</A>  &COPY;1997-1999 Sun Microsystems, Inc.  All Rights Reserved. </FONT></I>
+
+</BODY>
+</HTML>

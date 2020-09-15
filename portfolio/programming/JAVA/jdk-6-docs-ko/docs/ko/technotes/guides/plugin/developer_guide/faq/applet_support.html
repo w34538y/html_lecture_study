@@ -1,0 +1,64 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Plug-in 에서의 APPLET 태그의 지원에 대해 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>Java<sup>TM</sup> Plug-in 에서의 <code>APPLET</code> 태그의 지원에 대해</h1>
+<hr>
+<br>
+<table summary="layout" width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+    <td>
+<h2><u>주:</u></h2>
+<p>Microsoft VM 와 Sun 제품의 호환성에 관한 자세한 것은,<a href="../compatibility.html">「부록 4:Microsoft VM 와 Java 애플릿의 호환성 문제」</a>를 참조해 주세요. <br>
+      </p>
+    </td>
+  </tr>
+</table>
+<p> 
+<p><b>Q:Java 플랫폼을 권하는 이유는 무엇입니까. </b> <br>
+</p>
+<p><b>A:</b> Java 플랫폼은 기능성, 성능, 및 시큐리티 옵션에 대해 종래의 제품을 견디고 있습니다. 개발자에게 있어, 소프트웨어의 사용자가 가장 완성한 기능을 가지는 Java 플랫폼의 가능성을 갖추는 것으로, 자신의 어플리케이션이 플랜지의 API 나 라이브러리를 사용할 수 있게 되는 것은 바람직한 일입니다. 고객이 Java 플랫폼을 사용하고 있으면, 개발자는 보다 강력하고 견뢰한 풀 기능의 어플리케이션이나 애플릿을 기술할 수 있게 됩니다. 또, Java 플랫폼에 의해 코드의 성능도 향상합니다.  
+<p> <tt>APPLET</tt> 태그를 지원한 최신의 Java Plug-in 를 사용하면, 자신의 애플릿을 실행하고 있는 클라이언트가 최신의 Java 플랫폼을 갖추게 되는데 도움이 됩니다.  </p>
+<p> <b>Q:자신의 애플릿을 호출하는데, 계속 <tt>OBJECT</tt> 태그를 사용해도 됩니까. </b> </p>
+<p> <b>A:</b>네. Java Plug-in 가 <tt>APPLET</tt> 태그를 지원하도록(듯이) 확장되고 있어도, 애플릿의 기동에 <tt>OBJECT</tt> 태그를 사용하는 기존의 Web 페이지와는 완전하게 하위 호환성이 있습니다.  </p>
+<p> <b>Q:Java 플랫폼의 사용에 의해 호환성 문제는 발생하고 있습니까. </b> </p>
+<p><b>A:</b> 대부분의 케이스에 대해, JDK 1.1 으로부터 Java 플랫폼에의 이행에 관해서, 고려해야 할 문제는 발생하고 있습니다. 주어진(given) Java 플랫폼의 릴리스에 관한 문서에, 기존의 비호환이 모두 기재되어 있습니다만, 대부분은 「경미한 문제」라고 말할 수 있는 범위내입니다. 예를 들어, Java 플랫폼의 버젼 1.4 에 있어서의 기존의 호환성 문제는,<a href="http://java.sun.com/j2se/1.4/compatibility.html"><tt>http://java.sun.com/j2se/1. 4/ja/compatibility.html</tt></a> 로 설명되고 있습니다.  
+<p> 이전의 바이트 코드 컴파일러에 의해 생성된 낡은 클래스 파일안에는, 올바른 클래스 파일 형식에 엄밀하게 준거하고 있지 않는 것이 있습니다만, 그렇게 말한 클래스는 Java Runtime Environment 에는 로드 되지 않습니다. </p>
+<p> 다른 릴리스의 Java 플랫폼간에서의 호환성 문제에 가세해, Sun 에 의한 Java Runtime Environment 와 그 외의 Java Runtime Environment 와의 사이의 호환성 문제도 있습니다. 예를 들어, 몇개의 Internet Explorer 브라우저에 포함되는 것 등입니다. Sun 에서는, 이러한 비호환성을 최소한으로 억제하기 위해서(때문에) 다대한 노력을 소비해 왔습니다. Sun 가 거두어 들인 JRE 및 Java Plug-in 의 개선점은 다음과 같습니다.  </p>
+<ul>
+<li>Java Plug-in 에 있어서의 클래스 로더 공유 정책를 변경해, Microsoft VM 의 클래스 로더 공유 정책에 명시적으로 의존하는 애플릿의 비호환적인 동작을 최소한으로 했다 </li>
+<li>Java Plug-in 에 있어서의 화상 및 사운드 자원의 룩 업 순서를 변경해, HTML <tt>archive</tt> 파라미터로 지정된 자원이,<tt>codebase</tt> URL 상의 자원보다 우선권을 가지도록(듯이) 했다. 이 변경은, Microsoft VM 에 의해 채용되고 있는 자원 룩 업 순서에 명시적으로 의존하고 있는 애플릿의 비호환적인 동작을 최소한으로 하기 위해서(때문에) 행해졌다 </li>
+<li><tt>AppletgetParameter()</tt> 의 구현을 변경해, 파라미터가 애플릿에 돌려주어지기 전에, 그 전후의 공백을 없애도록(듯이) 했다. 이것은, 몇개의 Internet Explorer 브라우저에 있어서의 Microsoft VM 에 의한 동작이며, 이 변경은 이 동작에 명시적으로 의존하는 애플릿의 비호환적인 동작의 가능성을 없애기 위해서(때문에) 행해졌다 </li>
+</ul>
+<p> <b>Q:Java Plug-in 가 사용하는 시큐리티 모델은 무엇입니까. </b> </p>
+<p> <b>A:</b> JRE 및 Java Plug-in 는 Java 플랫폼 패밀리의 제품이며, 새로운 Java 플랫폼의 시큐리티 모델을 사용하고 있습니다. 이 시큐리티 모델은, JDK 1.1 으로 사용되고 있던 것보다 유연성이 있어 구성하기 쉬운 것입니다. 상세한 것에 대하여는,<tt><a href="http://java.sun.com/j2se/1.3/docs/guide/security/">http://java.sun.com/j2se/1. 4/docs/guide/security/index.html</a> </tt> 에 있는 「Java 플랫폼의 시큐리티」에 관한 문서를 참조해 주세요.  
+</p>
+<p> Microsoft VM 의 시큐리티 모델에 있어서의 독자적인 테크놀러지에 명시적으로 의존하고 있는 애플릿에서는, Java Plug-in 는 동작하지 않습니다.  </p>
+<p> <b>Q:<code>ClassFormatError</code> 에 의해 애플릿이 실패합니다. 무엇이 원인입니까. </b> 
+</p>
+<p> <b>A:</b> 이 문제는, 낡은 컴파일러에 의해 생성된 바이트 코드가 원인이 되고 있는 경우가 있습니다. 이러한 바이트 코드는, 최근의 JRE 의 릴리스에서는 강화하고 있는 가상 머신의 스펙에 엄밀하게 준거하고 있지 않기 때문입니다. </p>
+<p> <b>Q:Java Plug-in 에 애플릿의 cab 파일이 로드 되지 않습니다. 왜 그렇습니까. </b> </p>
+<p> <b>A:</b> Java Plug-in 는 <code>. jar</code> 파일에 패키지 되는 애플릿을 지원하고 있습니다. Microsoft 독자적인 <i><code>. </code></i><code>cab</code> 파일 형식은 지원하고 있습니다. 따라서, Microsoft 의 <i><code>. </code></i><code>cab 파일</code> 형식에 패키지화된 애플릿은 JRE 및 Java Plug-in 에는 로드 되지 않습니다.  </p>
+<p> <b>Q:Authenticode 방식에서 서명된 애플릿은 Sun 의 JRE 및 Java Plug-in 로 동작합니까. </b> 
+</p>
+<p><b>A:</b>동작하지 않습니다. Sun JRE 및 Java Plug-in 는, Authenicode 서명이나 <i><code>. </code></i><code>cab</code> 파일 형식 등 Microsoft 독자적인 테크놀러지는 지원하고 있습니다. Microsoft 의 Authenticode 테크놀러지에 의존한 서명 첨부 애플릿은, JRE 및 Java Plug-in 에서는 로드 되지 않습니다.  </p>
+<p> <b>Q:J/Direct, AFC, WFC등을 사용하고 있는 애플릿은, Sun 의 JRE 및 Java Plug-in 로 동작합니까. </b> </p>
+<p><b>A:</b>동작하지 않습니다. 여기 로 거론된 것이나 그 외의 Microsoft 독자적인 테크놀러지의 라이브러리는, JRE 및 Java Plug-in 에는 포함되어 있지 않습니다. Microsoft 독자적인 테크놀러지에 의존하는 애플릿을 JRE 및 Java Plug-in 로 실행했을 경우, 올바르게 동작하지 않습니다.  
+</p>
+<p> <b>Q:애플릿이 AWT 발송이벤트쓰레드로부터 <code>NullPointerException</code> 를 throw 합니다. 왜 그렇습니까. </b> </p>
+<p><b>A:</b> 애플릿의 기동시와 정지시에 발생하는 이벤트가, Microsoft 와 Sun 의 Java 플랫폼의 구현간에 다르기 때문입니다. 예를 들어, 애플릿의 논리가,<tt>Applet.start()</tt>/<tt>Applet.stop()</tt> 가 불려 갔을 때에 표시되는 애플릿에 의존하고 있다고 합니다. 이 상태는, Microsoft 의 구현상에서 애플릿이 실행되고 있는 경우는 정상적입니다만, Sun 의 구현에서는 정상적이지는 않습니다.  </p>
+<p> Microsoft 에 의한 Java 플랫폼의 구현상에서 기동시와 정지시에 발생하는 고유의 이벤트에 의존하는 애플릿은, JRE 및 Java Plug-in 에서는 올바르게 동작하지 않습니다. 이런 종류의 문제로 가장 자주(잘) 볼 수 있는 증상에, AWT 발송이벤트쓰레드로부터의 <tt>NullPointerException</tt> 가 있습니다.  </p>
+<p> <b>Q:애플릿이 AWT 발송이벤트쓰레드로부터 <code>ClassCastException</code> 를 throw 합니다. 왜 그렇습니까. </b> </p>
+<p><b>A:</b> Microsoft 와 Sun 의 구현에서는, 애플릿과 그것을 둘러싸는 프레임간의 컨테이너수가 다릅니다. 따라서, Microsoft VM 에 있어서의 특정의 포함 레벨에 있는 프레임에 의존하는 애플릿은, AWT 계층 컴퍼넌트 트리 전체를 안내하지 않기 때문에, Sun 의 JRE 및 Java Plug-in 로 실행하면(자) 실패할 가능성이 있습니다. 이런 종류의 문제로 가장 자주(잘) 볼 수 있는 증상에, AWT 발송이벤트쓰레드로부터의 <tt>ClassCastException</tt> 가 있습니다.  </p>
+<p> <b>Q:Java Plug-in 는, Java 와 JavaScript 간의 통신을 지원하고 있습니까. </b> </p>
+<p><b>A:</b>네. Java Plug-in 는, 기본적인 쌍방향성의 Java 와 JavaScript 간의 통신을 지원하고 있습니다. 다만, 다음과 같은 비호환성이 판명하고 있습니다.  </p>
+<p> Microsoft 의 구현에서는, JavaScript 로 개시되는 애플릿의 메소드나 프로퍼티은 애플릿 객체의 메소드나 필드와 완전히 같습니다. 그런데 , Java Plug-in 에서는, 애플릿의 메소드나 프로퍼티은 JavaBeans<sup><font  size="-2">TM</font></sup> 의 인트로스페크션을 통해 JavaScript 로 개시됩니다.  여기에서는, Microsoft VM 와는 다른 수법으로 애플릿의 필드가 처리됩니다. 따라서, 애플릿 객체의 필드에 액세스 하는 JavaScript 는, JRE 및 Java Plug-in 상에서 실행하는과 같은 동작을 하지 않습니다.  </p>
+<p>&nbsp;</p>
+</body>
+</html>

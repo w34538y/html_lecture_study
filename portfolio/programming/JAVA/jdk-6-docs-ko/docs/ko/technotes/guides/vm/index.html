@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java 가상 머신 테크놀러지 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+
+<center>
+<h1>Java<sup><font size="-2">TM</font></sup> 가상 머신 테크놀러지</h1>
+</center>
+
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+</TD>
+
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+<blockquote>
+<p>JDK<sup><font size="-2">TM</font></sup> 에는, 1 개(살) 또는 복수의 Java<sup><font size="-2">TM</font></sup> 가상 머신 (VM) 구현이 짜넣어지고 있습니다. </p>
+  <ul>
+    <li>
+<p> 일반적으로, 클라이언트 어플리케이션용으로 사용되는 플랫폼에서는, JDK 는 <b>Java HotSpot<sup><font size="-2">TM</font></sup> Client VM</b> ( 「클라이언트 VM」)로 불리는 VM 구현에 부속되어 있습니다. 클라이언트 VM 는 기동 시간을 단축해, 메모리 사이즈를 축소하도록(듯이) 조정되고 있습니다. 클라이언트 VM 는, 어플리케이션의 기동시에,<code>-client</code> 커멘드행 옵션을 사용해 호출합니다. <br>
+      </p>
+    </li>
+    <li>
+<p>모든 플랫폼에서, SDK 는 <b>Java HotSpot Server VM</b> (서버 VM)로 불리는 Java 가상 머신 (VM) 구현에 부속되어 있습니다. 서버 VM 는 프로그램 실행 속도가 최대가 되도록(듯이) 설계되고 있습니다. 서버 VM 는, 어플리케이션의 기동시에,<code>-server</code> 커멘드행 옵션을 사용해 호출합니다. <br>
+      </p>
+    </li>
+  </ul>
+<p>어느 쪽의 VM 구현에도 공통되는 Java HotSpot 테크놀러지의 기능을 다음에 나타냅니다.  </p>
+  <ul>
+<li>「적응형 컴파일러」 - 어플리케이션은 표준의 interpreter로 기동합니다만, 실행시에는 코드를 해석해 퍼포먼스의 보틀 넥, 즉 「핫 스포트」를 검출합니다. <em></em>Java HotSpot VM 는, 퍼포먼스를 향상시키기 (위해)때문에, 코드의 이러한 퍼포먼스-위기인 부분을 컴파일 합니다만, 거의 사용되지 않는 코드 (프로그램의 대부분)를 불필요하게 컴파일 할 것은 없습니다. 또, Java HotSpot VM 는, 적응형 컴파일러를 사용해, 인 라인화 등, 컴파일 한 코드를 최적화하기 위한 최선의 방법을 순간에 판단합니다. 컴파일러가 실행시 해석을 실시하므로, 최대의 퍼포먼스를 낳는 최적화 처리를 추측으로 판단하지 않아도 됩니다.  
+<p> 
+<li>「고속 기억 장치 할당하고」와「가베지 컬렉션」 - Java HotSpot 테크놀러지에서는, 객체에 대해서 고속으로  메모리의 할당을 합니다.  또, 고속으로  효율적인 최첨단의 가비지 컬렉터가 갖춰지고 있습니다. <em></em> 
+<p> 
+<li>「thread 동기」 - Java 프로그램 언어는, 프로그램 실행의 복수의 병렬 패스 ( 「thread」라고 불린다)의 사용을 고려에 넣고 있습니다. <em></em>Java HotSpot 테크놀러지는, thread 처리 기능을 실현하고 있습니다. 이 기능은, 대규모 메모리 공유형의 멀티 프로세서 서버에서의 사용을 용이하게 슬캘링 할 수 있도록(듯이) 설계되었습니다.  
+</ul>
+</blockquote>
+
+<h2>
+툴 
+</h2>
+<blockquote>
+Java HotSpot VM 의 조작 특징의 1 개는, 커멘드행 플래그를 사용해 제어할 수 있다고 하는 것입니다.  
+<p>
+<ul>
+<li>
+<b>표준 HotSpot VM 옵션</b> (<a href="../../tools/windows/java.html">Microsoft&nbsp;Windows</a> &nbsp;|&nbsp;<a href="../../tools/solaris/java.html">Solaris and Linux&nbsp;Operating&nbsp;Environments&nbsp;</a> ) - Java HotSpot VM 로 지원되고 있는 커멘드행 옵션에 대해서는, Java 어플리케이션 기동 툴의 참조 페이지에 설명되고 있습니다.  
+
+</li>
+<li>
+<b><a href="http://java.sun.com/docs/hotspot/VMOptions.html">비표준 Java HotSpot VM 옵션</a> </b> - 현재의 VM 구현에서는 인식되고 있어도, 장래의, 또는 Sun 이외의 구현으로 인식된다고는 할 수 없는 비표준 옵션에 대해서는, 이쪽의 Web 페이지로 설명되고 있습니다.  
+
+</li>
+</ul>
+</blockquote>
+
+<a name="features"></a> 
+<h2>
+확장 기능
+</h2>
+<blockquote>
+JDK 6 에서의 확장 기능:
+<ul>
+<li><a href="dtrace.html">DTrace 프로브</a>  
+</li>
+<li>가베지 컬렉션의 확장 기능
+<ul>
+<li>
+<a href="par-compaction-6.html">병렬 압축</a>  
+</li>
+<li>
+<a href="cms-6.html">병행 Mark Sweep 수집가의 확장 기능</a> 
+</li>
+</ul>
+</li>
+</ul>
+JDK 5.0 에서의 확장 기능:
+<ul>
+<li><a href="class-data-sharing.html">클래스 데이터의 공유</a>  
+</li>
+<li><a href="server-class.html">서버 클래스 머신의 검출</a>  
+</li>
+<li><a href="gc-ergonomics.html">가베지 컬렉션 인간공학</a>  
+</li>
+<li><a href="thread-priorities.html">thread 우선 순위의 변경</a>  
+</li>
+</ul>
+J2SE 1.4.x 에서의 확장 기능 
+<ul>
+<li><a href="enhancements.html">JDK 1.4. 2, 1.4. 1, 및 1.4. 0 에서의 가상 머신의 확장 기능</a> 
+</ul>
+
+
+
+
+</blockquote>
+
+<h2>
+상세 정보
+</h2>
+
+<blockquote>
+<ul>
+<li><a href="http://java.sun.com/javase/technologies/hotspot/index.jsp">HotSpot 의 홈 페이지</a> 
+<li><a href="../performance/index.html">퍼포먼스의 향상</a> 
+</ul>
+</blockquote>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2"> <A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<font size="-1"><a HREF="http://developers.sun.com/contact/feedback.jsp ?referer=http://java.sun.com/javase/6/docs/technotes/guides/vm/index.html &category=j2se &mailsubject=Virtual Machines">피드백</a> </font>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>
+
+
+

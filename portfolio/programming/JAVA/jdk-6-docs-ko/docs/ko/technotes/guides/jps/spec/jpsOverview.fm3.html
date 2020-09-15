@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 1 - 입문
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="jpsOverview.fm2.html">전의 항목</a>  | <a href="jpsOverview.fm4.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998278"><i></i> Java 인쇄 서비스의 아키텍쳐(architecture)</a> </h2>
+
+<blockquote>
+<a name="997887"><!-- --></a>  Java 인쇄 서비스 API 는, javax.print, javax.print.attribute, javax.print.attribute.standard, 및 javax.print.event 라고 하는 4 개의 패키지로 구성됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="998713"><!-- --></a>  <i></i>javax.print 패키지
+</h3>
+
+<blockquote>
+<a name="998562"><!-- --></a>  javax.print 패키지는, 이 API 의 메인 패키지입니다. 이 패키지에는, 이하의 기능에 사용하는 클래스 및 인터페이스가 짜넣어지고 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="998580"><!-- --></a>  인쇄 서비스를 검출한다
+</li>
+<li>
+<a name="998581"><!-- --></a>  인쇄 데이터의 서식을 지정한다
+</li>
+<li>
+<a name="999651"><!-- --></a>  인쇄 서비스로부터 인쇄 작업을 작성한다
+</li>
+<li>
+<a name="998582"><!-- --></a>  인쇄 데이터를 프린터 또는 스트림에 송신한다
+</li>
+</ul>
+</blockquote>
+
+<br> <a name="998585"><!-- --></a> 
+<h4><i> 인쇄 서비스를 검출한다</i></h4>
+
+<blockquote>
+<a name="999017"><!-- --></a>  어플리케이션으로부터 추상 클래스 PrintServiceLookup 의 static 메소드를 호출해, 어플리케이션의 인쇄 요구를 채우는 기능을 가진 인쇄 서비스를 검색합니다. 예를 들어, 양면 인쇄의 문서를 인쇄하려면 , 어플리케이션으로부터 양면 인쇄 기능을 가진 프린터를 검색할 필요가 있습니다.  <p>
+<a name="999050"><!-- --></a>  PrintService 인터페이스의 구현은, PrintServiceLookup 의 구현으로부터 반환되는 실제의 프린터를 표현하고 있습니다. PrintService 에 조회해 그 프린터의 기능을 조사하려면 , 인쇄 서비스로 사용할 수 있는 속성을 돌려주는 메소드를 호출합니다. PrintService 및 PrintServiceLookup 의 사용 방법에 대해서는,<a href="printing.fm.html#996958">「문서의 인쇄 및 스트림 전달」</a>의<a href="printing.fm2.html#998467">「서비스의 검색」</a>을 참조해 주세요. <p>
+<a name="999048"><!-- --></a>  JDK 에는, 표준의 플랫폼 프린터를 검색할 수 있는 PrintServiceLookup 의 구현이 짜넣어지고 있습니다. 인쇄 서비스 프로바이더는, IPP 프린터나 JINI 프린터 등, 그 외의 종류의 프린터를 검색하기 위해서, PrintServiceLookup 의 구현을 작성할 수 있습니다. 인쇄 서비스 프로바이더는, SPI JAR 파일 스펙을 사용해, 작성한 PrintServiceLookup 구현을 동적으로 인스톨 할 수 있습니다.  <p>
+<a name="999058"><!-- --></a>  어플리케이션에서는, 데이터를 프린터에 송신하는 대신에, StreamPrintService 를 사용해 출력 스트림에 출력할 수도 있습니다. StreamPrintService 를 사용하면(자), 어플리케이션상에서 데이터를 다른 서식으로 변환할 수 있습니다. StreamPrintService 를 가져오려면 , 어플리케이션상에서 추상 클래스 StreamPrintServiceFactory 의 룩 업 메소드를 사용합니다. 이 클래스는 PrintServiceLookup 클래스와 닮아 있어 인쇄 서비스를 검출합니다. StreamPrintServiceFactory 및 StreamPrintService 의 사용 방법에 대해서는,<a href="printing.fm.html#996958">「문서의 인쇄 및 스트림 전달」</a>을 참조해 주세요. StreamPrintService 는, 2D 그래픽스를 출력 스트림에 송신할 경우에도 사용할 수 있습니다. 상세한 것에 대하여는,<a href="printing2d.fm.html#">「2D 그래픽스의 인쇄와 스트림 전달」</a>을 참조해 주세요. <p>
+</blockquote>
+<br> <a name="999672"><!-- --></a> 
+<h4><i> 인쇄 데이터의 서식의 지정</i></h4>
+
+<blockquote>
+<a name="999673"><!-- --></a>  DocFlavor 클래스는, JPEG 나 PostScript 등의, 인쇄 데이터의 서식을 표현합니다. DocFlavor 객체는, MIME 타입 및 표현 클래스명 (java.io.InputStream 등)으로부터 구성됩니다. 전자에는 서식을 지정해, 후자에게는 문서를 서비스에 전달하는 방법을 지정합니다. JPS API 에는, 사용 빈도의 높은 데이터 서식을 표현한다, 정의 끝난 DocFlavor 객체도 짜넣어지고 있습니다. DocFlavor 객체의 사용 방법에 대해서는,<a href="docflavor.fm.html#996958">「문서의 종류의 지정」</a>을 참조해 주세요. <p>
+</blockquote>
+<br> <a name="998604"><!-- --></a> 
+<h4><i> 인쇄 작업의 작성</i></h4>
+
+<blockquote>
+<a name="998804"><!-- --></a>  어플리케이션에서는, 적절한 인쇄 서비스를 검출하면(자), 그 서비스로부터 인쇄 작업을 작성합니다. 인쇄 작업은, DocPrintJob 클래스에 의해 표현됩니다. 이 클래스에는, 실제의 인쇄 메소드가 짜넣어지고 있습니다. 어플리케이션에서는, 인쇄 메소드를 호출하기 전에, Doc 객체를 작성해 인쇄 데이터와 인쇄 요구 속성을 캡슐화합니다. 인쇄 요구 속성은, javax.print.attribute 및 javax.print.attribute.standard 패키지에 정의되고 있습니다. Doc 및 DocPrintJob 의 사용 방법에 대해서는,<a href="printing.fm.html#996958">「문서의 인쇄 및 스트림 전달」</a>을 참조해 주세요. Java 인쇄 서비스를 사용해 2D 그래픽스를 인쇄하는 어플리케이션에서는, PrinterJob 클래스 또는 DocPrintJob 클래스를 사용할 수 있습니다. Java 인쇄 서비스를 사용해 2D 그래픽스를 인쇄하는 방법에 대해서는,<a href="printing2d.fm.html#">「2D 그래픽스의 인쇄와 스트림 전달」</a>을 참조해 주세요. <p>
+<a name="998808"><!-- --></a> 속성의 패키지<p>
+<a name="999686"><!-- --></a>  javax.print.attribute 및 javax.print.attribute.standard 패키지에는, 인쇄의 속성이 정의되고 있습니다. 이러한 속성에는, 인쇄 서비스의 기능, 문서의 특성, 특정의 문서 또는 인쇄 작업 전체에 대한 처리 명령, 혹은 인쇄 작업 또는 프린터 상태가 지정되고 있습니다.  <p>
+<a name="998813"><!-- --></a>  javax.print.attribute 패키지에는, 속성의 종류와 속성을 수집해 속성 세트에 정리할 방법이 지정되고 있습니다. Attribute 인터페이스는, 모든 속성의 슈퍼 인터페이스입니다. javax.print.attribute 패키지에는, 5 종류가 다른 속성을 정의한 클래스와 인터페이스가 짜넣어지고 있습니다. 이러한 속성에는, 특정의 인쇄 처리의 기능이 규정되고 있습니다. 예를 들어, PrintRequestAttribute 인터페이스에는, 클라이언트가 사용하는 속성이 정의되고 있습니다. 이 속성에는, 인쇄 부수등의 인쇄 작업의 특성이 규정되고 있습니다. <p>
+<a name="998812"><!-- --></a>  javax.print.attribute.standard 패키지에는, 이 API 로 지원되는 표준 속성이 모두 열거되고 있습니다. 그 대부분은, IPP 스펙으로 지정되고 있는 속성의 구현입니다. 상세한 것에 대하여는, 속성 API 를 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="998393"><!-- --></a>  <i></i>javax.print.event 패키지
+</h3>
+
+<blockquote>
+<a name="998818"><!-- --></a>  javax.print.event 패키지에는, 인쇄 작업 및 인쇄 서비스에 관한 이벤트에 등록하기 위한 클래스가 짜넣어지고 있습니다. 인쇄 작업 이벤트에의 등록에 대해서는,<a href="printing.fm5.html#998697">「이벤트의 등록」</a>을 참조해 주세요. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="jpsOverview.fm2.html">전의 항목</a>  | <a href="jpsOverview.fm4.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

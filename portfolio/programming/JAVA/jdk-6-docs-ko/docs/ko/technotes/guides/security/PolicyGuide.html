@@ -1,0 +1,730 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!-- <link rel="stylesheet" href="../../css/tools.css"  type="text/css" /> -->
+<title>Policy Tool - 정책 파일 작성 및 관리툴 - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+
+
+<h1>정책 파일 작성 및 관리</h1>
+
+
+
+
+
+<p>인스톨 한 시스템의 Java 시큐리티 정책를 정의하는, 외부 정책 구성 파일의 작성과 수정을 실시합니다. </p>
+
+<h2>목차</h2>
+
+  <dl>
+<dd><a href="#Introduction"><b>처음에</b></a> <br /> <br /></dd>
+
+    <dd>
+<a href="#Usage"><b>Policy Tool 의 사용법</b></a> 
+
+      <dl>
+<dd><a href="#StartTool"><b>Policy Tool 의 기동</b></a> </dd>
+
+<dd><a href="#Create"><b>새로운 정책 파일의 작성</b></a> </dd>
+
+<dd><a href="#Open"><b>다른 정책 파일의 오픈</b></a> </dd>
+
+<dd><a href="#SpecifyKeystore"><b>키스토어의 지정</b></a> </dd>
+
+        <dd>
+<a href="#AddEntry"><b>새로운 정책 엔트리의 추가</b></a> 
+
+          <dl>
+<dd><a href="#AddPrincipal"><b>새로운 주체의 추가</b></a> </dd>
+
+<dd><a href="#EditPrincipal"><b>주체의 편집</b></a> </dd>
+
+<dd><a href="#RemovePrincipal"><b>주체의 삭제</b></a> </dd>
+
+<dd><a href="#AddPerm"><b>새로운 액세스권의 추가</b></a> </dd>
+
+<dd><a href="#EditPerm"><b>액세스권의 편집</b></a> </dd>
+
+<dd><a href="#RemovePerm"><b>액세스권의 삭제</b></a> </dd>
+
+<dd><a href="#EntryDone"><b>정책 엔트리의 추가의 완료</b></a> </dd>
+          </dl>
+        </dd>
+
+<dd><a href="#EditEntry"><b>정책 엔트리의 편집</b></a> </dd>
+
+<dd><a href="#RemoveEntry"><b>정책 엔트리의 삭제</b></a> </dd>
+
+<dd><a href="#SaveFile"><b>정책 파일의 보존</b></a> </dd>
+
+<dd><a href="#ExitTool"><b>Policy Tool 의 종료</b></a> </dd>
+
+<dd><a href="#Log"><b>경고 로그의 표시</b></a> </dd>
+      </dl><br />
+    </dd>
+
+    <dd>
+<a href="#Examples"><b>례</b></a> 
+
+      <dl>
+<dd><a href="#ExStartingCreation"><b>사용자 정책 파일의 작성의 개시</b></a> </dd>
+
+<dd><a href="#ExAddEntry"><b>정책 엔트리의 추가</b></a> </dd>
+
+<dd><a href="#ExSpecifyKeystore"><b>키스토어의 지정</b></a> </dd>
+
+<dd><a href="#ExAddSignedByEntry"><b>SignedBy 별명을 지정한 정책 엔트리의 추가</b></a> </dd>
+
+<dd><a href="#ExAddPrincipalEntry"><b>주체를 지정한 정책 엔트리의 추가</b></a> </dd>
+
+<dd><a href="#ExSaveFile"><b>사용자 정책 파일의 보존</b></a> </dd>
+
+<dd><a href="#ExExit"><b>Policy Tool 의 종료</b></a> </dd>
+      </dl><br />
+    </dd>
+
+<dd><a href="#SeeAlso"><b>관련 항목</b></a> </dd>
+  </dl>
+  <hr />
+
+<h2><a name="Introduction" id=   "Introduction">처음에</a> </h2>
+
+  <blockquote>
+<p>Java 실행시의 정책는, 다양한 소스를 출처(소)로 하는 코드가, 다양한 주체로서 실행될 때, 어떠한<a href=     "../../guides/security/permissions.html">액세스권</a>을 이용할 수 있는지를 지정해서 ,Policy 객체에 의해 표현됩니다. 디폴트의 Policy 의 구현은, 정적인 ASCII 형식의 정책 구성 파일로부터 정보를 가져옵니다. </p>
+
+<p>정책 파일은, 간단한 텍스트 문자 편집기를 사용하는지, 이 문서로 설명하는 그래피컬한 <b>Policy Tool</b> 유틸리티를 사용해 작성할 수 있습니다. <b>Policy Tool</b> 를 사용하면(자), 입력의 수고를 줄일 수 있을 뿐만 아니라,<a href=     "../../guides/security/PolicyFiles.html#filesyntax">정책 파일의 구문</a>에 대해 알 필요가 없어지기 (위해)때문에, 에러를 줄일 수가 있습니다. </p>
+
+<p><a href="#Usage">「Policy Tool 의 사용법」</a>에서는,<b>Policy Tool</b> 를 사용해 정책 파일을 작성 및 수정하는 방법에 대해 설명합니다. </p>
+
+<p><a href="#Examples">「예」</a>에서는,<b>Policy Tool</b> 의 사용예를 소개해, 자세하게 설명합니다. </p>
+
+<p><a href="#SeeAlso">「관련 항목」</a>에서는, 관련하는 문서에의 링크를 제공합니다. </p>
+  </blockquote>
+
+<h2><a name="Usage" id="Usage">Policy Tool 의 사용법</a> </h2>
+
+  <blockquote>
+<h3><a name="StartTool" id="StartTool">Policy Tool 의 기동</a> </h3>
+
+    <blockquote>
+    <p>
+<b>Policy Tool</b> 를 기동하려면 , 커멘드행에 다음과 같이 입력합니다. </p>
+      <pre>
+  policytool
+</pre>
+
+<p>「Policy Tool」윈도우가 표시됩니다. </p>
+
+<p><b>Policy Tool</b> 는, 기동할 때마다, 「사용자 정책 파일」이라고도 불리는 파일로부터 정책 정보를 취득해, 윈도우에 표시하려고 합니다. 디폴트의 사용자 정책 파일은, 홈 디렉토리에 있다 <code>. java.policy</code> 라는 이름의 파일입니다. 정책 파일이 발견되지 않는 경우는, 그것을 나타내는 메세지와 공백의 「Policy Tool」윈도우가 표시됩니다. 즉, 윈도우에 표제나 버튼은 표시됩니다만, 데이터는 포함되어 있지 않습니다 (다음의 화면을 참조). </p>
+
+      <p>
+<img src="images/ptBlank.gif" alt=         "공백의 「Policy Tool」윈도우" />
+      </p>
+
+<p><b>Policy Tool</b> 를 기동한 뒤는, 작업하는 임의의 정책 파일을<a href="#Open">열 수가 </a>있습니다. 또,<a href="#AddEntry">정책 엔트리를 추가</a>하거나 필요에 따라서<a href="#SpecifyKeystore">키스토어를 지정</a>하거나 해,<a href="#SaveFile">파일을 보존</a>하면, 새로운 정책 파일을 작성할 수도 있습니다. </p>
+
+<p><b>Policy Tool</b> 를 시작해 실행한 시점에서는, 사용자 정책 파일은 존재하고 있습니다 (수동으로 작성했을 경우를 제외하다). </p>
+    </blockquote>
+
+<h3><a name="Create" id="Create">새로운 정책 파일의 작성</a> </h3>
+
+    <blockquote>
+    <p>
+새로운 정책 파일을 작성하려면 ,<b>「파일」</b>메뉴로부터<b>「신규」</b>커멘드를 선택합니다. 현재 열리고 있는 정책 파일이 있으면, 필요에 따라서 파일의 보존을 유발 (prompt)하는 메세지가 표시된 후에, 그 파일이 닫혀져, 새로운 「Policy Tool」윈도우가 표시됩니다. 그 윈도우에는 표제나 버튼이 표시되고 있습니다만, 데이터는 포함되어 있지 않습니다. </p>
+      
+<p>주:상기의 조작은, Policy Tool 를 시작해 실행하는 경우는 필요 없습니다. Policy Tool 는 사용자 정책 파일을 열려고 합니다만, 그 파일이 아직 존재하지 않기 때문에 (수동으로 작성했을 경우를 제외하다), 데이터가 아무것도 포함되지 않은 윈도우가 표시됩니다. </p>
+
+<p>새로운 「Policy Tool」윈도우가 표시되면(자),<a href="#AddEntry">정책 엔트리를 작성</a>하거나<a href="#SpecifyKeystore">키스토어를 지정</a>하거나 (키스토어 별명을 지정한 정책 엔트리가 있는 경우) 할 수가 있습니다. 정책 파일은, 언제라도<a href="#SaveFile">보존</a>할 수 있습니다. </p>
+    </blockquote>
+
+<h3><a name="Open" id="Open">다른 정책 파일의 오픈</a> </h3>
+
+    <blockquote>
+    <p>
+현재 작업중의 정책 파일과는 다른 정책 파일로 작업하려면 ,<b>「파일」</b>메뉴의<b>「연다」</b>커멘드를 사용합니다.
+</p>
+<p>현재 열리고 있는 정책 파일이 있으면, 필요에 따라서 파일의 보존을 유발 (prompt)하는 메세지가 표시된 후에, 그 파일이 닫혀져 「연다」다이얼로그가 표시됩니다. 이 다이얼로그에서는, 디렉토리 구조를 이동해, 작업하는 정책 파일이 있는 디렉토리를 검색할 수 있습니다. 파일을 선택해,<b>「연다」</b>버튼을 선택합니다. </p>
+
+<p>선택한 정책 파일의 정보가 「Policy Tool」윈도우에 표시됩니다. 표시되는 정보는, 정책 파일명, 키스토어의 URL (존재하는 경우), 그리고 정책 파일내의 각 정책 엔트리의 CodeBase, SignedBy, 및 주체 파트입니다. </p>
+    </blockquote>
+
+<h3><a name="SpecifyKeystore"/>키스토어의 지정</h3>
+
+    <blockquote>
+    <p>
+정책 엔트리의 SignedBy 파트에서 지정된 별명의 열쇠 정보를 포함한 키스토어를 지정하려면 ,<b>「편집」</b>메뉴의<b>「키스토어의 변경」</b>커멘드를 선택합니다. </p>
+
+<p>다이알로그 박스가 표시되면(자), 새로운 키스토어의 URL 와 키스토어의 타입 (생략 가능)을 지정합니다. </p>
+
+<p>예를 들어,<code>/tests/</code> 디렉토리에 있는 mykeystore 라는 이름의 키스토어를 지정하려면 , 「New KeyStore URL」라고 하는 라벨이 붙은 텍스트 박스에, 다음과 같이 <code>file:</code>URL 라고 입력합니다. </p>
+      <pre>
+  file:/tests/mykeystore
+</pre>
+<p>또, 키스토어의 타입으로서 JKS (Sun 가 지원하고 있는 독자적인 키스토어의 타입)를 지정하려면 , 「신규 키스토어의 타입」이라고 하는 라벨이 붙은 텍스트 박스에, 다음과 같이 입력합니다. </p>
+      <pre>
+  JKS
+</pre>
+
+<p>키스토어의 URL 와 필요에 따라서 타입을 지정하면(자),<b>「이해」</b>를 선택합니다. 조작을 취소하는 경우는,<b>「취소」</b>를 선택합니다. 조작을 취소하지 않았던 경우는, 「키스토어」라고 하는 라벨이 붙은 텍스트 박스에, 지정한 키스토어의 URL 와 타입이 표시됩니다. </p>
+    </blockquote>
+
+<h3><a name="AddEntry"/>새로운 정책 엔트리의 추가</h3>
+
+    <blockquote>
+    <p>
+새로운 정책 엔트리를 추가하려면 , 「Policy Tool」메인 윈도우로<b>「정책 엔트리의 추가」</b>버튼을 선택합니다.
+</p>
+<p>「정책 엔트리」다이알로그 박스가 표시됩니다. </p>
+
+      <p>
+<img src="images/AddEntryBlank.gif" alt=         "공백의 「정책 엔트리」다이얼로그" />
+      </p>
+
+<p>이 다이알로그 박스에서는, 다음의 정보를 지정합니다. </p>
+
+      <ul>
+<li><b>「CodeBase」</b>엔트리 (생략 가능). 코드의 출처(소)를 나타내는 URL 를 지정합니다. 예를 들어, 로컬의 <code>/JavaSoft/TESTS/</code> 디렉토리로부터의 코드를 지정하려면 , 「<b>CodeBase</b>」텍스트 박스로 다음과 같이 file: URL 를 입력합니다.
+          <pre>
+  file:/JavaSoft/TESTS/
+</pre>
+        </li>
+
+<li><b>「SignedBy」</b>엔트리 (생략 가능). 코드에 서명하기 위해서 사용된 비공개키를 소유하는 서명자를 참조하기 위한 , 키스토어에 있는 별명을 지정합니다. 예를 들어, 「duke」라고 하는 별명을 지정하려면 ,<b>「SignedBy」</b>텍스트 박스에 다음과 같이 입력합니다.
+          <pre>
+  duke
+</pre>
+        </li>
+
+<li><b>「주체」</b>엔트리 (생략 가능). 액세스권이 허가되기 위해서(때문에), 어느 주체로서 코드를 실행할 필요가 있는지를 나타내는, 주체의 리스트를 지정합니다. <a href=         "#AddPrincipal">「새로운 주체의 추가」</a>를 참조해 주세요. </li>
+
+<li>1 개(살) 이상의<b>액세스권</b>엔트리. CodeBase 및 SignedBy 의 값에 의해 지정된 소스로부터의 코드 (이러한 값이 지정되어 있지 않은 경우는 임의의 코드)에 허가하는 액세스권을 지정합니다. <a href=         "#AddPerm">「새로운 액세스권의 추가」</a>를 참조해 주세요. </li>
+      </ul>
+
+<p><b>SignedBy</b> 의 값은, 서명자가 관련지을 수 있었던 일식의 공개키에, 키스토어를 사용해 매핑 되는 별명의 캐릭터 라인입니다. 이러한 공개키는, 지정된 코드 소스로부터의 클래스가, 실제로 이러한 서명자에 의해 서명되고 있는 것을 검증하기 위해서 사용됩니다. </p>
+
+<p><b>SignedBy</b> 의 값에는, 복수의 서명자를 콤마로 단락지은 캐릭터 라인을 지정할 수 있습니다. 예를 들어, 「Adam, Eve, Charles」와 같이 지정합니다. 이 경우는, 각 요소가 OR 는 아니고 AND 로 결합되어 「Adam 와 Eve 와 Charles 에 의해 서명되었다」라고 하는 의미가 됩니다. </p>
+
+<p><b>SignedBy</b> 의 값은 생략 할 수 있습니다. 생략 했을 경우는, 「임의의 서명자」라고 하는 의미가 되어, 코드에 서명이 행하여지고 있는지 어떤지가 검증되지 않게 됩니다. 같이<b>CodeBase</b> 엔트리를 생략 했을 경우는, 「임의의 코드」라고 하는 의미가 되어, 코드의 출처(소)가 검증되지 않게 됩니다. </p>
+
+<p>이 때문에,<b>CodeBase</b> 엔트리가 존재하지 않는 경우는, 지정된 별명의 서명이 붙은 모든 코드에 대해, 지정된 액세스권이 주어집니다. 또,<b>SignedBy</b> 엔트리가 존재하지 않는 경우는, 코드에 서명이 행하여지고 있는지 어떤지, 또 누가 서명했는지를은 관계없이, 지정된 <b>CodeBase</b> 를 출처(소)로 하는 모든 코드에 대해서, 지정된 액세스권이 허가됩니다. <b>CodeBase</b> 엔트리와 <b>SignedBy</b> 엔트리가 어느쪽이나 존재하지 않는 경우는, 모든 코드에 대해서, 지정된 액세스권이 허가됩니다. </p>
+
+<p>주:<b>CodeBase</b> 치의 정확한 의미는, 말미의 문자에 따라서 다릅니다. 말미가 「/」의 <b>CodeBase</b> 는, 지정된 디렉토리내의 모든 클래스 파일 (JAR 파일을 제외하다)을 나타냅니다. 말미가 「/*」의 <b>CodeBase</b> 는, 그 디렉토리내에 있는 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두)을 나타냅니다. 말미가 「/-」의 <b>CodeBase</b> 는, 지정된 디렉토리와 그 아래의 전서브 디렉토리내의 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두)을 나타냅니다. </p>
+
+<p><b>주체</b>엔트리에는, 「주체의 값」의 리스트를 지정합니다. 각각의 주체의 값에는, 실행하고 있는 thread의 주체 세트내에 존재하고 있지 않으면 안 되는 principal_type 과 principal_name 의 페어를 지정합니다. 주체 엔트리는 생략 가능합니다. 생략 했을 경우는, 「임의의 주체」라고 하는 의미가 됩니다. </p>
+
+<p>principal_type 이 지정되지 않고, principal_name 가 인용부호로 둘러싸인 캐릭터 라인인 경우는, 실행시에 정책 파일이 처리될 때, 그 캐릭터 라인은 키스토어의 별명으로서 다루어집니다. 키스토어는 별명을 경유해 X509 증명서를 조사해, 문의합니다. 그 증명서가 발견되었을 경우, 주체의 타입은 javax.security.auth.x500.X500Principal 이라고 자동적으로 상정되어 실제의 주체의 이름은, 증명서에 있는 Subject 로서 식별된 이름이라고 상정됩니다. X509 증명서에의 매핑이 발견되지 않는 경우는, 지정된 주체에 대해서 액세스권을 허가하고 있는 정책 엔트리 전체가 무시됩니다. </p>
+
+<h4><a name="AddPrincipal"/>새로운 주체의 추가</h4>
+
+      <blockquote>
+      <p>
+새로운 주체를 추가하려면 , 「정책 엔트리」다이알로그 박스로<b>「주체의 추가」</b>버튼을 선택합니다. 「주체」다이알로그 박스가 표시됩니다. </p>
+
+        <p>
+<img src="images/AddPrincipalBlank.gif" alt=           "공백의 「주체」다이얼로그" />
+        </p>
+
+<p>주체를 추가하려면 , 다음과 같이 합니다. </p>
+
+        <ol>
+<li><b>주체의 타입</b>을 입력하는지, 또는 선택합니다.
+
+<p>「주체의 타입」이라고 하는 라벨이 붙은 드롭 다운 리스트에는, 짜넣어지고 있는 주체의 타입의 리스트가 표시됩니다. 리스트에 있는 타입을 지정하는 경우는, 리스트로부터 그 타입을 선택합니다. 선택한 주체의 타입의 완전한 이름이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </p>
+
+<p>사용자가 정의한 주체의 타입을 지정하는 경우는, 그 주체의 타입을 텍스트 박스에 입력합니다. </p>
+          </li>
+
+<li><b>주체의 이름</b>을 입력합니다.
+
+<p>주체의 이름을, 「주체의 이름」텍스트 박스에 직접 입력합니다. 예를 들어,<code>duke</code> 라는 이름의 주체를 지정하려면 , 다음과 같이 입력합니다. </p>
+            <pre>
+  duke
+</pre>
+          </li>
+        </ol>
+	<p>주체의 정보를 지정하면(자),<b>「이해」</b>버튼을 선택합니다. 조작을 취소하는 경우는,<b>「취소」</b>를 선택합니다. 새로운 주체의 행이 「주체」엔트리에 표시됩니다.
+</p>
+<p>이후에, 같은 순서에 따라 다른 주체를 추가할 수가 있습니다. 기존의 주체를<a href=         "#EditPrincipal">편집 </a>또는<a href=         "#RemovePrincipal">삭제</a>할 수도 있습니다. </p>
+      </blockquote>
+
+<h4><a name="EditPrincipal" id="EditPrincipal">주체의 편집</a> </h4>
+
+      <blockquote>
+      <p>
+기존의 주체를 편집하려면 , 「주체」엔트리로 주체의 행을 선택해,<b>「주체의 편집」</b>버튼을 선택합니다. 또는, 그 주체의 행을 더블 클릭 하는 것만으로도, 주체를 편집할 수 있게 됩니다.
+</p>
+<p>새로운 주체를<a href="#AddPrincipal">추가</a>할 때와 같은 「주체」다이알로그 박스가 표시됩니다. 다만, 이 경우는, 기존의 주체의 정보가 표시되고 있습니다. 표시되고 있는 정보를 변경하려면 , 드롭 다운 리스트로부터 새로운 값을 선택하는지, 또는 텍스트 박스의 정보를 새로운 값으로 옮겨놓습니다. </p>
+
+<p>편집이 끝나면(자),<b>「이해」</b>버튼을 선택합니다. 변경을 취소하는 경우는,<b>「취소」</b>를 선택합니다. 「주체」엔트리에, 수정 후의 주체의 정보가 표시됩니다. </p>
+      </blockquote>
+
+<h4><a name="RemovePrincipal" id="RemovePrincipal">주체의 삭제</a> </h4>
+
+      <blockquote>
+      <p>
+기존의 주체를 삭제하려면 , 「주체」엔트리로 그 주체의 행을 선택해,<b>「주체의 삭제」</b>버튼을 선택합니다. </p>
+      </blockquote>
+
+<h4><a name="AddPerm"/>새로운 액세스권의 추가</h4>
+
+      <blockquote>
+      <p>
+새로운 액세스권을 추가하려면 , 「정책 엔트리」다이알로그 박스로<b>「액세스권의 추가」</b>버튼을 선택합니다. 「액세스권」다이알로그 박스가 표시됩니다.
+</p>
+        <p>
+<img src="images/AddPermBlank.gif" alt=           "공백의 「액세스권」다이얼로그" />
+        </p>
+
+<p>액세스권을 추가하려면 , 다음과 같이 합니다. </p>
+
+        <ol>
+<li><b>액세스권의 타입</b>을 입력하는지, 또는 선택합니다.
+
+<p>「액세스권」이라고 하는 라벨이 붙은 드롭 다운 리스트에는, 짜넣어지고 있는 액세스권의 타입의 리스트가 표시됩니다. 리스트에 있는 타입을 지정하는 경우는, 리스트로부터 그 타입을 선택합니다. 선택한 액세스권의 타입의 완전한 이름이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </p>
+
+<p>사용자가 정의한 액세스권의 타입을 지정하는 경우는, 그 액세스권의 타입을 텍스트 박스에 입력합니다. </p>
+          </li>
+
+<li>액세스권의<b>타겟명</b>을 입력하는지, 또는 선택합니다.
+
+<p>「액세스권」드롭 다운 리스트로부터 편입의 액세스권을 선택했을 경우, 그 타입의 액세스권에 특정의 타겟명의 값이 있을 때는, 「타겟명」이라고 하는 라벨이 붙은 드롭 다운 리스트에 그 값의 리스트가 표시되므로, 그 리스트로부터 값을 선택합니다. </p>
+
+<p>타겟명의 선택사항이 무한하게 있는 경우에서도, 특별한 의미를 가지는 편입의 타겟명이 있을 때는, 그러한 타겟명이 드롭 다운 리스트에 표시됩니다. 예를 들어, 「FilePermission」의 경우의 리스트에는, 특별한 타겟명으로서 「&lt;&lt;All FILES&gt;&gt;」가 표시됩니다. </p>
+
+<p>드롭 다운 리스트에 없는 타겟명을 지정하려면 , 「타겟명」드롭 다운 리스트의 우측의 텍스트 박스에 타겟명을 직접 입력합니다. 예를 들어,<code>/JavaSoft/ptTest/</code> 디렉토리내의 <code>data</code> 라는 이름의 파일을 지정하려면 , 다음과 같이 입력합니다. </p>
+            <pre>
+  /JavaSoft/ptTest/data
+</pre>
+          </li>
+
+<li>액션을 지정할 필요가 있는 경우는, 1 개(살) 이상의<b>액션</b>을 입력하는지, 또는 선택합니다.
+
+<p>일부의 액세스권은, 타겟명만을 가져, 액션을 가지고 있지 않습니다. 이러한 액세스권에서는, 「액션」드롭 다운 리스트의 우측의 텍스트 박스를 공백대로 해 둡니다. 그 액세스권이 편입의 액세스권의 경우는, 텍스트 박스가 자동적으로 엷은 색 표시가 되어, 이용할 수 없게 됩니다. </p>
+
+<p>액션의 지정이 필요한 액세스권의 경우는, 콤마로 단락지은 액션의 리스트를 텍스트 박스에 입력하는지, 또는 드롭 다운 리스트로부터 액션을 선택합니다. 예를 들어, 「FilePermission」로 지정된 파일에 대해서 read와 기입의 양쪽 모두의 액세스권을 지정하려면 , 우선 리스트로부터 「<code>read</code>」(또는 「<code>write</code>」. 순서는 임의)를 선택합니다. 텍스트 박스에 「read」라고 표시됩니다. 다음에, 「<code>write</code>」를 선택합니다. 콤마와 스페이스가 입력되어 그 후에 「write」라고 표시됩니다. </p>
+          </li>
+
+<li>필요에 따라서, 「서명자」라벨의 우측의 텍스트 박스에 <b>SignedBy</b> 별명을 입력합니다. 액세스권 엔트리에서는,<b>SignedBy</b> 의 값은 생략 가능합니다. 이 값이 존재하는 경우는, 서명 첨부 액세스권인 것을 나타냅니다. 즉, 그 액세스권이 주어지도록(듯이) 하기 위해서는, 액세스권 클래스 그 자체가, 지정된 별명에 의해 서명되어 있지 않으면 안됩니다. </li>
+        </ol>
+	<p>액세스권의 정보를 지정하면(자),<b>「이해」</b>버튼을 선택합니다. 조작을 취소하는 경우는,<b>「취소」</b>를 선택합니다. 새로운 액세스권의 행이 「정책 엔트리」다이얼로그에 표시됩니다.
+</p>
+<p>이후에, 같은 순서에 따라 액세스권을 추가할 수가 있습니다. 기존의 액세스권을<a href=         "#EditPerm">편집 </a>또는<a href=         "#RemovePerm">삭제</a>할 수도 있습니다. </p>
+      </blockquote>
+
+<h4><a name="EditPerm" id="EditPerm">액세스권의 편집</a> </h4>
+
+      <blockquote>
+      <p>
+기존의 액세스권을 편집하려면 , 「정책 엔트리」다이알로그 박스로 액세스권의 행을 선택해,<b>「액세스권의 편집」</b>버튼을 선택합니다. 또는, 액세스권의 행을 더블 클릭 하는 것만으로도, 그 액세스권을 편집할 수 있게 됩니다.
+</p>
+<p>새로운 액세스권을<a href="#AddPerm">추가</a>할 때와 같은 「액세스권」다이알로그 박스가 표시됩니다. 다만, 이 경우는, 기존의 액세스권의 정보가 표시되고 있습니다. 표시되고 있는 정보를 변경하려면 , 드롭 다운 리스트로부터 새로운 값을 선택하는지, 또는 텍스트 박스의 정보를 새로운 값으로 옮겨놓습니다. </p>
+
+<p>편집이 끝나면(자),<b>「이해」</b>버튼을 선택합니다. 변경을 취소하는 경우는,<b>「취소」</b>를 선택합니다. 「정책 엔트리」다이알로그 박스에, 수정 후의 액세스권의 정보가 표시됩니다. </p>
+      </blockquote>
+
+<h4><a name="RemovePerm"/>액세스권의 삭제</h4>
+
+      <blockquote>
+      <p>
+기존의 액세스권을 삭제하려면 , 「정책 엔트리」다이알로그 박스로 그 액세스권의 행을 선택해,<b>「액세스권의 삭제」</b>버튼을 선택합니다. </p>
+      </blockquote>
+
+<h4><a name="EntryDone"/>정책 엔트리의 추가의 완료</h4>
+
+      <blockquote>
+      <p>
+정책 엔트리의 추가가 끝나면(자), 「정책 엔트리」다이알로그 박스의<b>「완료」</b>버튼을 선택합니다. 조작을 취소하는 경우는,<b>「취소」</b>를 선택합니다. </p>
+
+<p><b>「완료」</b>를 선택하면(자), 지금까지의 조작으로 설정된 정책 엔트리를 나타내는 행이 「Policy Tool」윈도우에 표시됩니다. 이 행에는, CodeBase, SignedBy, 및 주체의 정보 (존재하는 경우)가 포함되어 있습니다. 「정책 엔트리」다이알로그 박스로, 어느 정보도 지정하지 않았던 경우는,</p>
+        <pre>
+  CodeBase &lt;ALL&gt;
+</pre>
+<p>(와)과만 표시됩니다. </p>
+
+<p>주:키스토어에 아직 존재하고 있지 않는 <b>SignedBy</b> 별명이 정책 엔트리에 포함되어 있는 경우는, 정책 엔트리를 닫는 시점에서 경고가 표시됩니다. 이 경우는,<b>「이해」</b>를 선택해, 해당하는 별명을 나중에 작성하겠습니다. 별명의 지정에 잘못이 있는 경우는,<a href="#EditEntry">정책 엔트리를 편집</a>해, 별명을 수정합니다. </p>
+      </blockquote>
+    </blockquote>
+
+<h3><a name="EditEntry"/>정책 엔트리의 편집</h3>
+
+    <blockquote>
+    <p>
+기존의 정책 엔트리를 편집하려면 , 「Policy Tool」메인 윈도우로 그 엔트리의 행을 선택해,<b>「정책 엔트리의 편집」</b>버튼을 선택합니다. 또는, 엔트리의 행을 더블 클릭 하는 것만으로도, 그 엔트리를 편집할 수 있게 됩니다.
+</p>
+<p>새로운 정책 엔트리를<a href="#AddEntry">추가</a>할 때와 같은 「정책 엔트리」다이알로그 박스가 표시됩니다. 다만, 이 경우는, 기존의 정책 엔트리의 정보가 표시되고 있습니다. 표시되고 있는 정보를 변경하려면 ,<b>CodeBase</b> 와 <b>SignedBy</b> 의 값의 경우는, 필요한 직접 입력해,<b>주체</b>와<b>액세스권</b>의 값의 경우는, 버튼을 사용해 정보를 변경합니다. </p>
+
+<p>편집이 끝나면(자),<b>「완료」</b>버튼을 선택합니다. 조작을 취소하는 경우는,<b>「취소」</b>를 선택합니다. </p>
+    </blockquote>
+
+<h3><a name="RemoveEntry"/>정책 엔트리의 삭제</h3>
+
+    <blockquote>
+    <p>
+정책 파일로부터 정책 엔트리를 삭제하려면 , 「Policy Tool」메인 윈도우로 그 엔트리의 행을 선택해,<b>「정책 엔트리의 삭제」</b>버튼을 선택합니다.
+</p>
+<p>선택한 정책 엔트리 전체가 표시됩니다. 이 엔트리를 삭제하려면<b>「이해」</b>를 선택해, 이 엔트리를 삭제하지 않는 경우는<b>「취소」</b>를 선택합니다. </p>
+    </blockquote>
+
+<h3><a name="SaveFile"/>정책 파일의 보존</h3>
+
+    <blockquote>
+<p>기존의 정책 파일에 대한 변경 내용을 보존하려면 ,<b>「파일」</b>메뉴의<b>「보존」</b>커멘드를 선택합니다. </p>
+
+<p>작성한 새로운 정책 파일을 보존하거나 기존의 정책 파일을 새로운 이름의 정책 파일에 카피하거나 하려면 ,<b>「파일」</b>메뉴의<b>「별명 보존」</b>커멘드를 선택합니다. 「별명 보존」다이알로그 박스가 표시됩니다. </p>
+
+<p>디렉토리 구조를 이동해, 정책 파일의 보존처의 디렉토리를 선택합니다. 파일명을 입력해,<b>「보존」</b>버튼을 선택합니다. 정책 파일이 보존되어 그 파일의 이름과 패스가, 「정책 파일」이라고 하는 라벨이 붙은 텍스트 박스에 표시됩니다. </p>
+    </blockquote>
+
+<h3><a name="ExitTool"/>Policy Tool 의 종료</h3>
+
+    <blockquote><p>
+<b>Policy Tool</b> 를 종료하려면 ,<b>「파일」</b>메뉴의<b>「종료」</b>커멘드를 선택합니다. </p>
+    </blockquote>
+
+<h3><a name="Log"/>경고 로그의 표시</h3>
+
+    <blockquote>
+    <p>
+<b>Policy Tool</b> 가, 경고를 경고 로그에 보존했다고 하는 메세지를 표시했을 경우는,<b>「파일」</b> 메뉴의<b>「경고 로그의 표시」</b>커멘드를 선택하면, 경고 로그를 표시할 수 있습니다.
+</p>
+<p>예를 들어, 정책 파일로 키스토어의 URL 를 지정하고 있어, 이 키스토어가 아직 존재하고 있지 않는 경우는, 파일을 열 때 등, 님 자리 없는 장면에서 경고가 표시됩니다. 경고가 존재하는 경우에서도, 정책 파일의 작업은 속행할 수 있습니다. </p>
+    </blockquote>
+  </blockquote>
+
+<h2><a name="Examples"/>례</h2>
+
+  <blockquote>
+  <p>
+이후에 소개하는 예에서는, 다음의 조작을 실행하는 방법을 설명합니다. </p>
+
+    <ul>
+<li>새로운<a href="#ExStartingCreation">사용자 정책 파일을 작성한다</a> </li>
+
+<li><a href="#ExAddEntry">정책 엔트리를 추가한다</a> </li>
+
+<li><a href="#ExSpecifyKeystore">키스토어를 지정한다</a> </li>
+
+<li><a href="#ExAddSignedByEntry">서명된 코드를 위한 정책 엔트리를 추가한다</a> </li>
+
+<li><a href="#ExAddPrincipalEntry">인증된 코드를 위한 정책 엔트리를 추가한다</a> </li>
+
+<li><a href="#ExSaveFile">사용자 정책 파일을 보존한다</a> </li>
+
+<li><a href="#ExExit">Policy Tool 를 종료한다</a> </li>
+    </ul>
+
+<h3><a name="ExStartingCreation" id=     "ExStartingCreation">사용자 정책 파일의 작성의 개시</a> </h3>
+
+    <blockquote>
+<p>초기 상태에서는, 사용자 정책 파일은 존재하고 있습니다 (수동으로 작성했을 경우를 제외하다). 사용자 정책 파일을 작성하려면 , 커멘드행에 다음과 같이 입력해 <b>Policy Tool</b> 를 기동합니다. </p>
+      <pre>
+  policytool
+</pre>
+
+<p>「Policy Tool」윈도우가 표시됩니다. </p>
+
+<p>Policy Tool 는, 기동할 때마다, 「사용자 정책 파일」이라고도 불리는 파일로부터 정책 정보를 취득해, 윈도우에 표시하려고 합니다. 디폴트의 사용자 정책 파일은, 홈 디렉토리에 있다 <code>. java.policy</code> 라는 이름의 파일입니다. 정책 파일이 발견되지 않는 경우는, 그것을 나타내는 메세지와 공백의 「Policy Tool」윈도우가 표시됩니다. 즉, 윈도우에 표제나 버튼은 표시됩니다만, 데이터는 포함되어 있지 않습니다 (다음의 화면을 참조). </p>
+
+      <p>
+<img src="images/ptBlank.gif" alt=         "공백의 「Policy Tool」윈도우" />
+      </p>
+
+<p>이 윈도우로 엔트리를 추가해 파일을 보존하면, 사용자 정책 파일을 작성할 수 있습니다. </p>
+    </blockquote>
+
+<h3><a name="ExAddEntry" id="ExAddEntry">정책 엔트리의 추가</a> </h3>
+
+    <blockquote>
+    <p>
+예를 들어,<code>/tests/</code> 디렉토리로부터의 모든 클래스에 대해,<code>/temp/data/</code> 디렉토리내의 <code>mydata</code> 라는 이름의 파일을 읽어내는 액세스권을 허가한다고 합니다. 이 경우는, 우선, 「Policy Tool」메인 윈도우로<b>「정책 엔트리의 추가」</b>버튼을 선택합니다. </p>
+
+<p>「정책 엔트리」다이알로그 박스가 표시됩니다. </p>
+
+      <p>
+<img src="images/AddEntryBlank.gif" alt=         "공백의 「정책 엔트리」다이얼로그" />
+      </p>
+
+<p>이 다이알로그 박스에서는,</p>
+      <pre>
+  file:/tests/
+</pre>
+<p>그렇다고 하는 URL 를<b>「CodeBase」</b>텍스트 박스에 입력합니다. </p>
+
+<p>코드에 서명이 행하여지고 있을 필요는 없기 때문에,<b>「SignedBy」</b>텍스트 박스는 공백대로 합니다. </p>
+
+<p>코드가 인증되고 있을 필요는 없기 때문에,<b>「주체」</b>텍스트 박스는 공백대로 합니다. </p>
+
+<p>액세스권을 추가하기 위해서,<b>「액세스권의 추가」</b>버튼을 선택합니다. 「액세스권」다이알로그 박스가 표시됩니다. </p>
+
+      <p>
+<img src="images/AddPermBlank.gif" alt=         "공백의 「액세스권」다이얼로그" />
+      </p>
+
+<p>액세스권을 추가하려면 , 다음과 같이 합니다. </p>
+
+      <ol>
+<li>「액세스권」드롭 다운 리스트로부터 「FilePermission」를 선택합니다. 액세스권의 타입의 완전한 이름 (java.io.FilePermission)이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </li>
+
+<li>「타겟명」이라고 하는 라벨이 붙은 리스트의 우측의 텍스트 박스에, 다음과 같이 입력합니다.
+          <pre>
+  /temp/data/mydata
+</pre>
+        </li>
+
+<li>읽기 액세스권을 지정하기 위해서, 「액션」드롭 다운 리스트로부터 「read」를 선택하는지, 또는 「액션」드롭 다운 리스트의 우측의 텍스트 박스에 「read」라고 직접 입력합니다. </li>
+      </ol>
+<p>여기까지의 조작으로, 「액세스권」다이알로그 박스에는, 다음과 같이 표시되고 있습니다. </p>
+
+      <p>
+<img src="images/sAddFilePerm1.gif" alt=         "제 1 의 파일 액세스권" />
+      </p>
+
+<p>액세스권의 정보를 지정하면(자),<b>「이해」</b>버튼을 선택합니다. 새로운 액세스권의 행이 「정책 엔트리」다이얼로그에 표시됩니다. </p>
+
+      <p>
+<img src="images/sAddEntry1.gif" alt=         "제 1 의 정책 엔트리" />
+      </p>
+
+<p>이것으로, 이 정책 엔트리의 지정은 마지막입니다. <b>「완료」</b>버튼을 선택합니다. 여기서 지정한 정책 엔트리를 나타내는 행이 「Policy Tool」윈도우에 표시됩니다. 이 행에는 CodeBase 의 값만이 포함되어 있습니다. </p>
+
+      <p>
+<img src="images/sptOneCB.gif" alt=         "CodeBase 하지만 1 개지정되고 있는 「Policy Tool」윈도우" />
+      </p>
+    </blockquote>
+
+<h3><a name="ExSpecifyKeystore"/>키스토어의 지정</h3>
+
+    <blockquote>
+    <p>
+여기에서는, 「http://java.sun.com/」(이)라고 하는 URL 에 있는 코드 가운데, 별명 「duke」의 서명자에 의해 서명된 임의의 코드에 대해서,<code>/tmp/</code> 디렉토리내의 모든 파일에의 읽어내 액세스권을 허가한다고 합니다. 게다가 이러한 코드에, 임의의 호스트에 대한 송신 소켓 접속을 개시할 수 있는 액세스권도 허가한다고 합니다. 이 경우는, 다음의 2 개의 조작을 실시할 필요가 있습니다. </p>
+
+      <ol>
+<li>필요한 별명이 들어간 키스토어를 지정한다</li>
+
+<li>필요한 액세스권을 허가하기 위한<a href="#ExAddSignedByEntry">정책 엔트리를 작성</a>한다</li>
+      </ol>
+      
+<p>정책 엔트리의 <b>SignedBy</b> 파트에서 지정된 별명의 열쇠 정보를 포함한 키스토어를 지정하려면 , 「Policy Tool」메인 윈도우로<b>「편집」</b>메뉴의<b>「키스토어의 변경」</b>커멘드를 선택합니다. </p>
+
+<p>다이알로그 박스가 표시되면(자), 새로운 키스토어의 URL 와 키스토어의 타입 (생략 가능)을 지정합니다. </p>
+
+<p>예를 들어,<code>/tests/</code> 디렉토리에 있는 「mykeystore」라고 하는 이름의 키스토어를 지정하려면 , 「신규 키스토어의 URL」라고 하는 라벨이 붙은 텍스트 박스에, 다음과 같이 <code>file:</code>URL 를 입력합니다. </p>
+      <pre>
+  file:/tests/mykeystore
+</pre>
+<p>키스토어의 타입이, 시큐리티 프로퍼티 파일내의 keystore.type 프로퍼티의 값에 의해 지정된 디폴트의 타입의 경우는, 「신규 키스토어의 타입」의 값을 입력할 필요는 없습니다. 이 프로퍼티의 디폴트의 값은, 「JKS」(Sun 가 지원하는 독자적인 키스토어의 타입)입니다. </p>
+
+<p>키스토어의 타입을 지정하려면 , 「신규 키스토어의 타입」이라고 하는 라벨이 붙은 텍스트 박스에 값을 입력합니다. 예를 들어, 키스토어의 타입이 「JKS」인 것을 나타내려면 , 다음과 같이 입력합니다. </p>
+      <pre>
+  JKS
+</pre><p>다이알로그 박스에는, 다음과 같이 표시됩니다. </p>
+
+      <p>
+<img src="images/sAddKeystore.gif" alt="Keystore" />
+      </p>
+
+<p>키스토어의 URL 와 타입을 지정하면(자),<b>「이해」</b>를 선택합니다. 「키스토어」라고 하는 라벨이 붙은 텍스트 박스에, 여기서 지정한 키스토어의 URL 와 타입이 표시됩니다. </p>
+
+<p>다음에, 정책 엔트리를 지정할 필요가 있습니다. </p>
+    </blockquote>
+
+<h3><a name="ExAddSignedByEntry"/>SignedBy 별명을 지정한 정책 엔트리의 추가</h3>
+
+    <blockquote>
+    <p>
+「Policy Tool」메인 윈도우로<b>「정책 엔트리의 추가」</b>버튼을 선택합니다. 「정책 엔트리」다이알로그 박스가 표시됩니다. <b>「CodeBase」</b>텍스트 박스에, 다음과 같이 입력합니다. </p>
+      <pre>
+  http://java.sun.com/*
+</pre>
+<p>「*」은, 이 <b>CodeBase</b> 가 지정한 디렉토리내의 클래스 파일과 JAR 파일의 양쪽 모두를 나타내는 것을 의미합니다. </p>
+
+<p><b>「SignedBy」</b>텍스트 박스에는, 다음의 별명을 입력합니다. </p>
+      <pre>
+  duke
+</pre>
+
+<p>코드가 인증되고 있을 필요는 없기 때문에,<b>「주체」</b>텍스트 박스는 공백대로 합니다. </p>
+
+<p>지정하는 2 개의 액세스권 가운데, 최초의 액세스권을 추가하기 위해서,<b>「액세스권의 추가」</b>버튼을 선택합니다. 「액세스권」다이알로그 박스가 표시됩니다. 다음과 같이 조작합니다. </p>
+
+      <ol>
+<li>「액세스권」드롭 다운 리스트로부터 「FilePermission」를 선택합니다. 액세스권의 타입의 완전한 이름 (java.io.FilePermission)이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </li>
+
+<li>「타겟명」이라고 하는 라벨이 붙은 리스트의 우측의 텍스트 박스에, 다음과 같이 입력해,<code>/tmp/</code> 디렉토리내의 모든 파일을 지정합니다.
+          <pre>
+  /tmp/*
+</pre>
+        </li>
+
+<li>읽기 액세스권을 지정하기 위해서, 「액션」드롭 다운 리스트로부터 「read」를 선택합니다. </li>
+      </ol>
+<p>「액세스권」다이알로그 박스에는, 다음과 같이 표시됩니다. </p>
+
+      <p>
+<img src="images/sAddFilePerm2.gif" alt=         "제 2 의 파일 액세스권" />
+      </p>
+
+<p><b>「이해」</b>버튼을 선택합니다. 새로운 액세스권의 행이 「정책 엔트리」다이얼로그에 표시됩니다. </p>
+
+<p>다음에, 2 번째의 액세스권을 지정할 필요가 있습니다. <b>「액세스권의 추가」</b>버튼을 선택합니다. 「액세스권」다이알로그 박스로, 다음과 같이 조작합니다. </p>
+
+      <ol>
+<li>「액세스권」드롭 다운 리스트로부터 「SocketPermission」를 선택합니다. 액세스권의 타입의 완전한 이름 (java.net.SocketPermission)이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </li>
+
+<li>「타겟명」이라고 하는 라벨이 붙은 리스트의 우측의 텍스트 박스에, 다음과 같이 입력해, 모든 호스트를 지정합니다.
+          <pre>
+  *
+</pre>
+        </li>
+
+<li>접속을 실시하는 허가를 지정하기 위해서, 「액션」드롭 다운 리스트로부터 「connect」를 선택합니다. </li>
+      </ol>
+<p>「액세스권」다이알로그 박스에는, 다음과 같이 표시됩니다. </p>
+
+      <p>
+<img src="images/AddSocketPerm.gif" alt=         "소켓 허가" />
+      </p>
+
+<p><b>「이해」</b>버튼을 선택합니다. 새로운 액세스권의 행이 「정책 엔트리」다이얼로그에 표시됩니다. </p>
+
+      <p>
+<img src="images/sAddEntry2.gif" alt=         "액세스권이 2 개지정되고 있는 「정책 엔트리」윈도우" />
+      </p>
+
+<p>이것으로, 정책 엔트리의 지정은 마지막입니다. 「정책 엔트리」다이얼로그의<b>「완료」</b>버튼을 선택합니다. 「Policy Tool」윈도우에, 지정한 CodeBase, SignedBy, 및 주체의 값을 포함한 정책 엔트리의 행이 표시됩니다. </p>
+
+      <p>
+<img src="images/sptTwoEntries.gif" alt=         "엔트리가 2 개지정되고 있는 「Policy Tool」윈도우" />
+      </p>
+    </blockquote>
+
+<h3><a name="ExAddPrincipalEntry"/>주체를 지정한 정책 엔트리의 추가</h3>
+
+    <blockquote>
+<p>여기에서는, 다음과 같은 X500 명을 가지는 주체에 액세스권을 허가한다고 합니다. </p>
+
+      <blockquote>
+        <pre>
+CN=Duke, OU=JavaSoft, O=Sun Microsystems, C=US
+</pre>
+      </blockquote>
+<p>이 주체에,<code>/tmp/</code> 디렉토리에 대한 기입을 허가합니다. </p>
+
+<p>「Policy Tool」메인 윈도우로<b>「정책 엔트리의 추가」</b>버튼을 선택합니다. 「정책 엔트리」다이알로그 박스가 표시됩니다. </p>
+
+<p>코드의 출처(소)는 제한하지 않기 때문에,<b>「CodeBase」</b> 텍스트 박스는 공백대로 합니다. </p>
+
+<p>코드에 서명이 행하여지고 있을 필요는 없기 때문에,<b>「SignedBy」</b>텍스트 박스는 공백대로 합니다. </p>
+
+<p><b>「주체의 추가」</b>버튼을 선택합니다. 「주체」다이알로그 박스로, 다음과 같이 조작합니다. </p>
+
+      <ol>
+<li>「주체의 타입」드롭 다운 리스트로부터 「X500Principal」을 선택합니다. 주체의 타입의 완전한 이름 (com.sun.security.auth.X500Principal)이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </li>
+
+<li>「주체의 이름」이라고 하는 라벨이 붙은 리스트의 우측의 텍스트 박스에, 다음과 같이 입력해, X500Principal 의 X500 명을 지정합니다.
+          <pre>
+CN=Duke, OU=JavaSoft, O=Sun Microsystems, C=US
+</pre>
+        </li>
+      </ol>
+<p>「주체」다이알로그 박스에는, 다음과 같이 표시됩니다. </p>
+
+      <p>
+<img src="images/AddX500Principal.gif" alt=         "X500Principal" />
+      </p>
+
+<p><b>「이해」</b>버튼을 선택합니다. 새로운 주체의 행이 「주체」리스트에 표시됩니다. </p>
+
+      <p>
+<img src="images/sAddEntry3.gif" alt=         "주체가 1 개지정되고 있는 「정책 엔트리」윈도우" />
+      </p>
+
+<p>액세스권을 추가하기 위해서,<b>「액세스권의 추가」</b>버튼을 선택합니다. 「액세스권」다이알로그 박스가 표시됩니다. 다음과 같이 조작합니다. </p>
+
+      <ol>
+<li>「액세스권」드롭 다운 리스트로부터 「FilePermission」를 선택합니다. 액세스권의 타입의 완전한 이름 (java.io.FilePermission)이, 드롭 다운 리스트의 우측의 텍스트 박스에 표시됩니다. </li>
+
+<li>「타겟명」이라고 하는 라벨이 붙은 리스트의 우측의 텍스트 박스에, 다음과 같이 입력해,<code>/tmp/</code> 디렉토리내의 모든 파일을 지정합니다.
+          <pre>
+  /tmp/*
+</pre>
+        </li>
+
+<li>기입 액세스권을 지정하기 위해서, 「액션」드롭 다운 리스트로부터 「write」를 선택합니다. </li>
+      </ol>
+
+<p><b>「이해」</b>버튼을 선택합니다. 새로운 액세스권의 행이 「정책 엔트리」다이얼로그에 표시됩니다. </p>
+
+      <p>
+<img src="images/AddPrincipalPermEntry.gif" alt=         "Principal (와)과 액세스권이 1 개씩 지정되고 있는 「정책 엔트리」윈도우" />
+      </p>
+
+<p>이것으로, 정책 엔트리의 지정은 마지막입니다. 「정책 엔트리」다이얼로그의<b>「완료」</b>버튼을 선택합니다. 「Policy Tool」윈도우에, 지정한 CodeBase, SignedBy, 및 주체의 값을 포함한 정책 엔트리의 행이 표시됩니다. </p>
+
+      <p>
+<img src="images/sptThreeEntries.gif" alt=         "엔트리가 3 개지정되고 있는 「Policy Tool」윈도우" />
+      </p>
+    </blockquote>
+
+<h3><a name="ExSaveFile" id="ExSaveFile">사용자 정책 파일의 보존</a> </h3>
+
+    <blockquote>
+    <p>
+여기에서는, 작성한 정책 파일을, 디폴트의 장소 (홈 디렉토리)에 디폴트의 이름 (. java.policy)로 보존한다고 합니다. </p>
+
+<p>작성한 사용자 정책 파일을 보존하기 위해서,<b>「파일」</b>메뉴의<b>「별명 보존」</b>커멘드를 선택합니다. 「별명 보존」다이알로그 박스가 표시됩니다. </p>
+
+<p>홈 디렉토리까지 디렉토리 구조를 이동해, 다음과 같이 입력합니다. </p>
+      <pre>
+  . java.policy
+</pre>
+<p>선두에 피리어드가 있는 것에 주의해 주세요. 그 후,<b>「보존」</b>버튼을 선택합니다. 정책 파일이 보존되어 그 파일의 이름과 패스가, 「정책 파일」이라고 하는 라벨이 붙은 텍스트 박스에 표시됩니다. </p>
+
+      <p>
+<img src="images/sptThreeEntriesAndFileName.gif" alt=         "3 개의 엔트리, 키스토어, 및 정책 파일명이 지정되고 있는 「Policy Tool」윈도우" />
+      </p>
+    </blockquote>
+
+<h3><a name="ExExit"/>Policy Tool 의 종료</h3>
+
+    <blockquote>
+    <p>
+<b>Policy Tool</b> 를 종료하려면 ,<b>「파일」</b>메뉴의<b>「종료」</b>커멘드를 선택합니다. </p>
+    </blockquote>
+  </blockquote>
+
+<h2><a name="SeeAlso">관련 항목</a> </h2>
+
+  <blockquote>
+    <ul>
+<li><a href=       "../../guides/security/permissions.html">Java &trade; Development Kit 에서의 액세스권</a> </li>
+
+<li><a href="../../guides/security/PolicyFiles.html">디폴트의 정책의 구현과 정책 파일의 구문</a> </li>
+
+<li><a href="../../tools/solaris/keytool.html">keytool</a>  툴의 메뉴얼 페이지</li>
+
+<li><a href=       "../../guides/security/spec/security-spec.doc.html">시큐리티 아키텍쳐(architecture)의 스펙</a> </li>
+
+<li><b>Policy Tool</b> 를 포함한 시큐리티 툴의 사용예에 대해서는,<a href=       "http://java.sun.com/docs/books/tutorial/trailmap.html"><b>「Java 튜토리얼」</b></a> 의<a href=       "http://java.sun.com/docs/books/tutorial/security/index.html"><b>「Security」</b></a> 를 참조해 주세요. </li>
+    </ul>
+  </blockquote>
+  <hr/>
+
+  <table border="0" width="100%" summary="layout">
+    <tr valign="top">
+      <td>
+<p><a href=         "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2006 <a href="http://www.sun.com">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+      </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"       alt="Sun" width="64" height="30" /><br /> <i> Java Software</i></td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Preferences API 의 개요 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF"
+  vlink="#000077" alink="#FF0000">
+    <table summary="layout" border="0" width="100%">
+      <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"         alt="Java" border="0" width="52" height="88" /> </td>
+
+        <td>
+          <center>
+<h1>Preferences API 의 개요</h1>
+          </center>
+        </td>
+
+        <td align="right" valign="top"></td>
+      </tr>
+    </table>
+
+
+<h2>처음에</h2>
+
+<p>설정 데이터를 변경하는 모든 메소드는, 비동기적으로 조작할 수 있습니다. 각 메소드는 즉시 복귀해, 변경은 지속적인 배킹 스토어에 전송 됩니다. <a href=   "../../../api/java/util/prefs/Preferences.html#flush()">flush</a>  메소드를 사용하면, 배킹 스토어를 강제적으로 갱신할 수 있습니다. </p>
+
+<p><a href=   "../../../api/java/util/prefs/Preferences.html">Preferences 클래스</a>내의 메소드는, 단일 JVM 내의 복수 thread에 의해 동시에 불려 갑니다. 이 때, 외부 동기를 실시할 필요는 없습니다. 순서대로 실행했을 경우와 같은 결과가 됩니다. 이 클래스가 복수의 JVM 에 의해 동시에 사용되어 설정 데이터가 같은 배킹 스토어에 포함되었을 경우, 데이터 스토어는 파괴합니다만, 설정 데이터의 일관성은 보증되지 않습니다. </p>
+
+<p>상세한 것에 대하여는, 이하의 링크로부터 선택해 주세요. </p>
+
+  <ul>
+<li><a href="#prefs-other">Preferences API 와 다른 기구라는 비교</a> </li>
+
+<li><a href="#prefs-usage">사용상의 주의</a> </li>
+
+<li><a href="#prefs-design-faq">Java 컬렉션 API 의 설계에 관한 FAQ</a> </li>
+  </ul>
+  <hr />
+
+<h3><a name="prefs-other"/>Preferences API 와 다른 기구라는 비교</h3>
+  
+  <p>
+  
+Preferences API 를 도입하기 이전은, 설정 및 구성 데이터를 개별적으로 관리하기 위해서, 지금부터 설명하는 Properties API 또는 JNDI API 를 사용하고 있었습니다.
+  
+  </p>
+
+<p>설정 및 구성 데이터는, 많은 경우, java.util.Properties API 를 사용해 프로퍼티 파일에 액세스 해, 이 파일에 포함하고 있었습니다. 다만, 디스크상에서의 파일의 위치 또는 파일의 이름에 관한 표준은 존재하지 않았습니다. 이 경우, 사용자의 설정 데이터의 백업 작성이나, 머신간의 데이터 전송이 곤란하게 됩니다. 어플리케이션수가 증가하는 것에 따라, 파일명이 중복 할 가능성이 높아집니다. 또, 로컬 디스크가 존재하지 않는 경우, 또는 데이터를 외부 데이터 스토어 (기업 전역에 걸치는 LDAP 디렉토리 서비스등의)에 보존하는 경우에는, 이 방법은 사용할 수 없습니다. </p>
+
+<p>적용예는 적게 됩니다만, JNDI (Java Naming and Directory Interface) API 를 사용해 디렉토리 서비스에 액세스 해, 거기에 포함하는 경우도 있었습니다. Properties API 와 달리, JNDI 에서는, 임의의 데이터 스토어를 사용할 수 있습니다 (연구 최종 단계의 중립성). JNDI 는 강력한 API 입니다만, 사이즈가 비교적 크고, 5 개의 패키지와 83 의 클래스로부터 구성됩니다. JNDI 에는, 디렉토리 이름 공간내에서 설정 데이터를 포함하는 장소, 또는 포함하는 이름 공간에 관한 정책가 존재하지 않습니다. </p>
+
+<p>Properties 및 JNDI 에는, 단순해, 범용적인, 연구 최종 단계의 중립성을 가지는 설정 관리 기능은 없습니다. Preferences API 에서는, Properties API 의 단순함과 JNDI 의 연구 최종 단계의 중립성이 동시에 실현됩니다. Preferences API 에는, 이름의 중복을 회피해, 일관성을 보관 유지해, 안정성을 향상하기 위해서 필요한 정책가 짜넣어지고 있습니다. 다만, 배킹 데이터 스토어의 사용은 추천 되고 있지 않습니다. </p>
+
+  <ul>
+<li>관련 항목:<a href="designfaq.html">Java 컬렉션 API 의 설계에 관한 FAQ</a> </li>
+  </ul>
+  
+  <hr/>
+
+<h2><a name="prefs-usage"/>사용상의 주의</h2>
+  
+  <p>
+여기에서는, Preferences API 의 스펙을 설명하는 것이 아니라, Preferences API 의 사용예를 몇개인가 가리킵니다.
+  </p>
+
+  <ul>
+<li><a href="#prefs-usage-enclosing">포함 클래스의 Preferences 객체를 취득한다</a> </li>
+
+<li><a href="#prefs-usage-static">Static 메소드의 Preferences 객체를 취득한다</a> </li>
+
+<li><a href="#prefs-usage-atomic">불가분인 갱신</a> </li>
+
+<li><a href="#prefs-usage-backingstore">배킹 스토어의 상태를 판단한다</a> </li>
+  </ul>
+
+<h3><a name="prefs-usage-enclosing"/>포함 클래스의 Preferences 객체를 취득한다</h3>
+  
+<p>다음의 예에서는, 포함 클래스에 소속하는 Preferences 객체 (시스템 및 사용자)를 취득하는 방법을 나타냅니다. 이러한 예는, 인스턴스 메소드내에게만 동작합니다. </p>
+  
+<p>여기에서는, 인 라인의 String 리터럴은 아니고, static final 필드가, 키명 (<code>NUM_ROWS</code> 및 <code>NUM_COLS</code>)으로서 사용되고 있습니다. 이와 같이 하면(자), 키명의 입력 미스에 의한 실행시의 버그가 발생할 가능성이 감소합니다. </p>
+
+<p>취득한 각 설정치에는, 적절한 디폴트를 할당할 수 있습니다. 이러한 디폴트는, 설정치가 설정되어 있지 않은 경우, 또는 배킹 스토어에 액세스 할 수 없는 경우에 돌려주어집니다.
+  </p>
+  <pre>
+package com.acme.widget;
+import  java.util.prefs. *;
+
+public class Gadget {
+    // Preference keys for this package
+    private static final String NUM_ROWS = "num_rows";
+    private static final String NUM_COLS = "num_cols";
+
+    void foo() {
+        Preferences prefs = Preferences.userNodeForPackage(Gadget.class);
+
+        int numRows = prefs.getInt(NUM_ROWS, 40);
+        int numCols = prefs.getInt(NUM_COLS, 80);
+
+        ...
+    }
+}
+</pre>
+
+<p>
+위의 예에서는, 사용자마다의 설정치를 취득하고 있습니다. 시스템마다의 값만이 필요한 경우는,<code>foo</code> 의 최초의 행을 다음의 행에 옮겨놓습니다.
+</p>
+  <pre>
+        Preferences prefs = Preferences.systemNodeForPackage(Gadget.class);
+</pre>
+
+<h3><a name="prefs-usage-static"/>Static 메소드의 Preferences 객체를 취득한다</h3>
+  
+  <p>
+전의 마디에서는, 포함 클래스에 소속하는 Preferences 객체를 취득해, 인스턴스 메소드의 내부를 조작했습니다. Static 메소드 (또는 정적 초기화자) 내에서는, 다음과 같이, 패키지명을 명시적으로 지정할 필요가 있습니다.
+  </p>
+  <pre>
+    Static String ourNodeName = "/com/acme/widget";
+
+    static void foo() {
+        Preferences prefs = Preferences.userRoot(). node(ourNodeName);
+
+        ...
+    }
+</pre>
+
+<p>일반적으로은, 시스템 설정 객체를 초기화자내에서 1 회 취득해, 시스템 설정이 필요한 때에 그것을 사용합니다.
+</p>
+  <pre>
+    static Preferences prefs =  Preferences.systemRoot(). node(ourNodeName);
+</pre>
+
+<p>
+일반적으로은, 사용자 설정 객체의 경우도, 같은 방법을 적용합니다. 다만, 코드를 서버내에서 사용해, 복수의 사용자가 동시에 또는 차례로 실행하는 경우는, 이 방법은 사용하지 않습니다. 이러한 시스템에서는,<code>userNodeForPackage</code> 및 <code>userRoot</code> 가 호출해 옆의 클라이언트에 대해서 적절한 노드를 돌려줍니다. 즉,<code>userNodeForPackage</code> 또는 <code>userRoot</code> 에의 호출은, 적절한 thread로부터 적절한 타이밍에 실시하는 것이 중요하게 됩니다. 이러한 서버 환경에서 코드를 사용하는 경우는, 사용하기 직전에 사용자 설정 객체를 취득하는 것을 추천합니다. <a href= "#ex-enclosing">「포함 클래스의 Preferences 객체를 취득한다」</a>를 참조해 주세요.</p>
+
+<h3><a name="prefs-usage-atomic"/>불가분인 갱신</h3>
+  
+<p>Preferences API 에는, 복수의 설정이 불가분으로 변경되는 트랜잭션(transaction)를 닮은 데이타베이스는 없습니다. 다만, 복수의 설정을 갱신할 때는, 1 단위로 실시할 필요가 있습니다. 예를 들어, x 좌표와 y 좌표를 포함해, 거기에 윈도우를 배치하는 것을 상정합니다. 불가분에 갱신하려면 , 이러한 값을 단일의 설정에 포함합니다. 다양한 방법으로 코딩 할 수 있습니다만, 여기에서는 간단한 예를 나타냅니다.
+  </p>
+  <pre>
+    int x, y;
+    ...
+    prefs.put(POSITION, x + "," + y);
+</pre>
+
+<p>이러한 복합 설정을 읽어들일 때는, 복호화 할 필요가 있습니다. 안정성을 확보하기 위해서, 값이 파괴했을 (해석 불가능한) 경우를 고려할 필요가 있습니다.
+</p>
+  <pre>
+    static int X_DEFAULT = 50, Y_DEFAULT = 25;
+    void baz() {
+        String position = prefs.get(POSITION, X_DEFAULT + "," + Y_DEFAULT);
+        int x, y;
+        try {
+            int i = position.indexOf(', ');
+            x = Integer.parseInt(coordinates.substring(0, i));
+            y = Integer.parseInt(position.substring(i + 1));
+        } catch(Exception e) {
+            // Value was corrupt, just use defaults
+            x = X_DEFAULT;
+            y = Y_DEFAULT;
+        }
+        ...
+    }
+</pre>
+
+<h3><a name="prefs-usage-backingstore"/>배킹 스토어의 상태를 판단한다</h3>
+  
+  <p>
+표준의 어플리케이션 코드에서는, 배킹 스토어를 이용할 수 있을지 어떨지에 관한 정보는 필요 없습니다. 대부분의 경우, 배킹 스토어는 항상 이용할 수 있습니다. 이용할 수 없는 경우는, 배킹 스토어내의 설정치 대신에 디폴트 값를 사용해, 실행을 계속합니다. 일부의 고도의 프로그램에서는, 배킹 스토어를 이용할 수 없는 경우에, 동작을 변경하는 (또는 단순하게 실행을 거부한다) 일이 생깁니다. 이하의 메소드에서는, 배킹 스토어를 이용할 수 있을지 어떨지를 판단하기 위해서(때문에), 값을 변경한 설정을 배킹 스토어에 플래시 하고 있습니다.
+  </p>
+  <pre>
+    private static final String BACKING_STORE_AVAIL = "BackingStoreAvail";
+
+    private static boolean backingStoreAvailable() {
+        Preferences prefs = Preferences.userRoot(). node("&lt;temporary&gt;");
+        try {
+            boolean oldValue = prefs.getBoolean(BACKING_STORE_AVAIL, false);
+            prefs.putBoolean(BACKING_STORE_AVAIL, ! oldValue);
+            prefs.flush();
+        } catch(BackingStoreException e) {
+            return false;
+        }
+        return true;
+    }
+</pre>
+
+
+ 
+<!-- Body text ends here --> <!-- ============================================================== -->
+  <hr size="3" noshade="noshade" />
+
+    <table summary="layout" border="0" width="100%">
+      <tr valign="top">
+        <td>
+<p><font size="-2"><a           href="../../../legal/SMICopyright.html">Copyright &copy;</a>  2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+<font size="-1">코멘트의 송부처:<a           href="">TBP</a> </font>
+          
+        </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"         alt="Sun" border="0" width="64" height="30" /> <br /> <font size="+1"><i>Java Software</i></font> </td>
+      </tr>
+    </table>
+</body>
+</html>

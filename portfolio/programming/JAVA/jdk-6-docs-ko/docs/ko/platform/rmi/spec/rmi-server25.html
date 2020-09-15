@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:5 - 서버 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-server24.html">전의 항목</a>  | <a href="rmi-server26.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a> 
+<h2><a name="5112">5.4	<code>Unreferenced</code> 인터페이스</a> </h2>
+
+<blockquote><pre>package java.rmi.server;
+
+public interface Unreferenced {
+	public void unreferenced();
+}
+
+
+</pre></blockquote><blockquote>
+<a name="1584"><!-- --></a> <code>java.rmi.server.Unreferenced</code> 인터페이스를 사용하면(자), 서버 객체가, 자신에 대한 원격 참조를 가지고 있는 클라이언트가 없다고 하는 통지를 받을 수가 있습니다. 분산 가베지 컬렉션 기구는, 각 원격 객체에 대해, 그 원격 객체를 참조하고 있는 클라이언트 가상 머신군을 보관 유지하고 있습니다. 어느 클라이언트가 있는 원격 객체에 대한 원격 참조를 가지고 있는 동안은, RMI 런타임도 그 원격 객체에의 로컬 참조를 계속 보관 유지합니다. 원격 객체의 「참조」세트가 비울 때마다 (즉, 그 객체를 참조하는 클라이언트의 수가 0 이 되면(자)), 원격 객체가 <code>Unreferenced</code> 인터페이스를 구현하고 있으면,<code>Unreferenced.unreferenced</code> 메소드가 불려 갑니다. 원격 객체가 <code>Unreferenced</code> 인터페이스를 지원하는 것은 필수가 아닙니다. <p>
+<a name="1593"><!-- --></a>  원격 객체에 대한 로컬 참조가 존재하고 있는 동안은, 그것을 원격 호출로 건네줄 수도 있고, 클라이언트에의 반환값으로도 됩니다. 참조를 받은 프로세스는, 그 원격 객체에 대한 세트에 추가됩니다. 참조 세트가 비웠을 때, 그 원격 객체의 <code>unreferenced</code> 메소드가 불려 갑니다. 이 때문에,<code>unreferenced</code> 메소드는, 참조 세트가 재차 비울 때마다, 몇번이나 불려 갑니다. 원격 객체는, 그에 대한 참조 (로컬 참조 또는 클라이언트가 보관 유지하고 있는 참조)가 없어졌을 때에 회수됩니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-server24.html">전의 항목</a>  | <a href="rmi-server26.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

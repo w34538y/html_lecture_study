@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>애플릿의 메소드가 동기화 너무 되었을 경우에 AWT 로 데드락 한다 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2><span class="bg2">애플릿의 메소드가 동기화 너무 되었을 경우에 AWT 로 데드락 한다</span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote> 
+<p> 애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있을 때, 애플릿의 메소드, 특히 <code>java.awt.Component</code> 로부터 상속된 메소드가 동기화 너무 되면(자) 데드락이 발생하는 경우가 있습니다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있습니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p> AWT 클래스 라이브러리는, thread에 대해서 안전한 클래스 라이브러리로서 사용되는 경우가 있습니다. 복수 thread를 사용해 AWT 를 개입시킨 액션을 실행하는 애플릿에서는, 클래스 라이브러리로 동기화의 문제에 주의한다고 하는 전제가 있습니다. <br><br> <br>그러나, AWT 클래스 라이브러리로 thread에 대해서 안전하다라고 하는 것이 보증되는 것은, AWT 이벤트발송쓰레드로부터 호출을 했을 때 뿐입니다. &nbsp;Microsoft VM 와 Sun 와는 구현이 다르기 (위해)때문에, thread에 대해서 안전하지 않은 코드가 한편의 VM 로 문제 없게 실행할 수 있어도, 이제(벌써) 한편에서는 실패할 가능성이 있습니다. </p>
+<p> 애플릿으로 사용되는 나쁜 실례로서는, Microsoft VM 로 경합 상태나 데드락이 발생하지 않게, 애플릿의 각 메소드를 동기화하는 것이 들고 있습니다. 그러나, 이 경우에서도 데드락이 발생할 가능성이 있습니다.  </p>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote>
+<p> 이 문제를 회피하려면 , 정말로 필요한 개소에서만 애플릿으로 동기를 사용해, 불필요한 동기는 삭제합니다. 예를 나타냅니다. </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>public synchronized void paint(Graphics g) {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br>&nbsp;&nbsp;&nbsp; }<br> <br> &nbsp;&nbsp;&nbsp; public synchronized void dispose() {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super.dispose();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .....<br> &nbsp;&nbsp;&nbsp; }</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; public synchronized void stop() {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br>&nbsp;&nbsp;&nbsp; }<br> <br> &nbsp;&nbsp;&nbsp; public synchronized void destroy() {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br> &nbsp;&nbsp;&nbsp; }</code></p>
+<p> 이 경우,<code>paint</code>,<code>dispose</code>,<code>stop</code>, 및 <code>destroy</code> 메소드는 항상 전용의 thread로부터,<code>paint</code> 및 <code>dispose</code> 메소드는 AWT 이벤트발송쓰레드로부터,<code>stop</code> 및 <code>destroy</code> 메소드는 애플릿의 thread로부터 각각 불려 가기 (위해)때문에, 이러한 메소드의 <code>synchronized</code> 키워드는 삭제합니다. 이 코드를 다음과 같이 변경합니다.  </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>public void paint(Graphics g) {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br>&nbsp;&nbsp;&nbsp; }<br> <br> &nbsp;&nbsp;&nbsp; public void dispose() {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super.dispose();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .....<br> &nbsp;&nbsp;&nbsp; }</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; public void stop() {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br>&nbsp;&nbsp;&nbsp; }<br> <br> &nbsp;&nbsp;&nbsp; public void destroy() {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br> &nbsp;&nbsp;&nbsp; }</code></p>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em></em>Java 튜토리얼의 <a href="http://java.sun.com/docs/books/tutorial/uiswing/misc/threads.html">「How to Use Threads」</a>  에서는, thread의 문제, 및 AWT 와 Swing 프로그램의 양쪽 모두에 적용되는 테크닉을 설명하고 있습니다.  </p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>RowSet - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="mapping.html">[전의 항목]</a>  <a href="appendixB.html">[다음의 항목]</a> 
+<hr><br>
+
+<h1>RowSet</h1>
+
+<a name="997347"></a> 
+<h2>10.1	 &nbsp;&nbsp; RowSet 의 개요</h2>
+<a name="998158"></a> <code>RowSet</code> 객체는, 겉(표) 형식 데이터를 포함하기 위한 컨테이너이며, 특정의 데이터 소스로부터 취득된 0 개 이상의 행을 캡슐화합니다. RowSet</code> 인터페이스의 기본 구현에서는, JDBC 데이터 소스로부터 행을 취득하게 되어 있습니다만, 행 세트를 커스터마이즈 하면, 스프레드쉬트나 플랫 파일이라고 하는 겉(표) 형식의 데이터 소스로부터 데이터를 취득하는 일도 가능합니다. <code> RowSet</code> 객체는,<code>ResultSet</code> 인터페이스를 확장하고 있습니다. 따라서,<code>RowSet</code> 객체는, 스크롤 가능이나 갱신 가능하게 할 수 있는 것 외에<code>ResultSet</code> 객체로 할 수 있는 것의 모든 것을 실행할 수 있습니다.  이 처음의 섹션에서는,<code>RowSet</code> 객체의 기능에 대해 간단하게 설명합니다만, 그러한 상세한 것에 대하여는, 이후의 각 섹션으로 설명합니다.
+<p><a name="1003756"></a> <code>RowSet</code> 객체와 <code>ResultSet</code> 객체의 차이점으로서는, 전자가 JavaBeans<font size="-2"><sup>TM</sup></font> 컴퍼넌트인 것이 들고 있습니다. 따라서,<code>RowSet</code> 객체는, 일련의 JavaBeans 프로퍼티을 갖추어 JavaBeans 의 이벤트 모델에 따릅니다. <code>RowSet</code> 객체는, 그러한 프로퍼티을 사용하는 것으로, 데이타베이스 접속의 확립과 쿼리의 실행을 독자적으로 실시해, 취득한 데이터를 자신에게 포함할 수 있습니다. 행 세트는, 「절단 되었다」상태로 하는 것이 가능합니다.  즉, 행 세트를 사용하고 있는 동안, 항상 데이터 소스에의 접속을 유지하지 않아도, 행 세트가 기능하도록 할 수 있습니다. <em></em>게다가 행 세트는 직렬화할 수 있기 (위해)때문에, 행 세트를 네트워크 경유로 특정의 원격 객체에 송신하는 것이 가능합니다.
+<p>
+JDBC API 는 일반적으로, 2 개의 카테고리로 나눌 수 있습니다.  <code>RowSet</code> 부분과 드라이버 부분의 2 개입니다. <code>RowSet</code> 와 그것을 지원하는 인터페이스는, JDBC API 의 그 외의 부분을 이용해 구현되도록(듯이) 설계되고 있습니다. 바꾸어 말하면(자),<code>RowSet</code> 인터페이스를 구현하는 클래스는, JDBC 드라이버상에서 동작하는 소프트웨어층이다고 말할 수 있습니다. <code>RowSet</code> 객체는 다른 JDBC 객체와 달리, 드라이버가 존재하지 않고, 데이터 소스에 접속되어 있지 않은 상태에서의 동작을 가능하게하기 위한 기구를 갖추고 있습니다.
+<p>
+J2SE  5.0 에서는, 3 번째의 카테고리가 도입되었습니다. <code>RowSet</code> API 와 드라이버에 가세해<code>RowSet</code> 인터페이스의 표준 구현이 5 개 준비되어 있습니다. 이러한 구현은, 기본 <code>RowSet</code> 인터페이스를 확장한 일련의 인터페이스를 제공함과 함께, 그러한 각 인터페이스의 레퍼런스 구현을 제공합니다. 반드시 이러한 구현을 사용할 필요는 없습니다만, 개발자는 이러한 구현을 사용하는 것으로, 이벤트 처리, 커서 조작등을 실시할 때에, JDBC API 에 확실히 준거할 수가 있습니다. 표준 구현의 상세한 것에 대하여는,<a href="rowsetImpl.html#1010137">「표준 구현」</a>을 참조해 주세요.
+<p>
+<a name="998227"></a> <code>RowSet</code> 인터페이스에는 모든 행 세트에 공통되는 일련의 기본 메소드가 포함되어 있습니다만, 여기에서는 그러한 메소드에 대해 설명합니다. 모든 <code>RowSet</code> 객체는 JavaBeans 컴퍼넌트입니다.  따라서,<code>RowSet</code> 인터페이스에는, 이벤트 청취자의 추가/삭제 메소드와 모든 프로퍼티에 대한 취득/설정 메소드가, 포함되어 있습니다. 그러한 프로퍼티의 상당수는, 접속의 설정, 커멘드의 실행의 어느쪽이든을 지원하기 위한의 것입니다. 행 세트는, 쿼리를 실행해 결과 세트를 생성해, 그것을 자신의 데이터로서 사용할 때에, 데이터 소스와의 접속을 사용합니다. 또, 행 세트는, 변경된 데이터를 데이터 소스에 써 되돌릴 때에도 접속을 사용합니다. 한층 더 <code>RowSet</code> 인터페이스에는,<code>RowSet</code> 객체의 커멘드 캐릭터 라인에 입력 파라미터가 포함되어 있었을 경우에 그러한 값을 설정하기 위한 메소드도, 데이터형 마다 1 개(살)씩 준비되어 있습니다. JDBC <code>RowSet</code> 의 구현 스펙에서는,<code>RowSet</code> 인터페이스에 정의되고 있는 이러한 기본 메소드의 구현이,<code>BaseRowSet</code> 추상 클래스로서 제공되고 있습니다 (이 클래스에 대해서는 후술 합니다).
+<p>
+<a name="1001958"></a> 그 외의 5 개의 인터페이스와 1 개의 클래스는, 시스템 내부에서 <code>RowSet</code> 인터페이스와 제휴 동작합니다. 클래스 <code>RowSetEvent</code> 와 인터페이스 <code>RowSetListener</code> 는, JavaBeans 의 이벤트 모델을 지원합니다. <code>RowSet</code> 객체는 커서 이동시 또는 데이터 변경시에,<code>RowSetListener</code> 의 발생한 이벤트에 대응하는 메소드를 호출해, 자신을 이벤트 발생원으로서 지정한 <code>RowSetEvent</code> 객체를 건네줍니다. 구현내에서는, 그 외의 <code>RowSet</code> 이벤트의 확장을, 필요에 따라서 자유롭게 기술할 수 있습니다.
+<p>
+<a name="1002261"></a> 어느 컴퍼넌트가 특정의 <code>RowSet</code> 객체내에서 발생한 이벤트의 통지를 받도록(듯이) 하려면 , 그 컴퍼넌트에 <code>RowSetListener</code> 인터페이스를 구현한 뒤, 그 컴퍼넌트를 목적의 <code>RowSet</code> 객체에 등록합니다. </a> <em></em></a> 그러한 컴퍼넌트 ( 「청취자」라고 불린다)는 일반적으로,<code>RowSet</code> 객체의 데이터를 표시하는, 겉(표)나 막대 그래프등의 GUI (그래피컬 사용자 인터페이스) 컴퍼넌트입니다. 행 세트내에서 이벤트가 발생할 때마다, 청취자는 통지를 받습니다. 따라서, 청취자와 행 세트와의 사이로, 커서 위치나 데이터의 일관성을 유지할 수 있습니다.
+<p>
+<a name="1012912"></a> 인터페이스 <code>RowSetInternal</code>,<code>RowSetReader</code>,<code>RowSetWriter</code> 는, 행 세트의 리더/라이터 기구를 지원합니다. <code></code></a> <em></em>A 「리더」란,<code>RowSetReader</code> 인터페이스를 구현한 클래스의 인스턴스입니다. 리더는, 데이터를 읽어들여, 그것을 행 세트에 삽입합니다. <em></em>「라이터」란,<code>RowSetWriter</code> 인터페이스를 구현한 클래스의 인스턴스입니다. 라이터는, 행 세트내의 변경된 데이터를, 그 취득처인 데이터 소스에 써 되돌립니다. <em></em> 
+<p>
+<a name="1001981"></a> <code>RowSetInternal</code> 인터페이스가 제공하는 추가의 메소드를 사용하면, 리더 또는 라이터는 행 세트의 내부 상태를 조작할 수 있습니다. 예를 들어, 행 세트에서는 원의 값을 추적할 수 있게 되어 있습니다만, 라이터는 <code>RowSetInternal</code> 의 메소드를 사용하는 것으로, 데이터 소스내의 대응하는 데이터가 다른 사용자에 의해 변경되었는지의 여부를 체크할 수가 있습니다. 게다가<code>RowSetInternal</code> 의 메소드를 사용하면, 행 세트의 커멘드 캐릭터 라인용의 입력 파라미터나 행 세트에게 건네진 접속이 존재하고 있는 경우, 그러한 정보를 취득할 수도 있습니다. 마지막으로, 리더는 <code>RowSetInternal</code> 의 메소드를 사용하는 것으로, 그 행 세트에 삽입하는 행을 기술한 새로운 <code>RowSetMetaData</code> 객체를, 그 행 세트로 설정할 수 있습니다. 이 인터페이스에는 <code>RowSetInternal</code> 라는 이름이 붙일 수 있고 있습니다만, 이 명명은 적절합니다. 그 메소드는, 내부적으로 사용될 뿐으로, 어플리케이션으로부터 직접 불려 갈 것은 없기 때문입니다.
+<p>
+<a name="1002505"></a> 행 세트는, 「접속된 행 세트」, 「절단 된 행 세트」의 머지않아인가입니다. </a> <em></em></a> <em></em>접속된 <code>RowSet</code> 객체는, 사용되고 있는 한, 항상 데이터 소스에의 접속을 유지합니다.  이것에 대해, 절단 된 행 세트는, 데이터 소스와의 사이에 데이터의 읽고 쓰기를 실시하는 동안만, 데이터 소스에 접속합니다. 접속이 절단 되고 있는 동안, 행 세트는, JDBC 드라이버나 JDBC API 의 구현 전체를 필요로 하지 않습니다. 그러한 행 세트는 매우 경량이며, 일련의 데이터를 thin 클라이언트에 송신하는 경우의 컨테이너로서 이상적입니다. 클라이언트는 필요하면, 데이터를 갱신해, 그 행 세트를 어플리케이션 서버에 돌려 보낼 수가 있습니다. 서버상의 절단 된 <code>RowSet</code> 객체는, 자신의 라이터를 사용해 데이터 소스에의 접속을 확립해, 데이터를 써 되돌립니다. 그 구체적인 실행 방법은, 라이터가 어떻게 구현되고 있을까에 의합니다. 라이터는 일반적으로, 접속을 확립해 데이터를 읽어들이는 처리를, JDBC 드라이버에 위양 합니다.
+<p>
+
+<a name="1002925"></a> 
+<h3>10.1. 1	 &nbsp; &nbsp; RowSet 의 이벤트 모델</h3>
+<a name="1012693"></a> <code>RowSet</code> 의 이벤트 모델을 사용하면, Java 객체 또는 컴퍼넌트는, 특정의 <code>RowSet</code> 객체에 의해 생성된 이벤트에 관한 통지를 받아들입니다. 그 통지 메카니즘의 설정에는, 통지를 받는 컴퍼넌트와 <code>RowSet</code> 객체 자신의 양쪽 모두가 관계합니다. 우선, 이벤트 통지를 받는 각 컴퍼넌트는,<code>RowSetListener</code> 인터페이스를 구현할 필요가 있습니다. 계속되어, 각 컴퍼넌트를 <code>RowSet</code> 객체에 등록할 필요가 있습니다.  거기에는, 각 컴퍼넌트를 그 객체의 이벤트 통지 컴퍼넌트 리스트에 추가합니다. 이 시점에서, 그러한 각 컴퍼넌트는 청취자가 됩니다. 청취자란, 특정의 <code>RowSet</code> 객체에 등록된,<code>RowSetListener</code> 의 메소드를 구현한 클래스의 인스턴스입니다.  
+<p><a name="1006533"></a> <code>RowSet</code> 객체내에서 발생할 가능성이 있는 이벤트는, 3 종류 있습니다. 「커서가 이동되었다」, 「특정의 행이 변경되었다 (삽입, 삭제, 갱신의 언젠가)」, 「내용 전체가 변경되었다」의 3 개(살)입니다. 이러한 이벤트에 각각 대응하는 것이,<code>RowSetListener</code> 의 메소드 <code>cursorMoved</code>,<code>rowChanged</code>,<code>rowSetChanged</code> 입니다. 특정의 이벤트가 발생하면(자), 행 세트는, 자신을 이벤트 발생원으로서 지정한 <code>RowSetEvent</code> 객체를 생성합니다. 각 청취자상의 대응하는 <code>RowSetListener</code> 의 메소드가 불려 갑니다만, 그 때,<code>RowSetEvent</code> 객체가 그러한 메소드에게 건네집니다. 이렇게 해, 행 세트의 모든 청취자에게 이벤트가 통지됩니다.
+<p>
+<a name="1003212"></a> 예를 들어, 원 그래프의 컴퍼넌트 <code>pieChart</code> 에 <code>RowSet</code> 객체 <code>rset</code> 의 데이터를 표시시키고 싶은 경우,<code>RowSetListener</code> 의 메소드 <code>cursorMoved</code>,<code>rowChanged</code>, 및 <code>rowSetChanged</code> 를,<code>pieChart</code> 내에 구현할 필요가 있습니다. 이러한 메소드의 구현에 의해,<code>rset</code> 로 이벤트가 발생했을 때의,<code>pieChart</code> 의 실행 내용이 정해집니다. 이러한 메소드의 구현이 완료하면(자),<code>pieChart</code> 를 <code>rset</code> 에 등록할 수 있습니다. <code>pieChart</code> 는,<code>rset</code> 에 청취자로서 추가되면(자),<code>rset</code> 에서의 이벤트 발생시에 통지를 받습니다만, 그것은,<code>RowSetEvent</code> 객체를 파라미터로서 지정해 대응하는 메소드를 호출하는 것으로 실현됩니다. 그 후, 청취자 <code>pieChart</code> 는, 자신을 갱신해 <code>rset</code> 의 현재의 데이터와 커서 위치를 반영할 수 있습니다. <code>pieChart</code> 에 반영할 필요가 없는 <code>rset</code> 이벤트가 존재하는 경우, 그 이벤트에 대응하는 <code>RowSetListener</code> 의 메소드를, 아무것도 처리하지 않게 구현합니다. 예를 들어,<code>rset</code> 의 현재의 커서 위치를 <code>pieChart</code> 로 표시할 필요가 없는 경우, 메소드 <code>cursorMoved</code> 내에서 아무것도 처리하지 않게 합니다.
+<p>
+<a name="1003477"></a> 어느 특정의 <code>RowSet</code> 객체의 청취자로서 지정 가능한 컴퍼넌트의 수에 제한은 없습니다. 예를 들어, 막대 그래프의 컴퍼넌트 <code>barGraph</code> 에도 <code>rset</code> 의 데이터를 표시시키고 싶은 경우, 그 컴퍼넌트를 청취자로 할 수 있습니다.  거기에는,<code>RowSetListener</code> 의 메소드를 구현하고 나서, 그 컴퍼넌트를 <code>rset</code> 에 등록합니다. 다음의 코드행에서는, 2 개의 컴퍼넌트 <code>pieChart</code> 와 <code>barGraph</code> 를,<code>rset</code> 의 청취자로서 등록하고 있습니다.
+<p>
+<pre><a name="1003199"></a>     rset.addRowSetListener(pieChart);
+<a name="1003200"></a>     rset.addRowSetListener(barGraph);
+</pre><a name="1003229"></a> 청취자의 삭제는, 메소드 <code>RowSet.removeListener</code> 를 사용해 비슷한 방법으로 실시할 수 있습니다.
+<p>
+<pre><a name="1003202"></a>     rset.removeRowSetListener(pieChart);
+<a name="1003203"></a>     rset.removeRowSetListener(barGraph);
+</pre><a name="1003235"></a> 행 세트의 청취자를 설정하는 코드는 어떠한 툴에 의해 생성되는 것이 많기 때문에, 어플리케이션 프로그래머가 실시할 필요가 있는 것은, 행 세트를 지정하는 것으로, 그 행 세트로 이벤트가 발생했을 때의 통지를 받는 컴퍼넌트를 지정하는 것 뿐입니다. 청취자의 설정이 완료하면(자), 이벤트 처리가 실행됩니다만, 그것은 주로 시스템 내부에서 실행됩니다. 예를 들어, 어느 어플리케이션이 <code>rset</code> 내의 특정의 행을 갱신했을 경우,<code>rset</code> 는 내부적으로,<code>RowSetEvent</code> 객체를 작성해,<code>pieChart</code> 와 <code>barGraph</code> 에 구현되고 있는 <code>rowChanged</code> 메소드에, 그 객체를 건네줍니다. 청취자는 이벤트의 발생원을 알 수 있습니다.  왜냐하면,<code>rowChanged</code> 에게 건네지는 <code>RowSetEvent</code> 객체는,<code>rset</code> (이벤트의 발생원인 <code>RowSet</code> 객체)로 초기화되고 있기 때문입니다. 컴퍼넌트 <code>pieChart</code> 와 <code>barGraph</code> 는, 각각 독자적인 <code>RowSetListener.rowChanged</code> 메소드 구현에 따라, 행의 표시를 갱신합니다.
+<p>
+<a name="1005705"></a> 다음의 코드에서는,<code>pieChart</code> 와 <code>barGraph</code> 를,<code>RowSet</code> 객체 <code>rset</code> 의 청취자로서 등록하고 있습니다. 메소드 <code>execute</code> 의 호출에 의해 <code>rset</code> 에 새로운 데이터가 포함되면(자), 이벤트 통지가 내부적으로 실행됩니다 (메소드 <code>execute</code> 의 상세한 것에 대하여는,<a href="rowsetImpl.html#1003388">「커멘드의 실행」</a>을 참조). 이벤트 통지 처리의 최초의 스텝으로서<code>RowSetEvent</code> 객체 <code>rsetEvent</code> 가 생성되어<code>rset</code> 로 초기화됩니다. 계속되어,<code>pieChart</code> 와 <code>barGraph</code> 의 버젼의 메소드 <code>rowSetChanged</code> 가, 인수에 <code>rsetEvent</code> 를 지정해 불려 갑니다. 이것에 의해, 청취자 <code>pieChart</code> 와 <code>barGraph</code> 는,<code>rset</code> 내의 모든 데이터가 변경된 것을 알아, 각각 독자적인 <code>rowSetChanged</code> 메소드 구현을 실행합니다.
+<p>
+<pre>
+rset.addRowSetListener(pieChart);
+rset.addRowSetListener(barGraph);
+.  .  .
+rset.execute();
+  
+// The following methods will be invoked behind the scenes:
+RowSetEvent rsetEvent = new RowSetEvent(this);
+pieChart.rowSetChanged(rsetEvent);
+barGraph.rowSetChanged(rsetEvent);
+</pre>
+<a name="1003261"></a> 
+<h3>10.1. 2	 &nbsp; &nbsp; RowSet 의 프로퍼티</h3>
+<a name="1003264"></a> <code>RowSet</code> 인터페이스에는 일련의 JavaBeans 프로퍼티이 포함되어 있기 (위해)때문에, 데이터 소스에 접속해 일련의 행을 취득하도록(듯이) <code>RowSet</code> 인스턴스를 설정하는 것이 가능합니다. 구현에도 따릅니다만, 모든 프로퍼티이 필요하다라고는 한정하지 않습니다. 예를 들어, 접속의 확립시에 필요한 것은, URL, 데이터 소스명의 언젠가이기 (위해)때문에, 한편의 프로퍼티이 설정되어 있으면, 한편은 생략 가능합니다. 양쪽 모두가 설정되어 있었을 경우, 나중에 설정되는 편이 사용됩니다. 커멘드를 지원하지 않는 비 SQL 데이터 소스 (스프레드쉬트등)로부터 행 세트의 데이터를 취득하는 경우, command 프로퍼티을 설정할 필요는 없습니다. 디폴트 값가 설정되어 있는 프로퍼티의 경우, 디폴트 값로 문제 없으면 설정을 생략 할 수 있습니다. 예를 들어, 이스케이프 처리는 디폴트로 온이 되어 있기 (위해)때문에, 오프로 하고 싶은 경우를 제외하면, 어플리케이션내에서 이스케이프 처리를 설정할 필요는 없습니다 (이스케이프 처리에 대해서는,<a href="statement.html#17215">「Statement 내의 SQL 이스케이프 구문」</a>을 참조).
+<p><a name="1003267"></a> 다음에 나타내는 것은,<code>RowSet</code> 객체의 프로퍼티의 취득/설정용으로서<code>RowSet</code> 인터페이스내에 정의되고 있는 취득/설정 메소드의 일람입니다. 다만, 메소드 <code>getConcurrency</code> 와 <code>getType</code> 의 2 개는 예외입니다.  이것들은,<code>RowSet</code> 인터페이스내에 정의된 메소드는 아니고,<code>ResultSet</code> 인터페이스로부터 상속된 메소드입니다.
+<p>
+<a name="1013315"></a> 
+
+<p>
+<table cellpadding=10>
+<tr><th><code>getCommand</code></th>
+<th><code>setCommand</code></th></tr>
+
+<tr><td><code>ResultSet.getConcurrency</code></td><td><code>setConcurrency</code></td></tr>
+<tr><td><code>getDataSourceName</code></td><td><code>setDataSourceName</code></td></tr>
+<tr><td><code>getEscapeProcessing</code></td><td><code>setEscapeProcessing</code></td></tr>
+<tr><td><code>getMaxFieldSize</code></td><td><code>setMaxFieldSize</code></td></tr>
+<tr><td><code>getMaxRows</code></td><td><code>setMaxRows</code></td></tr>
+<tr><td><code>getPassword</code></td><td><code>setPassword</code></td></tr>
+<tr><td><code>getQueryTimeout</code></td><td><code>setQueryTimeout</code></td></tr>
+<tr><td><code>getTransactionIsolation</code></td><td><code>setTransactionIsolation</code></td></tr>
+<tr><td><code>ResultSet.getType</code></td><td><code>setType</code></td></tr>
+<tr><td><code>getTypeMap</code></td><td><code>setTypeMap</code></td></tr>
+<tr><td><code>getUrl</code></td><td><code>setUrl</code></td></tr>
+<tr><td><code>getUsername</code></td><td><code>setUsername</code></td></tr>
+</table>
+<p>
+
+이것에 가세해 JDBC <code>RowSet</code> 의 표준 구현에는, 그러한 구현에 고유의 프로퍼티이 많이 포함되어 있습니다.
+<p>
+<a name="1010064"></a> 다음의 코드에서는,<code>DataSource</code> 객체를 사용해 데이터 소스와의 접속을 확립할 때에 일반적으로 필요하게 되는 프로퍼티을 설정해 있습니다 (<code>rset</code> 는 <code>RowSet</code> 객체).
+<p>
+<pre><a name="1002928"></a>     rset.setDataSourceName("jdbc/logicalDataSourceName");
+<a name="1002929"></a>     rset.setUsername("cervantes");
+<a name="1002930"></a>     rset.setPassword("secret");
+</pre><a name="1002931"></a> <code>jdbc/logicalDataSourceName</code> 는, JNDI (Java Naming and Directory Interface) 네임 서비스에 등록되어 있는 이름입니다. 어플리케이션내에서 네임 서비스에 논리명을 지정하면(자), 그 논리명에 바인드 된 <code>DataSource</code> 객체가, 네임 서비스로부터 돌려주어집니다. <code>DataSource</code> 객체와 JNDI API 의 사용 방법에 대해서는,<a href="datasource.html#27896">「JNDI 의 사용」</a>을 참조해 주세요. 접속 정보를 하드 코드 하는 대신에 <code>DataSource</code> 객체를 사용하면, 코드의 이식성이 높아져, 코드의 보수도 용이하게 됩니다. 예를 들어, 데이터 소스의 호스트 머신이나 포트 번호가 변경되었을 경우, 갱신할 필요가 있는 것은, JNDI 네임 서비스에 입력한 <code>DataSource</code> 객체의 프로퍼티 뿐이어서, 그 데이터 소스에의 접속을 취득하는 각 어플리케이션을 갱신할 필요는 없습니다.
+<p>
+<a name="1005795"></a> <code>RowSet</code> 객체에는, 커멘드의 실행에 영향을 주는 프로퍼티의 설정 메소드도 포함되어 있습니다. 그러한 메소드의 사용예로서 다음의 코드에서는, 문장을 실행할 때의 드라이버의 최대 대기 시간으로서 20 초를 설정해,<code>rset</code> 에 포함할 수 있는 최대행 수라고 해 1024 를 설정해,<code>rset</code> 가 위탁이 끝난 트랜잭션(transaction)의 데이터만을 읽어들이도록(듯이) 설정해 있습니다.
+<p>
+<pre><a name="1002948"></a>     rset.setQueryTimeout(20);
+<a name="1002949"></a>     rset.setMaxRows(1024);
+<a name="1002950"></a>     rset.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+</pre><a name="1002962"></a> 또, 다음의 코드행에 나타내도록(듯이),<code>RowSet</code> 객체의 타입과 동시성 처리를 설정하는 일도 가능합니다.
+<p>
+<pre><a name="1002981"></a>     rset.setType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+<a name="1002982"></a>     rset.setConcurrency(ResultSet.CONCUR_UPDATABLE);
+</pre><a name="1002983"></a> 1 행 째로는, 스크롤 가능하지만, 접속이 열려 있는 동안에 발생한 갱신은 반영하지 않게,<code>rset</code> 를 설정해 있습니다. </a> A데이터 소스와의 접속을 계속적으로 유지하는 <code>RowSet</code> 객체에는 <code>TYPE_SCROLL_SENSITIVE</code> 를 지정할 수 있습니다만, 그렇지 않은 RowSet 객체를, 다른 객체나 트랜잭션(transaction)에 의한 변경을 반영하도록(듯이) 설정할 수 없습니다. 코드의 2 행 째로는,<code>rset</code> 를 갱신 가능으로서 설정해 있습니다.  따라서,<code>rset</code> 내의 데이터를 변경할 수 있습니다.
+<p>
+<a name="1003281"></a> 스크롤 가능한 결과 세트를 지원하지 않는 드라이버를 사용하는 경우에서도,<code>RowSet</code> 객체를 스크롤 가능하게 할 수가 있습니다. 실제, 스크롤 가능한 결과 세트를 실현하는 수단으로서 일반적으로의 결과 세트 대신에 행 세트를 사용하는 일이 자주 있습니다. 상세한 것에 대하여는,<a href="rowsetImpl.html#1003347">「RowSet 객체내의 이동」</a>을 참조해 주세요.
+<p>
+<a name="1003192"></a> 어플리케이션은,<code>RowSet</code> 인스턴스에 데이터를 포함하기 위해서,<code>RowSet</code> 객체의 커멘드 캐릭터 라인을 실행합니다. 이 캐릭터 라인은, 실행시에 결과 세트를 생성하는 쿼리일 필요가 있습니다.  그렇게 해서 생성된 결과 세트로부터,<code>RowSet</code> 객체의 데이터가 취득됩니다. 메소드 <code>setCommand</code> 는, 지정된 <code>String</code> 객체를, 메소드 <code>execute</code> 의 호출시에 실행되는 커멘드로서 설정합니다. 예를 들어, 다음의 코드행에서는, 테이블 <code>EMPLOYEES</code> 에 포함되는 모든 행의 이름과 급여액을 선택하는 쿼리를, 커멘드 캐릭터 라인으로서 설정해 있습니다.
+<p>
+<pre><a name="1003193"></a>     <code>rset.setCommand("SELECT NAME, SALARY FROM EMPLOYEES");
+</code></pre><a name="1003080"></a> 상기의 커멘드 문자를 설정하고 나서 <code>rset</code> 의 <code>execute</code> 메소드를 호출하면(자), 그 쿼리에 의해 생성되는 결과 세트와 완전히 같은 데이터 (테이블 <code>EMPLOYEES</code> 내의 각 행에 대해서 1 행씩.  각 행에는 이름과 급여액이 포함된다)가,<code>rset</code> 내에 포함됩니다.
+<p>
+
+<a name="1003300"></a> 
+<h3>10.1. 3	 &nbsp; &nbsp; 커멘드 캐릭터 라인의 파라미터의 설정</h3>
+<a name="1003301"></a> 1 개(살)전의 섹션에서는, 파라미터용 플레이스홀더를 포함하지 않는 커멘드의 사용예를 소개했습니다만, command 프로퍼티에는, 입력 파라미터를 취하는 쿼리를 설정할 수도 있습니다. 이것을 가능하게 하기 위해서, 커멘드 캐릭터 라인은 내부적으로 <code>PreparedSatement</code> 객체로서 표현되고 있습니다. 다만, 이 파라미터는 출력 파라미터는 아니고 입력 파라미터일 필요가 있습니다.  
+<p><a name="1015655"></a> 새롭게 설정된 <code>RowSet</code> 객체에는 데이터가 포함되어 있지 않기 때문에, 메소드 <code>execute</code>,<code>populate</code> 의 어느쪽이든을 호출해 데이터를 생성할 필요가 있습니다. 메소드 <code>execute</code> 를 사용하려면 , 필요한 프로퍼티을 설정함과 함께, 모든 플레이스홀더 파라미터에 값을 설정해 둘 필요가 있습니다.  파라미터치의 설정은 실행시에 실시할 수 있습니다. 따라서, 예를 들어, 어플리케이션 실행시에 대화 형식에서 사용자로부터 입력을 받는 일도 가능합니다.
+<p>
+<a name="1003348"></a> <code>RowSet</code> 인터페이스는 <code>PreparedStatement</code> 인터페이스와 같이, 입력 파라미터의 값을 설정하기 위한 설정 메소드를 갖추고 있습니다. 각종 데이터형 (SQL99 데이터형도 포함한다) 마다 설정 메소드가 1 개씩 준비되어 있습니다. 다음의 코드에서는, 커멘드 캐릭터 라인을 설정한 뒤, 그 2 개의 입력 파라미터에 값을 설정해 있습니다. 열 <code>DEPT</code> 에 포함되는 값의 형태가 <code>VARCHAR</code> 인 경우, 메소드 <code>setString</code> 를 사용해 양파라미터에 값을 설정합니다.  그렇다고 하는 것도, 이것이 <code>VARCHAR</code> 치를 설정하기 위한 메소드이기 때문입니다.
+
+<p>
+<pre><a name="1003317"></a>     rset.setCommand(
+<a name="1003322"></a>     <code>  "SELECT NAME, SALARY FROM EMPLOYEES WHERE DEPT = ?  OR DEPT = ? ");
+</code><a name="1003329"></a>     rset.setString(1, "SALES");
+<a name="1003323"></a>     rset.setString(2, "MARKETING");
+</pre><a name="1003535"></a> 이 커멘드가 실행되면(자), 판매 부문과 마케팅 부문에 속하는 종업원의 이름과 급여액이,<code>rset</code> 에 포함됩니다.
+<p>
+<a name="1012733"></a> <code>RowSet</code> 객체의 커멘드 캐릭터 라인에 포함되는 모든 파라미터에 값을 설정하지 않으면 그 커멘드를 실행할 수 없습니다. 절단 된 행 세트에서는, 벌써 설정된 파라미터가, 리더의 <code>readData</code> 메소드에 의해 사용됩니다.  이 메소드는, 메소드 <code>execute</code> 에 의해 내부적으로 불려 갑니다. 이러한 파라미터치는, 행 세트의 내부의 해시 테이블에 포함됩니다. <code> readData</code> 메소드는, 그러한 값을 취득하기 위해서, 그 행 세트의 <code>RowSetInternal.getParams</code> 메소드를 호출합니다.  
+<p>
+
+<a name="1003347"></a> 
+<h3>10.1. 4	 &nbsp; &nbsp; RowSet 객체내의 이동</h3>
+<a name="1003366"></a> <code>javax.sql.RowSet</code> 인터페이스는 <code>java.sql.ResultSet</code> 인터페이스를 확장하고 있습니다. 따라서, 스크롤 가능한 <code>RowSet</code> 객체와 스크롤 가능한 <code>ResultSet</code> 객체와의 사이로, 커서의 이동 방법에 관한 차이는 전혀 없습니다. RowSet</code> 객체는,<code>ResultSet</code> 의 모든 메소드를 상속하고 있어, 실질적으로, 「JavaBeans 컴퍼넌트로서 동작하기 위한 기능이 추가된 결과 세트」이다고 말할 수 있습니다. <code>RowSet</code> 의 인스턴스를 사용하는 컴퍼넌트의 대부분은, 그러한 인스턴스를 <code>ResultSet</code> 객체로서 취급하게 됩니다.
+<p><a name="1004961"></a> <code>RowSet</code> 객체와 <code>ResultSet</code> 객체의 커서 이동용 메소드는, 사용자의 시점으로부터는 동일하게 보입니다만, 구현 방법의 점에서는 차이가 납니다. <code></code><code>RowSet</code> 객체에서는, 커서가 이동할 때마다, 그 이벤트를 등록된 청취자에게 통지할 필요가 있습니다. </a> 그 결과,<code>RowSet</code> 객체의 커서 이동용 메소드는, 내부의 이벤트 통지 처리를 기동하도록(듯이) 구현되고 있습니다. 예를 들어, 메소드 <code>next</code> 가 불려 갔을 경우,<code></code>그 구현은,<code>RowSetEvent</code> 객체를 작성해, 그것을 파라미터로서 지정해 각 청취자의 <code>cursorMoved</code> 메소드를 호출합니다. <code></code>청취자는,<code>RowSetEvent</code> 객체에 근거해 커서 이동이 발생한 <code>RowSet</code> 객체를 특정한 뒤, 메소드 <code>cursorMoved</code> 의 구현을 호출합니다. 구현내에서는, 아무것도 처리하지 않아도 괜찮습니다 해, 예를 들어, 메소드 <code>ResultSet.getRow</code> 를 호출해 커서의 현재 위치를 취득해, 그 행에 대한 청취자의 표시 내용을 갱신하도록(듯이) 해도 괜찮습니다.
+<p>
+<a name="1003371"></a> <code>RowSet</code> 와 <code>ResultSet</code> 의 커서 이동이 같은 것을 나타내기 위해서(때문에), 다음의 코드에서는,<code>RowSet</code> 객체 <code>rset</code> 에 대해서 순서 방향의 루프 처리를 실시해, 각 행으로부터 취득한 2 개의 값을 출력하고 있습니다.
+<p>
+<pre><a name="1003374"></a>     rset.beforeFirst();
+<a name="1003375"></a>     while (rset.next()) {
+<a name="1003381"></a>       System.out.println(rset.getString(1) + " " + rset.getFloat(2));
+<a name="1003376"></a>     }
+</pre><a name="1003382"></a> 그 외의 커서 이동도,<code>ResultSet</code> 인터페이스의 경우와 같습니다.  .
+<p>
+<a name="1003388"></a> 
+<h3>10.1. 5	 &nbsp; &nbsp; 커멘드의 실행</h3>
+<a name="1010071"></a> <code>RowSet</code> 인터페이스에 포함되는 메소드 <code>execute</code> 는,<code>RowSet</code> 객체에 데이터를 포함하는 경우에 불려 갑니다. 이 메소드의 구현에는 많은 변화(variation)이 있어, subtype에서는 데이터 설정용의 추가 메소드가 정의되고 있을 가능성이 있습니다. <code>execute</code> 메소드는, 행 세트의 프로퍼티을 사용합니다만, 필요한 프로퍼티이 설정되어 있지 않았던 경우,<code>SQLException</code> 를 throw 합니다. 표준 프로퍼티이 정의되고 있습니다만,<code>RowSet</code> 의 구현에 따라서는, 다른 프로퍼티도 정의되고 있을 가능성이 있습니다.  따라서, 어플리케이션 개발자는, 사용하는 구현의 문서에 잘 대충 훑어봐 주세요.
+<p><a name="1006691"></a> 절단 된 행 세트에서는, 리더 (<code>RowSetReader</code> 인터페이스를 구현한 객체)와 라이터 (<code>RowSetWriter</code> 인터페이스를 구현한 객체)가 필요하게 됩니다. JDBC <code>RowSet</code> 구현에서는,<code>javax.sql.rowset.spi</code> 패키지의 <code>SyncProvider</code> 클래스내에, 리더와 라이터가 캡슐화되고 있습니다. SPI (Service Provider Interface)로 불리는 이 패키지에 대해서는, 후술 합니다. SPI 를 사용하면, 리더와 라이터의 구현 및 배치가, 보다 간단하게 실시할 수 있습니다. 2 개의 레퍼런스 구현 <code>RIOptimisticProvider</code> 와 <code>RIXmlProvider</code> 는, 곧바로 사용할 수 있는 상태가 되어 있습니다.
+<p>
+<a name="1015711"></a> 또, 절단 된 행 세트는, 그 내부 상태에 리더와 라이터로부터 액세스 할 수 있도록(듯이),<code>RowSetInternal</code> 인터페이스를 구현하고 있을 필요가 있습니다. 리더/라이터 시스템를 사용할 수 있는 경우, 행 세트의 <code>execute</code> 메소드는, 그 리더 컴퍼넌트와 라이터 컴퍼넌트에 태스크를 위양 할 수 있습니다.  
+<p>
+<a name="1010074"></a> <code>RowSet</code> 의 표준 구현이 추가되었기 때문에, 개발자에 의한 리더/라이터 기구의 구현 작업이, 큰폭으로 간략화될 것입니다. 이러한 표준 구현에 벌써 포함되어 있는 리더/라이터 기구를 사용자의 구현내에 짜넣는 것만으로, 그러한 기구를 활용할 수 있게 됩니다.
+<p>
+<a name="1003559"></a> 전형적인 구현에서는, 절단 된 행 세트의 <code>execute</code> 메소드는, 새로운 데이터를 행 세트에 읽어들이는 처리를 실행하기 위해서, 리더의 <code>readData</code> 메소드를 호출합니다. <code>readData</code> 메소드는 일반적으로, 행 세트의 현재의 내용을 클리어 한 뒤, 필요한 프로퍼티을 취득해, 데이터 소스와의 접속을 확립합니다. 설정해야 할 파라미터가 존재하는 경우,<code>readData</code> 는, 행 세트로부터 그것들을 취득해, 행 세트의 커멘드 캐릭터 라인내로 설정합니다. 계속되어,<code>readData</code> 메소드는, 그 커멘드 캐릭터 라인을 실행해 결과 세트를 생성합니다. 마지막으로,<code>readData</code> 는, 결과 세트의 데이터를 행 세트로 설정함과 함께, 그 데이터를 원의 값으로 해서 설정합니다.
+<p>
+<a name="1006913"></a> 리더의 <code>readData</code> 메소드는, 행 세트의 메타데이타를 설정하도록(듯이) 구현하는 일도 가능합니다. 그 구현 방법으로서는 다양한 것이 생각됩니다만,<code>readData</code> 메소드내에서 <code>RowSetMetaData</code> 객체를 작성해, 그 객체에 데이터 소스내가 읽어들이는 열에 관한 정보를 설정하는 것도, 그 1 개(살)입니다. 계속되어,<code>readData</code> 메소드는, 그 새로운 <code>RowSetMetaData</code> 객체를 행 세트에 관련짓습니다. 그러자(면), 행 세트는, 읽히는 데이터의 형식을,<code>RowSetMetaData</code> 객체에 근거해 판단할 수 있게 됩니다.
+<p>
+어느 행 세트의 커멘드 캐릭터 라인이 실행되었을 경우, 그 행 세트의 모든 청취자에게 그 취지를 통지하는 것으로, 그러한 청취자가 적절한 처리를 실행할 수 있도록(듯이) 할 필요가 있습니다. <code>execute</code> 메소드는, 각 청취자의 <code>rowSetChanged</code> 메소드를 호출합니다만, 그 때, 각 <code>rowSetChanged</code> 에는 새롭게 작성된 <code>RowSetEvent</code> 객체가 건네받습니다.  이 객체에는, 이벤트 발생원의 <code>RowSet</code> 객체가 지정되고 있습니다. 청취자에게로의 통지는, 메소드 <code>execute</code> 내에서 실행되는 그 외의 대부분의 처리와 같이, 행 세트를 사용하는 어플리케이션 프로그래머에게 의식시키지 않게 내부적으로 실행됩니다.
+<p>
+<a name="1003926"></a> <code>execute</code> 메소드의 이제(벌써) 1 개의 역할은, 행 세트내에 보관 유지되는 「원의」값을 설정하는 것입니다. 이것들은 마지막 갱신이 실행되기 직전의 값이며, 메소드 <code>RowSetInternal.getOriginal</code> 로부터 돌려주어집니다. <code>RowSet</code> 객체의 원의 값은, 데이터 소스로부터 취득한 값과 동일한 경우가 있습니다만, 반드시 그렇다고는 할 수 없습니다. 최초로 <code>RowSet</code> 객체의 데이터와 데이터 소스와의 동기를 취한 시점에서는, 원의 값과 데이터 소스로부터 취득한 값은 동일하게 됩니다. 그런데 ,<code>RowSet</code> 객체의 몇개의 값을 2 회 변경했을 경우, 원의 값은, 데이터 소스의 값은 아니고, 1 번째의 변경 후에 존재하고 있던 값이 됩니다. <code>RowSet</code> 객체의 원의 값을 추적하면, 데이터 소스내의 대응하는 값이 변경되었는지의 여부를 체크할 수가 있습니다.  
+<p>
+<a name="1014141"></a> <code>SyncProvider</code> 객체가 경합의 유무를 체크하도록(듯이) 구현되고 있었을 경우, 원의 값과 데이터 소스내의 값이 비교됩니다. 행 세트의 원의 값 (변경전의 값)과 기가 되는 데이터 소스의 값이 동일하지 않은 경우,<code>RowSet</code> 객체의 변경치를 데이터 소스에 기입한 시점에서 경합이 발생하게 됩니다. 한편, 값이 동일한 경우에는, 경합은 발생하지 않습니다. 경합 발생시에 <code>SyncProvider</code> 객체가 새로운 행 세트치를 데이터 소스에 기입할지 어떨지는, 사용되는 동기 모델에 의합니다.
+<p>
+<a name="1008796"></a> <code>SyncProvider</code> 구현이 새로운 값을 기가 되는 데이터 소스에 기입하지 않는 경우,<code>execute</code> 메소드는, 원의 값을 행 세트내의 현재의 값에 리셋 합니다. 다음에 <code>execute</code> 가 불려 가 행 세트내의 모든 값이 변경된 시점에서,<code>SyncProvider</code> 객체는, 그러한 값을 취득해 기가 되는 데이터 소스내의 값과 비교해, 경합의 유무를 체크할 수가 있습니다.
+<p>
+<a name="1003594"></a> 이상을 정리하면(자), 어플리케이션내에서 <code>execute</code> 메소드가 불려 가면(자), 시스템 내부에서 많은 처리가 실행됩니다. 행 세트가 절단 되면(자), 다음과 같이 됩니다. 절단 된 행 세트의 경우, 그 내용이 새로운 데이터에 고쳐 쓸 수 있어 그 데이터를 사용하고 있는 모든 청취자에게 이벤트가 통지되어 메타데이타가 갱신되어 원의 값에 현재의 데이터값가 설정됩니다. 접속된 행 세트의 경우,<code>execute</code> 메소드는 일반적으로, 행 세트에 새로운 데이터를 설정해, 청취자에게 이벤트를 통지할 뿐입니다. 접속된 <code>RowSet</code> 객체에 대한 변경은 데이터 소스에도 반영되기 (위해)때문에, 경합이 발생할 가능성은 없습니다.
+<p>
+
+<a name="1003633"></a> 
+<h3>10.1. 6	 &nbsp; &nbsp; RowSet 객체의 메타데이타의 사용</h3>
+<a name="1003634"></a> <code>RowSet</code> 객체는, 포함하는 데이터의 열에 관한 일련의 메타데이타를 보관 유지합니다. <code>RowSet</code> 는 <code>ResultSet</code> 로부터 파생한 인터페이스이기 (위해)때문에,<code>ResultSetMetaData</code> 의 메소드를 사용하면,<code>ResultSet</code> 객체의 메타데이타를 취득하는 것과 같은 요령으로, RowSet 객체의 메타데이타를 취득할 수 있습니다. 예를 들어, 다음의 코드에서는,<code>RowSet</code> 객체 <code>rset</code> 에 대한 <code>RowSetMetaData</code> 객체를 작성해,<code>rset</code> 에 포함되고 있는 열의 개수를 체크하고 있습니다. 여기서, 메소드 <code>getMetaData</code> 가 <code>ResultSet</code> 의 메소드이며, 그 반환값은 <code>ResultSetMetaData</code> 객체인 점에 주의해 주세요.  따라서, 그 반환값은,<code>RowSetMetaData</code> 객체에 캐스트 하지 않으면,<code>rsetmd</code> 에 대입할 수 없습니다.
+<p><pre><a name="1003643"></a>     RowSetMetaData rsetmd = (RowSetMetaData) rset.getMetaData();
+<a name="1003646"></a>     int columnCount = rsetmd.getColumnCount();
+</pre><a name="1003673"></a> 변수 <code>rsetmd</code> 에는,<code>RowSet</code> <code>rset</code> 내의 열에 관한 정보가 포함되어 있습니다. <code>rsetmd</code> 상에서 임의의 <code>RowSetMetaData</code> 메소드를 호출하는 것으로,<code>rsetmd</code> 내에 포함된 정보를 취득할 수 있습니다.
+<p>
+<a name="1003664"></a> 인터페이스 <code>RowSetMetaData</code> 에는,<code></code><code>ResultSetMetaData</code> 에 정의되고 있는 취득 메소드에 대응하는 설정 메소드가 정의되고 있습니다 (다만, 열의 클래스명을 설정하기 위한 메소드와 열이 「읽기 전용」, 「아마 기입해 가능」, 「틀림없이 기입해 가능」의 어디에서 있는지를 설정하기 위한 메소드는 존재하지 않는다). RowSetMetaData</code> 의 설정 메소드가 리더에 의해 불려 가는 것은, 리더가, 새로운 데이터를 행 세트내에 읽어들여,<code>RowSet</code> 객체의 열을 기술하는 새로운 <code>RowSetMetaData</code> 객체를 작성 혀 후입니다. 다음의 코드는, 리더가 내부적으로 어떠한 처리를 실행하는지를 나타낸 것입니다. 리더는,<code>RowSet</code> 객체 <code>rowset</code> 에 대한 새로운 <code>RowSetMetaData</code> 객체 <code>rowsetmd</code> 를 작성해, 거기에 열의 정보를 설정해, 마지막에 <code>RowSetInternal</code> 의 메소드 <code>setMetaData</code> 를 호출해 <code>rowsetmd</code> 를 <code>rowset</code> 의 메타데이타로서 설정해 있습니다.
+<p>
+<pre><a name="1006993"></a>     rowset.execute();
+<a name="1007322"></a>     // ... as part of its implementation, execute calls readData
+<a name="1007323"></a>     reader.readData((RowSetInternal) this);
+<a name="1007000"></a>     
+<a name="1006994"></a>     // ... as part of the implementation of readData, the reader for
+<a name="1006995"></a>     // the rowset would do something like the following to update the
+<a name="1006996"></a>     // metadata for the rowset
+<a name="1006981"></a>     RowSetMetaData rowsetmd = new ...; // create an instance of a class
+<a name="1008908"></a>     // that implements RowSetMetaData
+<a name="1006982"></a>     rowsetmd.setColumnCount(3);
+<a name="1006984"></a>     rowsetmd.setColumnType(1, Types.INTEGER);
+<a name="1006985"></a>     rowsetmd.setColumnType(2, Types.VARCHAR);
+<a name="1006986"></a>     rowsetmd.setColumnType(3, Types.BLOB);
+<a name="1006987"></a>     // ... set other column information
+<a name="1006983"></a>     rowset.setMetaData(rowsetmd);
+</pre>
+<a name="1010137"></a> 
+<h2>10.2	 &nbsp;&nbsp;표준 구현</h2>
+<a name="1010138"></a> J2SE 5.0 의 릴리스에서는, Java 플랫폼에 <code>RowSet</code> 인터페이스의 5 개의 표준 구현이 포함되어 있습니다. 이러한 구현은, 독자적인 구현의 개발을 목표로 하는 사용자를 지원하는 목적으로 제공되고 있습니다. <code>RowSet</code> 인터페이스는, 다양한 목적을 위해서(때문에) 다양한 방법으로 구현 가능합니다.  또, 그러한 구현을 누가 가도 괜찮습니다. 다만,<code>RowSet</code> 구현의 대부분이 드라이버 벤더에 의해 개발되어 그러한 구현이 JDBC 제품의 일부로서 제공되는 것이 예상됩니다. 구현자는, 레퍼런스 구현을 그대로 사용해도 괜찮습니다 해, 그것들을 기본으로, 혹은 완전히 제로로부터, 독자적인 구현을 작성해도 괜찮습니다.
+<p><a name="1010319"></a> 표준 구현은 2 개의 부분, 즉 인터페이스와 레퍼런스 구현으로 구성되어 있습니다. 인터페이스는 <code>javax.sql.rowset</code> 패키지에, 구현은 <code>com.sun.rowset</code> 패키지에, 각각 거둘 수 있고 있습니다. 이것들은, Java Community Process 의 JSR 114 를 통해, 데이타베이스 분야의 전문가의 의견을 기본으로 개발되었습니다.  그 목적은, 행 세트의 주요 기능을 표준화 해, 개발자가 그러한 표준 기능을 독자적인 구현내에서 활용할 수 있도록(듯이) 하는 것이었습니다. <code>RowSet</code> 의 표준 구현을, 다음에 열거합니다.
+<p>
+
+<ul><a name="1010311"></a> 
+<li><code>JdbcRowSet</code><br><br> <a name="1010327"></a> 
+<li><code>CachedRowSet</code><br><br> <a name="1010331"></a> 
+<li><code>WebRowSet</code><br><br> <a name="1010329"></a> 
+<li><code>FilteredRowSet</code><br><br> <a name="1010333"></a> 
+<li><code>JoinRowSet</code><br><br>
+</ul>
+<a name="1010312"></a> 
+<h3>10.2. 1	 &nbsp; &nbsp; 구현의 기본</h3>
+<a name="1013759"></a> <code>RowSet</code> 의 모든 표준 구현은, 추상 클래스 <code>BaseRowSet</code> 를 확장함과 함께, 특정의 인터페이스 (<code>JdbcRowSet</code>,<code>CachedRowSet</code>,<code>WebRowSet</code>,<code>FilteredRowSet</code>,<code>JoinRowSet</code> 의 어느쪽이든)를 구현하고 있습니다. <code>BaseRowSet</code> 클래스는, 모든 <code>RowSet</code> 객체에 공통되는 기능의 기본 구현을 제공합니다만, 이 클래스를 사용할지 어떨지는, 개발자에게 맡고 있습니다. <code>BaseRowSet</code> 클래스에는 다음의 것이 포함되어 있습니다.
+<p>
+<ul><a name="1013791"></a> 
+<li>프로퍼티 -- 프로퍼티치를 포함하기 위한 필드와 그러한 프로퍼티치를 취득/설정하기 위한 메소드<br><br> <a name="1013795"></a> 
+<li>이벤트 통지 메카니즘 -- 청취자를 추가/삭제하기 위한 메소드와 청취자로 변경을 통지하기 위한 메소드<br><br> <a name="1013801"></a> 
+<li>설정 메소드 -- <code>RowSet</code> 객체의 command 프로퍼티내의 플레이스홀더 파라미터를 설정하기 위한 완전한 메소드 세트<br><br> <a name="1013815"></a> 
+<li>디폴트 값 -- 모든 <code>RowSet</code> 구현에 포함되는 디폴트 값는 다음대로 <br><br> <a name="1013808"></a>  <br><br> <a name="1013808"></a> 
+<ul>
+<li>스크롤 가능하지만, 외부에 의한 변경은 반영하지 않는다<br><br> <a name="1013831"></a> 
+<li>갱신 가능하다<br><br> <a name="1013832"></a> 
+<li>삭제된 행은 표시하지 않는다<br><br> <a name="1013833"></a> 
+<li>드라이버가 <code>RowSet</code> 객체의 커멘드 실행에 소비하는 시간에 제한은 없다<br><br> <a name="1013837"></a> 
+<li>형태 <code>BINARY</code>,<code>VARBINARY</code>,<code>LONGVARBINARY</code>,<code>CHAR</code>,<code>VARCHAR</code>, 또는 <code>LONGVARCHAR</code> 의 열에 포함할 수 있는 바이트수에 제한은 없다<br><br> <a name="1013856"></a> 
+<li>위탁되어 있지 않은 데이터를 읽어들이지 않는다 ( 「더티인」읽기를 실시하지 않는다)<br><br> <a name="1013860"></a> 
+<li>이스케이프 처리는 온이 되어 있다<br><br> <a name="1013861"></a> 
+<li>접속의 형태 맵은 <code>null</code> 로 설정되어 있다<br><br> <a name="1013865"></a> 
+<li><code>RowSet</code> 객체의 커멘드에 포함되는 플레이스홀더 파라미터에 대한 설정치를 포함하기 위한 , 빈 상태(empty)의 <code>Hashtable</code> 객체를 갖추고 있다<br><br>
+</ul>
+</ul><a name="1013874"></a> 
+
+<p>
+<a name="1013878"></a> 전술한 것처럼,<code>RowSet</code> 객체는, 접속된 행 세트, 절단 된 행 세트의 머지않아인가입니다. <code>RowSet</code> 구현은 다음과 같이 분류할 수 있습니다.
+<p>
+
+<ul><a name="1013886"></a> 
+<li>접속된 행 세트 (JDBC 드라이버를 사용해 데이터 소스에의 접속을 유지한다) <br><br> <a name="1013894"></a> 
+<ul>
+<li><code>JdbcRowSet</code><br><br>
+</ul>
+<a name="1013901"></a> 
+<li>절단 된 행 세트 (데이터 소스와의 사이에 데이터를 읽고 쓰기할 때 이외는 데이터 소스에 접속되어 있지 않다) <br><br>
+<ul>
+<a name="1013905"></a> 
+<li><code>CachedRowSet</code><br><br> <a name="1013909"></a> 
+<li><code>JoinRowSet</code><br><br> <a name="1013910"></a> 
+<li><code>FilteredRowSet</code><br><br> <a name="1013918"></a> 
+<li><code>WebRowSet</code><br><br>
+</ul>
+</ul><a name="1013931"></a> 
+
+<p>
+<a name="1013935"></a> <code>CachedRowSet</code> 인터페이스에는, 절단 된 <code>RowSet</code> 객체로 필요한 메소드가 포함되어 있습니다. 표준 구현의 절단 된 <code>RowSet</code> 는,<code>BaseRowSet</code> 클래스를 확장함과 함께,<code>CachedRowSet</code> 인터페이스를 구현하고 있습니다. 이것에 가세해<code>JoinRowSet</code> 구현은 <code>JoinRowSet</code> 인터페이스를 구현해,<code>FilteredRowSet</code> 구현은 <code>FilteredRowSet</code> 인터페이스를 구현해,<code>WebRowSet</code> 구현은 <code>WebRowSet</code> 인터페이스를 구현하고 있습니다.
+<p>
+
+<a name="1013758"></a> 
+<h3>10.2. 2	 &nbsp; &nbsp; JdbcRowSet 구현의 개요</h3>
+<a name="1014003"></a> <code>JdbcRowSet</code> 객체 (<code>JdbcRowSet</code> 인터페이스의 표준 구현의 인스턴스)는, 다른 모든 행 세트와 같이, 일련의 행을 포함하기 위한 컨테이너입니다. 이러한 행의 소스는 항상,<code>ResultSet</code> 객체입니다.  그렇다고 하는 것도,<code>JdbcRowSet</code> 객체는 접속된 <code>RowSet</code> 객체이기 때문입니다. 바꾸어 말하면(자),<code>JdbcRowSet</code> 객체는, JDBC 드라이버 경유로 DBMS 와의 접속을 항상 유지합니다. 다만, 그 외의 구현에서는, 리더/라이터 기구가 올바르게 구현되고 있으면, 플랫 파일이나 스프레드쉬트 등, 임의의 겉(표) 형식 데이터를 데이터의 소스로서 사용할 수가 있습니다.
+<p><a name="1010486"></a> <code>JdbcRowSet</code> 객체에는 다양한 용도가 있습니다. 아마 가장 일반적인 용도는,<code>ResultSet</code> 객체를 스크롤 가능하게 하는 것입니다.  이것에 의해, 스크롤을 지원하고 있지 않는 종래형 드라이버의 활용 범위가 넓어집니다. <code>JdbcRowSet</code> 객체내의 행 데이터 ( 및 임의의 <code>RowSet</code> 객체내의 행 데이터)는, 그러한 행 세트의 커멘드를 실행한 결과적으로 생성되는 <code>ResultSet</code> 객체내의 행 데이터에 외 되지 않습니다. 따라서,<code>ResultSet</code> 객체 자신이 스크롤 가능하지 않았다고 해도, 대응하는 행 세트를 스크롤 가능하게 하면, 스크롤 가능한 <code>ResultSet</code> 객체를 손에 넣은 것이라고 같은 것이 됩니다.
+<p>
+<a name="1010514"></a> 이제(벌써) 1 개(살)의 일반적인 용도는, 드라이버 또는 <code>ResultSet</code> 객체를 JavaBeans 컴퍼넌트로 하는 것입니다. <code>JdbcRowSet</code> 객체는, 다른 모든 <code>RowSet</code> 객체와 같이, JavaBeans 컴퍼넌트입니다. <code>JdbcRowSet</code> 객체는, 특정의 드라이버에 계속적으로 접속되고 있기 (위해)때문에, 그 드라이버의 래퍼로서의 역할을 완수할 수 있습니다. 그 결과, 그 드라이버를 JavaBeans 컴퍼넌트로서 제공할 수 있습니다.  이것은,<code>JdbcRowSet</code> 객체로서 제공된 드라이버가, 툴상에서 어플리케이션 구축용으로서 제공되는 Beans 의 1 개가 되는 것을 의미합니다. 또, 계속적으로 접속되고 있는 것은,<code>JdbcRowSet</code> 객체가 그 <code>ResultSet</code> 객체의 래퍼로서의 역할을 완수할 수 있는 일도 의미합니다. <code>JdbcRowSet</code> 객체는, 자신에 대해서 불려 간 메소드를,<code>ResultSet</code> 객체에 대해서 호출할 수가 있습니다. 그 결과,<code>ResultSet</code> 객체를, 예를 들어,<code>Swing</code> 기술을 사용한 GUI 어플리케이션내의 컴퍼넌트의 1 개로서 제공할 수 있습니다.
+<p>
+<a name="1010531"></a> 다음의 코드는,<code>JdbcRowSet</code> 객체를 작성해, 그 프로퍼티을 설정해,<code>command</code> 프로퍼티내의 커멘드 캐릭터 라인을 실행하는 방법을 나타낸 것입니다. <code>JdbcRowSet</code> 구현에는 디폴트의 생성자 이 준비되어 있습니다만,<code>JdbcRowSet</code> 구현은 JavaBeans 컴퍼넌트이기 (위해)때문에, 아마 대부분의 경우, 인스턴스는 비주얼 JavaBeans 개발툴에 의해 작성됩니다.
+<p>
+<pre><a name="1010552"></a>     JdbcRowSet jrs = new JdbcRowSetImpl();
+<a name="1010553"></a>     jrs.setCommand("SELECT * FROM TITLES);
+<a name="1010554"></a>     jrs.setURL("jdbc:myDriver:myAttribute");
+<a name="1010557"></a>     jrs.setUsername("cervantes");
+<a name="1010558"></a>     jrs.setPassword("sancho");
+<a name="1010560"></a>     jrs.execute();
+</pre><a name="1010577"></a> 이 시점에서,<code>jrs</code> 에는, 테이블 <code>TITLES</code> 내의 모든 데이터가 포함되고 있습니다.  왜냐하면,<code>jrs</code> 의 커멘드에 의해 생성된 <code>ResultSet</code> 객체에, 테이블 <code>TITLES</code> 내의 모든 데이터가 포함되고 있기 때문입니다.
+<p>
+<a name="1010687"></a> 여기에서 앞은, 코드내에서 단순하게 <code>ResultSet</code> 의 메소드를 사용할 수 있습니다.  그렇다고 하는 것도, 내부적으로는 <code>ResultSet</code> 객체상에서 모든 처리가 실행되기 때문입니다. <code>jrs</code> 내의 행간 이동, 열의 값의 취득, 열의 값의 갱신, 새로운 행의 삽입등의 조작을 실시할 수 있습니다. 예를 들어, 다음의 2 행으로부터 되는 코드에서는,<code>ResultSet</code> 의 메소드를 사용해, 2 번째의 행으로 이동해, 최초의 열의 값을 취득하고 있습니다.
+<p>
+<pre><a name="1010724"></a>     jrs.absolute(2);
+<a name="1010727"></a>     String title = jrs.getString(1);
+</pre>
+<a name="1010401"></a> 
+<h3>10.2. 3	 &nbsp; &nbsp; CachedRowSet 구현의 개요</h3>
+<a name="1010397"></a> <code>CachedRowSet</code> 인터페이스의 표준 구현 (패키지 <code>com.sun.rowset</code> 내의 <code>CachedRowSetImpl</code>)은, 데이터 소스의 외부에 있는 메모리내에 캐쉬된 일련의 행을 포함하기 위한 컨테이너입니다. 또, 절단 된 행 세트이기도 해, 직렬화, 갱신, 및 스크롤이 가능해지고 있습니다. CachedRowSet</code> 객체는, 자신의 데이터를 캐쉬내에 포함하기 위해(때문에), 데이터 소스와의 접속을 유지할 필요가 없습니다.  따라서, 데이터 소스와의 사이에 데이터의 읽고 쓰기를 실시할 때 이외는, 데이터 소스와의 접속은 절단 되고 있습니다. 다만,<code>CachedRowSet</code> 객체는, 그 모든 행을 메모리내에 포함하기 위해(때문에), 매우 큰 사이즈의 데이터 세트를 포함하기에는  적합하지 않습니다. (이)라고 해도 <code>CachedRowSet</code> 객체에서는, 대량 데이터에도 대응할 수 있도록(듯이) 한 번으로 지정된 행수의 데이터만을 읽어들여, 데이터를 페이징 할 수 있게 되어 있습니다.
+<p><a name="1014051"></a> <code>CachedRowSet</code> 객체는, 특정의 겉(표) 형식 데이터 소스로부터 취득한 데이터를 자신으로 설정할 수 있습니다.  또, 갱신 가능하기 때문에, 포함되고 있는 데이터를 변경할 수도 있습니다. <code>CachedRowSet</code> 객체는, 다른 모든 <code>RowSet</code> 객체와 같이, 데이터의 취득에 가세해 데이터의 출력도 실시할 수 있습니다 (변경 내용을 기가 되는 데이터 소스에 반영시킬 수가 있다).  
+<p>
+
+<a name="1010144"></a> 
+<h3>10.2. 4	 &nbsp; &nbsp; CachedRowSet 객체의 사용</h3>
+<a name="1010145"></a> <code>CachedRowSet</code> 객체는, 접속이 절단 되고 있어 직렬화 가능하기 때문에, thin 클라이언트에서의 사용에 특별히 적합합니다. 또, 데이터 소스에 계속적으로 접속하는 것은 아니기 때문에, JDBC 드라이버의 존재를 필요로 하지 않습니다.  따라서,<code>ResultSet</code> 객체나 접속된 <code>RowSet</code> 객체에 비해 대폭적인 경량화를 꾀할 수 있습니다.
+<p><a name="1010147"></a> <code>CachedRowSet</code> 인스턴스의 주된 용도의 1 개는, 어플리케이션 서버내에서 동작하는 EnterpriseJavaBeans <font size="-2"><sup>TM</sup></font> (EJB<font size="-2"><sup>TM</sup></font>) 컴퍼넌트 등, 분산 어플리케이션의 컴퍼넌트간으로, 겉(표) 형식의 데이터를 교환하는 것입니다. 서버는, JDBC API 를 사용해 데이타베이스로부터 일련의 행을 취득한 뒤, 그 데이터를 예를 들어 Web 브라우저내에서 동작하고 있는 thin 클라이언트에,<code>CachedRowSet</code> 객체를 사용해 네트워크 경유로 송신할 수가 있습니다.
+<p>
+<a name="1010148"></a> <code>CachedRowSet</code> 객체의 이제(벌써) 1 개의 용도는, 스크롤 기능 및 갱신 기능을 가지지 않는 <code>ResultSet</code> 객체에, 그러한 기능을 제공하는 것입니다. 예를 들어, 어플리케이션내에서,<code>JdbcRowSet</code> 객체와 같게,<code>ResultSet</code> 객체의 데이터로 초기화된 <code>CachedRowSet</code> 객체를 작성해, 결과 세트 대신에 그 행 세트를 사용해 처리를 실행할 수가 있습니다. 행 세트를 스크롤과 갱신이 가능한 것 같게 설정해 두면, 어플리케이션은, 커서를 이동해 데이터를 갱신해, 그 갱신을 데이터 소스에 반영시킬 수가 있습니다.
+<p>
+<a name="1012820"></a> 다음의 코드에서는,<code>CachedRowSet</code> 객체 <code>crset</code> 에,<code>ResultSet</code> 객체 <code>rs</code> 의 데이터를 설정해 있습니다.  
+<p>
+<pre><a name="1010150"></a>     ResultSet rs = stmt.executeQuery("SELECT * FROM AUTHORS");
+<a name="1010151"></a>     CachedRowSet crset = new CachedRowSetImpl();
+<a name="1010152"></a>     crset.populate(rs);
+</pre><a name="1010733"></a> 일단 행 세트에 데이터가 설정되면, 어플리케이션은, 분산 컴퍼넌트가 그 행 세트를 조작할 수 있도록(듯이), 그 행 세트를 네트워크 경유로 분산 컴퍼넌트에 건네줄 수가 있습니다.  또,<code>rs</code> 대신에 <code>crset</code> 에 대해서 처리를 실시하는 것으로, 스크롤 기능이나 갱신 기능을 손에 넣을 수가 있습니다.
+<p>
+<a name="1012836"></a> <code>CachedRowSet</code> 구현은,<code>BaseRowSet</code> 추상 클래스의 기본 API 를 사용함과 함께,<code>CachedRowSet</code> 인터페이스를 사용하고 있습니다.  이 인터페이스에는, 필요한 추가 기능에 대한 메소드가 정의되고 있습니다. 예를 들어, 데이터 소스에 접속해 데이터를 읽어들이는 기능이 필요합니다. 또, 접속이 절단 되고 있는 동안에 <code>CachedRowSet</code> 객체의 데이터가 변경될 가능성이 있는 경우, 데이터 소스에 접속해 새로운 데이터를 써 되돌리는 기능도 필요합니다. <code>RowSetReader</code>,<code>RowSetWriter</code> 의 양인터페이스에 근거해 작성되어<code>SyncProvider</code> 구현내에 캡슐화된 리더/라이터 기구가, 이러한 기능을 제공합니다.
+<p>
+<a name="1010831"></a> 라이터 구현은, 절단중에 된 모든 변경을 데이터 소스에 반영해, 변경 데이터를 지속화하기 위한 메카니즘을 제공합니다. 「경합」이 존재하는 경우, 즉, 데이터 소스내의 같은 데이터를 다른 사용자가 벌써 변경하고 있었을 경우, 그러한 처리는 복잡하게 될 가능성이 있습니다. <em></em>SyncProvider</code> 클래스는, 데이타베이스내의 데이터에 대하는 것 외의 사용자의 액세스 레벨을 여러가지로 제어하는 메카니즘을 갖추고 있어 그 결과, 발생하는 경합의 수를 어느 정도 제어할 수 있게 되어 있습니다. <em></em>한층 더 중요한 (일)것은, 개개의 <code>SyncProvider</code> 구현 마다, 동기시의 고려 레벨을 결정할 수 있다고 하는 점입니다.
+<p>
+<a name="1010801"></a> JDBC <code>RowSet</code> 구현 스펙에는, 다른 레벨의 동시성 처리를 지원하는 2 살의 동기용 레퍼런스 구현이 포함되어 있습니다. <code>RIXmlProvider</code> 는, 경합의 유무를 체크하지 않고, 변경 데이터를 데이터 소스에 단순하게 기입합니다. <code>RIOptimisticProvider</code> 구현에 정의되고 있는 라이터는, 경합의 유무를 체크해, 경합이 존재했을 경우에는, 변경 데이터를 기입할지 어떨지를, 어플리케이션이 <code>SyncResolver</code> 객체를 사용해 케이스 바이 케이스로 결정할 수 있도록(듯이) 합니다. 서드 파티는, 다양한 레벨의  동기기노우를 갖춘 <code>SyncProvider</code> 구현을 작성할 수 있습니다.  그리고, 절단 된 행 세트는, 그러한 쳐, 시스템의 요구에 가장 맞은 것을 사용할 수 있습니다. <code>SyncProvider</code> 클래스 및 <code>SyncResolver</code> 인터페이스에 대해서는, 「<code>javax.sql.rowset.spi</code> 패키지의 사용」을 참조해 주세요.
+<p>
+<a name="1010891"></a> <code>CachedRowSet</code> 인터페이스의 구현은, 다른 절단 된 행 세트를 구현할 때의 기반으로서 사용할 수 있습니다. 예를 들어,<code>WebRowSet</code>,<code>FilteredRowSet</code>,<code>JoinRowSet</code> 의 각 인터페이스의 구현은 모두,<code>CachedRowSet</code> 인터페이스의 구현에 근거해 작성되고 있습니다. 따라서,<code>CachedRowSet</code> 인터페이스에 관한 이하의 섹션에서는, 이 인터페이스내에 정의되고 있는 메소드와 그러한 처리 내용에 대해, 어느 정도 자세하게 설명합니다.  절단 된 행 세트의 그 외의 구현에 관한 섹션에서는,<code>CachedRowSet</code> 구현에 포함되지 않은 기능에 대해 설명합니다.
+<p>
+
+<a name="1010183"></a>  <a name="1919183"></a> 
+<h3>10.2. 5	 &nbsp; &nbsp;CachedRowSet 객체의 작성</h3>
+<a name="1010185"></a> 모든 <code>RowSet</code> 객체는 JavaBeans 컴퍼넌트입니다. 이 때문에, 개발자는 일반적으로, 어플리케이션 구축중에 비주얼인 JavaBeans 개발툴을 사용해 그러한 객체를 작성합니다. 또,<code>RowSet</code> 인터페이스를 구현한 클래스가 제공하는 public 의 생성자 을 사용해, 어플리케이션내에서 실행시에 인스턴스를 작성하는 일도 가능합니다. 예를 들어,<code>CachedRowSet</code> 인터페이스의 표준 구현에는, public 의 디폴트 생성자 이 정의되고 있습니다.  따라서, 다음의 코드행을 사용하면,<code>CachedRowSet</code> 의 인스턴스를 작성할 수 있습니다.
+<p><pre><a name="1010186"></a>     CachedRowSet crset = new CachedRowSetImpl();
+</pre><a name="1014326"></a> 새롭게 작성된 <code>crset</code> 는, 일련의 데이터를 포함하기 위한 컨테이너이며,<code>BaseRowSet</code> 객체의 디폴트의 프로퍼티을 포함하고 있습니다. 이 구현은,<code>BaseRowSet</code> 클래스를 사용하고 있습니다.  이 때문에,<code>crset</code> 는 <code>BaseRowSet</code> 의 메소드를 사용해, 그러한 디폴트 프로퍼티에 새로운 값을 설정하거나 그 외의 프로퍼티에 필요에 따라서 값을 설정하거나 할 수 있습니다. 예를 들어, 다음의 코드에서는, 1 행 째로,<code>crset</code> 가 데이터 취득시에 사용하는 커멘드 캐릭터 라인을 설정해, 2 행 째로, 이스케이프 처리를 오프로 하고 있습니다.
+<p>
+<pre><a name="1014318"></a>     crset.setCommand("SELECT * FROM EMPLOYEES");
+<a name="1014346"></a>     crset.setEscapeProcessing(false);
+</pre>
+<a name="1014301"></a> 
+<h3>10.2. 6	 &nbsp; &nbsp; SyncProvider 객체의 설정</h3>
+<a name="1014409"></a> 모든 <code>CachedRowSet</code> 객체는, 리더와 라이터를 구현한 <code>SyncProvider</code> 객체를 취득할 필요가 있습니다.  이 객체가 없으면 데이터 소스로부터 데이터를 취득하거나 변경 데이터를 데이터 소스에 써 되돌리거나 할 수 없습니다. <code>SyncFactory</code> 는,<code>RowSet</code> 객체로부터의 요구를 받아들이면(자), 자신에게 등록된 특정의 <code>SyncProvider</code> 객체의 인스턴스를 작성합니다. <code>crset</code> 를 작성한 생성자 에 파라미터가 지정되지 않았기 (위해)때문에,<code>SyncFactory</code> 로부터, 디폴트인 <code>RIOptimisticProvider</code> (<code>RowSet</code> 의 표준 구현에 포함되어 있는,<code>SyncProvider</code> 클래스의 2 개의 구현 가운데 1 개)의 인스턴스가 돌려주어졌습니다.
+<p><a name="1015907"></a> <code>SyncProvider</code> 구현의 완전 수식 클래스명이 생성자 으로 지정되었을 경우,<code>SyncFactory</code> 은, 그 <code>SyncProvider</code> 구현의 인스턴스로 <code>RowSet</code> 객체를 초기화합니다.  다만, 그 구현이 <code>SyncFactory</code> 에 등록되어 있을 필요가 있습니다. 다음의 코드행에서는,<code>CachedRowSet</code> 객체를 작성합니다만, 그 동기 프로바이더는, 지정된 <code>SyncProvider</code> 구현의 인스턴스가 됩니다.
+
+<p>
+<pre><a name="1014428"></a>     CachedRowSet crset = new CachedRowSetImpl("com.supersoftware.providers.HighAvailabilityProvider");
+</pre><a name="1015904"></a> <code>RowSet</code> 객체를 작성한 뒤, 그 객체에 다른 등록이 끝난 <code>SyncProvider</code> 구현을 설정하는 것이 가능합니다.  그러한 구현으로서는, 서드 파티제의 구현이나, 이제(벌써) 1 개의 표준 프로바이더 구현인 <code>RIXmlProvider</code> 등이 있습니다. 덧붙여<code>RIXmlProvider</code> 는,<code>RowSet</code> 객체의 읽고 쓰기를 XML 형식에서 실시합니다. <code> SyncProvider</code> 객체를 설정하려면 ,<code>CachedRowSet</code> 의 메소드 <code>setSyncProvider</code> 를 사용합니다. 이 메소드는, 현재의 <code>SyncProvider</code> 객체가 지정된 것에 옮겨놓습니다.  예를 들어,<code>crset</code> 의 현재의 프로바이더가 <code>RIOptimisticProvider</code> 객체이다고 하면(자), 다음의 코드행에 의해, 프로바이더가 <code>RIOptimisticProvider</code> 객체로부터 <code>com.supersoftware.providers.HighAvailabilityProvider</code> 객체로 변경됩니다.
+<p>
+<pre><a name="1014451"></a>     crset.setSyncProvider("com.supersoftware.providers.HighAvailabilityProvider");
+
+</pre>
+<a name="1010196"></a> 
+<h3>10.2. 7	 &nbsp; &nbsp; CachedRowSet 객체의 데이터 설정</h3>
+<a name="1010198"></a> <code>CachedRowSet</code> 객체에 포함하는 데이터의 소스로서 파일이나 스프레드쉬트등의 데이터 소스를 선택하는 일도 가능합니다만, 아마, 그러한 소스로서 주로 사용되는 것은, JDBC 드라이버 경유로 취득한 <code>ResultSet</code> 객체입니다. RowSet</code> 인터페이스에는, 파라미터를 취하지 않는 메소드 <code>execute</code> 가 포함되어 있습니다만,<code>CachedRowSet</code> 인터페이스에는,<code>Connection</code> 객체를 파라미터로서 취하는 별버젼의 메소드 <code>execute</code> 가 포함되어 있습니다. 어느 쪽의 메소드도,<code>CachedRowSet</code> 객체의 커멘드 실행시에 작성된 <code>ResultSet</code> 객체의 데이터를,<code>CachedRowSet</code> 객체로 설정합니다. 또,<code>CachedRowSet</code> 인터페이스에는, 추가의 메소드로서 <code>populate</code> 도 포함되어 있습니다.  이 메소드는,<code>ResultSet</code> 객체를 파라미터로서 취합니다.  
+<p><a name="1010199"></a> <code>RowSet</code> 인터페이스로부터 상속된 버젼의 <code>execute</code> 는, 내부적으로 접속을 확립하지 않으면, 행 세트의 커멘드 캐릭터 라인을 실행할 수 없습니다. <code>CachedRowSet</code> 인터페이스에 정의된 버젼의 <code>execute</code> 는,<code>Connection</code> 객체를 건네받으므로, 독자적인 접속을 확립할 필요는 없습니다. 메소드 <code>populate</code> 는, 독자적인 접속을 확립하거나 쿼리를 실행하거나 할 필요는 없습니다.  그렇다고 하는 것도, 데이터의 취득처로서 사용할 수 있는 <code>ResultSet</code> 객체를 건네받기 때문입니다. 따라서, 메소드 <code>populate</code> 를 호출하기 전에, 접속에 관계하는 프로퍼티을 설정하거나 커멘드 캐릭터 라인을 설정하거나 할 필요는 없습니다. 다음의 코드는, 메소드 <code>populate</code> 의 사용법을 나타낸 것입니다.
+<p>
+<pre><a name="1010200"></a>     ResultSet rs = stmt.executeQuery("SELECT NAME, SALARY FROM EMPLOYEES");
+
+<a name="1014982"></a>     // The code that generates rs
+<a name="1014983"></a>     .  .  .
+<a name="1010202"></a>     CachedRowSet crset = new CachedRowSetImpl();
+<a name="1010203"></a>     crset.populate(rs);
+</pre><a name="1010204"></a> 새로운 <code>CachedRowSet</code> 객체 <code>crset</code> 에 포함되어 있는 데이터는,<code>ResultSet</code> 객체 <code>rs</code> 에 포함되어 있는 데이터와 동일합니다.
+<p>
+<a name="1010205"></a> 물론, 메소드 <code>populate</code> 의 구현 자세한 것은 구현간에 다를 가능성이 있습니다만,<code>ResultSet</code> 객체를 받는 <code>populate</code> 는, 몇개의 점으로써 메소드 <code>execute</code> 와는 완전히 다릅니다.  전술한 것처럼,<code>populate</code> 메소드에서는, 접속을 확립할 필요는 없습니다. 또, 리더를 사용할 필요도 없습니다.  지정된 결과 세트로부터 데이터를 직접 취득할 수 있기 때문입니다. populate 메소드는,<code>ResultSetMetaData</code> 의 메소드를 사용해 결과 세트의 형식에 관한 정보를 취득할 수 있기 (위해)때문에,<code>ResultSet</code> 객체내의 데이터를 취득할 때에,<code>ResultSet</code> 인터페이스의 적절한 취득 메소드를 사용할 수가 있습니다.
+<p>
+<a name="1010206"></a> 메소드 <code>execute</code> 와 <code>populate</code> 에는, 유사점이 몇개인가 있습니다. 최대의 유사점은, 어느 쪽의 메소드도 행 세트 전체의 내용을 변경한다, 라고 하는 점입니다. 그 결과, 어느 쪽의 메소드에서도, 청취자에게로의 통지 처리, 현재의 행 세트치를 원의 값으로 설정하는 처리, 및 행 세트의 메타데이타 정보의 갱신 처리가 실행됩니다.
+<p>
+<a name="1010207"></a> 메소드 <code>execute</code> 의 2 개의 버젼의 사용예를, 다음에 나타냅니다.  어느 쪽의 버젼도 쿼리를 실행합니다. 따라서, 어느 쪽의 경우도 커멘드 캐릭터 라인을 설정할 필요가 있습니다. 메소드 <code>execute</code> 에 접속을 건네주지 않았던 경우, 적절한 접속 관련 프로퍼티을 설정하지 않으면, 커멘드를 호출할 수 없습니다. <code>execute</code> 메소드는, 행 세트의 리더를 호출합니다.  그러자(면), 그 리더는, 필요한 프로퍼티을 사용해 데이터 소스와의 접속을 확립합니다. 일단 접속이 확립되면(자), 리더는, 메소드 <code>executeQuery</code> 를 호출하는 것으로, 행 세트의 커멘드 캐릭터 라인을 실행해, 데이터의 취득처로서 사용할 수 있는 결과 세트를 취득할 수 있습니다.
+<p>
+<pre><a name="1010208"></a>     CachedRowSet crset1 = new CachedRowSetImpl();
+<a name="1010209"></a>     crset1.setCommand("SELECT NAME, SALARY FROM EMPLOYEES");
+<a name="1010210"></a>     crset1.setDataSourceName("jdbc/myDataSource");
+<a name="1010211"></a>     crset1.setUsername("paz");
+<a name="1010212"></a>     crset1.setPassword("p38c3");
+<a name="1010213"></a>     crset1.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+<a name="1010215"></a>     crset1.execute();
+</pre><a name="1010216"></a> 다음의 예에서는, 메소드 <code>execute</code> 에 <code>Connection</code> 객체 <code>con</code> 가 건네받고 있습니다. <code>CachedRowSet</code> 객체 <code>crset2</code> 는,<code>con</code> 를 사용해 커멘드 캐릭터 라인을 실행합니다.  따라서, 새로운 접속을 내부적으로 확립할 필요는 없습니다.
+<p>
+<pre><a name="1010217"></a>     CachedRowSet crset2 = new CachedRowSetImpl();
+<a name="1010218"></a>     crset2.setCommand("SELECT NAME, SALARY FROM EMPLOYEES");
+<a name="1010219"></a>     crset2.execute(con);
+</pre><a name="1010220"></a> <code>crset1</code> 와 <code>crset2</code> 는 어느쪽이나, 커멘드 캐릭터 라인을 실행해, 그 결과 데이터를 읽어들여, 그것을 자신에게 삽입하는 동안은, 데이터 소스에 접속되고 있었습니다. 메소드 <code>execute</code> 의 실행이 종료하면(자), 어느 쪽의 경우도 데이터 소스에의 접속이 닫혀집니다.
+<p>
+
+<a name="1010222"></a> 
+<h3>10.2. 8	 &nbsp; &nbsp; 데이터에의 액세스</h3>
+&nbsp; 데이터에의 액세스 <a name="1010223"></a> <code>CachedRowSet</code> 객체는, 다른 모든 행 세트와 같이,<code>ResultSet</code> 인터페이스로부터 상속한 취득 메소드를 사용해 데이터에 액세스 합니다. <code>CachedRowSet</code> 객체는 디폴트로 스크롤 가능하게 되도록(듯이) 구현되고 있기 (위해)때문에,<code>ResultSet</code> 의 커서 이동용 메소드를 사용할 수도 있습니다. 예를 들어, 다음의 코드에서는,<code>CachedRowSet</code> 객체 <code>crset</code> 의 마지막 행에 커서를 이동한 뒤, 그 행의 최초의 열의 <code>String</code> 치를 취득하고 있습니다.
+<p><pre><a name="1010224"></a>     crset.last();
+<a name="1010225"></a>     String note = crset.getString(1);
+</pre><a name="1010227"></a> <code>CachedRowSet</code> 객체는 항상 <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code> 형이도록(듯이) 구현되고 있습니다. 따라서,<code>CachedRowSet</code> 객체는, 스크롤 가능한 것에 가세해 외부에 의한 변경을 반영하지 않습니다. 이것은 당연하게 이루어지고 있습니다.  왜냐하면,<code>CachedRowSet</code> 객체는 대부분의 기간 절단 된 상태에 있어, 절단 되고 있는 동안은, 데이터의 취득처인 기가 되는 데이터 소스에 대해서 외부의 사용자가 간 변경을 알 방법이 없기 때문입니다.
+<p>
+
+<a name="1010228"></a> 
+<h3>10.2. 9	 &nbsp; &nbsp; 데이터의 변경</h3>
+<a name="1010229"></a> 전의 섹션으로 설명한 것처럼,<code>CachedRowSet</code> 객체의 내용 전체를 변경하려면 , 메소드 <code>execute</code> 와 <code>populate</code> 를 사용합니다. </a> </a> 한 번에 1 개의 행을 변경하려면 ,<code>ResultSet</code> 의 갱신 메소드와 메소드 <code>insertRow</code>,<code>deleteRow</code> 를 사용합니다. JDBC <code>RowSet</code> 구현 스펙에서는, 행의 삽입 위치에 대해서는 규정되어 있지 않은 것에 주의해 주세요. 이 레퍼런스 구현에서는 현재행의 직후에 행이 삽입됩니다만, 행의 삽입 위치에 관해서는, 구현자에 의한 선택의 여지가 많이 남아 있습니다.
+<p><a name="1010232"></a> 갱신 메소드는, 현재행의 지정된 열의 값을, 지정된 값 (일반적으로은 2 번째의 파라미터로서 건네받은 값)으로 변경합니다. 갱신 메소드에 의해 변경되는 것은, 메모리에 캐쉬되고 있는 행 세트내의 값 뿐입니다.  기가 되는 데이터 소스내의 값은 변경되지 않습니다. 또, 행 세트내에서 원의 값으로 해서 추적되고 있는 값도 변경되지 않습니다.
+<p>
+<a name="1010233"></a> 어플리케이션은, 1 개의 행에 대한 모든 갱신이 완료하면(자), 메소드 <code>updateRow</code> 를 호출합니다. <code>CachedRowSet</code> 구현에서는, 이 메소드가 불려 가면(자), 현재행의 갱신이 완료했던 것이 시스템에 통지됩니다.  다만, 갱신 메소드의 경우와 같이, 기가 되는 데이터 소스내의 값은 변경되지 않습니다. 같이 원의 값으로 해서 포함되고 있는 값도,<code>updateRow</code> 메소드에서는 변경되지 않습니다. 어플리케이션은, 갱신 대상의 모든 행에 대해서 <code>updateRow</code> 메소드를 다 호출했으면,<code>CachedRowSet</code> 의 메소드 <code>acceptChanges</code> 를 호출할 필요가 있습니다. 이 메소드는, 라이터 컴퍼넌트를 내부적으로 호출하는 것으로, 그 행 세트의 기본으로 되어 있는 데이터 소스로 변경을 반영한 뒤, 변경된 열 마다 현재의 값을 원의 값으로 설정합니다.  
+<p>
+<a name="1010234"></a> 어플리케이션은, 일단 <code>updateRow</code> 를 호출하면(자), 현재행의 갱신을 취소하기 위한 메소드 <code>cancelRowUpdates</code> 를 호출할 수 없게 됩니다. 다만, 메소드 <code>acceptChanges</code> 를 아직 호출하지 않은 경우는, 메소드 <code>restoreOriginal</code> 를 호출할 수가 있습니다.  이 메소드는, 모든 행에 대한 갱신을 취소하기 위해서(때문에), 행 세트내의 갱신된 값을 원의 값에 옮겨놓습니다. <code>restoreOriginal</code> 메소드의 실행에는, 기가 되는 데이터 소스와의 통신은 필요 없습니다.
+<p>
+<a name="1010235"></a> 다음의 코드에서는,<code>CachedRowSet</code> 객체 <code>crset</code> 내의 최초의 2 행을 갱신하고 있습니다.
+<p>
+<pre><a name="1010236"></a>     crset.execute();
+<a name="1010237"></a>     // crset is initialized with its original and current values
+<a name="1010238"></a>     
+<a name="1010239"></a>     crset.first();
+<a name="1010240"></a>     crset.updateString(1, "Jane_Austen");
+<a name="1010241"></a>     crset.updateFloat(2, 150000f);
+<a name="1010242"></a>     crset.updateRow();
+<a name="1010243"></a>     // the current value of the first row has been updated
+<a name="1010244"></a>     
+<a name="1010245"></a>     crset.relative(1);
+<a name="1010246"></a>     crset.updateString(1, "Toni_Morrison");
+<a name="1010247"></a>     crset.updateFloat(2, 120000f);
+<a name="1010248"></a>     crset.updateRow();
+<a name="1010249"></a>     // the current value of the second row has been updated
+<a name="1010250"></a>     
+<a name="1010251"></a>     crset.acceptChanges();
+<a name="1010252"></a>     // the original value has been set to the current value and the 
+<a name="1010253"></a>     // database has been updated
+</pre>
+<a name="1010254"></a> 
+<h3>10.2. 10	 &nbsp; &nbsp; 리더와 라이터의 커스터마이즈</h3>
+<a name="1010255"></a> 절단 된 <code>RowSet</code> 의 구현에서는, 행 세트 시스템가 제공하는 데이터 취득/갱신 기능을 커스터마이즈 할 수가 있습니다. 이것은,<code>CachedRowSet</code> 객체등의 절단 된 행 세트에 적용됩니다.  그렇다고 하는 것도, 절단 된 행 세트에서는, 리더와 라이터의 서비스가 필요합니다만, 그러한 서비스는 <code>SyncProvider</code> 객체에 의해 캡슐화되고 있기 때문입니다.
+<p><a name="1010257"></a> <code>CachedRowSet</code> 인터페이스에는,<code>CachedRowSet</code> 객체에 리더와 라이터의 구현을 설정하기 위한 메소드 <code>setSyncProvider</code> 가 정의되고 있습니다. 또, 행 세트의 <code>SyncProvider</code> 객체를 취득하기 위한 메소드 <code>getSyncProvider</code> 도 정의되고 있습니다. 행 세트의 리더와 라이터는, 완전하게 시스템 내부에서 동작해, 임의의 수의 태스크를 실행합니다만, 그러한 태스크를 커스터마이즈 하면, 추가 기능을 제공할 수 있습니다.
+<p>
+<a name="1010258"></a> <code>RowSetReader</code> 인터페이스에 포함되는 단일의 메소드 <code>readData</code> (public 메소드)는, 다양한 방법으로 커스터마이즈 가능합니다. 예를 들어, JDBC 드라이버를 사용해 데이타베이스로부터 읽어들이는 대신에, 파일 그 외의 비 SQL 데이터 소스로부터 데이터를 직접 읽어들이도록(듯이), 리더를 구현해도 괜찮습니다. 그러한 리더는, 메소드 <code>RowSet.insertRow</code> 를 사용해 새로운 행을 행 세트에 삽입할 수 있습니다. 또, 이 메소드는, 리더로부터 불려 갔을 경우에는 행 세트내의 원의 값을 갱신하도록(듯이) 구현할 수도 있습니다.  
+<p>
+<a name="1010260"></a> <code>RowSetWriter</code> 인터페이스에 포함되는 유일한 메소드 (public 메소드) <code>writeData</code> 는, 변경된 데이터를 기가 되는 데이터 소스에 써 되돌립니다. 이 메소드도, 다양한 방법으로 커스터마이즈 할 수 있습니다. 라이터는 리더와 같이, 데이터 소스와의 접속을 확립합니다. 다만, 경합의 유무를 체크할지 어떨지는, 구현 방법에 따라서 다릅니다. <code>RowSetInternal</code> 의 메소드 <code>getOriginal</code> 과 <code>getOriginalRow</code> 는, 현재의 변경전에 존재하고 있던 값을 돌려줍니다.  따라서, 라이터는, 그러한 값을 데이터 소스로부터 읽어들인 값과 비교하는 것으로, 그 데이터 소스가 변경되었는지의 여부를 판단할 수 있습니다. 경합이 존재하고 있는 경우에 데이터를 기입할지 어떨지를, 라이터가 어떻게 판단할까는, 역시 구현 방법에 따라서 다릅니다.
+
+<p>
+<a name="1010261"></a> 커스터마이즈 된 리더나 라이터와 제휴하도록(듯이) 설정된 <code>CachedRowSet</code> 객체는, 일반적으로의 JavaBeans 컴퍼넌트로서 제공할 수 있습니다. 따라서, 어플리케이션을 작성하는 개발자는, 리더나 라이터의 커스터마이즈에 대해 고려하지 않고 끝나, 행 세트를 얼마나 효과적으로 사용하는가 하는, 보다 중요한 측면으로 집중할 수 있게 됩니다.
+<p>
+
+<a name="1015563"></a> 
+<h3>10.2. 11	 &nbsp; &nbsp; 그 외의 메소드</h3>
+<a name="1015564"></a> <code>CachedRowSet</code> 인터페이스에는, 그 밖에도 많은 메소드가 정의되고 있습니다. 예를 들어, 2 개의 버젼의 메소드 <code>toCollection</code> 가 정의되고 있습니다. 행 세트내의 데이터를 컬렉션내의 요소로서 처리하는 편이 편리한 경우가 있습니다.  그 경우, 이러한 메소드는 행 세트의 데이터를 Java 의 컬렉션으로 변환합니다. <code>CachedRowSet</code> 에는, 행 세트의 카피를 작성하는 메소드도 준비되어 있습니다. <code>CachedRowSet.clone</code> 와 <code>CachedRowSet.createCopy</code> 는, 지정된 행 세트와 완전히 같은 카피를 작성합니다.  덧붙여 작성된 카피는 원의 행 세트로부터 독립하고 있습니다. 이것에 대해,<code>CachedRowSet.createShared</code> 메소드는, 원의 행 세트와 상태를 공유하는 행 세트를 작성합니다. 바꾸어 말하면(자), 새로운 행 세트와 원의 행 세트는, 물리적으로 동일한 메모리 영역 (원의 값과 현재의 값)을 공유합니다. 상태를 공유하고 있는 행 세트의 한편으로 갱신 메소드가 불려 갔을 경우, 그 갱신 내용은 한편에도 반영됩니다. 결과적으로,<code>createShared</code> 메소드를 사용하면, 단일의 행 세트에 대해서 복수의 커서를 작성할 수 있게 됩니다.
+<p>
+<a name="1010262"></a> 
+<h3>10.2. 12	 &nbsp; &nbsp; javax.sql.rowset.spi 패키지의 사용</h3>
+<a name="1015031"></a> 패키지 <code>javax.sql.rowset.spi</code> 는, 개발자가 동기 프로바이더를 구현할 때에 사용할 필요가 있는 API 를 제공합니다. 이 패키지에 포함되어 있는 클래스와 인터페이스는, 다음과 같습니다.
+
+<p>
+<ul><a name="1015054"></a> 
+<li><code>SyncFactory</code><br><br> <a name="1015082"></a> 
+<li><code>SyncFactoryException</code><br><br> <a name="1015063"></a> 
+<li><code>SyncProvider</code><br><br> <a name="1015058"></a> 
+<li><code>SyncProviderException</code><br><br> <a name="1015062"></a> 
+<li><code>SyncResolver</code><br><br> <a name="1015083"></a> 
+<li><code>XmlReader</code><br><br> <a name="1015084"></a> 
+<li><code>XmlWriter</code><br><br> <a name="1015085"></a> 
+<li><code>TransactionalWriter</code><br><br>
+</ul><a name="1015386"></a> 다음의 2 개의 인터페이스는, 패키지 <code>javax.sql</code> 로부터 상속되고 있습니다.
+<p>
+<ul><a name="1015390"></a> 
+<li><code>RowSetReader</code><br><br> <a name="1015394"></a> 
+<li><code>RowSetWriter</code><br><br>
+</ul><a name="1015053"></a> <code>CachedRowSet</code> 객체 또는 그 외의 절단 된 <code>RowSet</code> 객체는, 자신의 <code>SyncProvider</code> 객체를 <code>SyncFactory</code> 객체로부터 가져옵니다. 이 클래스는 static 이기 (위해)때문에,<code>SyncFactory</code> 의 실체는 1 개 밖에 존재하지 않습니다.  즉, 절단 된 <code>RowSet</code> 객체가 자신의 <code>SyncProvider</code> 객체의 취득처로서 사용할 수 있는 소스는, 1 개(살) 뿐입니다. 각 벤더가 <code>SyncProvider</code> 추상 클래스의 구현을 <code>SyncFactory</code> 에 등록하면(자), 각 <code>RowSet</code> 객체가 그 구현을 플러그 인 할 수 있게 됩니다.  다음의 코드행은,<code>SyncProvider</code> 구현을 <code>SyncFactory</code> 에 등록하는 방법의 1 개를 나타낸 것입니다.
+<p>
+<pre><a name="1015168"></a>     SyncFactory.registerProvider("com.supersoftware.providers.HAProvider");
+
+</pre><a name="1015239"></a> <code>registerProvider</code> 로 지정한 인수가,<code>SyncProvider</code> 구현의 완전 수식 클래스명인 것에 주의해 주세요.
+<p><a name="1015235"></a> <code>SyncProvider</code> 구현을 등록하는 다른 방법으로서 그 구현을 시스템 프로퍼티에 추가한다고 하는 방법도 있습니다. 이 방법에서는, 실행시에 커멘드행으로부터 다음과 같이 입력합니다.
+
+<p>
+<pre><a name="1015254"></a>     -Drowset.provider.classname=com.supersoftware.providers.HAProvider
+</pre><a name="1015267"></a> <code>SyncProvider</code> 구현을 등록하는 다른 방법으로서 완전 수식 클래스명, 벤더, 및 버젼 번호를 표준 프로퍼티 파일에 추가한다고 하는 방법도 있습니다. 레퍼런스 구현에 부속되는 프로퍼티 파일에는, 2 개의 레퍼런스 구현 동기 프로바이더 <code>RIOptimisticProvider</code> 와 <code>RIXmlProvider</code> 에 대한 엔트리가, 최초부터 포함되어 있습니다. <code>SyncProvider</code> 구현의 4 번째의 등록 방법은, 목적의 구현을 특정의 JNDI 문맥으로서 등록한 뒤, 그 JNDI 문맥을 <code>SyncFactory</code> 에 등록한다고 하는 방법입니다.  그 때, 완전 수식 프로바이더명을 메소드 <code>SyncFactory.registerJNDIContext</code> 로 지정합니다.
+<p>
+<a name="1015157"></a> <code>RowSet</code> 객체가 특정의 <code>SyncProvider</code> 구현을 요구하면(자),<code>SyncFactory</code> 는, 그 구현을 검색해 인스턴스를 작성해, 그것을 <code>RowSet</code> 객체에 돌려줍니다. 예를 들어, 다음의 코드행에서는,<code>CachedRowSet</code> 객체 <code>crset</code> 가,<code>com.supersoftware.providers.HAProvider</code> 를 요구하고 있습니다.
+<p>
+<pre><a name="1015334"></a>     crset.setSyncProvider("com.supersoftware.providers.HAProvider");
+</pre><a name="1015335"></a> 요구된 프로바이더가 사용 가능한 어느 방법에서도 등록되지 않았던 경우,<code>SyncFactory</code> 는 <code>SyncFactoryException</code> 객체를 throw 합니다.  
+<p>
+<a name="1015372"></a> <code>CachedRowSet</code> 객체 또는 그 임의의 서브 클래스는, 어떠한 <code>SyncProvider</code> 구현이 <code>SyncFactory</code> 에 등록되어 있어, 이용 가능하게 되어 있을까를 알 수 있습니다.  거기에는, 다음의 코드행을 호출합니다.  
+<p>
+<pre><a name="1015189"></a>     java.util.Enumeration providers = SyncFactory.getRegisteredProviders();
+</pre><a name="1015200"></a> <code>SyncProvider</code> 객체의 주요 컴퍼넌트는, 객체 마다 구현되고 있는 리더와 라이터입니다. 리더의 구현에 의해, 데이터의 read처로서 사용할 수 있는 데이터 소스의 종류 (RDB, 플랫 파일, 스프레드쉬트등)와 그 read 방법이 정해집니다. 라이터의 구현에 의해, 사용되는 동시성 처리의 레벨, 경합의 유무를 체크할지 어떨지, 및 검출한 경합의 처리 방법이 정해집니다. <code>RIOptimisticProvider</code> 에 포함되는 리더 (<code>RowSetReader</code> 인터페이스를 구현한 것)는, RDB로부터 데이터를 읽어들입니다. 라이터 (RowSetWriter 인터페이스를 구현한 것)는, 경합의 유무를 체크해, 경합이 발견되었을 경우는 데이터 소스에 데이터를 기입하지 않습니다. <code>RIXmlProvider</code> 내에 구현되고 있는 리더와 라이터는, 행 세트를 XML 문서로서 읽고 쓰기합니다. 이 때문에, 이 프로바이더는 주로 <code>WebRowSet</code> 객체에 의해 사용됩니다. 라이터는, 경합의 유무를 체크하지 않고,<code>RowSet</code> 객체의 모든 변경을 데이터 소스에 단순하게 기입합니다.
+<p>
+<a name="1015489"></a> <code>TransactionalWriter</code> 인터페이스를 사용하면, 글로벌 또는 로컬의 트랜잭션(transaction)에 참가하고 있는 <code>CachedRowSet</code> 객체는, 트랜잭션(transaction) 경계에 대한 치밀한 제어를 실시할 수 있게 됩니다. 이 기능을 이용하고 싶은 경우,<code>CachedRowSet</code> 객체는,<code>TransactionalWriter</code> 인터페이스를 구현한 <code>SyncProvider</code> 객체를 사용할 필요가 있습니다.  
+<p>
+<a name="1015201"></a> 레퍼런스 구현에는, 어플리케이션이 경합을 케이스 바이 케이스로 해결할 수 있도록(듯이)하기 위한 수단이 준비되어 있습니다. 라이터는, 모든 경합을 다 검출하면(자),<code>SyncProviderException</code> 객체를 throw 합니다. 어플리케이션은, 그 예외를 캐치 해, 그것을 기본으로 <code>SyncResolver</code> 객체 (특수화 된 <code>RowSet</code> 객체)를 작성할 수 있습니다. <code>SyncResolver</code> 객체는, 경합이 존재하고 있는 <code>RowSet</code> 객체에 대응하고 있어, 그것과 같은 수의 행으로 열을 포함하고 있습니다만, 거기에 포함되어 있는 것은, 경합이 존재하고 있는 데이터만입니다.  
+<p>
+<a name="1015517"></a> <code>SyncResolver</code> 객체는, 특정의 행에 존재하는 경합치를 1 개씩 꺼내, 데이터 소스내의 값과 <code>RowSet</code> 객체내의 값을 비교합니다. <code>SyncResolver</code> 객체는, 그 행의 모든 경합에 대해, 어느 값을 지속할까를 결정하면(자), 그러한 값을 메소드 <code>setResolvedValue</code> 를 사용해 설정합니다. 계속되어,<code>SyncResolver</code> 객체는, 다음의 경합으로 이동해, 경합이 없어질 때까지 이상의 처리를 반복합니다.
+<p>
+
+<a name="1015557"></a> 
+<h3>10.2. 13	 &nbsp; &nbsp; CachedRowSet 의 통계</h3>
+<a name="1015586"></a> 이상을 정리하면(자),<code>CachedRowSet</code> 인터페이스의 구현은, 접속이 절단 되고 있어 드라이버가 없어도 동작 가능합니다.  또, 특히 thin 클라이언트상에서 분산 어플리케이션을 사용해 데이터를 주고 받거나 결과 세트를 스크롤 가능/갱신 가능하게 할 수 있도록(듯이) 설계되고 있습니다. 이 밖에도, 다양한 목적을 위해서(때문에), 다수의 <code>RowSet</code> 구현을 설계하는 것이 가능합니다.
+<p>
+<a name="1010267"></a> 
+<h3>10.2. 14	 &nbsp; &nbsp; WebRowSet 구현</h3>
+&nbsp; WebRowSet 구현 <a name="1010269"></a> <code>WebRowSet</code> 인터페이스는,<code>CachedRowSet</code> 인터페이스를 확장한 것이어,<code>CachedRowSet</code> 에 포함되는 모든 기능과 같은 것을 갖추고 있습니다. 추가된 것은, 행 세트를 XML 형식에서 읽고 쓰기하는 기능입니다. <code>WebRowSet</code> 객체는,<code>WebRowSetXmlReader</code> 객체를 사용해 XML 형식의 행 세트를 읽어들여,<code>WebRowSetXmlWriter</code> 객체를 사용해 행 세트를 XML 형식에서 기입합니다. XML 판의 <code>WebRowSet</code> 객체에는, 데이터 외에, 프로퍼티을 포함한 메타데이타도 포함되어 있습니다.  
+<p><a name="1015995"></a> <code>WebRowSet</code> 객체가 행 세트를 XML 문서로서 읽고 쓰기할 수 있도록(듯이),<code>WebRowSet</code> 의 디폴트 생성자 은 <code>RIXmlProvider</code> 구현을 요구합니다. 또, XML 기능을 갖춘 서드 파티제의 <code>SyncProvider</code> 구현을,<code>WebRowSet</code> 객체로 설정할 수도 있습니다.
+<p>
+<a name="1010276"></a> <code>WebRowSet</code> 객체는, 분산 클라이언트/서버 어플리케이션내에서 잘 동작하도록(듯이) 설계되고 있습니다. CachedRowSet</code> 구현과의 유사점으로서는, 어느쪽이나 thin 클라이언트와 어플리케이션 서버를 접속하는 역할을 완수하는 점을 들 수 있습니다. 따라서, 어느쪽이나, thin 클라이언트에 데이터를 송신하는 용도에 적절하고 있습니다. 양자의 차이점은, 사용하는 프로토콜이 다른 것입니다. <code>CachedRowSet</code> 객체는 직렬화 가능하기 때문에, RMI/IIOP (Remote Method Invocation/Internet Interoperability Protocol)를 사용해 다른 컴퍼넌트에 송신하는 것이 가능합니다. <code>WebRowSet</code> 객체는, HTTP/XML (Hypertext Transfer Protocol/eXtensible Markup Language)를 사용해 중간층과 통신하는 것으로, 예를 들어, Web 클라이언트가 데이터 액세스를 제공하는 Java 서브 렛과 교환할 수 있도록(듯이) 합니다.
+<p>
+<a name="1010277"></a> XML 가 Web 서비스에 있어 더욱 더 중요하게 되고 있는 이유는, 데이터의 이식성의 높이에 있습니다. JDBC <code>RowSet</code> 구현 스펙에는, 표준 <code>WebRowSet</code> 의 XML Schema (<code>http://java.sun.com/xml/ns/jdbc/webrowset.xsd</code>)가 포함되어 있어 표준 <code>WebRowSet</code> 객체는 이 schema에 준거하고 있습니다. 이 때문에, 통신하는 2 자가 <code>WebRowSet</code> 객체의 XML schema를 소지하고 있으면, 양자는 그 schema에 근거하는 공통의 형식을 사용해 행 세트를 교환할 수 있습니다.  그 때, 양자의 데이터가 내부적으로는 완전히 다른 형식에서 보존되고 있었다고 해도, 무슨 문제도 없습니다. 따라서,<code>WebRowSet</code> 객체는 강력한 데이터 교환 툴로서 사용할 수 있습니다.
+<p>
+<a name="1010998"></a> Java 플랫폼은 코드의 이식성을 제공해, XML 는 데이터의 이식성을 제공합니다.  따라서, 양자는, Web 서비스를 실현하기 위한 이상적인 편성입니다. Java<font size="-2"><sup>TM</sup></font> API for XML-based RPC, SOAP with Attachments API for Java<font size="-2"><sup>TM</sup></font>, Java<font size="-2"><sup>TM</sup></font> Architecture for XML Binding, Java<font size="-2"><sup>TM</sup></font> API for XML Registries 등의 기술을 활용하면, Web 서비스의 개발이 더욱 더 용이하게 실시할 수 있게 됩니다. 게다가 J2EE 플랫폼이 제공하는 인프라스트럭쳐(infrastructure)를 사용하면, 개발자는, 분산 트랜잭션(transaction), 접속 풀, 및 시큐리티용의 관리 소프트웨어를 독자적으로 작성할 필요가 없어집니다.  
+<p>
+<a name="1015983"></a> 데이터 송신용으로 <code>WebRowSet</code> 객체를 사용할 수 있는 것은, Java 플랫폼을 사용해 Web 서비스를 실현할 때의 메리트를, 한층 더 높여 줍니다. 예를 들어,<code>WebRowSet</code> 객체는, 표준의 XML schema를 사용하고 있기 (위해)때문에, Web 서비스 메세지의 일부로 하는 것이 가능합니다 (일반적으로은 SOAP with Attachments API for Java 기술을 사용한다).
+<p>
+<a name="1010278"></a> 다음의 단순한 샘플 코드에서는,<code>WebRowSet</code> 객체 <code>wrs</code> 를 작성해, 거기에 <code>ResultSet</code> 객체 <code>rs</code> 의 데이터를 설정한 뒤, 특정의 열의 값을 갱신하고 있습니다. 마지막 2 행에서는,<code>wrs</code> 를 XML 형식에서 출력하고 있습니다.
+<p>
+<pre><a name="1011035"></a>     WebRowSet wrs = new WebRowSetImpl();
+<a name="1011036"></a>     wrs.populate(rs);
+<a name="1011037"></a>     
+<a name="1011038"></a>     //perform updates
+<a name="1011039"></a>     wrs.absolute(2)
+<a name="1011040"></a>     wrs.updateString(1, "newString");
+<a name="1011041"></a>     
+<a name="1011043"></a>     FileWriter fWriter = new FileWriter("/share/net/output.xml");
+<a name="1011044"></a>     wrs.writeXml(fWriter);
+</pre><a name="1011079"></a> 이 XML 출력을 수신한 머신에서는, 다음과 같은 처리에 의해 데이터가 읽힙니다. 일단 <code>fReader</code> 로부터 <code>wrs</code> 에의 데이터와 메타데이타의 read가 완료하면(자),<code>wrs</code> 는, 코드내에서 다른 <code>WebRowSet</code> 객체와 완전히와 같이  처리됩니다.
+<p>
+<pre><a name="1011084"></a>     WebRowSet wrs = new WebRowsetImpl();
+<a name="1011085"></a>     
+<a name="1011086"></a>     FileReader fReader = new FileReader("/share/net/output.xml");
+<a name="1011087"></a>     wrs.readXml(fReader);
+<a name="1013319"></a>     
+<a name="1011089"></a>     wrs.absolute(2);
+<a name="1011090"></a>     String str = wrs.getString(1);
+</pre>
+<a name="1011105"></a> 
+<h3>10.2. 15	 &nbsp; &nbsp; FilteredRowSet 구현</h3>
+<a name="1011109"></a> <code>FilteredRowSet</code> 객체는,<code>CachedRowSet</code> 객체를 확장한 것입니다.  프로그래머는 이 객체를 사용하는 것으로, 행 세트를 필터링 한 부분집합 데이터를 사용할 수 있게 됩니다. 예를 들어,<code>FilteredRowSet</code> 객체에 매우 대량의 행이 포함되어 있다고 합니다. 그러한 행의 부분집합 에 대해서만 처리를 실시하고 싶은 프로그래머는, 값의 범위를 지정하는 것만으로,<code>FilteredRowSet</code> 객체로부터 그 범위에 포함되는 값만이 돌려주어지게 됩니다. 이러한 필터링은, 메소드 <code>next</code> 내에서 실행됩니다.  이 메소드는, 지정된 범위에 포함되지 않는 행을 모두 읽어 날리도록(듯이) 구현되고 있습니다. 이 기능이 없으면, 프로그래머는, 데이터 소스에의 접속을 확립해, 선택된 행을 포함한 <code>ResultSet</code> 객체를 취득해, 그러한 행을 행 세트로 설정하지 않으면 안됩니다.  접속의 확립에는 매우 코스트가 듭니다. <code>FilteredRowSet</code> 객체의 포함에 필요하게 되는 메모리의 코스트와는 비교가 되지 않습니다.  따라서, 새로운 접속을 확립하지 않고 선택된 행 세트를 취득하는 기능은, 많은 경우, 퍼포먼스의 대폭적인 향상을 가져옵니다.
+<p><a name="1011162"></a> 여기서, 기업 XYZ 의 모든 종업원을 포함한 <code>FilteredRowSet</code> 객체 <code>frs</code> 가 있다고 합니다. 지금, 이 기업에 포함되는 모든 종업원의 평균 급여액을 다 계산했 습니다. 다음에, 이름이 「Aaronson」로부터 「Lee」의 범위에 포함되는 종업원의 정보만을 취득하고 싶다고 합니다. 다음의 코드에서는, 열 <code>NAMES</code> 의 값이 「Aaronson」로부터 「Lee」의 범위에 포함되어 있는 행만이,<code>frs</code> 로부터 돌려주어지도록(듯이) 하고 있습니다.
+<p>
+<a name="1011457"></a> 다음의 코드에서는,<code>FilteredRowSet</code> 객체 <code>frs</code> 에,<code>ResultSet</code> 객체 <code>rs</code> 내의 데이터를 설정해 있습니다. 계속되어,<code>Range</code> 객체를 작성합니다.  이 객체는, 열 <code>NAME</code> 에 포함되는 「Aaronson」로부터 「Lee」까지의 성의 범위가, 메소드 <code>next</code> 로부터 반환되는 이름의 범위가 되는 것을 지정하고 있습니다.
+<p>
+<pre><a name="1011205"></a>     FilteredRowSet frs = new FilteredRowSetImpl();
+<a name="1011206"></a>     frs.populate(rs);
+<a name="1011207"></a>     
+<a name="1011208"></a>     Range names = new Range("Aaronson", "Lee", findColumn("NAME"));
+<a name="1011209"></a>     frs.setFilter(names);
+<a name="1011210"></a>     
+<a name="1011211"></a>     while (frs.next()) {
+<a name="1011263"></a>       String name = frs.getString("NAME");
+<a name="1011258"></a>       .  .  .  // add each name to, for example, a mailing list
+<a name="1011243"></a>       // only names from "Aaronson" to "Lee" will be returned
+<a name="1011239"></a>     }
+</pre><a name="1016019"></a> <code>FilteredRowSet</code> 객체에 포함된 부분집합내의 데이터의 일부를 변경할 필요가 있는 경우, 그러한 변경을 데이터 소스에 동기 시킬 수가 있습니다. 부분집합내의 변경만이 동기 됩니다. 다만, 데이터의 소스가, 갱신 불가능한 SQL <code>VIEW</code> (정수 <code>SyncProvider.NONUPDATABLE_VIEW_SYNC</code> 로 나타내진다)인 경우,<code>FilteredRowSet</code> 객체에의 변경은 동기 되지 않습니다.  &nbsp; JoinRowSet 구현
+<p>
+
+<a name="1011264"></a> 
+<h3>10.2. 16	 &nbsp; &nbsp; JoinRowSet 구현</h3>
+<a name="1011265"></a> <code>JoinRowSet</code> 객체를 사용하면, 프로그래머는 다른 2 개의 <code>RowSet</code> 객체내의 데이터를 결합할 수가 있습니다. 이 기능은 특히, 관련 데이터가 복수의 데이터 소스에 포함되고 있는 경우에 편리합니다. 결합에는 임의의 <code>RowSet</code> 구현을 사용할 수 있습니다만, 일반적으로 결합되는 것은, 2 개의 <code>CachedRowSet</code> 객체입니다. 모든 관련 데이터를 결합해 단일의 <code>JoinRowSet</code> 객체로서 표현하면, 어플리케이션은, 다른 종류의 <code>RowSet</code> 객체와 완전히 같이 그 데이터를 처리할 수 있습니다.
+<p><a name="1011266"></a> 다음의 코드는, 2 개의 <code>CachedRowSet</code> 객체를 결합해 단일의 <code>JoinRowSet</code> 객체로서 표현하는 방법을 나타낸 것입니다. 이 시나리오에서는, 테이블 <code>EMPLOYEES</code> 내의 데이터와 테이블 <code>BONUS_PLAN</code> 내의 데이터를 결합하는 것으로, 각 종업원의 개인정보와 보너스 계획 정보의 모든 것을, 단일의 행 세트로서 제공하고 있습니다. 원의 행 세트는 어느쪽이나, 최초의 열에 종업원 식별 번호를 포함하고 있기 (위해)때문에, 양테이블내의 데이터를 결합할 때에 그 최초의 열이 사용되고 있습니다. 결합 후,<code>JoinRowSet</code> 객체의 각 행에는, 양쪽 모두의 행 세트의 열로부터 되는, 동일 종업원 ID 에 관련지을 수 있었던 데이터가 포함되어 있습니다.
+<p>
+<a name="1011371"></a> 코드의 1 행 째로는,<code>JoinRowSet</code> 객체 <code>jrs</code> 를 작성합니다. 계속되어, 테이블 <code>EMPLOYEES</code> 내의 모든 열의 데이터를 새로운 <code>CachedRowSet</code> 객체 <code>empl</code> 로 설정해,<code>empl</code> 의 최초의 열을 일치열로서 설정해, 그 <code>empl</code> 를 <code>jrs</code> 에 추가하고 있습니다. 계속되어 같이 테이블 <code>BONUS_PLAN</code> 내의 모든 열의 데이터를 <code>CachedRowSet</code> 객체 <code>bonus</code> 로 설정해,<code>bonus</code> 의 최초의 열을 일치열로서 설정해, 그 <code>bonus</code> 를 <code>jrs</code> 에 추가하고 있습니다. <code>empl</code> 와 <code>bonus</code> 의 어느쪽이나, 최초의 열은 <code>EMPLOYEE_ID</code> (주키)입니다. 이 열은, 2 개의 행 세트에 공통되고 있으므로,<code>empl</code> 내의 특정의 종업원의 정보와<code>bonus</code> 내의 같은 종업원에 대한 정보를 일치시키기 위해서(때문에) 사용할 수 있습니다. 마지막 코드행에서는,<code>jrs</code> 내를 이동해, 특정의 열의 값을 취득하고 있습니다.
+<p>
+<pre><a name="1011269"></a>     JoinRowSet jrs = new JoinRowSetImpl();
+<a name="1011270"></a>     
+<a name="1011271"></a>     ResultSet rs1 = stmt.executeQuery("SELECT * FROM EMPLOYEES");
+<a name="1011272"></a>     CachedRowSet empl = new CachedRowSetImpl();
+<a name="1011273"></a>     empl.populate(rs1);
+<a name="1011274"></a>     empl.setMatchColumn(1); // The first column is EMPLOYEE_ID 
+<a name="1011275"></a>     jrs.addRowSet(empl);
+<a name="1011276"></a>     
+<a name="1011277"></a>     ResultSet rs2 = stmt.executeQuery("SELECT * FROM BONUS_PLAN");
+<a name="1011278"></a>     CachedRowSet bonus = new CachedRowSetImpl();
+<a name="1011279"></a>     bonus.populate(rs2);
+<a name="1011280"></a>     bonus.setMatchColumn(1); // The first column is EMPLOYEE_ID 
+<a name="1011281"></a>     jrs.addRowSet(bonus);
+<a name="1011283"></a>     
+<a name="1011310"></a>       // The jrs instance now joins the two rowsets.  The application
+<a name="1011398"></a>       // can browse the combined data as if it were browsing one single
+<a name="1011403"></a>       // RowSet object.
+<a name="1011292"></a>     
+<a name="1011293"></a>     jrs.first();
+<a name="1011294"></a>     int employeeID = jrs.getInt(1);
+<a name="1011295"></a>     String employeeName = jrs.getString(2);
+</pre><a name="998974"></a> <code>JoinRowSet</code> 객체에서도 <code>FilteredRowSet</code> 객체의 경우와 같게, 변경 데이터를 동기 시킬 수가 있습니다.  다만, 그 경우, 데이터의 취득처가 갱신 불가능한 SQL <code>VIEW</code> 여 되지 않습니다.
+<p>
+<pre><a name="1014650"></a>     
+<a name="1014659"></a>     
+</pre>
+
+<hr>
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="mapping.html">[전의 항목]</a>  <a href="appendixB.html">[다음의 항목]</a> 
+<hr><br>
+
+
+<address>
+<a href="mailto:jdbc@eng.sun.com">jdbc@eng.sun.com</a>  또는 <a href="mailto:jdbc-business@eng.sun.com">jdbc-business@eng.sun.com</a> 
+</address>
+
+<i><a href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 1996-2004 Sun Microsystems, Inc.    All rights reserved. </i>
+
+
+
+</body>
+</html>

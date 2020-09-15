@@ -1,0 +1,91 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:7 -  원격 객체 기동
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-activation2.html">전의 항목</a>  | <a href="rmi-activation4.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">7.2	 기동 프로토콜</a> </h2>
+
+
+<blockquote>
+<a name="1044"><!-- --></a>  원격 메소드의 호출 시에, 대상이 되는 객체의 「라이브」참조를 모르는 경우는, fault 참조는 기동 프로토콜을 이용합니다. 기동 프로토콜은, 몇개의 엔티티라든지 변합니다. 이 엔티티는, fault 참조, 「activator」, 「기동 그룹」, 및 기동되고 있는 원격 객체입니다.  <p>
+<a name="1050"><!-- --></a>  activator (일반적으로, 호스트 마다 1 개(살))는, 기동을 관리하는 엔티티로, 다음의 2 개의 역할을 가집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="1054"><!-- --></a>  기동 식별자와 객체의 기동에 필요한 정보 (객체의 클래스, 객체의 클래스의 로드원을 나타내는 URL, 객체가 bootstrap를 위해서(때문에) 필요로 하는 특정의 데이터등)와의 매핑 정보의 데이타베이스로서의 역할
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="1059"><!-- --></a>  필요한 때에 JVM 를 기동함과 함께, 객체의 기동 요구를 원격 JVM 내의 올바른 기동 그룹에, 필요한 정보와 함께 전송 하는 Java 가상 머신의 매니저로서의 역할
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="1065"><!-- --></a>  activator는, 현재의 기동 식별자와 액티브한 객체와의 매핑 정보를 캐쉬로서 보관 유지하고 있으므로, 기동 요구마다 기동 그룹에 문의를 할 필요는 없습니다. <p>
+<a name="1068"><!-- --></a>  JVM 마다 1 개(살)만 존재하는 기동 그룹은, JVM 내의 객체의 기동 요구를 받아들여, 기동된 객체를 activator에 돌려주는 엔티티입니다. <p>
+<a name="1072"><!-- --></a>  기동 프로토콜은, 다음과 같은 기능을 합니다. 우선, fault 참조는 기동 식별자를 사용해 activator (내부 RMI 인터페이스)를 호출해, 기동 식별자에 관련지을 수 있었던 객체를 기동합니다. 다음에, activator는 객체의 「기동 기술자」(전에 등록한 것)을 참조합니다. 객체의 기술자에게는, 다음의 정보가 포함됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="1079"><!-- --></a>  객체의 그룹 식별자 (객체가 기동되는 JVM 를 나타낸다)
+<li>
+<a name="5452"><!-- --></a>  객체의 클래스명
+</li>
+<li>
+<a name="5453"><!-- --></a>  객체의 클래스 코드의 로드원을 나타내는 URL 패스, 및
+</li>
+<li>
+<a name="5454"><!-- --></a>  객체 고유의 정렬화 된 형식의 초기화 데이터 (예를 들어, 객체의 지속 상태가 포함된 파일의 이름 등)
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="1084"><!-- --></a>  해당하는 객체가 속해야 할 기동 그룹이 존재하는 경우는, activator는 기동 요구를 그 그룹에 전송 합니다. 그러한 기동 그룹이 존재하지 않는 경우는, JVM 에 기동 그룹을 기동시켜, 그 기동 그룹에 기동 요구를 전송 합니다. <p>
+<a name="1090"><!-- --></a>  기동 그룹은, 해당 객체의 클래스를 로드해, 몇개의 인수 (전에 등록한 기동 기술자등)를 취하는 특별한 생성자 을 사용해 객체의 인스턴스를 생성합니다. <p>
+<a name="1094"><!-- --></a>  객체의 기동이 완료하면(자), 기동 그룹은 「정렬화 된 객체」의 참조를 activator에 돌려주어, 그것을 받은 activator는, 기동 식별자와 액티브한 참조의 페어를 기록해, 액티브한 (라이브) 참조를 fault 참조에 돌려줍니다. 다음에, fault 참조 (Stub내)는, 원격 객체에의 직접적인 라이브 참조를 개입시켜 메소드 호출을 전송 합니다. <p>
+</blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="5473">주 - </a> </b>Java 2 SDK, Standard Edition, v 1.2 의 RMI 에서는, 기동 시스템 인터페이스의 구현이 준비되어 있습니다. 기동을 사용하려면 , 사전에 기동 시스템 demon <code>rmid</code> 를 동작 하게 할 필요가 있습니다.  
+<hr noshade size="1">
+</blockquote>
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-activation2.html">전의 항목</a>  | <a href="rmi-activation4.html">다음의 항목</a>  
+
+
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

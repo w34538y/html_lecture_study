@@ -1,0 +1,53 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Plug-in 에서의 RSA 서명 첨부 애플릿의 배치 방법 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1> Java Plug-in 에서의 RSA 서명 첨부 애플릿의 배치</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li> <a href="#deploy">RSA 서명 첨부 애플릿의 배치 방법</a> </li>
+<li> <a href="#certificate">증명서의 관리</a> </li>
+<li> <a href="#disabling">RSA 서명 첨부 애플릿 지원의 무효화</a> </li>
+</ul>
+<h2><a name="deploy"></a> RSA 서명 첨부 애플릿의 배치 방법 </h2>
+<p>RSA 서명 첨부 애플릿을 배치하려면 , 다음의 조작을 실행합니다. </p>
+<ol>
+<li><code>archive</code>,<code>cache_archive</code>, 또는 <code>cache_archive_ex</code> 형식을 사용해, HTML 페이지로부터 JAR 파일을 참조합니다. <a href="applet_caching.html">「애플릿 캐쉬」</a>를 참조해 주세요.
+<li>JAR 파일 및 HTML 페이지를 Web 서버상에 배치합니다.  
+</ol>
+<p>Java Plug-in 의 사용자가 RSA 서명 첨부 애플릿에 조우하면(자), Plug-in 에 의해 다음의 점이 검증됩니다.  </p>
+<ol>
+<li>애플릿이 올바르게 서명되고 있는 것</li>
+<li>RSA 증명서 체인 및 루트 CA 가 유효한 것</li>
+</ol>
+<p>애플릿이 올바르게 서명되고 있어 RSA 증명서 체인 및 루트 CA 가 유효한 경우는, Plug-in 에 의해 시큐리티 다이얼로그가 pop-up 해, 사용자 및 다음의 4 개의 옵션이 표시됩니다. </p>
+<ol>
+<li><em></em>[Grant always]:이 옵션을 선택하면(자), 애플릿에 <code>AllPermission</code> 가 부여됩니다. 이후, 같은 증명서를 사용해 서명된 애플릿은, 모두 자동적으로 신뢰됩니다. 이 증명서에 재차 조우해도, 시큐리티 다이얼로그는 표시되지 않습니다. 이 옵션은, Java 컨트롤 패널로 변경할 수 있습니다. <br>
+  </li>
+<li>[Grant this session]:이 옵션을 선택하면(자), 애플릿에 <code>AllPermission</code> 가 부여됩니다. 같은 증명서를 사용해 서명된 애플릿은 모두, 같은 브라우저 세션내에서 자동적으로 신뢰됩니다.
+  </li>
+<li>[Deny]:이 옵션을 선택하면(자), 애플릿은, 신뢰되지 않는 애플릿으로서 다루어집니다. <br>
+  </li>
+<li>[View Issuer]:이 옵션을 선택하면(자), 사용자는 JAR 파일의 증명서 체인내의 각 증명서의 속성을 확인할 수 있습니다. </li>
+</ol>
+<p>사용자가 시큐리티 다이얼로그로 옵션을 선택하면(자), 대응하는 시큐리티 문맥내에서, 애플릿이 실행됩니다. 옵션 선택은 모두 조작중에 행해지기 (위해)때문에, 사전으로 설정을 실시할 필요는 없습니다. </p>
+<p></p>
+<h2><a name="certificate"></a> 증명서의 관리</h2>
+<p>Java 컨트롤 패널에서는, RSA 서명 첨부 애플릿을 관리하기 위한 <a href="control_panel.html">「증명서」패널</a>이 제공됩니다. 이 패널에는, Java Plug-in 시큐리티 다이얼로그 (pop-up)의 표시시에 「항상 허가한다」액세스권을 받는 증명서의 리스트가 포함됩니다. 사용자는, 리스트로부터 임의의 증명서를 삭제할 수 있습니다. 삭제된 증명서에 의해 서명된 애플릿에 다시 조우하면(자), 시큐리티 다이얼로그가 pop-up 해 액세스권이 요구됩니다. 사용자는 Java 컨트롤 패널을 사용해, 증명서를 export 하거나 표시하거나 할 수도 있습니다. </p>
+<h2><a name="disabling"></a> RSA 서명 첨부 애플릿 지원의 무효화</h2>
+<p>정책 파일로 <code>usePolicy</code> 액세스권을 지정하는 것으로써, RSA 서명 첨부 애플릿을 Java Plug-in 로 완전하게 무효로 할 수 있습니다. <code>usePolicy</code> 액세스권이, 지정된 코드 소스에 (구성 끝난 시큐리티 정책에 의해) 부여된 액세스권의 일부인 경우, 사용자에게로의 요구는 행해지지 않고, 시큐리티 정책내에서 지정된 액세스권만이 코드 소스에 부여됩니다. Java Plug-in 에서는, RSA 서명 첨부 애플릿은 디폴트로 유효합니다.  </p>
+<h2>&nbsp;</h2>
+</body>
+</html>

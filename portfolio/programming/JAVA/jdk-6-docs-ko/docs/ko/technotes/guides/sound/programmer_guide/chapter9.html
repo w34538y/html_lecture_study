@@ -1,0 +1,111 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 9 장 :MIDI system resource에의 액세스</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<table width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bordercolor="#000000" bgcolor="#FFFFCC">
+  <tr>
+    <td>
+<h2><u>주:</u></h2>
+<p>버젼 5.0 에서는,<code>sound.properties</code> 파일을 사용해,<code>Sequencer</code>,<code>Synthesizer</code>,<code>Transmitter</code> 및 <code>Receiver</code> 의 디폴트의 디바이스를 설정할 수 있습니다. 상세한 것에 대하여는, API 의 <code><a href="../../../../api/javax/sound/midi/MidiSystem.html">MidiSystem</a> </code> 클래스, 예에 대해서는, 이 가이드의<a href="appendix2.html">「부록 2:<code>sound.properties</code> 파일」</a>  을 참조해 주세요. <br>
+    </p>    </td>
+  </tr>
+</table>
+<br>
+<p><a name="119694"> </a> Java<font size="-1"><sup>TM</sup></font> Sound API 는, 샘플링 오디오 시스템을 구성하는 경우와 같이, 유연성의 높은 MIDI 시스템 구성용 모델을 제공합니다. Java Sound API 를 구현하는 것으로써, 다양한 종류의 MIDI 디바이스의 제공이 가능하게 되었습니다. 게다가 서비스 프로바이더의 제공하는 것 외의 MIDI 디바이스의 추가 및 인스톨도 가능합니다. 컴퓨터에 인스톨 되는 MIDI 디바이스의 종류를 거의 의식하는 일 없이, 프로그램을 작성할 수 있습니다. 한편, 프로그램으로 MIDI 시스템의 디폴트를 이용하는 일도, 이용 가능한 임의의 디바이스를 사용자가 선택해 사용할 수도 있습니다.
+</p>
+<p><a name="119705"> </a> 여기에서는, 프로그램이, 인스톨 되고 있는 MIDI 자원을 인식해, 사용하는 MIDI 자원에 액세스 하는 방법을 설명합니다. 디바이스에의 액세스 및 오픈이 완료하면(자), 디바이스간의 상호 접속이 가능하게 됩니다. 자세한 것은, 다음의 장<a href="chapter10.html">「MIDI 메세지의 송신 및 수신」</a>으로 설명합니다.  </p>
+<a name="119711"> </a> 
+<h3> MidiSystem 클래스</h3>
+<p><a name="119713"> </a> Java Sound API 의 MIDI 패키지에 있어서의 <code>MidiSystem</code> 클래스의 역할은, 샘플링 오디오 패키지에 있어서의 <code>AudioSystem</code> 의 역할에 유사하고 있습니다. <code>MidiSystem</code> 는, 인스톨 된 MIDI 자원에 액세스하기 위한 정보 센터로서 기능합니다.
+</p><p><a name="119718"> </a> <code>MidiSystem</code> 에의 문의를 행해 인스톨 되고 있는 디바이스의 종류를 알 수 있으면(자), 이용 가능한 디바이스를 반복 처리 해, 목적의 디바이스에의 액세스를 취득할 수 있습니다. 예를 들어, 기동시에 이용 가능한 신디사이저를 <code>MidiSystem</code> 에 문의해 그 리스트를 표시해, 사용자의 선택을 기다린다, 라고 하는 동작을 하는 응용 프로그램을 작성할 수 있습니다. 또, 단지 디폴트의 신디사이저를 사용할 뿐(만큼)이라고 하는, 보다 단순한 응용 프로그램을 작성하는 일도 가능합니다.
+</p><p><a name="119726"> </a> <code>MidiSystem</code> 클래스는, 또, MIDI 파일과 <code>Sequence</code> 간의 변환을 실시하는 메소드도 제공합니다. 구체적으로는, MIDI 파일의 파일 형식의 리포트, 및 다른 타입의 파일의 기입이 가능합니다.
+</p><p><a name="119731"> </a> 응용 프로그램은,<code>MidiSystem</code> 로부터 다음의 자원을 취득할 수 있습니다.
+</p><ul><a name="119733"> </a> 
+<li>시퀀서<a name="119734"> </a> 
+<li>신디사이저<a name="119735"> </a> 
+<li>트랜스미터 (MIDI 입력 포트에 관련지을 수 있었던 트랜스미터 등)<a name="119736"> </a> 
+<li>리시버 (MIDI 출력 포트에 관련지을 수 있었던 리시버 등)<a name="119737"> </a> 
+<li>표준 MIDI 파일의 데이터<a name="119738"> </a> 
+<li>사운드 뱅크 파일의 데이터
+<p><a name="119740"> </a> 
+</ul>
+이 장에서는, 최초의 4 개의 자원에 대해 설명합니다. <code>MidiSystem</code> 클래스의 파일 처리 기능에 대해서는, 제 11 장<a href="chapter11.html">「MIDI 순서의 재생, 기록, 및 편집」 </a>및 제 12 장<a href="chapter12.html">「사운드의 합성」</a>으로 설명합니다. MIDI 시스템이 이러한 모든 자원에 액세스 하는 방법에 대해서는, 이 문서의 제 III 부 「Service Provider 인터페이스」를 참조해 주세요.  
+<p></p><a name="119749"> </a> 
+<h3> 디폴트 디바이스의 취득</h3>
+<p><a name="119751"> </a> Java Sound API 를 사용하는 일반적으로의 MIDI 응용 프로그램은, 기동시에 필요한 디바이스군을 가져옵니다. 디바이스군은, 1 개(살) 또는 복수의 시퀀서, 신디사이저, 입력 포트, 및 출력 포트로부터 구성됩니다.  
+</p><p><a name="121015"> </a> 디폴트의 신디사이저 디바이스, 디폴트의 시퀀서 디바이스, 디폴트의 송신 디바이스, 및 디폴트의 수신 디바이스가 1 개씩 존재합니다. 일반적으로, 송신과 수신의 2 개의 디바이스는, 그것들이 시스템으로 이용 가능한 경우, MIDI 의 입력 포트 및 출력 포트를 각각 나타냅니다. 여기서, 입력과 출력의 방향성을 잘못하기 쉽기 때문에 주의해 주세요. 포트의 송신과 수신은, 물리 포트에 접속하는 외부의 물리 디바이스와의 관계는 아니고, 소프트웨어와의 관계로 이해할 필요가 있습니다. MIDI 입력 포트는, 데이터를 외부 디바이스로부터 Java Sound API <code>Receiver</code> 에 「송신」합니다. 같이 MIDI 출력 포트는, 소프트웨어 객체로부터 데이터를 「수신」해 외부 디바이스에 중계합니다. <em></em><em></em> 
+</p><p><a name="121012"> </a> 단순한 응용 프로그램은, 인스톨 떠날 수 있어 모든 디바이스를 조사하지 않고 , 디폴트의 디바이스를 사용합니다. <code>MidiSystem</code> 클래스에는, 디폴트의 자원을 검색할 때에 사용하는, 다음의 메소드가 포함됩니다.
+</p><blockquote><pre>    static Sequencer getSequencer()
+    static Synthesizer getSynthesizer()
+    static Receiver getReceiver()
+    static Transmitter getTransmitter()
+	</pre></blockquote>
+<p><a name="120991"> </a> 최초의 2 개의 메소드는, 시스템의 디폴트의 시켄싱리소스 및 합성 자원을 가져옵니다. 각 자원은, 물리 디바이스의 경우도 있으면, 완전하게 소프트웨어에 구현되고 있는 경우도 있습니다. <code>getReceiver</code> 메소드는, 송신된 MIDI 메세지를 받아들여 디폴트의 수신 디바이스에 중계하는 <code>Receiver</code> 객체를 가져옵니다. 같이<code>getTransmitter</code> 메소드는, 디폴트의 송신 디바이스에 대신해 MIDI 메세지를 수신 측에 송신할 수 있는 <code>Transmitter</code> 객체를 가져옵니다.
+</p><a name="119787"> </a> 
+<h3> 인스톨 되고 있는 디바이스의 확인 방법</h3>
+<p><a name="119789"> </a> 디폴트의 디바이스를 사용하는 대신에, 시스템에 인스톨 떠날 수 있어 모든 디바이스중에서 목적의 디바이스를 확실히 선택한다고 하는 방법도 있습니다. 응용 프로그램에서는, 프로그램에 의해 목적의 디바이스를 선택하는 일도, 이용 가능한 디바이스의 리스트를 표시해 사용자가 선택할 수 있도록(듯이) 하는 일도 가능합니다. <code>MidiSystem</code> 클래스에서는, 인스톨 되고 있는 디바이스를 확인하기 위한 메소드, 및 지정된 종류의 디바이스를 취득하기 위한 대응하는 메소드가 제공됩니다.  
+</p><p><a name="119794"> </a> 다음에, 인스톨 된 디바이스를 확인하는 방법을 나타냅니다.
+</p><blockquote><pre>    static MidiDevice.Info[] getMidiDeviceInfo()
+</pre></blockquote>
+<p><a name="119798"> </a> 이 메소드는 정보 객체의 배열을 돌려줍니다. 반환되는 각 <code>MidiDevice.Info</code> 객체는, 시퀀서, 신디사이저, 포트를 각각 1 종류, 또는 인스톨 되고 있는 것 외의 디바이스를 나타냅니다. 일반적으로, 시스템에 있는 특정의 종류의 인스턴스는, 많아도 1 개(살)입니다. 예를 들어, 특정의 벤더의 특정 모델의 신디사이저는, 한 번만 인스톨 됩니다. <code>MidiDevice.Info</code> 에는, 디바이스를 나타내는 다음의 캐릭터 라인이 포함됩니다.
+</p><ul><a name="119812"> </a> 
+<li>이름 <a name="119813"> </a> 
+<li>버젼 번호 <a name="119814"> </a> 
+<li>벤더 (디바이스를 작성한 기업) <a name="119815"> </a> 
+<li>디바이스에 관한 설명
+<p><a name="119817"> </a> 
+</ul>
+이러한 캐릭터 라인을 사용자 인터페이스에 표시해, 사용자가 디바이스 리스트로부터 선택할 수 있도록(듯이) 할 수가 있습니다.   
+<p></p><p><a name="121091"> </a> 다만, 캐릭터 라인을 사용자에게 표시하기 위해(때문에)는 아니고, 프로그램에 의해 디바이스를 선택하기 위해서 캐릭터 라인을 사용하는 경우는, 그 디바이스의 정보를 미리 취득할 필요가 있습니다. 각 디바이스를 제공하는 기업은, 이 디바이스 정보를 문서에 기재할 필요가 있습니다. 특정의 디바이스의 사용이 필요한 또는 추천 되는 응용 프로그램은, 이 정보를 사용해 디바이스를 검출할 수 있습니다. 이 방법에는, 프로그램 할 수 있는 것은 사전에 정보가 있는 디바이스 구현으로 한정된다고 하는 결점이 있습니다.  
+</p><p><a name="119827"> </a> 이 밖에, 보다 일반적인 방법으로서 복수의 <code>MidiDevice.Info</code> 객체를 반복 처리 해, 각 객체에 대응하는 디바이스를 취득해, 각 디바이스가 사용에 적절하고 있는지 어떤지, 또는 적어도 각 디바이스가 사용자에게 표시하는 선택 리스트에 포함하는 것이 적절한가 어떤가를, 프로그램에 의해 결정하는 방법입니다. 다음의 마디에서는, 이 방법을 설명합니다.
+</p><a name="119833"> </a> 
+<h3> 목적의 디바이스의 취득</h3>
+<p><a name="120802"> </a> 적절한 디바이스의 info 객체가 검출되면(자), 응용 프로그램은 다음의 <code>MidiSystem</code> 메소드를 호출해 대응하는 디바이스 자체를 가져옵니다.
+</p><blockquote><pre>    static MidiDevice getMidiDevice(MidiDevice.Info info)
+</pre></blockquote>
+<p><a name="120804"> </a> 이 메소드를 사용할 수 있는 것은, 필요한 디바이스가 기술된 info 객체를 벌써 검출하고 있는 경우입니다. 다만,<code>getMidiDeviceInfo</code> 가 돌려주는 info 객체를 해석해 필요한 디바이스를 판정할 수 없는 경우, 또는 모든 디바이스의 정보를 사용자에게 표시하는 것을 바라지 않는 경우는, 대신에,<code>getMidiDeviceInfo</code> 가 돌려주는 모든 <code>MidiDevice.Info</code> 객체를 반복 처리 해, 대응하는 디바이스를 취득해, 각 디바이스가 사용에 적절하고 있는지 어떤지를 테스트하는 방법도 있습니다. 즉, 사용자에게 표시하는 디바이스 리스트에 포함하기 전에, 또는 사용자를 개재시키지 않고 프로그램에 의해 디바이스를 결정하는 수단의 1 개로서 각 디바이스에 그 클래스 및 기능을 문의할 수가 있습니다. 예를 들어, 프로그램이 신디사이저를 필요로 하는 경우, 다음에 나타내도록(듯이), 인스톨 되고 있는 각 디바이스를 취득해,<code>Synthesizer</code> 인터페이스를 구현하는 클래스의 인스턴스를 판별해 리스트에 표시해, 사용자의 선택을 기다립니다.
+<blockquote>
+  <pre>
+// Obtain information about all the installed synthesizers.
+Vector synthInfos;
+MidiDevice device;
+MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
+for (int i = 0; i &lt; infos.length; i++) {
+    try {
+        device = MidiSystem.getMidiDevice(infos[i]);
+    } catch (MidiUnavailableException e) {
+          // Handle or throw exception...
+    }
+    if (device instanceof Synthesizer) {
+        synthInfos.add(infos[i]);
+    }
+}
+// Now, display strings from synthInfos list in GUI. 	
+</pre>
+</blockquote>
+<p><a name="119876"> </a> 다른 예로서 사용자를 개재시키지 않고 , 프로그램에 의해 디바이스를 선택하는 방법에 대해 생각합시다. 대부분의 음색을 동시에 재생할 수 있는 신디사이저를 취득한다고 합니다. <strong> </strong>상기와 같이, 모든 MidiDevice.Info 객체를 반복 처리 해, 디바이스가 신디사이저인 것을 확인할 수 있던 시점에서,<code>Synthesizer</code> 의 <code>getMaxPolyphony</code> 메소드를 호출해 기능을 문의합니다. 다음의 마디로 가리키도록(듯이), 최대의 다음 (동시에 연주할 수 있는 소리)을 보관 유지하는 신디사이저를 예약합니다. 사용자에게 신디사이저의 선택을 요구하지 않는 경우에서도, 사용자에게로의 참고 정보로서 선택한 <code>MidiDevice.Info</code> 객체로부터 돌아가는 캐릭터 라인을 표시할 수도 있습니다.
+</p><a name="119891"> </a> 
+<h3> 디바이스의 오픈</h3>
+<p><a name="119893"> </a> 전의 마디에서는, 인스톨 되고 있는 디바이스를 취득하는 방법을 나타냈습니다. 다만, 디바이스는 인스톨 되고 있어도, 이용할 수 없는 경우가 있습니다. 예를 들어, 다른 응용 프로그램이, 배타적으로 사용하고 있는 경우가 있습니다. <strong> </strong>사용하는 프로그램용으로 디바이스를 확실히 예약하려면 , 다음과 같이 <code>MidiDevice</code> 의 <code>open</code> 메소드를 사용할 필요가 있습니다.  
+</p><blockquote><pre>if (! (device.isOpen())) {
+    try {
+      device.open();
+  } catch (MidiUnavailableException e) {
+          // Handle or throw exception...
+  }
+}
+</pre></blockquote>
+<p><a name="119916"> </a> 디바이스에 액세스 해 오픈하는 것으로써 예약이 완료하면(자), 그 디바이스를 다른 1 개(살) 또는 복수의 디바이스에 접속해, 서로 MIDI 데이터를 교환할 수가 있습니다. 이 순서는, 제 10 장<a href="chapter10.html">「MIDI 메세지의 송신 및 수신」</a>으로 설명합니다.  </p>
+<p><a name="121197"> </a> 디바이스에 관련하는 작업이 완료하면(자),<code>MidiDevice</code> 의 <code>close</code> 메소드를 호출해, 다른 프로그램으로부터 이용할 수 있도록(듯이) 디바이스를 해제합니다.
+</p>
+<p>&nbsp;</p></body>
+</html>

@@ -1,0 +1,1699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"
+  "http://www.w3.org/TR/REC-html40">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Emacs/20.2.2 [en] (Motif; sparc-sun-solaris2.5; sun4u) [FSF]">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<TITLE>FAQ - RMI 와 객체 직렬화 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: Ann Wollrath - JavaSoft East, 20-Dec-2001 --> <!-- Changed by: Susan Snyder - 10/15/05 -->
+
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+&nbsp;
+<TABLE BORDER=0 WIDTH="100%" SUMMARY="layout">
+<TR>
+<TD>
+<H1>
+</H1>
+</TD>
+
+<TD>
+<CENTER>
+<H1>
+FAQ<BR> Java<sup><font size=-2>TM</font></sup> RMI 와 객체 직렬화</H1></CENTER>
+</TD>
+
+<TD width=15% ALIGN=center VALIGN=top>
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+<HR WIDTH="100%">
+<H2>
+Java RMI</H2>
+
+<H3>
+전반
+</H3><UL>
+<LI> <A HREF="#domain">A. 1
+
+<code>Naming.lookup</code> 를 호출하면(자), 예기치 않은 호스트명이나 포트 번호에 대한 예외가 발행됩니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#codebase">A. 2
+
+클라이언트의 <code>CLASSPATH</code> 에 <code>_Stub</code> 파일을 인스톨 할 필요가 있습니까. 다운로드할 수 있는 것은 아닐까 생각합니다만.
+
+</A> 
+<LI> <A HREF="#classserver">A. 3
+
+Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI)에서는, HTTP 서버를 사용할 필요가 있습니까.
+
+</A> 
+<LI> <A HREF="#wrongcodebase">A. 4
+
+<code>ClassNotFoundException</code> 가 반환되는 것은 왜입니까.
+
+</A> 
+
+
+<LI> <A HREF="#customsocketreuse">A. 5
+
+어플리케이션이 커스텀 소켓 팩토리를 사용할 경우에 Java RMI 구현이 다수의 소켓을 작성하는 것은 왜입니까.  또, 같은 원격 객체를 참조하는 (커스텀 소켓 팩토리를 사용한다) Stub가 동일하지 않은 것은 왜입니까.  또, 커스텀 서버 소켓 팩토리를 사용할 경우에 Java RMI 구현이 서버측의 포트를 재사용하지 않는 것은 왜입니까.
+
+</A> 
+</UL>
+
+
+<H3>
+Java RMI 프로그램의 디버그
+</H3><UL>
+<LI> <A HREF="#debug">B. 1
+
+Java RMI 에 편입의 디버그 기구는 있습니까.
+
+</A> 
+<LI> <A HREF="#debugwin">B. 2
+
+Windows 95 에서의 디버그에 고생하고 있습니다. 무엇인가 좋은 안은 있습니까.
+
+</A> 
+<LI> <A HREF="#mismatch">B. 3
+
+프로그램의 실행중에 <code>java.lang.ClassMismatchError</code> 가 돌려주어집니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#array">B. 4
+
+원격 객체의 배열을 송신하면(자),<code>ArrayStoreException</code> 가 발행됩니다. 어떻게 되어 있습니까.
+
+</A> 
+<LI> <A HREF="#deadlock">B. 5
+
+동기 하는 복수의 로컬 객체가 있습니다. 이것들을 원격로 하면(자), 어플리케이션이 행업 합니다. 무엇이 문제인 것입니다인가.
+
+</A> 
+<LI> <A HREF="#regpath">B. 6
+
+원격 객체를 레지스트리에 등록하려고 하면(자), Stub 클래스에 <code>ClassNotFoundException</code> 가 발행됩니다. 어떻게 되어 있습니까.
+
+</A> 
+<LI> <A HREF="#serverdied">B. 7
+
+서버가 떨어졌습니다. 서버의 동작의 트레이스를 취할 수 있습니까.
+
+</A> 
+<LI> <A HREF="#properties">B. 8
+
+Java RMI 어플리케이션의 구현 및 디버그에 사용 가능한 시스템 프로퍼티의 리스트는 어디에 있습니까.
+
+</A> 
+</UL>
+<H3>
+네트워크 기능
+</H3><UL>
+<LI> <A HREF="#netcontact">C. 1
+
+Java RMI 클라이언트는, 어떻게 해 원격 Java RMI 서버에 컨택트 합니까.
+
+</A> 
+<LI> <A HREF="#netunknownhost">C. 2
+
+원격 메소드 또는 콜백 루틴이, 네스트 된 <code>java.net.UnknownHostException</code> 를 발행해 실패합니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#netfqdn">C. 3
+
+서버로 완전 지정의 도메인명 또는 IP 주소를 사용하고 있습니다만, 그런데도 <code>UnknownHostException</code> 가 발행됩니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#netmultihomed">C. 4
+
+최신 릴리스의 Java 2 SDK 를 사용하고 있습니다. 호스트에게는 복수의 IP 주소가 있어, Java RMI 가 서버 호스트명에 잘못한 IP 주소를 선택합니다만, 어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#nethostname">C. 5
+
+JDK 의 각 버젼으로, Java RMI 는 어떻게 해 서버 호스트명을 취득합니까.
+
+</A> 
+<LI> <A HREF="#bind">C. 6
+
+Windows 시스템으로 <code>Naming.bind</code> 과 <code>Naming.lookup</code> 에 매우 시간이 걸리는 것은 왜입니까.
+
+</A> 
+<LI> <A HREF="#standalone">C. 7
+
+네트워크에 접속되어 있지 않은 스탠드얼론의 Windows 95 머신에서는, 어떻게 해 Java RMI 를 사용하는 것일까요.
+
+</A> 
+<LI> <A HREF="#addrinuse">C. 8
+
+레지스트리를 실행하려고 하면(자) [<code>java.net.SocketException:Address already in use</code>] 가 발행됩니다만, 왜입니까.
+
+</A> 
+<LI> <A HREF="#firewall">C. 9
+
+방화벽(fire wall) 경유로 Java RMI 호출을 실행하려면  어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#firewallOut">C. 10
+
+로컬의 방화벽(fire wall)의 안쪽에서 외측에 Java RMI 호출을 실시하려면 , 어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#firewallIn">C. 11
+
+로컬의 방화벽(fire wall)의 외측에서 안쪽에 Java RMI 호출을 실시하려면 , 어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#firewallBoth">C. 12
+
+2 개의 방화벽(fire wall)를 넘어 Java RMI 조작을 하려면  어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#servlet">C. 13
+
+Java 2 SDK 에 부속되어 있는 java-rmi.cgi 스크립트를 서브 렛을 사용해 치환하는 것은 가능합니까.
+
+</A> 
+</UL>
+<H3>
+Java RMI 의 사용
+</H3><UL>
+<LI> <A HREF="#notify">D. 1
+
+원격 가상 머신에 장해가 발생했을 때에, 자동적으로 곧바로 통지를 받는 방법은 있습니까.
+
+</A> 
+<LI> <A HREF="#newvm">D. 2
+
+가상 머신내로부터, 원격 머신상에 새로운 가상 머신을 생성할 수 있습니까.
+
+</A> 
+<LI> <A HREF="#unref">D. 3
+
+모든 클라이언트의 접속이 끊어졌을 때에 원격 객체에 통지할 수 있습니까.
+
+</A> 
+<LI> <A HREF="#noexit">D. 4
+
+모든 클라이언트의 접속이 끊어졌을 때에 서버 프로그램이 종료하지 않습니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#leases">D. 5
+
+분산형 가비지 컬렉터는, 접속이 끊어진 클라이언트를 어떻게 해 검출합니까. 클라이언트를 적절히 종료하기 위해서 <code>System.exit</code> 를 사용하는 것은 현명할까요.
+
+</A> 
+<LI> <A HREF="#leases2">D. 6
+
+클라이언트가 크래쉬 한 것을 서버는 어떻게 압니까.
+
+</A> 
+<LI> <A HREF="#fastleases">D. 7
+
+원격 객체의 사용을 그만두고 나서 <code>unreferenced()</code> 메소드가 불려 갈 때까지 10 분 걸립니다. 이 시간을 단축하는 방법을 가르쳐 주세요.
+
+</A> 
+<LI> <A HREF="#crashnotif">D. 8
+
+클라이언트가 크래쉬 했을 때에, 곧바로 통지를 납득할 수 없는 것은 왜입니까.
+
+</A> 
+<LI> <A HREF="#rmicbatch">D. 9
+
+DOS 의 배치파일로 <code>rmic</code> 커멘드를 실행시키려면  어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#getclient">D. 10
+
+원격 객체의 구현으로, 원격 메소드의 호출원의 호스트명을 알려면  어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#inout">D. 11
+
+RMI 에서는 (CORBA 와 같이) OUT, INOUT 파라미터를 취급할 수 있습니까.
+
+</A> 
+<LI> <A HREF="#caststub">D. 12
+
+일반적으로, Java 프로그램 언어에서는, 인터페이스의 인스턴스를, 생성원의 클래스의 인스턴스에 캐스트 해, 그 결과를 사용할 수가 있습니다. Java RMI 에서는, 왜 이것을 할 수 없습니까.
+
+</A> 
+</UL>
+<H3>
+RMI 의 작용
+</H3><UL>
+<LI> <A HREF="#browsersupport">E. 1
+
+필요한 Java SE<sup><font size=-2>TM</font></sup> 의 버젼을 브라우저가 지원하고 있지 않는 경우는 어떻게 하면 좋을까요.
+
+</A> 
+<LI> <A HREF="#observer">E. 2
+
+Java RMI 에 원격의 Observer 및 Observable 객체를 구현할 수 있습니까.
+
+</A> 
+</UL>
+
+<H3>
+내부, 자원, 퍼포먼스
+</H3><UL>
+<LI> <A HREF="#connection">F. 1
+
+클라이언트와 서버의 사이에 「라이브」접속을 할 수 있는 것은 어느 시점입니까. 또, 접속의 관리는 어떻게 행해집니까.
+
+</A> 
+<LI> <A HREF="#replace">F. 2
+
+Java 는 원격 메소드의 호출중, 모든 원격 객체를 Stub에 옮겨놓습니까.
+<LI> <A HREF="#nosockets">F. 3
+
+소켓을 사용하지 않는, Java RMI 용의 새로운 트랜스폴트층을 기술할 수 있습니까. 또, TCP 베이스가 아닌 소켓을 사용하는 트랜스폴트층은 어떨까요.
+
+</A> 
+<LI> <A HREF="#polling">F. 4
+
+레지스트리가 CPU 자원을 계속 사용하고 있는것을  깨닫았습니다. <code>select()</code> 호출로 블록화는 아니고 폴링 하고 있는 것 같습니다만, 레지스트리는 폴링으로 구현되고 있습니까.
+
+</A> 
+<LI> <A HREF="#numsockets">F. 5
+
+클라이언트 프로세스에 Stub가 몇개 있어도, 클라이언트 프로세스와 서버의 사이에는 소켓 접속은 1 개 밖에 존재하지 않는 것일까요.
+
+</A> 
+</UL>
+<H3>
+그 외
+</H3><UL>
+<LI> <A HREF="#license">G. 1
+
+Java RMI 의 사용에 관한 라이센스의 문제는 어떻게 되어 있습니까.
+
+</A> 
+<LI> <A HREF="#stdinput">G. 2
+
+Java RMI 호출을 개시하는 사용자 커멘드를 표준 입력으로 받아들이는, 싱글스 레드 프로그램을 사용하고 있습니다만, 이 프로그램이 표준 입력을 블록 하고 있는 것 같고, 원격 객체가 이 원격 호출에 대응할 수 없습니다. 무엇이 문제인 것입니다인가.
+
+</A> 
+<LI> <A HREF="#passbycopy">G. 3
+
+원격 서버-에 배열 요소를 카피해 그 값을 변경해도, 인크리먼트(increment) 후의 값이 클라이언트에 카피되지 않습니다. 왜입니까.
+
+</A> 
+<LI> <A HREF="#staticinit">G. 4
+
+원격 인터페이스에 static 의 필드를 가질 수 있을까요.
+
+</A> 
+<LI> <A HREF="#registry">G. 5
+
+레지스트리의 위치를 알 수 있었습니다만, 거기에는 레지스트리가 없는 것 같습니다. 어떻게 되어 있습니까.
+
+</A> 
+<LI> <A HREF="#more">G. 6
+
+여기에는, 나의 질문에 대한 회답이 없습니다. 어디를 조사하면 좋을까요.
+
+</A> 
+</UL>
+
+<H2>
+객체 직렬화</H2>
+
+<OL>
+<LI>
+<A HREF="#whyserial"><code>ObjectOutputStream</code> 에 기입하기 위해서(때문에), 클래스가 <code>Serializable</code> 를 구현해야 하는 것은 왜입니까. </A> 
+
+<LI>
+<A HREF="#whichserial">JDK v1. 1 시스템 클래스 가운데, 직렬화 가능하게 되는 것은 어떤 것입니까. </A> 
+
+<LI>
+<A HREF="#awt">AWT 컴퍼넌트를 직렬화 복원할 수 없습니다. 어떻게 하면 좋을까요. </A> 
+
+<LI>
+<A HREF="#encryption">객체 직렬화에서는 암호화는 지원됩니까. </A> 
+
+<LI>
+<A HREF="#random">객체의 직렬화 클래스는 스트림 지향입니다. 객체를 랜덤 억세스 파일에 기입하려면  어떻게 하면 좋을까요. </A> 
+
+<LI>
+<A HREF="#local">로컬 객체를 직렬화해 Java RMI 호출에 파라미터로서 건네주면(자), 그 로컬 객체의 메소드의 바이트 코드도 건네받습니까. 원격 가상 머신 (VM) 어플리케이션이 객체 핸들을 보관 유지한 채로라고, 객체의 일관성은 어떻게 되는 것일까요. </A> 
+
+<LI>
+<A HREF="#nofile">파일을 사이에 개없고 <code>ObjectOutputStream</code> 로부터 <code>ObjectInputStream</code> 를 작성하려면 , 어떻게 하면 좋을까요. </A> 
+
+<LI>
+<A HREF="#handle">객체를 작성하고 나서 <code>writeObject</code> 메소드를 사용해 넷상을 송신해,<code>readObject</code> 메소드를 사용해 수신합니다. 다음에, 객체의 필드의 값을 변경하고 나서 똑같이 송신하면(자),<code>readObject</code> 메소드로부터 반환되는 객체는 최초의 것과 같아, 필드의 새로운 값이 반영되어 있지 않은 것 같습니다. 이것은 올바른 동작인 것입니다인가. </A> 
+
+<LI>
+<A HREF="#serialthread">thread 객체의 직렬화를 지원할 예정은 있습니까. </A> 
+
+<LI>
+<A HREF="#diff">diff(serial(x), serial(y))의 계산은 할 수 있습니까. </A> 
+
+<LI>
+<A HREF="#zip">자신의 zip 및 unzip 메소드를 사용해, 직렬화 표현의 객체를 압축할 수 있습니까. </A> 
+
+<LI>
+<A HREF="#compress">isempty(zip(serial(x)))등의 압축한 객체에 대해서, 메소드를 실행할 수 있습니까. </A> 
+
+<LI>
+<A HREF="#font">폰트나 화상의 객체를 직렬화해 다른 VM 로 재구축 하려고 하면(자), 어플리케이션이 떨어집니다. 왜입니까. </A> 
+
+<LI>
+<A HREF="#tree">객체 트리를 직렬화하려면  어떻게 하면 좋을까요. </A> 
+
+<LI>
+<A HREF="#serialsuper">클래스 A 가 <code>Serializable</code> 를 구현하지 않고, 그 서브 클래스 B 가 <code>Serializable</code> 를 구현하고 있는 경우, 클래스 B 를 직렬화했을 때, 클래스 A 의 필드는 직렬화 됩니까. </A> 
+</OL>
+
+<HR width="75%">
+<H2>
+Java RMI</H2>
+
+<H3><A NAME="domain">A. 1
+
+<code>Naming.lookup</code> 를 호출하면(자), 예기치 않은 호스트명이나 포트 번호에 대한 예외가 발행됩니다. 왜입니까.
+
+</A> </H3>
+
+예외 트레이스중에 나타나는 호스트명과 포트 번호는, 룩 업 서버가 대기하고 있는 응답처의 주소를 나타냅니다.
+
+Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI) 서버는 이론적으로는 임의의 호스트에게 배치할 수 있습니다만, 일반적으로은 레지스트리를 실행하고 있는 호스트의, 다른 포트를 사용합니다.
+
+<p>
+
+서버의 호스트명이나 IP 주소가 잘못하고 있는 (또는 클라이언트를 해석할 수 없는 호스트명을 서버가 가지고 있다) 경우에서도, 서버는 그 잘못한 호스트명을 사용해 모든 객체를 export 합니다. 다만, 그러한 객체를 받으려고 할 때마다 예외가 발생합니다.
+
+<p>
+
+레지스트리의 위치를 나타내기 위해서(때문에) <code>Naming.lookup</code> 로 지정한 호스트명은, 서버에의 원격 참조에 벌써 짜넣어지고 있는 호스트명에는 효과가 없습니다.
+
+<p>
+
+일반적으로, 불가해한 호스트명은 서버의 수식되어 있지 않은 호스트명, 즉 클라이언트의 네임 서비스에 알려져 있지 않은 비공개인 이름입니다.  Windows 플랫폼의 경우, 그 이름은 서버의 [네트워크] -> [식별 정보] -> [머신명] 으로 설정되어 있습니다.
+
+<p>
+
+대책으로서는, 서버의 기동시에 시스템 프로퍼티 <code>java.rmi.server.hostname</code> 를 설정합니다.
+
+이 프로퍼티의 값은, 외부로부터 액세스 가능한 서버의 호스트명 (또는 IP 주소)이 아니면 안되어, 이것을 <code>Naming.lookup</code> 의 호스트 부분으로 지정했을 때의 동작은 성공합니다.
+
+<p>
+
+상세한 것에 대하여는,<A     HREF="#netunknownhost">콜백</a>과<A     HREF="#netfqdn">완전 지정의 도메인명</a>에 관한 질문을 참조해 주세요.
+
+
+<H3><A NAME="codebase">A. 2
+
+클라이언트의 <code>CLASSPATH</code> 에 <code>_Stub</code> 파일을 인스톨 할 필요가 있습니까. 다운로드할 수 있는 것은 아닐까 생각합니다만.
+
+</A> </H3>
+
+그 원격 객체를 export 하고 있는 서버가, 정렬화 된 Stub 인스턴스에, Stub 클래스의 로드원을 나타내는 <code>java.rmi.server.codebase</code> 프로퍼티을 주석으로서 붙이고 있는 경우는, Stub 클래스를 다운로드할 수 있습니다.
+
+원격 객체를 export 하는 서버상의 <code>java.rmi.server.codebase</code> 프로퍼티을 설정할 필요가 있습니다.
+
+원격 클라이언트가 이 프로퍼티을 설정할 수 있게 되면(자), 지정된 코드 베이스만으로부터 원격 객체를 입수하도록(듯이) 제한됩니다.
+
+모든 클라이언트 VM 가, 객체의 장소를 나타내는 코드 베이스를 지정하고 있는 것은 아닙니다.
+
+<p>
+
+원격 객체가 Java RMI 에 의해 정렬화 될 때 (원격 호출의 인수로서 또는 반환값으로서), Stub 클래스의 코드 베이스가 Java RMI 에 의해 취득되어 직렬화 된 Stub의 주석부에 사용됩니다.
+
+Stub가 정렬화 해제될 때는,<code>CLASSPATH</code> 또는 애플릿 코드 베이스 등, 객체를 받기 위한 콘텍스트 클래스 로더에 벌써 그 클래스가 존재하지 않는 한,<code>RMIClassLoader</code> 를 사용해 Stub의 클래스 파일을 로드하기 위해서(때문에) 코드 베이스가 사용됩니다.
+
+<p>
+
+<code>_Stub</code> 클래스가 <code>RMIClassLoader</code> 에 의해 로드 되었을 경우는, Java RMI 는 벌써, 주석 붙여에 사용하는 것은 어느 코드 베이스인지를 알고 있습니다.
+
+<code>_Stub</code> 클래스가 <code>CLASSPATH</code> 로부터 로드 되었을 경우는 명확한 코드 베이스는 존재하지 않기 때문에, Java RMI 는 <code>java.rmi.server.codebase</code> 시스템 프로퍼티을 조사해 코드 베이스를 검색합니다.
+
+이 시스템 프로퍼티이 설정되어 있지 않은 경우는, Stub는 null 코드 베이스로 정렬화 됩니다. 즉, 클라이언트가 그 <code>CLASSPATH</code> 내에 <code>_Stub</code> 클래스 파일에 일치하는 카피를 가지고 있지 않는 이상 이 코드 베이스는 사용할 수 없습니다.
+
+<p>
+
+코드 베이스 프로퍼티을 지정하는 것은 잊기 쉽상입니다.
+
+이전 차이를 검출하는 방법의 1 개에,<code>rmiregistry</code> 를 개별적으로 기동해, 어플리케이션 클래스에 액세스 하지 않는다고 하는 방법이 있습니다.
+
+이렇게 하면(자), 코드 베이스가 생략 되었을 경우는, 반드시 <code>Naming.rebind</code> 가 실패합니다.
+<p>
+<code>java.rmi.server.codebase</code> 프로퍼티에 대한 자세한 것은, 튜토리얼의 <a     href="codebase.html">「Java RMI 의 사용에 의한 동적인 코드의 다운로드 (<code>java.rmi.server.codebase</code> 프로퍼티을 사용)」</a>  를 참조해 주세요.
+ 
+<H3><A NAME="classserver">A. 3
+
+Java RMI 에서는 HTTP 서버를 사용할 필요가 있습니까.
+
+</A> </H3>
+
+아니오. <code>java.rmi.server.codebase</code> 프로퍼티을,<code>file</code> 또는 <code>ftp</code> 등, 임의의 유효한 URL 프로토콜을 사용하도록(듯이) 설정할 수 있습니다. HTTP 서버를 사용해도, 클래스 파일의 자동 다운로드 기구가 제공될 뿐입니다. HTTP 서버에 액세스 하지 않는 경우, 또는 HTTP 서버를 설정하지 않는 경우는,<code><a href="http://java.sun.com/javase/technologies/core/basic/rmi/class-server.zip">http://java.sun.com/javase/technologies/core/basic/rmi/class-server.zip</a> </code> 에 있는 소규모의 클래스 파일 서버를 사용할 수 있습니다.
+
+<H3><A NAME="wrongcodebase">A. 4
+
+<code>ClassNotFoundException</code> 가 반환되는 것은 왜입니까.
+
+</A> </H3>
+
+원격 객체를 export 하고 있는 VM 상에서,<code>java.rmi.server.codebase</code> 프로퍼티이 설정되어 있지 않을 (또는 올바르게 설정되어 있지 않다) 가능성이 있습니다. 튜토리얼의<a href="codebase.html">「Java RMI 의 사용에 의한 동적인 코드의 다운로드 (<code>java.rmi.server.codebase</code> 프로퍼티을 사용)」</a>를 참조해 주세요.
+
+<H3><A NAME="customsocketreuse">A. 5
+
+어플리케이션이 커스텀 소켓 팩토리를 사용할 경우에 Java RMI 구현이 다수의 소켓을 작성하는 것은 왜입니까.  또, 같은 원격 객체를 참조하는 (커스텀 소켓 팩토리를 사용한다) Stub가 동일하지 않은 것은 왜입니까.  또, 커스텀 서버 소켓 팩토리를 사용할 경우에 Java RMI 구현이 서버측의 포트를 재사용하지 않는 것은 왜입니까.
+
+</A> </H3>
+
+Java RMI 구현은, 원격 호출로 사용 가능한 오픈 소켓을 재사용하려고 합니다. 커스텀 소켓 팩토리를 사용하는 Stub상의 원격 메소드가 불려 가면(자), 그 소켓이 동등의 소켓 팩토리에 의해 작성된 것인 한, Java RMI 구현은, 연 접속이 있으면 그것을 재사용합니다. 클라이언트 소켓 팩토리는 클라이언트에 대해서 직렬화 되므로, 1 개의 클라이언트가 같은 논리 소켓 팩토리의 별개의 카피를 복수 보유하는 일이 있습니다. Java RMI 구현이 커스텀 소켓 팩토리에 의해 작성된 소켓을 재사용하는 것을 보증하기 위해서는, 커스텀 클라이언트 소켓 팩토리 클래스가 <code>hashCode</code> 메소드 및 <code>equals</code> 메소드를 적절히 구현할 필요가 있습니다. 클라이언트 소켓 팩토리가 이러한 메소드를 올바르게 구현하지 않는 경우는, 같은 원격 객체를 참조하는 (클라이언트 소켓 팩토리를 사용한다) Stub가 동일하지 않다고 하는 결과가 됩니다.
+<p>
+Java RMI 구현은, 서버측의 포트도 재사용하려고 합니다. 다만, 동등의 소켓 팩토리에 의해 작성된 포트의 기존의 서버 소켓이 있는 경우에 한정합니다. 서버 소켓 팩토리 클래스도 <code>hashCode</code> 메소드 및 <code>equals</code> 메소드를 구현할 필요가 있습니다.
+    
+<p>
+소켓 팩토리에 인스턴스 상태가 없는 경우는,<code>hashCode</code> 메소드와 <code>equals</code> 메소드를 다음과 같이 구현합니다.
+
+<pre>
+    public int hashCode() { return 57; }
+    public boolean equals(Object o) { return this.getClass() == o.getClass() }
+</pre>
+
+<H3><A NAME="debug">B. 1
+
+Java RMI 에 편입의 디버그 기구는 있습니까.
+
+</A> </H3>
+
+Java RMI 에는 디버그용으로, 간단한 호출 로그 기능이 있습니다.
+
+그러나, 현시점에서는 풀 장비의 인터랙티브인 원격 디버거에 대해서는 계획하고 있습니다.
+
+<H3><A NAME="debugwin">B. 2
+
+Windows 95 에서의 디버그에 고생하고 있습니다. 무엇인가 좋은 안은 있습니까.
+
+</A> </H3>
+
+<code>javaw</code> 커멘드는,<code>stdout</code> 와 <code>stderr</code> 에 출력을 실시하므로, 디버그 목적에서는 <code>java</code> 커멘드를 다른 윈도우로 실행해 에러의 출력을 표시할 수 있도록(듯이) 하는 편이 좋을 것입니다.
+
+이것을 실시하려면 , 다음과 같이 커멘드를 실행합니다.
+
+<pre>
+        start java EchoImpl
+</pre>
+
+<P>
+
+개발시에는,<code>javaw</code> 커멘드의 사용은 추천하지 않습니다.  
+
+서버의 활동을 관찰하려면 ,<code>-Djava.rmi.server.logCalls=true</code> 를 지정해 서버를 기동합니다.
+
+<H3><A NAME="mismatch">B. 3
+
+프로그램의 실행중에 <code>java.lang.ClassMismatchError</code> 가 돌려주어집니다. 왜입니까.
+
+</A> </H3>
+
+프로그램의 실행중에 Java RMI 가 사용하고 있는 클래스를 1 개 이상 수정한 것이라고 생각됩니다.
+
+모든 Java RMI 어플리케이션 (<code>java.rmi.registry.RegistryImpl</code> 를 포함한다)을 재기동해 보세요.
+
+이것으로 문제가 없어집니다.
+
+<H3><A NAME="array">B. 4
+
+원격 객체의 배열을 송신하면(자),<code>ArrayStoreException</code> 가 발행됩니다. 어떻게 되어 있습니까.
+
+</A> </H3>
+
+Java RMI 는 원격 객체를 Stub에 옮겨놓으므로, 배열은 인터페이스와 같은 형태가 아니면 안됩니다.
+
+코드는 다음과 같이 됩니다.
+
+<pre>
+   FooRemote[] f = new FooRemote[10];
+   for (int i = 0; i &lt; f.length; i++) {
+      f[i] = new FooRemoteImpl();
+   }
+</pre>
+<P>
+
+이와 같이 하면, Java RMI 가 배열의 각 셀에 Stub를 넣어도, 원격 호출에서의 예외는 발생하지 않습니다.
+
+<H3><A NAME="deadlock">B. 5
+
+동기 하는 복수의 로컬 객체가 있습니다. 이것들을 원격로 하면(자), 어플리케이션이 행업 합니다. 무엇이 문제인 것입니다인가.
+
+</A> </H3>
+
+이것은, 분산형 데드락입니다.
+
+로컬 VM 의 경우, VM 는 호출해 원의 객체 A 가 락을 소유하고 있는 것을 통지해, A 에의 콜백의 속행을 허가합니다.
+
+분산환경에서는, 이러한 결정을 실시할 수 없기 때문에 데드락이 일어납니다.
+
+<P>
+
+분산 객체는 로컬 객체와는 동작이 다릅니다. 락과 장해를 처리하는 일 없이, 로컬의 구현을 재사용하는 것 만으로는, 예측 불가능한 결과가 생길 가능성이 있습니다.
+
+<H3><A NAME="regpath">B. 6
+
+원격 객체를 레지스트리에 등록하려고 하면(자), Stub 클래스에 <code>ClassNotFoundException</code> 가 발행됩니다. 어떻게 되어 있습니까.
+
+</A> </H3>
+
+    <p> 
+객체를 바인드 하기 위해서 레지스트리에의 호출을 실시하면, 레지스트리는 실제로는 그 원격 객체의 Stub에의 참조를 바인드 합니다. Stub 객체의 인스턴스를 생성하려면 , 레지스트리 VM 로부터 그 클래스 정의가 로드 가능한 필요가 있습니다. 직렬화 형식의 Stub를 원격 메소드 호출로 레지스트리에 송신하는 VM (이 경우는 서버 VM)는, 그 클래스를 어디에서 다운로드할 수 있을까를 Stub의 주석으로서 붙입니다. Stub에 적절한 주석을 붙일 수 있지 않은 경우, Java RMI 는 Stub의 인스턴스 생성을 시도할 때에,<code>ClassNotFoundException</code> 를 throw 합니다.
+    <p> 
+클래스에 적절한 주석을 붙이기 위해서(때문에), 서버는 <code>java.rmi.server.codebase</code> 프로퍼티의 값을 Stub 클래스의 위치로 설정할 필요가 있습니다. Java RMI 는, 송출되는 직렬화 형식의 객체 인스턴스에,<code>java.rmi.server.codebase</code> 프로퍼티의 값을 자동적으로 주석으로서 붙입니다.
+    <p> 
+주:관련하는 Stub 클래스 파일 모든 것을 <tt>rmiregistry</tt> 의 CLASSPATH 에 배치하는 것으로써,<tt>rmiregistry</tt> 로부터 Stub 객체의 비정렬화를 실행할 수 있습니다 (특히 소수의 환경에서는 적절한 방법입니다). 다만,<tt>rmiregistry</tt> 는, 반드시 Stub 클래스를 다운로드할 필요는 없습니다. Stub 클래스가 로컬로 이용 가능한 경우에는, 그것을 사용합니다. Stub의 배치에 <tt>rmiregistry</tt> 의 CLASSPATH 를 사용하는 경우, 레지스트리로부터 취득한 Stub 인스턴스를 참조하는 모든 VM 는, 로컬에 인스톨 된 Stub의 클래스 파일을 (VM 의 CLASSPATH 내에) 보관 유지할 필요가 있습니다.
+    <p> 
+예를 들어, 레지스트리가 CLASSPATH 로부터 Stub 클래스를 로드하는 경우, 직렬화 된 Stub 객체를 레지스트리가 다른 VM 에 송신하면(자), 직렬화 된 객체에는, 레지스트리의 <code>java.rmi.server.codebase</code> 프로퍼티의 값 (거의 항상 null)을 주석으로서 붙일 수 있습니다. 직렬화 된 Stub 객체를 레지스트리로부터 받는 VM 가, 로컬에 인스톨 된 이것들 Stub의 클래스 파일을 보관 유지하지 않는 경우, VM 로부터 <code>ClassNotFoundException</code> 가 throw 되는 경우가 있습니다.
+    <p> 
+한편, 서버 VM 의 <code>java.rmi.server.codebase</code> 주석으로부터 클래스가 동적으로 다운로드되는 경우, CLASSPATH 내의 Stub 클래스를 보관 유지할 필요가 있는 것은, 서버 VM 뿐입니다. 이 방법에 의해, 어플리케이션 배치는 보다 심플하게 되어, 또 가동중의 분산형 시스템에의 신버젼의 Stub 도입이 가능하게 됩니다.
+    <p> 
+Java RMI 에서의 코드의 동적인 다운로드에 대해서는,<a href="codebase.html">「Java RMI 의 사용에 의한 동적인 코드의 다운로드 (<code>java.rmi.server.codebase</code> 프로퍼티을 사용)」</a>를 참조해 주세요.
+    </p> 
+
+<H3><A NAME="serverdied">B. 7
+
+서버가 떨어졌습니다. 서버의 동작의 트레이스를 취할 수 있습니까.
+
+</A> </H3>
+
+서버의 활동의 트레이스를 취하려면 , 다음과 같이 해 서버를 기동합니다.
+
+<pre>
+    java -Djava.rmi.server.logCalls=true YourServerImpl
+</pre>
+
+여기서 <code>YourServerImpl</code> 는 서버명입니다.
+
+서버가 헹 하면(자), Solaris<sup><font size=-2>TM</font></sup>  operating system (Solaris OS)에서는 <tt>ctrl-\</tt>, Windows 플랫폼에서는 <tt>ctrl-break</tt> 키를 누르는 것으로 모니터 덤프와 thread 덤프를 얻을 수 있습니다.
+
+<H3><A NAME="properties">B. 8
+
+Java RMI 어플리케이션의 구현 및 디버그에 사용 가능한 시스템 프로퍼티의 리스트는 어디에 있습니까.
+
+</A> </H3>
+
+<a href="javarmiproperties.html"><b>"<code>java.rmi. </code>"</b> 그리고 시작되는 프로퍼티</a>은, 공개된 스펙의 일부이며,<a    href="../../../platform/rmi/spec/rmiTOC.html">Java RMI 스펙</a>에 문서화 되고 있습니다.
+   <p>
+<a href="sunrmiproperties.html"><b>"<code>sun.rmi. </code>"</b></a> 그리고 시작되는 프로퍼티은, Sun Microsystems 가 제공하는 Java<sup><font size=-2>TM</font></sup> SE Development Kit (JDK)의 특정의 버젼에서만 지원되고 있습니다. 이러한 <b>"<code>sun.rmi. *</code>"</b> 프로퍼티은, 실행시의 디버그 및 튜닝에 편리합니다만, public API 의 일부라고는 보여지지 않은 것, 및 장래의 구현으로 그 사용법이 변경될 (또는 완전하게 삭제될) 가능성이 있는 것에 주의해 주세요.
+   
+
+<H3><A NAME="netcontact">C. 1
+
+Java RMI 클라이언트는, 어떻게 해 원격 Java RMI 서버에 컨택트 합니까.
+
+</A> </H3>
+
+<IMG SRC="images/faqArt1-1.gif" HEIGHT=366 WIDTH=443 ALIGN=LEFT ALT="아래에 설명이 있는,Java RMI 클라이언트가 원격 Java RMI 서버에 컨택트 하는 수단을 도시한다">
+
+<P>
+
+Java RMI 클라이언트가 원격 Java RMI 서버에 컨택트 하기 위해서는, 클라이언트는 우선 최초로 서버에의 참조를 취득할 필요가 있습니다.
+
+클라이언트가 최초로 원격 서버-에의 참조를 취득하는 가장 일반적인 방법은,<code>Naming.lookup</code> 메소드 호출에 의한 방법입니다.
+
+원격 참조는 다른 방법에서도 취득할 수가 있습니다. 예를 들어, 모든 원격 메소드 호출에서는 원격 참조가 돌려주어집니다.
+
+<code>Naming.lookup</code> 메소드는, 잘 알려진 Stub를 사용해 <code>rmiregistry</code> 에의 원격 메소드 호출을 실시해,<code>rmiregistry</code> 는 <code>lookup</code> 메소드가 요구한 객체에의 원격 참조를 돌려줍니다.
+
+<P>
+
+모든 원격 참조에는 서버의 호스트명과 포트 번호가 포함되어 클라이언트는 그것을 사용해 특정의 원격 객체의 서버인 VM 의 위치를 알 수 있습니다.
+
+원격 참조의 취득 후에, Java RMI 클라이언트는 그 참조로부터 얻을 수 있는 호스트명과 포트 번호를 사용해 원격 서버-에의 소켓 접속을 열 수가 있습니다.
+
+<P>
+
+Java RMI 에서는, 「클라이언트」와「서버」라고 하는 용어는, 동일한 프로그램을 가리키는 경우가 있는 것에 유의해 주세요.
+
+Java RMI 서버로서 기능하는 Java 프로그램에는, export 된 원격 객체가 포함됩니다.
+
+Java RMI 클라이언트는, 다른 가상 머신내의 원격 객체상의 1 개 또는 복수의 메소드를 호출하는 프로그램입니다.
+
+1 개의 VM 가 양쪽 모두의 기능을 실행하는 경우, 이 VM 는 RMI 클라이언트와 Java RMI 서버의 양쪽 모두가 됩니다.
+
+<H3><A NAME="netunknownhost">C. 2
+
+원격 메소드 또는 콜백 루틴이, 네스트 된 <code>java.net.UnknownHostException</code> 를 발행해 실패합니다. 왜입니까.
+
+</A> </H3>
+
+많은 <A HREF="#nethostname">JDK 의 버젼</A>  (<A HREF="#nethostname.1.1">v1. 1</A>  을 제외하는 모든 버젼의 JDK 와 <A HREF="#nethostname.latestReleases">최신 릴리스</a>)에서는,Java RMI 는 디폴트로 해석 불가능한 서버 호스트명 (예:수식되어 있지 않은 이름, Windows Internet Naming Service (WINS) 명, 수식되어 있지 않은 DHCP 명)를 사용합니다.
+
+Java RMI 클라이언트가, 해석 불가능한 서버 호스트명을 포함한 참조를 사용해 원격 메소드를 호출하면(자), 클라이언트는 <code>UnknownHostException</code> 를 발행합니다.
+
+<P>
+
+실제로 기능하는 원격 참조를 작성하려면 , Java RMI 서버는 모든 Java RMI 클라이언트가 해석 가능한 완전 수식의 호스트명 또는 IP 주소를 제공할 수 없으면 안됩니다.  (완전 수식 호스트명의 예:<samp>foo.bar.com</samp>).
+
+어느 Java RMI 프로그램이 원격 콜백을 실시하는 경우, 이 프로그램은 Java RMI 객체로서 일합니다.  그 때문에, Java RMI 클라이언트에 건네주는 원격 참조중의 서버 호스트명으로서 사용한다, 해석 가능한 호스트명을 결정할 수 없으면 안됩니다.
+
+원격 객체로서 기능하는 애플릿을 호출하는 VM 는, 애플릿이 유효한 서버 호스트명을 제공할 수 없었던 경우에는 <code>UnknownHostException</code> 를 발행하는 일이 있습니다.
+
+<P>
+
+Java RMI 어플리케이션이 <code>UnknownHostException</code> 를 발행했을 경우는, 스택 트레이스의 결과를 조사해, 클라이언트가 원격 서버-에의 컨택트에 사용하고 있는 호스트명이 올바른지, 완전 지정되고 있는지 어떤지를 확인해 주세요.
+
+필요하면, 서버의 <code>java.rmi.server.hostname</code> 프로퍼티을 설정해 서바소
+
+<H3><A NAME="netfqdn">C. 3
+
+서버로 완전 지정의 도메인명 또는 IP 주소를 사용하고 있습니다만, 그런데도 <code>UnknownHostException</code> 가 발행됩니다. 왜입니까.
+
+</A> </H3>
+
+네트워크의 네임 서비스의 설정에 따라서는, 어느 Java RMI 호스트로 인식할 수 있는 완전 지정 호스트명이 다른 Java RMI 호스트로부터 해석할 수 없는 것이 있습니다.
+
+이하에, 이 상황이 생기는 예를 몇개인가 가리킵니다.
+
+    <UL>
+
+    <LI>
+
+DHCP 서버의 설정이 올바르지 않기 위해(때문에), Java RMI 서버 머신의 완전 지정된 도메인명을, Java RMI 서버가 실제로 소속하는 도메인은 아니고, 리절버측 도메인의 도메인명으로 설정했을 경우.
+
+이 경우, 서버의 도메인명이 올바르지 않기 때문에, 서버의 DHCP 도메인의 외측의 Java RMI 클라이언트는 서버에 컨택트 할 수 없습니다.
+
+    <LI>
+
+서버 머신이, WINS 를 사용하도록(듯이) 설정된 네트워크상에 있는 경우.
+
+	WINS 아래에만 등록되어 있는 호스트에게는, DNS 인 만큼 의존하는 호스트로부터는 액세스 할 수 없습니다.
+
+    <LI>
+
+Java RMI 클라이언트와 서버가 방화벽(fire wall)의 양측에 있는 경우.
+
+	Java RMI 클라이언트가 방화벽(fire wall)의 외측에 있어, 서버가 안쪽에 있는 경우는, 클라이언트는 서버에 대해 원격 호출을 실시할 수 없습니다.
+
+	Java RMI 클라이언트가 방화벽(fire wall)의 안쪽에 있는 경우는, HTTP 를 사용해 서버에 컨택트 하도록(듯이)<A 	HREF="../../../platform/rmi/spec/rmi-arch6.html">Java RMI 클라이언트를 설정할 </a>필요가 있습니다.
+
+    </UL>
+
+
+
+<H3><A NAME="netmultihomed">C. 4
+
+최신 릴리스의 Java 2 SDK 를 사용하고 있습니다. 호스트에게는 복수의 IP 주소가 있어, Java RMI 가 서버 호스트명에 잘못한 IP 주소를 선택합니다만, 어떻게 하면 좋을까요.
+
+</A> </H3>
+
+<code>java.rmi.server.hostname</code> 프로퍼티을, Java RMI 서버 머신의 올바른 IP 주소로 설정합니다.
+
+이 프로퍼티을 설정해, 서버가 네임 서비스로부터 취득한 완전 지정의 호스트명을 사용하도록(듯이) 지정할 수도 있습니다.
+
+<pre>
+    java.rmi.server.useLocalHostname=true
+</pre>
+
+
+<H3><A NAME="nethostname">C. 5
+
+JDK 의 각 버젼으로, Java RMI 는 어떻게 해 서버 호스트명을 취득합니까.
+
+</A> </H3>
+
+JDK 의 각 버젼으로 Java RMI 가 서버 호스트명을 취득하기 위해서 사용하는 수단은, 각각 다음과 같습니다.
+
+<H4><A NAME="nethostname.1.1">JDK v1. 1</A> </H4>
+
+Java RMI 는 <code>java.net.InetAddress.getLocalHost()</code> 에 의존해 완전 수식 도메인명을 돌려주고 있었습니다.
+
+	<code>InetAddress</code> 객체는, 코드의 static 블록으로 로컬 호스트명을 초기화해, 로컬 IP 주소를 역룩 올라가 로컬 호스트명을 취득했습니다.
+
+	그러나, 네트워크에 접속되어 있지 않은 머신에서는,<code>InetAddress</code> 가 찾고 있는 호스트명이 발견되지 않기 위해(때문에), 이 동작에 의해 행업이 일어났습니다.
+
+<H4><A NAME="nethostname.1.1.6">JDK v1. 1.1-1. 1.6</A> </H4>
+
+스탠드얼론 시스템에서의 JDK v1. 1 의 문제에 대처하기 위해(때문에), JDK v1. 1.1 에서는 <code>InetAddress</code> 를 수정해, 네임 서비스에 문의를 하지 않는 네이티브의 시스템 콜로부터 반환되는 「수식되어 있지 않을 가능성이 있다」호스트명만을 취득하도록(듯이) 했습니다.
+
+	Java RMI 는 이 변경을 추가하도록(듯이) 수정되지 않았습니다.  그 이유는, 사용자가 <code>java.rmi.server.hostname</code> 프로퍼티을 설정하는 것으로써,<code>InetAddress</code> 로부터 제공되는 올바르지 않은 호스트명을 무시할 수가 있기 때문입니다.
+
+	Java RMI 는 네임 서비스에의 문의를 하지 않고, 디폴트로 비수식 호스트명을 사용할 수가 있습니다.
+
+<H4><A NAME="nethostname.latestReleases">그 후의 버젼</A> </H4>
+
+JDK v1. 1.1 에서의 <code>InetAddress</code> 의 기능상의 변경에 의해 생긴 많은 문제점을 추가하기 (위해)때문에, 최근의 SDK 의 버젼에는, 다음의 동작이 짜넣어지고 있습니다.
+
+    <P>
+
+	Java RMI 는 있는 원격 객체의 서버의 머신을 식별하기 위해서, IP 주소 또는 완전 지정의 도메인명을 사용합니다.
+
+	서버의 호스트명은, 다음의 동작에 의해 취득한 값에 초기화됩니다.
+
+	<OL>
+
+	<LI>
+
+	    디폴트에서는, Java RMI 는 원격 참조의 서버명으로서 서버 호스트의 IP 주소를 사용합니다.
+
+	<LI>
+
+	    <code>java.rmi.server.hostname</code> 프로퍼티이 설정되어 있는 경우는, Java RMI 는 그 프로퍼티의 값을 서버의 호스트명으로서 사용해, 다른 방법으로 완전 지정의 도메인명을 찾을 것은 없습니다.
+
+	    이 프로퍼티은, Java RMI 서버명을 찾는 것 외의 모든 방법으로 우선합니다.
+
+	<LI>
+
+	    <code>java.rmi.server.useLocalHostname</code> 프로퍼티이 <code>true</code> (디폴트에서는, 이 프로퍼티의 값은 <code>false</code>)로 설정되어 있는 경우, Java RMI 는 다음의 순서로 Java RMI 서버의 호스트명을 가져옵니다.
+
+	    <OL>
+
+	    <LI>
+
+		<code>InetAddress.getLocalHost(). getHostName()</code> 메소드로부터 반환된 값에 「.」문자가 포함되어 있는 경우는, Java RMI 는 이 값을 서버의 완전 지정 도메인명으로 간주해, 서버 호스트명으로서 사용합니다.
+
+	    <LI>
+
+		그 이외의 경우는, Java RMI 는 thread를 생성해 로컬의 네임 서비스에 Java RMI 서버의 완전 지정 도메인명을 문의합니다.
+
+		네임 서비스로부터 돌아오는데 시간이 너무 걸리거나 네임 서비스로부터의 반환값에 「.」(이)가 포함되지 않는 경우는, Java RMI 는 <code>InetAddress.getLocalHost(). getHostAddress()</code> 에 의해 취득한 서버의 IP 주소를 사용합니다.
+
+	    </OL>
+
+	    Java RMI 가 완전 지정 도메인명을 검색하는 디폴트 시간 (10 초 = 10000 밀리 세컨드)을, 다음의 프로퍼티을 설정하는 것으로써 무시할 수 있습니다. <br><br> <code>sun.rmi.transport.tcp.localHostnameTimeOut</code>=<I>timeOutMillis</I> <br> 여기서 timeOutMillis  에는 Java RMI 의 대기 시간을 밀리 세컨드 단위로 지정합니다.
+
+	    예를 나타냅니다.
+	<pre>
+            java -Dsun.rmi.transport.tcp.localHostnameTimeOut=2000 MyServerApp
+        </pre>
+
+	</OL>
+
+	기동 가능한 원격 객체를 사용하는 경우는, Java RMI 서버의 <code>java.rmi.server.useLocalHostname</code> 프로퍼티을 <code>true</code> 로 설정하는 것을 추천 합니다.
+
+	일반적으로, 호스트명은 IP 주소보다 영속성이 있습니다.
+
+	기동 가능한 원격 객체는, 일시 원격 객체보다 길게 존재하는 경향에 있습니다 (예를 들어, 리부트 후도 존재한다).
+
+	Java RMI 클라이언트는, 명시적인 IP 주소를 사용하는 것보다도 수식된 호스트명을 사용하는 편이, 장기에 걸쳐 원격 객체의 장소를 특정하기 쉬워집니다.
+
+<H3><A NAME="bind">C. 6
+
+Windows 플랫폼에서 <code>Naming.bind</code> 과 <code>Naming.lookup</code> 에 매우 시간이 걸리는 것은 왜입니까.
+
+</A> </H3>
+
+호스트의 네트워크 설정이 올바르지 않은 것이 생각됩니다.
+
+Java RMI 에서는 Java API 의 네트워크 클래스를 사용합니다.  특히,<code>java.net.InetAddress</code> 를 사용해 TCP/IP 호스트명을 검색합니다 (<code>InetAddress</code> 클래스는, 시큐리티상의 이유로부터, 호스트로부터 주소에의 매핑과 주소로부터 호스트명에의 매핑의 양쪽 모두를 실시한다).
+
+Windows 플랫폼에서는, 룩 업 기능은 네이티브의 소켓 라이브러리에 의해 행해지므로, 지연은 Java RMI 는 아니고 라이브러리 중(안)에서 일어납니다.
+
+호스트가 DNS 를 사용하도록(듯이) 설정되어 있어, DNS 서버가 통신에 관계하는 호스트에 대한 정보를 가지지 않고, DNS 룩 업 타임 아웃이 일어나고 있는 경우는 문제입니다.
+
+관련하는 모든 호스트의 호스트명 또는 주소를 로컬 파일 <code>\winnt\system32\drivers\etc\hosts</code> 또는 <code>\windows\hosts</code> 에 기입해 주세요.
+
+호스트 파일의 서식은 일반적으로, 다음과 같은 것입니다.
+<pre>
+    IPAddress     Machine Name
+</pre>
+예를 들어:
+<pre>
+    208.2. 84.61   homer
+</pre>
+
+이 처치에 의해, 최초의 룩 업에 필요로 하는 시간을 큰폭으로 단축할 수 있습니다.
+
+<H3><A NAME="standalone">C. 7
+
+네트워크에 접속되어 있지 않은 스탠드얼론의 Windows 95 머신에서는, 어떻게 해 Java RMI 를 사용하는 것일까요.
+
+</A> </H3>
+
+네트워크에 접속되어 있지 않은 Windows 95 머신으로 Java RMI 를 동작시키려면 , TCP/IP 를 설정할 필요가 있습니다.
+
+1 개의 방법은, 사용하고 있지 않는 COM 포트를 전용의 PPP 또는 SLIP 접속으로서 설정하는 것입니다.
+
+다음에, DHCP 를 무효로 하고 나서 수동으로 IP 주소 (<code>192.168. 1.1</code>)을 설정합니다.
+
+그러자(면), 이것을 DOS 쉘로부터 검출해 ping 를 실행할 수가 있습니다 (<kbd>ping</kbd> <var>mymachine</var>).
+
+이것으로, 머신상에서 Java RMI 를 사용할 수 있습니다.
+
+<H3><A NAME="addrinuse">C. 8
+
+레지스트리를 실행하려고 하면(자) [<code>java.net.SocketException:Address already in use</code>] 가 발행됩니다만, 왜입니까.
+
+</A> </H3>
+
+이 예외는,<code>RegistryImpl</code> 가 사용하는 포트 (디폴트는 1099)가 벌써 사용되고 있는 것을 의미합니다.
+
+머신상에 실행중의 다른 레지스트리가 있다고 생각되므로, 그것을 정지시켜 주세요.
+
+
+
+<H3><A NAME="firewall">C. 9
+
+방화벽(fire wall) 경유로 Java RMI 호출을 실행하려면  어떻게 하면 좋을까요.
+
+</A> </H3>
+
+그방법은, 방화벽(fire wall)의<a     href="#firewallOut">외측에의 호출</a>과<a href="#firewallIn">안쪽에의 호출</a>의 어느 쪽을 실행할까에 따라서 다릅니다.
+
+
+
+<H3><A NAME="firewallOut">C. 10
+
+로컬의 방화벽(fire wall)의 안쪽에서 외측에 Java RMI 호출을 실시하려면 , 어떻게 하면 좋을까요.
+
+</A> </H3>
+
+주된 방법은 3 개 있습니다. HTTP 터널링, SOCKS, 및 다운로드된 소켓 팩토리입니다.
+
+<H4>HTTP 터널링</H4>
+
+이것은 자주(잘) 사용되는 방법으로, 셋업이 거의 필요없기 때문에 인기가 있어, 프록시를 통해서 HTTP 를 취급할 수 있는 방화벽(fire wall) 환경에서는 매우 잘 기능합니다. 다만, 일반적으로의 외부로 향한 TCP 접속은 할 수 없습니다.
+
+    <p>
+
+Java RMI 가 목적의 서버에의 일반적으로의 (SOCKS) 접속의 작성에 실패해, HTTP 프록시 서버-가 설정되어 있다고 통지했을 경우는, 그 프록시 서버-를 통해서 Java RMI 요구를 1 개씩 터널링 하려고 합니다.
+
+    <p>
+
+HTTP 터널링에는 2 개의 형식이 있어, 차례로 시도됩니다.
+
+	1 번째의 형식은,<em>http-to-port</em> 로, 2 번째는 <em>http-to-cgi</em> 입니다.
+
+    <p>
+
+http-to-port 터널링에서는, Java RMI 는 목적의 서버의 정확한 호스트명과 포트 번호를 가리키는 <code>http:</code>URL 에의 HTTP POST 요구를 시도합니다.
+
+	HTTP 요구에는 1 개의 Java RMI 요구가 포함됩니다.
+
+	HTTP 프록시는 이 URL 를 받아들이면(자), 대기중의 Java RMI 서버에 이 POST 요구를 전송 합니다.  Java RMI 서버는 요구를 인식해 랩을 해제합니다.
+
+	호출의 결과는 HTTP 응답에 랩 되어 같은 프록시 경유로 반송됩니다.
+
+    <p>
+
+HTTP 프록시는, 이상한 포트 번호에 대한 요구를 거부하는 일이 자주 있습니다.
+
+	이 경우, Java RMI 는 http-to-cgi 터널링을 실행하려고 합니다. Java RMI 요구는 전회 같이 HTTP POST 요구내에 캡슐화됩니다만, 요구 URL 의 형식은 <code>http://<em>hostname</em>:80/cgi-bin/java-rmi.cgi? port=<em>n</em></code> (<em>hostname</em> 와 <em>n</em> 는 목적의 서버의 호스트명과 포트 번호)가 됩니다.
+
+	서버 호스트의 포트 80 으로 대기하고 있는 HTTP 서버가 필요해, 이것은 <code>java-rmi.cgi</code> 스크립트 (SDK 로 제공)를 실행합니다.  다음에, 이 스크립트는 포트 <em>n</em> 로 대기중의 Java RMI 서버에 요구를 전송 합니다.
+
+	Java RMI 는 HTTP 터널링 된 요구를, HTTP 서버나 CGI 스크립트등의 외부로부터의 도움 없이 랩 해제할 수 있습니다.
+
+	그 때문에, 클라이언트의 HTTP 프록시가 서버의 포트에 직접 접속할 수 있는 경우는,<code>java-rmi.cgi</code> 스크립트는 전혀 필요 없습니다.
+
+    <p>
+
+HTTP 터널링의 사용을 트리거하기 위해서는, 표준 시스템 프로퍼티 <code>http.proxyHost</code> 를 로컬 HTTP 프록시의 호스트명으로 설정할 필요가 있습니다.
+
+	보고에 의하면, Navigator 의 일부의 버젼에서는 이 프로퍼티이 설정되지 않습니다.
+
+    <p>
+
+HTTP 터널링의 최대의 단점은, 내향의 호출이나 다중 접속을 허가하지 않는 점입니다.
+
+	제 2 의 단점은, http-to-cgi 방식으로는 서버 측에 심각한 시큐리티 홀이 가능하게 된다고 하는 점입니다. 그 이유는, 이 방식으로는, 수정하지 않는 한, 어떤 포트에의 내향의 요구도 모두 리다이렉트(redirect) 되어 버리기 때문입니다.
+
+<H4>SOCKS</H4>
+
+SDK 의 소켓의 디폴트 구현에서는,<A         HREF="http://www.socks.nec.com/">SOCKS 서버</a>가 이용 가능해 설정 끝난 경우에는, 그것을 사용합니다.
+
+	시스템 프로퍼티 <code>socksProxyHost</code> 는, SOCKS 서버의 호스트명으로 설정되어 있을 필요가 있습니다. SOCKS 서버의 포트 번호가 1080 이 아닌 경우는,<code>socksProxyPort</code> 프로퍼티으로 설정하지 않으면 안됩니다.
+
+    <p>
+
+이 방법이, 가장 일반적으로 사용할 수 있는 방법이라고 생각됩니다. 현재로서는,<code>ServerSockets</code> 는 SOCKS 를 사용하지 않기 때문에, 내향의 호출에는 다른 메카니즘을 사용할 필요가 있습니다.
+
+<H4>다운로드된 소켓 팩토리</H4>
+
+이것은 JDK 의 신기능으로, 이 기능을 사용하면(자), 클라이언트가 사용하는 소켓 팩토리를 서버가 지정할 수가 있습니다.
+
+	클라이언트측에서는, J2SE v1. 2 이후가 가동하고 있을 필요가 있습니다.
+
+	자세한 것은,<A HREF="socketfactory/index.html">「Java RMI 에 의한 커스텀 소켓 팩토리의 사용」</a>튜토리얼을 참조해 주세요.
+
+<p>
+
+이 방법의 단점은, 방화벽(fire wall)의 통과를 Java RMI 서버측으로부터 제공된 코드를 사용해 실시하지 않으면 안 되는 점입니다.  Java RMI 서버측에서는 올바른 통과 방법을 알고 있다고는 할 수 없지 않고, 또 방화벽(fire wall)를 통과하기 위한 충분한 특권을 자동적으로 보관 유지한다고는 할 수 없습니다.
+
+
+<H3><A NAME="firewallIn">C. 11
+
+로컬의 방화벽(fire wall)의 외측에서 안쪽에 Java RMI 호출을 실시하려면 , 어떻게 하면 좋을까요.
+
+</A> </H3>
+
+주된 방법은 3 개 있습니다. 기존의 포트, 트랜스폴트 레벨 브릿지, 및 어플리케이션 레벨 프록시입니다.
+
+
+<H4>기존의 포트</H4>
+
+export 되는 객체가 모두, 기존의 호스트의 기존의 포트로 export 되는 경우에는, 그 호스트와 포트를 방화벽(fire wall)에서 명시적으로 허가할 수가 있습니다.
+
+	일반적으로, Java RMI 는 포트 0 ( 「임의의 포트」의 코드)을 요구합니다.
+
+	JDK 에서는,<code>exportObject</code> 메소드에는 정확한 포트 번호를 지정하기 위한 특별한 인수가 있습니다.
+
+JDK v1. 1 에서는, 서버는 <code>RMISocketFactory</code> 을 서브 클래스화해,<code>createServerSocket(0)</code> 에의 요구를 횡령해, 특정의 포트 번호에 묶는 요구와 옮겨놓습니다.
+
+    <p>
+
+이 방법의 단점은, 로컬 방화벽(fire wall)의 책임자인 네트워크 관리자의 도움이 필요한 일입니다.
+
+	export 된 객체가 다른 장소에서 실행되는 (코드가 그 사이트에 다운로드되었기 때문에) 경우, 로컬 방화벽(fire wall)를 관리하는 네트워크 관리자에게는, 실행하려고 하고 있는 사용자가 누군가 모릅니다.
+
+	<LART><!-- (Sometimes, obtaining the helpful and cheerful         assistance of netadmins at your own site can be difficult!)         --></LART>
+
+<H4>트랜스폴트 레벨 브릿지</H4>
+
+트랜스폴트 레벨 브릿지는, 1 개의 TCP 접속으로부터 바이트 데이터를 읽어들여 다른 TCP 접속에 기입하는 ( 및 그 역) 프로그램으로, 바이트 데이터의 내용에 대해서는 칸치 하지 않습니다.
+
+    <p>
+
+여기서의 생각은, 「방화벽(fire wall)의 외측으로부터 그 객체의 원격 메소드를 호출하려고 하는 사람은 누구라도, 대신에 (아마 다른 머신의)별의 포트에 컨택트 한다」라고 하는 방법으로 객체를 export 한다고 하는 것입니다.
+
+	이 다른 포트에서는, 실제의 서버에의 이차적인 접속을 작성해 양방향에 바이트 데이터를 배웅하는 프로그램이 가동하고 있습니다.
+
+    <p>
+
+이 방법으로 어려운 것은, 브릿지에 접속하는 것을 클라이언트에 납득시키는 것입니다.
+
+	다운로드 가능한 소켓 팩토리 (JDK, v1. 2 이후)를 사용하면(자) 효율적으로 이것을 실시할 수가 있습니다.  소켓 팩토리를 사용하지 않는 경우는,<code>java.rmi.server.hostname</code> 프로퍼티을 설정하는 것으로써, 브릿지 호스트에게 이름을 붙여 포트 번호를 같게 할 수 있습니다.
+
+<H4>어플리케이션 레벨 프록시</H4>
+
+이 수법은 꽤 시간이 듭니다만, 매우 확실한 성과를 얻을 수 있습니다.
+
+	프록시 프로그램은, 방화벽(fire wall) 호스트상 (외부로부터도 내부로부터도 액세스 가능한 호스트)에서 가동합니다.
+
+	내부 서버가, 외부로부터 이용 가능한 export 객체를 작성하려고 할 때는, 프록시 서버-에 컨택트 해 원격 참조를 건네줍니다.
+
+	프록시 서버-는, 원의 객체와 같은 원격 인터페이스를 구현한 프록시 객체 (프록시 서버-에 속하는 새로운 원격 객체)를 작성합니다.
+
+	프록시 서버-는, 새로운 프록시 객체에의 원격 참조를 내부 서버에 돌려줍니다. 내부 서버는, 그 참조를 어떠한 방법으로 외부에게 전합니다.
+
+    <p>
+
+외부로부터 프록시에 호출이 있으면(자), 프록시는 즉시 그 호출을 내부 서버상의 원의 객체에 전송 합니다.
+
+	프록시의 사용법은 외부로부터 보입니다만, 통신시에 원의 참조 또는 프록시 참조의 어느 쪽을 건네줄까를 결정하는 내부 서버로부터는 보이지 않습니다.
+
+    <p>
+
+말할 필요도 없이, 이것에는 대량의 설정과 로컬 네트워크 관리자 사이의 협력이 필요합니다.
+
+
+<H3><A NAME="firewallBoth">C. 12
+
+2 개의 방화벽(fire wall)를 넘어 Java RMI 조작을 하려면  어떻게 하면 좋을까요.
+
+</A> </H3>
+
+우선, 클라이언트측의 방화벽(fire wall)로부터 어떠한 협력을 얻을 수 있을지가 문제입니다.
+
+<p>
+
+최악의 경우는, 클라이언트측의 방화벽(fire wall)이 직접적인 TCP 접속을 일절 허가하지 않고, 그 방화벽(fire wall)내의 클라이언트가 「Web 서핑」하기 위한 HTTP 프록시 서버-만을 가지고 있는 케이스입니다.
+
+이 경우, 서버 호스트는, HTTP 요구에 파묻힌 Java RMI 요구를 포함한 포트 80 에서의 접속을 받습니다.
+
+HTTP 서버로 <code>java-rmi.cgi</code> 프로그램을 사용하는지, Java RMI 서버를 포트 80 으로 직접 실행할 수 있습니다.
+
+어느 쪽의 방법에서도, 서버는 클라이언트가 export 한 콜백 객체를 사용할 수 없습니다.
+
+<p>
+
+그것 보다 좋은 케이스에, 클라이언트가 서버에의 직접 접속을 작성할 수 있지만 서버로부터의 접속은 납득할 수 없다고 하는 경우가 있습니다.
+
+이 경우도, 콜백 객체는 보통으로는 사용할 수 없습니다.
+
+<p>
+
+클라이언트 방화벽(fire wall)의 관리자로부터 협력을 얻을 수 없는 경우, 가장 보수적인 방법은, 다음과 같습니다.
+
+    <ul>
+
+    <li>
+
+콜백 객체를 사용하지 않는다
+
+    <li>
+
+80, 81, 8001, 443 등의 「퍼블릭」인 포트로 서버를 실행한다
+
+    <li>
+
+서버가 포트 80 으로 가동하고 있지 않는 경우
+
+	<ul>
+
+        <li>
+
+CGI 가능한 HTTP 서버를 <code>java-rmi.cgi</code> 스크립트를 사용해 포트 80 에 둔다
+
+        <li>
+
+포트 redirector (<code>DeleGate</code> 등)를 포트 80 에 둔다. 이것은, 접속을 받아들이자마자 실제의 서버 포트에 접속해, 바이트 데이터의 수수를 실시합니다. 이것은 <code>getClientHost()</code> 가 잘못한 정보를 돌려주는 원인이 되므로, 다른 호스트상에 없는 한, 이 메소드를 사용해 레지스트리를 이용 가능하게 하지 말아 주세요.
+
+        </ul>
+    </ul>
+
+<H3><A NAME="servlet">C. 13
+
+Java 2 SDK 에 부속되어 있는 <code>java-rmi.cgi</code> 스크립트를 서브 렛을 사용해 치환하는 것은 가능합니까. </A> </H3>
+
+서브 렛을 사용해 <code>java-rmi.cgi</code> 스크립트를 구현하는 방법을 나타낸<i><a href="archives/rmiservlethandler.zip">예</a> </i>를 참조해 주세요. 이 예에서는, 서브 렛 VM 로 원격 객체를 실행하는 방법에 대해서도 설명하고 있습니다.
+<p>
+주:HTTP 를 개입시켜 원격 메소드 호출의 터널링을 실시할 때의 <code>java-rmi.cgi</code> 의 동작에 대해서는, Java RMI 내의 <a     href="#firewallOut">HTTP 터널링</a>에 관한 FAQ 를 참조해 주세요.
+
+<H3><A NAME="notify">D. 1
+
+원격 VM 에 장해가 발생했을 때에, 자동적으로 곧바로 통지를 받는 방법은 있습니까.
+
+</A> </H3>
+
+현시점에서는, 없습니다.
+
+<H3><A NAME="newvm">D. 2
+
+가상 머신내로부터, 원격 머신상에 새로운 가상 머신을 생성할 수 있습니까.
+
+</A> </H3>
+
+JDK 에는 객체의 기동 기능이 포함되어 있어 그 사용법을 설명하는<A     HREF="activation/overview.html">튜토리얼</a>이 있습니다.
+
+
+<H3><A NAME="unref">D. 3
+
+모든 클라이언트의 접속이 끊어졌을 때에 원격 객체에 통지할 수 있습니까.
+
+</A> </H3>
+
+할 수 있습니다.
+
+원격 객체는 <A     HREF="../../../api/java/rmi/server/Unreferenced.html"><code>java.rmi.server.Unreferenced</code></A>  인터페이스를 (그 외의 필요한 인터페이스에 가세해) 구현할 필요가 있습니다.
+
+Java RMI 는, 모든 접속이 떼어내졌을 때에 <code>unreferenced</code> 메소드를 호출해 통지할 수가 있습니다.
+
+<code>unreferenced</code> 메소드의 구현에 의해, 원격 객체가 통지를 받을 방법을 결정할 수 있습니다.
+
+다만, 레지스트리에 참조가 있는 경우는,<code>Unreferenced.unreferenced</code> 메소드는 불려 가지 않습니다.
+
+<H3><A NAME="noexit">D. 4
+
+모든 클라이언트의 접속이 끊어졌을 때에 서버 프로그램이 종료하지 않습니다. 왜입니까.
+
+</A> </H3>
+
+Java RMI 에서는, 서버 VM 는, 다음의 경우는 종료하게 되어 있습니다. <ul><LI> 클라이언트가 보관 유지하고 있는 미해결의 원격 객체 참조가 VM 에 없는 경우<LI> demon가 아닌 thread가 VM 상에서 실행되어 있지 않은 경우</ul>
+
+그러나, 어느 원격 객체에의 로컬 참조 또는 원격 참조가 존재하지 않는다고 하는 것만으로, 그 객체가 적시 가베지 컬렉션 되는 것은 아닙니다.
+
+이 경우는, 메모리 할당을 채우기 위해서(때문에) 그 원격 객체의 메모리가 컬렉션 됩니다. 메모리코레크션을 하지 않으면 메모리 할당은 (<code>OutOfMemoryError</code> 를 발행해) 실패합니다.
+
+<P>
+
+Java API 에서는 컬렉션의 시기를 지정합니다만, JDK v1. 1 구현으로 원격 객체의 컬렉션이 무기한에 늦는 것처럼 보이는데는 특별한 이유가 있습니다.
+
+Java RMI 런타임은 내부적으로, export 된 원격 객체에의 「약참조」를 테이블 로 유지하고 있습니다 (객체에의 로컬과 원격의 참조를 추적하기 위해(때문에)).
+
+JDK v1. 1 으로 이용 가능한 약참조의 기구에서는, VM 는 공격적이지 않은 캐싱 컬렉션 정책 (브라우저에 최적)를 사용합니다. 그 때문에, 「약하게 참조되고 있다」객체는, 로컬 GC 가 다음의 메모리 할당으로, 그 메모리가 정말로 필요하다고 판단할 때까지는 컬렉션 되지 않습니다.
+
+이것은 IDLE 상태의 서버에는 결코 일어나지 않습니다만,
+
+메모리가 필요한 경우에는 참조되어 있지 않은 서버 객체가 컬렉션 됩니다.
+
+<P>
+
+Java SE 플랫폼에는 Java RMI 가 사용하는 새로운 인프라스트럭쳐(infrastructure)가 포함되어 이 문제가 발생하는 상황을 큰폭으로 줄일 수가 있습니다.
+
+<H3><A NAME="leases">D. 5
+
+분산형 가비지 컬렉터는, 접속이 끊어진 클라이언트를 어떻게 해 검출합니까. 클라이언트를 적절히 종료하기 위해서 <code>System.exit</code> 를 사용하는 것은 현명할까요.
+
+</A> </H3>
+
+클라이언트 VM 의 Java RMI 런타임이, 어느 원격 객체가 로컬로 참조되지 않게 된 것을 검출하면(자), 비교적 빨리 서버에 비동기에 통지해, 서버가 그 객체의 참조된 세트를 통지에 따라 갱신할 수 있도록(듯이) 합니다.
+
+분산 가비지 컬렉터는, 클라이언트가 보관 유지하고 있는 각 원격 객체 참조에 관련지을 수 있었던 리스 (임대 계약)를 사용해, 클라이언트가 원격 객체에의 참조를 보관 유지하고 있는 동안은 그 객체의 리스를 갱신합니다.
+
+리스의 갱신 기구의 목적은, 서버가 클라이언트의 이상종료(ABEND)를 검출하는 것입니다. 이것에 의해, 클라이언트가 실행을 정지하기 전에 적절한 「참조 없음」의 메세지를 보낼 수가 없게 된 것에 의해, 서버가 영원히 원격 객체를 보관 유지하는 것을 막습니다.
+
+<code>System.exit()</code> 가 불려 가면(자) RMI 런타임은 서버에 적절한 「참조 없음」의 메세지를 보낼 수가 없기 때문에, 이것을 호출한 클라이언트는 이상종료(ABEND)로 간주해집니다.
+
+종료전에 클라이언트로 <code>System.runFinalizersOnExit</code> 를 실행하는 것 만으로는 불충분합니다. 그 이유는, 파이나라이자에서는 필요한 처리가 모두 행해지는 것은 아니고, 「참조 없음」의 메세지가 서버에 보내지지 않기 때문입니다
+
+(runFinalizersOnExit 의 사용은 일반적으로 추천 하지 못하고, 데드락을 일으키기 쉽다).
+
+<P>
+
+<code>System.exit()</code> 를 사용해 클라이언트 VM 를 종료할 필요가 있는 경우는, VM 내에 보관 유지되고 있는 원격 참조가 보다 빨리 확실히 소거되도록(듯이), 액세스 가능한 원격 참조가 벌써 존재하지 않게 할 필요가 있습니다. 그 때문에(위해)는, 실행중의 thread로부터 액세스 할 수 없게 하는 로컬 레퍼런스를 모두 명시적으로 null 로 합니다. 완전한 가베지 컬렉션을 실행해, 파이나라이자를 실행하고 나서 종료한다고 하는 방법도 있습니다.
+
+<pre>
+    System.gc();
+    System.runFinalization();
+</pre>
+
+
+<H3><A NAME="leases2">D. 6
+
+클라이언트가 크래쉬 한 것을 서버는 어떻게 압니까.
+
+</A> </H3>
+
+클라이언트의 리스 (임대 계약) 기한이 지날 때까지 기다리는 경우는, Java RMI 구현에 의해 <code>unreferenced()</code> 메소드가 불려 갑니다 (레지스트리는 모든 바인딩에의 참조를 보관 유지하고 있기 (위해)때문에, 레지스트리도 또, 이 목적에서는 클라이언트가 된다).
+
+<p>
+
+클라이언트가 원격 참조를 보관 유지하고 있는 경우는, 그 참조의 리스도 보관 유지하고 있어, 그것을 갱신하는 (서버에 컨택트 해 <code>dirty()</code> 호출을 실시하는 것으로) 필요가 있습니다.
+
+export 된 객체에 대한 마지막 리스가 기한 마감이 될까 닫혀질까 하면(자), 그 객체는 참조되어 있지 않다고 보여<code>java.rmi.Unreferenced</code> 을 구현하고 있는 경우는 <code>unreferenced()</code> 메소드가 불려 갑니다.
+
+<p>
+
+복수의 클라이언트가 동일한 원격 객체에의 참조를 가지고 있는 경우는, 그 객체에 대한 모든 클라이언트의 리스가 기한 마감이 되지 않는 이상<code>unreferenced()</code> 메소드는 불려 가지 않습니다.
+
+따라서, 이 수법을 사용해 개개의 클라이언트를 추적하는 경우는, 개개의 클라이언트가 <code>Unreferenced</code> 객체에 대한 참조를 보관 유지하고 있을 필요가 있습니다.
+
+
+
+<H3><A NAME="fastleases">D. 7
+
+원격 객체의 사용을 그만두고 나서 <code>unreferenced()</code> 메소드가 불려 갈 때까지 10 분 걸립니다. 이 시간을 단축하는 방법을 가르쳐 주세요.
+
+</A> </H3>
+
+리스의 종료 기한은 서버에 의해 지정됩니다. 시스템 프로퍼티 <code>java.rmi.dgc.leaseValue</code> 를 사용해 밀리 단위로 지정됩니다.
+
+이 시간을 짧게 하려면 (례:30 초), 다음과 같이 해 서버를 기동합니다.
+<pre>
+    java -Djava.rmi.dgc.leaseValue=30000 ServerMain
+</pre>
+
+<p>
+
+디폴트 값는 600000 밀리 세컨드 (10 분 )입니다.
+
+<p>
+
+클라이언트는 기한의 반을 지나면(자) 각자 리스를 갱신합니다.
+
+리스기간이 너무 짧으면(자), 클라이언트는 쓸데없는 리스 갱신을 위해서(때문에) 네트워크 대역폭을 낭비하게 됩니다.
+
+리스기간이 극단적으로 짧은 경우에는 클라이언트의 리스 갱신이 늦게 되어, 결과적으로 export 된 객체가 삭제되는 일도 있습니다.
+
+<p>
+
+Java RMI 의 장래의 릴리스에서는, 리스의 갱신이 실패하면(자) 원격 참조가 무효가 됩니다 (참조의 무결성을 유지하기 위해(때문에)).  실효한 원격 객체에의 참조의 사용을에게 해야 하지는 않습니다.
+
+<p>
+
+클라이언트 머신이 크래쉬 했을 경우는, 단지 타임 아웃을 기다리는 것만으로 좋습니다.
+
+접속이 끊어졌을 때에 클라이언트가 아직 하등의 제어를 유지하고 있는 경우는, 클라이언트는 재빠르게 DGC clean 호출을 실시해,<code>Unreferenced</code> 를 시기적절하게 사용할 수 있습니다.
+
+이 처리를 잘 진행하려면 , 클라이언트가 원격 객체에 대해서 보관 유지하고 있을 가능성이 있는 참조를 모두 null 로 하고 나서,<code>System.gc()</code> 를 호출합니다
+
+(v1. 1. x 에서는, 파이나라이자를 동기 해 실행시키고 나서, 한번 더 GC 를 실행하는 것이 필요).
+
+
+<H3><A NAME="crashnotif">D. 8
+
+클라이언트가 크래쉬 했을 때에, 곧바로 통지를 납득할 수 없는 것은 왜입니까.
+
+</A> </H3>
+
+서버에는, 네트워크의 지연과 크래쉬 한 호스트를 구별하는 수단이 없기 때문입니다.
+
+<p>
+
+크래쉬 한 클라이언트가 나중에 재기동해 서버에 컨택트 하면, 그 때에 서버는 클라이언트가 지금까지의 사이에 크래쉬 했는지의 여부를 추측할 수가 있습니다.
+
+클라이언트와 서버가 대화하고 있는 동안, 양자간에서 TCP 접속이 쭉 열려 있다면, 나중에 그 접속에의 기입해 (1 시간 마다의 TCP 유지 패킷이 유효한 경우는, 그것을 포함한다)가 실패했을 때에, 서버는 클라이언트가 재기동한 것을 검출할 수 있습니다.
+
+그러나, 그러한 영속적인 접속은 스케이라비리티를 해치는 것 외에 그다지 도움이 되지 않기 때문에, Java RMI 는 영속적인 접속을 필요로 하지 않게 설계되고 있습니다.
+
+<p>
+
+네트워크 피어가 언제 크래쉬 하거나 이용할 수 없게 되었는지를 간단하게 판단하는 것은, 완전히 불가능해서, 피어가 응답하지 않게 되었을 때의 어플리케이션의 동작을 결정해 둘 필요가 있습니다.
+
+<p>
+
+이 작업에 사용하는 주된 수단은 타임 아웃과 리셋입니다.
+
+타임 아웃이 일어났을 경우, 피어가 통신 불가능하게 되었다고 판단해도 괜찮습니다. 그러나, 그 피어가 이쪽으로 통신하려고 하는 것을 그만두도록(듯이), 타임 아웃 했던 것이 피어에 알 필요가 있습니다. 리스의 메카니즘은, 이것을 반 자동적으로 실시하기 위한 것입니다.
+
+<p>
+
+리셋란, 피어를 위해서(때문에) 보관 유지되고 있는 상태를 일소 하는 것입니다.
+
+예를 들어, 클라이언트는 서버에 최초로 등록했을 때에 리셋를 행해, 서버가 그 클라이언트를 위해서(때문에) 그것까지 보관 유지하고 있던 상태를 파기하도록(듯이) 합니다 (클라이언트가 그 이전의 「죽었다」세션의 기억을 가지지 않고 재기동했다고 생각해).
+
+<p>
+
+많은 경우, 목적은, 서버로 클라이언트의 명확한 리스트를 가져, 잘못이나 실패없이 그 리스트를 최신 상태에 유지하는 것입니다.
+
+네트워크 시스템에서는 고장이나 지연은 언제라도 일어날 가능성이 있으므로, 리스트에는 어느 정도의 잘못이 있는 것을 예기 할 필요가 있습니다.
+
+리스등의 메카니즘을 사용해 타임 아웃을 강제하면, 자원의 누락의 문제는 해결합니다.
+
+실효한 데이터의 문제가 좀 더 심각해, 정상적인 동작을 방해하는 것 같은 경우가 있습니다. 문제를 없애지 않으면 악영향이 있는 경우에는, 명시적으로 없앨 필요가 있습니다.
+
+<p>
+
+예를 들어, 사용자가 편집하기 위해(때문에), 어느 비지니스 객체가 락 되고 있을 때 세션이 이상종료(ABEND) 했을 경우에는, 어떠한 방법으로 락을 해제할 필요가 있습니다.
+
+이 경우, 락에는 타임 아웃이 필요할지도 모릅니다. 그러나, 곧바로 동일 사용자가 로그인해, 그 사용자는 타임 아웃까지 기다릴 필요는 없다고 생각하고 있다면, 새로운 세션에서는 락을 상속하는지, 사용자가 락을 보관 유지하고 있지 않다고 단정할 (서버가 안전하게 락을 해제할 수 있도록(듯이) 할) 필요가 있습니다.
+
+
+<H3><A NAME="rmicbatch">D. 9
+
+DOS 의 배치파일로 <code>rmic</code> 커멘드를 실행시키려면  어떻게 하면 좋을까요.
+
+</A> </H3>
+
+DOS 의 배치파일로, 제어가 배치파일에 돌아오도록(듯이) 하기 위해서는, 실행 가능 커멘드의 전에 <code>call</code> 커멘드를 삽입할 필요가 있습니다.
+
+예를 나타냅니다.
+<pre>
+    call rmic ClientHandler
+    call rmic Server
+    call rmic ServerHandler
+    call rmic Client
+</pre>
+
+<H3><A NAME="getclient">D. 10
+
+원격 객체의 구현으로, 원격 메소드의 호출원의 호스트명을 알려면  어떻게 하면 좋을까요.
+
+</A> </H3>
+
+<code>java.rmi.RemoteServer.getClientHost</code> 메소드가, 현재의 thread상의 현재의 호출원의 클라이언트 호스트명을 돌려줍니다.
+
+<H3><A NAME="inout">D. 11
+
+Java RMI 에서는 (CORBA 와 같이) OUT, INOUT 파라미터를 취급할 수 있습니까.
+
+</A> </H3>
+
+Java RMI 에서는, OUT 및 INOUT 파라미터를, 그 외의 코어 Java 프로그램 언어와 같이 지원하지 않습니다.
+
+원격 호출은 모두 원격 객체의 메소드입니다.
+
+로컬 객체는 카피에 의해, 원격 객체는 Stub에의 참조에 의해 건네받습니다.
+
+상세한 것에 대하여는, Java RMI 스펙의<A     HREF="../../../platform/rmi/spec/rmi-objmodel7.html">「원격 메소드 호출에서의 파라미터의 인도」</a>를 참조해 주세요.
+
+<H3><A NAME="caststub">D. 12
+
+일반적으로, Java 프로그램 언어에서는, 인터페이스의 인스턴스를, 생성원의 클래스의 인스턴스에 캐스트 해, 그 결과를 사용할 수가 있습니다. Java RMI 에서는, 왜 이것을 할 수 없습니까.
+
+</A> </H3>
+
+Java RMI 에서는, 클라이언트는 원의 객체의 Stub인 만큼 액세스 합니다.
+
+Stub는 원격 인터페이스와 그 원격 메소드만을 구현합니다. 또 Stub이므로, 원의 구현 클래스에 캐스트 백할 수 없습니다.
+
+<P>
+
+그 때문에, 원격 객체 참조를 서버로부터 클라이언트에 건네주고 나서, 서버에 돌려 보내, 원의 구현 클래스에 캐스트 백할 수 없습니다.
+
+다만, 서버상의 원격 객체 참조를 사용해 그 객체에의 원격 호출을 실시할 수 있습니다.
+
+<P>
+
+한번 더 구현 클래스를 찾아낼 필요가 있는 경우는, 원격 참조를 구현 클래스에 매핑 하는 테이블을 보관 유지할 필요가 있습니다.
+
+<H3><A NAME="browsersupport">E. 1
+
+필요한 JDK 또는 Java SE 의 버젼을 브라우저가 지원하고 있지 않는 경우는 어떻게 하면 좋을까요.
+
+</A> </H3>
+
+필요한 JDK 또는 Java SE 의 버젼을 지원하지 않는 브라우저에서는,<a     href="http://java.sun.com/products/plugin/">Java Plug-in</a>  를 사용해 보세요.
+
+<H3><A NAME="observer">E. 2
+
+Java RMI 에 원격의 Observer 및 Observable 객체를 구현할 수 있습니까.
+
+</A> </H3>
+
+<code>java.util.Observable</code> 와 <code>java.util.Observer </code> 를 새로운 인터페이스로 「랩」할 수가 있습니다 (각각을 <code>RemoteObservable</code> 와 <code>RemoteObserver</code> 라고 부른다).
+
+이러한 새로운 인터페이스로, 각 메소드가 <code>java.rmi.RemoteException</code> 를 throw 하도록(듯이) 합니다.
+
+다음에, 원격 객체로 이러한 인터페이스를 구현합니다.
+
+<P>
+
+원격가 아닌 랩 된 객체는 <code>java.rmi.server.UnicastRemoteObject</code> 를 상속하고 있지 않았기 때문에, 그 객체를 <code>UnicastRemoteObject</code> 의 <code>exportObject</code> 메소드를 사용해 명시적으로 export 할 필요가 있습니다.
+ 
+다만, 이것을 실시하면,<code>equals</code>,<code>hashCode</code>,<code>toString</code> 의 각 메소드의 <code>java.rmi.server.RemoteObject</code> 구현을 잃습니다.
+
+
+<H3><A NAME="connection">F. 1
+
+클라이언트와 서버의 사이에 「라이브」접속을 할 수 있는 것은 어느 시점입니까. 또, 접속의 관리는 어떻게 행해집니까.
+
+</A> </H3>
+
+클라이언트가 룩 업 조작을 실시할 때는, 지정된 호스트의 <code>rmiregistry</code> 에의 접속이 작성됩니다.
+
+일반적으로, 원격 호출을 위한 새로운 접속은, 작성되는 경우와 작성되지 않는 경우가 있습니다.
+
+접속은, 장래의 이용에 대비해, Java RMI 트랜스폴트에 의해 캐쉬됩니다.  그 때문에, 어느 원격 호출의 올바른 호출처에의 접속이 비어 있을 때는, 그 접속이 사용됩니다.
+
+접속은 Java RMI 트랜스폴트의 레벨로 관리되고 있으므로, 클라이언트가 서버에의 접속을 명시적으로 닫을 수 없습니다.
+
+접속은, 일정기간 사용되지 않으면 타임 아웃이 됩니다.
+
+<H3><A NAME="replace">F. 2
+
+Java 는 원격 메소드의 호출중, 모든 원격 객체를 Stub에 옮겨놓습니까. </H3>
+
+JRMP 및 Java RMI-IIOP 의 구현은, 직렬화 된 객체의 그래프의 깊게 있는 것도 포함해, 각 원격 객체를, 같은 프로토콜의 대응하는 Stub로 옮겨놓습니다.
+
+<H3><A NAME="nosockets">F. 3
+
+소켓을 사용하지 않는, Java RMI 용의 새로운 트랜스폴트층을 기술할 수 있습니까. 또, TCP 베이스가 아닌 소켓을 사용하는 트랜스폴트층은 어떨까요.
+
+</A> </H3>
+
+트랜스폴트 인터페이스의 다양한 구현을 Java RMI 로 사용할 수 있도록(듯이), 트랜스폴트 인터페이스를 설계했습니다.
+
+초기의 릴리스에서는, 이 추상 클래스는 당사에서 내부적인 목적으로 사용해, 일반적으로는 공개하고 있었었습니다.
+
+현재의 JDK 에서는, Java RMI 로<A     HREF="socketfactory/index.html">클라이언트와 서버의 소켓 팩토리</a>가 지원되어TCP 베이스 이외의 소켓을 개입시킨 RMI 호출을 작성할 수 있습니다.  
+
+<H3><A NAME="polling">F. 4
+
+레지스트리가 CPU 자원을 계속 사용하고 있는것을  깨닫았습니다. <code>select()</code> 호출로 블록화는 아니고 폴링 하고 있는 것 같습니다만, 레지스트리는 폴링으로 구현되고 있습니까.
+
+</A> </H3>
+
+Java RMI 는 select 의 호출로 폴링 하지 않습니다.
+
+어느 thread가 빈번하게 불러일으켜져 export 된 원격 객체의 테이블을 폴링 합니다.
+
+이 「베어 내」thread는 분산형 가비지 컬렉터용으로 사용됩니다.
+
+<H3><A NAME="numsockets">F. 5
+
+클라이언트 프로세스에 Stub가 몇개 있어도, 클라이언트 프로세스와 서버의 사이에는 소켓 접속은 1 개 밖에 존재하지 않는 것일까요.
+
+</A> </H3>
+
+Java RMI 는, 클라이언트와 서버간의 소켓 접속을 할 수 있는 한 재사용합니다.
+
+현재의 구현에서는, 소켓의 필요시에 요구에 응해 추가의 소켓이 작성됩니다.
+
+예를 들어, 어느 호출이 기존의 소켓을 사용중에 다른 호출이 있으면(자), 새로운 호출용의 새로운 소켓이 작성됩니다.
+
+일반적으로, 원격 객체가 서버로부터 돌려주어졌을 때에 분산형 가비지 컬렉터가 원격 호출을 실시하기 (위해)때문에, 최저 2 개의 소켓이 열려 있을 필요가 있습니다.
+
+캐쉬된 접속이 일정기간미사용대로 되면(자), 그 접속은 닫혀집니다.
+
+
+<H3><A NAME="license">G. 1
+
+Java RMI 의 사용에 관한 라이센스의 문제는 어떻게 되어 있습니까.
+
+</A> </H3>
+
+Java RMI 는 Java SE 플랫폼의 일부이기 (위해)때문에, J2SE 의 라이센스 조항의 대상이 됩니다.
+
+<H3><A NAME="stdinput">G. 2
+
+Java RMI 호출을 개시하는 사용자 커멘드를 표준 입력으로 받아들이는, 싱글스 레드 프로그램을 사용하고 있습니다만, 이 프로그램이 표준 입력을 블록 하고 있는 것 같고, 원격 객체가 이 원격 호출에 대응할 수 없습니다. 무엇이 문제인 것입니다인가.
+
+</A> </H3>
+
+이것은 Java RMI 의 문제는 아니고, 표준 입력을 읽어들이는 thread에 관한 자주(잘) 알려진 문제입니다.
+
+이 thread는 블록 리드 시에 그 밖에 양보하지 않고 계속 실행하므로 , 청취자는 거의 CPU 사이클을 얻을 수 있지 않습니다.
+
+다음의 2 개의 방법이 잘되는 것 같습니다. 메인 thread (표준 입력을 읽어들이는 thread)의 우선 순위를 내립니다. 또는, 스트림내에 바이트가 없을 때는 그 밖에 실행을 양보해, 그 후에 실제로 읽어들이도록(듯이) 합니다.
+
+<H3><A NAME="passbycopy">G. 3
+
+원격 서버-에 배열 요소를 카피해 그 값을 변경해도, 인크리먼트(increment) 후의 값이 클라이언트에 카피되지 않습니다. 왜입니까.
+
+</A> </H3>
+
+원격가 아닌 객체는 카피로 건네받으므로, 클라이언트에 배열의 새로운 값을 반영시키려면 , 귀가 인수로서 돌려 보낼 필요가 있습니다.
+
+<H3><A NAME="staticinit">G. 4
+
+원격 인터페이스에 static 의 필드를 가질 수 있을까요.
+
+</A> </H3>
+
+할 수 있습니다.
+
+각 VM 로 이니샤라이자를 실행하고 나서 원격 인터페이스를 로드해, 지정된 값으로 static 변수를 신규 작성합니다.
+
+따라서, 원격 인터페이스를 로드하는 각 VM 로, 이 static 치의 다른 카피를 가질 수가 있습니다.
+
+<H3><A NAME="registry">G. 5
+
+레지스트리의 위치를 알 수 있었습니다만, 거기에는 레지스트리가 없는 것 같습니다. 어떻게 되어 있습니까.
+
+</A> </H3>
+
+<code>LocateRegistry.getRegistry(String host)</code> 메소드는, 호스트상의 레지스트리에 직접 액세스 하는 것이 아니라, 레지스트리가 존재할지 어떨지를 확인하기 위해서 호스트를 룩 올라갈 뿐입니다.
+
+따라서, 이 메소드가 정상적으로 종료해도, 반드시 지정된 호스트로 레지스트리가 실행중이다고는 할 수 없습니다.
+
+그 시점에서 레지스트리에 액세스 가능한 Stub가 돌려주어질 뿐입니다.
+
+<H3><A NAME="more">G0. 6
+
+여기에는, 나의 질문에 대한 회답이 없습니다. 어디를 조사하면 좋을까요.
+
+</A> </H3>
+
+RMI-USERS 메일링리스트의<A     HREF="http://archives.java.sun.com/archives/rmi-users.html">하이퍼 메일 어카이브(archive)</a>에 많은 정보가 있습니다.
+
+<P>
+
+Java RMI 와 객체 직렬화의 어느 쪽의 사용자도, 메일링리스트 <code>rmi-users&#64;java.sun.com</code> 를 통해서 다른 사용자와 의견의 교환을 할 수 있습니다.
+
+메일링리스트의 구독을 신청하려면 , 다음과 같이 쓴 메일을 listserv@java.sun.com 에 전송해 주세요.
+<pre>
+    subscribe RMI-USERS
+</pre>
+
+구독을 중지하려면 ,<code>listserv@java.sun.com</code> 에 다음과 같이 쓴 메일을 전송해 주세요.
+<pre>
+    unsubscribe RMI-USERS
+</pre>
+
+<hr>
+
+<H2>
+객체 직렬화</H2>
+
+<H3>1.  <A NAME="whyserial"></A> <b><code>ObjectOutputStream</code> 에 기입하기 위해서(때문에), 클래스가 <code>Serializable</code> 를 구현해야 하는 것은 왜입니까. </b></H3>
+
+
+「클래스가 <code>java.io.Serializable</code> 인터페이스를 구현하는 것」이라고 하는 조건은 안이하게 결정된 것이 아닙니다. 예측 가능하고 안전한 기구를 제공하기 위해(때문에), 설계에는 개발자로부터의 요구와 시스템의 요구의 밸런스를 취하는 것이 요구되었습니다. 설계상의 가장 곤란한 제약은, Java 프로그램 언어의 클래스의 안전성과 시큐리티였습니다.
+
+<P>「클래스가 직렬화 가능과 명시되지 않으면 안 된다」라고 하는 설계로 하면(자), 개발자가 (그 조건을 잊거나 무시하는 등의 이유로써) 클래스를 <code>Serializable</code> 와 선언하지 않았던 경우에는, 그 클래스가 RMI 로 사용할 수 없게 되거나 지속성을 갖게한다고 하는 목적으로 사용할 수 없게 될 우려가 있습니다. 이 조건에 의해, 개발자에게 「있는 클래스가 장래, 타인에 의해 어떻게 사용될까」라고 하는 본질적으로 예지 불가능한 일을 생각하지 않으면 안 된다고 하는 부담을 줄 우려도 있습니다. 실제, 예비 설계에서는 알파 API 에 반영되고 있도록(듯이), 「디폴트에서는, 클래스내의 객체는 직렬화 가능으로 한다」라고 결론 했습니다. 그 설계를 변경한 것은, 시큐리티와 정확함을 고려한 결과, 디폴트에서는 객체는 직렬화 가능하고 있어서는 안된다고 확신했기 때문에입니다.
+
+<H4>시큐리티에 의한 제한</H4>
+
+객체의 디폴트 동작을 변경하는 이유가 된 최초의 고려점은, 시큐리티, 특히 private, package protected, protected 의 어느 쪽인가에 선언되고 있는 필드의 기밀성에 관한 문제였습니다. Java 플랫폼은, Runtime 내의 객체의 부분집합의 읽어내 또는 기입의 목적에서의, 이러한 필드에 대한 액세스를 제한합니다.
+
+<P>객체를 직렬화 가능하게 하면(자), 이러한 제한을 줄 수 없게 됩니다. 객체의 직렬화의 결과인 바이트 스트림은, 그 스트림에 액세스 할 수 있는 어떤 객체에 의해도 읽기와 수정이 가능합니다. 이것에 의해, 직렬화 된 객체 상태에는 어떤 객체로부터도 액세스 할 수가 있으므로, Java 의 사용자가 기대하는 기밀성의 보증이 찢어집니다. 게다가 스트림내의 바이트를 임의로 변경할 수 있으므로, Java 플랫폼에 의한 보호하에서는 불가능했던 객체의 재구축이 가능하게 됩니다. 이러한 객체 복구성에 의해, Java 플랫폼의 사용자가 기대하는 기밀성 보증 뿐만이 아니라, 플랫폼 그 자체의 무결성이 위협해지는 경우가 있습니다.
+
+<P>이러한 파괴 행위를 막을 수 없습니다. 그 이유는, 직렬화의 개념 그 자체가, 객체를 Java 플랫폼의 외부 (즉, Java 환경의 기밀성과 안전성의 보증의 권외)에 꺼낼 수 있는 형태로 변환해, 그 후에 Java 플랫폼에 되돌리는 것을 가능하게하기 위한의 것이기 때문입니다. 객체를 직렬화 가능하게 선언한다고 하는 조건은, 「클래스의 설계자는, 기밀면이나 안전면에서의 그러한 침해의 가능성을 허용 한다고 하는 적극적인 결단을 실시할 필요가 있다」일을 의미합니다. 직렬화에 관한 지식이 없는 개발자가, 지식의 결여의 탓으로 무방비가 되지 않습니다. 또, 클래스를 Serializable 라고 선언하는 경우는, 그 선언의 결과를 자주(잘) 고려하는 것이 바람직합니다.
+
+<P>이런 종류의 시큐리티 문제는, 시큐리티 매니저의 기구에 의해 해결할 수 있는 문제가 아닙니다. 직렬화의 목적은, 가상 머신간의 객체의 이송 (RMI 의 경우와 같은 공간상의 이송, 또는, 파일에 스트림을 보존하는 경우와 같은 시간상의 이송)을 가능하게 하는 것입니다. 따라서, 시큐리티에 사용되는 기구는 특정의 가상 머신의 실행시 환경과는 무관계하다라고 하는 것이 필요합니다. 우리는, 가능한 한 「있는 가상 머신으로 객체를 직렬화 할 수 있어 다른 가상 머신에서는 그 객체를 직렬화 해제할 수 없다」라고 하는 문제를 피하려고 했습니다. 시큐리티 매니저는 실행시 환경의 일부이므로, 만약 직렬화에 시큐리티 매니저를 사용하면, 이 요구를 달성할 수 없었었지요.
+
+<H4>의식적인 결정의 강제</H4>
+
+설계 변경의 제일의 이유는 시큐리티의 고려입니다만, 「직렬화는 어느 정도의 설계상의 고려의 후에 클래스에 추가해야 한다」라고 하는 일도 이유로서 설득력을 가진다고 생각합니다. 직렬화와 직렬화 복원에 의해 붕괴해 버리는 클래스를 설계하는 것은 아주 간단합니다. 클래스의 설계자에 대해서 Serializable 인터페이스의 지원의 선언을 요구하는 것으로써, 그 클래스의 직렬화의 프로세스에 대한 고려를 유발 (prompt)하고 싶다고 생각했습니다.
+
+<P>실례는 많이 있습니다. 많은 클래스는, 특정의 객체가 존재하는 실행시 환경에서만 의미를 가지는 정보 (파일 핸들, 오픈 소켓 접속, 시큐리티 정보등)를 처리합니다. 이러한 데이터는, 필드를 <code>transient</code> 라고 선언하는 것만으로 간단하게 취급할 수가 있습니다만, 이러한 선언이 필요한 것은 객체가 직렬화 될 예정 때 뿐입니다. 서투른 프로그래머의 경우는, 필드를 <code>transient</code> 라고 선언하는 것을 게을리할지도 모르지 않고, 똑같이 클래스가 <code>Serializable</code> 인터페이스를 구현하고 있는 것을 선언하는 것을 게을리할지도 모릅니다. 이러한 케이스가 부정한 동작에 연결되지 않게 할 필요가 있습니다. 그 때문에 방법이,<code>Serializable</code> 인터페이스의 구현이 선언되어 있지 않은 객체는, 직렬화하지 않는 것인 것입니다.  
+
+<P>다른 예로서 다수의 객체에 걸치는 그래프의 루트가 되고 있는 「단순한」객체를 생각해 봅시다. 직렬화는 그래프 전체에 기능하므로, 이 객체를 직렬화하면(자), 다른 많은 객체를 직렬화하게 됩니다. 이러한 직렬화는 의식적으로 결정 해야 할것이며, 디폴트의 동작으로 일으켜져야 할 일이 아닙니다.
+
+<P>기본 Java API 클래스 라이브러리의 검토 작업중에, 우리는 이 문제를 고려하는 필요성을 통감했습니다. 당초는 라이브러리의 시스템 클래스가 적당, 직렬화 가능이라고 선언되고 있다고 하는 설계였습니다. 우리는 당초, 이 설계를 실현하는 것은 간단하다고 생각했습니다. 「대부분의 시스템 클래스에 <code>Serializable</code> 인터페이스의 구현을 선언할 수 있으니까, 이것을 디폴트의 구현으로 하면 그 밖에 아무것도 변경하지 않아도 그대로 사용할 수 있을 것이다」라고 생각했습니다. 그러나, 대부분의 경우, 예상대로는 되지 않았습니다. 매우 많은 클래스에서, 필드를 <code>transient</code> 와 선언해야할 것인가 부디 또 원래 클래스를 직렬화 가능하게 하는 것에 의미가 있는지 어떤지에 임해서 신중하게 생각할 필요가 있었습니다.
+
+<P>물론, 프로그래머나 클래스의 설계자가 클래스를 직렬화 가능과 선언할 경우에, 실제로 이 문제에 대해 생각한다고 하는 보증은 없습니다. 그러나, 클래스에 <code>Serializable</code> 인터페이스의 구현을 선언하는 것을 요구하는 것으로써, 프로그래머에게는 하등의 고려를 지불하는 것이 요구됩니다. 직렬화를 객체의 디폴트 상태로 하면(자), 고려의 부족에 따라, 프로그램에 하등의 악영향 (Java 플랫폼 전체의 설계로 막으려고 한 것)을 미칠 가능성이 있습니다.
+
+<H3>2.  <A NAME="whichserial"></A> <B>JDK v1. 1 시스템 클래스 가운데, 직렬화 가능하게 되는 것은 어떤 것입니까. </B></H3>
+
+삭제되었습니다. 이 정보는,<code>javadoc</code> 툴에 의해 생성되는 API 문서로부터 입수할 수 있습니다.
+
+
+<H3>3.  <A NAME="awt"></A> <B>JDK v1. 0.2 로 AWT 컴퍼넌트를 직렬화 복원할 수 없습니다. </B><B>어떻게 하면 좋을까요. </B></H3>
+
+AWT 위젯를 직렬화하면(자), 그 AWT 기능을 로컬 윈도우 시스템에 맵 하는 피어 객체도 직렬화 됩니다. AWT 위젯를 직렬화 해제 (재구축)하면(자), 낡은 피어가 재생됩니다만, 그 시점에서는 이제 사용할 수 없습니다. 피어는 로컬 윈도우 시스템에 대해서 네이티브이며, 로컬 address 공간내의 데이터 구조에의 포인터를 가지고 있으므로, 다른 장소로 이동할 수 없습니다.
+
+<P>대처법으로서 우선 톱 레벨의 위젯를 컨테이너로부터 삭제해 주세요 (이것으로, 위젯는 「액티브」는 아니게 된다). 이 시점에서 피어는 파기되어 AWT 위젯 상태만을 보존할 수 있습니다. 나중에 위젯를 직렬화 해제해 읽어낼 때, 프레임에 톱 레벨의 위젯를 추가해, AWT 위젯를 표시시킵니다. <code>show</code> 호출을 추가하는 것이 필요한 경우가 있습니다.
+
+<P>JDK v1. 1 이후의 AWT 위젯는 직렬화 가능합니다. <code>java.awt.Component</code> 클래스는 <code>Serializable</code> 인터페이스를 구현합니다.
+
+
+<H3>4.  <A NAME="encryption"></A> <B>객체 직렬화에서는 암호화는 지원됩니까. </B></H3>
+
+객체의 직렬화에는, 암호화나 암호 해독은 포함되어 있지 않습니다. 직렬화는 Java API 의 표준 스트림에의 기입과 Java API 의 표준 스트림로부터의 읽기를 실시하므로, 이용 가능한 임의의 암호화 기술과 조합해 사용할 수가 있습니다. 객체의 직렬화는, 다양한 장면에서 사용할 수 있습니다. 간단한 지속성이나 파일의 읽고 쓰기 뿐만이 아니라, Java RMI 에 의한 호스트 사이 통신에도 사용할 수 있습니다.
+
+<P>RMI 로 직렬화를 사용하는 경우는, 암호화와 암호 해독을 하위의 네트워크 트랜스폴트에 맡깁니다. 안전한 채널이 필요한 경우는, 네트워크 접속에는 SSL 와 같은 것을 사용하는 것을 추천합니다 (<A HREF="socketfactory/SSLInfo.html">「RMI 에서의 SSL 의 사용」</a>을 참조).
+
+
+<H3>5.  <A NAME="random"></A> <B>객체의 직렬화 클래스는 스트림 지향입니다. 객체를 랜덤 억세스 파일에 기입하려면  어떻게 하면 좋을까요. </B></H3>
+
+현재는, 랜덤 억세스 파일에 객체를 직접 기입하는 방법은 없습니다.
+
+<P><code>ByteArrayInputStream</code> 및 <code>ByteArrayOutputStream</code> 객체를 중개할 방법을 이용할 수 있습니다. <code>ByteArrayInputStream</code> 및 <code>ByteArrayOutputStream</code> 객체를 사용해 랜덤 억세스 파일의 읽고 쓰기를 실시해, 바이트 스트림로부터 <code>ObjectInputStream</code> 및 <code>ObjectOutputStream</code> 를 작성해 객체의 전송을 실시합니다. 바이트 스트림에 객체 전체가 들어가도록 주의해 주세요. 그렇게 하지 않으면 객체에의 읽고 쓰기에 실패합니다.
+
+<P>예를 들어,<code>java.io.ByteArrayOutputStream</code> 를 사용해 <code>ObjectOutputStream</code> 의 바이트를 받습니다. 바이트 배열의 형식에서 결과를 1 개 받습니다. 다음에, 이 바이트 배열을 <code>ByteArrayInputStream</code> 로 <code>ObjectInput</code> 스트림에의 입력으로서 사용합니다.
+
+
+<H3>6.  <A NAME="local"></A> <B>로컬 객체를 직렬화해 Java RMI 호출에 파라미터로서 건네주면(자), 그 로컬 객체의 메소드의 바이트 코드도 건네받습니까. 원격의 VM 어플리케이션이 객체 핸들을 보관 유지한 채로라고, 객체의 일관성은 어떻게 되는 것일까요. </B></H3>
+
+로컬 객체의 메소드의 바이트 코드는 직접 <code>ObjectOutputStream</code> 에는 건네받지 않습니다. 다만, 그 객체의 클래스가 아직 로컬로 이용 가능하게 되지 않은 경우는, 그 클래스를 수신측에서 로드할 필요가 있습니다. 클래스 파일 그 자체는 아니고, 클래스명만이 직렬화 됩니다. 직렬화를 해제할 경우에는, 모든 클래스는 일반적으로의 클래스 로드 기구를 사용해 로드 가능하지 않으면 안됩니다. 애플릿의 경우는 <code>AppletClassLoader</code> 로 로드 됩니다.
+
+<P>로컬 객체가 원격 VM 에게 건네질 때는, 객체의 내용이 카피되어 건네받는 (진정한 값인도) 것으로, 일관성은 보증되지 않습니다.
+
+
+<H3>7.  <A NAME="nofile"></A> <B>파일을 사이에 개없고 <code>ObjectOutputStream</code> 로부터 <code>ObjectInputStream</code> 를 작성하려면 , 어떻게 하면 좋을까요. </B></H3>
+
+<code>ObjectOutputStream</code> 와 <code>ObjectInputStream</code> 는, 어떤 스트림 객체에 대해서도 기능합니다. <code>ByteArrayOutputStream</code> 를 사용해, 배열을 취득해 <code>ByteArrayInputStream</code> 에 삽입할 수도 있습니다. (와)과 같이 piped stream 클래스도 사용할 수 있습니다. <code>OutputStream</code> 클래스와 <code>InputStream</code> 클래스를 상속하는 모든 <code>java.io</code> 클래스를 사용할 수 있습니다.
+
+
+<H3>8.  <A NAME="handle"></A> <B>객체를 작성하고 나서 <code>writeObject</code> 메소드를 사용해 넷상을 송신해,<code>readObject</code> 메소드를 사용해 수신합니다. 다음에, 객체의 필드의 값을 변경하고 나서 똑같이 송신하면(자),<code>readObject</code> 메소드로부터 반환되는 객체는 최초의 것과 같아, 필드의 새로운 값이 반영되어 있지 않은 것 같습니다. 이것은 올바른 동작인 것입니다인가. </B></H3>
+
+<code>ObjectOutputStream</code> 클래스는 직렬화한 각 객체를 추적해, 그 이후 그 객체가 스트림에 기입해질 때는, 핸들만을 보냅니다. 이것은, 이 클래스가 객체의 그래프를 취급하는 방법입니다. 대응하는 <code>ObjectInputStream</code> 는, 생성한 모든 객체와 핸들을 추적해, 한번 더 핸들이 참조되었을 때에, 같은 객체를 돌려줄 수 있도록(듯이) 합니다. 출력 스트림과 입력 스트림은, 어느쪽이나 개방될 때까지 이 상태를 유지합니다.
+
+<P>또,<code>ObjectOutputStream</code> 클래스는 <code>reset</code> 메소드를 구현하고 있습니다. 이 메소드를 사용하면(자) 객체를 송신했다고 하는 기록이 파기되므로, 객체를 한번 더 보내면(자) 카피가 작성됩니다.
+
+
+<H3>9.  <A NAME="serialthread"></A> <B>thread 객체의 직렬화를 지원할 예정은 있습니까. </B></H3>
+
+thread는 직렬화 가능하게 되지 않습니다. 현재의 구현으로, thread를 직렬화하고 나서 직렬화 해제하려고 하면(자), 새로운 네이티브 thread나 스택은 명시적으로 할당할 수 없습니다. 네이티브 구현없이 객체를 할당할 수 있었던 system resource가 될 뿐입니다. 이 객체는 기능하지 않고, 예측 불가능한 동작을 일으킵니다.
+
+<P>thread의 직렬화가 어려운 것은, thread는 가상 머신에 복잡하게 결부된 많은 상태를 가지고 있기 위해서(때문에), 다른 장소에 문맥을 재확립하는 것이 곤란 또는 불가능하기 때문에입니다. 예를 들어, VM 호출 스택을 보존하는 것 만으로는 불충분합니다. 그 이유는, 많은 네이티브 메소드가 C 의 프로시저를 호출해, 그 프로시저가 Java 플랫폼의 코드를 호출하고 있는 경우, Java 프로그램 언어의 구조와 C 의 포인터가 복잡하게 혼합한 것에 대처할 필요가 있기 때문입니다. 또, 스택을 직렬화하는 것은, 임의의 스택 변수로부터 액세스 가능한 모든 객체를 직렬화하는 것을 의미합니다.
+
+<P>같은 VM 내에서 thread가 재개되면(자), 그 thread는 많은 상태를 원의 thread와 공유합니다. 양쪽 모두의 thread가 동시에 실행되면(자), 정확히 2 개의 C 의 thread가 스택을 공유하려고 했을 경우와 같이, 예측 불가능한 동작을 일으킵니다. 또, 다른 VM 로 직렬화 해제했을 경우의 결과는 예상할 수 없습니다.
+
+
+<H3>10.  <A NAME="diff"></A> <B>diff(serial(x), serial(y))의 계산은 할 수 있습니까. </B></H3>
+
+diff 는, 같은 객체가 직렬화 될 때마다 같은 스트림을 생성합니다. 각각의 객체를 직렬화하려면 , 새로운 <code>ObjectOutputStream</code> 를 작성할 필요가 있습니다.
+
+
+<H3>11.  <A NAME="zip"></A> <B>자신의 zip 및 unzip 메소드를 사용해, 직렬화 표현의 객체를 압축할 수 있습니까. </B></H3>
+
+<code>ObjectOutputStream</code> 는 <code>OutputStream</code> 를 생성합니다. zip 객체가 <code>OutputStream</code> 클래스를 상속하고 있으면, 압축해도 문제 없습니다.
+
+
+<H3>12.  <A NAME="compress"></A> <B>isempty(zip(serial(x)))등의 압축한 객체에 대해서, 메소드를 실행할 수 있습니까. </B></H3>
+
+객체의 encode의 문제에 의해, 임의의 객체에 대해서는 실행할 수 없습니다. 특정의 객체 (String 등)에서는, 결과의 비트 스트림을 비교할 수 있습니다. 이 경우는 encode 방법은 안정되어 있어 같은 객체는 매회 같은 비트 구성에 encode 됩니다.
+
+
+<H3>13.  <A NAME="font"></A> <B>폰트나 화상의 객체를 직렬화해 다른 VM 로 재구축 하려고 하면(자), 어플리케이션이 떨어집니다. 왜입니까. </B></H3>
+
+삭제되었습니다. 현재 폰트는 직렬화 가능합니다만, 이미지는 직렬화할 수 없습니다.
+
+
+<H3>14.  <A NAME="tree"></A> <B>객체 트리를 직렬화하려면  어떻게 하면 좋을까요. </B></H3>
+
+
+<P>객체의 트리의 직렬화의 예를 나타냅니다.
+<pre>
+import java.io. *;
+
+class tree implements java.io.Serializable {
+    public tree left;
+    public tree right;
+    public int id;
+    public int level;
+
+    private static int count = 0;
+
+    public tree(int depth) {
+        id = count++;
+        level = depth;
+        if (depth > 0) {
+            left = new tree(depth-1);
+            right = new tree(depth-1);
+        }
+    }
+
+    public void print(int levels) {
+        for (int i = 0; i &lt; level; i++)
+            System.out.print("  ");
+        System.out.println("node " + id);
+
+        if (level &lt;= levels &amp;&amp; left ! = null)
+            left.print(levels);
+
+        if (level &lt;= levels &amp;&amp; right ! = null)
+            right.print(levels);
+    }
+
+
+    public static void main (String argv[]) {
+
+        try {
+            /* Create a file to write the serialized tree to.  */
+            FileOutputStream ostream = new FileOutputStream("tree.tmp");
+            /* Create the output stream */
+            ObjectOutputStream p = new ObjectOutputStream(ostream);
+
+            /* Create a tree with three levels.  */
+            tree base = new tree(3);
+
+            p.writeObject(base); // Write the tree to the stream.
+            p.flush();
+            ostream.close();    // close the file.
+            
+            /* Open the file and set to read objects from it.  */
+            FileInputStream istream = new FileInputStream("tree.tmp");
+            ObjectInputStream q = new ObjectInputStream(istream);
+            
+            /* Read a tree object, and all the subtrees */
+            tree new_tree = (tree) q.readObject();
+
+            new_tree.print(3);  // Print out the top 3 levels of the tree
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+</pre>
+
+
+<H3>15.  <A NAME="serialsuper"></A> <B>클래스 A 가 <code>Serializable</code> 를 구현하지 않고, 그 서브 클래스 B 가 <code>Serializable</code> 를 구현하고 있는 경우, 클래스 B 를 직렬화했을 때, 클래스 A 의 필드는 직렬화 됩니까. </B></H3>
+
+<code>Serializable</code> 객체의 필드만이 써내져 복원됩니다. 객체는, 클래스 A 가 인수의 없는 생성자 을 가지고 있는 경우에만 복원됩니다. 이 생성자 은 직렬화 가능하지 않은 슈퍼타입의 필드를 초기화합니다. 서브 클래스가 슈퍼 클래스 상태에 액세스 하는 경우는, 그 상태의 보존과 복원용으로 <code>writeObject</code> 와 <code>readObject</code> 를 구현할 수 있습니다.
+
+
+<HR>
+
+<P><FONT SIZE="-1">Java RMI 개발자의 메일링리스트: RMI-USERS
+
+<BR>구독신청 ( 「<code>subscribe rmi-users</code>」라고 적은 메일을 전송해 주세요):<A     HREF="mailto:listserv@javasoft.com">listserv@javasoft.com</A> 
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td>
+<p><font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</font></body>
+</html>

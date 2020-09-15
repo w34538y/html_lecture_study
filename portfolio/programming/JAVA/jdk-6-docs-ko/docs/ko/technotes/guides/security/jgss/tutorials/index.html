@@ -1,0 +1,189 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JAAS 및 Java GSS-API 튜토리얼의 소개 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+
+<a href="BasicClientServer.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>JAAS 및 Java GSS-API 튜토리얼의 소개</H1>
+</center>
+
+<br> <br>
+
+<p>이 페이지는, JAAS (Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Authentication and Authorization Service) 및 Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 의 다양한 사용 방법을 나타내는 일련의 튜토리얼에 링크하고 있습니다.
+
+<p> <b>JAAS</b> 는, 다음의 2 개의 목적으로 사용할 수 있습니다.
+
+<ul>
+
+<li>사용자의 「인증」. Java 코드를 실행중의 사용자를, 신뢰성이 높고, 시큐리티가 확보된 방법으로 확인합니다. <p>
+
+<li>사용자의 「승인」. 시큐리티 관련 조작의 실행에 필요한 액세스 제어권 (액세스권)의 보관 유지를 보증합니다.
+
+</ul>
+
+<p><b>Java GSS-API</b> 는, 통신 어플리케이션간의 「안전한 메시지 교환」에 사용됩니다. Java GSS-API 에는,<a href = "http://www.ietf.org/rfc/rfc2853.txt">RFC 2853</a>  으로 정의된 GSS-API (Generic Security Services Application Program Interface) 용의 Java 바인딩이 포함됩니다. GSS-API 는, 어플리케이션 프로그래머에 대해, Kerberos 를 포함한 기반이 되는 시큐리티 기구상에 배치된 시큐리티 서비스에의 통일된 액세스를 제공합니다.
+
+<p>주:JSSE 는, 시큐리티 보호된 통신에 사용 가능한 다른 API 입니다. 2 개의 API 의 차이점의 자세한 것은,<a href="JGSSvsJSSE.html">「Java GSS-API 및 JSSE 를 언제 사용할까」</a>를 참조해 주세요.
+
+<p>JAAS 와 Java GSS-API 의 튜토리얼이 양쪽 모두 제공되고 있는 이유는, JAAS 인증은, 일반적으로 Java GSS-API 를 사용한 안전한 통신전에 행해지기 (위해)때문에입니다. JAAS 및 Java GSS-API 는, 관련하고 있어, 자주 병용 됩니다. 다만, 어플리케이션으로부터, Java GSS-API 없음으로 JAAS 를 사용하는 일도, JAAS 없음으로 Java GSS-API 를 사용하는 일도 가능합니다. 게다가 JAAS 자체를 인증에만 사용하는 일도, 인증과 승인의 양쪽 모두에 사용할 수도 있습니다.
+
+<p>이하의 튜토리얼에서는, 상술의 시나리오 모든 실례를 나타냅니다.
+
+<ol>
+
+<li>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환 
+
+<p>Java GSS-API 를 사용해, 클라이언트 어플리케이션과 서버 어플리케이션간의 안전한 메시지 교환을 실시하는 방법을 나타냅니다.  <p>
+
+
+<li><a href="AcnOnly.html">「JAAS 인증」</a>  
+
+<p>JAAS 를 사용해, 어플리케이션으로부터 사용자의 인증을 실시하는 방법을 설명합니다.  <p>
+
+
+<li><a href="AcnAndAzn.html">「JAAS 승인」</a>  
+
+<p>JAAS 를 사용해, 사용자 베이스의 액세스 제어를 실행하는 방법을 설명합니다.  <p>
+
+
+<li><a href="LoginSample.html">JAAS Login 유틸리티의 사용</a>  
+
+<p>JAAS 를 사용해 사용자를 인증해, 그 사용자로 어플리케이션을 실행하는 유틸리티프로그램에 대해 설명합니다. 어플리케이션의 실행중에, 사용자 베이스의 적절한 액세스 제어를 합니다. 이 유틸리티는, 편의상, 기본적으로 JAAS 인증 및 JAAS 승인 튜토리얼로 설명한 조작을 사용자에 대신해 실행합니다. 이 때문에, JAAS 인증 및 승인을 직접 실행하는 방법을 알 필요가 없는 경우, 전의 튜토리얼을 스킵 해, 이 튜토리얼에 진행되어도 괜찮습니다.  <p>
+
+
+<li><a href="ClientServer.html">JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환</a>  
+
+<p>가장 종합적인 튜토리얼입니다. Login 유틸리티는, 서비스의 사용자를 인증해, 그 사용자로 서버 어플리케이션을 기동하기 위해서 사용합니다. Login 유틸리티는, 클라이언트의 사용자를 인증해, 그 사용자로 클라이언트 어플리케이션을 기동하는 경우에도 사용합니다. 마지막으로, 클라이언트 및 서버 어플리케이션은, 인증된 클라이언트 및 서비스의 사용자로, Java GSS-API 를 사용한 안전한 메시지 교환을 실시합니다.  <p>
+
+
+<li><a href="MoreToDo.html">Java GSS-API 및 JAAS 로 실행 가능한 다른 조작</a>  
+
+<p>전의 튜토리얼의 서버 어플리케이션으로 클라이언트 어플리케이션과의 통신 확립 후에 실행 가능한, 다른 조작에 대해 설명합니다.  
+
+</ol>
+
+
+
+
+<p>이 시리즈의 튜토리얼내의 어플리케이션은 모두, 인증 및 안전한 통신용의 기반이 되는 기술로서 Kerberos Version 5 를 사용합니다. 자세한 것은,<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요. 튜토리얼을 통해서, 「Kerberos」라고 하는 말은 Kerberos Version 5 를 가리킵니다.
+
+<br> <br>
+
+<H1>관련 문서</H1>
+
+<blockquote>
+
+<H3>API 스펙</H3>
+
+<ul>
+
+<LI><a href="../../../../../jre/api/security/jgss/spec/com/sun/security/jgss/package-summary.html">com.sun.security.jgss 패키지</a> 
+
+<LI><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/package-summary.html">com.sun.security.auth 패키지</a> 
+
+<LI><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/callback/package-summary.html">com.sun.security.auth.callback 패키지</a> 
+
+<LI><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/login/package-summary.html">com.sun.security.auth.login 패키지</a> 
+
+<LI><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/package-summary.html">com.sun.security.auth.module 패키지</a> 
+
+</ul>
+
+<H3>사용자 가이드</H3>
+
+<ul>
+
+<li><a href="../../jaas/JAASRefGuide.html">「Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 인증·승인 서비스 (JAAS) 레퍼런스 가이드」</a>  <p>
+
+</ul>
+
+<H3>문서</H3>
+
+<ul>
+
+<li><a href="../single-signon.html">Kerberos 를 사용한 Java 의 싱글 싸인온</a>  <p>
+
+<li><a href="http://java.sun.com/security/jaas/doc/acsac.html">JAAS white paper</a>  <p>
+
+</ul>
+
+<H3>튜토리얼</H3>
+
+<ul>
+
+<li><a href="http://java.sun.com/docs/books/tutorial/security/index.html">Java 시큐리티 튜토리얼</a>  <p>
+
+</ul>
+
+<H3>다른 Java 시큐리티 문서 </H3>
+
+<ul>
+
+<li><a href = "../../PolicyFiles.html">디폴트의 Policy 의 구현과 정책 파일의 구문</a>  <p>
+
+<li><a href = "../../permissions.html">「Java<sup><font size=-2>TM</font></sup> 2 SDK 에 있어서의 액세스권」</a>  <p>
+
+<li><a href="../../spec/security-spec.doc.html">Java 2 시큐리티 아키텍쳐(architecture)</a>  <p>
+
+</ul>
+
+<H3>참조 문서 </H3>
+
+<ul>
+
+<li><a href="http://www.ietf.org/rfc/rfc2853.txt">「Generic Security Service API Version 2:Java Bindings」</a>에는,Java GSS-API 에 통합하는 GSS-API 용 Java 바인딩에 관한 코멘트가 기재되어 있습니다.
+<p>
+
+</ul>
+
+</blockquote>
+
+
+<hr>
+
+<FONT SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright &#169;</A>  2001-2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><p></P>
+
+<p>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+
+<a href="BasicClientServer.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</body>
+
+</html>
+

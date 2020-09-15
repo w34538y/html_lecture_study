@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+<title>Java(TM) API for XML Web Services (JAX-WS) 2.0 - wsimport - xrath.com 에서 번역됨</title>
+  <meta name="CREATED" content="20050329;10375410" />
+  <meta name="CHANGED" content="20050401;8213207" />
+<link href="../../css/tools.css" rel="stylesheet" type="text/css" />
+</head>
+<body dir="ltr" lang="en-US">
+<h1> wsimport - JAX-WS 2.0 베타</h1>
+<h2><a name="wsimporttool" id="wsimporttool"></a> 형식</h2>
+<blockquote>
+<pre>wsimport [options] &lt;wsdl&gt;</pre>
+</blockquote>
+<h2>설명</h2>
+<p>  <code>wsimport</code> 툴은, 다음과 같은 JAX-WS 휴대용 아티팩트를 생성합니다.  </p>
+<ul>
+<li>서비스 엔드 포인트 인터페이스 (SEI)</li>
+<li>서비스</li>
+<li>wsdl:fault 로부터 맵 되는 예외 클래스 (존재하는 경우)</li>
+<li>응답 wsdl:message 로부터 파생하는 비동기 응답 Bean (존재하는 경우)
+  </li>
+<li>JAX-B 가 생성하는 값타입 (schema의 형태로부터 맵 된 Java 클래스)
+  </li>
+</ul>
+<p>이러한 아티팩트는, WSDL 문서, schema 문서, 및 엔드 포인트 구현과 함께 WAR 파일내에 패키지화해 배치할 수가 있습니다. <br />
+</p>
+<p>wsimport 툴을 기동하려면 , 커멘드행 스크립트 wsimport.sh (Unix) 또는 wsimport.bat (Windows)를 사용합니다. WSDL 를 임포트 및 컴파일하기 위한 <a  href="#Ant_task">Ant 태스크</a>도 존재하고 있습니다. 자세하게는 후술의 설명을 참조해 주세요. <br />
+</p>
+<h2>옵션</h2>
+<p>다음의 겉(표)에,<code>wsimport</code> 의 옵션을 나타냅니다. <code></code><code></code><code></code><br />
+</p>
+<p align="center">겉(표) 1-1 wsimport 의 옵션</p>
+<table border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <th>
+<p align="center">옵션</p>
+      </th>
+      <th>
+<p align="center">설명</p>
+      </th>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-d &lt;directory&gt;</code></p>
+      </td>
+      <td>
+<p align="left">생성되는 출력 파일을 포함하는 장소를 지정한다</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p><code>-b &lt;path&gt;</code></p>
+      </td>
+      <td>
+<p>외부의 JAX-WS 또는 JAXB 바인딩 파일을 지정합니다 (<code>&lt;file&gt;</code> 마다 <code>-b</code> 가 필요하다)</p>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">-catalog<br />
+      </td>
+<td style="vertical-align: top;">외부 엔티티 참조를 해결하기 위한 카탈로그 파일을 지정합니다. TR9401, XCatalog, OASIS XML Catalog 의 각 형식이 지원되고 있습니다. 자세한 것은,<a href="http://java.sun.com/webservices/docs/2.0/jaxws/catalog.html">「XML Entity and URI Resolvers」</a>문서를 읽으시는지,<span style="font-weight: bold;">wsimport_catalog</span> 샘플을 참조해 주세요.  </td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-extension</code></p>
+      </td>
+      <td>
+<p align="left">벤더 확장 (스펙으로 규정되어 있지 않은 기능)을 허가합니다. 확장을 사용하면(자), 어플리케이션의 이식성이 없어지거나 다른 구현과의 상호 운용을 실시할 수 없게 되는 가성이 있습니다</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p><code>-help</code></p>
+      </td>
+      <td>
+<p>헬프를 표시합니다</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-httpproxy:&lt;host&gt;:&lt;port&gt;</code></p>
+      </td>
+      <td>
+<p align="left">HTTP 프록시 서버-를 지정합니다 (디폴트의 포트는 8080)</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-keep</code></p>
+      </td>
+      <td>
+<p align="left">생성된 파일을 보관 유지합니다</p>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;"><code>-p</code></td>
+<td style="vertical-align: top;">이 커멘드행 옵션 경유로 타겟 패키지를 지정했을 경우, 그 지정 내용은, 패키지명에 대한 모든 WSDL/schema 바인딩 커스터마이즈나, 스펙으로 규정되고 있는 디폴트의 패키지명 알고리즘보다 우선됩니다</td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-s &lt;directory&gt;</code></p>
+      </td>
+      <td>
+<p align="left">생성되는 원시 파일을 포함하는 장소를 지정한다</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-verbose</code></p>
+      </td>
+      <td>
+<p align="left">컴파일러가 실행하고 있는 처리에 관한 메세지를 출력합니다</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+<p align="left"><code>-version</code></p>
+      </td>
+      <td>
+<p align="left">버젼 정보를 출력합니다</p>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;"><code>-wsdllocation &lt;location&gt;</code><br />
+      </td>
+<td style="vertical-align: top;"><code>@WebService.wsdlLocation</code> 와 <code>@WebServiceClient.wsdlLocation</code> 의 값<br />
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><code>-b</code> 옵션을 사용해, 복수의 JAX-WS 및 JAXB 바인딩 파일을 지정할 수 있습니다. 이러한 파일을 사용해, 패키지명이나 Bean 명 등, 다양한 커스터마이즈가 가능합니다. JAX-WS 및 JAXB 바인딩 파일의 상세한 것에 대하여는,<a href="http://java.sun.com/webservices/docs/2.0/jaxws/customizations.html">커스터마이즈 메뉴얼</a>을 참조해 주세요. <br />
+</p>
+<h3><a name="Ant_task"></a> Ant 태스크<br />
+</h3>
+<p><code>wsimport</code> 툴에는, 이 툴용의 Ant 태스크가 부속되어 있습니다. 이 Ant 태스크가 지원하는 속성이나 요소를, 다음에 나타냅니다.  <br />
+</p>
+<pre>   &lt;wsimport           <br />      wsdl="..."      <br />      destdir="directory for generated class files"<br />      sourcedestdir="directory for generated source files"<br />      keep="true|false"<br />      extension="true|false"<br />      verbose="true|false"<br />      version="true|false"<br />      wsdlLocation="..."<br />      catalog="catalog file"<br />      package="package name"<br />      &lt;binding dir="..." includes="..." /&gt;<br />  &lt;/wsimport&gt;</pre>
+<table border="0" cellpadding="2" cellspacing="2" width="90%">
+  <tbody>
+    <tr valign="top">
+      <td bgcolor="#ffffbd" width="15%">
+<p><b>속성</b></p>
+      </td>
+      <td bgcolor="#ffffbd" width="70%">
+<p><b>설명</b></p>
+      </td>
+      <td bgcolor="#ffffbd" width="15%">
+<p><b>커멘드행</b></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>wsdl</code></p>
+      </td>
+      <td width="70%">
+<p>WSDL file</p>
+      </td>
+      <td width="15%">
+<p>WSDL</p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>destdir</code></p>
+      </td>
+      <td width="70%">
+<p>생성되는 출력 클래스를 포함하는 장소를 지정합니다</p>
+      </td>
+      <td width="15%">
+<p><code>-d</code></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<pre>sourcedestdir</pre>
+      </td>
+      <td width="70%">
+<p>생성된 원시 파일의 포함 장소를 지정합니다. 이 옵션의 지정시에는 keep 도 온이 됩니다. <br />
+      </p>
+      </td>
+      <td width="15%">
+<p><code>-s</code></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>keep</code></p>
+      </td>
+      <td width="70%">
+<p>생성된 파일을 보관 유지합니다. sourcedestdir 옵션지정시에 온이 됩니다<br />
+      </p>
+      </td>
+      <td width="15%">
+<p><code>-keep</code></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>verbose</code></p>
+      </td>
+      <td width="70%">
+<p>컴파일러가 실행하고 있는 처리에 관한 메세지를 출력합니다</p>
+      </td>
+      <td width="15%">
+<p><code>-verbose</code></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>binding</code></p>
+      </td>
+      <td width="70%">
+<p>외부의 JAX-WS 또는 JAXB 바인딩 파일을 지정합니다</p>
+      </td>
+      <td width="15%">
+<p><code>-b</code></p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+<p><code>extension<br /></code></p>
+      </td>
+      <td width="70%">
+<p>벤더 확장 (스펙으로 규정되어 있지 않은 기능)을 허가합니다. 확장을 사용하면(자), 어플리케이션의 이식성이 없어지거나 다른 구현과의 상호 운용을 실시할 수 없게 되는 가성이 있습니다<br />
+      </p>
+      </td>
+      <td width="15%">
+<p><code>-extension</code></p>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;"><code>wsdllocation</code><br />
+      </td>
+<td style="vertical-align: top;">이 옵션 경유로 건네받은 WSDL 의 URI 는, 생성된 SEI 및 서비스 인터페이스상의 <code>@WebService.wsdlLocation</code> 및 <code>@WebServiceClient.wsdlLocation</code> 주석 요소의 값을 설정하기 위해서 사용됩니다. <br />
+      </td>
+<td style="vertical-align: top;"><code>-wsdllocation</code><br />
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;"><code>catalog</code><br />
+      </td>
+<td style="vertical-align: top;">외부 엔티티 참조를 해결하기 위한 카탈로그 파일을 지정합니다. TR9401, XCatalog, OASIS XML Catalog 의 각 형식이 지원되고 있습니다. 게다가 Ant xmlcatalog 타입을 사용해 엔티티를 해결할 수도 있습니다. wsimport_catalog 샘플을 참조해 주세요. <br />
+      </td>
+<td style="vertical-align: top;"><code>-catalog</code><br />
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;"><code>package</code><br />
+      </td>
+<td style="vertical-align: top;">타겟 패키지를 지정합니다</td>
+<td style="vertical-align: top;"><code>-p</code><br />
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><code></code><code>binding</code> 속성은,<a href="http://ant.apache.org/manual/using.html#path">path-like structure</a>  이며, 각각 상자가 된 <code></code> <code>&lt;binding&gt;</code> 요소를 사용해 설정할 수도 있습니다. 이 태스크를 사용하려면 , 다음의 <code>&lt;taskdef&gt;</code> 요소를 프로젝트에 추가해 둘 필요가 있습니다. </p>
+<pre>  &lt;taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport"&gt;<br />      &lt;classpath path="jaxws.classpath"/&gt;<br />  &lt;/taskdef&gt;</pre>
+<p>여기서,<code>jaxws.classpath</code> 는, JAX\-WS 툴이 필요로 하는 클래스의 리스트를 포함한, 빌드 환경내의 다른 장소에 정의된 <a  href="http://ant.apache.org/manual/using.html#path">path-like structure</a>  에의 참조입니다. </p>
+<h2>례</h2>
+<pre>  &lt;wsimport<br />      <code>destdir</code>="${build.classes.home}"<br />      debug="true"<br />      wsdl="AddNumbers.wsdl"<br />      binding="custom.xml"/&gt;
+</pre>
+<p>위의 예에서는,<code>AddNumbers.wsdl</code> 의 클라이언트측 아티팩트를 생성해,<code>custom.xml</code> 커스터마이즈 파일에 근거해 <code>${build.classes.home}</code> 디렉토리내에 <code>. class</code> 파일을 포함하고 있습니다. 사용되는 클래스 패스는 <code>xyz.jar</code> 이며, 디버그 정보가 온 상태로 컴파일이 실행됩니다. </p>
+<pre>  &lt;wsimport<br />      keep="true"<br />      sourcedestdir="${source.dir}"<br />      <code>destdir</code>="${build.classes.home}"<br />      wsdl="AddNumbers.wsdl"&gt;<br />      &lt;binding dir="${basedir}/etc" includes="custom.xml"/&gt;<br />  &lt;/wsimport&gt;
+</pre>
+<p>위의 예에서는,<code>AddNumbers.wsdl</code> 의 휴대용 아티팩트를 생성해,<code>${source.dir}</code> 디렉토리내에 <code>. java</code> 파일을 포함해,<code>${build.classes.home}</code> 디렉토리내에 <code>. class</code> 파일을 포함하고 있습니다.  </p>
+<h2>설명</h2>
+<p>변경 또는 삭제된 wsimport 의 Ant 속성의 개요</p>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">base</span> 를 <span style="font-weight: bold;">destdir</span>로 옮겨놓을 수 있었습니다<br /> <span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;"><br /></span>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">sourceBase</span> 를 <span style="font-weight: bold;">sourcedestdir</span> 로 옮겨놓을 수 있었습니다<br /> <span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;"><span style="font-weight: bold;"><br /></span></span>
+<div style="margin-left: 40px;"><span style="font-weight: bold;"><span  style="font-weight: bold;">wsdlFile </span></span> 를 <span  style="font-weight: bold;">wsdl 로 옮겨놓을 수 있었던<br /><br /> httpProxy </span> 가 삭제되었습니다. 대신에, Ant 의 setproxy 태스크를 사용해 프록시 구성을 실시해 주세요. <br /><br /><span style="font-weight: bold;">version </span> 가 삭제되었습니다<br /><span style="font-weight: bold;"></span></div>
+<hr />
+<table border="0" width="100%" summary="layout">
+        <tbody>
+          <tr valign="top">
+            <td>
+<p><a href=               "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+            </td>
+
+            <td align="right">
+	    <img src="../../../images/sunlogo64x30.gif" alt="Sun"/><br /> <i> Java Software </i></td>
+          </tr>
+        </tbody>
+</table>
+</body>
+
+</html>

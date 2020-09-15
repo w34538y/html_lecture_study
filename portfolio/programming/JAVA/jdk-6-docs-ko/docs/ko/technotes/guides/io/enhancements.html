@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java I/O 의 확장 기능 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+  </head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<h1 align=center>Java I/O 의 확장 기능 </h1>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<UL>
+<LI><a href="#6">Java SE 6 의 확장 기능</a> 
+<LI><a href="#5.0">J2SE 5.0 의 확장 기능 </a> 
+<LI><a href="#1.4">J2SDK 1.4 의 확장 기능 </a> 
+<LI><a href="#pre">이전의 확장 기능</a> 
+</UL>
+<hr>
+
+<h2><a name="6">Java SE 6 의 확장 기능</a> </h2>
+
+<h3>java.io</h3>
+
+<p> 다음의 새로운 클래스가 1 개 추가되었습니다.
+
+<ul>
+<li> <a href="../../../api/java/io/Console.html"><code>Console</code></a>  - 문자 베이스의 콘솔 디바이스에 액세스 하는 메소드가 포함됩니다. <code>readPassword()</code> 메소드는, 메아리를 무효로 하는 것으로부터, 패스워드와 같은 기밀 데이터의 취득에 적절하고 있습니다. <a href="../../../api/java/lang/System.html#console()"><code>System.console()</code></a>  메소드는, Java 가상 머신과 관계가 있는 일의의 콘솔을 돌려줍니다.  
+</ul>
+
+<p> 다음의 메소드가 <a href="../../../api/java/io/File.html"><code>File</code></a>  에 추가되었습니다.
+
+<ul>
+<li> 디스크 사용 정보를 취득하기 위한 메소드：
+     <ul>
+<li> <a href="../../../api/java/io/File.html#getTotalSpace()"><code>getTotalSpace()</code></a>  는 파티션의 용량을 바이트수로 돌려줍니다
+<li> <a href="../../../api/java/io/File.html#getFreeSpace()"><code>getFreeSpace()</code></a>  는 파티션의 빈 용량을 바이트수로 돌려줍니다
+<li> <a href="../../../api/java/io/File.html#getUsableSpace()"><code>getUsableSpace()</code></a>  는, 파티션으로 사용 가능한 바이트수를 돌려주는 것 외에 기입 권한과 다른  operating system의 제한에 대해 체크합니다
+
+     </ul>
+
+<li> 파일에의 액세스권한을 설정 또는 조회하기 위한 메소드：
+     <ul>
+<li> <a href="../../../api/java/io/File.html#setWritable(boolean, boolean)"><code>setWritable(boolean writable, boolean ownerOnly)</code></a>  와 <a href="../../../api/java/io/File.html#setWritable(boolean)"><code>setWritable(boolean writable)</code></a>  는 소유자 또는 전원의 기입 권한을 설정합니다
+<li> <a href="../../../api/java/io/File.html#setReadable(boolean, boolean)"><code>setReadable(boolean readable, boolean ownerOnly)</code></a>  와 <a href="../../../api/java/io/File.html#setReadable(boolean)"><code>setReadable(boolean readable)</code></a>  는 소유자 또는 전원의 읽기 권한을 설정합니다
+<li> <a href="../../../api/java/io/File.html#setExecutable(boolean, boolean)"><code>setExecutable(boolean executable, boolean ownerOnly)</code></a>  와 <a href="../../../api/java/io/File.html#setExecutable(boolean)"><code>setExecutable(boolean executable)</code></a>  는 소유자 또는 전원의 실행 권한한을 설정합니다
+<li> <a href="../../../api/java/io/File.html#canExecute()"><code>canExecute()</code></a>  는 실행 권한한의 값을 테스트합니다
+     </ul>
+</ul>
+
+<p> 다음의 클래스에 생성자 이 추가되었습니다.
+
+<ul>
+<li> <a href="../../../api/java/io/IOException.html"><code>IOException</code></a>  는, 새로운 생성자 <a href="../../../api/java/io/IOException.html#IOException(java.lang.String, java.lang.Throwable)"><code>IOException(String, Throwable)</code></a>  와 <a href="../../../api/java/io/IOException.html#IOException(java.lang.Throwable)"><code>IOException(Throwable)</code></a>  의 추가에 의해, 예외 체인을 지원합니다.
+</ul>
+
+<p> 다음의 메소드의 동작이 변경되었습니다.
+
+<ul> 
+<li> CON, NUL, AUX, LPT 등의 예약된 디바이스명에는 반드시 <code>false</code> 를 돌려주도록(듯이),<a href="../../../api/java/io/File.html#isFile()"><code>File.isFile()</code></a>  Windows 구현이 변경되었습니다.
+이전의 반환값은 <code>true</code> 로, 그것이 Unix 로 사용하는 디바이스의 동작과 정합하고 있지 않는 것으로부터, 대상 사용자는 이것을 버그로 간주하고 있었습니다. </ul>
+
+<h3>java.nio</h3>
+
+<ul>
+
+<li>Linux epoll 이벤트 통지 기능을 베이스로 하는 <a href="../../../api/java/nio/channels/spi/SelectorProvider.html"><code>java.nio.channels.SelectorProvider</code></a>  구현이 새롭게 추가되었습니다. 이 epoll 기능은 Linux 2.6 이후의 커넬로 사용할 수 있습니다. <a href="../../../api/java/nio/channels/Selector.html"><code>Selector</code></a>  에 다수의 <a href="../../../api/java/nio/channels/SelectableChannel.html"><code>SelectableChannel</code></a>  가 등록되어 있는 경우, 새로운 epoll 베이스의 <code>SelectorProvider</code> 구현은, 종래의 poll 베이스의 <code>SelectorProvider</code> 구현보다 스케이라불입니다. 새로운 <code>SelectorProvider</code> 구현은, 2.6 커넬이 검출되면(자), 디폴트로 사용됩니다. poll 베이스의 <code>SelectorProvider</code> 는, 2.6 보다 전의 커넬이 검출되면(자) 사용됩니다.
+
+<li> 시스템 프로퍼티 <code>sun.nio.ch.disableSystemWideOverlappingFileLockCheck</code> 는,<code>FileChannel</code> 외 인스턴스에 의해 영역이 락 될까 <a href="../../../api/java/nio/channels/FileChannel.html#lock()"><code>java.nio.channels.FileChannel.lock()</code></a>  가 체크할지 어떨지를 제어합니다. 이 시스템 프로퍼티이 <code>true</code> 로 설정되어 있지 않은 한, 어플리케이션이<code>FileChannel</code>의 다른 인스턴스에 의해 락 된 영역과 중복 하는 영역을 잠그려고 하면(자),<code>FileChannel.lock()</code> 은 <a href="../../../api/java/nio/channels/OverlappingFileLockException.html"><code>OverlappingFileLockException</code></a>  를 throw 합니다. 시스템 프로퍼티이 존재하는 것은, JVM 전체의 중복 파일 락 체크를 구현하고 있지 않는 이전의 릴리스와의 호환성을 제공하기 (위해)때문에입니다.
+
+</ul>
+
+<h2><a name="5.0">J2SE 5.0 의 확장 기능 </a> </h2>
+
+<h3>java.nio</h3>
+
+<ul>
+<li> 클래스 <a href="../../../api/javax/net/ssl/SSLEngine.html"><code>javax.net.ssl.SSLEngine</code></a>  가 추가되었습니다. J2SDK v1. 4.0 에서의 기존의 안전한 통신 인프라스트럭쳐(infrastructure)인 <a href="../../../api/javax/net/ssl/SSLSocket.html"><code>javax.net.ssl.SSLSocket</code></a>  는, java.net.Socket. 의 I/O 모델을 베이스로 하고 있습니다.
+<code>SSLEngine</code> 클래스는 I/O 모델을 무시하고 있기 (위해)때문에, 개발자는 대체의 I/O 를 사용해 통신 경로를 보호할 수가 있습니다. <code>SSLEngine</code> 는 New I/O API 와 조합해, 안전한 블록 또는 비블록 <code>SocketChannel</code> 등의 구현을 작성할 수 있습니다. 상세한 것에 대하여는,<a href="../security/jsse/JSSERefGuide.html">「JSSE 레퍼런스 가이드」</a>를 참조해 주세요. </ul>
+
+<h2><a name="1.4">Java 2 SDK, v1. 4 의 확장 기능</a> </h2>
+
+<h3>java.io</h3>
+
+<ul>
+<li> <a href="../../../api/java/io/FileInputStream.html"><code>FileInputStream</code></a>  및 <a href="../../../api/java/io/FileOutputStream.html"><code>FileOutputStream</code></a>  클래스에서는, 기본이 되는 <code>FileChannel</code> 객체를 돌려주는 <code>getChannel</code> 메소드가 추가되어<code>close</code> 메소드는 기본이 되는 채널을 클로즈 하도록(듯이) 개정되었다
+
+<li> 같이<a href="../../../api/java/io/RandomAccessFile.html"><code>RandomAccessFile</code></a>  클래스에서는,<code>getChannel</code> 메소드가 추가되어<code>close</code> 메소드는 기본이 되는 채널을 클로즈 하도록(듯이) 개정되었다. <code>RandomAccessFile</code> 생성자 이, 모드 문자<tt>「s」</tt>와<tt>「d」</tt>를 지원하게 되어, 파일을 열 때, 동기 기입해 또는 동기 데이터 기입을 지정할 수 있게 되었다
+
+<li> <a href="../../../api/java/io/InputStreamReader.html"><code>InputStreamReader</code></a>  및 <a href="../../../api/java/io/OutputStreamWriter.html"><code>OutputStreamWriter</code></a>  클래스에서는, 스트림과 <code>Charset</code> 객체를 인수에 있는 생성자 이 추가되어<code>getEncoding</code> 메소드가, 사용되고 있는 인코딩의 전통명을 돌려주도록(듯이) 개정된 기존의 <code>CharsetDecoder</code> 객체를 취하는<code>InputStreamReader</code> 의 생성자 과 기존의 <code>CharsetEncoder</code> 객체를 취하는 <code>OutputStreamWriter</code> 의 생성자 이 추가되었다.
+</ul>
+
+<h3>java.nio</h3>
+
+<ul>
+<li> java.io 패키지의 I/O 기능을 추가하기 위해(때문에), nio 패키지가 추가되었습니다.
+<li> 다이렉트 버퍼를 지원하기 위해서, 새로운 3 개의 함수가 JNI (Java Native Interface)에 추가되었습니다. 자세한 것은,<a      href="../jni/jni-14.html">「v1. 4 의 JNI 확장 기능」</a>을 참조해 주세요.
+</ul>
+
+<a name="pre"></a> <h2>이전의 확장 기능</h2>
+
+<ul>
+<li> <a href="io-maj.html">「java.io.File 의 기능」</a>  에서는,<code>java.io.File</code> 클래스의 변경점에 대해 설명합니다.
+<li> <a href="io-min.html">「다른 변경점」</a>  에서는,<code>java.io</code> 패키지의 변경점에 대해 설명합니다.
+<li> <a href="io.html">「문자 스트림」</a>은, 문자 스트림을 지원하는 java.io 클래스 패키지의 초기의 변경점에 대해 설명합니다.  
+</ul>
+
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT> <br>
+
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+</body>
+</html>

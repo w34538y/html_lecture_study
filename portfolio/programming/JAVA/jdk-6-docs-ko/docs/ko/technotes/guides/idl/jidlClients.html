@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL:클라이언트의 개발 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: vlc, 6/20/97 --> <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER>클라이언트의 개발</H1>
+<P>이 문서는, J2SE<SUP><FONT SIZE="-2">TM</FONT></SUP> 의 이번 릴리스에서는 갱신되고 있지 않습니다.
+  
+<HR>
+
+<P>갱신되고 있는 경우, 여기에는 이하의 토픽이 포함되어 있습니다.
+<UL>
+<LI><A href="#orbsandinvocations">ORB 라고 불러 방편</A> 
+<LI><A href="#staticinvoke">정적인 호출</A> 
+<LI><A href="#DynamicInvocation">동적인 호출</A>  <!--<LI><A href="#torque">Using Portable Stubs</A>  <LI><A href="#otherorbs">Initializing Applets</A> -->
+</UL>
+
+
+
+<!--*******ORBS AND INVOCATIONS********-->
+
+<A name="orbsandinvocations"></A> 
+<H2>ORB 라고 불러 방편</H2>
+
+<P>클라이언트가 CORBA 객체의 오퍼레이션을 호출하려면 , 클라이언트와 서버 (객체의 구현)의 양쪽 모두가 ORB (Object Request Broker)라고 하는 CORBA 소프트웨어 컴퍼넌트를 사용할 필요가 있습니다. ORB 는, 클라이언트와 서버로 다른 위치, 플랫폼, 및 프로그램 언어의 차이를 묻는 책임을 다하는 공통의 기준입니다. ORB 는, 네트워크 경유로 서로 컨택트를 취하는 것이 가능해, 객체의 참조 (CORBA 객체 핸들)를 작성 및 해석할 수가 있습니다. 또, 파라미터를 IIOP 가 사용하는 형식에 정렬화하거나 IIOP 가 사용하는 형식으로부터 다른 형식에 정렬화할 수도 있습니다. 여기에서는 설명을 생략 합니다만, ORB 는, 클라이언트/서버 통신 이외의 서비스도 제공합니다. </P>
+
+<P>CORBA 객체의 오퍼레이션을 호출하려면 , 다음의 2 방법의 방법이 있습니다.  </P>
+
+<UL>
+<LI><I><A HREF="#staticinvoke">정적인 호출</A> </I>. 이것은, 가장 빈번하게 사용되어 다시 또 와도 종래의 Java 프로그램을 닮아 있는 호출 방법으로, 컴파일러에 의해 형태 체크를 합니다. 다만, 호출한 클라이언트의 컴파일시에 인터페이스 정의가 존재하는 객체에만 사용할 수 있습니다.  <P>
+   
+<LI><A HREF="#DynamicInvocation">동적인 호출</A> . 이것은, 클라이언트가 실행시에 발견한 객체를 호출할 수가 있기 (위해)때문에, 보다 유연성이 있습니다. 다만, 동적인 호출에서는, 컴파일시에 형태 체크를 실시할 수 없습니다. 실행시에 파라미터의 형태 체크를 실시하는 것은 가능합니다만, 그것을 실행하기 위해서는, CORBA 인터페이스 리포지터리(repository)가 필요하게 됩니다. 이 리포지터리(repository)는, 현행의 Java&nbsp;IDL 에서는 제공하고 있습니다.  
+</UL>
+
+
+<!--*******STATIC INVOCATION********-->
+
+<A name="staticinvoke">
+<H2>정적인 호출</H2></A> 
+
+<P>CORBA 객체로 정적인 호출을 실시하는 경우, Java 클라이언트에는, 오퍼레이션을 실행하는 서번트에게로의 객체 참조가 필요하게 됩니다. 객체 참조에는, 다음의 2 개의 중요한 기능이 있습니다. </P>
+
+<UL>
+<LI>서번트의 위치가 어디서 있어도, 서번트를 일의에 식별한다<P>
+   
+<LI>클라이언트 Stub 인터페이스를 구현해, 서번트 객체의 로컬 프록시에의 참조를 작성한다
+</UL>
+
+<p></P>클라이언트는 객체 참조를 작성합니다만, 일반적으로, 팩토리나<A href="jidlNaming.html">네이밍 </a>문맥등의 다른 객체로부터 가져옵니다.
+
+<P>OMG IDL 는, CORBA 객체의 인터페이스를 정의하는 언어입니다. <TT>idlj</TT> 컴파일러는, OMG IDL 모듈 마다 Java 패키지를 생성합니다. OMG IDL 모듈로 정의된 각 인터페이스 <CODE>Foo</CODE> 에 대해서 생성된 패키지에는, 클라이언트 프로그래머에게 있어 유용한 이하의 항목이 포함되어 있습니다. </P>
+
+<UL>
+<LI>Java <em>시그니챠</em>인터페이스 <CODE>Foo</CODE>. <TT>org.omg.portable.IDLEntity</TT>,<TT>org.omg.CORBA.Object</TT>, 및 오퍼레이션 인터페이스를 확장한 것입니다. 시그니챠인타페스는, 지정한 형태의 인터페이스를 다른 인터페이스로 사용하는 경우에 메소드 선언의 시그니챠형으로서 사용합니다. 클라이언트의 관점으로부터 말하면(자), CORBA <CODE>Foo</CODE> 객체의 객체 참조는, 이 인터페이스를 구현합니다. <P>
+   
+<P>주:Stub는 <CODE>Foo</CODE> 인터페이스를 구현합니다. 여기서 각 메소드의 코드를 생성해 인수를 정렬화해 메소드를 호출해, 인수의 정렬화를 해제합니다. <P>
+
+<LI>Java <em>오퍼레이션</em>인터페이스 <CODE>FooOperations</CODE>. 서버측의 매핑으로 사용되어 같은 장소에 있는 클라이언트와 서버에 최적화된 호출을 제공하는 기구로서 사용됩니다. 서버의 개발자는, 오퍼레이션 인터페이스로 지시받은 메소드에 대해서 구현을 제공합니다.
+<P>주:서버의 개발자는, 일반적으로,<CODE>FooPOA</CODE> 를 확장해, 오퍼레이션 인터페이스로 제공된 메소드에 대해서 구현을 제공합니다.
+<P>
+   
+<LI>Java 의 <CODE>FooHelper</CODE> 클래스. 이 클래스는, 보조 메소드, 특히 Java 의 캐스트에게 대응하는 CORBA 의 <CODE>narrow()</CODE> 를 정의합니다. <P>
+   
+<LI>Java 의 <TT>FooHolder</TT> 클래스. 공공적인 <TT>Foo</TT> 의 멤버를 보관 유지합니다. 홀더는,<TT>out</TT> 또는 <TT>inout</TT> 를 인수로 하는 CORBA 의 오퍼레이션에 필요합니다. 이 인수는, CORBA 의 <TT>in</TT> 인수와 달리, Java 의 값인도에 의한 시멘틱스에는 직접 맵 되지 않습니다.
+</UL>
+
+
+
+<!--*******DYNAMIC INVOCATION********-->
+
+<A NAME="DynamicInvocation">
+<H2>동적인 호출</H2></A> 
+
+<P>CORBA 의 동적 호출은 「request<I></I>」라고 불리는 객체를 사용해, 호출해에 관한 모든 것을 보관 유지합니다. 그 중에는, 객체 참조, 오퍼레이션명, 그 파라미터, 및 결과의 영역이 포함됩니다. 클라이언트는, 오퍼레이션을 기술하는 request 객체를 구축해, 그 <CODE>invoke</CODE> 메소드를 호출합니다. 이 메소드는 Stub와 같은 방법으로 요구를 발송 합니다. invoke 메소드가 돌려주어지면(자), 그 결과는 request 객체로 이용할 수 있게 됩니다. </P>
+
+<P>동적인 호출의 열쇠가 되는 것은, 자기 기술형 데이터를 보관 유지하는 요구 기능입니다. 이 기능에 의해, request 객체는, 파라미터에 관계없이, 임의의 오퍼레이션의 임의의 호출을 대리 실행할 수 있습니다. 자기 기술형 데이터의 각 요소는, OMG IDL 에서는 <CODE>Any</CODE> 라고 하는 특별한 형태를 가지고 있습니다. <CODE>Any</CODE> 는, 타입 코드 (그 값은 OMG IDL 에 의해 정의되고 있다)와 값으로 구성되어 타입 코드에는 값의 형태를 지정합니다. </P>
+
+
+
+<P><HR>
+<CENTER><P>
+클라이언트 | <A href="jidlServers.html">서버</A>  | <A  href="jidlExceptions.html">예외</A>  | <A  href="jidlInitialization.html">초기화</A>  | <A  href="jidlNaming.html">네임 서비스</A>  
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html"><IMAGE  SRC="images/1top_lt.gif"><BR>홈</A> </TD>
+<TD ALIGN=CENTER><A href="fund.html"><IMAGE  SRC="images/2fundamentals_lt.gif"><BR>개념</A> </TD>  
+<TD ALIGN=CENTER><A href="program.html"><IMAGE  SRC="images/3programming_lt.gif"><BR>프로그래밍</A> </TD>  
+<TD ALIGN=CENTER><A href="reference.html"><IMAGE  SRC="images/4ref_lt.gif"><BR>레퍼런스</A> </TD>  
+<TD ALIGN=CENTER><A href="examples.html"><IMAGE  SRC="images/4ex_lt.gif"><BR>튜토리얼</A> 
+</TD>
+</TR></TABLE>
+
+<HR><FONT SIZE="-2"><A HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2">1996-2004 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA. 94043-1100 USA., All rights reserved. </FONT><p></P>
+</CENTER>
+
+
+</h2></i></BODY>
+</HTML>

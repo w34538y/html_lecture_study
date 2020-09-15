@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>J2SDK 1.4 에서의 Collections Framework 에 대한 변경의 개요 - xrath.com 에서 번역됨</title>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH=60>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+<TD>
+<center>
+<h1>Collections Framework 의 확장 기능</h1>
+</center>
+</TD>
+</TR>
+</TABLE>
+<!-- Body text begins here --> 이 페이지에서는, Java<sup><font size="-2">TM</font></sup>&nbsp; 2 SDK 버젼 1.4 의 Collections Framework 의 확장 기능에 대해 설명합니다.
+
+<ul>
+<li><tt>Collections</tt> 유틸리티 클래스에, 다음과 같은 새로운 메소드가 추가되었습니다.
+
+<ul>
+<li><tt><a href="../../../api/java/util/Collections.html#rotate(java.util.List,%20int)">rotate(List list, int distance)</a> </tt> - 리스트에 있는 모든 요소를, 지정한 거리만 회전 깬다. 이 조작은, GUI 의 계산에서는 일반적입니다. 사브리 파업에 이 조작을 적용하면(자), 겉(표)의 1 개 또는 복수의 열이동을 효과적으로 실시할 수가 있습니다. 이 조작은, 수학이나 과학의 계산에서도 넓게 이용되고 있습니다.
+
+<p><li><tt><a href="../../../api/java/util/Collections.html#replaceAll(java.util.List,%20T,%20T)">replaceAll(List list, Object oldVal, Object newVal)</a> </tt> - 지정한 값을 모두 다른 값에 옮겨놓습니다. 이것은 본래, 편리한 메소드입니다. 프로그램은 어렵지는 않습니다가, 매우 폭넓게 필요하게 되고 있습니다.
+
+<p><li><tt><a href="../../../api/java/util/Collections.html#indexOfSubList(java.util.List,%20java.util.List)">indexOfSubList(List source, List target)</a> </tt> - <tt>target</tt> 와 동일한 <tt>source</tt> 의 최초의 사브리 파업의 인덱스를 돌려줍니다. 일반적으로, 텍스트 처리를 포함한 많은 영역에서 사용됩니다.
+<p><li><tt><a href="../../../api/java/util/Collections.html#lastIndexOfSubList(java.util.List,%20java.util.List)"> lastIndexOfSubList(List source, List target)</a> </tt> - <tt>target</tt> 와 동일한 <tt>source</tt> 의 마지막 사브리 파업의 인덱스를 돌려줍니다. 일반적으로, 텍스트 처리를 포함한 많은 영역에서 사용됩니다.
+
+<p><li><tt><a href="../../../api/java/util/Collections.html#swap(java.util.List,%20int,%20int)">swap(List list, int i, int j)</a> </tt> - 지정한 리스트내의 지정한 위치에 있는 요소를 스왑 합니다. 이 구현은 네이티브인 구현보다 고속으로  가, 본래는 편리한 메소드입니다.
+
+<p><li><tt><a href="../../../api/java/util/Collections.html#list(java.util.Enumeration)">list(Enumeration e)</a> </tt> - 지정한 열거에 의해 반환된 요소를 포함하는 <tt>ArrayList</tt> 를 돌려줍니다. 이 편리한 메소드에 의해, 열거를 돌려주는 종래의 API 와 컬렉션을 필요로 하는 새로운 API 와의 상호 운용이 가능하게 됩니다.   </ul>
+
+<p><li>새로운 <tt><a href="../../../api/java/util/RandomAccess.html">RandomAccess</a> </tt> 인터페이스는,<tt>List</tt> 의 구현이 고속 랜덤 억세스 (일반적으로은 일정시간)를 지원하고 있는 것을 나타내기 위한 마커 인터페이스입니다. 이것에 의해 범용 알고리즘이 랜덤 억세스 리스트 또는 차례차례 액세스 리스트의 어느 쪽인가에 적용될 때, 그 동작을 변경해 퍼포먼스를 향상할 수가 있습니다.
+
+<p><li>새로운 <tt><a href="../../../api/java/util/LinkedHashMap.html">LinkedHashMap</a> </tt> 클래스는, 삽입순서에 실행되는 <tt>Map</tt> 구현이며,<tt>HashMap</tt> 와 같은(정도)만큼 고속으로  실행됩니다. 내부적으로는, 삽입순서에 실행되는 이중으로 링크된 리스트가 있는 해시 테이블을 사용합니다. 이것에 대응하는 <tt>Set</tt> 의 구현도 있어,<tt><a href="../../../api/java/util/LinkedHashSet.html">LinkedHashSet</a> </tt> 로 불리고 있습니다.
+
+<p><li>새로운 <tt><a href="../../../api/java/util/IdentityHashMap.html">IdentityHashMap</a> </tt> 클래스는, 식별 정보 베이스의 Map 구현이며, 해시 테이블에 근거하고 있습니다. 직렬화나 딥 카피등과 같이, 위상기하학을 유지하면서 객체 그래프를 변형하는 경우에, 이 클래스는 편리합니다. 이러한 변형을 실시하려면 , 어느 객체가 표시가 끝난 상태인지를 추적하는 식별 정보 베이스의 「노드 테이블」을 보수할 필요가 있습니다. 동일성 베이스의 맵을 사용해, 동적인 디버거나 같은 시스템으로 객체와 메타 정보의 매핑을 보수할 수도 있습니다. 또, 동일성 베이스의 맵은 equals 메소드를 의도적으로 비뚤어지게 하는 것에 의해 발생하는 「부정행위」를 막는 경우에 유용합니다. (<tt>IdentityHashMap</tt> 가 키에 대해서 equals 메소드를 호출할 것은 없습니다. ) 이 구현의 이제(벌써) 1 개의 이점은, 고속이다고 하는 것입니다.   </ul>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2001 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+<br> <br> <FONT SIZE="-1">코멘트의 송부처:<a href="mailto:collections-comments@java.sun.com">collections-comments@java.sun.com</a> </FONT>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+</TR>
+</TABLE>
+</body>
+</html>

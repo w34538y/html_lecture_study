@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:직렬화 가능 필드의 예		
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="exceptions.html">전의 항목</a>  | 다음의 항목 <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="3601"><!-- --></a> 
+<h1>
+직렬화 가능 필드의 예		
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="4374"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<U><h1>부록 C  
+</h1></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="4378"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="4421"><!-- --></a>  <a href="examples.html#4420">java.io.File 대체 구현의 예</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4420"><i>C. 1	</i> 	java.io.File 대체 구현의 예</a> </h2>
+
+<blockquote>
+<a name="4325"><!-- --></a> 여기에서는, 기존의 클래스를 지정 및 구현해, 기존의 구현과의 상호 운용을 가능하게 하는 간단한 예를 나타냅니다. 다만, 파일명의 표현에 관해서는, 그 전제가 String 의 경우와 같지 않아도 괜찮습니다. <p>
+<a name="4326"><!-- --></a> 시스템 클래스 <code>java.io.File</code> 는, 1 개의 파일명을 표현해, 또 구문 분석용의 메소드를 가집니다. 이 클래스를 사용해, 이름으로 파일과 디렉토리를 조작할 수 있습니다. 이 클래스에는, 현재의 파일명을 포함한 단일의 private 인 필드가 있습니다. 패스를 해석하는 메소드의 시멘틱스는, 정적 필드에 보관 유지된 현재의 패스 단락 문자에 의존합니다. 이 패스 단락 문자는 파일의 직렬화 상태의 일부로, read시에 파일명을 조절하기 위해서 필요합니다. <p>
+<a name="4327"><!-- --></a> <code>File</code> 객체의 직렬화 상태는, 그 파일의 직렬화 가능 필드 및 데이터값의 순서로서 정의됩니다. 이 경우는, 1 개의 직렬화 가능 필드 및 1 개의 데이터값의 순서가 있습니다. <p>
+<a name="4546"><!-- --></a> 
+<pre>Serializable Fields:
+    String path;     // path name with embedded separators
+Serializable Data:
+    char            // path name separator for path name
+An alternate implementation might be defined as follows:
+class File implements java.io.Serializable {
+    ...
+    private String[] pathcomponents;
+    // Define serializable fields with the ObjectStreamClass
+    
+</pre>
+
+
+<a name="4549"><!-- --></a> 
+<pre>	/**
+</pre>
+
+
+<a name="4550"><!-- --></a> 
+<pre>	 * @serialField path String 
+</pre>
+
+
+<a name="4551"><!-- --></a> 
+<pre>     *              Path components separated by separator.           
+</pre>
+
+
+<a name="4552"><!-- --></a> 
+<pre>     */
+</pre>
+
+
+<a name="4548"><!-- --></a> 
+<pre>	private static final ObjectStreamField[] serialPersistentFields
+        = { new ObjectStreamField(&#34;path&#34;, String.class) };
+    ...
+	/**
+</pre>
+
+
+<a name="4555"><!-- --></a> 
+<pre>      * @serialData  Default fields followed by separator character.              
+</pre>
+
+
+<a name="4556"><!-- --></a> 
+<pre>    */ 
+</pre>
+
+
+<a name="4554"><!-- --></a> 
+<pre>    private void writeObject(ObjectOutputStream s)
+        throws IOException
+    {
+        ObjectOutputStream.PutField fields = s.putFields();
+        StringBuffer str = new StringBuffer();
+        for(int i = 0; i &lt; pathcomponents; i++) {
+            str.append(separator);
+            str.append(pathcomponents[i]);
+        }
+        fields.put(&#34;path&#34;, str.toString());
+        s.writeFields();
+        s.writeChar(separatorChar); // Add the separator character
+    }
+    ...
+</pre>
+
+
+<a name="4334"><!-- --></a> 
+<pre>    private void readObject(ObjectInputStream s)
+        throws IOException
+    {
+        ObjectInputStream.GetField fields = s.readFields();
+        String path = (String) fields.get(&#34;path&#34;, null);
+        ...
+        char sep = s.readChar(); // read the previous separator char
+</pre>
+
+
+<a name="4335"><!-- --></a> 
+<pre>        // parse path into components using the separator
+        // and store into pathcomponents array.
+    }
+}
+</pre>
+
+
+</blockquote>
+
+<br>
+<hr>
+<!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="exceptions.html">전의 항목</a>  | 다음의 항목 <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:49 2005 -->
+ 
+
+
+</body>
+</html>
+

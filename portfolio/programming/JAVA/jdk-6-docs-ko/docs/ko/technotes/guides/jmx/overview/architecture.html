@@ -1,0 +1,187 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:57:32" />
+<title>JMX 아키텍쳐(architecture) - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="JMXoverviewTOC.html" />
+    <link rel="Previous" href="intro.html" />
+    <link rel="Next" href="instrumentation.html" />
+    <link rel="Index" href="appendixA.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="intro.html">전의 항목</a>  | <a accesskey="n" href="instrumentation.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지 개요</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp996881"> </a> <h2 class="pChapNum">
+제 2 장
+</h2>
+<a name="wp996882"> </a> <h2 class="pChapTitle">
+JMX 아키텍쳐(architecture)
+</h2>
+<a name="wp998064"> </a> <p class="pBody">
+JMX 테크놀러지에는, 자원을 관리 및 감시하기 위한 표준 API 가 준비되어 있습니다. API 에서는 원격 접근을 실행할 수 있기 (위해)때문에, remote administration 어플리케이션으로 어플리케이션, 시스템, 및 네트워크를 관리 및 감시할 수 있습니다. 이 장에서는, 이하의 섹션으로 JXM 아키텍쳐(architecture)의 개요를 설명합니다.
+</p>
+<ul class="pBullet1"><a name="wp1001634"> </a> <div class="pBullet1"><li><a  href="architecture.html#wp1001607"><span style="color: #3366CC">&quot;아키텍쳐(architecture)의 개요 &quot;</span></a> </li></div>
+<a name="wp1001623"> </a> <div class="pBullet1Plus"><li><a  href="architecture.html#wp998959"><span style="color: #3366CC">&quot;MBean 를 사용한 자원의 계측 &quot;</span></a> </li></div>
+<a name="wp1001627"> </a> <div class="pBullet1Plus"><li><a  href="architecture.html#wp998962"><span style="color: #3366CC">&quot;JMX 에이전트의 작성 &quot;</span></a> </li></div>
+<a name="wp1001631"> </a> <div class="pBullet1Last"><li><a  href="architecture.html#wp999066"><span style="color: #3366CC">&quot;자원의 remote administration &quot;</span></a> </li></div>
+</ul>
+<a name="wp1001607"> </a> <h2 class="pHeading1">
+	아키텍쳐(architecture)의 개요
+</h2>
+<a name="wp998140"> </a> <p class="pBody">
+JMX 테크놀러지는, Java Specification Requests (JSR) 3 및 JSR 160 으로서 Java Community Process (JCP)에 의해 개발된 밀접하게 관련하는 2 개의 스펙으로 정의되고 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp998854"> </a> <div class="pBullet1"><li><em class="cEmphasis">JSR 3, Java Management Extensions Instrumentation and Agent Specification</em></li></div>
+<a name="wp998855"> </a> <div class="pBullet1Last"><li><em class="cEmphasis">JSR 160, Java Management Extensions Remote API</em></li></div>
+</ul>
+<a name="wp998925"> </a> <p class="pBody">
+관리 아키텍쳐(architecture)를 3 레벨로 나눈 것을 다음의 겉(표)에 나타냅니다. 겉(표)의 최초의 2 레벨인 Instrumentation과 에이전트,
+</p>
+<a name="wp998952"> </a> <p class="pBody">
+Java VM 는 JSR 3 으로, remote administration의 레벨은 JSR 160 으로 정의되고 있습니다. </p><div align="left">
+<table border="1" cellpadding="7" id="wp998928">
+  <caption><a name="wp998928"> </a> <div class="pTableCaption">
+겉(표) &#160;2-1&#160;&#160;&#8211;&#160;&#160;JMX 테크놀러지의 아키텍쳐(architecture)
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th><a name="wp998932"> </a> <div style="text-align: left" class="pTableHead">
+레벨
+</div>
+
+</th>
+    <th><a name="wp998934"> </a> <div style="text-align: left" class="pTableHead">
+설명
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp998936"> </a> <div class="pTableText">
+Instrumentation
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp998938"> </a> <div class="pTableText">
+어플리케이션, 디바이스, 서비스등의 자원은, Managed Bean (MBean)로 불리는 Java 객체를 사용해 계측 되고 있다. MBean 는 remote administration 및 감시용의 JMX 에이전트를 통해서, 관리 인터페이스 (속성과 조작으로부터 된다)를 공개하고 있다
+</div>
+<a name="wp998939"> </a> <div class="pTableText">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp998941"> </a> <div class="pTableText">
+에이전트
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp998943"> </a> <div class="pTableText">
+JMX 에이전트의 주컴퍼넌트는, MBean 서버이다. MBean 서버는 MBean 가 등록되어 있는 코어의 관리 객체 서버이다. JMX 에이전트에는, MBean 를 처리하기 위한 일련의 서비스도 포함된다. JMX 에이전트는, 직접 자원을 제어해, remote administration 에이전트로 이용할 수 있도록(듯이) 한다
+</div>
+<a name="wp998944"> </a> <div class="pTableText">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp998946"> </a> <div class="pTableText">
+remote administration
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp998948"> </a> <div class="pTableText">
+프로토콜 어댑터와 표준 연결기에 의해, JMX 에이전트는 에이전트의 Java 가상 머신 (Java VM)의 외부에 있는 remote administration 어플리케이션으로부터 액세스 할 수 있게 됩니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp998959"> </a> <h2 class="pHeading1">
+	MBean 를 사용한 자원의 계측
+</h2>
+<a name="wp998960"> </a> <p class="pBody">
+JMX 테크놀러지를 사용해 자원을 관리하려면 , 최초로 자원을 Java 프로그램 언어로 계측 할 필요가 있습니다. MBean 로 불리는 Java 객체를 사용해, 자원의 Instrumentation에의 액세스를 구현합니다. MBean 는, 스펙으로 정의된 설계 패턴 및 인터페이스에 따르지 않으면 안됩니다. 이렇게 하는 것으로, 모든 MBean 로 관리 대상 자원의 계측이 표준화 된 방법으로 제공되는 것이 보증됩니다.
+</p>
+<a name="wp998977"> </a> <p class="pBody">
+자원이 MBean 로 계측 되면(자), JMX 에이전트를 통해서 관리할 수 있게 됩니다. MBean 에서는, JMX 에이전트로 MBean 를 조작하기 위한 지식은 불필요합니다.  
+</p>
+<a name="wp998982"> </a> <p class="pBody">
+MBean 는, 구현이 유연·간결·용이하도록 설계되고 있습니다. 어플리케이션, 시스템, 및 네트워크의 개발자는, 복잡한 관리 시스템에 대한 이해나 투자가 요구되는 일 없이, 제품을 표준적인 방법으로 관리할 수 있는 것으로 할 수 있습니다. 최소한의 노력으로, 기존의 자원을 관리 가능하게 합니다.
+</p>
+<a name="wp998985"> </a> <p class="pBody">
+게다가 Instrumentation레벨에서는, 통지 기구를 지정합니다. 이렇게 하는 것으로, MBean 로 통지 이벤트를 생성해, 다른 레벨의 컴퍼넌트에 보낼 수가 있습니다.
+</p>
+<a name="wp998962"> </a> <h2 class="pHeading1">
+	JMX 에이전트의 작성
+</h2>
+<a name="wp999017"> </a> <p class="pBody">
+JMX 에이전트는 표준적인 관리 에이전트이며, 자원을 직접 관리해, remote administration 어플리케이션으로 자원을 이용할 수 있도록(듯이) 합니다. 일반적으로은 제어하는 자원과 같은 머신상에 있습니다만, 필수가 아닙니다.
+</p>
+<a name="wp999022"> </a> <p class="pBody">
+JMX 에이전트의 코어 컴퍼넌트는 MBean 서버입니다.  MBean 서버는, MBean 가 등록되어 있는 관리 객체 서버입니다. 또, JMX 에이전트에는, MBean 를 관리하기 위한 일련의 서비스와 관리 어플리케이션으로부터 액세스 가능한 통신 어댑터 또는 연결기가 적어도 1 개(살) 포함되어 있습니다.
+</p>
+<a name="wp999018"> </a> <p class="pBody">
+JMX 에이전트를 구현하는 경우는, 관리에 사용되는 자원의 시멘틱스나 기능을 이해해 둘 필요는 없습니다. 실제의 곳, JMX 에이전트에서는, 제공하는 자원의 정보는 필요 없습니다.  이것은, JMX 스펙에 준거해 계측 된 모든 자원은, 필요한 서비스를 제공하는 모든 JMX 에이전트를 사용할 수 있기 (위해)때문에입니다. 같이 에이전트에서는, 액세스 하는 관리 어플리케이션의 기능에 대한 정보는 필요 없습니다.
+</p>
+<a name="wp999066"> </a> <h2 class="pHeading1">
+	자원의 remote administration
+</h2>
+<a name="wp999080"> </a> <p class="pBody">
+JMX API Instrumentation은, Simple Network Management Protocol (SNMP)와 같은 기존의 관리 프로토콜이나 독자적인 프로토콜에 의한 다양한 방법으로 액세스 됩니다. MBean 서버에서는, 프로토콜 어댑터나 연결기를 사용해, 에이전트의 Java 가상 머신 (Java VM)의 외부에 있는 remote administration 어플리케이션으로부터 JMX 에이전트에 액세스 할 수 있도록(듯이) 합니다.  
+</p>
+<a name="wp999071"> </a> <p class="pBody">
+어느 어댑터도, MBean 서버에 등록된 모든 MBean 에 특유의 프로토콜을 사용해, 뷰를 제공합니다. 예를 들어 HTML 어댑터는, MBean 를 Web 브라우저에 표시할 수 있습니다.  
+</p>
+<a name="wp999089"> </a> <p class="pBody">
+연결기는, 매니저와 JMX 에이전트의 사이의 통신을 처리하는, 매니저측의 인터페이스를 갖추고 있습니다. 각 연결기는 다른 프로토콜을 통해서, 같은 remote administration 인터페이스를 제공합니다. remote administration 어플리케이션으로 이 인터페이스를 사용하면(자), 프로토콜에 관계없이, 투과적으로 네트워크를 개입시켜 JMX 에이전트에 접속할 수 있습니다.  
+</p>
+<a name="wp999125"> </a> <p class="pBody">
+JMX 테크놀러지에는, JMX API Instrumentation을 원격 어플리케이션에 export하기 위한 , Remote Method Invocation (RMI)를 기본으로 한 표준적인 솔루션이 있습니다. 또, JMX Remote API 에서는, TCP 소켓을 직접 기본으로 한 추가의 프로토콜인 JMX Messaging Protocol (JMXMP)를 정의하고 있습니다. JMX Remote API 의 구현에서는, 이 추가 프로토콜을 지원할 필요는 없습니다. Java SE 플랫폼에는 생략 가능한 연결기는 포함되어 있지 않습니다. 자세한 것은,<a  href="appendixA.html#wp1002189"><span style="color: #3366CC">부록&#160;A 「JMX 테크놀러지의 버젼」</span></a> 을 참조해 주세요.
+</p>
+<a name="wp998484"> </a> <p class="pBody">
+JMX Remote API 스펙에서는, 기존의 검출·검색 인프라스트럭쳐(infrastructure)를 사용해 JMX 에이전트를 통지하거나 검색하거나 할 방법이 설명되고 있습니다. 그러한 예는, 「Java Management Extensions (JMX) 테크놀러지의 튜토리얼」에 있습니다. 이 스펙에서는, 독자적인 검출·검색 서비스는 정의되고 있지 않습니다. 이 스펙에서는, 독자적인 검출·검색 서비스는 정의되고 있지 않습니다. 기존의 검출·검색 서비스를 사용할 수도 있습니다만, JMX API 에이전트의 주소를 URL 의 형식에서 encode 해, 그 URL 를 매니저에게 통지할 수도 있습니다.
+</p>
+<a name="wp998488"> </a> <p class="pBody">
+
+</p>
+<a name="wp998489"> </a> <p class="pBody">
+
+</p>
+<a name="wp998490"> </a> <p class="pBody">
+
+</p>
+<a name="wp998068"> </a> <p class="pBody">
+
+</p>
+<a name="wp997103"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="intro.html">전의 항목</a>  | <a accesskey="n" href="instrumentation.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지 개요<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

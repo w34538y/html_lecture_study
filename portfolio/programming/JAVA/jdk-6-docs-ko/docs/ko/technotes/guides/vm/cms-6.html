@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>병행 Mark Sweep 수집가의 확장 기능 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body>
+<h1 align="center">병행 Mark Sweep 수집가의 확장 기능</h1>
+
+    <ul>
+      <li>
+	<a href="#description">설명</a> 
+      </li>
+      <li>
+	<a href="#system_gc">System.gc()의 동시 실행</a> 
+      </li>
+      <li>
+	<a href="#heap_size">디폴트의 젊은 세대의 사이즈의 증가</a> 
+      </li>
+      <li>
+	<a href="#parallel">병렬 마크 뒤따라라</a> 
+      </li>
+      <li>
+	<a href="#more_info">상세 정보</a> 
+      </li>
+    </ul>
+
+<h1><a name="description">설명</a> </h1>
+
+    <p>
+병행 수집가나 CMS 라고도 불리는 병행 Mark Sweep 수집가는, 가베지 컬렉션에 의한 일시정지의 영향을 받는 어플리케이션을 타겟으로 하고 있습니다. 이 수집가는, 대부분의 가베지 컬렉션 동작을 병행에 실행합니다. 즉, 어플리케이션 thread가 실행되고 있는 동안, 가베지 컬렉션에 의한 일시정지가 짧아집니다. JDK&nbsp;6 의 CMS 수집가에 대해서 행해진 주된 퍼포먼스 확장에 대해서는, 다음으로 설명합니다. 이러한 변경, CMS 수집가, 및 핫 스포트의 가베지 컬렉션의 자세한 것은,<a href="#more_info">다음의 문서</a>를 참조해 주세요.
+    </p>
+
+    <p>
+이러한 기능은, CMS 수집가를 사용하고 있어, 옵션 <code>-XX:+UseConcMarkSweepGC</code> 로 CMS 수집가를 선택하고 있는 경우에게만 들어맞읍니다.
+    </p>
+
+<h1><a name="system_gc">System.gc()의 동시 실행</a> </h1>
+
+    <p>
+<code>System.gc()</code> 및 <code>Runtime.getRuntime(). gc()</code> 메소드는, 미사용의 객체를 재사용하기 위해서 가비지 컬렉터를 실행하도록(듯이) JVM 에 지시합니다. 이러한 메소드의 핫 스포트 구현에 의해, heap 전체를 수집하기 위해서 모든 어플리케이션 thread가 정지합니다. 이것에 의해, 특히 heap가 큰 경우에 일시정지가 길어집니다. 일시정지를 짧게 한다고 하는 CMS 수집가의 목적과는 반대로 동작합니다.
+    </p>
+
+    <p>
+JDK&nbsp;6 에서는, CMS 수집가는,<code>System.gc()</code> 또는 <code>Runtime.getRuntime(). gc()</code> 호출에의 응답을 위해 일시정지가 길어지는 것을 피하기 위해서(때문에), 옵션으로 이러한 컬렉션을 병행에 실행할 수 있습니다. 이 기능을 유효하게 하려면 , 다음의 옵션을 추가합니다.
+    </p>
+
+    <p align="center">
+<code><b>-XX:+ExplicitGCInvokesConcurrent</b></code>
+    </p>
+
+이 옵션은,<code>java</code> 커멘드행에 추가합니다.   
+
+<h1><a name="heap_size">디폴트의 젊은 세대의 사이즈의 증가</a> </h1>
+
+    <p>
+CMS 수집가가 사용될 때의 젊은 세대의 디폴트 사이즈를 크게 하기 위해서, 몇개의 변경을 했습니다.
+    </p>
+
+    <ul>
+      <li>
+	젊은 세대의 최소 사이즈는 4M 바이트에서 16M 바이트에 증가했습니다.
+      </li>
+      <li>
+	젊은 세대에 대해서 사용되는 heap 전체의 비율은 1/15 으로부터 1/7 에 증가했습니다.
+      </li>
+      <li>
+	디폴트로 Survivor 영역이 사용됩니다. 이 영역의 디폴트 사이즈가 증가했습니다. 이전의 릴리스에서는, CMS 수집가로 Survivor 영역은 디폴트로 무효가 되어 있었습니다.
+      </li>
+    </ul>
+
+    <p>
+이러한 변경에 의해, 가베지 컬렉션에 의한 오버헤드가 감소해, 어플리케이션의 퍼포먼스가 향상했습니다. 다만, 디폴트의 젊은 세대의 사이즈가 증가했기 때문에, 어플리케이션에서는 젊은 세대의 일시정지 시간이 증가해, 메모리 사이즈가 증가할 가능성이 있습니다. 세대, Survivor 영역, 및 사이즈를 조정하기 위해서 사용 가능한 옵션에 대해서는, 필요에 따라서<a href="#more_info">다음의 문서</a>를 참조해 주세요.
+    </p>
+
+
+<h1><a name="parallel">병렬 마크 뒤따라라</a> </h1>
+
+    <p>
+CMS 수집가는 복수의 thread를 사용해, 복수의 프로세서를 가지는 플랫폼에서 병렬에 병행 마크부 태스크를 실행합니다. 이것에 의해, 병행 마크부 사이클의 시간이 단축되어 특히 대규모 멀티 프로세서 머신상에서, 수집가는 수많은 thread 및 높은 객체 할당 레이트를 가지는 어플리케이션을 지원할 수 있습니다. 이전의 릴리스에서는, 병행 마크부에 대해서 1 개의 thread만을 사용하고 있었기 때문에, 높은 객체 할당 레이트를 가지는 어플리케이션에 대응하는 수집가의 기능이 제한되고 있었습니다.
+    </p>
+
+<h1><a name="more_info">상세 정보</a> </h1>
+
+    <p>
+핫 스포트의<a href="https://java.sun.com/j2se/reference/whitepapers/memorymanagement_whitepaper.pdf">메모리 관리 화이트 페이퍼</a>에서는, 세대,Survivor 영역, 그 외의 메모리 관리 개념 뿐만이 아니라, CMS 수집가, 핫 스포트로 사용 가능한 다른 수집가에 대해서도 설명되고 있습니다.
+    </p>
+
+    <p>
+핫 스포트의<a href="http://java.sun.com/docs/hotspot/index.html">문서 페이지</a>에는, 각 릴리스에 고유의 가베지 컬렉션의 조정을 행하기 위한 가이드에의 링크가 포함되어 있습니다. 이 가이드에게는, 어플리케이션에 최적인 가비지 컬렉터를 선택하기 위한 가이드 라인, 및 가베지 컬렉션에 의한 오버헤드를 줄이는 경우에 도움이 되는 기술이 나타나고 있습니다.
+  </body>
+</html>

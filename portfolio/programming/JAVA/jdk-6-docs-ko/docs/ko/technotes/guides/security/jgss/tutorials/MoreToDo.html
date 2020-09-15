@@ -1,0 +1,496 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java GSS-API 및 JAAS 로 실행 가능한 다른 조작 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="ClientServer.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a> 
+</td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>Java GSS-API 및 JAAS 로 실행 가능한 다른 조작</H1>
+</center>
+
+<br> <br>
+
+<p>전의 튜토리얼,<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>에서는,2 개의 어플리케이션 (특히 클라이언트와 서버)이 Java GSS-API 를 사용해 상호간의 시큐리티 보호된 문맥을 확립해, 메세지를 안전하게 교환하는 방법을 나타냈습니다.
+
+<p>문맥 이니씨에이터 (이 클라이언트/서버의 예에서는 클라이언트)를 사용해 문맥을 확립한 후에, 문맥 억셉터 (서버)가 실행 가능한 조작은 그 밖에도 있습니다. 기본적으로, 서버는 클라이언트를 「가장한다」일이 생깁니다. 위장의 레벨은, 클라이언트가 쿠레덴샤르를 서버에 위양 하고 있을지 어떨지에 의해 다릅니다.
+
+<ul>
+
+<li><a href="#Impers">클라이언트 사용자에서의 코드의 실행</a>  <p>
+
+<li><a href="#DelCr">클라이언트로부터 위양 된 쿠레덴샤르의 사용</a>  <p>
+
+</ul>
+
+<br>
+
+
+<a name="Impers"></a> 
+<H1>클라이언트 사용자에서의 코드의 실행</H1>
+
+<blockquote>
+
+<p>서버가 클라이언트를 가장하는 1 개의 방법은, 클라이언트 코드를 실행하는 것과 같은 엔티티 (사용자)로 코드를 실행하는 것입니다. 일반적으로, thread에 의해 실행되는 메소드는, 그 thread 자체의 액세스 제어 설정을 사용합니다. 다만, 이 튜토리얼에서는, 서버가 클라이언트를 가장할 때, 클라이언트의 액세스 제어 설정을 사용하기 위해(때문에), 서버는 클라이언트 자체가 실행시 로 유지하는, 엄밀하게 같은 자원에 액세스 할 수 있습니다.
+
+<p>이 튜토리얼로 사용하는 방법의 주요한 이점은, JAAS 승인 컴퍼넌트를 액세스 제어에 사용할 수 있는 것입니다. JAAS 승인 컴퍼넌트가 없는 경우, 서버 법칙은, 클라이언트 사용자로 실행되는 코드가 액세스 하는 모든 자원에 액세스 할 수 없으면 안됩니다. 또, 서버 코드에, 사용자가 그 자원에 액세스 하는 것이 승인되고 있는지 어떤지를 판별하기 위한 액세스 제어 논리를 포함할 필요가 있습니다. JAAS 승인을 이용하는 것으로써, 법칙 베이스의 액세스 제어가 제공되기 (위해)때문에, 액세스 제어가 자동적으로 처리됩니다. 이러한 코드내의 시큐리티 관련 조작의 액세스권은, 사용자에게만 부여할 필요가 있어, 서버 코드에 부여할 필요는 없습니다. JAAS 승인의 자세한 것은,<a href="AcnAndAzn.html">「JAAS 승인」</a>튜토리얼을 참조해 주세요.
+
+<ul>
+
+<li><a href="#BasicApp">기본적인 어프로치</a>  <p>
+
+<li><a href="#SampleCode">샘플 코드 및 정책 파일</a>  <p>
+
+<li><a href="#RunCode">샘플 코드의 실행</a>  <p>
+
+</ul>
+
+
+<a name="BasicApp"></a> 
+<H2>기본적인 어프로치</H2>
+
+<blockquote>
+
+<p>서버는, 어떻게 해 클라이언트를 「치장」, 클라이언트 코드를 실행하는 사용자로 코드를 실행할 수 있는 것일까요. 기본적으로, 그 사용자로 클라이언트 코드를 실행하는 경우와 같은 방법이 사용됩니다. 모든 서버 코드는, 사용자의 법칙명을 인식할 필요가 있습니다. 사용자의 법칙명은, 클라이언트로 확립된 문맥으로부터 취득할 수 있습니다.
+
+<p>클라이언트 코드를 실행하는 사용자의 JAAS 인증에 의해, 사용자 (법칙) 명을 보관 유지하는 법칙을 포함한 주제가 작성되는 것은 벌써 배웠습니다. 그 후, 법칙은 (Login 유틸리티로부터의 <code>Subject.doAsPrivileged</code> 호출을 개입시켜) 새로운 액세스 제어 문맥에 관련지을 수 있어 클라이언트 코드가 그 사용자로 실행되는 것이라고 보여집니다. 이후의 액세스 제어는, 필요한 액세스권이 클라이언트 코드를 실행하는 특정의 사용자에게 부여될지 어떨지에 근거해 결정됩니다.
+
+<p>서버 코드도 이와 같이 처리됩니다. 다만, 일반적으로, 인증의 지정된 법칙은 사용자 법칙은 아니고 「서비스 법칙」인 점이 다릅니다. 재차, 지정된 법칙명의 법칙을 포함한 주제가 작성되어<code>Subject.doAsPrivileged</code> 가 불려 갑니다. 서버 코드는 지정된 법칙으로 실행된다고 보여집니다. 이후의 액세스 제어는, 필요한 액세스권이 서버 코드를 실행하는 특정의 법칙에 부여될지 어떨지에 근거해 결정됩니다.
+
+<p>일단 클라이언트 및 서버가 상호 문맥을 확립하면(자), 다음의 코드로 문맥 이니씨에이터의 이름 (클라이언트의 법칙명)을 확인할 수 있습니다.  
+
+<blockquote>
+<pre>
+GSSName clientGSSName = context.getSrcName();
+</pre>
+</blockquote>
+
+<p>문맥 억셉터 (서버)는, 이 이름을 사용해, 같은 엔티티를 나타내는 법칙을 포함한 주제를 생성할 수 있습니다. 예를 들어, 산의 제공하는 JRE 를 사용하고 있는 경우, 다음의 방법으로 주제를 생성할 수 있습니다.
+
+<blockquote>
+<pre>
+Subject client = 
+  com.sun.security.jgss.GSSUtil.createSubject(clientGSSName, null);
+</pre>
+</blockquote>
+
+<p><a href="../../../../../jre/api/security/jgss/spec/com/sun/security/jgss/GSSUtil.html#createSubject(org.ietf.jgss.GSSName,%20org.ietf.jgss.GSSCredential)"> createSubject</a>  메소드는, 인수로서 지정된 GSSName 및 GSSCredential 로부터 새로운 주제를 작성합니다. 서버 코드가 로컬 JVM 내의 사용자로 코드를 실행하는 경우, 사용자의 쿠레덴샤르는 필요하지는 않습니다. 실제의 곳, 클라이언트가 서버에 쿠레덴샤르를 위양 하고 있으므로 않은 한, 사용자의 쿠레덴샤르는 취득할 수 없습니다. 자세한 것은,<a href="#DelCr">「클라이언트로부터 위양 된 쿠레덴샤르의 사용」</a>을 참조해 주세요. 여기에서는 쿠레덴샤르는 필요하지 않기 때문에, GSSCredential 인수에 <code>null</code> 를 건네줍니다.
+
+<blockquote>
+<hr>
+
+주:Sun 의 제공하는 JRE 를 사용하고 있는 것은 아닌 경우, 이것을 실행하는 다른 방법은, 다음과 같이 해 KerberosPrincipal 인스턴스를 생성하는 것입니다.
+
+<blockquote>
+<pre>
+KerberosPrincipal principal = 
+  new KerberosPrincipal(clientGSSName.toString());
+</pre>
+</blockquote>
+
+<p>다음에, 이 법칙을 사용해 새로운 주제를 생성하는지, 기존의 주제의 법칙 세트내에서 이 법칙을 생성합니다.
+
+<hr>
+</blockquote>
+
+<p>서버가 사용자로서 실행하는 코드는,<code>java.security.PrivilegedAction</code> (또는 <code>java.security.PrivilegedExceptionAction</code>)를 구현하는 <code>run</code> 메소드로 개시할 필요가 있습니다. 즉, 코드를 이 <code>run</code> 메소드내에 배치하는 일도,<code>run</code> 메소드로부터 호출할 수도 있습니다.
+ 
+<p>서버 코드는, PrivilegedAction (또는 PrivilegedExceptionAction)의 인스턴스와 함께 주제를 <code>Subject.doAsPrivileged</code> 에 건네주어, 이후의 코드를 PrivilegedAction 의 <code>run</code> 메소드로부터, 지정된 주제의 법칙 (사용자)으로 개시할 수 있습니다.
+
+<p>예를 들어, PrivilegedAction 클래스가 ReadFileAction 를 호출해, 인수로서 법칙명을 보관 유지하는 String 를 취하는 경우를 생각합시다. 이 인스턴스는, 다음의 코드로 작성할 수 있습니다.
+
+<blockquote>
+<pre>
+String clientName = clientGSSName.toString();
+PrivilegedAction readFile = 
+    new ReadFileAction(clientName);
+</pre>
+</blockquote>
+
+<p><code>doAsPrivileged</code> 의 호출은, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+Subject.doAsPrivileged(client, readFile, null);
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<a name="SampleCode"></a> 
+<H2>샘플 코드 및 정책 파일</H2>
+
+<blockquote>
+
+<p>다음의 샘플 코드 및 정책 파일은, 클라이언트를 실행하는 특정의 사용자에만 허가되는 시큐리티 관련 조작용의 코드를 실행하기 위해서, 서버가 클라이언트를 가장하는 방법을 나타냅니다.
+
+
+<ul>
+
+<li><a href="#SSI">SampleServerImp.java</a>  <p>
+
+<li><a href="#ReadFileAction">ReadFileAction.java</a>  <p>
+
+<li><a href="#SSIPolicy">serverimp.policy</a>  <p>
+
+</ul>
+
+<a name="SSI"></a> 
+<H3>SampleServerImp.java</H3>
+
+<blockquote>
+
+<p><a href = "SampleServerImp.java">SampleServerImp.java</a>  파일은, 클라이언트와 메세지를 교환한 뒤, 클라이언트 사용자로서 <code>ReadFileAction</code> 를 실행하기 위한 이하와 같은 코드가 생성되는 점을 제외하면, 전의 튜토리얼 (<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>)로 소개한 SampleServer.java 파일과 완전히 같습니다.
+
+<blockquote>
+<pre>
+System.out.println("Impersonating client. ");
+
+/*
+ * Extract the KerberosPrincipal from the client GSSName and 
+ * populate it in the principal set of a new Subject.  Pass in a 
+ * null for credentials since credentials will not be needed.
+ */
+GSSName clientGSSName = <b>context.getSrcName</b>();
+System.out.println("clientGSSName: " + clientGSSName);
+Subject client =
+   com.sun.security.jgss.GSSUtil. <b>createSubject</b>(clientGSSName,
+        null);
+
+/*
+* Construct an action that will read a file meant only for the
+* client
+*/
+String clientName = clientGSSName.toString();
+PrivilegedAction readFile = 
+   new <b>ReadFileAction</b>(clientName);
+
+/*
+* Invoke the action via a doAsPrivileged.  This allows the
+* action to be executed as the client subject, and it also 
+* runs that code as privileged.  This means that any permission 
+* checking that happens beyond this point applies only to 
+* the code being run as the client.
+*/
+<b>Subject.doAsPrivileged</b>(client, readFile, null);
+</pre>
+</blockquote>
+
+
+
+</blockquote>
+
+<a name="ReadFileAction"></a> 
+<H3>ReadFileAction.java</H3>
+
+<blockquote>
+
+
+<p><a href = "ReadFileAction.java">ReadFileAction.java</a>  파일에는, ReadFileAction 클래스가 포함됩니다. 이 생성자 은, 클라이언트 사용자명의 String 를 인수에 취합니다. 클라이언트 사용자명은, ReadFileAction 가 읽기를 시도하는 파일의 파일명의 작성에 사용됩니다. 파일명은, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+. /data/&lt;name&gt;_info.txt
+</pre>
+</blockquote>
+
+여기서, &lt;name&gt; 는 대응하는 영역을 포함하지 않는 클라이언트 사용자명이 됩니다. 예를 들어, 사용자명 전체가 <code>mjones@KRBNT-OPERATIONS.ABC.COM</code> 의 경우, 파일명은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+. /data/mjones_info.txt
+</pre>
+</blockquote>
+
+주:Microsoft Windows 시스템의 경우, slash를 backslash로 옮겨놓아 주세요.
+
+<p>ReadFileAction 의 <code>run</code> 메소드는, 지정된 파일을 읽어내, 그 내용을 출력합니다.
+
+</blockquote>
+
+
+
+<a name="SSIPolicy"></a> 
+<H3>serverimp.policy</H3>
+
+<blockquote>
+
+<p>ReadFileAction 는 파일을 읽어내려고 합니다. 이 조작은 시큐리티 체크의 대상이 됩니다. ReadFileAction 는 클라이언트 사용자 (법칙)로서 실행되게 되어 있으므로, ReadFileAction 코드 자체와 클라이언트인 법칙에 대해서 적절한 액세스권을 부여할 필요가 있습니다.
+
+<p><code>ReadFileAction</code> 클래스가 <code>ReadFileAction.jar</code> 라는 이름의 JAR 파일내에 배치되어 사용자 법칙명이 <code>mjones@KRBNT-OPERATIONS.ABC.COM</code> 인 경우를 생각합시다. 이 경우, 정책 파일내에 다음의 코드를 기술해, 액세스권을 부여합니다.
+
+<blockquote>
+<pre>
+grant CodeBase "file:. /ReadFileAction.jar" 
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "mjones@KRBNT-OPERATIONS.ABC.COM" {
+
+    permission java.io.FilePermission "data/mjones_info.txt", 
+        "read";
+};
+</pre>
+</blockquote>
+
+<a href = "serverimp.policy">serverimp.policy</a>  파일은, SampleServer 코드에 <code>doAsPrivileged</code> 메소드의 호출에 필요한 액세스권 <code>javax.security.auth.AuthPermission "doAsPrivileged"</code> 를 부여하는 것, 및 위에 나타낸 FilePermission 를 부여하는 플레이스홀더를 보관 유지하는 것을 제외해, 전의 (<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>) 튜토리얼의 <code>server.policy</code> 파일과 엄밀하게 동일합니다. 다음에, FilePermission 를 부여하는 플레이스홀더를 나타냅니다.
+
+<blockquote>
+<pre>
+grant CodeBase "file:. /ReadFileAction.jar" 
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "your_user_name@your_realm" {
+
+    permission java.io.FilePermission "data/your_user_name_info.txt", 
+        "read";
+};
+</pre>
+</blockquote>
+
+<p>여기서,<code>your_realm</code> 는 사용하는 Kerberos 영역에서,<code>your_user_name@your_realm</code> 와 <code>data/your_user_name_info.txt</code> 내의 <code>your_user_name</code> 는 사용하는 사용자명으로 옮겨놓을 필요가 있습니다. Microsoft Windows 시스템의 경우,<code>data/your_user_name_info.txt</code> 내의 「/」을 「\」으로 옮겨놓아 주세요.
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="RunCode"></a> 
+<H2>샘플 코드의 실행</H2>
+
+<blockquote>
+
+<p>클라이언트를 가장하는 서버의 샘플 코드를 실행하는 경우, 전의 튜토리얼의<a href="ClientServer.html#RunProgs">「SampleClient 및 SampleServer 프로그램의 실행」</a>에 설명되고 있는 것과 같은 조작을 실행해 주세요. 다만, 이하의 점이 다릅니다.
+
+<ul>
+
+<li>「SampleServer 의 실행 준비」의 스텝 <p>
+
+<ul>
+
+<li><code>SampleServer.java</code> 대신에 <a href = "SampleServerImp.java">SampleServerImp.java</a>  를 사용합니다. 다음의 커멘드를 실행해 컴파일 해,<code>SampleServerImp.class</code> 를 포함한 <code>SampleServerImp.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+javac SampleServerImp.java
+jar -cvf SampleServerImp.jar SampleServerImp.class
+</pre>
+</blockquote>
+<p>
+
+<li>정책 파일 <code>server.policy</code> 대신에,<a href = "serverimp.policy">serverimp.policy</a>  를 사용합니다.  <p>
+
+<li>로그인 구성 파일 <code>cs.conf</code> 대신에,<a href = "csImpLogin.conf">csImpLogin.conf</a>  를 사용합니다.  <p>
+
+<li><a href = "ReadFileAction.java">ReadFileAction.java</a>  를, 다른 파일과 같은 디렉토리에 카피합니다. 다음의 커멘드를 실행해 컴파일 해, JAR 파일내에 포함합니다.
+
+<blockquote>
+<pre>
+javac ReadFileAction.java
+jar -cvf ReadFileAction.jar ReadFileAction.class
+</pre>
+</blockquote>
+
+
+<li><code>csImpLogin.conf</code> 내의 "service_principal@your_realm" 를,<a href="ClientServer.html#KerbNames">SampleServer 를 나타내는 서비스 법칙의 Kerberos 명</a>으로 옮겨놓습니다.  <p>
+
+<li><code>serverimp.policy</code> 내의 2 개소에 표시된 "service_principal@your_realm" 를, SampleServer 를 나타내는 서비스 법칙의 Kerberos 명으로 옮겨놓습니다. 이것은, 로그인 구성 파일로 사용하는 이름과 같은 이름입니다. 또,<code>your_realm</code> 는 사용하는 Kerberos 영역에서,<code>your_user_name@your_realm</code> 와 <code>data/your_user_name_info.txt</code> 내의 <code>your_user_name</code> 는 사용하는 사용자명으로 옮겨놓을 필요가 있습니다. Microsoft Windows 시스템의 경우,<code>data/your_user_name_info.txt</code> 내의 「/」을 「\」으로 옮겨놓아 주세요.  <p>
+
+<li>현재의 디렉토리내에 <code>data</code> 서브 디렉토리를 작성해, 그 디렉토리내로 지정된 이름의 작은 텍스트 파일을 작성합니다. 예를 들어, 사용자명이 <code>mjones</code> 의 경우, data 서브 디렉토리내에 <code>mjones_info.txt</code> 라는 이름의 파일을 배치합니다.
+
+</ul>
+
+<p>
+ 
+
+<li>「SampleServer 의 실행」스텝 <p>
+
+<ul>
+
+<li>이 섹션내에서 지정된 커멘드 대신에, 다음의 커멘드를 사용합니다. 이 커멘드에 의해,<code>SampleServerImp</code> 의 실행,<code>serverimp.policy</code> 및 <code>csImpLogin.conf</code> 의 사용,<code>ReadFileAction.jar</code> 의 편입을 실시할 수가 있습니다.
+
+<p><b>중요:이러한 커멘드의,<code>&lt;port_number&gt;</code> 를 적절한 포트 번호 (4444 등이 큰 포트 번호)에,<code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역에,<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC 에 각각 옮겨놓아 주세요. </b>
+
+<p>다음에, Microsoft Windows 시스템의 커멘드를 나타냅니다.
+
+<pre>
+  java -classpath Login.jar;SampleServerImp.jar;ReadFileAction.jar 
+    -Djava.security.manager 
+    -Djava.security.krb5.realm=&lt;your_realm&gt; 
+    -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+    -Djava.security.policy=serverimp.policy 
+    -Djava.security.auth.login.config=csImpLogin.conf 
+    Login SampleServerImp &lt;port_number&gt; 
+</pre>
+
+<p>다음에, UNIX 시스템의 커멘드를 나타냅니다.
+
+<pre>
+  java -classpath Login.jar:SampleServerImp.jar:ReadFileAction.jar 
+    -Djava.security.manager 
+    -Djava.security.krb5.realm=&lt;your_realm&gt; 
+    -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+    -Djava.security.policy=serverimp.policy 
+    -Djava.security.auth.login.config=csImpLogin.conf 
+    Login SampleServerImp &lt;port_number&gt;
+</pre>
+
+<p>일반적으로 대로, 커멘드 전체는 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. 커멘드가 너무 긴 경우는,. bat 파일 (Microsoft Windows) 또는 . sh 파일 (UNIX)에 기술합니다.  이 파일을 실행하는 것으로, 커멘드를 실행할 수 있습니다.
+
+<p>SampleServer 의 실행시에, SampleServerImp 의 실행이 예기 되는 서비스 법칙의 Kerberos 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된 Kerberos 로그인 모듈에 의해, 서비스 법칙의 Kerberos 에의 로그인을 합니다. 인증이 성공하면(자),<code>SampleServerImp</code> 의 코드가 서비스 법칙으로서 실행됩니다. 이 코드는, 지정된 포트상에서 소켓 접속을 대기합니다.
+
+<p>일반적으로 대로, 「SampleClient 의 실행 준비」 및 「SampleClient 의 실행」의 지시에 따라 조작을 실행하면(자), 클라이언트 코드에 의해 SampleServerImp 와의 소켓 접속이 요구됩니다. SampleServerImp 가 접속을 받아들이면(자), SampleClient 및 SampleServerImp 에 의해, 전의 튜토리얼로 해설한 방법으로, 공유 문맥의 확립 및 메세지의 교환을 합니다.
+
+<p>메세지의 교환 후에, SampleServerImp 는 클라이언트 코드를 실행하는 사용자의 법칙명을 판별해, 그 이름의 법칙을 포함한 주제를 새롭게 작성합니다. 또,<code>Subject.doAsPrivileged</code> 를 호출해, 지정된 사용자로 ReadFileAction 내의 코드를 실행합니다. ReadFileAction 는, 현행 디렉토리의 <code>data</code> 서브 디렉토리내의 <code>your_user_name_info.txt</code> (<code>your_user_name</code> 는 실제의 사용자명)라는 이름의 파일을 읽어내, 그 내용을 출력합니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+</ul>
+
+</blockquote>
+
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="DelCr"></a> 
+<H1>클라이언트로부터 위양 된 쿠레덴샤르의 사용</H1>
+
+<blockquote>
+
+<p>클라이언트가 쿠레덴샤르를 서버에 위양 하는 경우, 완성도의 가장 높은 방법으로 클라이언트를 가장할 수가 있습니다.  
+
+<p>문맥 억셉터 (전의 튜토리얼의 서버)와의 문맥을 확립하기 전에, 문맥 이니씨에이터 (클라이언트)에 의해 다양한 문맥 옵션의 설정을 한 것을 생각이 미쳐 주세요. 다음에 나타내도록(듯이), 이니씨에이터가 <code>context</code> 객체에 대해, 인수 <code>true</code> 를 지정해 <code>requestCredDeleg</code> 메소드를 호출하는 경우를 생각합시다.
+
+<blockquote>
+<pre>
+context.requestCredDeleg(true);
+</pre>
+</blockquote>
+
+이 경우, 문맥 확립시에, 이니씨에이터의 쿠레덴샤르를 억셉터에 위양 하는 것이 요구됩니다.
+
+
+<p>이니씨에이터로부터 억셉터에 쿠레덴샤르를 위양 하는 것으로써, 억셉터가 스스로를 이니씨에이터의 에이전트 또는 대리인으로서 인증하는 것이 가능하게 됩니다.
+
+<p>문맥 확립 후에, 억셉터는 쿠레덴샤르의 위양이 실제로 행해졌는지의 여부를 최초로 확인할 필요가 있습니다. 이것은,<code>getCredDelegState</code> 메소드를 호출하는 것으로 실행됩니다.
+
+<blockquote>
+<pre>
+boolean delegated = context.getCredDelegState();
+</pre>
+</blockquote>
+
+<p>쿠레덴샤르가 위양 되고 있는 경우, 억셉터는 <code>getDelegCr</code> 메소드를 호출해, 그 쿠레덴샤르를 취득할 수 있습니다.
+
+<blockquote>
+<pre>
+GSSCredential clientCr = context.getDelegCr();
+</pre>
+</blockquote>
+
+<p>작성된 GSSCredential 를 사용해, 이후의 GSS-API 문맥을 이니씨에이터의 「대리인」으로서 개시할 수가 있습니다. 예를 들어, 서버는, 연구 최종 단계 서버에 대해, 클라이언트로서 인증을 실시합니다. 연구 최종 단계 서버에는, 중간적 서버는 어떤 것일까하고 말하는 것보다, 원의 클라이언트가 어떤 것일까하고 말하는 것이 중요합니다.  
+
+<p>서버는, 클라이언트로서 동작하는 것으로써, 연구 최종 단계 서버와의 접속 확립, 결합 시큐리티 문맥의 확립, 및 메시지 교환을, 클라이언트나 서버와 기본적으로 같은 방법으로 실행할 수 있습니다.
+
+<p>이것을 실행하는 1 개의 방법은, 서버가 GSSManager 의 <code>createContext</code> 메소드를 호출할 때에,<code>createContext</code> 에 <code>null</code> 는 아니고 위양 된 쿠레덴샤르를 건네주는 것입니다.  
+
+<p>다른 선택사항으로서 서버 코드가 최초로 <code>com.sun.security.jgss.GSSUtil createSubject</code> 메소드를 호출해, 게다가 위양 된 쿠레덴샤르를 건네준다고 하는 방법도 있습니다. 이 메소드는, 이러한 쿠레덴샤르를 디폴트의 쿠레덴샤르로서 포함한 주제를 돌려줍니다. 그 후, 「JAAS 승인」튜토리얼의<a href="AcnAndAzn.html#AssocSubject">「주제의 액세스 제어 문맥에의 관련짓고」</a>로 설명한 것처럼, 서버는, 이 주제를 현행의 AccessControlContext 에 관련지을 수가 있습니다. 다음에, 서버 코드는, GSSManager <code>createContext</code> 메소드의 호출시에, null ( 「현행의」주제를 쿠레덴샤르로서 사용하는 것을 지시한다)를 건네줄 수가 있습니다. 다른 말투를 하면, 서버가 실질적으로 클라이언트가 됩니다. GSS 를 사용하는 그 후의 연구 최종 단계 서버에의 접속은, 전의 튜토리얼로 설명되는 대로 방법으로 확립할 수가 있습니다. 이것은, 위양 된 쿠레덴샤르를 사용하는 코드가, 디폴트의 로카르크레덴샤르를 사용하는 코드와 동일하다라고 하는 것이 필요한 경우에 유용한 방법입니다.
+
+ 
+<H2>쿠레덴샤르의 위양에 필요한 액세스권 </H2>
+
+<blockquote>
+
+<p>쿠레덴샤르를 위양 하려면 , 문맥 이니씨에이터 (전의 튜토리얼에서는 SampleClient)가 <code>javax.security.auth.kerberos.DelegationPermission</code> 를 보관 유지할 필요가 있습니다. 예를 다음에 나타냅니다 (이탤릭의 플레이스홀더에는 실제의 값을 지정).  
+
+<blockquote>
+<pre>
+permission javax.security.auth.kerberos.DelegationPermission
+  "\"<i>service_principal@your_realm</i>\"  
+     \"krbtgt/<i>your_realm</i>@<i>your_realm</i>\"";
+</pre>
+</blockquote>
+
+<p>DelegationPermission 가 보관 유지하는 단일의 타겟내에, 인용부호로 둘러싸인 2 개의 항목이 포함되는 것에 주목해 주세요. 내부의 각 인용부호는, 「\」으로 이스케이프 되고 있습니다. 이 때문에, 최초의 항목은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+"<i>service_principal@your_realm</i>"
+</pre>
+</blockquote>
+
+2 번째의 항목은, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+"krbtgt/<i>your_realm</i>@<i>your_realm</i>"
+</pre>
+</blockquote>
+
+<p>이것은, 기본적으로, 클라이언트로서 실행되는 코드에 대해, 지정된 피어에 Kerberos 티켓을 전송하기 위한 액세스권을 부여합니다. Kerberos 티켓은,<code>krbtgt/<i>your_realm</i>@<i>your_realm</i></code> 로부터의 서비스 이용에 사용합니다.
+
+<p>표시되고 있는 <code><i>your_realm</i></code> 는, 모두 실제의 영역에서 옮겨놓아 주세요. 또,<code><i>service_principal@your_realm</i></code> 도, 서비스 법칙명 (서버를 나타내는 서비스 법칙의 이름)으로 옮겨놓아 주세요(전의 튜토리얼의<a href="ClientServer.html#KerbNames">「Kerberos 사용자 및 서비스 법칙의 이름」</a>을 참조). 영역이 KRBNT-OPERATIONS.ABC.COM 로, 서비스 법칙이 "sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM" 인 경우를 생각해 봅시다. 이 경우, 액세스권을 정책 파일내에서 다음과 같이 표시할 수 있습니다.
+
+<blockquote>
+<pre>
+permission javax.security.auth.kerberos.DelegationPermission
+  "\"sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM\"  
+     \"krbtgt/KRBNT-OPERATIONS.ABC.COM@KRBNT-OPERATIONS.ABC.COM\"";
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+</blockquote>
+
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="ClientServer.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a> 
+
+</td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</ul></body>
+
+</html>
+

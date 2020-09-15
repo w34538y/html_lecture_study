@@ -1,0 +1,1021 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>
+JAAS 레퍼런스 가이드
+ - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+<BODY BGCOLOR="#ffffff">
+<HR>
+
+<center>
+<H1>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 인증·승인 서비스 (JAAS)</h1>
+
+<H1>레퍼런스 가이드</H1>
+
+<H2>
+Java <SUP><font size=-2>TM</font></SUP> SE Development Kit 6
+</H2>
+
+</center>
+
+<!-- 11.15.05 commented out the old 1.4 'whats new' section. -->
+
+
+<br>
+
+<HR>
+
+<p>
+<dl>
+<dt><dd><a href="#Introduction"><font size="+1"><b>처음에</b></font></a> 
+  <dl>
+<dt><dd><a href="#Who"><b>이 문서의 대상 독자</b></a> 
+<dt><dd><a href="#RelatedDocs"><b>관련 문서</b></a> 
+  </dl><br>
+
+  <!--    <dt><dd><a href="#WhatsNew">     <font size="+1"><b>What's New in JAAS in the J2SDK 1.4</b></font>     </a>    <br>   <br>   -->
+
+<dt><dd><a href="#Core"><font size="+1"><b>코어 클래스와 인터페이스</b></font></a> 
+    <dl>
+<dt><dd><a href="#Common"><b>공통 클래스</b></a> 
+      <dl>
+<dt><dd><a href="#Subject"><b>주제</b></a> 
+<dt><dd><a href="#Principals"><b>법칙</b></a> 
+<dt><dd><a href="#Credentials"><b>쿠레덴샤르</b></a> 
+      </dl>
+<dt><dd><a href="#Authentication"><b>인증 클래스와 인터페이스</b></a> 
+      <dl>
+<dt><dd><a href="#LoginContext"><b>LoginContext</b></a> 
+<dt><dd><a href="#LoginModule"><b>LoginModule</b></a> 
+<dt><dd><a href="#CallbackHandler"><b>CallbackHandler</b></a> 
+<dt><dd><a href="#Callback"><b>Callback</b></a> 
+      </dl>
+<dt><dd><a href="#Authorization"><b>승인 클래스</b></a> 
+      <dl>
+<dt><dd><a href="#Policy"><b>Policy</b></a> 
+<dt><dd><a href="#AuthPermission"><b>AuthPermission</b></a> 
+<dt><dd><a href="#PrivateCredentialPermission"><b>PrivateCredentialPermission</b></a> 
+      </dl>
+    </dl><br>
+
+<dt><dd><a href="#Sample"><font size="+1"><b>JAAS 튜토리얼과 샘플 프로그램</b></font></a> <br><br>
+
+<dt><dd><a href="#AppendixA"><font size="+1"><b>부록 A:java.security 시큐리티 프로퍼티 파일에서의 JAAS 설정</b></font></a> <br><br>
+
+<dt><dd><a href="#AppendixB"><font size="+1"><b>부록 B:샘플 로그인 구성</b></font></a> <br><br>
+
+</dl>
+
+<!------------------------------------------------------------------------>
+<HR>
+<H1><a name="Introduction">처음에</a> </H1>
+
+<blockquote>
+
+<p> 당초, Java<SUP><FONT SIZE=-2>TM</FONT></SUP>인증·승인 서비스 (JavaTM Authentication and Authorization Service: JAAS 는, Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition (J2SDK), v 1.3 의 옵션 패키지 (확장 기능)였습니다. JAAS 는 J2SDK, v 1.4 에 통합되었습니다.
+
+<p> JAAS 는, 다음의 2 개의 목적으로 사용할 수 있습니다.
+
+<ul>
+
+<li>사용자를 「인증한다」때, 코드가 어플리케이션, 애플릿, Bean, 또는 서브 렛일까에 관계없이, Java 코드를 실행중의 사용자를 신뢰 한편 안전한 방법으로 확인한다<p>
+
+<li>사용자를 「승인한다」때, 동작의 실행에 필요한 액세스 제어권 (액세스권)을 사용자가 보관 유지하고 있는 것을 확인한다
+
+</ul>
+
+<p>JAAS 는, Java 버젼의 표준 Pluggable Authentication Module (PAM) 시스템를 구현합니다. 상세한 것에 대하여는,<a href="http://java.sun.com/security/jaas/doc/pam.html">「Making Login Services Independent of Authentication Technologies」</a>를 참조해 주세요.
+
+<p>지금까지, Java 는, 코드 소스 베이스의 액세스 제어 (코드의 출처(소) 및 서명자에 근거하는 액세스 제어)를 제공해 왔습니다. 그러나, 코드의 실행자에 근거하는 액세스 제어를 추가 실행하는 기능은 부족했습니다. JAAS 는, Java 시큐리티 아키텍쳐(architecture)를 확장하는 시스템에 의해, 이 기능을 지원합니다.
+
+<p> JAAS 인증은, 「플러그 인 가능」방식에서 실행됩니다. 이 때문에, 어플리케이션은, 기반이 되는 인증 기술로부터 독립해 기능합니다. 어플리케이션내에서는, 신규 또는 갱신된 인증 기술을 플러그 인으로서 사용할 수 있습니다. 어플리케이션을 변경할 필요는 없습니다. 어플리케이션은,<a href="../../../../api/javax/security/auth/login/LoginContext.html"><code>LoginContext</code></a>  객체를 인스턴스화하는 것으로, 인증 프로세스를 유효하게 합니다.  한편,<a href="../../../../api/javax/security/auth/login/LoginContext.html"><code>LoginContext</code></a>  객체는 <a href="../../../../api/javax/security/auth/login/Configuration.html"><code>Configuration</code></a>  를 참조해, 사용하는 인증 테크놀러지 또는 <a href="../../../../api/javax/security/auth/spi/LoginModule.html"><code>LoginModule</code></a>  를 결정합니다. 일반적인 로그인 모듈은, 사용자명 및 패스워드의 입력을 유발 (prompt)해, 입력된 것을 검증합니다. 음성이나 지문의 읽기 및 객체로 검증을 실행할 수 있는 것도 있습니다.
+
+<p> 코드를 실행하는 사용자가 인증되면(자), JAAS 승인 컴퍼넌트는 코어 Java SE 액세스 제어 모델과 연동해 기능해, 신중한 조작의 필요한 자원에의 액세스를 보호합니다. 액세스 제어의 결정이 코드 위치 및 코드 서명자 (<a href="../../../../api/java/security/CodeSource.html"><code>CodeSource</code></a> )에만 기초를 두는 J2SDK, v 1.3 과는 달리, J2SDK, v 1.4 에서는, 액세스 제어의 결정은, 실행 코드의 <code>CodeSource</code> 및 코드를 실행하는 <a href="../../../../api/javax/security/auth/Subject.html"><code>Subject</code></a>  객체로 나타내지는 사용자 또는 서비스에 근거하고 있습니다. 인증에 성공했을 경우,<code>LoginModule</code> 는, 관련하는 <a href="../../../../api/java/security/Principal.html"><code>Principal</code></a>  및 자격을 사용해 <code>Subject</code> 를 갱신합니다.
+
+<H2><a name="Who">이 문서의 대상 독자</a> </H2>
+
+<blockquote>
+
+<p> 이 문서는,<code>CodeSource</code> 베이스 및 <code>Subject</code> 베이스의 시큐리티 모델의 제약을 받는 어플리케이션을 설계하는 상급 개발자를 대상으로 하고 있습니다. 로그인 모듈 개발자 (인증 기술을 구현하는 개발자)는,<a href="JAASLMDevGuide.html">「JAAS 로그인 모듈 개발자 가이드」</a>  의 전에 이 문서를 읽어 주세요.
+
+<p>최초로<a href="tutorials/GeneralAcnOnly.html">「JAAS 인증」이라고</a> <a href="tutorials/GeneralAcnAndAzn.html">「JAAS 승인」</a>  의 2 개의 튜토리얼로 JAAS 의 사용 방법의 개요와 유효한 샘플 코드를 확인한 다음, 이 문서로부터 상세 정보를 얻을 수도 있습니다.  
+
+</blockquote>
+
+
+<H2><a name="RelatedDocs">관련 문서</a> </H2>
+
+<blockquote>
+
+<p> 이 문서에서는, 독자가 벌써 다음의 문서를 읽고 있는 것을 전제로 하고 있습니다.
+
+<ul>
+<li><a href="../spec/security-spec.doc.html">Java SE 시큐리티 아키텍쳐(architecture)</a>  <p>
+
+<li><a href="http://java.sun.com/security/jaas/doc/acsac.html">JAAS white paper</a>  <p>
+
+<li><a href="http://java.sun.com/docs/books/tutorial/security/index.html">Java SE 시큐리티 튜토리얼</a>  
+</ul>
+
+<p><a href="JAASLMDevGuide.html">「JAAS 로그인 모듈 개발자 가이드」</a>는, 인증 기술을 구현하는 <a href="../../../../api/javax/security/auth/spi/LoginModule.html"><code>LoginModule</code></a>  를 기술할 필요가 있는 상급 프로그래머전용의 문서이며, 이 문서의 추가으로서 도움이 됩니다.
+
+<p>표준 Pluggable Authentication Module (PAM) 시스템 (JAAS 는 Java 버젼의 PAM 를 구현)의 상세 정보를 취득하고 싶은 독자는,<a href="http://java.sun.com/security/jaas/doc/pam.html">「Making Login Services Independent of Authentication Technologies」</a>를 참조해 주세요.
+
+<p>이하의 「튜토리얼」은, JASS 인증 및 승인을 이용하는 모든 사용자를 대상으로 하고 있습니다.
+
+<ul>
+<li><a href="tutorials/GeneralAcnOnly.html">「JAAS 인증 튜토리얼」</a> 
+<li><a href="tutorials/GeneralAcnAndAzn.html">「JAAS 승인 튜토리얼」</a>  
+</ul>
+
+<p>이하의 튜토리얼은, JAAS 인증 및 승인 튜토리얼과 닮아 있습니다만, Kerberos LoginModule 의 사용 방법의 해설이 포함되기 (위해)때문에, 사용하기 전에 Kerberos 를 인스톨 할 필요가 있습니다.  
+
+<ul>
+<li><a href="../jgss/tutorials/AcnOnly.html">「JAAS 인증」</a> 
+<li><a href="../jgss/tutorials/AcnAndAzn.html">「JAAS 승인」</a> 
+</ul>
+
+<p>이 2 개의 튜토리얼은, 인증과 안전한 통신을 위한 기반기술로서 Kerberos 를 이용하는<a href="../jgss/tutorials/index.html">「Java GSS-API 및 JAAS 의 일련의 튜토리얼」</a>에 포함되어 있습니다.
+
+</blockquote>
+
+</blockquote>
+
+<!--  <H1><a name="WhatsNew">What's New in JAAS in the J2SDK 1.4</a> </H1>  <blockquote>  <P> Below are listed the differences between the previous version of JAAS (JAAS 1.0) and the JAAS within the J2SDK 1.4.   <ul> <li><a href="#InJ2">JAAS Is Now in J2SDK</a> <P> <li><a href="#NewMethods">New Classes/Interfaces</a> <P> <li><a href="#Deprecated">Deprecated Items</a> <P> </ul>    <H3><a name="InJ2">JAAS Is Now in J2SDK</a> </H3>  <blockquote>  <p>JAAS was previously an optional package (extension) to the Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition (J2SDK),  versions 1.3.x.  JAAS has now been integrated into  the J2SDK 1.4.   JAAS augments the core Java 2 platform with the means to authenticate and enforce access controls upon users.   <p> The major ramification of this integration stems around the system security policy.  The J2SDK, versions 1.3 and earlier, has its own security policy class (<a href="../../../api/java/security/Policy.html"><code>java.security.Policy</code> </a> ).  JAAS 1.0, as an optional package, provided an additional <code>Principal</code>-based security policy (<code>javax.security.auth.Policy</code>).  Upon integration into the core SDK, the JAAS policy has been deprecated in favor of the SDK policy.   <p> The SDK <code>Policy</code> API was upgraded to support <a href="../../../api/java/security/Principal.html"> <code>Principal</code></a> -based queries, and the <code>Policy</code>  reference implementation was upgraded to support <code>Principal</code>-based  <code>grant</code> entries in policy files,  where such an entry may include a <code>Principal</code> field indicating that  the user or other entity represented by the specified <code>Principal</code>,  executing the specified code, has the designated permissions.  In addition, the graphical <a href="../SecurityToolsSummary.html">Policy Tool</a>  utility used to create policy files  was enhanced to support inclusion of <code>Principal</code> fields.  Appropriately, the JAAS 1.0 <code>Policy</code> reference implementation and its supporting classes in the <code>com.sun.security.auth</code> package have been deprecated.   <p> Please reference the <a href="../PolicyFiles.html">Policy Document</a>  for more information on the <code>Policy</code> reference implementation and a list of the relevant API changes.   </blockquote>    <H3><a name="NewMethods">New Classes/Interfaces</a> </H3>  <blockquote>  <p>Additions include  <ul>  <li> Two default <code>CallbackHandler</code> implementations: <ul> <li> <a href="spec/com/sun/security/auth/callback/DialogCallbackHandler.html"> <code>com.sun.security.auth.callback.DialogCallbackHandler</code></a>  <li> <a href="spec/com/sun/security/auth/callback/TextCallbackHandler.html"> <code>com.sun.security.auth.callback.TextCallbackHandler</code></a>  </ul> <p>  <li> New <a href="spec/com/sun/security/auth/module/Krb5LoginModule.html"> <code>com.sun.security.auth.module.Krb5LoginModule</code></a>  <p>  <li> New <a href="spec/com/sun/security/auth/module/KeyStoreLoginModule.html"> <code>com.sun.security.auth.module.KeyStoreLoginModule</code></a>   </ul>  </blockquote>   <H3><a name="Deprecated">Deprecated Items</a> </H3>  <blockquote>  <p>Deprecated items include:  <ul>  <li> Deprecation of <ul> <li> <a href="spec/com/sun/security/auth/module/SolarisLoginModule.html"> <code>com.sun.security.auth.module.SolarisLoginModule</code></a>  </ul>      in favor of <ul> <li> <a href="spec/com/sun/security/auth/module/UnixLoginModule.html"> <code>com.sun.security.auth.module.UnixLoginModule</code></a>  </ul>      The new UnixLoginModule can be used on both Solaris      and Linux.  <p> <li> Deprecation of <ul> <li> <a href="spec/com/sun/security/auth/SolarisPrincipal.html"> <code>com.sun.security.auth.SolarisPrincipal</code></a>  </ul>      in favor of <ul> <li> <a href="spec/com/sun/security/auth/UnixPrincipal.html"> <code>com.sun.security.auth.UnixPrincipal</code></a>  </ul> <p> <li> Deprecation of <ul> <li> <a href="spec/com/sun/security/auth/SolarisNumericUserPrincipal.html"> <code>com.sun.security.auth.SolarisNumericUserPrincipal</code></a>  </ul>      in favor of <ul> <li> <a href="spec/com/sun/security/auth/UnixNumericUserPrincipal.html"> <code>com.sun.security.auth.UnixNumericUserPrincipal</code></a>  </ul> <p> <li> Deprecation of <ul> <li> <a href="spec/com/sun/security/auth/SolarisNumericGroupPrincipal.html"> <code>com.sun.security.auth.SolarisNumericGroupPrincipal</code></a>  </ul>      in favor of <ul> <li> <a href="spec/com/sun/security/auth/UnixNumericGroupPrincipal.html"> <code>com.sun.security.auth.UnixNumericGroupPrincipal</code></a>  </ul> <p> <li> Deprecation of <ul> <li> <a href="spec/com/sun/security/auth/X500Principal.html"> <code>com.sun.security.auth.X500Principal</code></a>  </ul>      in favor of <ul> <li><a href="../../../api/javax/security/auth/x500/X500Principal.html"> <code>javax.security.auth.x500.X500Principal</code></a>  </ul> <p> <li> Deprecation of the  <a href="../../../api/javax/security/auth/AuthPermission.html"> <code>javax.security.auth.AuthPermission</code></a>  target name <ul> <li> "createLoginContext" </ul>      in favor of <ul> <li> "createLoginContext. {configuration entry name}" </ul>  </ul>  </blockquote>     </blockquote>   </blockquote>  ***** end of old "Whats New section ******-->
+
+<!------------------------------------------------------------------------>
+<hr>
+<H1><a name="Core">코어 클래스와 인터페이스</a> </H1>
+
+<blockquote>
+JAAS 관련 코어 클래스 및 인터페이스는, 공통 클래스, 인증 클래스, 및 승인 클래스의 3 개의 카테고리로 분류할 수 있습니다.
+<ul>
+<li><a href="#Common">공통 클래스</a>  
+  <ul>
+<li><a href="#Subject">Subject</a> ,<a href = "#Principals">Principal</a> ,<a href="#Credentials">Credential</a>  (임의의 객체)
+  </ul>
+<li><a href="#Authentication">인증 클래스와 인터페이스</a>  
+  <ul>
+<li><a href = "#LoginContext">LoginContext</a> ,<a href = "#LoginModule">LoginModule</a> ,<a href = "#CallbackHandler">CallbackHandler</a> ,<a href = "#Callback">Callback</a> 
+  </ul>
+<li><a href="#Authorization">승인 클래스</a> 
+  <ul>
+<li><a href = "#Policy">Policy</a> ,<a href = "#AuthPermission">AuthPermission</a> ,<a href = "#PrivateCredentialPermission">PrivateCredentialPermission</a> 
+  </ul>
+</ul>
+
+
+<h2><a name="Common"></a> 공통 클래스</h2>
+
+<blockquote>
+
+공통 클래스는, JAAS 인증 및 승인 컴퍼넌트의 양쪽 모두에 공통입니다.
+
+<p>열쇠 JAAS 클래스는,<a href="../../../../api/javax/security/auth/Subject.html"><code>javax.security.auth.Subject</code></a>  입니다. 이 클래스는, 단일 엔티티 (인물등)의 관련 정보의 그룹화를 나타냅니다. 관련 정보에는, 엔티티의 <a href = "#Principals">Principal</a> , public 쿠레덴샤르, 및 private 쿠레덴샤르등이 있습니다.
+
+<p> 법칙의 표현에는,<code>java.security.Principal</code> 인터페이스가 사용됩니다. 또, JAAS 에 의해 정의되는 쿠레덴샤르에는, 임의의 객체를 지정할 수 있습니다.
+
+
+<h3><a name="Subject">주제</a> </h3>
+
+<blockquote>
+
+자원에의 액세스를 승인하는 경우, 최초로, 어플리케이션이 요구원을 인증할 필요가 있습니다. JAAS 시스템에서는, 요구원을 「주제」라고 하는 말로 나타냅니다. 주제는, 사용자나 서비스등의 임의의 엔티티입니다. 한 번, 피인증자가 인증되면(자) <a href="../../../../api/javax/security/auth/Subject.html"><code>javax.security.auth.Subject</code></a>  에는 관련하는 식별 정보, 또는 주체를 할당할 수 있습니다. 단일의 주제가 복수의 법칙을 가지는 경우도 있습니다. 예를 들어, 어느 인물은, 이름의 법칙 ( 「John Doe」) 및 SSN 법칙 ( 「123-45-6789」)을 가집니다. 이러한 법칙에 의해, 이 인물은 다른 주제와 구별됩니다.
+
+<p> 주제는, 「쿠레덴샤르」라고 불리는 시큐리티 관련의 속성도 보관 유지할 수 있습니다. 비공개 암호화열쇠 등, 특별한 보호가 필요한 쿠레덴샤르는, 비공개 쿠레덴샤르 <code>Set</code> 내에 포함됩니다. 공개키 증명서등의 공유되는 쿠레덴샤르는, 공개 쿠레덴샤르 <code>Set</code> 내에 포함됩니다. 쿠레덴샤르 <code>Set</code> 가 다르면(자), 거기에 액세스 및 변경하기 위한 액세스권도 다릅니다.
+
+<p>주제는, 다음의 생성자 을 사용해 작성됩니다.
+<pre>
+    public Subject();
+
+    public Subject(boolean readOnly, Set principals,
+                   Set pubCredentials, Set privCredentials);
+</pre>
+
+최초의 생성자 은, 법칙 및 쿠레덴샤르의 빈 상태(empty) (null 는 아니다)의 <code>Set</code> 로 주제를 작성합니다. 2 번째의 생성자 은, 지정된 법칙 및 쿠레덴샤르의 <code>Set</code> 로 주제를 작성합니다. 주제를 읽어내 전용으로 하기 위해서(때문에) 사용할 수 있는 boolean 형의 인수도 가지고 있습니다. 읽기 전용의 주제내에서는, 법칙 및 쿠레덴샤르 <code>Set</code> 는 불변입니다.
+
+<p>어플리케이션 작성자가 주제를 인스턴스화할 필요는 없습니다. 어플리케이션이 <code>LoginContext</code> 를 인스턴스화해, 주제를 <code>LoginContext</code> 생성자 에 건네주지 않는 경우,<code>LoginContext</code> 는 새로운 빈 상태(empty)의 주제를 인스턴스화합니다. <a href="#LoginContext">LoginContext</a>  의 섹션을 참조해 주세요.
+
+<p> 주제가 읽어내 전용 상태로 인스턴스화 되지 않았던 경우, 다음의 메소드를 호출해 읽기 전용으로 설정할 수 있습니다.
+<pre>
+    public void setReadOnly();
+</pre>
+
+타겟명 「setReadOnly」를 가지는 <code>javax.security.auth.AuthPermission</code> 는, 이 메소드를 호출하기 위해서(때문에) 요구됩니다. 읽기 전용으로 설정한 후에, 법칙이나 쿠레덴샤르를 추가 또는 삭제하려고 하면(자),<code>IllegalStateException</code> 가 throw 됩니다.
+
+<p>다음의 메소드를 사용해, 주제의 읽기 전용 상태를 테스트할 수 있습니다.
+<pre>
+    public boolean isReadOnly();
+</pre>
+
+<p>주제에 관련한 법칙을 취득하는 경우, 다음의 2 개의 메소드를 이용할 수 있습니다.
+<pre>
+    public Set getPrincipals();
+    public Set getPrincipals(Class c);
+</pre>
+
+<p>최초의 메소드는, 주제에 포함되는 모든 법칙을 돌려줍니다. 한편, 2 번째의 메소드는, 지정된 클래스 <code>c</code> 또는 그 서브 클래스의 인스턴스가 되어 있는 법칙 밖에 돌려주지 않습니다. 주제에 관련지을 수 있고 있는 법칙이 없는 경우는, 빈 상태(empty)세트가 돌려주어집니다.
+
+<p>주제에 관련한 공개 쿠레덴샤르를 취득하는 경우는, 다음의 메소드를 이용할 수 있습니다.
+<pre>
+    public Set getPublicCredentials();
+    public Set getPublicCredentials(Class c);
+</pre>
+
+<p>이러한 메소드의 동작은 <code>getPrincipals</code> 메소드의 동작과 닮아 있습니다. 다만,<code>getPrincipals</code> 메소드에서는, 공개 쿠레덴샤르를 취득할 수 없습니다.
+
+<p><code>주제</code>에 관련한 비공개 쿠레덴샤르에 액세스 하는 경우는, 다음의 메소드를 이용할 수 있습니다.
+<pre>
+    public Set getPrivateCredentials();
+    public Set getPrivateCredentials(Class c);
+</pre>
+
+<p>이러한 메소드의 동작은,<code>getPrincipals</code> 메소드나 <code>getPublicCredentials</code> 메소드와 자주(잘) 닮았습니다.
+
+<p> <code>Subject</code> 의 <code>Principal</code> <code>Set</code>, 공개 쿠레덴샤르 <code>Set</code>, 또는 비공개 쿠레덴샤르 <code>Set</code> 를 변경 또는 조작하는 경우, 호출측은 <a href="../../../../api/java/util/Set.html"><code>java.util.Set</code></a>  클래스에서 정의된 메소드를 사용합니다. 그방법을 나타내는 샘플 코드를 다음에 나타냅니다.
+<pre>
+    Subject subject;
+    Principal principal;
+    Object credential;
+
+    .  .  .
+
+    // add a Principal and credential to the Subject
+    subject.getPrincipals(). add(principal);
+    subject.getPublicCredentials(). add(credential);
+</pre>
+
+<p> 주:「modifyPrincipals」, 「modifyPublicCredentials」, 「modifyPrivateCredentials」의 몇개의 타겟명을 가지는 <code>AuthPermission</code> 는, 각각의 <code>Set</code> 를 변경하기 위해서 요구됩니다. 주제의 내부 세트가 돌려주는 것은, 인수 없음의 <code>getPrincipals()</code>,<code>getPublicCredentials()</code>,<code>getPrivateCredentials()</code> 메소드로부터 반환되는 세트만입니다. 이 때문에, 반환된 세트를 변경하면(자), 내부 세트도 영향을 받습니다. 주제의 내부 세트는,<code>getPrincipals(Class c)</code>,<code>getPublicCredentials(Class c)</code>,<code>getPrivateCredentials(Class c)</code> 메소드로부터 반환되는 세트는 돌려주지 않습니다. 메소드 호출할 것에, 신규 세트가 작성되어 돌려주어집니다. 이러한 세트를 변경해도, 주제의 내부 세트에 영향은 없습니다.
+
+<p>비공개 쿠레덴샤르의 Set 로 반복 처리를 실행하려면 , 각 쿠레덴샤르에 액세스 하기 위한(해),<code>javax.security.auth.PrivateCredentialPermission</code> 가 필요합니다. 상세한 것에 대하여는,<a href="../../../../api/javax/security/auth/PrivateCredentialPermission.html"><code>「PrivateCredentialPermission」</code></a> API 문서를 참조해 주세요.
+
+<p> 주제는 <code>AccessControlContext</code> 와 관련지을 수 있습니다 (이하의 <code>doAs</code> 및 <code>doAsPrivileged</code> 메소드의 해설을 참조). 다음의 메소드는, 지정된 <code>AccessControlContext</code> 와 관련한 주제를 돌려줍니다. 지정된 <code>AccessControlContext</code> 와 관련지을 수 있었던 주제가 존재하지 않는 경우에는,<code>null</code> 를 돌려줍니다.
+<pre>
+    public static Subject getSubject(final AccessControlContext acc);
+</pre>
+
+<p> 타겟명 「getSubject」를 가지는 <code>AuthPermission</code> 은,<code>Subject.getSubject</code> 를 호출하기 위해서(때문에) 요구됩니다.
+<p>
+<code>Subject</code> 클래스에는,<code>java.lang.Object</code> 로부터 상속한 다음의 메소드도 포함됩니다.
+<pre>
+    public boolean equals(Object o);
+    public String toString();
+    public int hashCode();
+</pre>
+
+
+<H4>특정의 주제로서 액션을 실행하는 doAs 메소드</H4>
+
+<blockquote>
+
+다음의 static 메소드는, 특정의 주제로서 액션을 실행합니다.
+<pre>
+    public static Object 
+        doAs(final Subject subject,
+             final java.security.PrivilegedAction action);
+
+    public static Object 
+        doAs(final Subject subject,
+             final java.security.PrivilegedExceptionAction action)
+             throws java.security.PrivilegedActionException;
+</pre>
+
+<p>어느 쪽의 메소드도, 지정된 주제를 현행 thread의 <code>AccessControlContext</code> 에 관련짓고 나서,<code>action</code> 를 실행합니다. 이것에 의해, 주제로서 <code>action</code> 를 실행하는 효과를 얻을 수 있습니다. 최초의 메소드에서는, 실행시 예외가 throw 될 가능성이 있습니다만, 일반적으로의 실행에서는,<code>action</code> 인수를 지정해 <code>run</code> 메소드를 실행해 얻을 수 있던 객체가 돌려주어집니다. 2 번째의 메소드도,<code>PrivilegedExceptionAction run</code> 메소드로부터의 체크된 예외를 throw 하는 경우가 있는 것을 제외해, 동작은 같습니다. 타겟명 "doAs" 를 가지는 <code>AuthPermission</code> 는,<code>doAs</code> 메소드를 호출하기 위해서(때문에) 요구됩니다.
+
+<p> <a name="Subject.doAs Example"><b>Subject.doAs 의 예</b></a> 
+
+<p> 다음에,<code>doAs</code> 메소드를 최초로 이용하는 경우의 예를 나타냅니다. 사용자 "Bob" 가 <code>LoginContext</code> 에 의해 인증되었기 때문에,<code>com.ibm.security.Principal</code> 클래스의 법칙에 주제가 생성되어 법칙의 이름이 "BOB" 가 되었다고 상정해 주세요. 또, SecurityManager 가 인스톨이 끝난 상태로, 액세스 제어 정책내에 이하가 존재하는 것으로 합니다 (정책 파일의 상세한 것에 대하여는<a href="#Policy">Policy</a> 를 참조).
+
+<pre>
+    // grant "BOB" permission to read the file "foo.txt"
+    grant Principal com.ibm.security.Principal "BOB" {
+        permission java.io.FilePermission "foo.txt", "read";
+    };
+</pre>
+
+<p>다음에, 샘플 어플리케이션 코드를 나타냅니다.
+
+<pre>
+    class ExampleAction implements java.security.PrivilegedAction {
+        public Object run() {
+            java.io.File f = new java.io.File("foo.txt");
+
+            // the following call invokes a security check
+            if (f.exists()) {
+                System.out.println("File foo.txt exists");
+            }
+            return null;
+        }
+    }
+
+    public class Example1 {
+        public static void main(String[] args) {
+
+            // Authenticate the subject, "BOB".
+            // This process is described in the
+            // <a href="#LoginContext">LoginContext</a>  section.
+            
+            Subject bob;
+            // Set bob to the Subject created during the 
+            // authentication process
+
+            // perform "ExampleAction" as "BOB"
+            Subject.doAs(bob, new ExampleAction());
+        }
+    }
+</pre>
+
+<p>실행시에,<code>ExampleAction</code> 가 <code>f.exists()</code> 를 호출하면(자), 시큐리티 체크가 실행됩니다. 다만,<code>ExampleAction</code> 가 「BOB」로서 실행중이며, 정책 (상기)에 의해 필요한 <code>FilePermission</code> 가 「BOB」에 부여되고 있기 (위해)때문에,<code>ExampleAction</code> 는 시큐리티 체크를 통과합니다. 정책내의 <code>grant</code> 문을 변경하는 (예를 들어, 부정한 <code>CodeBase</code> 를 추가할까 법칙을 "MOE" 로 변경한다)와<code>SecurityException</code> 가 throw 됩니다.
+
+</blockquote>
+
+
+<H4>doAsPrivileged 메소드 </H4>
+
+<blockquote>
+
+<p> 다음의 메소드도, 특정의 주제로서 액션을 실행합니다.
+<pre>
+    public static Object doAsPrivileged(
+        final Subject subject,
+        final java.security.PrivilegedAction action,
+        final java.security.AccessControlContext acc);
+
+    public static Object doAsPrivileged(
+        final Subject subject,
+        final java.security.PrivilegedExceptionAction action,
+        final java.security.AccessControlContext acc)
+        throws java.security.PrivilegedActionException;
+</pre>
+
+<p>타겟명 「doAsPrivileged」를 가지는 <code>AuthPermission</code> 는,<code>doAsPrivileged</code> 메소드를 호출하기 위해서(때문에) 요구됩니다.
+
+</blockquote>
+
+
+<a name="doAsComp">
+<H4>doAs 와 doAsPrivileged</H4></a> 
+
+<blockquote>
+
+<p><code>doAsPrivileged</code> 메소드의 동작은,<code>doAs</code> 와 완전히 같습니다. 다만, 지정된 주제를 현행의 thread의 <code>AccessControlContext</code> 에 관련짓는 대신에, 지정된 <code>AccessControlContext</code> 를 사용합니다. 이와 같이, 현행의 것과는 다른 <code>AccessControlContext</code> 에 의해 액션이 제한되는 일이 있습니다.
+
+<p><code>AccessControlContext</code> 에는,<code>AccessControlContext</code> 의 인스턴스화 이후에 실행된 모든 코드에 관한 정보 (코드 위치나, 정책에 의해 코드에 부여된 액세스권등)가 포함됩니다. 액세스 제어 체크를 성공시키기 (위해)때문에, 정책는,<code>AccessControlContext</code> 에 의해 참조되는 각 코드 항목에, 필요한 액세스권을 부여할 필요가 있습니다.  
+
+<p><code>doAsPrivileged</code> 에 제공된 <code>AccessControlContext</code> 가 <code>null</code> 인 경우, 액션이 다른 <code>AccessControlContext</code> 에 의해 제한될 것은 없습니다. 이것은, 서버 환경에서 도움이 되는 경우가 있습니다. 서버는, 복수의 착신 요구를 인증해, 각 요구에 대해서 다른 <code>doAs</code> 를 실행할 수가 있습니다. 각 <code>doAs</code> 액션을 새롭게 개시해, 현행의 서버의 제한 <code>AccessControlContext</code> 를 없애기 (위해)때문에, 서버는 <code>doAsPrivileged</code> 를 호출해,<code>null</code> <code>AccessControlContext</code> 를 제공할 수가 있습니다.
+
+</blockquote>
+
+</blockquote>
+
+
+<h3><a name="Principals"></a> Principals</h3>
+
+<blockquote>
+
+이전에 설명한 것처럼, 인증에 성공했을 경우, 법칙을 주제에 관련지을 수가 있습니다. <code>Principal</code> 는,<code>Subject</code> 의 식별 정보를 나타냅니다. 또,<a href="../../../../api/java/security/Principal.html"><code>java.security.Principal</code></a>  및 <a href="../../../../api/java/io/Serializable.html"><code>java.io.Serializable</code></a>  인터페이스를 구현할 필요가 있습니다. 주제에 관련한 법칙의 갱신 방법은,<a href="#Subject">주제</a>를 참조해 주세요.
+
+</blockquote>
+
+
+<h3><a name="Credentials"></a> Credentials</h3>
+
+<blockquote>
+
+공개 및 비공개 쿠레덴샤르크라스는, 코어 JAAS 클래스 라이브러리의 일부에서는 없습니다. 모든 클래스가 쿠레덴샤르가 됩니다. 다만, 개발자는, 쿠레덴샤르에 관련하는 2 개의 인터페이스,<code>Refreshable</code> 및 <code>Destroyable</code> 를 구현하는 쿠레덴샤르크라스를 가지는 것을 결정할 수 있습니다.
+
+
+<h4>Refreshable</h4>
+
+<blockquote>
+
+<p>이<a href="../../../../api/javax/security/auth/Refreshable.html"><code>javax.security.auth.Refreshable</code></a>  <b>인터페이스</b>는, 자격의 자동 갱신 기능을 제공합니다. 예를 들어, 유효기간의 제한된 쿠레덴샤르가 이 인터페이스를 구현하면(자), 호출측이 유효기간을 갱신할 수 있게 됩니다. 이 인터페이스에는, 다음의 2 개의 abstract 메소드가 있습니다.
+<pre>
+    boolean isCurrent();
+</pre>
+이 메소드는, 자격이 현재 유효한가 어떤가를 판정합니다.
+<pre>
+    void refresh() throws RefreshFailedException;
+</pre>
+이 메소드는, 자격의 유효기간을 갱신 또는 확장합니다. 이 메소드 구현은,<code>AuthPermission("refreshCredential")</code> 시큐리티 체크를 실행합니다. 이 때문에, 호출측은 쿠레덴샤르를 갱신하기 위한 액세스권을 보관 유지합니다.
+
+</blockquote>
+
+
+<h4>Destroyable</h4>
+
+<blockquote>
+
+<p>이 <a href="../../../../api/javax/security/auth/Destroyable.html"><code>javax.security.auth.Destroyable</code></a>  <b>인터페이스</b>는, 자격의 컨텐츠를 파기하는 기능을 제공합니다. 이 인터페이스에는, 다음의 2 개의 abstract 메소드가 있습니다.
+<pre>
+    boolean isDestroyed();
+</pre>
+이 메소드는, 자격이 파기되었는지의 여부를 판별합니다.
+<pre>
+    void destroy() throws DestroyFailedException;
+</pre>
+이 메소드는, 이 자격에 관련한 정보를 파기 및 소거합니다. 이후, 이 쿠레덴샤르의 특정 메소드를 호출하면(자),<code>IllegalStateException</code> 가 throw 됩니다. 이 메소드 구현은,<code>AuthPermission("destroyCredential")</code> 시큐리티 체크를 실행합니다. 이 때문에, 호출측은 쿠레덴샤르를 파기하기 위한 액세스권을 보관 유지합니다.
+
+
+</blockquote>
+
+</blockquote>
+
+
+<h2><a name="Authentication"></a> 인증 클래스와 인터페이스</h2>
+
+<blockquote>
+
+주제 (사용자 또는 서비스)의 인증에서는, 다음의 처리를 합니다.
+
+<ol>
+<li> 어플리케이션이 <code>LoginContext</code> 를 인스턴스화합니다.  <p>
+
+<li> <code>LoginContext</code> 가,<a href="../../../../api/javax/security/auth/login/Configuration.html"><code>Configuration</code></a>  에 문의를 실시해, 어플리케이션용으로 구성된 모든 로그인 모듈을 로드한다 <p>
+
+<li> 어플리케이션이,<code>LoginContext</code> 의 <code>login</code> 메소드를 호출합니다.  <p>
+
+<li> <code>login</code> 메소드가 로드 된 모든 로그인 모듈을 호출합니다. 각 로그인 모듈은 주제를 인증하려고 합니다. 성공했을 경우, 인증되는이라고 있는 주제를 나타내는 <code>Subject</code> 객체에, 적절한 법칙과 쿠레덴샤르를 관련짓습니다.  <p>
+
+<li> <code>LoginContext</code> 가, 인증 상태를 어플리케이션에 돌려줍니다. <p>
+
+<li> 인증이 성공하면(자), 어플리케이션은 <code>Subject</code> 를 <code>LoginContext</code> 로부터 가져옵니다. <p>
+
+</ol>
+
+<p>이하에서는, 인증 클래스에 도착해 설명합니다.
+
+
+<h3><a name="LoginContext"></a> LoginContext</h3>
+
+<blockquote>
+
+<p> <a href="../../../../api/javax/security/auth/login/LoginContext.html"><code>javax.security.auth.login.LoginContext</code></a>  클래스는, 피인증자의 인증에 사용되는 기본적인 메소드를 제공합니다.  이 클래스를 사용하면(자), 기반이 되는 인증 테크놀러지에 의존하지 않는 어플리케이션을 개발할 수 있습니다. <code><code>LoginContext</code> 는,<a href="../../../../api/javax/security/auth/login/Configuration.html"><code>Configuration</code></a>  에의 문의를 실행해, 특정의 어플리케이션용으로 구성된 인증 서비스 또는 <a href="../../../../api/javax/security/auth/spi/LoginModule.html"><code>LoginModule</code></a>  를 확인합니다. 이 때문에, 어플리케이션 자체를 변경하지 않고 , 복수가 다른 로그인 모듈을 플러그 인으로서 어플리케이션으로 사용할 수 있습니다.
+
+<p><code>LoginContext</code> 는, 선택 가능한 4 개의 생성자 을 제공합니다.
+<pre>
+    public LoginContext(String name) throws LoginException;
+
+    public LoginContext(String name, Subject subject) throws LoginException;
+
+    public LoginContext(String name, CallbackHandler callbackHandler)
+           throws LoginException
+
+    public LoginContext(String name, Subject subject,
+           CallbackHandler callbackHandler) throws LoginException
+</pre>
+모든 생성자 은, 공통의 파라미터 <code>name</code> 를 공유합니다. <code><code>LoginContext</code> 는, 이 인수를 로그인 구성의 인덱스로서 사용해,<code>LoginContext</code> 의 인스턴스화를 실시하는 어플리케이션용으로서 구성되는 로그인 모듈을 특정합니다. 주제를 입력 파라미터로서 취하지 않는 생성자 은, 신규 주제를 인스턴스화합니다. 어느 생성자 에서도, null 의 입력은 허가되지 않습니다. 호출원래는 타겟명 「createLoginContext. &lt;name&gt;」를 가지는 <code>AuthPermission</code> 에 대해서,<code>LoginContext</code> 의 인스턴스화를 요구합니다. 여기서, &lt;name&gt; 는, 어플리케이션이 <code>LoginContext</code> 의 인스턴스화 시에 <code>name</code> 파라미터로 참조하는 로그인 구성 엔트리의 이름입니다.
+
+<p><code>CallbackHandler</code> 와 이것이 필요한 상황에 대해서는,<a href="#CallbackHandler">CallbackHandler</a>  의 섹션을 참조해 주세요.
+
+<p> 실제의 인증은, 다음의 메소드에의 호출을 사용해 행해집니다.
+<pre>
+    public void login() throws LoginException;
+</pre>
+
+<p><code>login</code> 를 호출하면(자), 모든 구성이 끝난 로그인 모듈이 불려 가 인증을 실행합니다. 인증에 성공했을 경우는, 다음의 메소드를 사용해, 인증된 주제 (법칙, 공개 쿠레덴샤르, 비공개 쿠레덴샤르)를 취득할 수 있습니다.
+<pre>
+     public Subject getSubject();
+</pre>
+
+<p> 주제를 로그아웃 해, 인증 끝난 법칙 및 쿠레덴샤르를 삭제하려면 , 다음의 메소드를 사용합니다.
+<pre>
+    public void logout() throws LoginException;
+</pre>
+
+<p> 다음의 샘플 코드는, 주제의 인증 및 로그아웃에 필요한 호출을 나타냅니다.
+<pre>
+    // let the LoginContext instantiate a new Subject
+    LoginContext lc = new LoginContext("entryFoo");
+    try {
+        // authenticate the Subject
+        lc.login();
+        System.out.println("authentication successful");
+
+        // get the authenticated Subject
+        Subject subject = lc.getSubject();
+
+        ...
+
+        // all finished -- logout
+        lc.logout();
+    } catch (LoginException le) {
+        System.err.println("authentication unsuccessful: " +  
+            le.getMessage());
+    }
+</pre>
+
+</blockquote>
+
+
+<h3><a name="LoginModule">LoginModule</a> </h3>
+
+<blockquote>
+
+<p><a href="../../../../api/javax/security/auth/spi/LoginModule.html"><code>LoginModule</code></a>  <b>인터페이스</b>를 사용하면(자), 다른 종류의 인증 기술을 구현해, 어플리케이션으로 플러그 인으로서 이용할 수 있습니다. 예를 들어, 사용자명/패스워드 베이스의 인증을 실행할 수 있는 로그인 모듈이 있습니다. 스마트 카드나 바이오 시학 디바이스등의 하드웨어에의 인터페이스를 제공하는 로그인 모듈도 있습니다.
+
+<p>주:어플리케이션 작성자는, 로그인 모듈의 기능을 이해하고 있지 않아도 괜찮습니다. 어플리케이션의 작성과 구성 정보 (로그인 구성 파일의 내용등)의 지정에 집중해, 어플리케이션이 구성에 의해 지정된 로그인 모듈 이용해 사용자를 인증할 수 있도록 해 주세요.  
+
+<p>인증 기술을 구현하는 로그인 모듈을 작성할 필요가 있는 프로그래머는,<a href="JAASLMDevGuide.html">「JAAS 로그인 모듈 개발자 가이드」</a>  로 구체적인 순서를 확인해 주세요.
+
+</blockquote>
+
+
+<h3><a name="CallbackHandler">CallbackHandler</a> </h3>
+
+<blockquote>
+
+<p>로그인 모듈이 사용자와의 통신을 개입시켜 인증 정보를 취득하는 것이 필요한 경우가 있습니다. <code>LoginModule</code> 는,<a href="../../../../api/javax/security/auth/callback/CallbackHandler.html">javax.security.auth.callback.CallbackHandler</a>  를 사용해 이것을 실행합니다. 어플리케이션은,<code>CallbackHandler</code> <b> 인터페이스</b> 를 구현해, 이것을 <code>LoginContext</code> 에 건네줍니다. <code>LoginContext</code> 는 이것을 기반이 되는 로그인 모듈에 직접 전송 합니다. 로그인 모듈은<code>CallbackHandler</code> 를 사용해, 사용자로부터의 입력 (패스워드, 스마트 카드의 비밀번호등)을 수집하거나 사용자에게 정보 (상태 정보등)를 제공하거나 합니다. 어플리케이션에 <code>CallbackHandler</code> 의 지정을 허가하는 것으로써, 기반이 되는 로그인 모듈은, 어플리케이션과 사용자 사이의 통신 방법으로 의존하지 않고 동작하게 됩니다. 예를 들어, GUI 어플리케이션용의 <code>CallbackHandler</code> 구현은, 윈도우를 표시해 사용자의 입력을 유발 (prompt)합니다. 한편, 비 GUI 툴용의 <code>CallbackHandler</code> 는, 커멘드행으로부터 직접 입력하도록(듯이) 사용자에게 요구합니다.
+</p>
+
+<code>CallbackHandler</code> 는, 1 개의 메소드를 가진 구현하기 위한 인터페이스입니다.
+<pre>
+     void handle(Callback[] callbacks)
+         throws java.io.IOException, UnsupportedCallbackException;
+</pre>
+
+<p><code>LoginModule</code> 은 <code>CallbackHandler handle</code> 메소드에 적절한 <code>Callback</code> 로부터 되는 배열 (예를 들어 사용자명의 경우 <a href="../../../../api/javax/security/auth/callback/NameCallback.html">NameCallback</a> , 패스워드의 경우 <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html">PasswordCallback</a> )을 건네주어,<code>CallbackHandler</code> 는 요구에 따라 사용자와 통신해,<code>Callback</code> 내에 적절한 값을 설정합니다. 예를 들어,<code>NameCallback</code> 를 처리하는 경우,<code>CallbackHandler</code> 는 사용자로부터 이름을 취득해,<code>NameCallback</code> 의 <code>setName</code> 메소드를 호출해 그 이름을 포함합니다.
+
+<p><a href="../../../../api/javax/security/auth/callback/CallbackHandler.html"><code>「CallbackHandler」</code></a> 의 문서에는, 이 문서에는 기재되지 않은 대량의 샘플이 기재되어 있습니다.
+
+</blockquote>
+
+
+<h3><a name="Callback">Callback</a> </h3>
+
+<blockquote>
+
+<a href="../../../../api/javax/security/auth/callback/package-summary.html">javax.security.auth.callback</a>  패키지에는,<code>Callback</code> 인터페이스 및 몇개의 구현이 포함되어 있습니다. 로그인 모듈은,<code>Callback</code> 의 배열을,<a href="#CallbackHandler">CallbackHandler</a>  의 <code>handle</code> 메소드에 직접 건네줄 수가 있습니다.
+
+<p>사용 방법의 상세한 것에 대하여는, 각종 <code>Callback</code> API 를 참조해 주세요.
+
+</blockquote>
+
+
+</blockquote>
+
+
+<h2><a name="Authorization">승인 클래스</a> </h2>
+
+<blockquote>
+
+<p>JAAS 승인을 실시하려면 , 실행중의 코드와 실행 사용자에 근거해 액세스권을 부여해, 다음의 작업을 실시할 필요가 있습니다.
+
+<ul>
+
+<li><a href="#LoginContext">LoginContext</a>  의 섹션의 설명에 따라 사용자를 인증한다 <p>
+
+<li>인증의 결과 생성되는 주제를<a href="#Subject">주제</a>의 설명에 따라 액세스 제어 문맥에 관련짓는다 <p>
+
+<li>이하의 설명에 따라 시큐리티 정책내에 법칙 베이스의 엔트리를 구성한다 <p>
+
+</ul>
+
+<p>이하에서는,<code>Policy</code> 추상 클래스와 승인 고유의 클래스 <code>AuthPermission</code> 및 <code>PrivateCredentialPermission</code> 에 대해 설명합니다.
+
+
+<h3><a name="Policy"></a> <u>Policy</u></h3>
+
+<blockquote>
+
+<p>
+<p><a href="../../../../api/java/security/Policy.html"><code>java.security.Policy</code></a>  클래스는, 시스템 전체의 액세스 제어 정책를 나타내는<b>추상</b>클래스입니다. <code><code>Policy</code> API 는 J2SDK, v 1.4 로 업그레이드 되어<a href="../../../../api/java/security/Principal.html"><code>Principal</code></a>  베이스의 쿼리를 지원하게 되어 있습니다.
+
+<p>J2SDK 는, 디폴트로, 파일 베이스의 서브 클래스 구현을 제공합니다. 이 구현도 업그레이드 되어 정책 파일내에서 <code>Principal</code> 베이스의 <code>grant</code> 엔트리를 사용할 수 있게 되어 있습니다.
+
+<p>정책 파일 및 그 내부의 엔트리 구조의 자세한 것은,<a href = "../PolicyFiles.html"> 「디폴트의 Policy 의 구현과 정책 파일의 구문」</a>을 참조해 주세요.
+
+</blockquote>
+
+
+<h3><a name="AuthPermission">AuthPermission</a> </h3>
+
+<blockquote>
+
+<p><a href="../../../../api/javax/security/auth/AuthPermission.html"><code>javax.security.auth.AuthPermission</code></a>  클래스는, JAAS 에 필수의 기본적인 액세스권을 캡슐화합니다. <code>AuthPermission</code> 에는 이름 (타겟명이라고도 불린다)은 포함됩니다만, 액션 리스트는 포함되지 않습니다. 따라서, 이름 첨부 액세스권을 얻는지, 액세스권을 얻지 않을까의 어딘가에 됩니다.
+
+<p> <code>AuthPermission</code> 는,<a href="../../../../api/java/security/Permission.html"><code>java.security.Permission</code></a>  로부터 상속된 메소드 외에 2 개의 public 생성자 을 가지고 있습니다.
+<pre>
+    public AuthPermission(String name);
+    public AuthPermission(String name, String actions);
+</pre>
+최초의 생성자 은, 지정된 name 로 신규 <code>AuthPermission</code> 를 작성합니다. 2 번째의 생성자 도, 지정된 name 로 <code>AuthPermission</code> 객체를 작성합니다만,<code>actions</code> 인수가 추가 지정되고 있습니다. 이 인수는 현재로서는미사용이기 (위해)때문에, null 로 합니다. 이 생성자 은,<code>Policy</code> 객체로 신규 <code>Permission</code> 객체를 인스턴스화하기 (위해)때문에인 만큼 존재합니다. 그 외의 대부분의 코드에서는, 최초의 생성자 의 사용이 적합합니다.
+
+<p>현재로서는,<code>AuthPermission</code> 객체는,<code>Policy</code>,<code>Subject</code>,<code>LoginContext</code>, 및 <code>Configuration</code> 객체에의 액세스의 보호에 사용됩니다. 지원되는 유효한 이름의 리스트에 대해서는,<a href="../../../../api/javax/security/auth/AuthPermission.html"> AuthPermission</a>  의 javadoc 문서를 참조해 주세요.
+
+</blockquote>
+
+
+<h3><a name="PrivateCredentialPermission">PrivateCredentialPermission</a> </h3>
+
+<blockquote>
+
+<p><code>javax.security.auth.PrivateCredentialPermission</code> 클래스는,<code>주제</code> 의 비공개 쿠레덴샤르에의 액세스를 보호해, 1 개의 public 생성자 을 제공합니다.
+
+<pre>
+     public PrivateCredentialPermission(String name, String actions);
+</pre>
+
+이 클래스의 자세한 것은,<a href="../../../../api/javax/security/auth/PrivateCredentialPermission.html">PrivateCredentialPermission</a>  javadoc 의 문서를 참조해 주세요.
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<p>
+
+
+<!------------------------------------------------------------------------>
+
+<hr>
+<H1><a name="Sample">JAAS 튜토리얼과 샘플 프로그램</a> </H1>
+
+<blockquote>
+
+<p><a href="tutorials/GeneralAcnOnly.html">「JAAS 인증」</a>  및 <a href="tutorials/GeneralAcnAndAzn.html">「JAAS 승인」</a>  의 각 튜토리얼에는, 다음의 샘플이 포함되어 있습니다.
+
+<ul>
+
+<li><a href = "tutorials/SampleAcn.java">SampleAcn.java</a> . JAAS 인증을 설명하는 샘플 어플리케이션 <p>
+
+<li><a href = "tutorials/SampleAzn.java">SampleAzn.java</a> . 승인 튜토리얼로 사용되는 샘플 어플리케이션. 인증과 승인의 양쪽 모두를 설명한다 <p>
+
+<li><a href = "tutorials/sample_jaas.config">sample_jaas.config</a> . 양쪽 모두의 튜토리얼로 사용되는 샘플 로그인 구성 파일 <p>
+
+<li><a href = "tutorials/sampleacn.policy">sampleacn.policy</a> . 인증 튜토리얼의 코드에 필요한 액세스권을 부여하는 샘플 정책 파일 <p>
+
+<li><a href = "tutorials/sampleazn.policy">sampleazn.policy</a> . 승인 튜토리얼의 코드에 필요한 액세스권을 부여하는 샘플 정책 파일 <p>
+
+<li><a href = "tutorials/SampleLoginModule.java">SampleLoginModule.java</a> . 튜토리얼의 로그인 구성 파일 (<code>sample_jaas.config</code>)에 의해, 기반이 되는 적절한 인증을 구현하는 클래스로서 지정된다. SampleLoginModule 의 사용자 인증은, 사용자에 의해 지정된 이름과 패스워드가 특정의 값을 가지고 있는 것을 검증하는 처리이다 <p>
+
+<li><a href = "tutorials/SamplePrincipal.java">SamplePrincipal.java</a> . <a href="../../../../api/java/security/Principal.html"><code> Principal</code></a>  인터페이스를 구현하는 샘플 클래스. SampleLoginModule 에 의해 사용된다
+
+</ul>
+
+<p>어플리케이션, 정책 파일, 및 로그인 구성 파일의 상세한 것에 대하여는, 튜토리얼을 참조해 주세요.
+
+<p>튜토리얼에 설명되고 있는 대로, 어플리케이션 작성자는 SampleLoginModule.java 나 SamplePrincipal.java 의 코드를 이해하고 있지 않아도 괜찮습니다. 로그인 모듈을 작성하는 프로그래머는,<a href="JAASLMDevGuide.html">「JAAS 로그인 모듈 개발자 가이드」</a>로 그방법을 확인할 수 있습니다.
+
+</blockquote>
+
+<p>
+
+
+<!------------------------------------------------------------------------>
+<hr>
+<H1><a name="AppendixA">부록 A:java.security 시큐리티 프로퍼티 파일에서의 JAAS 설정</a> </H1>
+
+<blockquote>
+
+<p> <code>java.security</code> 마스터 시큐리티 프로퍼티 파일내에서 다수의 JAAS 설정을 실시할 수가 있습니다. 이 파일은, Java Runtime 의 <b>lib/security</b> 디렉토리내에 있습니다.
+
+<p> JAAS 는,<code>java.security</code> 에 다음의 2 개의 새로운 시큐리티 프로퍼티을 추가합니다.
+<ul>
+<li><code>login.configuration.provider</code>
+<li><code>login.config.url. <i>n</i></code>
+</ul>
+
+<p>다음의 기존의 프로퍼티도 JAAS 사용자와 관계가 있습니다.
+<ul>
+<li><code>policy.provider</code>
+<li><code>policy.url. <i>n</i></code>
+</ul>
+
+
+<H3>로그인 구성 프로바이더</H3>
+
+<blockquote>
+
+<p> Sun Microsystems 가 제공하는 디폴트의 JAAS 로그인 구성 구현은, 그 구성 정보를 파일로부터 가져옵니다. 이 정보는, 튜토리얼에 기재되어 있는 특수한 형식에서 제공되게 되어 있습니다.
+
+<p>대체 프로바이더 클래스 구현을 <code>login.configuration.provider</code> 프로퍼티내로 지정하는 것으로, 디폴트의 JAAS 로그인 구성 구현을 옮겨놓을 수가 있습니다.
+
+<p> 예를 나타냅니다.
+<pre>
+  login.configuration.provider=com.foo.Config
+</pre>
+
+시큐리티 프로퍼티 <code>login.configuration.provider</code> 가 발견되지 않는, 또는 지정되어 있지 않은 경우, 디폴트 값가 설정됩니다.
+<pre>
+  login.configuration.provider=com.sun.security.auth.login.ConfigFile
+</pre>
+
+<p> 로그인 구성 프로바이더를, 커멘드행으로부터 동적으로 설정할 수 없습니다.
+
+</blockquote>
+
+
+<H3>로그인 구성 URL</H3>
+
+<blockquote>
+
+<p> Sun Microsystems 가 제공하는 디폴트 구현과 같이, 파일내에 구성 정보가 지정되고 있는 것을 요구하는 로그인 구성 구현을 사용하고 있는 경우는,<code>login.config.url. <i>n</i></code> 프로퍼티에 개개의 URL 를 지정하는 것으로써, 로그인 구성 파일의 위치를 정적으로 설정할 수 있습니다. '<i>「n」</i> 는, 1 으로부터 시작되는 연속한 번호입니다. 「<i>n</i> >= 2」와 같이 복수의 구성 파일이 지정되는 경우, 그것들은 읽혀 결합되어 단일의 구성이 됩니다.
+
+<p> 예를 나타냅니다.
+<pre>
+  login.config.url. 1=file:C:/config/.java.login.config
+  login.config.url. 2=file:C:/users/foo/.foo.login.config
+</pre>
+
+<p> 구성 파일의 위치가 <code>java.security</code> 프로퍼티 파일로 지정되지 않고, 커멘드행으로부터 <code>-Djava.security.auth.login.config</code> 옵션을 사용해 동적으로 지정되지 않은 경우, JAAS 는 이하로부터 디폴트 구성의 로드를 시도합니다.
+
+<blockquote>
+<pre>
+<i>file:${user.home}</i>/. java.login.config
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<a name="policyprovider"></a> 
+<H3>정책 프로바이더</H3>
+
+<blockquote>
+
+<p> 대체 프로바이더 클래스 구현을 <code>policy.provider</code> 프로퍼티내로 지정하는 것으로, 디폴트의 JAAS 액세스 제어 정책 구현을 옮겨놓을 수가 있습니다.
+
+<p> 예를 나타냅니다.
+<pre>
+  policy.provider=com.foo.Policy
+</pre>
+
+시큐리티 프로퍼티 <code>policy.provider</code> 가 발견되지 않는, 또는 지정되어 있지 않은 경우,<code>Policy</code> 는 디폴트 값로 설정됩니다.
+<pre>
+  policy.provider=sun.security.provider.PolicyFile
+</pre>
+
+<p> 정책 프로바이더를, 커멘드행으로부터 동적으로 설정할 수 없습니다.
+
+</blockquote>
+
+
+<H3>정책 파일 URL</H3>
+
+<blockquote>
+
+<p> 액세스 제어 정책 파일의 위치는,<code>auth.policy.url. <i>n</i></code> 프로퍼티에 각각의 URL 를 지정하는 것으로써, 정적으로 설정할 수 있습니다. '<i>「n」</i> 는, 1 으로부터 시작되는 연속한 번호입니다. 「<i>n</i> >= 2」와 같이 복수의 정책가 지정되는 경우, 그것들은 읽혀 결합되어 단일의 정책가 됩니다.
+
+<p> 예를 나타냅니다.
+<pre>
+  policy.url. 1=file:C:/policy/.java.policy
+  policy.url. 2=file:C:/users/foo/.foo.policy
+</pre>
+
+<p> <code>java.security</code> 프로퍼티 파일에 정책 파일의 위치가 지정되지 않고,<code>-Djava.security.policy</code> 옵션에 의해 커멘드행으로부터 동적으로 지정될 것도 없는 경우, 액세스 제어 정책는, J2SDK 와 동시에 인스톨 된 시스템 정책 파일과 같게 됩니다. 이 정책 파일의 특징은 다음과 같습니다.  
+
+<ul>
+
+<li>표준의 확장 기능에 모든 액세스권을 부여 <p>
+
+<li>임의의 사용자가 비특권 포트로 대기하는 것을 허가 <p>
+
+<li>임의의 코드가 시큐리티상 그만큼 중요하지 않은 특정의 「표준」프로퍼티 ("os.name","file.separator" 등)을 읽어내는 것을 허가 
+
+</ul>
+
+</blockquote>
+
+
+<H3>샘플 마스터 시큐리티 프로퍼티 파일</H3>
+
+<blockquote>
+
+<p> 다음에, Java SE 6 으로 제공되는 <code>java.security</code> 파일을 나타냅니다. JAAS 관련 프로퍼티의 샘플 설정은 굵은 글씨로 가리킵니다. 이 예에서는,<code>policy.provider</code>,<code>policy.url. <i>n</i></code>,<code>및 login.configuration.provider</code> 프로퍼티의 디폴트의 <code>java.security</code> 파일내의 값은 그대로 사용합니다. 디폴트의 <code>java.security</code> 파일내의 <code>login.config.url. <i>n</i></code> 의 값은 코멘트화 되고 있습니다. 이하의 예에서는 코멘트화 되고 있지 않습니다.
+
+<pre>
+#
+# This is the "master security properties file".
+#
+# In this file, various security properties are set for use by
+# java.security classes.  This is where users can statically register
+# Cryptography Package Providers ("providers" for short).  The term
+# "provider" refers to a package or set of packages that supply a
+# concrete implementation of a subset of the cryptography aspects of
+# the Java Security API.  A provider may, for example, implement one or
+# more digital signature algorithms or message digest algorithms.
+#
+# Each provider must implement a subclass of the Provider class.
+# To register a provider in this master security properties file,
+# specify the Provider subclass name and priority in the format
+#
+#    security.provider. &lt;n&gt;=&lt;className&gt;  
+#
+# This declares a provider, and specifies its preference
+# order &lt;n&gt;.  The preference order is the order in which providers are
+# searched for requested algorithms (when no specific provider is
+# requested).  The order is 1-based; 1 is the most preferred, followed
+# by 2, and so on.
+#
+# &lt;className&gt; must specify the subclass of the Provider class whose
+# constructor sets the values of various properties that are required
+# for the Java Security API to look up the algorithms or other
+# facilities implemented by the provider.
+#
+# There must be at least one provider specification in java.security.
+# There is a default provider that comes standard with the JDK.  It
+# is called the "SUN" provider, and its Provider subclass
+# named Sun appears in the sun.security.provider package.  Thus, the
+# "SUN" provider is registered via the following:
+#
+#    security.provider. 1=sun.security.provider.Sun
+#
+# (The number 1 is used for the default provider. )
+#
+# Note: Statically registered Provider subclasses are instantiated
+# when the system is initialized.  Providers can be dynamically
+# registered instead by calls to either the addProvider or
+# insertProviderAt method in the Security class.
+
+#
+# List of providers and their preference orders (see above):
+#
+security.provider. 1=sun.security.provider.Sun
+security.provider. 2=com.sun.net.ssl.internal.ssl.Provider
+security.provider. 3=com.sun.rsajca.Provider
+security.provider. 4=com.sun.crypto.provider.SunJCE
+security.provider. 5=sun.security.jgss.SunProvider
+
+#
+# Select the source of seed data for SecureRandom.  By default it uses
+# a system/thread activity algorithm.  Optionally, if the platform supports
+# it an entropy gathering device can be selected.  
+#
+#securerandom.source=file:/dev/random
+#
+# The entropy gathering device is described as a URL and can 
+# also be specified with the property "java.security.egd".  For example,
+#   -Djava.security.egd=file:/dev/urandom
+# Specifying this property will override the securerandom.source setting.
+
+#
+# Class to instantiate as the javax.security.auth.login.Configuration
+# provider.
+#
+<b>login.configuration.provider=com.sun.security.auth.login.ConfigFile</b>
+
+#
+# Default login configuration file
+#
+<b>login.config.url. 1=file:${user.home}/. java.login.config</b>
+
+#
+# Class to instantiate as the system Policy.  This is the name of the class
+# that will be used as the Policy object.
+#
+<b>policy.provider=sun.security.provider.PolicyFile</b>
+
+# The default is to have a single system-wide policy file,
+# and a policy file in the user's home directory.
+<b>policy.url. 1=file:${java.home}/lib/security/java.policy
+policy.url. 2=file:${user.home}/. java.policy</b>
+
+# whether or not we expand properties in the policy file
+# if this is set to false, properties (${...}) will not be expanded in policy
+# files.
+policy.expandProperties=true
+
+# whether or not we allow an extra policy to be passed on the command line
+# with -Djava.security.policy=somefile.  Comment out this line to disable
+# this feature.
+policy.allowSystemProperty=true
+
+# whether or not we look into the IdentityScope for trusted Identities
+# when encountering a 1.1 signed JAR file.  If the identity is found
+# and is trusted, we grant it AllPermission.
+policy.ignoreIdentityScope=false
+
+#
+# Default keystore type.
+#
+keystore.type=jks
+
+#
+# Class to instantiate as the system scope:
+#
+system.scope=sun.security.provider.IdentityDatabase
+
+#
+# List of comma-separated packages that start with or equal this string
+# will cause a security exception to be thrown when
+# passed to checkPackageAccess unless the
+# corresponding RuntimePermission ("accessClassInPackage. "+package) has
+# been granted.
+package.access=sun.
+
+#
+# List of comma-separated packages that start with or equal this string
+# will cause a security exception to be thrown when
+# passed to checkPackageDefinition unless the
+# corresponding RuntimePermission ("defineClassInPackage. "+package) has
+# been granted.
+#
+# by default, no packages are restricted for definition, and none of
+# the class loaders supplied with the JDK call checkPackageDefinition.
+#
+#package.definition=
+
+#
+# Determines whether this properties file can be appended to
+# or overridden on the command line via -Djava.security.properties
+#
+security.overridePropertiesFile=true
+
+#
+# Determines the default key and trust manager factory algorithms for 
+# the javax.net.ssl package.
+#
+ssl.KeyManagerFactory.algorithm=SunX509
+ssl.TrustManagerFactory.algorithm=SunX509
+
+#
+# Determines the default SSLSocketFactory and SSLServerSocketFactory
+# provider implementations for the javax.net.ssl package.   If, due to
+# export and/or import regulations, the providers are not allowed to be
+# replaced, changing these values will produce non-functional
+# SocketFactory or ServerSocketFactory implementations.
+#
+#ssl.SocketFactory.provider=
+#ssl.ServerSocketFactory.provider=
+</pre>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+<p>
+
+
+<!------------------------------------------------------------------------>
+<hr>
+<H1><a name="AppendixB">부록 B:샘플 로그인 구성</a> </H1>
+
+<blockquote>
+
+<p>로그인 구성은,<code>java.security</code> 파일내의 <code>login.config.url.n</code> 시큐리티 프로퍼티을 사용해 배치됩니다. 이 프로퍼티의 상세 및 <code>java.security</code> 파일의 위치에 대해서는,<a href="#AppendixA">「부록 A」</a>를 참조해 주세요.
+
+<p> 디폴트의 Configuration 구현 <code>ConfigFile</code> 는, 그 구성 정보를 로그인 구성 파일로부터 가져옵니다. JAAS 의 제공하는 디폴트 로그인 Configuration 구현의 자세한 것은,<a href="../../../../jre/api/security/jaas/spec/com/sun/security/auth/login/ConfigFile.html"><code>com.sun.security.auth.login.ConfigFile</code></a>  클래스의 javadoc 를 참조해 주세요.
+
+<p>이하는 샘플의 로그인 구성 파일입니다.  
+
+<pre>
+    Login1 {
+       sample.SampleLoginModule required debug=true;
+    };
+
+    Login2 {
+       sample.SampleLoginModule required;
+       com.sun.security.auth.module.NTLoginModule sufficient;
+       com.foo.SmartCard requisite debug=true;
+       com.foo.Kerberos optional debug=true;
+    };
+</pre>
+
+<p> 어플리케이션 <b>Login1</b> 는, 구성 끝난 로그인 모듈의,<code>SampleLoginModule</code> 만을 보관 유지합니다. 이 때문에,<b>Login1</b> 가 주제 (사용자 또는 서비스)를 인증하려고 하는 시도는,<code>SampleLoginModule</code> 가 성공했을 경우에게만 성공합니다.
+
+<p> 어플리케이션 <b>Login2</b> 의 인증 논리는, 이하의 겉(표)로 간단하게 설명할 수 있습니다. 주:<code>required</code>,<code>sufficient</code>,<code>requisite</code>, 및 <code>optional</code> 의 각 플래그에 대해서는,<a href="../../../../api/javax/security/auth/login/Configuration.html"><code>Configuration</code></a>  의 javadoc 문서를 참조해 주세요.
+
+<p>
+<table summary="Login2 Authentication Status" BORDER="1" CELLPADDING="3" CELLSPACING="0">
+<thead>
+<th colspan=10><font size="+2"><b>Login2 의 인증 상태</b></font>
+
+<tr>
+<td>SampleLoginModule</td><td>required</td><td>성공</td><td>성공</td><td>성공</td><td>성공</td><td>실패</td><td>실패</td><td>실패</td><td>실패</td>
+</tr>
+<tr>
+<td>NTLoginModule</td><td>sufficient</td>  <td>성공</td><td>실패</td><td>실패</td><td>실패</td><td>성공</td><td>실패</td><td>실패</td><td>실패</td>
+</tr>
+<tr>
+<td>SmartCard</td><td>requisite</td>       <td>*</td>   <td>성공</td><td>성공</td><td>실패</td><td>*</td>   <td>성공</td><td>성공</td><td>실패</td>
+</tr>
+<tr>
+<td>Kerberos</td><td>optional</td>         <td>*</td>   <td>성공</td><td>실패</td><td>*</td>   <td>*</td>   <td>성공</td><td>실패</td><td>*</td>
+</tr>
+<tr>
+<td colspan=2>전체의 인증</td>  <td>성공</td><td>성공</td><td>성공</td><td>실패</td><td>실패</td><td>실패</td><td>실패</td><td>실패</td>
+</tr>
+
+</table>
+* = 전의 requisite 모듈이 실패하는지, 또는 전의 sufficient 모듈이 성공했기 때문에, 어플리케이션에 제어가 돌려주어지므로, 이 값은 미묘하게 변화합니다.
+
+</blockquote>
+
+<!------------------------------------------------------------------------>
+
+<p>
+<i><!-- Last update: August 8, 2001 --></i>
+<p>
+</body>
+</HTML>

@@ -1,0 +1,163 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Input Method Framework 의 개요 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>Input Method Framework 의 개요</CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<H2>목차</H2>
+
+<OL>
+<LI><A HREF="#Introduction">처음에</A> 
+   
+<LI><A HREF="#Goals">목표</A> 
+   
+<LI><A HREF="#Input Method Support in Other Frameworks">다른 시스템에서의 입력 메소드의 지원</A> 
+   
+<LI><A HREF="#References">레퍼런스</A> 
+</OL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Introduction"></A> 1.  처음에</H2>
+
+<P>입력 메소드는, 키 입력, 음성 입력, 펜 디바이스를 사용한 자필 입력등의 사용자 조작을 변환해, 어플리케이션에의 텍스트 입력을 생성하는 소프트웨어 컴퍼넌트입니다. 무엇보다 일반적인 입력 메소드는, 중국어나 일본어나 한국어 등 수천이 다른 문자를 사용하는 언어를, 일반적으로의 사이즈의 키보드로 입력할 수 있도록(듯이)하기 위한의 것입니다. 텍스트의 입력은 일반적으로 사이즈의 키보드로 취급할 수 있는 형식 (예를 들어 로마자)에서 행해져, 입력된 후에 텍스트는 목적의 언어의 형식에 변환됩니다. 일반적으로, 복수의 문자를 입력하고 나서, 1 개의 덩어리로서 변환할 필요가 있습니다.  또, 변환 후보가 1 개 만이 아닌 것도 있으므로, 변환을 반복해 실시하지 않으면 안 되는 경우가 있습니다. 같이 자필 문자의 인식에서는, 사용자는 일련의 문자를 써, 변환해, 복수의 변환 결과 후보로부터 올바른 텍스트를 선택합니다. 이 프로세스를 「변환」이라고 불러, 입력 메소드의 작업 대상이 되어 있는 텍스트를 「변환 텍스트」라고 부릅니다. 이 프로세스는 사용자가 최종적인 변환 결과를 확정하면(자) 종료해, 텍스트가 「확정」합니다. </P>
+
+<P>변환중은, 변환 텍스트는 논리적으로 말해 입력 메소드에 속하고 있습니다만, 사용자에 대해서 표시할 필요가 있습니다. 그 때문에(위해), Input Method Framework 는 입력 메소드와 협조해, 적어도 2 종류의 방법을 제공합니다. 최신의 텍스트 편집 컴퍼넌트의 경우는, 최종적으로 배치되게 되는 문서내의 위치에, 입력 메소드에 의한 변환 또는 확정이 아직 필요한 것을 나타내는 형식에서, 입력 텍스트를 표시할 수 있습니다. 이 방법을, 「온더 스포트」스타일의 입력이라고 부릅니다. 또, 확정하지 않으면 텍스트를 취급할 수 없는 구식의 텍스트 편집 컴퍼넌트의 경우는, 대체 수단으로서 텍스트를 다른 윈도우로 표시할 수 있도록(듯이) 합니다. 이 방법을, 「루트 윈도우」스타일의 입력이라고 부릅니다. </P>
+
+<P>Java 2 플랫폼의 Input Method Framework 는, 텍스트 입력시에, 텍스트 편집 컴퍼넌트와 입력 메소드간의 공동 작업을 가능하게 합니다. 이 Input Method Framework 의 입력 메소드 클라이언트 API 는, 텍스트 편집 컴퍼넌트가 입력 메소드와 통신해, 충분히 통합된 텍스트 입력 사용자 인터페이스를 온더 스포트 스타일 또는 비로자스폿트스타일로 구현하는 것을 가능하게 하는 인터페이스와 클래스를 제공합니다.  또, 이 API 는, 대체 수단으로서 루트 윈도우 스타일의 입력 방법을 제공합니다. 이 API 의 입력 메소드 엔진용의 Service Provider Interface (SPI)는, 임의의 Java 실행 환경에서 사용할 수 있는 Java 프로그램 언어를 사용한 입력 메소드의 개발을 가능하게 하는 인터페이스를 제공합니다.  또, 이 SPI 는, 호스트 플랫폼의 네이티브인 입력 메소드를 지원합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Goals"></A> 	2.  	목표</H2>
+
+<H3>텍스트 컴퍼넌트의 경우의 「Write Once, Run Anywhere in the World」</H3>
+
+<P>Input Method Framework 를 사용하는 텍스트 편집 컴퍼넌트는, 임의의 Java 어플리케이션 환경에서 동작해, 그 Java 어플리케이션 환경에서 이용 가능한 텍스트 입력 메소드를 지원합니다.  텍스트 편집 컴퍼넌트의 변경 또는 재컴파일은, 필요 없습니다. Input Method Framework 에 의해, 텍스트 편집 컴퍼넌트는, 플랫폼 및 입력 메소드 엔진의 사이에 있는 차이로부터 떼어내집니다. 입력 메소드와 대화하기 위한 방법으로서 다만 1 개의 프로그래밍 모델이 제공됩니다. 이것에 의해, 개발자는 1 개의 API 에 대해서만 프로그램을 기술하면 자주(잘), 사용자는 목적에 맞은 입력 메소드를 선택할 수 있습니다. 네이티브인 입력 메소드를 사용하면(자), Input Method Framework 에 의해 플랫폼의 입력 메소드 API 에 매핑 됩니다.
+</P>
+
+<P>대부분의 개발자에게 있어 엔진의 독립성은 중요한 일입니다만, 고도의 기능의 개발자에게는, 엔진에 고유의 기능이 필요하게 되는 경우가 있습니다. Input Method Framework 에서는 이 필요를 채울 수가 있습니다. </P>
+
+<H3>입력 메소드의 경우의 「Write Once, Run Anywhere in the World」</H3>
+
+<P>Java 프로그램 언어로 기술되어 입력 메소드 엔진 SPI 를 사용하는 입력 메소드는, 임의의 Java 어플리케이션 환경에 인스톨 해, 그 Java 어플리케이션 환경에서 동작하는 임의의 텍스트 컴퍼넌트를 지원할 수가 있습니다. Input Method Framework 에 의해, 입력 메소드는, 플랫폼 및 텍스트 편집 컴퍼넌트의 사이에 있는 차이로부터 떼어내집니다. 텍스트 컴퍼넌트와 대화하기 위한 방법으로서 다만 1 개의 프로그래밍 모델이 제공됩니다. 이것에 의해, 개발자는 1 개의 SPI 에 대해서만 프로그램을 기술하면 자주(잘), 사용자는 목적에 맞은 텍스트 편집 컴퍼넌트를 선택할 수 있습니다. </P>
+
+<H3>언어의 독립성</H3>
+
+<P>Input Method Framework 는, 완전하게 세계 공통의 어플리케이션에 대한 요구에 응하기 (위해)때문에, 언어에 의존하지 않습니다. 입력 메소드는, 주로 동아시아계의 언어의 텍스트 입력에 사용됩니다만, 다른 언어에 대해서도 똑같이 도움이 되는 경우가 있습니다. 예를 들어, 라틴 문자를 사용해 그리스 문자를 입력하기 위한 문자 변환용 입력 메소드를 만들 수가 있습니다. </P>
+
+<P>시스템는, 다른 언어의 입력 메소드를 동시에 처리해, 진정한 다언어 텍스트 편집을 실현합니다. 호스트  operating system에 의해 네이티브인 입력 메소드의 선택이 제한되는 경우가 있는데 대해, Java 프로그램 언어로 기술되어 입력 메소드 엔진 SPI 를 사용하는 임의의 입력 메소드는, 언제라도 사용할 수 있습니다. 텍스트의 언어에 대응한 조작을 어플리케이션으로 실행할 수 있도록, 입력 메소드로 작성된 텍스트에는 언어 속성을 지인 일이 생깁니다. </P>
+
+<H3>입력 길이치의 독립성</H3>
+
+<P>Input Method Framework 는, 다양한 입력 길이치에 대응할 수 있도록(듯이) 설계되고 있습니다. 현재, 텍스트 입력의 수단은 거의 키보드입니다만, 다른 장치의 중요성도 더하고 있습니다. 텍스트 입력의 방법으로서 pen inputting만을 채용하고 있는 플랫폼도 있습니다. 또, 음성 입력도 넓게 보급하고 있습니다. 입력 메소드 엔진 SPI 에 의해, 이러한 대체 장치의 지원가 가능하게 됩니다. </P>
+
+<H3>복수의 서비스 레벨</H3>
+
+<P>프로그램이 다르면, 입력 메소드의 지원에 대한 요구도 다릅니다. 입력 메소드와의 통합을 긴밀히 하면, 사용자 인터페이스는 제일 좋아집니다만, 추가의 프로그래밍이 필요하게 됩니다. 그러한 추가의 작업을 하는 가치를 인정하지 않는 개발자라도, 동아시아계의 언어의 텍스트 입력을 받을 수가 있는 어플리케이션을 개발해야 하는 경우가 있습니다. 게임등의 프로그램안에는, 입력 메소드의 개입을 받지 않고 , 저레벨의 키보드 입력을 직접 받는 것도 있습니다. 시스템에서는, 다음에 나타내는 텍스트 입력 지원의 레벨로부터, 프로그램이 적절한 것을 선택할 수 있게 되어 있습니다. </P>
+
+<H4>통합 텍스트 입력 사용자 인터페이스</H4>
+
+<P>동아시아 지역의 언어에서의 사용을 목적으로 해 만들 수 있고라고 있는 최근의 프로그램은, 일반적으로, 완전하게 통합화 된 사용자 인터페이스를 가지는 텍스트 입력 조작 기능을 갖추고 있어 변환 텍스트는 문서 텍스트에 파묻혀 표시됩니다. 텍스트의 변환에서는, 현재의 후보는 반전 표시되고 있어, 사용자가 다른 후보를 선택하면(자), 전의 후보 텍스트는 새로운 후보 텍스트로 옮겨집니다. 입력 메소드에 대한 이러한 사용자 인터페이스 지원는, 「온더 스포트」스타일 또는 「인 라인」스타일로 불리고 있습니다. 중국어를 하는 사용자가 좋아하는 다른 방식은, 「비로자스폿트」스타일입니다.  이 스타일에서는, 변환 텍스트는 별개의 변환용 윈도우에 표시됩니다.  이 윈도우는, 확정 후에 텍스트가 삽입되는 위치의 근처에 자동적으로 배치됩니다. 입력 메소드 클라이언트 API 에 의해, 텍스트 편집 컴퍼넌트는 이러한 통합 텍스트 입력 사용자 인터페이스를 구현할 수 있습니다.
+</P>
+
+<P>이 통합은, 단지 변환 텍스트를 대상 문서의 문맥내에 표시하는 것만을 의미하는 것은 아닙니다. 이 통합은, 텍스트 편집 컴퍼넌트가 「입력 메소드 이벤트」를 이해하는 일도 의미합니다.  입력 메소드 이벤트는, 텍스트에 관한 단순한 키 이벤트 이상의 정보 (예를 들어, 문법 정보)를 입력 메소드가 교환하는 것을 가능하게 합니다.  또, 이 통합은, 입력 메소드의 기능 (예를 들어, 정확함)의 개선을 가능하게 하는 입력 메소드 자체로부터의 정보에 대한 요구에 텍스트 편집 컴퍼넌트를 응답할 수 있는 것을 의미합니다. </P>
+
+<H4>비통합 텍스트 입력 사용자 인터페이스</H4>
+
+<P>텍스트 입력 조작용의 사용자 인터페이스를 취급할 필요가 없는 프로그램에서는, 최종적인 입력 텍스트만이 어플리케이션에 보내집니다. 이 경우, 시스템가 입력 조작에 제공하는 사용자 인터페이스는, 어플리케이션의 외부에 있는 독립한 변환용 윈도우가 됩니다. 이것은, 「루트 윈도우」스타일로 불립니다. 사용자는 윈도우를 수동으로 삽입 위치의 근처에 배치하는지, 변환용 윈도우와 어플리케이션 윈도우의 사이에 눈을 움직일 필요가 있기 (위해)때문에, 이 방식은 별로 편리하지는 않습니다. </P>
+
+<P>이 방식의 경우, 어플리케이션은, 일련의 키 이벤트로서 입력 텍스트를 받습니다. 따라서, 입력 텍스트에 관한 정보 (문법 정보등)를 받는 방법은 없습니다. 또, Unicode Standard Version 2.0 으로 정의되고 있는 surrogate 페어는, 2 개의 독립한 키 이벤트로서 수신됩니다. </P>
+
+<H4>입력 메소드의 비지원</H4>
+
+<P>게임 소프트웨어 등 일부의 어플리케이션에서는, 변환되지 않는 키 입력만이 필요해, 입력 메소드의 지원를 필요로 하지 않는 경우가 있습니다. 시스템에서는, 입력 메소드의 지원를 명시적으로 무효로 하는 수단이 제공되고 있습니다. </P>
+
+<H3>구축 블록의 재사용</H3>
+
+<P>객체 지향 프로그래밍의 중요한 테마는, 프로그램 구축 블록의 재사용입니다. 동일한 구축 블록을 다수가 다른 어플리케이션으로 사용할 수 있어 같은 어플리케이션으로 몇번이나 사용할 수도 있습니다. 기능이 다른 다양한 텍스트 편집 구축 블록의 편성을 용이하게 하기 위한(해), Input Method Framework 에서는, 각 텍스트 편집 컴퍼넌트와 직접 또한 개별적으로 대화합니다. </P>
+
+<P>그 결과, 많은 어플리케이션은 Input Method Framework 와 직접 대화하는 것은 전혀 없습니다. 대신에, 그러한 어플리케이션은, 어플리케이션과의 대화를 처리하는 Swing 텍스트 컴퍼넌트 등, 준비되어 있는 텍스트 편집 컴퍼넌트를 사용합니다. </P>
+
+<H3>다른 시스템와의 밀접한 통합</H3>
+
+<P>Input Method Framework 는, Java 플랫폼의 일부로서 설계되고 있습니다. 입력 메소드와 텍스트 컴퍼넌트의 사이에서의 텍스트 교환에 필요한 인터페이스는, Java 2D 나 Swing 텍스트 컴퍼넌트 등, 다른 텍스트 관련 시스템와의 사이의 통신도 지원하도록(듯이) 설계되고 있습니다. Java 2D 에는, 입력 메소드에서의 반전 draw를 지원하는 기능이 통합되고 있으므로, 텍스트 컴퍼넌트는, 변환 텍스트와 다른 텍스트를 똑같이 취급할 수가 있어 다른 스타일과 같이 반전 표시 스타일을 처리할 수 있습니다. Java 2D 는, Input Method Framework 라고 대화해, 입력 메소드의 반전 표현 방법으로서 적절한 표시 스타일을, 플랫폼의 종류에 근거해 결정합니다. Swing 텍스트 컴퍼넌트는, Input Method Framework 를 사용해, 최소한의 추가의 프로그래밍으로, 가능하지만 안에서는 최선의 사용자 인터페이스를 구현합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Input Method Support in Other Frameworks"></A> 3.  다른 시스템에서의 입력 메소드의 지원</H2>
+
+<P>이 장에서는, 입력 메소드를 지원하는 것 외의 Java 플랫폼의 시스템에 있어서의 기능의 개요를 설명합니다. </P>
+
+<H3>텍스트</H3>
+
+<P><CODE><A HREF="../../../api/java/text/AttributedCharacterIterator.html">AttributedCharacterIterator</A> </CODE> 인터페이스는, 속성이 부가된 텍스트 정보를 시스템간에 교환하기 위한 표준적인 수단을 제공합니다. 이것에 의해, 텍스트를 읽어내는 측은, 정보 제공측에서의 텍스트의 포함 방법을 몰라도, 텍스트에 액세스 할 수 있습니다. 속성 정보에는, 폰트나 스타일의 속성 뿐만이 아니라, 언어 태그나 문법에 관한 주석도 포함되는 경우가 있습니다. </P>
+
+<H3>Abstract Window Toolkit</H3>
+
+<P><CODE><A HREF="../../../api/java/awt/Window.html">Window</A> </CODE> 클래스는, 윈도우의 초기 입력 문맥을 작성해, 윈도우가 파기되는 시점에서 그 초기 입력 문맥을 파기합니다. 입력 문맥을 명시적으로 파기하는 것으로, 네이티브인 입력 메소드에 할당할 수 있고 있어, 가끔 상당한 크기가 되는 자원을 해제할 수 있습니다. </P>
+
+<P><CODE><A HREF="../../../api/java/awt/Component.html">Component</A> </CODE> 클래스에는, 입력 문맥과 입력 메소드 요구 핸들러를 처리하기 위한 메소드가 있습니다. 윈도우 이외의 새롭게 작성된 <CODE>Component</CODE> 의 인스턴스는, 최초, 그것들을 포함하고 있는 윈도우의 입력 문맥을 공유합니다. <CODE>Component</CODE> 클래스에서의 이벤트 처리는, 받은 이벤트를 컴퍼넌트에 관련하는 입력 문맥에 리다이렉트(redirect) 해, 이벤트가 입력 메소드로 사용되지 않는 경우는, 컴퍼넌트의 청취자에게 이벤트를 건네주는 처리만을 실시합니다. 입력 문맥이 입력 메소드를 기동 또는 정지할 수 있도록, 포커스의 변경은 입력 문맥에 통지됩니다.
+</P>
+
+<P>이벤트 클래스 또는 청취자 클래스의 정보를 가지고 있는 AWT 클래스는,<CODE>InputMethodEvent</CODE> 클래스 및 <CODE>InputMethodListener</CODE> 클래스를 처리합니다. </P>
+
+<P><CODE>Graphics</CODE> 클래스는,<CODE>AttributedCharacterIterator</CODE> 인스턴스를 입력으로서 받는 <CODE><A HREF="../../../api/java/awt/Graphics.html#drawString(java.text.AttributedCharacterIterator,%20int,%20int)">drawString</A> </CODE> 메소드를 정의합니다. <CODE><A HREF="../../../api/java/awt/font/TextLayout.html">TextLayout</A> </CODE> 클래스의 인스턴스는,<CODE>AttributedCharacterIterator</CODE> 인스턴스로부터 구축할 수가 있어 입력 메소드의 반전 표시를 사용해 텍스트를 draw 하는데 사용할 수 있습니다. 어느 쪽의 텍스트 draw법도, 입력 메소드의 반전 표시를 텍스트의 속성으로서 인식해, 렌더링 합니다. </P>
+
+<H3>Swing</H3>
+
+<P>디폴트에서는, Java 2 플랫폼의 <A HREF="../../../api/javax/swing/text/JTextComponent.html">Swing 텍스트 컴퍼넌트</a>는,Input Method Framework 의 액티브 클라이언트입니다. 즉, 디폴트에서는, 이러한 텍스트 컴퍼넌트를 사용하는 어플리케이션은, 온더 스포트 스타일 또는 비로자스폿트스타일을 사용합니다. 어플리케이션 개발자는, 텍스트의 확정을 요구하는 것 외의 조작을 개시할 때는,<A HREF="api-tutorial.html#Ending%20Input%20Operations">입력 조작의 종료</a>를 실시하지 않으면 안됩니다. Input Method Framework 의 메소드를 사용해,<A HREF="api-tutorial.html#Creating%20Private%20Input%20Contexts">사적인 입력 문맥의 작성</a>,<A HREF="api-tutorial.html#Selecting%20Input%20Methods">입력 메소드의 선택</a>, 또는<A HREF="api-tutorial.html#Setting%20an%20Expected%20Character%20Subset">유효한 문자 부분집합의 설정</a>도 가능합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="References"></A> 4.  참조</H2>
+
+<P>여러 가지의 플랫폼에서의 입력 메소드의 구현에 대해서는, 다음의 서적을 참조해 주세요. </P>
+
+<UL>
+<LI>「Programmer's Supplement for Release 6」, O'Reilly & Associates, Inc.  (ISBN 1-56592-089-9)
+   
+<LI>「INSIDE MACINTOSH Text」, 에디슨·웨슬리·파브릿샤즈·재팬 발행 (ISBN 0-201-63298-5)
+   
+<LI>「Developing International Software for Windows 95 and Windows NT」, Nadine Kano 저, Microsoft Press 발행, 1995
+   
+<LI>「IIIMP - Platform Independent Input Method for Internet and Java」, Proc.  Twelfth International Unicode/ISO 10646 Conference, Unicode Consortium.
+</UL>
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2004 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT          SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/1.5.0/docs/technotes/guides/imf/overview.html&category=api&mailsubject=Internationalization">연락처</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I><FONT SIZE="+1"></FONT>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

@@ -1,0 +1,111 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:57:33" />
+<title>JMX 테크놀러지의 자원의 계측 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="JMXoverviewTOC.html" />
+    <link rel="Previous" href="architecture.html" />
+    <link rel="Next" href="agent.html" />
+    <link rel="Index" href="appendixA.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="architecture.html">전의 항목</a>  | <a accesskey="n" href="agent.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지 개요</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp996881"> </a> <h2 class="pChapNum">
+제 3 장
+</h2>
+<a name="wp998567"> </a> <h2 class="pChapTitle">
+JMX 테크놀러지의 자원의 계측
+</h2>
+<a name="wp998589"> </a> <p class="pBody">
+이 장에서는, JMX 테크놀러지를 사용한 관리로 자원을 계측 할 때의 개념에 대해, 다음의 섹션으로 설명합니다.
+</p>
+<ul class="pBullet1"><a name="wp998590"> </a> <div class="pBullet1"><li><a  href="instrumentation.html#wp998573"><span style="color: #3366CC">&quot;관리 가능한 자원 &quot;</span></a> </li></div>
+<a name="wp1000742"> </a> <div class="pBullet1Plus"><li><a  href="instrumentation.html#wp998816"><span style="color: #3366CC">&quot;관리 대상 Bean (MBean) &quot;</span></a> </li></div>
+<a name="wp998896"> </a> <div class="pBullet1Last"><li><a  href="instrumentation.html#wp1000773"><span style="color: #3366CC">&quot;Java 가상 머신의 계측 &quot;</span></a> </li></div>
+</ul>
+<a name="wp998573"> </a> <h2 class="pHeading1">
+	관리 가능한 자원
+</h2>
+<a name="wp998817"> </a> <p class="pBody">
+JMX 테크놀러지를 사용하면(자), 어플리케이션, 서비스의 구현, 디바이스, 사용자 등, 다양한 타입의 자원을 관리할 수 있습니다. 지정된 자원을 JMX 테크놀러지로 관리하려면 , 그 자원은 Java 언어로 개발되고 있는지, 적어도 Java 언어 래퍼가 제공되고 있을 필요가 있습니다. 또, 관리 대상 Bean (MBean)로서 알려져 있는 Java 객체 1 개(살) 이상에 의해, JMX 스펙에 따라 계측되어 있지 않으면 안됩니다.
+</p>
+<a name="wp998834"> </a> <p class="pBody">
+어플리케이션이나 디바이스의 개발자는, MBean 로서 계측 되고 있는 객체의 세분성을 자유롭게 선택할 수 있습니다. MBean 는 어플리케이션으로 최소의 객체를 나타내는 일도 있으면, 어플리케이션 전체를 나타내는 경우도 있습니다. 관리 인터페이스를 염두에 두어 설계된 어플리케이션 컴퍼넌트는, 일반적으로, MBean 가 될 수가 있도록(듯이) 기술되고 있습니다. MBean 는, 관리 인터페이스를 가지지 않는 유산 코드의 래퍼로서 또는 유산 관리 인터페이스를 가지는 코드의 프록시라고 해도 사용할 수 있습니다.
+</p>
+<a name="wp998832"> </a> <p class="pBody">
+
+</p>
+<a name="wp998816"> </a> <h2 class="pHeading1">
+	관리 대상 Bean (MBean)
+</h2>
+<a name="wp998037"> </a> <p class="pBody">
+자원과 그 계측을 구현한 Java 객체는, 관리 대상 Bean 또는 MBean 로 불립니다. MBean 는, JMX 스펙 (JSR 3)으로 정의된 설계 패턴 및 인터페이스에 따르지 않으면 안됩니다. 이렇게 하는 것으로, 모든 MBean 로 관리 대상 자원의 계측이 표준화 된 방법으로 제공되는 것이 보증됩니다.
+</p>
+<a name="wp1000822"> </a> <p class="pBody">
+지정된 자원의 계측은, 표준 또는 동적인 1 개(살) 이상의 MBean 에 의해 행해집니다. 「표준 MBean」는, JavaBeans(TM) 컴퍼넌트 모델에 유래하는 특정의 설계 패턴에 준거한 Java 객체입니다. 「동적 MBean」는, 실행시에 유연성이 높은 (분)편의 인터페이스에 준거합니다. MXBeans 는, 정의 끝난 형태 세트만을 참조합니다.  
+</p>
+<a name="wp998677"> </a> <p class="pBody">
+<a  href="agent.html#wp996882"><span style="color: #3366CC">제 4 장 「JMX 에이전트의 사용」</span></a> 으로 설명하도록(듯이), 자원의 계측에 의해, 자원이 에이전트 레벨로 관리 가능하게 됩니다. MBean 에서는, JMX 에이전트로 MBean 를 조작하기 위한 지식은 불필요합니다.
+</p>
+<a name="wp998681"> </a> <p class="pBody">
+MBean 는, 구현이 유연·간결·용이하도록 설계되고 있습니다. 어플리케이션·서비스·디바이스의 개발자는, 표준적인 방법으로 제품을 관리할 수가 있어 복잡한 관리 시스템에 대한 이해나 투자는 필요 없습니다. 기존의 객체는, 표준 MBean 를 생성하도록(듯이) 발전시키는 것이나, 동적 MBean 로서 랩 하는 것이 간단하게 실시할 수 있기 (위해)때문에, 기존의 자원은, 최소한의 노력으로 관리 가능하게 됩니다.
+</p>
+<a name="wp998686"> </a> <p class="pBody">
+게다가 계측 레벨에서는, 통지 기구도 지정합니다. 이렇게 하는 것으로, MBean 로 통지 이벤트를 생성해, 다른 레벨의 컴퍼넌트에 보낼 수가 있습니다.
+</p>
+<a name="wp998875"> </a> <p class="pBody">
+MBean 의 관리 인터페이스는, 이하로 구성되어 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp998876"> </a> <div class="pBullet1"><li>읽기나 기입해 가능한 이름 첨부 및 형태 부착 속성</li></div>
+<a name="wp998877"> </a> <div class="pBullet1Plus"><li>호출해 가능한 이름 첨부 및 형태 부착 조작</li></div>
+<a name="wp998878"> </a> <div class="pBullet1Last"><li>MBean 가 송출 가능한 형태 부착 통지</li></div>
+</ul>
+<a name="wp998655"> </a> <p class="pBody">
+표준 MBean 의 Java 클래스에서는, 그 속성이나 조작으로 직접 관리 가능한 자원을 공개하고 있습니다. 속성은, 겟타 및 셋타메소드를 개입시켜 공개되고 있는 내부 엔티티입니다. 조작은, 클래스의 그 외의 메소드 가운데, 관리측에서 이용 가능한 메소드입니다. 이러한 메소드는 모두 MBean 인터페이스에 정적으로 정의되고 있어 JMX 에이전트에서는, 인트로스페크션을 통해서 이러한 메소드를 확인할 수 있습니다. 이것이 새로운 자원을 관리 가능하게 하는 제일 알기 쉬운 방법입니다.
+</p>
+<a name="wp1000771"> </a> <p class="pBody">
+동적 MBean 는, 그 관리 인터페이스를 실행시에 정의하는 MBean 입니다. 예를 들어 구성 MBean 는, XML 파일을 해석하는 것으로, 공개하는 속성의 이름과 형태를 결정합니다.  
+</p>
+<a name="wp1000834"> </a> <p class="pBody">
+MXBean 는 새로운 타입의 MBean 로, 정의 끝난 형태 세트만을 참조하는 MBean 의 코딩을 간단하게 할 수 있습니다. 이 방법이라면, 원격 클라이언트를 포함한 클라이언트는, MBean 의 형태를 나타내는 모델 고유의 클래스에 액세스 하지 않아도, MBean 를 이용할 수 있습니다.
+</p>
+<a name="wp1000773"> </a> <h2 class="pHeading1">
+	Java 가상 머신의 Instrumentation
+</h2>
+<a name="wp998860"> </a> <p class="pBody">
+Java 가상 머신 (Java VM)은, JMX 테크놀러지를 사용해 고도로 계측 되고 있습니다. JMX 에이전트를 기동해, 편입의 Java VM Instrumentation에의 액세스를 간단하게 할 수 있습니다. 이것에 의해, JMX 테크놀러지로 원격에 Java VM 의 감시 및 관리를 할 수 있습니다.
+</p>
+<a name="wp1000841"> </a> <p class="pBody">
+JMX 테크놀러지를 사용한 Java VM 의 감시 및 관리에 대해서는,<a  href="http://java.sun.com/javase/6/docs/technotes/guides/management/index.html">「Java SE 감시 및 관리 가이드」</a>를 참조해 주세요.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="architecture.html">전의 항목</a>  | <a accesskey="n" href="agent.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지 개요<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

@@ -1,0 +1,2949 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<title>Java SE 6 용 JSSE 레퍼런스 가이드 - xrath.com 에서 번역됨</title>
+
+<style type="text/css">
+blockquote {
+  display: block;
+  margin: 1em 0px 1em 25px;
+}
+</style>
+
+</head>
+<body bgcolor="#ffffff">
+<hr width="100%">
+<center>
+<h1>Java<sup><font size="-2">TM</font></sup> Secure Socket Extension (JSSE)</h1>
+<h1>레퍼런스 가이드</h1>
+<h2>Java<sup><font size="-2">TM</font></sup> Platform Standard Edition 6</h2>
+</center>
+<hr width="100%">
+<p>
+
+<blockquote>
+<dl>
+<dt><a href="#Introduction"><font size="+1"><b>처음에</b></font></a> 
+
+<dd><a href="#Features">특장과 이점</a> 
+
+<dd><a href="#StandardAPI">JSSE 표준 API</a> 
+
+<dd><a href="#SunJSSE">SunJSSE 프로바이더 </a> 
+
+<dd><a href="#RelatedDocs">관련 문서</a> 
+
+</dl>
+
+<a href="#Terms"><font size="+1"><b>용어와 정의</b></font></a> 
+
+<dl><dt><a href="#SSLOverview"><font size="+1"><b>Secure Sockets Layer (SSL) 프로토콜의 개요</b></font></a> 
+
+<dd><a href="#WhySSL">SSL 를 사용하는 것의 이점</a> 
+
+<dd><a href="#HowSSLWorks">SSL 의 구조</a> 
+</dl>
+
+<dl>
+<dt><a href="#KeyClasses"><font size="+1"><b>주요한 클래스</b></font></a> 
+
+<dd><a href="#ClassRelationship"><b>클래스의 관계</b></a> 
+
+<dd><a href="#CoreClasses"><b>코어 클래스와 인터페이스</b></a> 
+<dl>
+<dt><dd><a href="#SocketFactory">SocketFactory 및 ServerSocketFactory 클래스</a> 
+<dt><dd><a href="#SSLSocketFactory">SSLSocketFactory 및 SSLServerSocketFactory 클래스</a> 
+<dt><dd><a href="#SSLSocket">SSLSocket 및 SSLServerSocket 클래스</a> 
+<dt><dd><a href="#SSLENG"><code>SSLEngine</code> 에 의한 비블록 입출력</a> 
+<dt><dd><a href="#SSLSession">SSLSession 인터페이스</a> 
+<dt><dd><a href="#HttpsURLConnection">HttpsURLConnection 클래스</a> 
+</dl>
+
+<dt><dd><a href="#SupportClasses"><b>지원 클래스와 인터페이스</b></a> 
+<dl>
+
+<dt><dd><a href="#SSLContext">SSLContext 클래스</a> 
+<dt><dd><a href="#TrustManager">TrustManager 인터페이스</a> 
+<dt><dd><a href="#TrustManagerFactory">TrustManagerFactory 클래스</a> 
+<dt><dd><a href="#X509TrustManager">X509TrustManager 인터페이스</a> 
+<dt><dd><a href="#KeyManager">KeyManager 인터페이스</a> 
+<dt><dd><a href="#KeyManagerFactory">KeyManagerFactory 클래스</a> 
+<dt><dd><a href="#X509KeyManager">X509KeyManager 인터페이스</a> 
+<dt><dd><A HREF="#RelsTM_KM">TrustManager 와 KeyManager 의 관련성</a> 
+</dl>
+
+
+<dt><dd><a href="#SecondarySupportClasses"><b>2차 지원 클래스 및 인터페이스</b></a> 
+<dl>
+
+<dt><dd><a href="#SSLSessionContext">SSLSessionContext 인터페이스</a> 
+<dt><dd><a href="#SSLSessionBindingListener">SSLSessionBindingListener 인터페이스</a> 
+<dt><dd><a href="#SSLSessionBindingEvent">SSLSessionBindingEvent 클래스</a> 
+<dt><dd><a href="#HandShakeCompletedListener">HandShakeCompletedListener 인터페이스</a> 
+<dt><dd><a href="#HandShakeCompletedEvent">HandShakeCompletedEvent 클래스</a> 
+<dt><dd><a href="#HostnameVerifier">HostnameVerifier 인터페이스</a> 
+<dt><dd><a href="#X509Certificate">X509Certificate 클래스</a> 
+</dl>
+
+<dt><dd><a href="#ConfigurationClasses"><b>구버젼 (JSSE 1.0.x)의 구현 클래스 및 인터페이스</b></a> 
+</dl>
+
+<dl>
+<dt><a href="#InstallationAndCustomization"><font size="+1"><b>JSSE 의 커스터마이즈 </b></font></a> 
+
+<dd><a href="#javaHome">인스톨 디렉토리 &lt;java-home&gt;</a> 
+
+<dd><a href="#Customization">커스터마이즈</a> 
+</dl>
+
+<dl>
+<dt><a href="#PKCS11"><font size="+1"><b>JCE 및 하드웨어 고속화/스마트 카드의 지원</b></font></a> 
+
+<dt><dd><a href="#UseOfJCE">JCE 의 사용법</a> 
+<dt><dd><a href="#HardwareAccelerators">하드웨어 가속기</a> 
+<dt><dd><a href="#ConfigSmartcard">스마트 카드를 키스토어 및 트러스트 스토어로서 사용하기 위한 JSSE 의 구성</a> 
+<dt><dd><a href="#MultiDynamicKeystores">복수의 동적 키스토어 </a> 
+</dl>
+
+<P>
+<dl>
+<dt> <a href="#KRB"> <font size="+1"><b>Kerberos encode 방식</b></font></a> 
+<dt><dd><a href="#KRBRequire">Kerberos 요건</a> 
+<dt><dd><a href="#KRBPeerID">피어의 아이덴티티 정보 </a> 
+<dt><dd><a href="#KRBSM">시큐리티 매니저</a> 
+</dl>
+
+<P>
+<a href="#KeystoreFormats"><font size="+1"><b>그 외의 키스토어 형식 (PKCS12)</b></font></a> 
+
+<dl>
+<dt><a href="#Troubleshooting"><font size="+1"><b>트러블 슈팅</b></font></a> 
+
+<dd><a href="#InstallProbs">구성상의 문제점</a> 
+
+<dd><a href="#Debug">디버그 유틸리티</a> 
+</dl>
+
+<dl>
+<dt><a href="#CodeExamples"><font size="+1"><b>코드예</b></font></a> 
+
+<dd><a href="#UnsecureSecure">안전하지 않은 소켓으로부터 안전한 소켓에의 변환</a> 
+
+<dd><a href="#SampleCode">JSSE 샘플 코드의 실행</a> 
+
+<dd><a href="#CreateKeystore">JSSE 로 사용하는 키스토어의 작성</a> 
+</dl>
+
+<a href="#AppA"><font size="+1"><b>부록 A:표준명</b></font></a> 
+<P>
+<a href="#PLUG"><font size="+1"><b>부록 B:프로바이더의 플러그 인 가능성</b></font></a> 
+
+</blockquote>
+<hr width="100%">
+<a name="Introduction"></a> 
+<h1>처음에</h1>
+<blockquote>
+네트워크를 통해서 교환되는 데이터에는, 의도된 수신자 이외의 사람도, 간단하게 액세스 할 수 있습니다. 데이터에 패스워드나 크레디트 카드 번호등의 개인정보가 포함되는 경우, 권한이 없는 사람이 데이터를 이해할 수 없게, 수단을 강의(강구)할 필요가 있습니다. 또, 의도적일지 어떨지에 관련되지 않고, 통신중으로 데이터가 변경되지 않게 하는 일도 중요합니다. Secure Sockets Layer (SSL) 및 Transport Layer Security (TLS)는, 네트워크를 통한 데이터의 송신시에, 데이터의 기밀성 및 무결성을 보호하기 위해서 설계된 프로토콜입니다.
+<p> Java Secure Socket Extension (JSSE)에 의해, 안전한 인터넷 통신이 가능하게 됩니다. JSSE 에서는, Java 버젼의 SSL 및 TLS 프로토콜의 시스템 및 구현이 제공됩니다. 또, 데이터 암호화, 서버 인증, 메세지의 무결성외, 옵션으로 클라이언트 인증의 기능이 포함됩니다. JSSE 를 사용하면(자), 개발자는 Hypertext Transfer Protocol (HTTP), Telnet, FTP 등, TCP/IP 의 어플리케이션 프로토콜을 실행하는 클라이언트와 서버의 사이로, 안전한 데이터의 교환을 실현할 수 있습니다. SSL 의 개요에 대해서는, 「<a href="#SSLOverview">Secure Sockets Layer (SSL)의 개요</a>」를 참조해 주세요.  </p>
+<p> JSSE 는, 기반이 되는 복잡한 시큐리티 알고리즘이나 「핸드 쉐이크」기구를 추상화 하는 것으로써, 식별하는 것이 어렵고, 그러나 위험한 시큐리티상의 약점이 태어나는 리스크를 최소한으로 억제합니다. 또, JSSE 를 개발자가 어플리케이션에 직접 통합할 수 있는 구축 블록으로서 사용하면(자), 어플리케이션 개발이 간단하게 됩니다.  </p>
+
+
+<p>지금까지의 JSSE 는, Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK Standard Edition (J2SDK) v 1.3 의 옵션 패키지였습니다. JSSE 는, J2SDK 1.4 보다 Java <SUP><FONT SIZE=-2>TM</FONT></SUP> Standard Edition Development Kit 에 통합되고 있습니다.
+
+
+<p> JSSE 는, 어플리케이션 프로그래밍 인터페이스 (API) 시스템와 그 API 의 구현을 제공합니다. JSSE API 는,<code>java.security</code> 및 <code>java.net</code> 패키지에 의해 정의된 「코어」네트워크 및 암호화 서비스를 추가해, 확장된 네트워크 소켓 클래스, 트러스트 매니저, 키 매니저, SSLContext, 및 소켓 작성 동작을 캡슐화하는 소켓 팩토리의 시스템를 제공합니다. 소켓 API 는 JDK 5.0 의 블록화 입출력 모델을 기본으로 하고 있기 (위해)때문에, 구현 단계에서 고유의 입출력 메소드를 선택할 수 있도록(듯이) 하기 위해서 비블록 <code>SSLEngine</code> API 가 도입되었습니다. </p>
+<p> JSSE API 에서는, SSL 버젼 2.0 및 3.0 외, Transport Layer Security (TLS) 1.0 을 지원합니다. 이러한 시큐리티 프로토콜은, 일반적으로의 쌍방향의 스트림 소켓을 캡슐화해, JSSE API 는 인증, 암호화, 및 무결성 보호의 투과적인 지원를 추가합니다. Sun 의 JRE 에 부속되어 있는 JSSE 구현은, SSL 3.0 으로 TLS 1.0 을 지원합니다. SSL 2.0 은 구현하지 않습니다.  </p>
+<p> 벌써 설명한 것처럼, JSSE 는 Java SE 6 플랫폼의 시큐리티 컴퍼넌트로, Java Cryptography Architecture (JCA) 시스템상의 다른 장소에 있는 것과 같은<a  href="../crypto/CryptoSpec.html#Design">설계 방침</a>에 근거하고 있습니다. 암호화에 관한 시큐리티 컴퍼넌트의 이 시스템에 의해, 구현의 독립성과 가능한 경우에는 알고리즘의 독립성을 실현할 수 있습니다. JSSE 는, JCA 로 정의된 것과 같은<a  href="../crypto/CryptoSpec.html#ProviderArch">프로바이더 </a>아키텍쳐(architecture)를 사용합니다.  </p>
+<p> Java SE 6 플랫폼외의 시큐리티 컴퍼넌트에는, Java 암호화 확장 기능 (<a href="http://java.sun.com/products/jce/">JCE</a> ), Java 인증·승인 서비스 (<a  href="http://java.sun.com/products/jaas/">JAAS</a> ), 및 <a  href="../../../tools/index.html#security">Java 시큐리티 툴</a>이 있습니다. JSSE 는 JCE 와 같은 개념 및 알고리즘을 다수 포함하고 있습니다만, 단순한 스트림 소켓 API 아래에서 이것들을 자동적으로 적용합니다.  </p>
+<p>JSSE API 는, 그 외의 SSL/TLS 프로토콜과 공개키 인프라스트럭쳐(infrastructure) (PKI) 구현을 심리스에 플러그 인 할 수 있는 설계가 되어 있습니다. 개발자가, 원격 호스트의 신뢰성이나 원격 호스트에게 송신하는 인증열쇠 데이터를 결정하는 논리를 제공할 수도 있습니다.  </p>
+  <a name="Features"></a> 
+<h2>특장과 이점</h2>
+  <blockquote>
+<p> JSSE 에는 다음과 같은 중요한 특장이 있습니다.  </p>
+    <ul>
+<li>JRE 1.4 이후의 표준의 컴퍼넌트로서 포함되어 있다
+        <p></p>
+      </li>
+<li>확장 가능한 프로바이더 베이스의 아키텍쳐(architecture)
+        <p></p>
+      </li>
+<li>100% Pure Java 에 구현된다
+        <p></p>
+      </li>
+<li>SSL 버젼 2.0 으로 3.0 및 TLS 1.0 이후의 API 를 지원해, SSL 3.0 및 TLS 1.0 을 구현한다
+        <p></p>
+      </li>
+<li>안전한 채널을 작성하기 위해서 인스턴스화 가능한 클래스를 포함한다 (<code>SSLSocket</code>,<code>SSLServerSocket</code>, 및 <code>SSLEngine</code>)
+        <p></p>
+      </li>
+<li>안전한 통신을 개시해, 검증하는데 사용되는 SSL 핸드 쉐이크 기능의 일부로서<a href="#CipherSuite">암호군</a>협상을 지원한다
+        <p></p>
+      </li>
+<li>일반적으로의 SSL 핸드 쉐이크 기능의 일부로서 클라이언트와 서버의 인증을 지원한다
+        <p></p>
+      </li>
+<li>SSL 프로토콜 (HTTPS)로 캡슐화된 Hypertext Transfer Protocol (HTTP)를 지원한다. 이것에 의해, HTTPS 를 사용하는 Web 페이지등의 데이터에 액세스 할 수 있다
+        <p></p>
+      </li>
+<li>메모리 상주형의 SSL 세션을 관리하기 위한 서버 세션 관리 API 를 제공한다
+        <p></p>
+      </li>
+<li>암호군으로 일반적으로 사용되는 복수의 암호화 알고리즘을 지원한다. 다음의 겉(표)에 나타내는 알고리즘이 포함된다 </li>
+    </ul>
+    <p>
+    <table border="1" cellspacing="1" cellpadding="7">
+      <caption>
+<h3 class="TableTitle">JSSE 로 이용할 수 있는 암호화 기능</h3>
+      </caption> <tbody>
+        <tr>
+          <th rowspan="1" colspan="1">
+<p class="CellHeading">암호화 알고리즘 * </p>
+          </th>
+          <th rowspan="1" colspan="1">
+<p class="CellHeading">암호화 처리 </p>
+          </th>
+          <th rowspan="1" colspan="1">
+<p class="CellHeading">열쇠의 길이 (비트) </p>
+          </th>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>RSA </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>인증과 열쇠 교환 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>512 이상
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>RC4 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>벌크 암호화 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>128<br>128 (40 이 유효) </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>DES </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>벌크 암호화 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>64 (56 이 유효)<br>64 (40 이 유효) </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>Triple DES </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>벌크 암호화 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>192 (112 가 유효) </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>AES</p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>벌크 암호화 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+          <p>256<br>128 </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>Diffie-Hellman </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>열쇠의 승인 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+          <p>1024<br> &nbsp;&nbsp;512 </p>
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="1" colspan="1" valign="top">
+<p>DSA </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+<p>인증 </p>
+          </td>
+          <td rowspan="1" colspan="1" valign="top">
+          <p>1024 </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p></p>
+<p>* Note:SunJSSE 구현에서는, 암호화 알고리즘의 모두에 있어 Java<sup><font  size="-2">TM</font></sup> 암호화 확장 기능 (JCE)을 사용합니다.  <br> <br> <br>
+    </p>
+  </blockquote>
+  <a name="StandardAPI"></a> 
+<h2>JSSE 표준 API</h2>
+  <blockquote>
+<p> JSSE 표준 API 는,<code>javax.net</code> 및 <code>javax.net.ssl</code> 패키지로 이용할 수 있는 API 로, 다음의 점을 커버합니다.  </p>
+    <ul>
+<li>안전한 소켓 (SSL) 및 서버 소켓
+        <p></p>
+      </li>
+<li>SSL/TLS 데이터를 생성 및 소비하는 비블록 엔진 (SSLEngine)
+        <p></p>
+      </li>
+<li>소켓, 서버 소켓, SSL 소켓, 및 SSL 서버 소켓을 작성하는 팩토리. 소켓의 작성 및 구성을 캡슐화할 수 있는 소켓 팩토리의 사용
+        <p></p>
+      </li>
+<li>안전한 소켓 팩토리와 엔진의 팩토리로서 동작하는 안전한 소켓 문맥을 나타내는 클래스
+        <p></p>
+      </li>
+<li>X. 509 고유의 키 매니저나 트러스트 매니저등의 열쇠 및 트러스트 매니저 인터페이스, 및 그러한 인터페이스를 작성하기 위해서 사용 가능한 팩토리
+        <p></p>
+      </li>
+<li>안전한 HTTP URL 접속용의 클래스 (HTTPS)
+        <p></p>
+      </li>
+    </ul>
+  </blockquote>
+
+  <a name="SunJSSE"></a> 
+<h2><code>SunJSSE</code> 프로바이더 </h2>
+  <blockquote>
+<p>Sun 의 Java SE 의 구현에는, 「<code>SunJSSE</code>」라고 하는 이름의 JSSE 프로바이더가 포함되어 있습니다. 이 프로바이더는 미리 인스톨 되어 JCA 에 등록되어 있습니다. 이 프로바이더가 제공하는 암호화 서비스는 다음과 같습니다.  </p>
+    <ul>
+<li><p>SSL 3.0 및 TLS 1.0 시큐리티 프로토콜의 구현
+
+<li><p>무엇보다 일반적인 SSL 및 TLS 암호군의 구현. 1조의 인증, 열쇠의 승인, 암호화, 및 무결성 보호를 포함한다
+
+<li><p>X. 509 베이스의 키 매니저의 구현. 표준적인 JCA KeyStore 로부터 적절한 인증 키를 선택한다</li>
+
+<li><p>증명서 체인 패스를 검증하는 규칙을 구현하는, X. 509 베이스의 트러스트 매니저의 구현</li>
+
+<li><p>JCA 키스토어형 「pkcs12」로서 PKCS12 를 구현 PKCS12 의 신뢰할 수 있는 엥커의 포함은 미지원. 사용자는, JKS 형식에서 신뢰할 수 있는 엥커를 포함해, PKCK12 형식에서 비공개키를 보존한다</li>
+    </ul>
+이 프로바이더의 자세한 것은,<a href="../SunProviders.html#SunJSSEProvider">「SunJSSE」</a>의 항을 참조해 주세요.
+    <p>
+  </blockquote>
+
+  <a name="RelatedDocs"></a> 
+<h2>관련 문서 </h2>
+  <blockquote>
+<h3>Java Secure Socket Extension 관련 문서</h3>
+    <ul>
+<li><p>JSSE 홈 페이지.  JavaOne<sup><font size="-2">SM</font></sup> 컨퍼런스의 슬라이드에의 링크, JSSE FAQ, 법률상의 문제 등:<br> <em> <a href="http://java.sun.com/products/jsse/">http://java.sun.com/products/jsse/</a> </em></li>
+
+<li>Sun 의 Java 시큐리티 팀 (<em>java-security@sun.com</em>)에 전해진 API 에 관한 질문과 회답 - <br><em><a  href="http://archives.java.sun.com/archives/java-security.html">http://archives.java.sun.com/archives/java-security.html</a> </em>
+<p>주:상기의 메일링리스트는, 구독 리스트나 지원 기구가 아닙니다. 이것은, Java SE 6 Standard Edition 시큐리티 팀에의 코멘트의 송부만을 목적으로 하고 있습니다.  </p>
+        <p></p>
+      </li>
+<li>JSSE API 관련 문서 - <br>
+
+        <ul>
+<li><em><a  href="../../../../api/javax/net/package-summary.html">javax.net 패키지</a> </em>
+<li><em><a href="../../../../api/javax/net/ssl/package-summary.html">javax.net.ssl 패키지</a> </em>
+<li><em><a  href="../../../../api/javax/security/cert/package-summary.html">javax.security.cert 패키지</a> </em>
+
+        </ul>
+        <p></p>
+        <p></p>
+      </li>
+    </ul>
+<h3>Java 플랫폼의 시큐리티 관련 문서</h3>
+    <ul>
+<li><p>Java 시큐리티 홈 페이지 - <br><em><a href="http://java.sun.com/security/index.jsp">http://java.sun.com/security/</a> </em></li>
+
+<li><p>Java<sup><font size="-2">TM</font></sup> Certification Path API 개발자 안내:<em> <a href="../certpath/CertPathProgGuide.html">http://java.sun.com/javase/6/docs/technotes/guides/security/certpath/CertPathProgGuide.html</a> </em></li>
+
+<li><p>그 외의 Java SE 6 플랫폼 시큐리티 문서 - <br><em><a href="../index.html">http://java.sun.com/javase/6/docs/technotes/guides/security/</a> </em></li>
+
+<li><p>Java 플랫폼 시큐리티의 튜토리얼 - <br><em><a  href="http://java.sun.com/docs/books/tutorial/security">http://java.sun.com/docs/books/tutorial/security/</a> </em></li>
+
+<li>Java SE 플랫폼 시큐리티에 관한 문서 - <br><em> Inside Java 2 Platform Security:Architecture, API Design, and Implementation</em> (Li Gong 저) Addison Wesley Longman, Inc., 1999.  ISBN:0201310007.   <A HREF="http://java.sun.com/docs/books/security/index.html">http://java.sun.com/docs/books/security/index.html</A> </li>
+    </ul>
+<h3>암호화에 관한 수출상의 문제</h3>
+    <blockquote>
+<p>미국의 암호 정책에 대해서는, 다음의 사이트를 참조해 주세요.  </p>
+      <ul>
+<li><p>미국 상무성:<br> <em> <a href="http://www.commerce.gov/">http://www.commerce.gov</a> </em></li>
+
+<li><p>수출규제에 관한 페이지 -<br> <em> <a href="http://www.crypto.com/">http://www.crypto.com/</a> </em></li>
+
+<li><p>Computer Systems Public Policy (CSPP) -<br> <em> <a href="http://www.cspp.org/">http://www.cspp.org/</a> </em></li>
+
+<li><p>연방 정보처리 표준 출판물 (FIPS PUBS)의 홈 페이지.  데이터 암호화 규격 (DES)에의 링크 있어:<em> <a href="http://www.itl.nist.gov/fipspubs/">http://www.itl.nist.gov/fipspubs/</a> </em></li>
+
+<li><p>미국 암호화 수출규제 (개정판) - <br><em> <a  href="http://www.epic.org/crypto/export_controls/regs_1_00.html">http://www.epic.org/crypto/export_controls/regs_1_00.html</a> </em></li>
+      </ul>
+    </blockquote>
+    <a name="CryptDocs"></a> 
+<h3>암호화에 관한 문서</h3>
+    <blockquote>
+<p>온라인 자원 </p>
+      <ul>
+<li>Rivest 박사의 암호화와 시큐리티의 페이지 -<br> <em> <a  href="http://theory.lcs.mit.edu/%7Erivest/crypto-security.html">http://theory.lcs.mit.edu/~rivest/crypto-security.html</a> </em></li>
+      </ul>
+<p>서적: </p>
+      <ul>
+<li><p><em>Applied Cryptography, Second Edition</em> (Bruce Scheneier 저) John Wiley and Sons, Inc., 1996</li>
+
+<li><p><em>Cryptography Theory and Practice</em> (Doug Stinson 저) CRC Press, Inc., 1995. </li>
+
+<li><p>「Cryptography &amp; Network Security:Principles &amp; Practice」, William Stallings 저, Prentice Hall, 1998. </li>
+
+      </ul>
+    </blockquote>
+    <a name="SSLDocs"></a> 
+<h3>Secure Sockets Layer 관련 문서</h3>
+    <blockquote>
+<p>온라인 자원 </p>
+      <ul>
+<!--
+<li><p>Netscape 에 의한 SSL 에 관한 문서:<br> <em> <a  href="http://developer.netscape.com/docs/manuals/security.html#SSL">http://developer.netscape.com/docs/manuals/security.html#SSL</a> </em></li>
+-->
+<li><p>Sun&#8482; ONE 소프트웨어로부터의 SSL 의 도입:<br><em> <a  href="http://docs.sun.com/source/816-6156-10/contents.htm">http://docs.sun.com/source/816-6156-10/contents.htm</a> </em></li>
+
+<li><p>SSL 프로토콜 버젼 3.0 인터넷 드래프트:<br><em> <a href="http://wp.netscape.com/eng/ssl3/ssl-toc.html">http://wp.netscape.com/eng/ssl3/ssl-toc.html</a> </em></li>
+
+<li><p>TLS 프로토콜 버젼 1.0 RFC:<br><em> <a href="http://www.ietf.org/rfc/rfc2246.txt">http://www.ietf.org/rfc/rfc2246.txt</a> </em></li>
+
+<li><p>"HTTP Over TLS" 의 RFC 정보:<br> <em> <a href="http://www.ietf.org/rfc/rfc2818.txt">http://www.ietf.org/rfc/rfc2818.txt</a> </em></li>
+      </ul>
+<p>서적: </p>
+      <ul>
+<li><p>「SSL and TLS:Designing and Building Secure Systems」, Eric Rescorla 저, Addison Wesley Professional 발행, 2000 </li>
+
+<li><p><em> SSL and TLS Essentials:Securing the Web</em> (Stephen Thomas 저) John Wiley and Sons, Inc., 2000</li>
+
+<li><p><em> Java 2 Network Security</em>, Second Edition (Marco Pistoia, Duane F Reller, Deepak Gupta, Milind Nagnur, and Ashok K Ramani 저) Prentice Hall, 1999.  Copyright 1999 International Business Machines</li>
+      </ul>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<a name="Terms"></a> 
+<h1>용어와 정의</h1>
+<blockquote>
+<p> 이 문서에서는, 암호화에 관한 용어가 사용됩니다. 이 마디에서는, 이러한 용어를 정의합니다.  </p>
+<h2>인증</h2>
+<i></i>인증이란, 통신 상대의 식별 정보를 확인하는 프로세스입니다.
+<h2><a name="CipherSuite">암호군</a> </h2>
+<i></i>암호군이란, 암호화 파라미터의 편성으로, 인증, 열쇠의 승인, 암호화, 및 무결성 보호에 사용하는 시큐리티 알고리즘 및 열쇠의 사이즈를 정의합니다.
+<h2>증명서</h2>
+<i></i>증명서란, 디지털 서명 첨부의 문장으로, 어느 엔티티 (사람이나 회사등)의 식별 정보 및 공개키의 내용을 보증합니다. 증명서에는, 자기 서명 첨부 증명서와 증명서 발행국 (CA)으로부터 발행된 증명서가 있습니다. 증명서 발행국이란, 다른 엔티티를 위해서(때문에) 유효한 증명서를 발행하는 신뢰를 둘 수 있는 엔티티입니다. 잘 알려져 있는 CA 에는 VeriSign, Entrust, 및 GTE CyberTrust 가 있습니다. X509 는 증명서의 일반적인 형식에서, JDK 의 keytool 로 관리할 수가 있습니다.
+<h2>암호화 해쉬 함수</h2>
+<i></i>암호화 해쉬 함수는 체크 섬과 닮아 있습니다. 데이터는, 해시로 불리는, 비교적 작은 비트 캐릭터 라인을 생성하는 알고리즘으로 처리됩니다. 암호화 해쉬 함수에는, 다음과 같은 3 개(살)의 주된 특징이 있습니다. (1) 한방향의 함수이기 (위해)때문에, 해시로부터 오리지날 데이터를 생성할 수 없습니다. (2) 오리지날 데이터를 조금 변경해도, 해시에서는 큰 변경이 됩니다. (3) 암호화열쇠는 필요 없습니다.
+<h2>암호화 서비스 프로바이더</h2>
+JCA 에서는, 다양한 암호화 알고리즘의 구현이,<i></i>암호화 서비스 프로바이더 (약칭은 「<a  href="../crypto/CryptoSpec.html#ProviderArch">프로바이더</a>」)에 의해 제공됩니다. 프로바이더는, 기본적으로는, 특정의 알고리즘의 엔진 클래스를 구현하는 패키지입니다. 엔진 클래스는, 구체적인 구현이 없는 추상적인 방법으로 암호화 서비스를 정의합니다.
+<h2>디지털 서명</h2>
+<i></i>디지털 서명이란, 자필의 서명의 디지털판입니다. 이것은, 네트워크로 전송되는 데이터가, 그것을 송신했다고 주장하는 인물로부터의 것이며, 송신중으로 데이터가 변경되어 있지 않은 것을 보증하는 것입니다. 예를 들어, RSA 베이스의 디지털 서명을 계산하려면 , 우선 데이터의 암호화 해시를 계산해, 다음에 송신자의 비공개키로 해시를 암호화합니다.
+<h2>암호화 및 암호 해독</h2>
+<i></i>암호화란, 복잡한 알고리즘을 사용해, 원의 메세지 (<i></i>clear text)를 encode 된 메세지 (<i></i>암호 텍스트)로 변환하는 프로세스입니다. 암호 텍스트는, 복호화 하지 않는 한, 그 내용을 이해할 수 없습니다. <i></i>복호화란, clear text로부터 암호 텍스트를 작성하는 것과는 역의 프로세스입니다. 일반적으로, 데이터의 암호화 및 복호화에 사용하는 알고리즘에는, 다음의 2 개의 카테고리가 있습니다. 그것은, 비밀열쇠 (대칭형) 암호와 공개키 (비대칭형) 암호입니다.
+<h2>핸드 쉐이크 프로토콜</h2>
+2 개의 소켓끼리가 새로운 세션이나 기존의 세션의 사용에 동의 하는 협상의 국면입니다. <i></i>핸드 쉐이크 프로토콜은, 레코드 프로토콜을 개입시켜 교환되는 일련의 메세지입니다. 핸드 쉐이크의 종료시에, 세션의 접속에 고유의 암호화열쇠나, 무결성을 보호하기 위한 열쇠가, 열쇠의 승인에 의한 비밀에 근거해 새롭게 생성됩니다.
+<h2>열쇠 협정</h2>
+<i></i> 열쇠 협정은, 2 개의 파티가 협력해 공통열쇠를 확립하기 위한 방법입니다. 각각의 옆이 일정한 데이터를 생성해 교환합니다. 그 후, 2 개의 데이터가 짜 합쳐져, 1 개의 열쇠가 생성됩니다. 적정한 비공개 초기화 데이터를 보관 유지하고 있는 사용자만이, 최종적인 열쇠를 취득할 수가 있습니다. Diffie-Hellman (DH)는, 일반적인 열쇠 협정 알고리즘의 일례입니다.
+
+<h2>열쇠 교환</h2>
+한편의 옆이 대칭열쇠를 생성해, 표준적으로는 RSA 에 의해, 피어의 공개키를 사용해 암호화합니다. 그리고 데이터가 피어에 송신되어 피어는 대응하는 비공개키를 사용해 대칭열쇠를 복호화 합니다.
+
+  <p><a name="KMandTMdef"></a>  </p>
+<h2>키 매니저와 트러스트 매니저</h2>
+<p> <i></i>키 매니저와<i></i>트러스트 매니저는, 각각의 열쇠 데이터에 키스토어를 사용합니다. 키 매니저는 키스토어를 관리해, 사용자 승인시등 필요에 따라서 공개키를 제공합니다. 트러스트 매니저는, 관리하는 트러스트 스토어의 정보에 의거해, 트러스트의 대상자를 결정합니다.
+</p>
+  <a name="Stores"></a> 
+<h2>키스토어와 트러스트 스토어</h2>
+<p> <i></i>키스토어는, 열쇠 데이터의 데이타베이스입니다. 열쇠 데이터에는 다양한 용도가 있어, 거기에는 인증이나 데이터 무결성도 포함됩니다. 이용할 수 있는 키스토어에는 다양한 형태가 있어, 그 중에는 「PKCS12」나 Sun 의 「JKS」도 포함됩니다.  </p>
+<p> 일반적으로, 키스토어 정보는 다음의 2 개의 카테고리로 분류할 수 있습니다. 그것은, 열쇠의 엔트리와 신뢰되는 증명서의 엔트리입니다. 열쇠의 엔트리는 엔티티의 식별 정보와 그 비공개키로부터 구성되어 있어 다양한 암호화의 용도에 사용할 수 있습니다. 이것과는 대조적으로, 신뢰되는 증명서의 엔트리에는, 공개키와 그 엔티티의 식별 정보 밖에 포함되어 있지 않습니다. 따라서,<code>javax.net.ssl.KeyManager</code> 의 경우 등, 비공개키가 필요한 경우는, 신뢰되는 증명서의 엔트리를 사용할 수 없습니다. JKS 의 J2SDK 구현에서는, 키스토어에 열쇠의 엔트리와 신뢰되는 증명서의 엔트리의 양쪽 모두를 포함할 수가 있습니다.  </p>
+<p> <i></i>트러스트 스토어란, 트러스트의 대상을 결정할 때 사용하는 키스토어입니다. 벌써 신뢰하고 있는 엔티티로부터 데이터를 받는 경우, 및 그 엔티티가 발신기지를 자칭하는 엔티티인 것을 검증할 수 있는 경우는, 데이터는 실제로 그 엔티티로부터 도착한 것이라고 가정할 수 있습니다.  </p>
+<p> 사용자가 그 엔티티를 신뢰하면(자) 결정했을 경우에 한정해, 트러스트 스토어에 엔트리가 추가됩니다. 사용자는, 열쇠의 페어를 생성하는지, 증명서를 임포트 하는 것으로써, 그 엔트리에 트러스트를 줍니다. 이것에 의해, 키스토어의 엔트리는 신뢰된 엔트리로 간주해집니다.  </p>
+<p> 다음과 같은 2 개의 키스토어파일이 있으면(자) 편리합니다. 1 개(살)은 열쇠의 엔트리만의 파일, 이제(벌써) 1 개(살)은 신뢰된 증명서의 엔트리를 포함한 파일입니다. 이것에는, 증명서 발행국 (CA)이 발행하는 증명서가 포함됩니다. 전자에는 기밀성이 있는 정보가 포함됩니다만, 후자에게는 기밀성이 있는 정보는 포함되지 않습니다. 단독의 키스토어파일은 아니고, 다른 2 개의 키스토어파일을 사용하면(자), 독자적인 증명서 ( 및 대응하는 비공개키)와 다른 증명서를 논리적으로 구별한 명확한 구분이 제공됩니다. 액세스 제한이 있는 키스토어에 비공개키를 보존하면(자), 비공개키를 한층 더 보호할 수가 있습니다. 한편, 필요하면, 보다 자유롭게 액세스 할 수 있는 키스토어로 신뢰되는 증명서를 제공할 수도 있습니다.  </p>
+<h2>메세지 인증 코드</h2>
+<i></i>메세지 인증 코드 (MAC)는, 송신된 정보나, 신뢰할 수 없는 미디어에 보존되고 있는 정보의 무결성을, 비밀열쇠에 의거해 체크하는 방법을 제공합니다. 일반적으로, MAC 는 비밀열쇠를 공유하는 2 살의 당사자 사이로, 서로가 송신하는 정보를 검증하기 위해서 사용됩니다.
+<p> 암호화 해시 기능에 근거하는 MAC 기구는, HMAC 로 불립니다. HMAC 는, 공유하는 비밀열쇠와 조합해, Message Digest 5 (MD5)나 Secure Hash Algorithm (SHA)등의 암호화 해쉬 함수와 함께 사용할 수 있습니다. HMAC 에 대해서는, RFC 2104 로 규정되고 있습니다.  </p>
+<h2>공개키암호 방식</h2>
+<i></i>공개키암호화에서는, 2 개의 열쇠를 생성하는 암호화 알고리즘을 사용합니다. 한편의 열쇠는 공개됩니다만, 한편은 비공개인 채입니다. 공개키와 비공개키에서는, 역의 암호화 처리가 이루어져 뿐의 열쇠로 암호화한 것을 한편의 열쇠로 복호화 합니다. 공개키암호화는, 비대칭 암호화라고도 불립니다.
+<h2> 레코드 프로토콜</h2>
+<i></i>레코드 프로토콜은, 어플리케이션 레벨의 데이터나 핸드 쉐이크 프로세스의 일부인 데이터를 모두, 독립한 데이터 레코드에 패키지화합니다. 이것은, TCP 스트림 소켓으로 어플리케이션 바이트 스트림을 네트워크 패킷으로 변환하는 경우에 자주(잘) 닮았습니다. 개개의 레코드는, 사용하고 있는 암호화열쇠 및 무결성 보호열쇠에 의해 보호됩니다.
+<h2>비밀열쇠 암호방식</h2>
+<i></i>비밀열쇠 암호방식으로는, 데이터의 암호화와 복호화에 같은 열쇠를 사용하는 암호화 알고리즘을 사용합니다. 비밀열쇠 암호방식은 대칭 암호 방식이라고도 불립니다.
+<h2>세션</h2>
+<i>세션</i>이란, 이름 첨부 상태의 정보의 컬렉션으로, 인증된 피어 식별 정보, 암호군, 열쇠의 승인의 비밀을 포함합니다. 세션에서는, 안전한 소켓 핸드 쉐이크를 통해서 협상을 합니다. 세션은, 복수의 안전한 소켓 인스턴스로 공유할 수가 있습니다.
+<h2>트러스트 매니저</h2>
+<a href="#KMandTMdef">「키 매니저와 트러스트 매니저」</a>를 참조해 주세요.
+<h2>트러스트 스토어 </h2>
+<a href="#Stores">「키스토어와 트러스트 스토어」</a>를 참조해 주세요.
+</blockquote>
+<br> <a name="SSLOverview"></a> 
+<h1>Secure Sockets Layer (SSL) 프로토콜의 개요</h1>
+<blockquote>
+<p> Secure Sockets Layer (SSL)는, Web 로 암호화를 구현하는 경우에 가장 자주(잘) 사용되는 프로토콜입니다. SSL 는, 네트워크로 안전한 통신을 실시하기 위해서(때문에) 암호화 프로세스를 조합해 사용합니다. 이 마디에서는, SSL 및 SSL 가 사용하는 암호화 프로세스에 대해 간단하게 설명합니다.  </p>
+<p> SSL 는, 인터넷으로 사용되는 표준적인 TCP/IP 소켓 프로토콜의 기능을 안전하게 확장합니다. 다음의 그림 「SSL 를 사용하는 TCP/IP 프로토콜」로 가리키도록(듯이), Secure Sockets Layer 는 표준적인 TCP/IP 프로토콜의 트랜스폴트층과 응용 계층의 사이에 추가됩니다. SSL 와 함께 가장 자주(잘) 사용되는 어플리케이션은 Hypertext Transfer Protocol (HTTP)입니다. 이것은 인터넷의 Web 페이지용의 프로토콜입니다. 이 밖에도, Net News Transfer Protocol (NNTP), Telnet, Lightweight Directory Access Protocol (LDAP), Interactive Message Access Protocol (IMAP), File Transfer Protocol (FTP)등의 어플리케이션이 있어, 역시 SSL 와 함께 사용합니다.  </p>
+<p> 주:현재로서는, 안전한 FTP 의 표준 규격은 존재하지 않습니다.  <br> <br>
+  </p>
+  <p></p>
+  <center>
+  <table>
+    <caption>
+<h3>SSL 를 사용하는 TCP/IP 프로토콜</h3>
+    </caption> <tbody>
+      <tr>
+        <th rowspan="1" colspan="1">
+<p class="CellHeading">TCP/IP 의 층 </p>
+        </th>
+        <th rowspan="1" colspan="1">
+<p class="CellHeading">프로토콜 </p>
+        </th>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">
+<p>응용 계층 </p>
+        </td>
+        <td rowspan="1" colspan="1">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;HTTP, NNTP, Telnet, FTP 등</p>
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">
+<p>Secure Sockets Layer </p>
+        </td>
+        <td rowspan="1" colspan="1">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;SSL </p>
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">
+<p>트랜스폴트층 </p>
+        </td>
+        <td rowspan="1" colspan="1">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;TCP </p>
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">
+<p>인터넷층 </p>
+        </td>
+        <td rowspan="1" colspan="1">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;IP </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </center>
+<p> SSL 는 1994 년에 Netscape 사에 의해 개발되어 인터넷의 세계에서 사용되게 되면(자), 표준적인 존재가 되었습니다. 현재는, 국제적인 표준화 기구인 Internet Engineering Task Force (IETF)가 관리하고 있습니다. IETF 는 SSL 의 명칭을 Transport Layer Security (TLS)로 변경해, 1999 년 1 월에 버젼 1.0 을 처음으로 발표했습니다. TLS 1.0 은, SSL 의 최신 버젼 3.0 을 약간 변경한 것입니다. SSL 3.0 으로 TLS 1.0 에는 거의 차이가 없습니다.  <a name="WhySSL"></a> </p>
+<h2>SSL 를 사용하는 것의 이점</h2>
+<blockquote>다음의 3 개의 이유로부터, 기밀 정보를 네트워크로 송신할 때에 위험이 수반하는 경우가 있습니다.
+    <ul>
+<li>통신 상대의 엔티티가, 실제로는 반드시 상정하는 상대라고는 할 수 없다
+        <p></p>
+      </li>
+<li>네트워크상의 데이터는 감청되는 일이 있어, 권한이 없는 제삼자 (경우에 따라서는 공격자)에게 데이터를 읽어내져 버리는 일이 있다
+        <p></p>
+      </li>
+<li>공격자가 데이터를 감청할 수 있는 경우, 공격자는 데이터가 수신자에게 닿기 전으로 내용을 변경할 수 있다 </li>
+    </ul>
+<p> SSL 는 이러한 문제에 대응하고 있습니다. 최초의 문제에는, 인증으로 불리는 프로세스를 통해, 통신의 당사자 쌍방으로 서로의 식별 정보를 임의에 확인시키는 것으로 대응하고 있습니다. 양자가 인증되면(자), SSL 는 양자를 암호화 접속해 안전한 통신을 실시합니다. 양자의 통신을 암호화하는 것으로 2 번째의 문제에 대응해, 기밀성이 보관 유지됩니다. SSL 로 사용하는 암호화 알고리즘에는, 안전한 해쉬 함수가 포함되어 있습니다. 이것은 체크 섬을 닮아 있습니다. 이것에 의해, 송신중으로 데이터가 변경되어 있지 않은 것이 보증됩니다. 안전한 해쉬 함수에 의해, 3 번째의 문제에 대응해, 데이터의 무결성을 확보합니다.  </p>
+<p> 인증도 암호화도 옵션이며, 당사자 사이에 협상을 한 암호군에 근거하고 있는 것에 주의해 주세요.  </p>
+<p> 무엇보다 단적인 SSL 의 사용예는 전자 상거래입니다. 전자 상거래에서는, 통신하는 서버의 식별 정보는 보증되고 있다고 생각해야 하는 것이 아닙니다. 크레디트 카드의 번호를 입력하는 것으로 훌륭한 서비스를 받게 된다고 하는 가짜의 Web 사이트를 작성하는 것은 간단한 일입니다. SSL 를 사용하면(자), 클라이언트가 서버의 식별 정보를 인증할 수가 있습니다. 또, 서버도 클라이언트의 정보를 인증할 수 있습니다만, 인터넷상의 거래에서는, 이 방법은 그다지 사용되고 있지 않습니다.  </p>
+<p> 클라이언트와 서버가 서로의 정보를 인증하면(자), SSL 는 암호화 알고리즘을 사용해 기밀성과 데이터의 무결성을 제공합니다. 이것에 의해, 크레디트 카드 번호와 같은 기밀 정보를 인터넷상에서 안전하게 송신할 수가 있습니다.  </p>
+<p> SSL 는 인증, 기밀성, 및 데이터의 무결성을 제공합니다만, 비거부 서비스는 제공하지 않습니다. 비거부성이란, 메세지를 송신한 엔티티는, 나중이 되어 송신을 거부할 수가 없다고 하는 것을 의미합니다. 메세지와 디지털 서명을 관련지을 수 있고 있으면(자), 나중이 되어 통신 내용을 증명할 수가 있습니다. SSL 단독으로는, 비거부성을 제공하지 않습니다.  </p>
+  </blockquote>
+  <a name="HowSSLWorks"></a> 
+<h2>SSL 의 구조</h2>
+<blockquote>SSL 가 유효한 이유의 1 개에, 복수의 암호화 프로세스를 사용하고 있는 일이 있습니다. SSL 는, 공개키암호로 인증을 실시해, 비밀열쇠 암호와 디지털 서명으로 기밀성과 데이터의 무결성을 제공합니다. SSL 에 대해 이해하기 전에, 암호화의 처리 방법을 이해해 두면(자) 도움이 됩니다.
+<h3>암호화 처리</h3>
+<blockquote>암호화의 주된 목적은, 권한이 없는 제삼자가 비공개의 통신에 액세스 하거나 그 내용을 이해하는 것을 곤란하게 하는 것입니다. 암호화에서는, 데이터에 대한 권한이 없는 모든 액세스를 반드시 제한할 수 있는 것은 아닙니다만, 권한이 없는 제삼자가 비공개의 데이터를 읽어낼 수 없게 할 수가 있습니다. 암호화에서는, 복잡한 알고리즘을 사용해, 원의 메세지 (clear text)를 encode 된 메세지 (암호 텍스트)로 변경합니다. 일반적으로, 네트워크로 송신되는 데이터의 암호화 및 복호화에 사용하는 알고리즘에는 2 개의 카테고리가 있습니다. 비밀열쇠 암호방식과 공개키암호 방식입니다. 이러한 암호 방식에 대해서는, 이하의 마디로 설명합니다.
+<p> 비밀열쇠 암호방식도 공개키암호 방식도, 합의에 근거하는 암호열쇠 또는 암호열쇠의 페어를 사용합니다. 열쇠는, 데이터의 암호화 프로세스 및 복호화 프로세스로 암호화 알고리즘이 사용하는 비트 캐릭터 라인입니다. 암호화열쇠는 자물쇠의 열쇠를 닮아 있습니다. 자물쇠를 비울 수가 있는 것은, 올바른 열쇠 뿐입니다.  </p>
+<p> 통신의 당사자가 서로 열쇠를 안전하게 송신하는 것은, 사소한 문제에서는 키N. 공개키 증명서를 사용하면(자), 공개키를 안전하게 송신해, 수신자에게 공개키의 신뢰성을 보증할 수가 있습니다. 공개키 증명서에 대해서는, 후의 마디로 설명합니다.  </p>
+<p> 이하로 설명하는 암호화 프로세스에서는, 안전보장 공동체에서 사용하는 명칭을 사용합니다. 통신의 당사자를 각각 Alice 와 Bob 로 해, 권한이 없는 제삼자를 Charlie 로 합니다. Charlie 는 공격자로도 됩니다.  </p>
+<h4>비밀열쇠 암호방식</h4>
+      <blockquote>
+<p> 비밀열쇠 암호방식으로는, 통신하는 Alice 와 Bob 는 메세지의 암호화와 복호화에 같은 열쇠를 사용합니다. 암호화된 데이터를 네트워크로 송신하기 전에, Alice 와 Bob 는 열쇠를 가지고 있는 것이 필요해, 암호화와 복호화에 사용하는 암호화 알고리즘에 동의 하고 있을 필요가 있습니다.  </p>
+<p> 비밀열쇠 암호방식에서 큰 문제가 되는 것은, 공격자에게 액세스 되지 않고 한편으로부터 한편에 열쇠를 건네주는 방법입니다. Alice 와 Bob 가 비밀열쇠 암호방식에서 데이터를 암호화해도, Charlie 가 그 열쇠에 액세스 할 수 있으면 Alice 와 Bob 의 비공개 메세지를 감청할 수가 있습니다. Charlie 는 Alice 와 Bob 의 메세지를 복호화 가능한 한은 아니고, Alice 가 되어 끝내 암호화 데이터를 Bob 에 송신할 수도 있습니다. Bob 에는, 메세지가 Charlie 로부터 도착한 것인가 Alice 로부터 도착한 것인가는 모릅니다.  </p>
+<p> 비밀열쇠의 배포 방법의 문제가 해결하면, 비밀열쇠 암호는 매우 귀중한 툴이 됩니다. 그 알고리즘에 의해, 뛰어난 시큐리티와 암호화 데이터가 비교적 신속히 제공할 수 있기 때문입니다. SSL 세션으로 송신되는 기밀성의 높은 데이터의 상당수는, 비밀열쇠 암호방식에서 송신됩니다.  </p>
+<p> 비밀열쇠 암호방식은, 데이터의 암호화와 복호화에 같은 열쇠를 사용하므로,<i></i>대칭 암호화 방식이라고도 불립니다. 잘 알려져 있는 비밀열쇠 암호화 알고리즘에는, Data Encryption Standard (DES), 트리플 DES (3DES), Rivest Cipher 2 (RC2), 및 Rivest Cipher 4 (RC4)가 있습니다.  </p>
+      </blockquote>
+<h4>공개키암호 방식</h4>
+      <blockquote>
+<p> 공개키암호화 방식은, 공개키와 비공개키를 사용하는 것으로 열쇠의 배포 방법을 해결했습니다. 공개키는 네트워크를 통해서 공개해, 송신할 수 있습니다만, 비공개키는 통신의 1 명의 당사자 밖에 공개되지 않습니다. 공개키와 비공개키는 암호화 방식이 역으로, 한편의 열쇠로 암호화한 것을 이제(벌써) 한편의 열쇠로 복호화 합니다.  </p>
+<p> 여기서, Bob 가 Alice 에 공개키암호 방식에서 비밀의 메세지를 송신하는 경우를 생각해 봅시다. Alice 는 공개키와 비공개키를 어느쪽이나 가지고 있으므로, 비공개키는 안전한 장소에 보관해 두어, 공개키를 Bob 에 송신합니다. Bob 는 Alice 의 공개키를 사용해 Alice 에의 비밀의 메세지를 암호화합니다. Alice 는 비공개키를 사용해 메세지를 복호화 합니다.  </p>
+<p> Alice 가 비공개키를 사용해 메세지를 암호화해, 그 메세지를 Bob 에 송신하면, Bob 가 수신하는 데이터는 Alice 로부터 도착한 것이라고 생각할 수가 있습니다. Bob 가 Alice 의 공개키로 데이터를 복호화 할 수 있으면, 그 메세지는 Alice 가 자신의 비공개키로 암호화한 것에 틀림없습니다. Alice 의 비공개키를 가지고 있는 것은 Alice 만이기 때문입니다. 문제는, Alice 의 공개키가 공개되고 있기 위해서(때문에), 누구나가 메세지를 읽을 수 있어 버리는 것입니다. 이 시나리오는, 안전한 데이터 통신을 고려에 넣고 있지 않습니다만, 디지털 서명의 기본에는 접하고 있습니다. 디지털 서명과는 공개키 증명서의 컴퍼넌트의 1 개로, SSL 로 클라이언트나 서버를 인증하기 위해서 사용합니다. 공개키 증명서와 디지털 서명에 대해서는, 후의 항으로 설명합니다.  </p>
+<p> 공개키암호 방식은, 데이터의 암호화와 복호화에 같은 열쇠를 사용하므로,<i></i>비대칭 암호화 방식이라고도 불립니다. SSL 를 사용하는 것이 많은, 잘 알려져 있는 공개키암호화 알고리즘에는, Rivest Shamir Adleman 가 있습니다. 이 밖에도, 비밀열쇠를 교환하기 위해서 설계된 SSL 를 사용하는 공개키암호화 알고리즘에는, Diffie-Hellman (DH)가 있습니다. 공개키암호 방식에는 방대한 계산이 필요하기 때문에, 속도가 늦어집니다. 거기서, 이 방식은 암호화 데이터 통신 전체에 사용하는 것보다도 오히려, 비밀열쇠 등 소량의 데이터를 암호화하는 경우에만 사용합니다.  </p>
+      </blockquote>
+<h4>비밀열쇠 암호방식과 공개키암호 방식의 비교</h4>
+      <blockquote>
+<p> 비밀열쇠 암호방식과 공개키암호 방식의 어느 쪽에도, 장점과 약점이 있습니다. 비밀열쇠 암호방식으로는, 데이터의 암호화나 복호화에 시간은 걸리지 않습니다만, 통신자끼리가 같은 비밀열쇠 정보를 가질 필요가 있어, 열쇠의 교환 방법이 문제가 됩니다. 공개키암호 방식으로는, 열쇠를 비밀로 할 필요가 없기 때문에 교환 방법은 문제가 되지 않습니다. 그러나 데이터의 암호화와 복호화에 사용하는 알고리즘에는 방대한 계산이 필요해, 속도가 늦어집니다.  </p>
+      </blockquote>
+<h4>공개키 증명서</h4>
+      <blockquote>
+<p> 공개키 증명서를 사용하면(자), 엔티티는 비대칭 암호 방식에서 사용하는 공개키를 안전하게 배포할 수 있습니다. 공개키 증명서는 다음과 같은 상황을 회피합니다. Charlie 가 자신의 공개키와 비공개키를 작성하면, 자신은 Alice 라고 자칭해 Bob 에 공개키를 송신할 수 있습니다. Bob 는 Charlie 와 통신할 수 있습니다만, 데이터를 Alice 에 송신하고 있으면(자) 믿어 버려 버립니다.  </p>
+<p> 공개키 증명서는 전자적인 패스포트라고 생각할 수가 있습니다. 이것은, 신뢰할 수 있는 조직에 의해 발행되어 소유자에게 식별 정보를 제공합니다. 공개키 증명서를 발행하는 신뢰할 수 있는 조직을, 증명서 발행국 (CA)이라고 부릅니다. CA 는 공증인에게 비유할 수가 있습니다. CA 로부터 증명서를 가져오려면 , 식별 정보의 증거가 되는 것을 제공할 필요가 있습니다. CA 는, 신청자가 제기하는 조직의 대표이다라는 확증을 얻을 수 있으면(자), 증명서에 포함되는 정보의 타당성을 증명하는 증명서에 서명합니다.  </p>
+<p> 공개키 증명서에는, 다음과 같은 필드가 있습니다.  </p>
+        <ul>
+<li>발행자 - 증명서를 발행한 CA 입니다. 증명서를 발행하는 CA 를 신뢰할 수 있어 증명서가 유효하면, 증명서는 신뢰할 수 있습니다.
+            <p></p>
+          </li>
+<li>유효기간 - 증명서에는 기일이 있습니다. 증명서의 타당성을 검증하는 경우는, 이 일자는 확인해야 할 정보의 1 개가 됩니다.
+            <p></p>
+          </li>
+<li>주제 - 주제 필드에는, 증명서가 나타내는 엔티티의 정보가 포함됩니다.
+            <p></p>
+          </li>
+<li>주제의 공개키 - 증명서가 제공하는 주된 정보에, 주제의 공개키가 있습니다. 그 외의 필드는, 이 열쇠의 타당성을 확인하기 위한의 것입니다.
+            <p></p>
+          </li>
+<li>서명 - 증명서는, 증명서를 발행한 CA 에 의해 전자적으로 서명됩니다. 서명은 CA 의 비공개키를 사용해 작성되어 증명서의 타당성을 보증하는 것입니다. 증명서에만 서명되어 SSL 트랜잭션(transaction) 송신되는 데이터에는 서명되지 않기 때문에, SSL 에는 비거부성이 없습니다.  </li>
+        </ul>
+<p> Alice 가 Bob 에 공개키 증명서로 자신의 공개키를 송신할 때, Bob 가 Alice 의 공개키를 유효하다라고 인정하는 이외를 실시하지 않는 경우, Charlie 가 Alice 가 되어 끝냈다고 해도, Bob 가 Charlie 에 비밀 정보를 송신할 것은 없습니다.  </p>
+<p> 복수의 증명서를 증명서 체인으로 링크할 수도 있습니다. 증명서 체인을 사용하는 경우, 최초의 증명서는 반드시 송신자의 증명서입니다. 다음은 송신자의 증명서를 발행한 엔티티의 증명서입니다. 체인내에 한층 더 증명서가 있는 경우, 직전의 증명서를 발행한 증명서 발행국의 증명서가 계속됩니다. 체인의 마지막 증명서는, 루트 CA 의 증명서입니다. 루트 CA 는, 넓게 신뢰되고 있는 공개 증명서 발행국입니다. 복수의 루트 CA 의 정보는, 일반적으로, 클라이언트의 인터넷 브라우저에 보존되고 있습니다. 이 정보에는, CA 의 공개키가 포함되어 있습니다. 잘 알려져 있는 CA 에는 VeriSign, Entrust, 및 GTE CyberTrust 가 있습니다.  </p>
+      </blockquote>
+<h4>암호화 해쉬 함수</h4>
+      <blockquote>
+<p> 암호화된 데이터를 송신하는 경우, SSL 는 일반적으로, 암호화 해쉬 함수를 사용해 데이터의 무결성을 보증합니다. 해쉬 함수를 사용해, Alice 가 Bob 에 보낸 데이터를 Charlie 를 조작할 수 없게 합니다.  </p>
+<p> 암호화 해쉬 함수는 체크 섬을 닮아 있습니다. 주된 차이는, 체크 섬이 데이터의 우발적 변화를 검출하는데 대해, 암호화 해쉬 함수는 고의로 밤변경을 검출한다고 하는 것입니다. 데이터가 암호화 해쉬 함수로 처리되면(자), 해시로 불리는 작은 비트 캐릭터 라인이 생성됩니다. 메세지가 매우 아주 조금 변경되었을 경우도, 결과적으로 생성되는 해시는 크게 변경됩니다. 암호화 해쉬 함수에는, 암호화열쇠가 필요 없습니다. SSL 와 함께 사용되는 것이 많은 해쉬 함수에는, Message Digest 5 (MD5)로 Secure Hash Algorithm (SHA)의 2 개가 있습니다. SHA 는,<a href="http://www.nist.gov">U.S.  National Institute of Science and Technology (NIST)</a>  에 의해 제안되었습니다.  </p>
+      </blockquote>
+<h4>메세지 인증 코드</h4>
+<blockquote>메세지 인증 코드 (MAC)는 암호화 해시를 닮아 있습니다만, 비밀열쇠를 베이스로 하고 있는 점이 다릅니다. 비밀열쇠 정보가 암호화 해쉬 함수로 처리한 데이터에 포함되어 있는 경우, 그 결과 생성되는 해시는 HMAC 로 불립니다.
+<p> Alice 는, Bob 에의 메세지를 Charlie 가 감청하고 있지 않는 것을 확인하고 싶은 경우, 메세지의 HMAC 를 계산해 원의 메세지에 HMAC 를 추가할 수 있습니다. 다음에, Bob 와 공유하고 있는 비밀열쇠를 사용해 메세지와 HMAC 를 암호화합니다. Bob 는, 메세지를 복호화 해 HMAC 를 계산하면, 송신중으로 메세지가 변경되었는지의 여부를 알 수 있습니다. SSL 에서는, HMAC 를 사용해 안전한 데이터를 송신합니다.  </p>
+      </blockquote>
+<h4>디지털 서명</h4>
+      <blockquote>
+<p> 메세지에 암호화 해시가 작성되면(자), 해시는 송신자의 비공개키로 암호화됩니다. 이러한 암호화 해시를 디지털 서명이라고 부릅니다.  </p>
+      </blockquote>
+    </blockquote>
+    <a name="SSLProcess"></a> 
+<h3>SSL 처리</h3>
+    <blockquote>
+<p> SSL 를 사용한 통신은, 클라이언트와 서버간의 정보 교환으로부터 시작됩니다. 이 정보 교환을 SSL 핸드 쉐이크라고 부릅니다.  </p>
+<p> SSL 에는, 주로 다음과 같은 3 개의 목적이 있습니다.  </p>
+      <ul>
+<li>암호군의 협상
+          <p></p>
+        </li>
+<li>정보의 인증 (옵션)
+          <p></p>
+        </li>
+<li>암호화 기구의 동의에 의한 정보 시큐리티의 확립 </li>
+      </ul>
+<h4>암호군의 협상</h4>
+      <blockquote>
+<p> SSL 세션은, 어느 암호군을 사용할까에 임해서, 클라이언트와 서버가 협상을 실시하는 것으로부터 시작됩니다. 암호군이란, 컴퓨터가 데이터를 암호화하기 위해서 사용하는 암호화 알고리즘과 열쇠의 사이즈입니다. encode 방식에는, 공개키 교환 알고리즘 또는 열쇠 협정 알고리즘, 및 및 암호화 해쉬 함수에 관한 정보가 포함됩니다. 클라이언트는 이용할 수 있는 암호군을 서버에게 전해 서버는, 어느 쪽에도 적용할 수 있는 암호군을 선택합니다.  </p>
+      </blockquote>
+<h4>서버의 인증</h4>
+      <blockquote>
+<p> SSL 의 인증 스텝은 생략 할 수 있습니다. 그러나, Web 상의 전자 상거래에서는, 일반적으로 클라이언트가 서버를 인증합니다. 서버의 인증에 의해, 서버가 나타내면(자) 클라이언트가 믿고 있는 엔티티를, 그 서버가 실제로 나타내고 있는 것을 클라이언트를 확인할 수 있습니다.  </p>
+<p> 서버는, 스스로가 나타낸다고 주창하는 조직에 속하고 있는 것을 증명하기 위해(때문에), 클라이언트에 공개키 증명서를 제시합니다. 이 증명서가 유효하면, 클라이언트는 서버의 식별 정보에 대해 확신할 수 있습니다.  </p>
+<p> 클라이언트와 서버는, 같은 비밀열쇠에 대해 동의 할 수 있는 정보를 교환합니다. 예를 들어, RSA 를 사용하는 경우, 클라이언트는 공개키 증명서로 취득한 서버의 공개키를 사용해, 비밀열쇠 정보를 암호화합니다. 클라이언트는 암호화된 비밀열쇠 정보를 서버에 송신합니다. 복호화에는 서버의 비공개키가 필요해서, 서버로만, 이 메세지를 복호화 할 수 있습니다.  </p>
+      </blockquote>
+<h4>암호화된 데이터의 송신</h4>
+      <blockquote>
+<p> 클라이언트와 서버는, 같은 비밀열쇠에 액세스 합니다. 각각의 메세지에서는, 이 처리의 최초의 단계에서 선택한, 비밀 정보를 공유하는 암호화 해쉬 함수를 사용해, 메세지에 첨부되는 HMAC 를 계산합니다. 다음에, 비밀열쇠와 이 처리의 최초의 단계에서 설정한 비밀열쇠 알고리즘을 사용해, 안전한 데이터와 HMAC 를 암호화합니다. 그 후, 클라이언트와 서버는, 암호화되고 해시화 된 데이터를 사용해 안전하게 통신할 수가 있습니다.  </p>
+      </blockquote>
+    </blockquote>
+<h3>SSL 프로토콜</h3>
+    <blockquote>
+<p> 전의 마디에서는, SSL 핸드 쉐이크를 상위 레벨로 설명했습니다. 즉, 암호화된 메세지를 송신하기 전에 클라이언트와 서버로 행해지는 정보 교환에 대해 설명했습니다. 이 마디에서는, 한층 더 자세하게 설명합니다.  </p>
+<p> 다음의 「SSL 메세지」에는, SSL 핸드 쉐이크로 교환되는 일련의 메세지가 나타나고 있습니다. 특정의 상황하로만 송신되는 메세지에는 (Optional)이라고 기록되고 있습니다. SSL 메세지의 설명은 다음과 같습니다.  <br> <br>
+      </p>
+<center><img src="sslmessages.gif" width="484" height="418"  alt="SSL 핸드 쉐이크로 교환되는 메세지 순서"> </center>
+      <br> <br>
+<p> SSL 메세지는, 다음의 순서로 송신됩니다.  </p>
+      <ol>
+<li><b>Client hello</b> - 클라이언트는 서버 정보를 송신합니다. 이 정보에는, 자신이 지원하는 최상정도 버젼의 SSL 와 암호군의 리스트가 포함됩니다. TLS 1.0 은 SSL 3.1 으로 표시됩니다. 암호군의 정보에는, 암호화 알고리즘과 열쇠의 사이즈가 포함됩니다.
+          <p></p>
+        </li>
+<li><b>Server hello</b> - 서버는, 클라이언트와 서버의 양쪽 모두가 지원하는 최상정도 버젼의 SSL 와 최적인 암호군을 선택해, 이 정보를 클라이언트에 송신합니다.
+          <p></p>
+        </li>
+<li><b>Certificate</b> - 서버는 클라이언트에 증명서 또는 증명서 체인을 송신합니다. 증명서 체인은 일반적으로, 서버의 공개키 증명서로 시작되어, 인증국의 루트 증명서로 끝납니다. 이 메세지는 옵션으로, 서버 인증이 요구되었을 경우에 사용합니다.
+          <p></p>
+        </li>
+<li><b>Certificate request</b> - 서버가 클라이언트를 인증할 필요가 있는 경우, 클라이언트에 증명서 요구를 송신합니다. 인터넷 어플리케이션에서는, 이 메세지가 사용되는 것은 거의 없습니다.
+          <p></p>
+        </li>
+<li><b>Server key exchange</b> - 상기의 3 으로 송신한 공개키 정보가 열쇠 교환을 실시하는데 불충분한 경우, 서버는 클라이언트에 서버열쇠 교환 메세지를 송신합니다.
+          <p></p>
+        </li>
+<li><b>Server hello done</b> - 서버는, 최초의 협상 메세지를 종료한 것을 클라이언트에게 전합니다.
+          <p></p>
+        </li>
+<li><b>Certificate</b> - 메세지 4 로 서버가 클라이언트에 증명서를 요구하면(자), 클라이언트는 메세지 3 으로 서버가 행한 것처럼 해, 증명서 체인을 송신합니다.
+          <p></p>
+<p> 주:클라이언트에 증명서를 요구하는 것은, 매우 일부의 인터넷 서버-어플리케이션 뿐입니다. </p>
+          <p> </p>
+        </li>
+<li><b>Client key exchange</b> - 클라이언트는, 대칭 암호 방식에서 사용하는 열쇠를 작성하는 정보를 생성합니다. RSA 에서는, 클라이언트는 서버의 공개키로 이 열쇠 정보를 암호화해 서버에 송신합니다.
+          <p></p>
+        </li>
+<li><b>Certificate verify</b> - 이 메세지는, 상술대로 클라이언트가 증명서를 제시하는 경우에 송신됩니다. 이 메세지는, 서버에 클라이언트의 인증 처리를 완료시키기 위한 것입니다. 이 메세지가 사용되면(자), 클라이언트는 암호화 해쉬 함수로 전자적으로 서명한 정보를 송신합니다. 서버가 클라이언트의 공개키로 이 정보를 복호화 하면, 서버는 클라이언트를 인증할 수 있습니다.
+          <p></p>
+        </li>
+<li><b>Change cipher spec</b> - 클라이언트는 메세지를 송신해, 암호화 모드를 변경하도록(듯이) 서버에게 전합니다.
+          <p></p>
+        </li>
+<li><b>Finished</b> - 클라이언트는 서버에, 안전한 데이터 통신을 개시할 준비를 할 수 있던 것을 전합니다.
+          <p></p>
+        </li>
+<li><b>Change cipher spec</b> - 서버는 메세지를 송신해, 암호화 모드를 변경하도록(듯이) 클라이언트에게 전합니다.
+          <p></p>
+        </li>
+<li><b>Finished</b> - 서버는 클라이언트에, 안전한 데이터 통신을 개시할 준비를 할 수 있던 것을 전합니다. SSL 핸드 쉐이크가 종료합니다.
+          <p></p>
+        </li>
+<li><b>Encrypted data</b> - 클라이언트와 서버는, 메세지 1 으로 2 로 결정한 대칭 암호화 알고리즘과 암호화 해쉬 함수, 및 메세지 8 으로 클라이언트가 서버에 송신한 비밀열쇠를 사용해 통신합니다.  </li>
+
+	<li><p><b>Close Messages</b> - 접속의 끝나에, 각각의 옆이 close_notify 메세지를 송신해, 접속이 종료한 것을 피어에게 전합니다. </li>
+      </ol>
+<p> SSL 세션으로 생성한 파라미터를 보존해 두면, 그 이후도 SSL 세션으로 이용할 수가 있습니다. SSL 세션의 파라미터를 보존해 두면, 암호화 통신을 재빠르게 개시할 수 있습니다. <br>
+      </p>
+
+<A NAME="ciphersuitechoice"></A> 
+<h4>encode 방식의 선택과 원격엔티티의 검증</h4>
+<a href="#SSLDocs">SSL/TLS 프로토콜</a>에서는, 보호된 접속을 확보하기 위한 일련의 구체적인 순서를 정의하고 있습니다. 다만, 선택하는 encode 방식에 의해, 접속으로 확보하는 시큐리티의 종류가 정해집니다. 예를 들어, 익명 encode 방식을 선택했을 경우, 어플리케이션에는 원격 피어의 식별 정보를 검증하는 수단이 없습니다. 암호화 없음의 encode 방식이 선택되었을 경우는, 데이터의 기밀성을 보호할 수 없습니다. 또 SSL/TLS 프로토콜에서는, 수신한 자격과 피어로부터 송신되는 것이 예기 되는 자격이 일치하도록(듯이)와는 규정하고 있습니다. 접속이 어떠한 이유로써 악의가 있는 피어에 리다이렉트(redirect) 되었을 때에, 악의가 있는 피어의 자격이 현재의 트러스트 데이터에 근거해 받아들여졌을 경우, 그 접속은 유효라고 보여져 버립니다.
+<P>
+raw <code>SSLSockets/SSLEngines</code> 를 사용하는 경우는, 데이터의 송신전에 반드시 피어의 자격을 체크해 주세요. <code>SSLSocket</code> 클래스와 <code>SSLEngine</code> 클래스는, URL 의 호스트명이 피어의 자격에 있는 호스트명으로 일치할지 어떨지를 자동적으로 검증하지 않습니다. 호스트명이 검증되지 않으면, URL 부정행위에 의해 피해를 받을 가능성이 있습니다.
+<P>
+<A HREF="http://www.ietf.org/rfc/rfc2818.txt">https</A>  등의 프로토콜은, 호스트명의 검증 처리가 불필요합니다. 어플리케이션은,<a href="#HostnameVerifier"><code>HostnameVerifier</code></a>  를 사용해 디폴트의 HTTPS 호스트명 규칙을 덧쓰기할 수 있습니다. 상세한 것에 대하여는,<a href="#HttpsURLConnection">「<code>HttpsURLConnection</code>」</a>  를 참조해 주세요. <br>
+      <p></p>
+    </blockquote>
+  </blockquote>
+  <a name="SSLRefs"></a> 
+<h2>SSL 와 TLS 에 관한 참조 자료</h2>
+  <blockquote>
+<p> SSL 에 대한 참고 자료는,<a href="#SSLDocs">「Secure Sockets Layer 의 관련 문서」</a>를 참조해 주세요.  </p>
+  </blockquote>
+</blockquote>
+
+
+<a name="KeyClasses"></a> 
+<h1>주요한 클래스</h1>
+<blockquote> <a name="ClassRelationship"></a> 
+<h2>클래스의 관계</h2>
+  <blockquote>
+<p>안전한 통신을 실시하려면 , 접속의 양쪽 모두의 옆에서 SSL 를 사용할 수 있는 것이 필요합니다. JSSE API 의 접속의 엔드 포인트 클래스는,<code>SSLSocket</code> 및 <code>SSLEngine</code> 입니다. 다음의 그림에서는,<code>SSLSocket/SSLEngine</code> 의 작성에 사용되는 주된 클래스를 논리적인 순서로 나란해질 수 있고 있습니다.  <br> <br>
+    </p>
+<center><img src="classes1.jpg" width="581" height="429"  alt="SSLSocket/SSLEngine 의 작성에 사용되는 클래스"> </center>
+    <br> <br>
+<p><code>SSLSocket</code> 는 <code>SSLSocketFactory</code> 또는 인 바운드 접속을 받는 <code>SSLServerSocket</code> 에 의해 작성됩니다. <code>SSLServerSocket</code> 는 <code>SSLServerSocketFactory</code> 로 작성됩니다. <code>SSLSocketFactory</code> 및 <code>SSLServerSocketFactory</code> 객체는 어느쪽이나 <code>SSLContext</code> 로 작성됩니다. SSLEngine</code> 는, SSLContext 에 의해 직접 작성되어 어플리케이션에 의존해 모든 입출력을 처리합니다. </p>
+    <blockquote>
+<hr><b>중요:</b>raw <code>SSLSockets/SSLEngines</code> 를 사용하는 경우는, 데이터의 송신전에 반드시 피어의 자격을 체크해 주세요. 예를 들어 <code>SSLSocket/SSLEngine</code> 클래스는, URL 의 호스트명이 피어의 자격에 있는 호스트명으로 일치할지 어떨지를 자동적으로 검증하지 않습니다. 호스트명이 검증되지 않으면, URL 부정행위에 의해 피해를 받을 가능성이 있습니다.  <br>
+      <hr> </blockquote>
+<p><code>SSLContext</code> 를 취득해 초기화하려면 , 다음의 2 방법의 방법이 있습니다.
+    </p>
+    <ul>
+<li>무엇보다 간단한 방법은,<code>SSLSocketFactory</code> 또는 <code>SSLServerSocketFactory</code> 클래스에서 <code>getDefault</code> static 메소드를 호출하는 것입니다. 이러한 메소드는, 디폴트의 <code>KeyManager</code>,<code>TrustManager</code>, 및 안전한 random number generation 함수를 사용해 디폴트의 <code>SSLContext</code> 를 작성합니다. 디폴트의 <code>KeyManagerFactory</code> 및 <code>TrustManagerFactory</code> 를 사용하면(자),<code>KeyManager</code> 및 <code>TrustManager</code> 가 각각 작성됩니다. 사용하는 열쇠 데이터는 디폴트의 키스토어 및 트러스트 스토어에 있어,<a href="#CustomizingStores">「디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 스토어 패스워드의 커스터마이즈」</a>로 설명하는 시스템 프로퍼티으로 설정합니다.
+        <p></p>
+      </li>
+<li>작성한 문맥의 동작을 호출해 옆에서 가장 자주(잘) 관리할 수 있는 방법은,<code>SSLContext</code> 클래스에서 <code>getInstance</code> static 메소드를 호출해, 한층 더 그 인스턴스의 적절한 <code>init</code> 메소드를 호출해 문맥을 초기화하는 것입니다. <code>init</code> 메소드의 파생 함수는, 다음의 3 개의 인수를 취합니다. <code>KeyManager</code> 객체의 배열,<code>TrustManager</code> 객체의 배열, 및 <code>SecureRandom</code> random number generation 함수입니다. 적절한 인터페이스를 구현하는지,<code>KeyManagerFactory</code> 클래스와 <code>TrustManagerFactory</code> 클래스를 사용해 구현을 생성하는 것으로써,<code>KeyManager</code> 객체와 <code>TrustManager</code> 객체가 작성됩니다. 다음에,<code>KeyManagerFactory</code> 및 <code>TrustManagerFactory</code> 클래스를,<code>TrustManagerFactory/KeyManagerFactory</code> 의 <code>init</code> 메소드로 인수로서 건네받은 <code>KeyStore</code> 에 포함되는 열쇠 데이터로 초기화합니다. 마지막으로,<code>TrustManagerFactory</code> 의 <code>getTrustManagers</code> 메소드와 <code>KeyManagerFactory</code> 의 <code>getKeyManagers</code> 메소드를 호출해, 트러스트 매니저 또는 키 매니저의 배열을 가져옵니다. 어느쪽이나 트러스트 데이터나 열쇠 데이터의 형태의 1 개입니다.  </li>
+    </ul>
+<p>SSL 접속이 확립되면(자),<code>SSLSession</code> 가 작성됩니다. 이것에는 설정한 식별 정보, 사용하는 암호군등의 정보가 포함됩니다. 다음에,<code>SSLSession</code> 를 사용해 양쪽 모두의 엔티티의 현재의 관계와 상태를 나타냅니다. 각 SSL 접속에는, 한 번에 1 개의 세션이 포함됩니다만, 그 세션이 엔티티간의 접속에, 동시에, 또는 연속해 몇번이나 사용되는 일이 있습니다.  </p>
+    <p></p>
+  </blockquote>
+  <a name="CoreClasses"></a> 
+<h2>코어 클래스와 인터페이스</h2>
+  <blockquote>
+<p> 코어 JSSE 클래스는,<code>java.net</code> 및 <code>javax.net.ssl</code> 패키지의 일부입니다.  <a name="SocketFactory"></a> </p>
+<h3><code>SocketFactory</code> 및 <code>ServerSocketFactory</code> 클래스</h3>
+    <blockquote>
+<p> 추상 클래스 <code>javax.net.SocketFactory</code> 는, 소켓의 작성에 사용됩니다. 이 클래스는, 다른 팩토리로 서브 클래스화할 필요가 있습니다. 팩토리는, 소켓의 특정의 서브 클래스를 작성해, 일반적인 소켓 레벨의 기능을 추가하는 시스템를 제공합니다. 예를 들어,<a href="#SSLSocketFactory"><code>「SSLSocketFactory」</code></a> 를 참조해 주세요.
+      </p>
+<p> <code>javax.net.ServerSocketFactory</code> 클래스는,<code>SocketFactory</code> 클래스를 닮아 있습니다만, 서버 소켓의 작성에 특별히 사용됩니다.  </p>
+<p> 소켓 팩토리를 사용하면(자), 구축하는 소켓에 관한 일련의 정책를 간단하게 취득해, 소켓을 요구하는 특별한 코드 설정을 필요로 하지 않는 방법으로 소켓을 작성할 수 있습니다.  </p>
+      <ul>
+<li> 팩토리와 소켓에 다상성이 있기 (위해)때문에, 종류가 다른 팩토리를 건네주는 것만으로, 종류가 다른 소켓에 같은 어플리케이션 코드를 사용할 수 있습니다.
+          <p></p>
+        </li>
+<li> 소켓 구축시에 사용하는 파라미터를 사용해, 팩토리 자신을 커스터마이즈 할 수 있습니다. 예를 들어, 팩토리를 커스터마이즈 해, 다른 네트워크 타임 아웃의 소켓이나, 설정 끝난 시큐리티 파라미터를 돌려줄 수가 있습니다.
+          <p></p>
+        </li>
+<li> 어플리케이션에 반환되는 소켓은 <code>java.net.Socket</code> (또는 <code>javax.net.ssl.SSLSocket</code>)의 서브 클래스로 할 수 있습니다. 그러면, 압축, 시큐리티, 레코드 선언, 통계 정보수집, 방화벽(fire wall) 터널링등의 기능의 새로운 API 를 직접 공개할 수 있습니다.  </li>
+      </ul>
+    </blockquote>
+    <a name="SSLSocketFactory"></a> 
+<h3><code>SSLSocketFactory</code> 및 <code>SSLServerSocketFactory</code> 클래스</h3>
+    <blockquote>
+<p> <code>javax.net.ssl.SSLSocketFactory</code> 는, 안전한 소켓을 작성하는 팩토리로서 동작합니다. 이 클래스는,<a  href="#SocketFactory"><code>javax.net.SocketFactory</code></a>  의 추상 서브 클래스입니다.
+      </p>
+<p> 안전한 소켓 팩토리는, 안전한 소켓의 작성과 초기설정의 상세 정보를 캡슐화합니다. 이것에는, 인증열쇠, 피어 증명서의 검증, 사용할 수 있는 암호군등이 포함됩니다.  </p>
+<p> <code>javax.net.ssl.SSLServerSocketFactory</code> 클래스는 <code>SSLSocketFactory</code> 클래스를 닮아 있습니다만, 서버 소켓의 작성에 특화해 사용됩니다.  </p>
+<h4><code>SSLSocketFactory</code> 의 취득</h4>
+      <blockquote>
+<p> <code>SSLSocketFactory</code> 를 가져오려면 , 다음의 3 개의 방법이 있습니다.
+        </p>
+        <ul>
+<li><code>SSLSocketFactory.getDefault</code> static 메소드를 호출해 디폴트의 팩토리를 취득한다.
+            <p> </p>
+          </li>
+<li>API 파라미터로서 팩토리를 수신한다. 즉, 소켓을 작성할 필요가 있지만, 그 소켓의 설정 내용의 상세하게 관여하지 않는 코드에는,<code>SSLSocketFactory</code> 파라미터로 메소드를 포함할 수가 있습니다. 이것은, 클라이언트에 의해 불려 가 소켓의 작성시에 사용하는 <code>SSLSocketFactory</code> 를 지정하는 파라미터입니다. (예: javax.net.ssl.HttpsURLConnection)
+            <p> </p>
+          </li>
+<li>동작을 지정한 신규 팩토리를 구축한다</li>
+        </ul>
+<p> 일반적으로, 디폴트의 팩토리는 서버 인증만을 지원하도록(듯이) 설정되어 있습니다. 이 때문에, 디폴트의 팩토리로 작성된 소켓은, 일반적인 TCP 소켓 이상으로 클라이언트의 정보를 흘릴 것은 없습니다.  </p>
+<p>소켓을 작성해 사용하는 클래스의 상당수는, 소켓의 작성 방법을 자세하게 알 필요는 없습니다. 파라미터로서 건네받은 소켓 팩토리를 개입시켜 소켓을 작성하는 것은, 소켓 설정의 상세를 분리해, 소켓을 작성해 사용하는 클래스의 재사용성을 높이는 좋은 방법입니다.  </p>
+<p>새로운 소켓 팩토리 인스턴스를 작성하려면 , 독자적인 소켓 팩토리 서브 클래스를 구현하는지, 소켓 팩토리의 팩토리로서 동작하는 클래스를 따로 사용합니다. 그러한 클래스의 1 개에,<code>SSLContext</code> 가 있습니다. 이 클래스는, 프로바이더 베이스의 구성 클래스로서 JSSE 구현에 제공되고 있습니다.  </p>
+      </blockquote>
+    </blockquote>
+
+    <a name="SSLSocket"></a> 
+<h3><code>SSLSocket</code> 및 <code>SSLServerSocket</code> 클래스</h3>
+    <blockquote>
+<p> <code>javax.net.ssl.SSLSocket</code> 는, 표준적인 Java 의 <tt>java.net.Socket</tt> 클래스의 서브 클래스입니다. 표준적인 소켓 메소드를 모두 지원해, 안전한 소켓에 고유의 메소드를 추가합니다. 이 클래스의 인스턴스는, 그 작성에 사용된 <a href="#SSLContext"><code>SSLContext</code></a>  를 캡슐화합니다. 소켓 인스턴스의 안전한 소켓 세션의 작성을 관리하는 API 도 있습니다만, 트러스트 매니저 및 키 매니저는 직접 공개되지 않습니다.  </p>
+<p> <code>javax.net.ssl.SSLServerSocket</code> 클래스는 <code>SSLSocket</code> 클래스를 닮아 있습니다만, 서버 소켓의 작성에 특화해 사용됩니다. <br>
+      </p>
+<p>피어의 부정행위를 방지하려면 , 항상 SSLSocket 에 나타나는<A HREF="#ciphersuitechoice">자격을 검증</a>해 주세요.  </p>
+<p>구현 에 해당하는 주의 :SSL 와 TLS 프로토콜은 복잡해서, 접속시의 입력 바이트가 핸드 쉐이크의 데이터와 어플리케이션 데이터의 어느 쪽인가를 예측해, 현재의 접속 상태에 어떠한 영향을 주는지 (처리를 중단시키는 일도 있다)를 예측하는 것은 곤란합니다. Sun JSSE 의 구현에서는,<code>SSLSocket.getInputStream()</code> 에 의해 취득된 객체의 <code>available()</code> 메소드는, SSL 접속으로 정상적으로 복호화 되어도, 어플리케이션에서는 아직 읽히지 않은 데이터의 바이트수를 돌려줍니다.  </p>
+<h4><code>SSLSocket</code> 의 취득</h4>
+<blockquote><code>SSLSocket</code> 의 인스턴스는, 다음의 2 개의 방법으로 취득할 수 있습니다. 1 번째는, 그 클래스의 복수의 <code>createSocket</code> 메소드 가운데 1 개를 개입시켜,<a href="#SSLSocketFactory"><code>SSLSocketFactory</code></a>  의 인스턴스로 <code>SSLSocket</code> 를 작성하는 방법입니다. 2 번째는,<code>SSLServerSocket</code> 클래스의 <code>accept</code> 메소드를 개입시켜 <code>SSLSocket</code> 를 취득하는 방법입니다.  </blockquote>
+    </blockquote>
+
+<a name=SSLENG></a> 
+<h3><code>SSLEngine</code> 에 의한 비블록 입출력</h3>
+<blockquote>
+SSL/TLS 가 이용될 기회는 더욱 더 증가하고 있습니다. 광범위한 계산 플랫폼이나 디바이스를 포함 하는 다양한 어플리케이션으로 사용되고 있습니다. 이러한 기술의 보급에 수반해, 어플리케이션의 퍼포먼스, 확장성, 사이즈 그 외의 요건을 채우기 (위해)때문에, 다른 입출력 모델이나 thread 모델에 대해도 사용 가능하게 할 필요가 생기고 있습니다. 예를 들어, 블록 및 비블록 입출력 채널, 비동기 입출력, 임의의 입력 스트림과 출력 스트림, 및 바이트 버퍼에서의 사용이 요구되고 있습니다. 또, 수천의 네트워크 접속을 관리하는 것이 필요한, 매우 확장성의 높은 퍼포먼스 중시의 환경에서 사용하는 일도 요구되고 있습니다.
+<p>
+Java SE 5 이전의 JSSE API 는, SSLSocket 에 의한 스트림 베이스 소켓이라고 하는 1 개의 트랜스폴트 추상화만을 지원하고 있었습니다. 스트림 베이스 소켓은 많은 어플리케이션에 적절했습니다만, 다른 입출력 모델이나 thread 모델을 사용할 필요가 있는 어플리케이션의 요구는 채울 수 없었습니다. 1.6. 0 에서는, 새로운 추상화 수법이 도입되어 트랜스폴트에 의존하지 않고 SSL/TLS 프로토콜을 어플리케이션으로 사용할 수 있게 되었습니다. 이것에 의해 어플리케이션에서는, 어플리케이션의 필요를 채우는 최선의 트랜스폴트 모델이나 계산 모델을 자유롭게 선택할 수가 있습니다. 이 새로운 추상화에 의해, 비블록 입출력 채널이나 다른 입출력 모델을 어플리케이션으로 사용 가능할 뿐만 아니라, 다른 thread 모델에도 대응할 수가 있습니다. 사실상 이것은, 입출력과 thread의 결정을 어플리케이션에 맡길 수 있게 됩니다. 이러한 유연성에 대응하기 위해(때문에), 앞으로의 어플리케이션은, 그 자체가 복잡한 문제이기도 한 입출력과 thread를 관리함과 함께, SSL/TLS 프로토콜을 어느 정도 이해하는 능력을 가질 필요가 있습니다. 이와 같이, 새로운 추상화는 고도의 API 이므로, 초심자는 계속해 <tt>SSLSocket</tt> 를 사용해 주세요.
+<P>
+API 를 처음으로 사용하는 사람은, 「<code>java.nio.channels.SocketChannel</code> 를 확장하는 <code>SSLSocketChannel</code> 인 만큼 하면 어떤가」라고 생각하는 일도 있겠지요. 그렇게 하지 않는 주된 이유는 2 개 있습니다.
+
+<UL>
+  <LI>
+클래스 계층, 및 <code>Selector</code> 나 다른 타입의 <code>SocketChannel</code> 과의 상호 동작 방법 등,<code>SSLSocketChannel</code> 를 어떠한 API 에 해야 하는가라고 하는 것에 관계해, 난문이 많이 있었습니다. SSL/TLS 에 대응하기 위해서 확장된 새로운 API 추상화는, 모두 같은만큼 중요한 분석이 필요해, 대규모이고 복잡한 API 가 될 가능성이 있는 것이 판명되었습니다.
+  <P>
+  <LI>
+새로운 API 의 모든 JSSE 구현에서는, 최선의 입출력 및 계산 전략을 자유롭게 선택하게 되었습니다만, 이러한 상세 사항을 숨기는 것은, 전면적인 제어권을 필요로 하는 어플리케이션에 있어서는 부적절합니다. 어떤 고유의 구현 방법도, 어플리케이션 세그먼트(segment)에 따라서는 적합하지 않는 경우가 있습니다.
+</UL>
+
+입출력을 추상화 해, 데이터를 바이트의 스트림로서 처리하는 것에 의해 이러한 문제를 해결한 결과, 새로운 API 는 기존 또는 장래의 어떤 입출력 모델에서도 사용할 수 있게 되었습니다. 이 솔루션에서는, 입출력과 CPU 의 처리가 개발자에게 맡습니다만, 구성 불능 또는 변경 불능인 내부의 상세 설정에 의해 JSSE 구현을 사용할 수 없게 되는 것 같은 상황을 방지하고 있습니다.
+<P>
+JGSS 나 SASL 등, 다른 Java 프로그램 언어 API 의 사용자는, 어플리케이션이 데이터를 트랜스폴트 하는 기능을 완수한다고 하는 유사점이 있는 것에 깨닫겠지요.
+
+<h3><code>SSLEngine</code></h3>
+
+<blockquote>
+이 새로운 추상화 방법의 코어 클래스는,<a href="../../../../api/javax/net/ssl/SSLEngine.html"><tt>javax.net.ssl.SSLEngine</tt></a>  입니다. 이 코어 클래스는, SSL/TLS 상태 머신을 캡슐화해,<tt>SSLEngine</tt> 의 사용자에 의해 공급되는 인 바운드와 아웃 바운드의 바이트 버퍼상에서 동작합니다. 다음의 그림은, 어플리케이션으로부터 배웅해져<tt>SSLEngine</tt> 와 트랜스폴트 기구를 거쳐 다시 돌아오는 데이터 플로우의 모습을 나타내고 있습니다.
+
+
+<!-- PICTURE -->
+<P ALIGN=CENTER><IMG SRC="sslengine.jpg" ALIGN="TOP" BORDER="0" ALT="SSLEngine"></P>
+
+<!--<tt>SSLEngine.wrap()</tt> and <tt>SSLEngine.unwrap()</tt> are the only methods by which to get data into and out of the engine -->
+
+좌측으로 나타나는 어플리케이션은, 어플리케이션의 plaintext 데이터를 어플리케이션 버퍼에 공급해,<tt>SSLEngine</tt> 에 건네줍니다. <tt>SSLEngine</tt> 는, 버퍼에 포함되고 있는 데이터 또는 핸드 쉐이크 데이터를 처리해 SSL/TLS encode 데이터를 생성해, 어플리케이션에 의해 제공되는 네트워크버퍼-에 포함합니다. 다음에 어플리케이션은, 우측으로 나타나고 있는 적절한 트랜스폴트를 사용해, 네트워크버퍼-의 내용을 피어에 송신하는 역할을 실행합니다. 트랜스폴트를 개입시켜 피어로부터 SSL/TLS encode 데이터를 받으면(자), 어플리케이션은 그 데이터를 네트워크버퍼-에 포함해,<tt>SSLEngine</tt> 에 건네줍니다. <tt>SSLEngine</tt> 는, 네트워크버퍼-의 내용을 처리해, 핸드 쉐이크 데이터 또는 어플리케이션 데이터를 생성합니다.
+
+
+<!-- If the application were to choose a stream-based socket as the transport mechanism, then this overview more or less corresponds to how an application would <tt>SSLSocket</tt>s except that with the new abstraction, it is doing each exchange in two steps instead of one.  --> <!-- <p> The TLS (and SSL) protocol is actually a collection of protocols.   One protocol supports application data exchange while the others support authentication, negotiation of the use of cipher suites and other parameters, and communication of warnings and errors.   These non-application data exchange tasks are referred to as <em>handshaking</em> and affect the state of the <tt>SSLEngine</tt>.  When handshaking data is fed to the <tt>SSLEngine</tt> (encapsulated within SSL/TLS encoded data received from the peer), it might change the engine's state such that the engine cannot process any more application data until it completes the handshaking.  -->
+<P>
+<tt>SSLEngine</tt> 는, 전체적으로 다음에 나타내는 5 개 상태의 몇개의 상태를 나타냅니다.
+<ol>
+<li>작성 - 설정 준비 완료
+<li>초기 핸드 쉐이크 - 인증의 실행과 통신 파라미터의 협상
+<li>어플리케이션 데이터 - 어플리케이션의 교환 준비 완료
+<li>재핸드 쉐이크 - 통신 파라미터/인증 정보의 재협상.  핸드 쉐이크 정보는 어플리케이션 데이터와 혼합 가능
+<li>폐쇄 - 접속의 종료 준비 완료
+</ol>
+
+이러한 5 개 상태의 상세한 것에 대하여는,<a href="../../../../api/javax/net/ssl/SSLEngine.html"><tt>SSLEngine</tt></a>  클래스의 자료를 참조해 주세요.
+
+</blockquote>
+
+<h3>입문</h3>
+<blockquote>
+<tt>SSLEngine</tt> 를 작성하려면 ,<tt>SSLContext.createSSLEngine()</tt> 메소드를 사용합니다. 다음에, 클라이언트 또는 서버로서 동작하도록(듯이) 엔진을 설정해, 사용하는 encode 방식이나 클라이언트 인증이 필요한가 어떨까 어느 다른 설정 파라미터도 설정합니다.
+<p>
+
+다음에 <tt>SSLEngine</tt> 의 작성예를 나타냅니다. 서버명과 포트 번호는, 서버와의 통신에는 사용되지 않습니다.  모든 트랜스폴트는 어플리케이션에 의해 실행됩니다. 이하의 작성예는, SSL 세션 캐싱의 경우, 및 취득하는 서버 자격을 결정하는 Kerberos 베이스의 encode 방식이 구현되고 있는 경우에 사용하는, JSSE 프로바이더에의 힌트입니다.
+
+<blockquote><pre>
+import javax.net.ssl. *;
+import java.security. *;
+
+// Create/initialize the SSLContext with key material
+
+char[] passphrase = "passphrase". toCharArray();
+
+// First initialize the key and trust material.
+KeyStore ksKeys = KeyStore.getInstance("JKS");
+ksKeys.load(new FileInputStream("testKeys"), passphrase);
+KeyStore ksTrust = KeyStore.getInstance("JKS");
+ksTrust.load(new FileInputStream("testTrust"), passphrase);
+
+// KeyManager's decide which key material to use.
+KeyManagerFactory kmf =
+    KeyManagerFactory.getInstance("SunX509");
+kmf.init(ksKeys, passphrase);
+
+// TrustManager's decide whether to allow connections.
+TrustManagerFactory tmf =
+    TrustManagerFactory.getInstance("SunX509");
+tmf.init(ksTrust);
+
+sslContext = SSLContext.getInstance("TLS");
+sslContext.init(
+    kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+// We're ready for the engine.
+SSLEngine engine = sslContext.createSSLengine(hostname, port);
+
+// Use as client
+engine.setUseClientMode(true);
+</pre></blockquote>
+</blockquote>
+
+<h3>SSL/TLS 데이터의 생성과 처리</h3>
+<blockquote>
+<tt>SSLEngine</tt> 의 주요한 2 개의 메소드인 <tt>wrap()</tt> 와 <tt>unwrap()</tt> 에 의해, 각각 네트워크 데이터가 생성 및 소비됩니다. <tt>SSLEngine</tt> 상태에 응해, 이 데이터는 핸드 쉐이크 데이터나 어플리케이션 데이터가 됩니다.
+<P>
+각각의 <tt>SSLEngine</tt> 에는, 라이프 타임을 통해서 여러종류의 단계가 있습니다. 어플리케이션 데이터를 송신/수신할 수 있도록(듯이) 하려면 , SSL/TLS 프로토콜에 따라 핸드 쉐이크를 실행해, 암호화 파라미터를 확정할 필요가 있습니다. 이 핸드 쉐이크에서는,<tt>SSLEngine</tt> 에 의한 일련의 데이터 교환 순서가 필요합니다. 핸드 쉐이크 자체의 상세한 것에 대하여는,<a href="#SSLProcess">「SSL 프로세스」</a>를 참조해 주세요.
+<P>
+초기 핸드 쉐이크시에,<tt>wrap()</tt> 와 <tt>unwrap()</tt> 는 핸드 쉐이크 데이터를 생성 및 소비해, 어플리케이션은 데이터를 트랜스폴트 하는 역할을 담당합니다. <tt>wrap()</tt>/<tt>unwrap()</tt> 순서는, 핸드 쉐이크가 종료할 때까지 반복해집니다. 각각의 <tt>SSLEngine</tt> 동작에 의해 <tt>SSLEngineResult</tt> 가 생성되어 SSLEngineResult 의 <tt>SSLEngineResult.HandshakeStatus</tt> 필드는, 핸드 쉐이크를 속행하기 위해서 실행할 필요가 있는 이하의 동작을 결정하기 위해서(때문에) 사용됩니다.
+<P>
+표준적인 핸드 쉐이크에서는 다음과 같은 동작을 합니다.
+
+<blockquote>
+<TABLE WIDTH="560" BORDER="0" CELLSPACING="2" CELLPADDING="4">
+  <TR>
+    <TD WIDTH="25%" ALIGN="CENTER" BGCOLOR="#dedeef">
+&nbsp;<B><CODE>클라이언트</CODE></B></TD>
+    <TD WIDTH="25%" ALIGN="CENTER" BGCOLOR="#dedeef">
+&nbsp;<B><CODE>SSL/TLS 메세지</CODE></B></TD>
+    <TD WIDTH="25%" ALIGN="CENTER" BGCOLOR="#dedeef">
+&nbsp;<B><CODE>HSStatus</CODE></B></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>wrap() </CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>ClientHello</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_UNWRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>unwrap()</CODE></TD>
+    <TD WIDTH="25%">
+
+&nbsp;<CODE>ServerHello/Cert/ServerHelloDone</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_WRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>wrap()</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>ClientKeyExchange</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_WRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>wrap()</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>ChangeCipherSpec</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_WRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>wrap()</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>Finished</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_UNWRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>unwrap()</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>ChangeCipherSpec</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>NEED_UNWRAP</CODE></TD>
+  </TR>
+  <TR>
+    <TD WIDTH="25%">
+&nbsp;<CODE>unwrap()</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>Finished</CODE></TD>
+    <TD WIDTH="25%">
+&nbsp;<CODE>FINISHED</CODE></TD>
+  </TR>
+</TABLE>
+
+</blockquote>
+
+이것으로 핸드 쉐이크가 완료합니다.  한층 더 <tt>wrap()</tt> 에의 다른 호출이 있으면(자), 어플리케이션 데이터 및 패키지를 소비해 트랜스폴트 하려고 합니다. <tt> unwrap()</tt> 는 반대의 동작을 시도합니다.
+<P>
+피어에 데이터를 송신하려면 , 우선 어플리케이션이 송신하는 데이터를 <tt>SSLEngine.wrap()</tt> 를 개입시켜 <tt>SSLEngine</tt> 에 송신해, 대응하는 SSL/TLS encode 데이터를 가져옵니다. 다음에 어플리케이션은, 선택한 트랜스폴트 기구를 사용해 encode 데이터를 피어에 송신합니다. 어플리케이션은, 트랜스폴트 기구를 개입시켜 피어로부터 SSL/TLS encode 데이터를 받으면(자),<tt>SSLEngine.unwrap()</tt> 를 개입시켜 그 데이터를 <tt>SSLEngine</tt> 에 보내, 피어에 의해 송신된 plaintext 데이터를 가져옵니다.
+<p>
+
+비블록 <tt>SocketChannel</tt> 를 사용해 피어와 통신하는 SSL 어플리케이션의 예를 다음에 나타냅니다. SSL 어플리케이션은, 비블록 <tt>SocketChannel</tt> 를 짜넣은 <tt>Selector</tt> 를 사용하는 것으로써, 견뢰성과 확장성을 높일 수가 있습니다. 이하의 샘플 코드는, 전의 예로 작성한 <tt>SSLEngine</tt> 를 사용해 encode 하는 것으로써, 피어에 캐릭터 라인 <tt>「hello」</tt> 를 송신합니다. 바이트 버퍼의 사이즈는,<tt>SSLSession</tt> 로부터의 정보를 사용해 결정됩니다.
+
+<blockquote><pre>
+// Create a non-blocking socket channel
+SocketChannel socketChannel = SocketChannel.open();
+socketChannel.configureBlocking(false);
+socketChannel.connect(new InetSocketAddress(hostname, port));
+
+// Complete connection
+while (! socketChannel.finishedConnect()) {
+    // do something until connect completed
+}
+
+// Create byte buffers to use for holding application and encoded data
+SSLSession session = engine.getSession();
+ByteBuffer myAppData = ByteBuffer.allocate(session.getApplicationBufferSize());
+ByteBuffer myNetData = ByteBuffer.allocate(session.getPacketBufferSize());
+ByteBuffer peerAppData = ByteBuffer.allocate(session.getApplicationBufferSize());
+ByteBuffer peerNetData = ByteBuffer.allocate(session.getPacketBufferSize());
+
+// Do initial handshake
+doHandshake(socketChannel, engine, myNetData, peerNetData);
+
+myAppData.put("hello". getBytes());
+myAppData.flip();
+
+while (myAppData.hasRemaining()) {
+    // Generate SSL/TLS encoded data (handshake or application data)
+    SSLEngineResult res = engine.wrap(myAppData, myNetData);
+
+    // Process status of call
+    if (res.getStatus() == SSLEngineResult.Status.OK) {
+        myAppData.compact();
+
+        // Send SSL/TLS encoded data to peer
+        while(myNetData.hasRemaining()) {
+            int num = socketChannel.write(myNetData);
+	    if (num == -1) {
+	        // handle closed channel
+	    } else if (num == 0) {
+	        // no bytes written; try again later
+	    }
+        }
+    }
+
+    // Handle other status:  BUFFER_OVERFLOW, CLOSED
+    ...
+}
+
+</pre></blockquote>
+
+이하의 코드는, 비블록 <tt>SocketChannel</tt> 로부터 데이터를 읽어내, 전에 작성한 <tt>SSLEngine</tt> 를 사용해, 그 데이터로부터 plaintext를 추상화 합니다. 이 코드가 반복될 때 마다, 핸드 쉐이크 처리가 진행되고 있을지 어떨지에 응해, plaintext가 생성되거나 생성되지 않거나 합니다.
+
+<blockquote><pre>
+// Read SSL/TLS encoded data from peer
+int num = socketChannel.read(peerNetData);
+if (num == -1) {
+    // Handle closed channel
+} else if (num == 0) {
+    // No bytes read; try again ...
+} else {
+    // Process incoming data
+    peerNetData.flip();
+    res = engine.unwrap(peerNetData, peerAppData);
+
+    if (res.getStatus() == SSLEngineResult.Status.OK) {
+        peerNetData.compact();
+
+        if (peerAppData.hasRemaining()) {
+            // Use peerAppData
+        }
+    }
+    // Handle other status:  BUFFER_OVERFLOW, BUFFER_UNDERFLOW, CLOSED
+    ...
+}
+</pre></blockquote>
+</blockquote>
+
+<a name="OperationStatus"></a> 
+<h3>동작의 상태</h3>
+<blockquote>
+엔진의 상태와 어플리케이션에 요구되는 동작의 종류를 나타내기 (위해)때문에,<tt>SSLEngine.wrap()</tt> 메소드와 <tt>SSLEngine.unwrap()</tt> 메소드는, 전의 예에 나타나는 것 같은 <a href="../../../../api/javax/net/ssl/SSLEngineResult.html"><tt>SSLEngineResult</tt></a>  인스턴스를 돌려줍니다. <tt>SSLEngineResult</tt> 에는, 엔진의 전체적인 상태와 핸드 쉐이크의 상태로 구성되는 2 개의 상태 정보가 있습니다.
+
+<p>
+전체적인 상태는,<tt>SSLEngineResult.Status</tt> enum 에 의해 나타내집니다. 예를 들어 이 상태에는, 에러가 없는 것을 의미하는 <tt>OK</tt>, 입력 버퍼의 데이터가 부족하기 위해서(때문에), 어플리케이션은 네트워크로부터 데이터를 읽어들이는 등 해 피어로부터도 와 데이터를 취득할 필요가 있는 것을 나타내는 <tt>BUFFER_UNDERFLOW</tt>, 출력 버퍼의 결과를 보관 유지하는 영역이 부족하기 위해서(때문에), 어플리케이션은 출력처 버퍼를 클리어 또는 확대할 필요가 있는 것을 나타내는 <tt>BUFFER_OVERFLOW</tt> 등이 있습니다.
+
+<p>
+다음에,<tt>SSLEngine.unwrap()</tt> 의 <tt>BUFFER_UNDERFLOW</tt> 및 <tt>BUFFER_OVERFLOW</tt> 상태를 처리하는 방법의 예를 나타냅니다. <tt>SSLSession.getApplicationBufferSize()</tt> 및 <tt>SSLSession.getPacketBufferSize()</tt> 를 사용해, 바이트 버퍼의 사이즈를 결정합니다.
+
+<blockquote><pre>
+SSLEngineResult res = engine.unwrap(peerNetData, peerAppData);
+switch (res.getStatus()) {
+
+case BUFFER_OVERFLOW:
+  // Maybe need to enlarge the peer application data buffer.
+  if (engine.getSession(). getApplicationBufferSize() >
+          peerAppData.capacity()) {
+      // enlarge the peer application data buffer
+  } else {
+        // compact or clear the buffer
+  }
+  // retry the operation
+  break;
+
+case BUFFER_UNDERFLOW:
+  // Maybe need to enlarge the peer network packet buffer
+  if (engine.getSession(). getPacketBufferSize() >
+          peerNetData.capacity()) {
+      // enlarge the peer network packet buffer
+  } else {
+        // compact or clear the buffer
+  }
+  // obtain more inbound network data and then retry the operation
+  break;
+
+// Handle other status: CLOSED, OK
+...
+}
+
+</pre></blockquote>
+
+<p>
+핸드 쉐이크의 상태는,<tt>SSLEngineResult.HandshakeStatus</tt> enum 에 의해 나타내집니다. 이 상태에 의해, 핸드 쉐이크가 완료하고 있을지 어떨지, 발신측은 피어로부터 한층 더 핸드 쉐이크 데이터를 취득할 필요가 있을지 어떨지, 또 피어에 좀 더 핸드 쉐이크 데이터를 송신할 필요가 있을지 어떨지등의 상태를 나타냅니다.
+
+<p>
+동작 결과 마다 2 종류의 상태를 나타내는 것으로, 엔진은 어플리케이션으로 실행하는 것이 필요한 2 개의 동작, 즉 핸드 쉐이크에의 응답에 있어서의 동작과 <tt>wrap()</tt>/<tt>unwrap()</tt> 메소드의 전체적인 상태를 나타내는 동작을 나타낼 수가 있습니다. 예를 들어 엔진은, 1 회의 <tt>SSLEngine.unwrap()</tt> 호출의 결과로서,<tt>SSLEngineResult.Status.OK</tt> 를 돌려주어 입력 데이터가 정상적으로 처리된 것을 나타내,<tt>SSLEngineResult.HandshakeStatus.NEED_UNWRAP</tt> 를 돌려주는 것으로, 핸드 쉐이크를 계속하기 위해서 어플리케이션이 피어로부터 한층 더 SSL/TLS encode 데이터를 취득해, 한번 더 <tt>SSLEngine.unwrap()</tt> 에 공급 해야 할것을 나타냅니다. 눈치대로, 앞의 예는 꽤 단순화 되고 있습니다만, 이것들 모든 상태를 적정하게 처리하려면  코드를 꽤 확장할 필요가 있습니다.
+
+<P>
+다음에,<tt>wrap()</tt>/<tt>unwrap()</tt> 메소드의 핸드 쉐이크의 상태와 전체적인 상태를 체크하는 것에 의해, 핸드 쉐이크 데이터를 처리하는 방법의 예를 나타냅니다.
+
+<blockquote><pre>
+void doHandshake(SocketChannel socketChannel, SSLEngine engine,
+        ByteBuffer myNetData, ByteBuffer peerNetData) throws Exception {
+
+    // Create byte buffers to use for holding application data
+    int appBufferSize = engine.getSession(). getApplicationBufferSize();
+    ByteBuffer myAppData = ByteBuffer.allocate(appBufferSize);
+    ByteBuffer peerAppData = ByteBuffer.allocate(appBufferSize);
+
+    // Begin handshake
+    engine.beginHandshake();
+    SSLEngineResult.HandshakeStatus hs = engine.getHandshakeStatus();
+
+    // Process handshaking message
+    while (hs ! = SSLEngineResult.HandshakeStatus.FINISHED &&
+        hs ! = SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING) {
+
+        switch (hs) {
+
+        case NEED_UNWRAP:
+            // Receive handshaking data from peer
+            if (socketChannel.read(peerNetData) < 0) {
+                // Handle closed channel
+            }
+
+            // Process incoming handshaking data
+            peerNetData.flip();
+            SSLEngineResult res = engine.unwrap(peerNetData, peerAppData);
+            peerNetData.compact();
+            hs = res.getHandshakeStatus();
+
+            // Check status
+            switch (res.getStatus()) {
+            case OK :
+                // Handle OK status
+                break;
+
+            // Handle other status: BUFFER_UNDERFLOW, BUFFER_OVERFLOW, CLOSED
+            ...
+            }
+            break;
+
+        case NEED_WRAP :
+            // Empty the local network packet buffer.
+            myNetData.clear();
+
+            // Generate handshaking data
+            res = engine.wrap(myAppData, myNetData);
+            hs = res.getHandshakeStatus();
+
+            // Check status
+            switch (res.getStatus()) {
+            case OK :
+                myNetData.flip();
+
+                // Send the handshaking data to peer
+                while (myNetData.hasRemaining()) {
+                    if (socketChannel.write(myNetData) < 0) {
+                        // Handle closed channel
+                    }
+                }
+                break;
+
+            // Handle other status:  BUFFER_OVERFLOW, BUFFER_UNDERFLOW, CLOSED
+            ...
+            }
+            break;
+
+        case NEED_TASK :
+	    // Handle blocking tasks
+            break;
+
+        // Handle other status:  // FINISHED or NOT_HANDSHAKING
+        ...
+        }
+    }
+
+    // Processes after handshaking
+    ...
+}
+
+</pre></blockquote>
+</blockquote>
+
+<h3>블록 태스크</h3>
+<blockquote>
+핸드 쉐이크 동작동안에,<tt>SSLEngine</tt> 는 블록 하거나 처리에 긴 시간이 걸리거나 하는 태스크에 직면하는 일이 있습니다. 예를 들어,<tt>TrustManager</tt> 는 원격의 증명서 검증 서비스에 접속할 필요가 있어,<tt>KeyManager</tt> 는, prompt를 표시해, 클라이언트 인증의 일부로서 사용하는 증명서를 사용자가 결정해 줄 필요가 있습니다. <tt>SSLEngine</tt> 는, 엔진의 비블록성을 회피하기 위해(때문에), 그러한 태스크에 직면했을 경우에 <tt>SSLEngineResult.HandshakeStatus.NEED_TASK</tt> 를 돌려줍니다. 이 상태를 받으면(자), 어플리케이션은 <tt>SSLEngine.getDelegatedTask()</tt> 를 호출해 태스크를 취득해, 그 요건에 적절한 thread 모델을 사용해 태스크를 처리합니다. 어플리케이션은, 예를 들어 thread 풀로부터 thread를 입수해 태스크를 처리해, 메인 thread는 다른 입출력의 처리에 착수합니다.
+
+<p>
+새롭게 작성된 thread로 각각의 태스크를 실행하는 예를 다음에 나타냅니다.
+<blockquote><pre>
+if (res.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_TASK) {
+    Runnable task;
+    while ((task=engine.getDelegatedTask()) ! = null) {
+        new Thread(task). start();
+    }
+}
+</pre></blockquote>
+엔진은, 미처리의 태스크 모든 것이 완료할 때까지,<code>wrap/unwrap</code> 호출을 블록 합니다.
+</blockquote>
+<h3>종료</h3>
+<blockquote>
+SSL/TLS 접속을 올바른 순서로 종료 하기 위한(해), SSL/TLS 프로토콜에서는 클로즈 메세지를 송신할 필요가 있습니다. 따라서, 어플리케이션이 SSL/TLS 접속을 종료하는 경우는, 최초로 <tt>SSLEngine</tt> 로부터 클로즈 메세지를 취득해, 트랜스폴트 기구를 사용해 그러한 메세지를 피어에 송신해, 마지막에 트랜스폴트 기구를 종료 합니다. 다음에 예를 나타냅니다.
+<blockquote><pre>
+// Indicate that application is done with engine
+engine.closeOutbound();
+
+while (! engine.isOutboundDone()) {
+    // Get close message
+    SSLEngineResult res = engine.wrap(empty, myNetData);
+
+    // Check res statuses
+
+    // Send close message to peer
+    while(myNetData(). hasRemaining()) {
+        int num = socketChannel.write(myNetData);
+	if (num == -1) {
+	    // handle closed channel
+	} else if (num == 0) {
+	    // no bytes written; try again later
+	}
+	myNetData(). compact();
+    }
+}
+
+// Close transport
+socketChannel.close();
+</pre></blockquote>
+
+<tt>SSLEngine</tt> 를 명시적으로 클로즈 하는 어플리케이션에 가세해<tt>SSLEngine</tt> 는, 핸드 쉐이크 데이터를 처리하고 있는 동안에 클로즈 메세지를 받아들이는 것으로, 피어에 의해 클로즈 됩니다.  또는, 어플리케이션 데이터 또는 핸드 쉐이크 데이터를 처리하고 있는 동안에 에러가 발생한 <tt>SSLEngine</tt> 에 의해 클로즈 됩니다. 그 에러는,<tt>SSLException</tt> 가 throw 되는 것에 의해 나타납니다.  그러한 경우 어플리케이션은,<tt>SSLEngine.wrap()</tt> 를 호출해 클로즈 메세지를 취득해, 전의 예에 나타나도록(듯이) <tt>SSLEngine.isOutboundDone()</tt> 가 true 치를 돌려줄 때까지, 또는 SSLEngineResult.getStatus()가 CLOSED 를 돌려줄 때까지 그 메세지를 피어에 송신합니다.
+<p>
+정상적인 종료에 가세해 클로즈 메세지가 교환되기 전에 트랜스폴트 링크를 절단 하는 비상 종료 방법이 있습니다. 전의 예에서는, 비블록 <tt>SocketChannel</tt> 로부터의 읽어내 또는 기입을 실행하려고 하면(자), 어플리케이션은 <tt>-1</tt> 을 받습니다. 마지막 입력 데이터가 되면, engine.closeInbound()를 호출해, SSL/TLS 의 관점으로부터는 원격의 페어에 의해 정상적으로 클로즈 된 SSLEngine 를 검증해 주세요.  그 후 어플리케이션은, 상술의 순서에 따라 정상적인 종료을 시도합니다. <tt>SSLSocket</tt> 과는 달리,<tt>SSLEngine</tt> 를 사용하는 어플리케이션은,<tt>SSLEngine</tt> 를 사용하는 경우보다 분명하게 많은 상태 이행, 상태, 및 프로그래밍에 대처할 필요가 있습니다. <code>SSLEngine</code> 베이스 어플리케이션의 작성 방법에 대해서는,<A HREF="#SSLEngineSample">「NIO 베이스의 HTTPS 서버」</a>를 참조해 주세요.
+</blockquote>
+</blockquote>
+    <a name="SSLSession"></a> 
+<h3><code>SSLSession</code> 인터페이스</h3>
+    <blockquote>
+<p> <code>javax.net.ssl.SSLSession</code> 는,<code>SSLSocket/SSLEngine</code> 접속의 2 개의 피어의 사이에 결정한 시큐리티 문맥을 나타냅니다. 한 번 확립된 세션은, 같은 2 개의 피어의 사이에 접속되는 그 후의 <code>SSLSocket/Engine</code> 에 의해도 공유할 수 있습니다. 세션에는 암호군이 포함됩니다. 이것은, 원격 피어의 네트워크 주소에 관한 권한이 없는 힌트와 같이, 안전한 소켓의 통신에서도 사용되어 작성이나 마지막 사용의 시점등에서, 관리 정보라고 해도 사용됩니다. 세션에는,<code>SSLSocket/SSLEngine</code> 에 의한 통신을 암호화해 무결성을 보증하는 암호열쇠를 작성하기 위해서 사용되는, 피어간에 결정한 공용 마스터가 되는 비밀도 포함됩니다. 이 마스터가 되는 비밀의 값은, 기반이 되는 시큐리티 소켓 구현에만 전해져<code>SSLSession</code> API 에서는 공개되지 않습니다.  </p>
+
+<P>
+<tt>SSLSession.getPacketBufferSize()</tt> 및 <tt>SSLSession.getApplicationBufferSize()</tt> 의 호출도,<tt>SSLEngine</tt> 에 의해 사용되는 적절한 버퍼 사이즈를 결정하기 위해서(때문에) 사용됩니다.
+<P>
+<a name="LargePackets"></a>  <b>주:</b> SSL/TLS 프로토콜은, 구현이 최대 16K 바이트의 plaintext를 포함한 패킷을 생성하는 것을 지정합니다. 다만, 일부의 구현은 이 지정에 위반해, 32K 바이트까지의 큰 레코드를 생성합니다. <tt>SSLEngine.unwrap()</tt> 코드가 큰 인 바운드 패킷을 검출했을 경우,<tt>SSLSession</tt> 로부터 반환되는 버퍼 사이즈는 동적으로 갱신됩니다. 어플리케이션은 항상, 필요에 따라서 <a href="#OperationStatus"><tt>BUFFER_OVERFLOW</tt>/<tt>BUFFER_UNDERFLOW</tt> 의 상태를 체크해, 대응하는 버퍼를 확대할 </a>필요가 있습니다. 32K 바이트의 착신 레코드를 허가했을 경우에서도, SunJSSE 는 항상 표준에 준거한 16K 바이트의 레코드를 송신합니다. 회피책에 대해서는,<a href="#Customization">「커스터마이즈」</a>의 시스템 프로퍼티 <tt>jsse.SSLEngine.acceptLargeFragments</tt> 도 참조해 주세요.
+    </blockquote>
+    <a name="HttpsURLConnection"></a> 
+<h3><code>HttpsURLConnection</code> 클래스</h3>
+<blockquote>https 프로토콜은 http 프로토콜을 닮아 있습니다만, 데이터를 요구 또는 수신하기 전에, 우선 SSL/TLS 소켓을 이용해 안전한 채널을 확립해<A HREF="#ciphersuitechoice">피어의 식별 정보를 검증</a>합니다. <code> javax.net.ssl.HttpsURLConnection</code> 는 <code>java.net.HttpsURLConnection</code> 클래스를 확장해, https 에 고유의 기능을 지원합니다. https URL 의 구조와 사용법의 상세한 것에 대하여는,<a  href="../../../../api/java/net/URL.html"><code>java.net.URL</code></a> , <a href="../../../../api/java/net/URLConnection.html"><code>java.net.URLConnection</code></a> ,<a href="../../../../api/java/net/HttpURLConnection.html"><code>java.net.HttpURLConnection</code></a> , 및 <a href="../../../../api/javax/net/ssl/HttpsURLConnection.html"><code>javax.net.ssl.HttpURLConnection</code></a>  클래스를 참조해 주세요.
+<p><code>HttpsURLConnection</code> 을 취득할 때,<code>URLConnection.connect</code> 메소드를 사용해 실제로 네트워크 접속을 개시하기 전에, 복수의 http/https 파라미터를 구성할 수 있습니다. 이것들에 대해서는, 이하를 참조해 주세요.  </p>
+      <ul>
+<li><a href="#SettingSSLSocketFactory">「할당하고 끝난 <code>SSLSocketFactory</code> 의 설정」</a> 
+        </li>
+<li><a href="#SettingHostnameVerifier">「할당하고 끝난 <code>HostnameVerifier</code> 의 설정」</a> 
+        </li>
+      </ul>
+      <a name="SettingSSLSocketFactory"></a> 
+<h4>할당하고 끝난 <code>SSLSocketFactory</code> 의 설정</h4>
+      <blockquote>
+<p>상황에 따라서는,<code>HttpsURLConnection</code> 의 인스턴스에 의해 사용되는 <code>SSLSocketFactory</code> 를 지정하는 편이 좋은 경우가 있습니다. 예를 들어, 디폴트 구현에서는 지원되지 않는 프록시를 사용해 터널링을 실시하는 경우가 이것에 해당합니다. 새로운 <code>SSLSocketFactory</code> 는, 벌써 필요한 터널링의 완료한 소켓을 돌려줄 수가 있습니다. 이 때문에,<code>HttpsURLConnection</code> 는 추가의 프록시를 사용할 수가 있습니다.  </p>
+<p><code>HttpsURLConnection</code> 클래스에는, 로드시에 할당할 수 있었던 디폴트의 <code>SSLSocketFactory</code> 가 있습니다(특히 <code>SSLSocketFactory.getDefault</code> 에 의해 반환된 팩토리의 경우). 이후,<code>HttpsURLConnection</code> 의 인스턴스는, static 메소드 <code>HttpsURLConnection.setDefaultSSLSocketFactory</code> 에 의해 클래스에 새로운 디폴트의 <code>SSLSocketFactory</code> 를 할당할 수 없을지, 현재의 디폴트의 <code>SSLSocketFactory</code> 를 상속합니다. <code>HttpsURLConnection</code> 의 인스턴스가 작성된 뒤,<code>setSSLSocketFactory</code> 메소드에의 호출에 의해, 이 인스턴스상의 상속된 <code>SSLSocketFactory</code> 를 덧쓰기할 수 있습니다.  </p>
+<p>디폴트의 static 메소드 <code>SSLSocketFactory</code> 를 변경해도, 기존의 <code>HttpsURLConnections</code> 의 인스턴스에는 무슨 영향도 없습니다. 기존의 인스턴스를 변경하려면 ,<code>setSSLSocketFactory</code> 메소드를 호출할 필요가 있습니다.  </p>
+<p><code>getSSLSocketFactory</code> 메소드 또는 <code>getDefaultSSLSocketFactory</code> 메소드를 호출하는 것으로, 인스턴스마다, 또는 클래스 마다 <code>SSLSocketFactory</code> 를 취득할 수 있습니다.  </p>
+      </blockquote>
+      <a name="SettingHostnameVerifier"></a> 
+<h4>할당하고 끝난 <code>HostnameVerifier</code> 의 설정</h4>
+<blockquote>URL 의 호스트명이 SSL/TLS 핸드 쉐이크시에 받은 쿠레덴샤르의 호스트명으로 일치하지 않는 경우, URL Spoofing 가 발생하고 있을 가능성이 있습니다. 호스트명의 확실성에 의심을 받는 경우, SSL 구현은, 인스턴스의 할당이 끝난 <code>HostnameVerifier</code> 의 콜백을 실행합니다. 이렇게 하는 것으로, 보다 자세한 체크를 실시할 수가 있습니다. 호스트명 식별자는, 판정을 내리기 위해서(때문에) 필요한 처리를 실시합니다. 그 일환으로서 예를 들어 그 외의 호스트명 패턴 매칭을 실행하거나 대화식의 다이알로그 박스를 표시하거나 합니다. 호스트명 검증자에 의한 검증에 실패했을 경우는, 접속이 절단 됩니다. 호스트명의 검증에 대해서는,<a  href="http://www.ietf.org/rfc/rfc2818.txt?number=2818">RFC 2818</a>  을 참조해 주세요.
+<p><code>setHostnameVerifier</code> 메소드 및 <code>setDefaultHostnameVerifier</code> 메소드는,<code>setSSLSocketFactory</code> 메소드 및 <code>setDefaultSSLSocketFactory</code> 메소드와 자주(잘) 닮았습니다. 이러한 공통점은, 인스턴스마다, 또는 클래스 마다 <code>HostnameVerifiers</code> 를 할당할 수 있어 현재의 값이 <code>getHostnameVerifier</code> 메소드 또는<code>getDefaultHostnameVerifier</code> 메소드에 의해 취득된다고 하는 점입니다.  </p>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+  <a name="SupportClasses"></a> 
+<h2>지원 클래스와 인터페이스</h2>
+  <blockquote>
+<p>이 마디로 설명하는 클래스와 인터페이스는,<code>SSLContext</code> 객체의 작성과 초기화를 지원해,<code>SSLSocketFactory, SSLServerSocketFactory</code> 객체와 <code>SSLEngine</code> 객체를 작성하기 위해서 제공됩니다. 지원 클래스와 인터페이스는 <code>javax.net.ssl</code> 패키지에 포함되어 있습니다.  </p>
+<p> 이 마디로 설명하는 클래스는 <a  href="#SSLContext"><code>SSLContext</code></a> ,<a  href="#KeyManagerFactory"><code>KeyManagerFactory</code></a> , 및 <a  href="#TrustManagerFactory"><code>TrustManagerFactory</code></a>  의 3 개로, 모두<i></i>엔진 클래스입니다. 엔진 클래스란, 특정의 알고리즘의 API 클래스 (<code>SSLContext</code> 의 경우는 프로토콜)입니다. 1 개(살) 또는 복수의 암호화 서비스 프로바이더 (프로바이더) 패키지로 구현이 제공되는 일이 있습니다. 프로바이더와 엔진 클래스의 자세한 것은, 「<a href="../crypto/CryptoSpec.html">Java<sup><font  size="-2">TM</font></sup> 암호화 아키텍쳐(architecture) 레퍼런스 가이드</a>」의 「설계 방침」과「개념」의 섹션을 참조해 주세요.  </p>
+<p> JSSE 에 표준으로 부속되는 <code>SunJSSE</code> 프로바이더는,<code>SSLContext</code>,<code>KeyManagerFactory</code>, 및 <code>TrustManagerFactory</code> 구현을 제공해, 표준의 Java 시큐리티 (<code>java.security</code>) API 에서는 엔진 클래스의 구현도 제공합니다. <code>SunJSSE</code> 가 제공하는 구현은 다음과 같습니다.  </p>
+    <blockquote>
+<pre><b>엔진 클래스 알고리즘 또는 </b>
+<b>구현 프로토콜</b>
+
+KeyStore              "PKCS12"
+
+KeyManagerFactory     "SunX509", "NewSunX509"
+
+TrustManagerFactory   "PKIX" (aka "X509"/"SunPKIX"), "SunX509"
+
+SSLContext            "SSLv3" (aka "SSL"), "TLSv1" (aka "TLS")
+      </pre>
+    </blockquote>
+	<a name="sslcontext"></a>  <a name="SSLContext"></a> 
+<h3><code>SSLContext</code> 클래스</h3>
+    <blockquote>
+<p> <code>javax.net.ssl.SSLContext</code> 는, 안전한 소켓 프로토콜의 구현의 엔진 클래스입니다. 이 클래스의 인스턴스는, SSL 소켓 팩토리 및 SSL 엔진의 팩토리로서 동작합니다. <code>SSLContext</code> 는, 그 문맥아래에서 작성된 모든 객체로 공유되는 상태 정보를 모두 보관 유지합니다. 예를 들어, 세션 상태는, 소켓 팩토리에 의해 작성되어 문맥에 의해 제공된 소켓에 의해 핸드 쉐이크 프로토콜이 결정되면(자),<code>SSLContext</code> 와 관련지을 수 있습니다. 캐쉬에 기입해진 이러한 세션은, 같은 문맥으로 작성된 다른 소켓으로 재사용하거나 공유할 수가 있습니다.  </p>
+<p>각 인스턴스는, 인증의 실행에 필요한 열쇠, 증명서 체인, 및 신뢰된 루트 CA 증명서를 사용해 <code>init</code> 메소드로 설정됩니다. 이 설정은, 열쇠와 트러스트 매니저의 형태로 제공됩니다. 이러한 매니저는 인증을 지원해, 문맥에 의해 지원되는 암호군의 열쇠의 승인을 제공합니다.  </p>
+<p>현재는, X. 509 베이스의 매니저만이 지원되고 있습니다.  </p>
+<h4><code>SSLContext</code> 객체의 작성</h4>
+<blockquote>다른 JCA 프로바이더 베이스의 「엔진」클래스와 같게,<code>SSLContext</code> 객체는,<code>SSLContext</code> 클래스의 <code>getInstance</code> 팩토리 메소드를 사용해 작성됩니다. 이러한 static 메소드는, 최저한 요구된 안전한 소켓 프로토콜을 구현하는 인스턴스를 돌려줍니다. 반환되는 인스턴스도, 그 외의 프로토콜을 구현할 수 있습니다. 예를 들어,<code>getInstance("SSLv3")</code> 로부터 반환되는 인스턴스는,<code>"SSLv3"</code> 와 <code>"TLSv1"</code> 를 구현합니다. <code>getSupportedProtocols</code> 메소드는, 이 문맥으로부터 <code>SSLSocket, SSLServerSocket</code> 또는 <code>SSLEngine</code> 가 작성되었을 때에, 지원 대상의 프로토콜의 리스트를 돌려줍니다. 실제의 SSL 접속으로 어느 프로토콜을 유효하게 할까는,<code>setEnabledProtocols(String[] protocols)</code> 메소드를 사용해 제어할 수 있습니다.
+<p> <b>주:</b> <code>SSLSocketFactory.getDefault</code> 를 호출하면(자),<code>SSLContext</code> 가 자동적으로 작성되어 인스턴스화 되어<code>SSLSocketFactory</code> 에 정적으로 할당할 수 있습니다. 따라서, 디폴트 동작을 오버라이드(override) 하는 경우를 제외해,<code>SSLContext</code> 객체를 직접 작성하거나 초기화하거나 할 필요는 없습니다.  </p>
+<p><code>getInstance</code> 팩토리 메소드를 호출해 <code>SSLContext</code> 객체를 작성하려면 , 프로토콜명을 지정할 필요가 있습니다. 또는, 요구된 프로토콜의 구현을 제공하는 프로바이더를 다음과 같이 지정할 수도 있습니다.  </p>
+        <blockquote>
+<pre>public static SSLContext getInstance(String protocol);<br><br>public static SSLContext getInstance(String protocol,<br>                                     String provider);<br><br>public static SSLContext getInstance(String protocol,<br>                                     Provider provider);<br></pre>
+        </blockquote>
+<p> 프로토콜명만을 지정하면(자), 시스템은, 요구된 프로토콜의 구현이 그 환경에서 이용할 수 있을지 어떨지를 판단합니다. 복수의 구현이 있는 경우, 보다 바람직한 것이 있을지 어떨지를 판단합니다.  </p>
+<p>프로토콜명과 프로바이더를 지정하면(자), 시스템은, 요구된 프로토콜의 구현이 요구된 프로바이더로 이용할 수 있을지 어떨지를 판단해, 이용할 수 없는 경우는 예외를 throw 합니다.  </p>
+<p>프로토콜은, 희망하는 안전한 소켓 프로토콜을 기술하는 캐릭터 라인 ( 「SSL」 등)입니다. <code>SSLContext</code> 객체의 일반적인 프로토콜명은,<a href="#AppA">부록 A</a>  로 정의되고 있습니다.  </p>
+<p> 다음에 <code>SSLContext</code> 의 취득예를 나타냅니다.
+        </p>
+        <blockquote>
+<pre>SSLContext sc = SSLContext.getInstance("SSL");<br></pre>
+        </blockquote>
+<p>새롭게 작성된 <code>SSLContext</code> 는,<code>init</code> 메소드를 호출하는 것에 의해 초기화할 필요가 있습니다.  </p>
+        <blockquote>
+<pre>public void init(KeyManager[] km, TrustManager[] tm,<br>                   SecureRandom random);<br></pre>
+        </blockquote>
+<p> <code>KeyManager[]</code> 파라미터가 NULL 의 경우, 이 문맥에는 빈 상태(empty)의 <code>KeyManager</code> 가 정의됩니다. <code>TrustManager[]</code> 파라미터가 NULL 의 경우, 인스톨 된 시큐리티 프로바이더는,<a href="#TrustManagerFactory"><code>TrustManagerFactory</code></a>  의 가장 우선도의 높은 구현으로 검색되어 적절한 <code>TrustManager</code> 가 취득됩니다. 같이 SecureRandom 파라미터도 NULL 로 할 수 있습니다. 그 경우, 디폴트 구현이 사용됩니다.  </p>
+<p> 내부의 디폴트 문맥이 사용되는 경우 (<code>SSLContext</code> 는 <code>SSLSocketFactory.getDefault()</code> 또는 <code>SSLServerSocketFactory.getDefault()</code> 에 의해 작성되는 등)는,<a href="#CustomizingStores">디폴트의 <code>KeyManager</code> 과 <code>TrustManager</code></a>  가 작성됩니다. 또, 디폴트의 <code>SecureRandom</code> 구현도 선택됩니다.  </p>
+      </blockquote>
+    </blockquote>
+    <a name="TrustManager"></a> 
+<h3><code>TrustManager</code> Interface</h3>
+<blockquote><code>TrustManager</code> 는, 제시된 인증 쿠레덴샤르의 신뢰성을 판정합니다. 신뢰할 수 없는 쿠레덴샤르의 경우, 접속은 절단 됩니다. 안전한 소켓 피어의 원격 식별 정보를 인증하려면 , 1 개(살) 또는 복수의 <code>TrustManager</code> 로 <code>SSLContext</code> 객체를 초기화할 필요가 있습니다. 지원되는 인증 기구의 각각 대해,<code>TrustManager</code> 를 1 개 건네줄 필요가 있습니다. <code>SSLContext</code> 의 초기화중에 NULL 가 건네받으면(자), 트러스트 매니저가 작성됩니다. 일반적으로은, X. 509 공개키 증명서　(<code>X509TrustManager</code> 등)에 근거하는 인증을 지원하는 단일의 트러스트 매니저가 존재하고 있습니다. 안전한 소켓 구현에는, 공유의 비밀열쇠, Kerberos, 또는 그 외의 기구에 근거하는 인증을 지원하는 것도 있습니다.
+<P>
+<code>TrustManager</code> 는 <code>TrustManagerFactory</code> 에 의해, 또는 인터페이스의 구체적인 구현을 실시하는 것에 의해 작성됩니다.
+</blockquote>
+    <a name="TrustManagerFactory"></a> 
+<h3><code>TrustManagerFactory</code> 클래스</h3>
+    <blockquote>
+<p><code>javax.net.ssl.TrustManagerFactory</code> 는 프로바이더 베이스의 서비스의 엔진 클래스에서, 1 개(살) 또는 복수의 형태의 <code>TrustManager</code> 객체의 팩토리로서 동작합니다. 이것은 프로바이더 베이스이므로, 한층 더 팩토리를 구현해 설정해, 보다 고도의 서비스를 제공하는 트러스트 매니저나, 인스톨 전용의 인증 정책를 구현하는 트러스트 매니저를 추가하거나 따로 제공할 수가 있습니다.  </p>
+
+<h4><code>TrustManagerFactory</code> 의 작성</h4>
+<blockquote>이 클래스의 인스턴스는 <code>SSLContext</code> 와 같은 방법으로 작성합니다만,<code>getInstance</code> 메소드에 프로토콜명은 아니고 알고리즘명의 캐릭터 라인을 건네주는 점이 다릅니다.
+        <blockquote>
+<pre>public static TrustManagerFactory<br>                  getInstance(String algorithm);<br><br>public static TrustManagerFactory<br>                  getInstance(String algorithm,<br>                              String provider);<br><br>public static TrustManagerFactory<br>                  getInstance(String algorithm,<br>                              Provider provider);<br></pre>
+        </blockquote>
+<p> 알고리즘 명문자열의 예를 다음에 나타냅니다.  </p>
+<blockquote><i><font face="Courier New,Courier">"PKIX"</font></i>
+        </blockquote>
+<p> 호출의 예를 다음에 나타냅니다.  </p>
+        <blockquote>
+<pre>TrustManagerFactory tmf =<br>    TrustManagerFactory.getInstance("PKIX", "SunJSSE");<br></pre>
+        </blockquote>
+<p> 위의 호출은,<code>SunJSSE</code> 프로바이더의 PKIX 트러스트 매니저 팩토리의 인스턴스를 작성합니다. 이 팩토리를 사용해, X. 509 PKIX 베이스의 증명서 패스 타당성 검사를 실행하는 트러스트 매니저를 작성할 수 있습니다.  </p>
+<p><code>SSLContext</code> 를 초기화하는 경우는, 트러스트 매니저 팩토리로부터 작성한 트러스트 매니저를 사용하는지,<a  href="../../../../api/java/security/cert/CertPath.html"><code>CertPath</code></a>  API 등을 사용해 독자적인 트러스트 매니저를 기술할 수가 있습니다. 상세한 것에 대하여는,<a href="../certpath/CertPathProgGuide.html">「Java<sup><font  size="-2">TM</font></sup> Certification Path API 개발자 안내」</a>를 참조해 주세요. <a  href="../../../api/javax/net/ssl/X509TrustManager.html"><a  href="../../../../api/javax/net/ssl/X509TrustManager.html"><code>X509TrustManager</code></a>  인터페이스를 사용해 트러스트 매니저를 구현하는 경우는, 트러스트 매니저 팩토리는 불필요합니다.  </p>
+<p>새롭게 작성된 팩토리는,<code>init</code> 메소드의 1 개를 호출하는 것에 의해 초기화할 필요가 있습니다.  </p>
+        <blockquote>
+<pre>public void init(KeyStore ks);<br>public void init(ManagerFactoryParameters spec);<br></pre>
+        </blockquote>
+<p>사용하는 <code>TrustManagerFactory</code> 에 적절한 <code>init</code> 메소드를 호출할 필요가 있습니다. 프로바이더의 벤더에 문의해 주세요.  </p>
+<p>「SunX509」<code>TrustManagerFactory</code> 등,<code>SunJSSE</code> 프로바이더가 제공하는 팩토리는 다수 있습니다만,<code>TrustManagerFactory</code> 를 초기화하기 위해서 필요한 정보는 <code>KeyStore</code> 만일 수 있는이므로, 최초로 <code>init</code> 메소드를 호출하는 것이 적절합니다. <code><code>TrustManagerFactory</code> 는 <code>KeyStore</code> 에, 인증 체크중에 신뢰해야 할 원격 증명서의 정보를 문의합니다.  </p>
+<p>경우에 따라서는,<code>KeyStore</code> 이외의 초기화 파라미터가 프로바이더에 필요하게 됩니다. 특정의 프로바이더의 이용자는, 프로바이더에 의한 정의에 따라, 적절한 <code>ManagerFactoryParameters</code> 의 구현을 건네줄 필요가 있습니다. 그 후, 프로바이더는 <code>ManagerFactoryParameters</code> 구현의 특정의 메소드를 호출해, 필요한 정보를 취득할 수 있습니다.  </p>
+<p>예를 들어,<code>TrustManagerFactory</code> 프로바이더가, 그 프로바이더를 사용하는 어플리케이션의 초기화 파라미터 B, R, 및 S 를 필요로 하고 있다고 합니다. KeyStore 이외의 초기화 파라미터를 요구하는 모든 프로바이더와 같게, 프로바이더는 어플리케이션이 <code>ManagerFactoryParameters</code> 의 특정의 서브 인터페이스를 구현하는 클래스의 인스턴스를 제공하는 것을 요구합니다. 예를 들어, 호출측의 어플리케이션이 <code>MyTrustManagerFactoryParams</code> 의 인스턴스를 구현해 작성해, 2 번째의 <code>init</code> 에 건네주도록(듯이) 프로바이더가 요구하고 있다고 합니다. 이 경우의 <code>MyTrustManagerFactoryParams</code> 상태를 다음에 나타냅니다.  </p>
+        <blockquote>
+<pre>public interface MyTrustManagerFactoryParams extends <br>       ManagerFactoryParameters {<br>    public boolean getBValue();<br>    public float getRValue();<br>    public String getSValue():<br>}<br></pre>
+        </blockquote>
+<p>KeyStore 객체나 그 외의 파라미터로 명시적으로 초기화되지 않아도, 트러스트를 결정될 수 있는 트러스트 매니저도 있습니다. 그러한 매니저는, 예를 들어, LDAP 경유로 로컬 디렉토리 서비스의 트러스트 데이터에 액세스 하거나 온라인의 증명서 상태 체크 서버를 원격로 사용하거나 또는 표준의 로컬 위치로부터 디폴트의 트러스트 데이터에 액세스 할 수도 있습니다.  </p>
+      </blockquote>
+
+<a name=CERTPATH></a> <h4>PKIX TrustManager 의 지원</h4>
+<blockquote>
+
+<p>디폴트의 트러스트 매니저의 알고리즘은 「PKIX」입니다. 디폴트는,<code>java.security</code> 파일의 <code>ssl.TrustManagerFactory.algorithm</code> 프로퍼티을 편집하는 것에 의해 변경할 수 있습니다.
+
+<p>
+PKIX 트러스트 매니저 팩토리는, 인스톨 된 시큐리티 프로바이더로부터의 <a href="../certpath/CertPathProgGuide.html">CertPath PKIX</a>  구현을 사용합니다. 「SUN」CerPath 프로바이더는 Java SE Development Kit 6 에 부속되어 있습니다. 트러스트 매니저 팩토리는, 일반적으로의 <code>init(KeyStore ks)</code> 메소드를 사용하는지, 또는 새롭게 도입된 클래스 <a href="../../../../api/javax/net/ssl/CertPathTrustManagerParameters.html"><tt>javax.net.ssl.CertPathTrustManagerParameters</tt></a>  를 사용해 CertPath 파라미터를 PKIX 트러스트 매니저에게 건네주는 것으로 초기화할 수 있습니다.
+<p>
+트러스트 매니저를 취득해 특정의 LDAP 증명서 스토어를 사용하는 방법과 취소해 확인을 유효하게 하는 방법의 예를 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+import javax.net.ssl. *;
+import java.security.cert. *;
+import java.security.KeyStore;
+...
+
+// Create PKIX parameters
+KeyStore anchors = KeyStore.getInstance("JKS");
+anchors.load(new FileInputStream(anchorsFile));
+CertPathParameters pkixParams = new PKIXBuilderParameters(anchors,
+    new X509CertSelector());
+
+// Specify LDAP certificate store to use
+LDAPCertStoreParameters lcsp = new LDAPCertStoreParameters("ldap.imc.org", 389);
+pkixParams.addCertStore(CertStore.getInstance("LDAP", lcsp));
+
+// Specify that revocation checking is to be enabled
+pkixParams.setRevocationEnabled(true);
+
+// Wrap them as trust manager parameters
+ManagerFactoryParameters trustParams =
+    new CertPathTrustManagerParameters(pkixParams);
+
+// Create TrustManagerFactory for PKIX-compliant trust managers
+TrustManagerFactory factory = TrustManagerFactory.getInstance("PKIX");
+
+// Pass parameters to factory to be passed to CertPath implementation
+factory.init(trustParams);
+
+// Use factory
+SSLContext ctx = SSLContext.getInstance("TLS");
+ctx.init(null, factory.getTrustManagers(), null);
+</pre>
+</blockquote>
+<P>
+<code>init (KeyStore ks)</code> 메소드가 사용되는 경우는, 취소 확인이 무효로 되는 점을 제외해, 디폴트의 PKIXParameter 가 사용됩니다. 유효하게 하려면 , 시스템 프로퍼티 <code>com.sun.net.ssl.checkRevocation</code> 를 <code>true</code> 로 설정합니다. 이 설정에서는, CertPath 구현 자신이 취소해 정보의 장소를 검출할 필요가 있습니다. SUN 프로바이더의 PKIX 구현에서는 많은 경우에 이 동작을 실행할 수 있습니다만, 시스템 프로퍼티 <code>com.sun.security.enableCRLDP</code> 를 <code>true</code> 로 설정할 필요가 있습니다.
+<P>
+PKIX 및 CertPath API 의 상세한 것에 대하여는,<a href="../certpath/CertPathProgGuide.html">「Java Certificate Path API 프로그래밍 가이드」</a>  를 참조해 주세요.
+    </blockquote>
+    </blockquote>
+    <a name="X509TrustManager"></a> 
+<h3><code>X509TrustManager</code> 인터페이스</h3>
+    <blockquote>
+<p> <code>javax.net.ssl.X509TrustManager</code> 인터페이스는, 범용의 <code>TrustManager</code> 인터페이스를 확장한 것입니다. X.  509 베이스의 인증을 실시할 때, 트러스트 매니저는 반드시 이 인터페이스를 구현합니다.  </p>
+<p> JSSE 를 사용한 원격 소켓 피어의 X. 509 인증을 지원하려면 , 이 인터페이스의 인스턴스를 <code>SSLContext</code> 객체의 <code>init</code> 메소드에 건네줄 필요가 있습니다.  </p>
+<h4><code>X509TrustManager</code> 의 작성</h4>
+<blockquote>이 인터페이스는, 스스로 직접 구현하는 일도,<code>SunJSSE</code> 프로바이더 등, 프로바이더 베이스의 <code>TrustManagerFactory</code> 로부터 취득할 수도 있습니다. 또, 독자적인 인터페이스를 구현해, 팩토리로 생성된 트러스트 매니저에게 위양 할 수도 있습니다. 예를 들어, 결과적으로 생긴 트러스트의 결정을 필터에 걸쳐 GUI 를 사용해 최종 사용자에 문의하는 경우에, 이것을 실행합니다.
+<p><b>주:</b>null 의 KeyStore 파라미터가 <code>SunJSSE</code> 의 「PKIX」또는 「SunX509」<code>TrustManagerFactory</code> 에게 건네지는 경우, 팩토리는 다음의 순서로 트러스트 데이터를 검색합니다.  </p>
+        <ol>
+<li><a href="#SystemProps">시스템 프로퍼티</a> 
+            <blockquote>
+<pre>javax.net.ssl.trustStore<br></pre>
+            </blockquote>
+하지만 정의되고 있는 경우,<code>TrustManagerFactory</code> 는, 이 시스템 프로퍼티으로 지정한 파일명을 사용해 파일을 검색해, 이 파일을 키스토어로 사용합니다. 시스템 프로퍼티 <code>javax.net.ssl.trustStorePassword</code> 가와 같이  정의되고 있는 경우는, 파일을 열기 전에, 그 값을 사용해 트러스트 스토어의 데이터의 무결성을 체크합니다.
+<p><code>javax.net.ssl.trustStore</code> 가 정의되고 있지만, 지정한 파일이 존재하지 않는 경우, 빈 상태(empty)의 키스토어를 사용하는 디폴트의 <code>TrustManager</code> 가 작성됩니다.  </p>
+            <p></p>
+          </li>
+<li> <code>javax.net.ssl.trustStore</code> 시스템 프로퍼티이 지정되지 않고, 한층 더 파일
+            <blockquote>
+<pre>&lt;java-home&gt;/lib/security/jssecacerts<br></pre>
+            </blockquote>
+하지만 존재하면, 그 파일을 사용합니다. <code>&lt;java-home&gt;</code> 의 상세한 것에 대하여는,<a href="#javaHome">「인스톨 디렉토리 &lt;java-home&gt;」</a>를 참조해 주세요. 그 이외의 경우,
+            <p></p>
+          </li>
+<li>파일
+            <blockquote>
+<pre>&lt;java-home&gt;/lib/security/cacerts<br></pre>
+            </blockquote>
+하지만 존재하면, 그 파일을 사용합니다.  </li>
+        </ol>
+<p> 어느 파일도 존재하지 않는 경우, 그것은 익명의 SSL 암호군이 있기 (위해)때문에라고 생각됩니다. 이 암호군은 인증을 실시하지 않기 때문에, 트러스트 스토어는 필요 없습니다.  </p>
+<p>팩토리는, 시큐리티 프로퍼티 <code>javax.net.ssl.trustStore</code> 경유로 지정한 파일, 또는 <code>jssecacerts</code> 파일을 검색해 <code>cacerts</code> 파일을 체크해, 신뢰된 루트 증명서의 JSSE 고유세트를, 코드에 서명하는 목적으로,<code>cacerts</code> 에 있는 것과는 별로 제공할 수 있도록(듯이) 합니다.  </p>
+      </blockquote>
+      <a name="OwnX509TM"></a> 
+<h4>독자적인 <code>X509TrustManager</code> 의 작성</h4>
+<blockquote>지정한 <code>X509TrustManager</code> 의 동작이 요구에 맞지 않는 경우는, 독자적인 <code>X509TrustManager</code> 를 작성할 수 있습니다.  방법으로서는, 독자적인 <code>TrustManagerFactory</code> 를 작성 및 등록하는 방법과<code>X509TrustManager</code> 인터페이스를 직접 구현하는 방법이 있습니다.
+<p>이하의 <code>MyX509TrustManager</code> 클래스는, 디폴트의 <code>SunJSSE</code> <code>X509</code> <code>TrustManager</code> 가 실패했을 때, 그 외의 인증 논리를 제공하는 것에 의해, 디폴트의 동작을 확장합니다.  </p>
+<blockquote>
+<pre>
+class MyX509TrustManager implements X509TrustManager {
+
+     /*
+      * The default PKIX X509TrustManager9.   We'll delegate
+      * decisions to it, and fall back to the logic in this class if the
+      * default X509TrustManager doesn't trust it.
+      */
+     X509TrustManager pkixTrustManager;
+
+     MyX509TrustManager() throws Exception {
+         // create a "default" JSSE X509TrustManager.
+
+         KeyStore ks = KeyStore.getInstance("JKS");
+         ks.load(new FileInputStream("trustedCerts"),
+             "passphrase". toCharArray());
+
+         TrustManagerFactory tmf =
+		TrustManagerFactory.getInstance("PKIX");
+         tmf.init(ks);
+
+         TrustManager tms [] = tmf.getTrustManagers();
+
+         /*
+          * Iterate over the returned trustmanagers, look
+          * for an instance of X509TrustManager.   If found,
+          * use that as our "default" trust manager.
+          */
+         for (int i = 0; i &lt; tms.length; i++) {
+             if (tms[i] instanceof X509TrustManager) {
+                 pkixTrustManager = (X509TrustManager) tms[i];
+                 return;
+             }
+         }
+
+         /*
+          * Find some other way to initialize, or else we have to fail the
+          * constructor.
+          */
+         throw new Exception("Couldn't initialize");
+     }
+
+     /*
+      * Delegate to the default trust manager.
+      */
+     public void checkClientTrusted(X509Certificate[] chain, String authType)
+                 throws CertificateException {
+         try {
+             pkixTrustManager.checkClientTrusted(chain, authType);
+         } catch (CertificateException excep) {
+             // do any special handling here, or rethrow exception.
+         }
+     }
+
+     /*
+      * Delegate to the default trust manager.
+      */
+     public void checkServerTrusted(X509Certificate[] chain, String authType)
+                 throws CertificateException {
+         try {
+             pkixTrustManager.checkServerTrusted(chain, authType);
+         } catch (CertificateException excep) {
+             /*
+              * Possibly pop up a dialog box asking whether to trust the
+              * cert chain.
+              */
+         }
+     }
+
+     /*
+      * Merely pass this through.
+      */
+     public X509Certificate[] getAcceptedIssuers() {
+         return pkixTrustManager.getAcceptedIssuers();
+     }
+}
+        </pre>
+        </blockquote>
+이러한 트러스트 매니저를 작성할 수 있으면(자),<code>init</code> 메소드를 사용해, 이것을 <code>SSLContext</code> 에 할당합니다. 이후, 이 <code>SSLContext</code> 로부터 작성된 <code>SocketFactories</code> 는, 사용자 독자적인 <code>TrustManager</code> 를 사용해 신뢰성을 판정하게 됩니다.
+        <blockquote>
+<pre>
+TrustManager[] myTMs = new TrustManager [] {
+                          new MyX509TrustManager() };
+SSLContext ctx = SSLContext.getInstance("TLS");
+ctx.init(null, myTMs, null);
+</pre>
+        </blockquote>
+      </blockquote>
+<h4><code>keyStore</code>  의 동적 갱신</h4>
+<blockquote> <code>MyX509TrustManager</code> 를 확장해, 키스토어의 동적 갱신 처리를 실시할 수가 있습니다. <code>checkClientTrusted</code> 또는 <code>checkServerTrusted</code> 의 테스트에 실패해, 신뢰할 수 있는 증명서 체인을 확립할 수 없었던 경우, 키스토어에 대해서, 요구된 신뢰할 수 있는 증명서를 추가할 수 있습니다. 갱신된 키스토어를 사용해 초기화된 <code>TrustManagerFactory</code> 로부터 새로운 <code>pkixTrustManager</code> 를 작성할 필요가 있습니다. 이전에 초기화한 <code>SSLContext</code> 를 사용해 새로운 접속을 확립하면(자), 새롭게 추가된 증명서가 불려 가 신뢰성의 판정을 합니다.  </blockquote>
+    </blockquote>
+    <a name="KeyManager"></a> 
+<h3><code>KeyManager</code> Interface</h3>
+    <blockquote>
+<p> <code>KeyManager</code> 는, 최종적으로 원격 호스트에게 송신되는 인증 쿠레덴샤르를 선택합니다. 자기 자신 (로컬의 시큐리티 소켓 피어)을 원격 피어에 인증시키려면 , 1 개(살) 또는 복수의 <code>KeyManager</code> 로 <code>SSLContext</code> 객체를 초기화할 필요가 있습니다.  지원되는 각 인증 기구에,<code>KeyManager</code> 를 1 개 건네줄 필요가 있습니다. <code><code>SSLContext</code> 의 초기화중에 NULL 가 건네받으면(자), 빈 상태(empty)의 <code>KeyManager</code> 가 작성됩니다. 내부의 디폴트 문맥이 사용되는 경우 (<code>SSLContext</code> 는 <code>SSLSocketFactory.getDefault()</code> 또는 <code>SSLServerSocketFactory.getDefault()</code> 에 의해 작성되는 등)는,<a href="#CustomizingStores">디폴트의 <code>KeyManager</code></a>  가 작성됩니다. 일반적으로은,<code>X. 509</code> 공개키 증명서에 근거하는 인증을 지원하는 키 매니저가 1 개 있습니다. 안전한 소켓 구현에는, 공유의 비밀열쇠, Kerberos, 또는 그 외의 기구에 근거하는 인증을 지원하는 것도 있습니다.  </p>
+<P>
+<code>KeyManager</code> 는 <code>KeyManagerFactory</code> 에 의해, 또는 인터페이스의 구체적인 구현을 실시하는 것에 의해 작성됩니다.
+    </blockquote>
+    <a name="KeyManagerFactory"></a> 
+<h3><code>KeyManagerFactory</code> 클래스</h3>
+    <blockquote>
+<p><code>javax.net.ssl.KeyManagerFactory</code> 는 프로바이더 베이스의 서비스의 엔진 클래스에서, 1 개(살) 또는 복수의 형태의 <code>KeyManager</code> 객체의 팩토리로서 동작합니다. <code>SunJSSE</code> 프로바이더는, 기본이 되는 X. 509 키 매니저를 돌려줄 수가 있는 팩토리를 구현합니다. 이것은 프로바이더 베이스이기 (위해)때문에, 추가의 팩토리를 구현해, 설정하는 것으로써, 추가의, 또는 대체의 키 매니저를 제공할 수 있습니다.  </p>
+<h4><code>KeyManagerFactory</code> 의 작성</h4>
+<blockquote>이 클래스의 인스턴스는 <code>SSLContext</code> 와 같은 방법으로 작성합니다만,<code>getInstance</code> 메소드에 프로토콜명은 아니고 알고리즘명의 캐릭터 라인을 건네주는 점이 다릅니다.
+        <blockquote>
+<pre>public static KeyManagerFactory<br>                  getInstance(String algorithm);<br><br>public static KeyManagerFactory<br>                  getInstance(String algorithm,<br>                              String provider);<br><br>public static KeyManagerFactory<br>                  getInstance(String algorithm,<br>                              Provider provider);<br></pre>
+        </blockquote>
+<p> 알고리즘 명문자열의 예를 다음에 나타냅니다.  </p>
+<blockquote><i><font face="Courier New,Courier">"SunX509"</font></i>
+        </blockquote>
+<p> 호출의 예를 다음에 나타냅니다.  </p>
+        <blockquote>
+<pre>KeyManagerFactory kmf =<br>    KeyManagerFactory.getInstance("SunX509", "SunJSSE");<br></pre>
+        </blockquote>
+<p> 상기의 호출로 <code>SunJSSE</code> 프로바이더의 디폴트의 키 매니저 팩토리의 인스턴스가 작성됩니다. 키 매니저 팩토리는, 기본이 되는 X. 509 베이스의 인증 키를 제공합니다.  </p>
+<p>새롭게 작성된 팩토리는,<code>init</code> 메소드의 1 개를 호출하는 것에 의해 초기화할 필요가 있습니다.  </p>
+        <blockquote>
+<pre>public void init(KeyStore ks, char[] password);<br>public void init(ManagerFactoryParameters spec);<br></pre>
+        </blockquote>
+<p>사용하는 <code>KeyManagerFactory</code> 에 적절한 <code>init</code> 메소드를 호출합니다. 프로바이더의 벤더에 문의해 주세요.  </p>
+<p>디폴트의 「SunX509」<code>KeyManagerFactory</code> 등,<code>SunJSSE</code> 프로바이더가 제공하는 팩토리는 다수 있습니다만,<code>KeyManagerFactory</code> 를 초기화하기 위해서 필요한 정보는 <code>KeyStore</code> 와 패스워드 뿐이므로, 최초로 <code>init</code> 메소드를 호출하는 것이 적절합니다. <code>KeyManagerFactory</code> 는 <code>KeyStore</code> 에, 원격의 소켓 피어를 인증하기 위해서 사용하는 비공개키, 및 대응하는 공개키 증명서에 대해 문의합니다. 패스워드 파라미터는,<code>KeyStore</code> 의 열쇠에 액세스 하는 메소드로 사용하는 패스워드를 지정합니다. <code>KeyStore</code> 의 열쇠는 모두, 같은 패스워드로 보호할 필요가 있습니다.  </p>
+<p>프로바이더에는,<code>KeyStore</code> 와 패스워드 이외의 초기화 파라미터가 필요한 경우도 있습니다. 특정의 프로바이더의 이용자는, 프로바이더에 의한 정의에 따라, 적절한 <code>ManagerFactoryParameters</code> 의 구현을 건네줄 필요가 있습니다. 그 후, 프로바이더는 <code>ManagerFactoryParameters</code> 구현의 특정의 메소드를 호출해, 필요한 정보를 취득할 수 있습니다.  </p>
+<p>어떤 종류의 팩토리에서는, KeyStore 객체나 그 외의 파라미터로 초기화되지 않아도, 인증 데이터에 액세스 할 수 있습니다. 예를 들어, Java 인증·승인 서비스 (JAAS)등의 로그인 기구의 일부로서 열쇠 데이터에 액세스 할 수 있는 경우가 있습니다.  </p>
+<p>위에서 말한 것처럼,<code>SunJSSE</code> 프로바이더는 「SunX509」팩토리를 지원합니다. 팩토리는, KeyStore 파라미터로 초기화할 필요가 있습니다.  </p>
+      </blockquote>
+    </blockquote>
+    <a name="X509KeyManager"></a> 
+<h3><code>X509KeyManager</code> 인터페이스</h3>
+<blockquote><code>javax.net.ssl.X509KeyManager</code> 인터페이스는, 범용의 <code>KeyManager</code> 인터페이스를 확장한 것입니다. X. 509 베이스의 인증을 실시하는 키 매니저로 구현합니다. JSSE 를 사용한 원격 소켓 피어의 X. 509 인증을 지원하려면 , 이 인터페이스의 인스턴스를 <code>SSLContext</code> 객체의 <code>init</code> 메소드에 건네줄 필요가 있습니다.
+<h4><code>X509KeyManager</code> 의 작성</h4>
+<blockquote>이 인터페이스는, 스스로 직접 구현하는 일도,<code>SunJSSE</code> 프로바이더 등, 프로바이더 베이스의 <code>KeyManagerFactory</code> 로부터 취득할 수도 있습니다. 또, 독자적인 인터페이스를 구현해, 팩토리로 생성된 키 매니저에게 위양 할 수도 있습니다. 예를 들어, 생성되는 열쇠를 필터에 걸쳐 GUI 를 사용해 최종 사용자에 문의하는 경우에, 이것을 실행합니다.
+      </blockquote>
+<h4>독자적인 <code>X509KeyManager</code> 의 작성</h4>
+<blockquote><code>X509KeyManager</code> 의 디폴트의 동작이 요구에 맞지 않는 경우는,<a href="#OwnX509TM">「독자적인 <code>X509TrustManager</code> 의 작성」이라고 </a>같은 순서로 독자적인 <code>X509KeyManager</code> 를 작성할 수 있습니다.  </blockquote>
+    </blockquote>
+    <a name="RelsTM_KM"></a> 
+<h3><code>TrustManager</code> 와 <code>KeyManager</code> 의 관련성</h3>
+<blockquote>지금까지는,<code>TrustManager</code> 와 <code>KeyManager</code> 의 기능이 자주 혼동 되어 왔습니다.  여기에서는, 각 매니저형의 주된 기능을 요약합니다.
+      <blockquote>
+        <table summary="manager types and functions" width="400"
+ border="1" cellspacing="2" cellpadding="0">
+<thead> <tr><th width="30%"> <b>형</b></th>
+<th width="70%"> <b>기능</b></th>
+           <tbody>
+            <tr>
+<td width="30%"> <code>TrustManager</code></td>
+<td width="70%"> 원격 인증 쿠레덴샤르의 신뢰성 (즉 접속의 신뢰성)을 판정합니다. </td>
+            </tr>
+            <tr>
+<td width="30%"> <code>KeyManager</code></td>
+<td width="70%"> 원격 호스트에게 송신되는 인증 쿠레덴샤르를 결정합니다. </td>
+            </tr>
+          </tbody>
+        </table>
+      </blockquote>
+    </blockquote>
+    </blockquote>
+    <a name="SecondarySupportClasses"></a> 
+<h2>2차 지원 클래스 및 인터페이스</h2>
+    <blockquote>
+<p> 2차 지원 클래스는, 안전한 소켓의 작성, 사용, 및 관리를 지원하는 JSSE API 의 일부로서 제공됩니다. 이 클래스는, 시큐리티 소켓 어플리케이션에서는, 코어 클래스나 지원 클래스정도로는 사용되지 않습니다. 2차 지원 클래스 및 인터페이스는 <code>javax.net.ssl</code> 및 <code>javax.security.cert</code> 패키지에 포함되어 있습니다.  <a name="SSLSessionContext"></a> </p>
+<h3><code>SSLSessionContext</code> 인터페이스</h3>
+      <blockquote>
+<p> <code>javax.net.ssl.SSLSessionContext</code> 는, 단일의 엔티티에 관련지을 수 있었던 <a href="#SSLSession"><code>SSLSession</code></a>  를 그룹화 한 것입니다. 예를 들어, 다수의 세션에 동시에 참가하는 서버나 클라이언트에 관련지을 수가 있습니다. 이 인터페이스의 메소드를 사용하면(자), 문맥의 전세션을 열거하거나 세션 ID 로 특정의 세션을 검색할 수가 있습니다.  </p>
+<p> <code>SSLSessionContext</code> 는, SSLSession 의 <code>getSessionContext</code> 메소드를 호출해 <code>SSLSession</code> 로부터 임의에 취득할 수도 있습니다. 일부의 환경에서는, 문맥을 이용할 수 없습니다. 그것은,<code>getSessionContext</code> 메소드가 NULL 를 돌려주는 경우입니다.  </p>
+      </blockquote>
+      <a name="SSLSessionBindingListener"></a> 
+<h3><code>SSLSessionBindingListener</code> 인터페이스</h3>
+      <blockquote>
+<p> <code>javax.net.ssl.SSLSessionBindingListener</code> 는,<a href="#SSLSession"><code>SSLSession</code></a>  로부터 바인드 또는 언바인드(unbind) 될 때 통지를 받는 객체에 의해 구현됩니다.
+        </p>
+      </blockquote>
+      <a name="SSLSessionBindingEvent"></a> 
+<h3><code>SSLSessionBindingEvent</code> 클래스</h3>
+      <blockquote>
+<p> <code>javax.net.ssl.SSLSessionBindingEvent</code> 는,<a href="#SSLSession"><code>SSLSession</code></a>  로부터 바인드 또는 언바인드(unbind) 될 때,<a href="#SSLSessionBindingListener"><code>SSLSessionBindingListener</code></a>  와 통신하는 이벤트입니다.
+        </p>
+      </blockquote>
+      <a name="HandShakeCompletedListener"></a> 
+<h3><code>HandShakeCompletedListener</code> 인터페이스</h3>
+      <blockquote>
+<p> <code>javax.net.ssl.HandShakeCompletedListener</code> 는,<code>SSLSocket</code> 접속시에 SSL 프로토콜 핸드 쉐이크의 완료 통지를 받는 임의의 클래스에 구현되는 인터페이스입니다.  </p>
+      </blockquote>
+      <a name="HandShakeCompletedEvent"></a> 
+<h3><code>HandShakeCompletedEvent</code> 클래스</h3>
+      <blockquote>
+<p> <code>javax.net.ssl.HandShakeCompletedEvent</code> 는,<code>SSLSocket</code> 접속의 SSL 프로토콜 핸드 쉐이크가 종료했을 때에 <a href="#HandShakeCompletedListener"><code>HandShakeCompletedListener</code></a>  와 통신하는 이벤트입니다.  </p>
+      </blockquote>
+      <a name="HostnameVerifier"></a> 
+<h3><code>HostnameVerifier</code> 인터페이스</h3>
+<blockquote>SSL/TLS 구현의 표준 호스트명 검증 논리가 실패했을 경우, 구현은, 이 인터페이스를 구현해, 이 <code>HttpsURLConnection</code> 인스턴스에 할당할 수 있었던 클래스의 <code>verify</code> 메소드를 호출합니다. 주어진(given) 파라미터가 호스트명을 받아들이는 것이 분명한 경우, 콜백 클래스는, 접속이 허가되는 것을 보고할 필요가 있습니다. 응답을 받아들일 수 없는 경우, 접속은 절단 됩니다.
+<p>예를 나타냅니다.  </p>
+        <blockquote>
+<pre>public class MyHostnameVerifier implements HostnameVerifier {<br><br>    public boolean verify(String hostname, SSLSession session) {<br>        // pop up an interactive dialog box<br>        // or insert additional matching logic<br>        if (good_address) {<br>            return true;<br>        } else {<br>            return false;<br>        }<br>    }<br>}<br><br>//...deleted...<br><br>HttpsURLConnection urlc = (HttpsURLConnection)<br>  (new URL("https://www.sun.com/")). openConnection();<br>urlc.setHostnameVerifier(new MyHostnameVerifier());<br></pre>
+        </blockquote>
+<code>HostnameVerifier</code> 를 <code>HttpsURLConnection</code> 에 할당하는 방법에 대해서는,<a href="#HttpsURLConnection">「<code>HttpsURLConnection</code> 클래스」</a>를 참조해 주세요.
+      </blockquote>
+      <a name="X509Certificate"></a> 
+<h3><code>X509Certificate</code> 클래스</h3>
+      <blockquote>
+<p> 안전한 소켓 프로토콜의 상당수는, X. 509 증명서라고 하는 공개키 증명서를 사용해 인증을 실시합니다. 이것은, SSL 및 TLS 프로토콜의 디폴트 인증 기구입니다.  </p>
+<p> <code>java.security.cert.X509Certificate</code> 추상 클래스는, X. 509 증명서의 속성에 액세스 하는 표준적인 방법을 제공합니다.  </p>
+<p> 주:<code><b>javax</b>. security.cert.X509Certificate</code> 클래스는, 이전의 버젼의 JSSE (1.0. x, 1.1.x)와의 후방 호환성을 확보하기 위한의 것입니다. 새로운 어플리케이션에서는 <code><b>java</b>. security.cert.X509Certificate</code> 를 사용해,<code>javax.security.cert.X509Certificate</code> 는 사용하지 않습니다.  </p>
+      </blockquote>
+    </blockquote>
+    <a name="ConfigurationClasses"></a> 
+<h2>구버젼 (JSSE 1.0.x)의 구현 클래스 및 인터페이스</h2>
+    <blockquote>
+<p>JSSE 의 구버젼 (1.0.x)에는 레퍼런스 구현이 있어, 그 구현에서는, 클래스 및 인터페이스가 <code>com.sun.net.ssl</code> 패키지로 제공되었습니다.  </p>
+<p>v 1.4 의 시점에서, JSSE 는 J2SDK 에 통합되고 있습니다. 종래 <code>com.sun.net.ssl</code> 패키지에 있던 클래스는,<code>javax.net.ssl</code> 패키지로 이동해, 현재는 표준의 JSSE API 에 포함되어 있습니다.  </p>
+<p><code>com.sun.net.ssl</code> 의 클래스와 인터페이스는 하위 호환을 위해서(때문에) 존재하고 있으므로, 사용하지 않게 추천합니다. 이러한 클래스와 인터페이스를 사용해 기술한 어플리케이션은, 재컴파일 하지 않고 v 1.4 이후의 J2SDK 로 실행할 수가 있습니다. 향후의 릴리스에서는, 이 클래스와 인터페이스는 삭제될 가능성이 있습니다. 그 때문에, 새로운 어플리케이션은 모두 <code>javax</code> 의 클래스와 인터페이스를 사용하고 쓰는 (분)편이 좋을 것입니다.  </p>
+<p>현재로서는,<code>com.sun.net.ssl</code> API 를 사용해 작성한 어플리케이션은,<code>com.sun.net.ssl</code> 를 사용하는 JSSE 1.0. 2 프로바이더, 또는 <code>javax</code> API 를 사용하는 v 1.4 이후의 J2SDK 용으로 기술된 JSSE 프로바이더의<i></i>어디라도 이용할 수 있습니다. 다만, J2SDK v 1.4 이후의 JSSE API 를 사용해 작성한 어플리케이션은,ｖ 1.4 이후의 J2SDK 용으로 기술된 JSSE 프로바이더 밖에 이용할 수 없습니다. 새로운 릴리스에는 어떠한 신기능이 포함되므로, 대응하고 있지 않는 프로바이더에서는 그러한 신기능은 이용할 수 없습니다. <code>SunJSSE</code> 는 Sun Microsystems 의 J2SDK 로 제공되는 프로바이더로,<code>javax</code> API 로 작성되고 있습니다.  </p>
+<p>JSSE 1.0. 2 를 사용하고 있는 경우와 같이 <code>java.protocol.handler.pkgs</code> <code>System</code> 프로퍼티을 설정해 URL 검색 패스를 갱신하면, 계속 <code>com.sun.net.ssl.HttpsURLConnection</code> 를 취득할 수 있습니다.  상세한 것에 대하여는, 트러블 슈팅의<a  href="#HttpsURLConnectionEx">「<code>HttpsURLConnection</code> 클래스를 사용하는 코드」</a>를 참조해 주세요.  </p>
+    </blockquote>
+  </blockquote>
+
+<br> <a name="InstallationAndCustomization"></a> 
+<h1>JSSE 의 커스터마이즈</h1>
+<blockquote> <a name="javaHome"></a> 
+<h2>인스톨 디렉토리 &lt;java-home&gt;</h2>
+  <blockquote>
+<p> 이 메뉴얼에서는,<code>&lt;java-home&gt;</code> 는, Java SE 6 Runtime Environment (JRE)가 인스톨 되고 있는 디렉토리를 나타냅니다. 디렉토리는, JSSE 를 실행하고 있는 것이, Java<sup><font size="-2">TM</font></sup> SDK 를 인스톨 한 JRE 인가, 인스톨 하고 있지 않는 JRE 등에 의해서 다릅니다. Java SE 6 SDK 에는 JRE 가 포함되어 있습니다만, 파일 계층의 레벨은 다릅니다.  </p>
+<p> <code>&lt;java-home&gt;</code> 가 나타내는 디렉토리의 예를, 다음에 나타냅니다.  </p>
+    <ul>
+<li>Solaris 로, Java SE 6 SDK 의 인스톨처가 <code>/home/user1/jdk1. 6.0</code> 의 경우,<code>&lt;java-home&gt;</code> 는 다음의 장소입니다.
+        <blockquote>
+<pre>/home/user1/jdk1. 6.0/jre<br></pre>
+        </blockquote>
+        <p> </p>
+      </li>
+<li>Solaris 로, JRE 가 <code>/home/user1/jre1. 6.0</code> 에 인스톨 되고 있어 Java 2 SDK 가 인스톨<i></i>되어 있지 않은 경우,<code>&lt;java-home&gt;</code> 는 다음의 장소입니다.
+        <blockquote>
+<pre>/home/user1/jre1. 6.0<br></pre>
+        </blockquote>
+        <p> </p>
+      </li>
+<li>Microsoft Windows 로, Java SE 6 SDK 의 인스톨처가 <code>C:\jdk1. 6.0</code> 의 경우,<code>&lt;java-home&gt;</code> 는 다음의 장소입니다.
+        <blockquote>
+<pre>C:\j2k1. 6.0\jre<br></pre>
+        </blockquote>
+        <p> </p>
+      </li>
+<li>Microsoft Windows 로, JRE 가 <code>C:\jre1. 6.0</code> 에 인스톨 되고 있어 Java SE 6 SDK 가 인스톨<i></i>되어 있지 않은 경우,<code>&lt;java-home&gt;</code> 는 다음의 장소입니다.
+        <blockquote>
+<pre>C:\jre1. 6.0<br></pre>
+        </blockquote>
+      </li>
+    </ul>
+  </blockquote>
+  <a name="Customization"></a> 
+<h2>커스터마이즈</h2>
+  <blockquote>
+<p> JSSE 에는, 모든 사용자가 사용할 수 있는 구현이 포함되어 있습니다. 필요하면, JSSE 의 다양한 기능을 변경해 다른 구현을 추가하거나 디폴트의 키스토어를 지정할 수도 있습니다. 다음의 겉(표)는, 커스터마이즈 할 수 있는 기능, 디폴트 설정, 및 커스터마이즈의 제공에 사용하는 기구를 집계한 것입니다. 겉(표)의 최초의 열에는, 지정한 기능과 커스터마이즈 방법의 상세가 설명되고 있는 사이트로의 링크가 설정해 둡니다.  </p>
+<p> 일부의 기능은, 시스템 프로퍼티이나 시큐리티 프로퍼티의 값을 설정해 커스터마이즈 할 수 있습니다. 겉(표)에 계속되는 마디에서는, 프로퍼티치의 설정 방법법에 대해 설명합니다.  </p>
+    <blockquote>
+<hr><b>중요:이 표에 나타내는 프로퍼티의 상당수는, 현재 JSSE 구현으로 사용되고 있습니다만, 그러한 이름이나 형태 (시스템 또는 시큐리티)가 향후도 변경되지 않는다고 하는 보증은 없고, 그것이 장래의 릴리스에 존재한다고 하는 보증도 없습니다. 변경이나 폐지의 가능성이 있는 프로퍼티에는 「*」이 붙어 있습니다. 여기에서는, JSSE 구현으로 사용하는 경우의 참고로서 그것들에 언급하고 있습니다. </b>
+      <hr> </blockquote>
+<center><b>JSSE 의 커스터마이즈</b></center>
+    <br>
+    <table summary="JSSE customization" border="1" cellspacing="1"
+ cellpadding="7">
+      <thead><tr><th width="30%" valign="top"> <b></b>
+<p align="center"><b>커스터마이즈 항목</b></p>
+      </th>
+      <th width="30%" valign="top"> <b></b>
+<p align="center"><b>디폴트 설정</b></p>
+      </th>
+      <th width="40%" valign="top"> <b></b>
+<p align="center"><b>커스터마이즈 방법</b></p>
+      </th>
+       <tbody>
+        <tr>
+<td width="30%" valign="top"><a href="#X509CCust"><b>X509Certificate</b> 구현</a> </td>
+          <td width="30%" valign="top">
+<p>Sun Microsystems 의 X509Certificate 구현</p>
+          </td>
+          <td width="40%" valign="top">
+<p><tt>cert.provider.x509v1</tt>시큐리티 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#HTTPSCust"><b>HTTPS 프로토콜</b>구현</a> </td>
+          <td width="30%" valign="top">
+<p>Sun Microsystems 의 구현</p>
+          </td>
+          <td width="40%" valign="top">
+<p><tt>java.protocol.handler.pkgs</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#ProviderCust"><b>프로바이더</b>구현</a> </td>
+          <td width="30%" valign="top">
+<p>SunJSSE</p>
+          </td>
+          <td width="40%" valign="top">
+<p>시큐리티 프로퍼티 파일의 <tt>security.provider.n= </tt> 행. 설명을 참조 </p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 <tt>SSLSocketFactory</tt> 구현</b></td>
+          <td width="30%" valign="top">
+<p>Sun Microsystems 로부터의 <tt>SSLSocketFactory</tt> 구현 </p>
+          </td>
+          <td width="40%" valign="top">
+<p>** <tt>ssl.SocketFactory.provider</tt> 시큐리티 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 <tt>SSLServerSocketFactory</tt> 구현</b></td>
+          <td width="30%" valign="top">
+<p>Sun Microsystems 로부터의 <tt>SSLServerSocketFactory</tt> 구현 </p>
+          </td>
+          <td width="40%" valign="top">
+<p>** <tt>ssl.ServerSocketFactory.provider</tt> 시큐리티 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 키스토어</b></a> </td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다 </p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.keyStore</tt> 시스템 프로퍼티. <br> 값 <code>NONE</code> 를 지정 가능. 이 설정은, 하드웨어 토큰에 존재하는 경우 등, 키스토어가 파일 베이스가 아닌 경우에 적절 </p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 키스토어파스워드</b></a>  </td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.keyStorePassword</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 키스토어프로바이다</b></a>  </td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.keyStoreProvider</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 키스토어형</b></a>  </td>
+          <td width="30%" valign="top">
+<p><tt>KeyStore.getDefaultType()</tt></p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.keyStoreType</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 트러스트 스토어</b></a> </td>
+          <td width="30%" valign="top">
+<p>존재하는 경우는 <code>jssecacerts</code>. 존재하지 않는 경우는 <code>cacerts</code></p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <code>javax.net.ssl.trustStore</code> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 트러스트 스토어 패스워드</b></a> </td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.trustStorePassword</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 트러스트 스토어 프로바이더</b></a> </td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.trustStoreProvider</tt> 시스템 프로퍼티</p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#CustomizingStores"> <b>디폴트의 트러스트 스토어형</b></a> </td>
+          <td width="30%" valign="top">
+<p><tt>KeyStore.getDefaultType()</tt></p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>javax.net.ssl.trustStoreType</tt> 시스템 프로퍼티. <br> 값 <code>NONE</code> 를 지정 가능. 이 설정은, 하드웨어 토큰에 존재하는 경우 등, 트러스트 스토어가 파일 베이스가 아닌 경우에 적절 </p>
+          </td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#DefaultKTMCust"> <b>디폴트의 키 매니저 팩토리의 알고리즘명</b></a> </td>
+          <td width="30%" valign="top">
+<p><code>SunX509</code></p>
+          </td>
+<td width="40%" valign="top"> <tt>ssl.KeyManagerFactory.algorithm</tt> 시큐리티 프로퍼티</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#DefaultKTMCust"> <b>디폴트의 트러스트 매니저 팩토리의 알고리즘명</b></a> </td>
+          <td width="30%" valign="top">
+<p><code>PKIX</code></p>
+          </td>
+<td width="40%" valign="top"> <tt>ssl.TrustManagerFactory.algorithm</tt> 시큐리티 프로퍼티</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 프록시 호스트</b></td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+<td width="40%" valign="top">* <tt>https.proxyHost</tt> 시스템 프로퍼티</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 프록시 포트</b></td>
+          <td width="30%" valign="top">
+          <p>80</p>
+          </td>
+<td width="40%" valign="top">* <tt>https.proxyPort</tt> 시스템 프로퍼티</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 암호군</b></td>
+          <td width="30%" valign="top">
+<p>소켓 팩토리에 의해 결정</p>
+          </td>
+<td width="40%" valign="top">* <tt>https.cipherSuites</tt> 시스템 프로퍼티. <code>HttpsURLConnection</code> 로 사용할 수 있는 암호군을 지정하는 암호군명 리스트 (콤마 단락 형식)를 포함한다. <a  href="../../../../api/javax/net/ssl/SSLSocket.html#setEnabledCipherSuites(java.lang.String%5B%5D)"><code> SSLSocket setEnabledCipherSuites(String[])</code></a>  메소드를 참조</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 핸드 쉐이크 프로토콜</b></td>
+          <td width="30%" valign="top">
+<p>소켓 팩토리에 의해 결정</p>
+          </td>
+<td width="40%" valign="top">* <tt>https.protocols</tt> 시스템 프로퍼티. <code>HttpsURLConnection</code> 로 사용할 수 있는 프로토콜군을 지정하는 프로토콜군명 리스트 (콤마 단락 형식)를 포함한다. <a  href="../../../../api/javax/net/ssl/SSLSocket.html#setEnabledProtocols(java.lang.String%5B%5D)"><tt> SSLSocket setEnabledProtocols(String[])</tt></a>  메소드를 참조</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>디폴트의 https 포트</b></td>
+          <td width="30%" valign="top">
+          <p>443</p>
+          </td>
+<td width="40%" valign="top">* https URL 내의 <code>port</code> 필드를 커스터마이즈</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><a href="#JCECust"> <b>SunJSSE 프로바이더가 사용하는 JCE 암호화 알고리즘</b></a> </td>
+          <td width="30%" valign="top">
+<p>SunJCE 구현</p>
+          </td>
+<td width="40%" valign="top">대체 JCE 알고리즘 프로바이더에 SunJSSE 프로바이더보다 높은 우선 순위를 부여</td>
+        </tr>
+        <tr>
+<td width="30%" valign="top"><b>큰 SSL/TLS 패킷용의 버퍼의 디폴트에서의 사이즈 설정</b></td>
+          <td width="30%" valign="top">
+<p>디폴트는 존재하지 않는다</p>
+          </td>
+          <td width="40%" valign="top">
+<p>* <tt>jsse.SSLEngine.acceptLargeFragments</tt> 시스템 프로퍼티<br> 이 시스템 프로퍼티을 <code>true</code> 로 설정하면(자), SSLSession 는 디폴트로<a href="#LargePackets">큰 데이터 패킷</a>을 처리하도록(듯이) 버퍼를 사이즈 설정합니다. 이것에 의해, 어플리케이션이 불필요한 큰 SSLEngine 버퍼를 할당하는 경우가 있습니다. 대신에, 어플리케이션은<a href="#OperationStatus">버퍼 오버플로우 조건을 동적으로 체크</a>해, 버퍼를 적당 사이즈 변경할 필요가 있습니다.  </p>.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </blockquote>
+  <blockquote>
+    <blockquote>
+<p>* 이 프로퍼티은 현재, JSSE 구현으로 사용되고 있습니다. 다른 구현에서의 검증 및 사용은 보증되고 있지 않습니다. 다른 구현으로<i></i>검증하는 경우는, JSSE 구현과 같은 방법으로 처리됩니다. 프로퍼티이 향후도 존재하는 것, 또는 시스템형이나 시큐리티형이 장래의 릴리스에서도 변경되지 않는 것의 보증은 되지 않습니다.  </p>
+    </blockquote>
+<p><code>java.lang.system</code> 프로퍼티을 설정해 커스터마이즈 하는 항목과<code>java.security.Security</code> 프로퍼티을 설정해 커스터마이즈 하는 항목이 있습니다. 이하의 마디에서는, 양쪽 모두의 프로퍼티형의 값을 설정하는 방법을 설명합니다.  <a name="SystemProps"></a> </p>
+<h3><code>java.lang.system</code> 프로퍼티의 설정 방법법</h3>
+    <blockquote>
+<p> JSSE 의 기능에는, 시스템 프로퍼티을 설정해 커스터마이즈 하는 것이 있습니다. 시스템 프로퍼티은 정적 또는 동적으로 설정합니다.  </p>
+      <ul>
+<li>시스템 프로퍼티을 정적으로 설정하려면 ,<code>java</code> 커멘드의 <code>-D</code> 옵션을 사용합니다. 예를 들어, 어플리케이션 <code>MyApp</code> 를 실행해 시스템 프로퍼티 <code>javax.net.ssl.trustStore</code> 를 설정해, 「<code>MyCacertsFile</code>」라고 하는<a href="#CustomizingStores">트러스트 스토어</a>를 지정하려면 , 다음과 같이 입력합니다.
+          <blockquote>
+<pre>java -Djavax.net.ssl.trustStore=MyCacertsFile MyApp<br></pre>
+          </blockquote>
+          <p> </p>
+        </li>
+<li>시스템 프로퍼티을 동적으로 설정하려면 , 다음의 코드로 <code>java.lang.System.setProperty</code> 메소드를 호출합니다.
+          <blockquote>
+<pre>System.setProperty(<i>propertyName</i>,<br>    "<i>propertyValue</i>");<br></pre>
+          </blockquote>
+적절한 프로퍼티명과 값을 입력해 주세요. 예를 들어, 시스템 프로퍼티 <code>javax.net.ssl.trustStore</code> 를 설정해 「<code>MyCacertsFile</code>」라고 하는 트러스트 스토어를 지정한다, 상기의 예에 대응한 <code>setProperty</code> 호출에서는, 다음과 같이 입력합니다.
+          <blockquote>
+<pre>System.setProperty("javax.net.ssl.trustStore",<br>    "MyCacertsFile");<br></pre>
+          </blockquote>
+        </li>
+      </ul>
+    </blockquote>
+    <a name="SecurityProps"></a> 
+<h3><code>java.security.Security</code> 프로퍼티의 설정</h3>
+    <blockquote>
+<p> JSSE 의 기능에는, 시큐리티 프로퍼티을 설정해 커스터마이즈 하는 것이 있습니다. 시큐리티 프로퍼티은 정적 또는 동적으로 설정합니다.  </p>
+      <ul>
+<li>시큐리티 프로퍼티을 정적으로 설정하려면 , 시큐리티 프로퍼티 파일에 1 행 추가합니다. 시큐리티 프로퍼티 파일은 다음의 디렉토리에 있습니다.
+          <blockquote>
+<pre>&lt;java-home&gt;/lib/security/java.security<br></pre>
+          </blockquote>
+여기서,<tt>&lt;java-home&gt;</tt> 는, JRE 런타임 소프트웨어의 인스톨 디렉토리입니다. <a href="#javaHome">인스톨 디렉토리 &lt;java-home&gt;</a>  를 참조해 주세요.
+<p> 시큐리티 프로퍼티 파일로 시큐리티 프로퍼티치를 지정하려면 , 다음의 행을 추가합니다.  </p>
+          <blockquote>
+<pre><i>propertyName</i>=<i>propertyValue</i>
+            </pre>
+          </blockquote>
+<p> 예를 들어, 디폴트의 「SunX509」이외의 키 매니저 팩토리의 알고리즘명을 지정한다고 합니다. <code>ssl.KeyManagerFactory.algorithm</code> 의 시큐리티 프로퍼티치를 알고리즘명으로 지정합니다. 예를 들어, 값을 「MyX509」로 설정하려면 , 시큐리티 프로퍼티 파일을 다음과 같이 변경합니다.  </p>
+          <blockquote>
+<pre>ssl.KeyManagerFactory.algorithm=MyX509<br></pre>
+          </blockquote>
+          <p> </p>
+        </li>
+<li>시큐리티 프로퍼티을 동적으로 설정하려면 , 다음의 코드로 <code>java.security.Security.setProperty</code> 메소드를 호출합니다.
+          <blockquote>
+<pre>Security.setProperty(<i>propertyName</i>,<br>    "<i>propertyValue</i>");<br></pre>
+          </blockquote>
+적절한 프로퍼티명과 값을 입력해 주세요. 예를 들어, 키 매니저 팩토리의 알고리즘명을 지정한다, 상기의 예에 대응한 <code>setProperty</code> 호출에서는, 다음과 같이 입력합니다.
+          <blockquote>
+<pre>Security.setProperty("ssl.KeyManagerFactory.algorithm",<br>    "MyX509");<br></pre>
+          </blockquote>
+        </li>
+      </ul>
+    </blockquote>
+    <a name="X509CCust"></a> 
+<h3>X509 증명서 구현의 커스터마이즈</h3>
+    <blockquote>
+<p><code>X509Certificate.getInstance</code> 메소드로 반환된 X509 증명서 구현은, 디폴트에서는 JSSE 구현의 구현입니다.  </p>
+<p> 임의로, 다른 구현을 돌려주도록(듯이) 할 수도 있습니다. 그 경우는, 새로운 구현 클래스의 이름 ( 및 패키지)을,<code>cert.provider.x509v1</code> 라고 하는<a href="#SecurityProps">시큐리티 프로퍼티</a>치로 설정합니다. 예를 들어,<code>MyX509CertificateImpl</code> 라고 하는 클래스가 <code>com.cryptox</code> 패키지에 있는 경우, 시큐리티 프로퍼티 파일에 다음의 행을 추가합니다.  </p>
+      <blockquote>
+<pre>cert.provider.x509v1=com.cryptox.MyX509CertificateImpl<br></pre>
+      </blockquote>
+    </blockquote>
+    <a name="HTTPSCust"></a> 
+<h3>HTTPS 프로토콜의 대체 구현</h3>
+    <blockquote>
+<p> <code>java.net.URL</code> 클래스에 https 로 시작되는 URL 를 사용하면, SSL 를 이용할 수 있는 Web 서버로 안전하게 통신할 수 있습니다. J2SDK 에서는, https 의 URL 구현을 디폴트로 제공합니다.  </p>
+<p>다른 https 프로토콜 구현을 사용하는 경우는,<code>java.protocol.handler.pkgs</code> 의<a  href="#SystemProps">시스템 프로퍼티</a>에 새로운 클래스명을 추가합니다. 그 결과, J2SDK 의 디폴트 클래스보다 전에, 지정한 클래스가 검색되어 로드 됩니다. 상세한 것에 대하여는,<code>java.net.URL</code> 클래스를 참조해 주세요.  </p>
+<p> <b>구버젼의 JSSE 사용자에게로의 주기:</b>구버젼의 JSSE 에서는, JSSE 의 인스톨중에 <code>java.protocol.handler.pkgs</code> 시스템 프로퍼티을 설정할 필요가 있었습니다. 이 스텝은,<code>com.sun.net.ssl.HttpsURLConnection</code> 의 인스턴스를 취득하는 경우 이외는 불필요하게 되었습니다. 상세한 것에 대하여는, 「트러블 슈팅」의<a href="#HttpsURLConnectionEx">「<code>HttpsURLConnection</code> 클래스를 사용하는 코드」</a>를 참조해 주세요.  </p>
+    </blockquote>
+    <a name="ProviderCust"></a> 
+<h3>프로바이더 구현의 커스터마이즈</h3>
+    <blockquote>
+<p> v 1.4 이후의 J2SDK 릴리스에는, 「<code>SunJSSE</code>」라고 하는 JSSE 암호화 서비스 프로바이더 (<i></i>프로바이더)가 표준으로 부속되어 있습니다. 기본적으로, 프로바이더는 특정의 암호화 알고리즘의 엔진 클래스를 구현하는 패키지입니다. JSSE 의 엔진 클래스는 <code>SSLContext</code>,<code>KeyManagerFactory</code>, 및 <code>TrustManagerFactory</code> 입니다. 프로바이더와 엔진 클래스의 자세한 것은, 「<a href="../crypto/CryptoSpec.html">Java<sup><font size="-2">TM</font></sup> 암호화 아키텍쳐(architecture) 레퍼런스 가이드</a>」의 「설계 방침」과「개념」의 섹션을 참조해 주세요.  </p>
+<p> 프로바이더를 사용하려면 , 그 프로바이더를 정적 또는 동적으로 등록할 필요가 있습니다. 「SunJSSE」프로바이더는 등록이 끝난 상태이므로, 새롭게 등록할 필요는 없습니다. 다른 프로바이더를 사용하는 경우는, 후술의 섹션으로 프로바이더의 등록 방법을 확인해 주세요.  </p>
+<h4>암호화 서비스 프로바이더를 정적으로 등록한다</h4>
+<blockquote>프로바이더를 정적으로 등록하려면 ,<a href="#SecurityProps">시큐리티 프로퍼티 파일</a>에 다음의 행을 추가합니다.
+        <blockquote>
+<pre>security.provider. <i>n</i>=<i>providerClassName</i>
+          </pre>
+        </blockquote>
+<p> 이것은 프로바이더를 선언해, 우선 순위 「n」를 지정하는 것입니다. 우선 순위란, 특정 프로바이더의 지정이 없는 경우에, 요구된 서비스에 관해서 검색되는 프로바이더의 순위입니다. 순위는 1 으로부터 시작되어, 1 이 최우선으로 다음에 2, 3 ...(와)과 계속됩니다.  </p>
+<p> <i>providerClassName</i> 는, 프로바이더 클래스의 완전 수식명입니다. 이 이름은, 프로바이더 벤더로부터 가져옵니다.  </p>
+<p> 프로바이더를 등록하려면 , 시큐리티 프로퍼티에 상기의 행을 추가해,<i>providerClassName</i> 를 프로바이더 클래스의 완전한 수식명, n 를 프로바이더에 할당하는 우선 순위로 합니다.  </p>
+<p>표준의 시큐리티 프로바이더, 및 SE 6 플랫폼에 부속되는 SunJSSE 가 자동적으로 등록됩니다. <code>java.security</code> 시큐리티 프로퍼티 파일에 다음의 행이 추가되어 SunJCE 시큐리티 프로바이더의 우선 순위가 5, SunJSSE 프로바이더의 우선 순위가 4 로서 등록됩니다.  </p>
+        <blockquote>
+          <pre>
+	  security.provider. 1=sun.security.pkcs11.SunPKCS11 \
+	      ${java.home}/lib/security/sunpkcs11-solaris.cfg
+	  security.provider. 2=sun.security.provider.Sun
+	  security.provider. 3=sun.security.rsa.SunRsaSign
+	  security.provider. 4=com.sun.net.ssl.internal.ssl.Provider
+	  security.provider. 5=com.sun.crypto.provider.SunJCE
+	  security.provider. 6=sun.security.jgss.SunProvider
+	  security.provider. 7=com.sun.security.sasl.Provider</pre>
+        </blockquote>
+<p> 다른 JSSE 프로바이더를 사용하는 경우는, 행을 추가해 프로바이더를 등록해, 우선 순위를 설정합니다.  </p>
+<p> 복수의 JSSE 프로바이더를 동시에 등록할 수 있습니다. 프로바이더에는, 다른 엔진 클래스의, 다른 알고리즘이 다른 구현이 포함되는 경우가 있어, 같은 형태의 알고리즘 및 엔진 클래스의 일부 또는 전부를 지원하는 경우도 있습니다. 특정의 알고리즘의 특정의 엔진 클래스 구현을 검색할 때, 그 조건에 해당하는 특정의 프로바이더가 지정되어 있지 않은 경우, 프로바이더는 우선 순위 첨부로 검색되어 지정한 알고리즘을 구현하는 최초의 프로바이더의 구현이 사용됩니다.  </p>
+      </blockquote>
+<h4>암호화 서비스 프로바이더를 동적으로 등록한다</h4>
+      <blockquote>
+<p> 프로바이더를 정적으로 등록하는 대신에, 프로그램 개시시에 <code>Security.addProvider</code> 메소드를 호출해, 실행시에 동적으로 추가할 수가 있습니다. 예를 들어, 프로바이더의 클래스명이 <code>MyProvider</code> 로,<code>com.ABC</code> 패키지에 <code>MyProvider</code> 클래스가 있는 경우, 다음과 같은 메소드를 호출해 프로바이더를 동적으로 추가합니다.  </p>
+        <blockquote>
+<pre>Security.addProvider(<br>  new com.ABC.MyProvider());<br></pre>
+        </blockquote>
+<p> <code>Security.addProvider</code> 메소드는, 다음에 이용할 수 있는 우선 순위로, 지정한 프로바이더를 추가합니다.  </p>
+<p> 이 등록은 항구적은 아니고, 충분한 액세스권이 있는 프로그램으로 밖에 실행할 수 없습니다.  </p>
+      </blockquote>
+    </blockquote>
+    <a name="CustomizingStores"></a> 
+<h3>디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 스토어 패스워드의 커스터마이즈</h3>
+    <blockquote>
+<p> <code>SSLSocketFactory.getDefault</code> 나 <code>SSLServerSocketFactory.getDefault</code> 를 호출하는 것으로 디폴트의 <code>SSLSocketFactory</code> 나 <code>SSLServerSocketFactory</code> 가 작성되어 이 디폴트의 <code>SSLSocketFactory</code> (또는 <code>SSLServerSocketFactory</code>)가 JSSE 레퍼런스 구현에 유래하는 것이면, 디폴트의 <code>SSLContext</code> 는 반드시 소켓 팩토리에 관련지을 수 있습니다. 디폴트의 소켓 팩토리는, JSSE 구현에 유래합니다.  </p>
+<p> 디폴트의 <code>SSLContext</code> 는, 디폴트의 <code>KeyManager</code> 및 <code>TrustManager</code> 로 초기화됩니다. <code>javax.net.ssl.keyStore</code> <a href="#SystemProps">시스템 프로퍼티 </a>및 적절한 <code>javax.net.ssl.keyStorePassword</code> <a href="#SystemProps">시스템 프로퍼티</a>으로 키스토어를 지정하면(자), 디폴트의 <code>SSLContext</code> 로 작성한 <code>KeyManager</code> 는, 지정한 키스토어를 관리하는 <code>KeyManager</code> 구현이 됩니다. 실제로는 「<a href="#DefaultKTMCust">디폴트열쇠와 트러스트 매니저</a>」로 설명했던 대로 구현됩니다. 시스템 프로퍼티이 지정되지 않는 경우는,<code>KeyManager</code> 가 관리하는 키스토어는 새로운 빈 상태(empty)의 키스토어입니다.  </p>
+<p> 일반적으로, 핸드 쉐이크로 서버로서 동작하는 피어에는, 클라이언트에의 인증의 자격을 취득하기 위해(때문에), KeyManager 의 키스토어가 필요합니다. 다만, 익명의 암호군을 선택하는 경우, 서버의 <code>KeyManager</code> 키스토어는 필요 없습니다. 또, 서버가 클라이언트 인증을 요구하지 않는 한, 클라이언트로서 동작하는 피어에는,<code>KeyManager</code> 키스토어는 필요 없습니다. 따라서, 이러한 상황에서는,<code>javax.net.ssl.keyStore</code> 의 시스템 프로퍼티치가 정의되어 있지 않은 경우도 있습니다.  </p>
+<p> 같이 트러스트 스토어를 <code>javax.net.ssl.trustStore</code> <a href="#SystemProps">시스템 프로퍼티</a>으로 지정하면(자), 디폴트의 <code>SSLContext</code> 으로 작성한 <code>TrustManager</code> 가, 지정한 트러스트 스토어를 관리하는 <code>TrustManager</code> 구현이 됩니다. 이 경우, 프로퍼티이 존재해도 지정하는 파일이 존재하지 않으면, 트러스트 스토어는 사용되지 않습니다. <code>javax.net.ssl.trustStore</code> 프로퍼티이 존재하지 않는 경우는, 디폴트의 트러스트 스토어를 검색합니다. <code>&lt;java-home&gt;/lib/security/jssecacerts</code> 라고 하는 트러스트 스토어가 발견되었을 경우, 이것을 사용합니다. 이 트러스트 스토어가 발견되지 않는 경우,<code>&lt;java-home&gt;/lib/security/jssecacerts</code> 라고 하는 트러스트 스토어를 검색해, 발견되면 이것을 사용합니다. <code>&lt;java-home&gt;</code> 에 대해서는 「<a href="#javaHome">인스톨 디렉토리 &lt;java-home&gt;</a> 」를 참조해 주세요. 트러스트 스토어가 발견되지 않는 경우,<code>TrustManager<code> 는 새로운 빈 상태(empty)의 트러스트 스토어를 관리합니다.  </p>
+      <blockquote>
+<hr><b>중요 :JDK 에는, 소수의 신뢰된 루트 증명서를 포함한 <code>&lt;java-home&gt;/lib/security/cacerts</code> 파일이 부속되어 있습니다. <a href="../../../tools/index.html#security">「keytool」</a>  에 기재했던 대로, 이 파일을 트러스트 스토어로서 사용하는 경우는, 이 파일에 포함되는 증명서의 관리 (추가 또는 삭제)를 실시할 필요가 있습니다.  </b>
+<p><b>접속처의 서버의 증명서 구성에 따라서는, 루트 증명서를 새롭게 추가해야 하는 경우도 있습니다. 적절한 벤더로부터 필요한 루트 증명서를 입수해 주세요.  </b></p>
+        <hr> </blockquote>
+<p> 시스템 프로퍼티 <code>javax.net.ssl.keyStoreType</code> 와 <code>javax.net.ssl.keyStorePassword</code> 의 양쪽 모두 또는 어느 쪽인지 한편이 지정되고 있는 경우, 각각이 디폴트의 <code>KeyManager</code> 키스토어형과 패스워드로서 다루어집니다. 형태가 지정되어 있지 않은 경우, 디폴트의 형태는 <code>KeyStore.getDefaultType()</code> 가 돌려주는 <code>keystore.type</code> 시큐리티 프로퍼티의 값입니다.  또, 그러한 시큐리티 프로퍼티이 지정되어 있지 않은 경우는 「jks」가 됩니다. 키스토어의 패스워드가 지정되어 있지 않은 경우는 "" 으로 간주해집니다.  </p>
+<p> 같이 시스템 프로퍼티 <code>javax.net.ssl.trustStoreType</code> 와 <code>javax.net.ssl.trustStorePassword</code> 의 양쪽 모두 또는 어느 쪽인지 한편이 지정되고 있는 경우, 각각이 디폴트의 트러스트 스토어형과 패스워드로서 다루어집니다. 형태가 지정되어 있지 않은 경우,<code>KeyStore.getDefaultType()</code> 에 의해 디폴트형이 돌려주어집니다. 트러스트 스토어의 패스워드가 지정되어 있지 않은 경우는 "" 으로 간주해집니다.  </p>
+<p> <b>중요:</b>이 마디에서는, 현재의 JSSE 레퍼런스 구현의 동작을 설명합니다. 이 마디로 설명하는 시스템 프로퍼티의 이름과 형태 (시스템인가 시큐리티인가)가 향후도 사용된다고 하는 보증은 없습니다. 또, 향후의 릴리스로 존재한다고 하는 보증도 있어 선. 또, 다른 JSSE 구현에서의 검증이나 사용도 보증되고 있지 않습니다. 구현으로 검증되었을 경우, 개개로 설명한 JSSE 레퍼런스 구현과 같은 방법으로 처리해 주세요.  </p>
+    </blockquote>
+    <a name="DefaultKTMCust"></a> 
+<h3>디폴트의 키 매니저 및 트러스트 매니저의 커스터마이즈</h3>
+    <blockquote>
+<p> 「<a href="#CustomizingStores">디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 패스워드의 커스터마이즈</a>」로 설명한 것처럼, 디폴트의 <code>SSLSocketFactory</code> 나 <code>SSLServerSocketFactory</code> 가 작성되어 이 디폴트의 <code>SSLSocketFactory</code> (또는 <code>SSLServerSocketFactory</code>)가 JSSE 레퍼런스 구현에 유래하는 경우는, 항상 디폴트의 <code>SSLContext</code> 는 소켓 팩토리에 관련지을 수 있습니다.  </p>
+<p> 이 디폴트의 <code>SSLContext</code> 는, 디폴트의 <code>KeyManager</code> 및 <code>TrustManager</code> 로 초기화됩니다. 디폴트의 <code>SSLContext</code> 에 제공된 <code>KeyManager</code> 과 <code>TrustManager</code> 의 양쪽 모두 또는 어느 쪽인지 한편은, 지정한 키스토어 또는 트러스트 스토어를 관리하는 <code>KeyManager</code> 또는 <code>TrustManager</code> 의 구현이 됩니다. 이것에 대해서는, 후의 마디로 설명합니다.  </p>
+<p> 선택되는 <code>KeyManager</code> 구현은, 우선 </p>
+      <blockquote>
+<pre>ssl.KeyManagerFactory.algorithm<br></pre>
+      </blockquote>
+<a href="#SecurityProps">시큐리티 프로퍼티</a>을 확인해 결정됩니다. 그러한 프로퍼티치가 지정되고 있으면(자), 지정한 알고리즘의 <code>KeyManagerFactory</code> 구현이 검색됩니다. 구현을 제공하는 최초의 프로바이더의 구현이 사용됩니다. 구현의 <code>getKeyManagers</code> 메소드가 불려 가 디폴트의 <code>SSLContext</code> 에 제공하는 <code>KeyManager</code> 가 결정됩니다. 기술적으로는,<code>getKeyManagers</code> 는 <code>KeyManager</code> 의 배열을 돌려줍니다. 이것은 열쇠 데이터의 형태마다의 <code>KeyManager</code> 입니다. 그러한 시큐리티 프로퍼티치가 지정되어 있지 않은 경우, 「SunX509」의 디폴트 값를 사용해 검색합니다. 주:「SunX509」알고리즘의 <code>KeyManagerFactory</code> 구현은 <code>SunJSSE</code> 프로바이더가 제공합니다. 프로바이더가 지정하는 <code>KeyManager</code> 는 <code>javax.net.ssl.X509KeyManager</code> 구현입니다.
+<p> 같이 선택되는 <code>TrustManager</code> 구현은, 우선 </p>
+      <blockquote>
+<pre>ssl.TrustManagerFactory.algorithm<br></pre>
+      </blockquote>
+시큐리티 프로퍼티을 확인해 결정됩니다. 그러한 프로퍼티치가 지정되고 있으면(자), 지정한 알고리즘의 <code>TrustManagerFactory</code> 구현이 검색됩니다. 구현을 제공하는 최초의 프로바이더의 구현이 사용됩니다. 구현의 <code>getTrustManagers</code> 메소드가 불려 가 디폴트의 <code>SSLContext</code> 에 제공하는 <code>TrustManager</code> 가 결정됩니다. 기술적으로는,<code>getTrustManagers</code> 는 <code>TrustManager</code> 의 배열을 돌려줍니다. 이것은 열쇠 데이터의 형태마다의 <code>TrustManager</code> 입니다. 그러한 시큐리티 프로퍼티치가 지정되어 있지 않은 경우, 「PKIX」의 디폴트 값를 사용해 검색합니다. 주:「PKIX」알고리즘의 <code>TrustManagerFactory</code> 구현은 <code>SunJSSE</code> 프로바이더가 제공합니다. 프로바이더가 지정하는 <code>TrustManager</code> 는 <code>javax.net.ssl.X509TrustManager</code> 구현입니다.
+<p> <b>중요:</b>이 마디에서는, 현재의 JSSE 레퍼런스 구현의 동작을 설명합니다. 이 마디로 설명하는 시스템 프로퍼티의 이름과 형태 (시스템인가 시큐리티인가)가 향후도 사용된다고 하는 보증은 없습니다. 또, 향후의 릴리스로 존재한다고 하는 보증도 있어 선. 또, 다른 JSSE 구현에서의 검증이나 사용도 보증되고 있지 않습니다. 구현으로 검증되었을 경우, 개개로 설명한 JSSE 레퍼런스 구현과 같은 방법으로 처리해 주세요.  </p>
+    </blockquote>
+    <a name="JCECust"></a> 
+<h3>암호화 알고리즘 프로바이더의 커스터마이즈</h3>
+    <blockquote>
+<p>Java SE 5 의 릴리스로부터, SunJSSE 프로바이더는, 암호화의 필요 모든 것을 채우기 위해서(때문에) SunJCE 구현을 사용하고 있습니다. Sun 프로바이더는 일반적으로의 위치에 두는 것이 추천 되고 있습니다만, SunJCE 프로바이더보다<b>전</b>에 등록하는 것으로써, 다른 JCA/JCE 프로바이더로부터의 구현을 사용할 수도 있습니다.
+
+프로바이더의 구성에는,<a href="../crypto/CryptoSpec.html#ProviderImplReq">표준 JCA 기구</a>를 사용할 수 있습니다. 우선, 이하의 시큐리티 프로퍼티 파일을 이용해 정적으로 실시하는 방법이 있습니다.  </p>
+      <blockquote>
+<pre>&lt;java-home&gt;/lib/security/java.security<br></pre>
+      </blockquote>
+다음에,<code>java.security.Security</code> 클래스의 <code>addProvider</code> 메소드 또는 <code>insertProviderAt</code> 메소드를 이용해 동적으로 실시하는 방법이 있습니다. <code>&lt;java-home&gt;</code> 의 상세한 것에 대하여는,<a href="#javaHome">「인스톨 디렉토리 &lt;java-home&gt;」</a>를 참조해 주세요.
+
+<h3>프로바이더의 구현을 실시하는 사용자에게로의 주기</h3>
+      <blockquote>
+<p>SunJSSE 가 <code>Cipher.getInstance()</code> 를 호출할 때, 사용되는 변환 캐릭터 라인은 "RSA/ECB/PKCS1Padding","RC4","DES/CBC/NoPadding","DESede/CBC/NoPadding" 가 됩니다. Cipher 클래스와 변환 캐릭터 라인의 상세한 것에 대하여는,<a  href="../crypto/CryptoSpec.html">「JCE 레퍼런스 가이드」</a>를 참조해 주세요.  </p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+
+<a name=PKCS11></a> <h1>JCE 및 하드웨어 고속화/스마트 카드의 지원</h1>
+
+<blockquote>
+<a name="UseOfJCE"></a> 
+<h3>JCE 의 사용법</h3>
+
+<blockquote>
+Java 암호화 확장 기능 (JCE)
+
+(은)는, 암호화, 열쇠 생성과 열쇠 협정, 및 메세지 인증 코드 (MAC) 알고리즘용의 시스템 및 구현이 되는 패키지 세트입니다. Java SE 5 보다 전의 SunJSSE 프로바이더는, 구성되어 있으면 JCE 프로바이더를 이용할 수가 있었습니다만, 여전히 JCE 를 사용하지 않는 내부 암호화 코드가 포함되어 있었습니다. Java SE 6 의 SunJSSE 프로바이더는, 모든 암호화 조작을 위해서(때문에) JCE 를 배타적으로 사용하므로, JCE 에 새롭게 추가된 <a href="http://www.rsasecurity.com/rsalabs/pkcs/pkcs-11/">PKCS#11</a>  의 지원를 포함해 JCE 의 특장이나 확장 기능의 이점을 자동적으로 활용할 수가 있습니다. 이것에 의해 Java SE 6 의 SunJSSE 프로바이더는, 하드웨어 암호화 가속기를 사용해 퍼포먼스를 현저하게 향상시켜, 키스토어로서 스마트 카드를 사용해, 열쇠 및 신뢰성 관리의 유연성을 높일 수가 있습니다.
+</blockquote>
+
+<a name="HardwareAccelerators"></a> 
+<h3>하드웨어 가속기</h3>
+<blockquote>
+기반이 되는 가속기 하드웨어를 사용하도록(듯이) SUN PKCS#11 프로바이더가 구성되어 그 PKCS#11 프로바이더를 사용하도록(듯이) JCE 가 구성되어 있으면, 하드웨어 암호화 가속기는 자동적으로 사용됩니다. PKCS#11 프로바이더는, 프로바이더 리스트에 있는 다른 JCE/JCA 프로바이더보다 전에 구성할 필요가 있습니다. Sun PCCS#11 프로바이더의 구성 방법에 대해서는,<a href="../p11guide.html">「PKCS#11 레퍼런스 가이드」</a>를 참조해 주세요.
+<p>
+</blockquote>
+
+<a name="ConfigSmartcard"></a> 
+<h3>스마트 카드를 키스토어 및 트러스트 스토어로서 사용하기 위한 JSSE 의 구성</h3>
+<blockquote>
+JCE 에서의 PKCS#11 의 지원에 의해, 키스토어로서 스마트 카드에 액세스 할 수도 있습니다. JSSE 에 의해 사용되는 키스토어의 형태와 장소의 구성 방법에 대해서는,<a href="#Customization">「커스터마이즈」</a>를 참조해 주세요. 스마트 카드를 키스토어 또는 트러스트 스토어로서 사용하려면 ,<tt>javax.net.ssl.keyStoreType</tt> 및 <tt>javax.net.ssl.trustStoreType</tt> 시스템 프로퍼티을 각각 「pkcs11」로 설정해,<tt>javax.net.ssl.keyStore</tt> 및 <tt>javax.net.ssl.trustStore</tt> 시스템 프로퍼티을 각각 「<tt>NONE</tt>」로 설정합니다. 특정의 프로바이더를 사용하도록(듯이) 지정하려면 ,<tt>javax.net.ssl.keyStoreProvider</tt> 및 <tt>javax.net.ssl.trustStoreProvider</tt> 시스템 프로퍼티을 사용합니다 (예:「SunPKCS11-joe」).
+
+이러한 프로퍼티을 사용하는 것으로써, 이전에는 파일 베이스의 키스토어에 액세스 하기 위해서 이러한 프로퍼티에 의존하고 있던 어플리케이션을 구성해, 어플리케이션으로 변경을 더하지 않고 스마트 카드의 키스토어를 사용할 수 있습니다.
+<p>
+어플리케이션에 따라서는, 키스토어를 프로그램으로 사용할 필요가 있습니다. 이러한 어플리케이션에서는, 계속 기존의 API 를 사용해 <tt>Keystore</tt> 를 인스턴스화해, 키 매니저와 트러스트 매니저에게 건네줄 수가 있습니다. <tt>Keystore</tt> 인스턴스가 스마트 카드에 의한 PKCS#11 키스토어를 참조하는 경우는, JSSE 어플리케이션이 스마트 카드 키에 액세스 하게 됩니다.
+</blockquote>
+
+
+<a name="MultiDynamicKeystores"></a> 
+<h3>복수의 동적 키스토어</h3>
+<blockquote>
+<p>
+스마트 카드 및 다른 떼어내 가능 토큰에는,<tt>X509KeyManager</tt> 의 경우에 요건이 추가됩니다. Java 어플리케이션이 존속하려면 , 다른 스마트 카드가 스마트 카드 리더에게 삽입되어 그러한 스마트 카드는 다른 패스워드를 사용해 보호됩니다. J2SE 5 이전의 API 및 SunX509 키 매니저는, 이러한 요건을 충분히 채우고 있지 않았습니다.
+
+그 때문에, Java SE 5 에는 새로운 API 가 짜넣어지고 있어 새로운 <tt>X509KeyManager</tt> 구현이 SunJSSE 프로바이더에 추가되었습니다.
+
+<p>
+<a href="../../../../api/java/security/KeyStore.Builder.html"><tt>java.security.KeyStore.Builder</tt></a>  클래스는, KeyStore 객체의 구조와 초기화 데이터를 추상화 합니다. 패스워드의 prompt에 CallbackHandlers 를 사용할 수 있어 서브 클래스화해 어플리케이션에 있어 바람직한 추가 기능을 지원할 수 있습니다. 예를 들어, 빌더를 구현해, 개개의 KeyStore 엔트리를 다른 패스워드로 보호하는 것이 가능합니다. 그 후,<a href="../../../../api/javax/net/ssl/KeyStoreBuilderParameters.html"><tt>javax.net.ssl.KeyStoreBuilderParameters</tt></a>  클래스를 사용해, 이러한 빌더 객체를 1 개 이상 사용해 KeyManagerFactory 를 초기화할 수가 있습니다.
+
+<p>
+
+「NewSunX509」라고 불리는, SunJSSE 프로바이더의 새로운 <tt>X509KeyManager</tt> 구현은, 이러한 파라미터를 지원하고 있습니다. 복수의 증명서가 사용 가능한 경우는, 열쇠의 사용법이 적절한 증명서를 선택해, 기한 마감의 증명서보다 유효한 증명서를 우선시킵니다.
+
+<p>
+스마트 카드를 사용하는 PKCS#11 파이르베이스키스토어와 PCKS#12 파이르베이스키스토어의 양쪽 모두를 사용하도록(듯이) JSSE 에 지시하는 방법의 예를 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+import javax.net.ssl. *;
+import java.security.KeyStore. *;
+...
+
+// Specify keystore builder parameters for PKCS#11 keystores
+Builder scBuilder = Builder.newInstance("PKCS11", null,
+    new CallbackHandlerProtection(myGuiCallbackHandler));
+
+// Specify keystore builder parameters for a specific PKCS#12 keystore
+Builder fsBuilder = Builder.newInstance("PKCS12", null,
+    new File(pkcsFileName), new PasswordProtection(pkcsKsPassword));
+
+// Wrap them as key manager parameters
+ManagerFactoryParameters ksParams =
+    new KeyStoreBuilderParameters(
+	Arrays.asList(new Builder[] { scBuilder, fsBuilder }));
+
+// Create KeyManagerFactory
+KeyManagerFactory factory = KeyManagerFactory.getInstance("NewSunX509");
+
+// Pass builder parameters to factory
+factory.init(ksParams);
+
+// Use factory
+SSLContext ctx = SSLContext.getInstance("TLS");
+ctx.init(factory.getKeyManagers(), null, null);
+</pre>
+</blockquote>
+
+</blockquote>
+</blockquote>
+
+<a name=KRB></a> <h1>Kerberos encode 방식</h1>
+<blockquote>
+
+Java SE 6 의 SunJSSE 프로바이더는,<a href="http://www.ietf.org/rfc/rfc2712.txt">RFC 2712</a>  로 규정되는 Kerberos encode 방식을 지원합니다. 이하의 encode 방식이 지원되고 있습니다만, 디폴트에서는 유효하게 되어 있지 않습니다.
+
+<blockquote><pre>
+TLS_KRB5_WITH_RC4_128_SHA
+TLS_KRB5_WITH_RC4_128_MD5
+TLS_KRB5_WITH_3DES_EDE_CBC_SHA
+TLS_KRB5_WITH_3DES_EDE_CBC_MD5
+TLS_KRB5_WITH_DES_CBC_SHA
+TLS_KRB5_WITH_DES_CBC_MD5
+TLS_KRB5_EXPORT_WITH_RC4_40_SHA
+TLS_KRB5_EXPORT_WITH_RC4_40_MD5
+TLS_KRB5_EXPORT_WITH_DES_CBC_40_SHA
+TLS_KRB5_EXPORT_WITH_DES_CBC_40_MD5
+</pre></blockquote>
+
+이러한 encode 방식을 사용 가능하게 하려면 , 명시적으로 지정할 필요. 상세한 것에 대하여는,<a href="../../../../api/javax/net/ssl/SSLEngine.html#setEnabledCipherSuites(java.lang.String%5B%5D)"><tt>SSLEngine.setEnabledCipherSuites()</tt></a>  및 <a href="../../../../api/javax/net/ssl/SSLSocket.html#setEnabledCipherSuites(java.lang.String%5B%5D)"><tt>SSLSocket.setEnabledCipherSuites()</tt></a>  를 참조해 주세요. 그 외의 모든 SSL/TLS encode 방식 같이, encode 방식이 피어의 옆에서 지원되어 있지 않은 경우는, 암호의 협상시에 선택되지 않습니다. 또, 어플리케이션 또는 서버가 필요한 Kerberos 자격을 취득할 수 없는 경우는, Kerberos encode 방식도 선택되지 않습니다.
+
+<p>
+<tt>TLS_KRB5_WITH_DES_CBC_SHA</tt> encode 방식만을 사용하는 TLS 클라이언트의 예를 나타냅니다.
+<blockquote><pre>
+// Create socket
+SSLSocketFactory sslsf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+SSLSocket sslSocket = (SSLSocket) sslsf.createSocket(tlsServer, serverPort);
+
+// Enable only one cipher suite
+String enabledSuites[] = { "TLS_KRB5_WITH_DES_CBC_SHA" };
+sslSocket.setEnabledCipherSuites(enabledSuites);
+</pre></blockquote>
+
+<a name="KRBRequire"></a> 
+<h2>Kerberos 요건</h2>
+<blockquote>
+JSSE 로 Kerberos encode 방식을 사용하기 전에, 배치되고 있는 환경에서 Kerberos 인프라스트럭쳐(infrastructure)를 설정해 둘 필요가 있습니다. 특히, TLS 클라이언트와 서버의 양쪽 모두에, Kerberos Key Distribution Center (KDC)에 의한 어카운트가 설정되어 있고 일이 필요합니다. 실행시에 Kerberos encode 방식의 1 개 이상이 유효화 되면(자), TLS 클라이언트와 서버는, 각각의 어카운트에 관련지을 수 있고 있는 자신의 Kerberos 자격을 KDC 로부터 가져옵니다. 예를 들어, Keberos 영역 <tt>IMC.ORG</tt> 의 머신 <tt>mach1.imc.org</tt> 로 동작하는 TLS 서버는,<tt>host/mach1.imc.org@IMC.ORG</tt> 라는 이름의 어카운트를 가져,<tt>IMC.ORG</tt> 용의 KDC 를 사용하도록(듯이) 구성되어 있을 필요가 있습니다. Java SE 에서의 Kerberos 의 사용법의 자세한 것은,<a href="../jgss/tutorials/KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+<p>
+<p> 어플리케이션은,<a href="../jaas/JAASRefGuide.html">Java 인증·승인 서비스 (JAAS)</a>  와 Kerberos 로그인 모듈을 사용해, 자신의 Kerberos 자격을 취득할 수 있습니다. Java SE Development Kit 6 은,<a href="../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Kerberos 로그인 모듈</a>에 부속되어 있습니다. JSSE 에서의 Kerberos encode 방식은,<a href="../jgss/tutorials/index.html">Java Generic Security Services (Java GSS)</a>  의 사용법과 같게, JAAS 프로그램이 있는 경우와 없는 경우에 사용할 수 있습니다.
+<p>
+<p>JAAS 프로그램없이 Kerberos encode 방식을 사용하려면 , JAAS 구성 입력용에 「<tt>com.sun.net.ssl.server</tt>」또는 「<tt>other</tt>, 및 TLS 클라이언트용으로 「<tt>com.sun.net.ssl.client</tt>」또는 「other」라고 하는 인덱스명을 사용해, 시스템 프로퍼티 <tt>javax.security.auth.useSubjectCredsOnly</tt> 를 false 로 설정할 필요가 있습니다. 예를 들어, JAAS 프로그램을 사용하지 않는 TLS 서버에는 이하의 JAAS 구성 파일이 있습니다.
+<blockquote><pre>
+com.sun.net.ssl.server {
+  com.sun.security.auth.module.Krb5LoginModule required
+        principal="host/mach1.imc.org@IMC.ORG"
+        useKeyTab=true
+        keyTab=mach1.keytab
+	storeKey=true;
+};
+</pre></blockquote>
+JAAS 프로그래밍을 실시하지 않고 Java GSS 및 Kerberos 를 사용하는 방법의 예는,<a href="../jgss/tutorials/BasicClientServer.html">「Java GSS 튜토리얼」</a>로 설명되고 있습니다. Java GSS 호출을 JSSE 호출에 옮겨놓는 것으로, JSSE 의 사용예에 적응할 수 있습니다.
+
+<p>
+<p>JAAS 프로그램에 의해 Kerberos encode 방식을 사용하려면 , 임의의 인덱스명을 사용할 수 있습니다.  이것은, 어플리케이션에, 인덱스명을 사용해 JAAS <tt>LoginContext</tt> 를 작성해, JSSE 호출을 <tt>Subject.doAs()</tt> 또는 <tt>Subject.doAsPrivileged()</tt> 호출의 내부에 랩 하는 역할이 있기 때문입니다. Java GSS 및 Kerberos 로 JAAS 를 사용하는 방법의 예는,<a href="../jgss/tutorials/BasicClientServer.html">「Java GSS 튜토리얼」</a>로 설명되고 있습니다. Java GSS 호출을 JSSE 호출에 옮겨놓는 것으로, JSSE 의 사용예에 적응할 수 있습니다.
+<P>
+JSSE 어플리케이션으로 Kerberos 를 사용하는 경우의 사용법 또는 구성 방법에 관한 문제에 대해서는, Java GSS 튜토리얼의 <a href="../jgss/tutorials/Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+</blockquote>
+
+<a name="KRBPeerID"></a> 
+<h2>피어의 아이덴티티 정보</h2>
+<blockquote>
+
+SSL 접속의 피어의 아이덴티티를 판별하려면 ,<tt>javax.net.ssl.SSLSession</tt>,<tt>javax.net.ssl.HttpsURLConnection</tt>, 및 <tt>javax.net.HandshakeCompletedEvent</tt> 클래스에서,<tt>getPeerPrincipal()</tt> 메소드를 사용합니다. 같이(로카르엔티티를 식별하기 위해서) 피어에 송신된 아이덴티티를 가져오려면 , 이러한 클래스에서 <tt>getLocalPrincipal()</tt> 를 사용합니다. X509 베이스의 암호화 방식의 경우, 이러한 메소드는 <tt>javax.security.auth.x500.X500Principal</tt> 의 인스턴스를 돌려줍니다. Kerberos 암호화 방식의 경우, 이러한 메소드는 <tt>javax.security.auth.kerberos.KerberosPrincipal</tt> 의 인스턴스를 돌려줍니다.
+
+<p>
+Java SE 5 보다 전은, JSSE 어플리케이션은,<tt>getPeerCertificates()</tt> 및 같은 메소드를 <tt>javax.net.ssl.SSLSession</tt>,<tt>javax.net.ssl.HttpsURLConnection</tt>, 및 <tt>javax.net.HandshakeCompletedEvent</tt> 로 사용해, 피어에 관한 정보를 취득했습니다. 피어에 증명서가 없는 경우,<tt>SSLPeerUnverifiedException</tt> 가 throw 됩니다. 이러한 메소드의 동작은, Java SE 6 에서도 변하지 않습니다. 즉, 접속이 Kerberos 암호화 방식을 사용해 보호되었을 경우, 이러한 메소드는 <tt>SSLPeerUnverifiedException</tt> 를 throw 합니다.
+<p>
+어플리케이션이 피어의 아이덴티티 또는 피어에 송신된 아이덴티티만을 판별할 필요가 있는 경우는, 각각 <tt>getPeerPrincipal()</tt> 및 <tt>getLocalPrincipal()</tt> 메소드를 사용할 필요가 있습니다. <tt>getPeerCertificates()</tt> 및 <tt>getLocalCertificates()</tt> 는, 그러한 증명서의 내용을 조사할 필요가 있는 경우에게만 사용합니다. 또, 인증된 피어에 증명서가 없는 경우의 처리의 준비가 필요합니다.
+</blockquote>
+
+<a name="KRBSM"></a> 
+<h2>시큐리티 매니저</h2>
+
+<blockquote>
+시큐리티 매니저가 유효한 경우, 피어와의 통신에 필요한 <tt>SocketPermission</tt> 이외에, Kerberos 암호화 방식을 사용하는 TLS 클라이언트 어플리케이션에는 다음의 액세스권도 필요합니다.
+<blockquote><pre>
+javax.security.auth.kerberos.ServicePermission(<em>serverPrincipal</em>, "initiate");
+</pre></blockquote>
+<em>serverPrincipal</em> 은, TLS 클라이언트가 통신하는 TLS 서버의 Kerberos 주체명입니다. <tt>host/mach1.imc.org@IMC.ORG</tt> 등입니다. TLS 서버 어플리케이션에는, 다음의 액세스권이 필요합니다.
+<blockquote><pre>
+javax.security.auth.kerberos.ServicePermission(<em>serverPrincipal</em>, "accept");
+</pre></blockquote>
+<em>serverPrincipal</em> 는, TLS 서버의 Kerberos 주체명입니다. <tt>host/mach1.imc.org@IMC.ORG</tt> 등입니다. 서버 또는 클라이언트가 KDC 에 컨택트 할 필요가 있는 경우 (그 자격이 로컬에 캐쉬되어 있지 않은 경우 등), 다음의 액세스권도 필요합니다.
+<blockquote><pre>
+javax.security.auth.kerberos.ServicePermission(<em>tgtPrincipal</em>, "initiate");
+</pre></blockquote>
+<em>tgtPrincipal</em> 는 KDC 의 주체명입니다. <tt>krbtgt/IMC.ORG@IMC.ORG</tt> 등입니다.
+
+  </blockquote>
+</blockquote>
+
+  <a name="KeystoreFormats"></a> 
+<h1>그 외의 키스토어 형식 (PKCS12)</h1>
+  <blockquote>
+
+<a href="http://www.rsasecurity.com/rsalabs/pkcs/pkcs-12/">PKCS#12 (Personal Information Exchange Syntax Standard)</a>  에서는, 이식 가능한 보존 형식, 및 사용자의 비공개키, 증명서, 그 외의 비밀 및 다른 항목의 전송에 대해 규정되고 있습니다. <code>SunJSSE</code> 프로바이더는, pkcs12 파일의 읽고 쓰기를 위한 PKCS12 <code>java.security.KeyStore</code> 형식의 구현을 제공합니다. 이 형식은, Netscape/Mozilla, Microsoft 의 Internet Explorer, OpenSSL 등 다른 툴 킷이나 어플리케이션에서도 지원되어 열쇠와 증명서를 임포트 및 export 합니다. 예를 들어, 이러한 구현은, 클라이언트의 증명서와 열쇠를 「. p12」파일명 확장자(extension)를 사용해 파일에 export 할 수 있습니다.  <p></p>
+<p><code>SunJSSE</code> 프로바이더에서는, 키스토어형 「pkcs12」(또는 PKCS12, 대문자와 소문자는 구별되지 않습니다)을 사용해, KeyStore API 를 개입시켜 PKCS12 에 액세스 할 수 있습니다. 한층 더 <b>keytool</b> 커멘드와<code>pkcs12</code> 로 설정된 <code>-storetype</code> 옵션을 사용해, 인스톨 된 열쇠 및 관련하는 증명서를 표시할 수 있습니다. <b>keytool</b> 에 대해서는 「<a  href="../../../tools/index.html#security">시큐리티 툴</a>」을 참조해 주세요.  </p>
+</blockquote>
+<a name="Troubleshooting"></a> 
+<h1>트러블 슈팅</h1>
+<blockquote> <a name="InstallProbs"></a> 
+<h2>구성상의 문제점</h2>
+  <blockquote>
+
+<h3> CertificateException:(핸드 쉐이크시) </h3>
+    <blockquote>
+<p> <b>문제</b>:SSL 접속의 협상중에, 클라이언트 또는 서버가 CertificateException 를 throw 합니다.  </p>
+<p> <b>원인 1</b>:많은 경우, 원격 사이드가 로컬 사이드에 있어 불명한 증명서를 송신하는 것이 원인입니다.  </p>
+<p> <b>해결법 1</b>:이러한 문제를 해결하려면 , 디버그를 온으로 해, 증명서의 로드시, 및 네트워크 접속으로부터의 수신시를 관찰합니다. 디버그에 대해서는,<a  href="#Debug">「디버그 유틸리티」</a>를 참조해 주세요. 많은 경우, 잘못한 트러스트 파일을 로드했기 때문에, 수신한 증명서가 트러스트 기구에 있어 불명합니다. 상세한 것에 대하여는, 이하의 마디를 참조해 주세요.  </p>
+      <ul>
+<li><a href="#ClassRelationship">클래스의 관계</a> 
+        </li>
+<li><a href="#TrustManager"><code>TrustManager</code> 인터페이스</a> 
+        </li>
+<li><a href="#KeyManager"><code>KeyManager</code> 인터페이스</a>  </li>
+      </ul>
+<p> <b>원인 2</b>:시스템 클록이 올바르게 설정되어 있지 않습니다.  </p>
+<p> <b>해결법 2</b>:클락이 올바르게 설정되어 있지 않은 경우, 인식된 시간이 증명서의 유효기간외가 되어 있을 가능성이 있습니다. 트러스트 스토어의 유효한 증명서와 옮겨놓지 않는 이상 시스템은 이 증명서를 무효로 간주해, 예외를 throw 합니다.  </p>
+    </blockquote>
+    <!-- ********** 11.22.05 -->
+
+
+
+<h3>java.security.KeyStoreException:TrustedCertEntry not supported</h3>
+
+   <blockquote>
+<p> <b>문제</b>:신뢰할 수 있는 증명서를 PKCS12 키스토어에 포함하려고 하면(자),<code>java.security.KeyStoreException: TrustedCertEntry not supported</code> 가 throw 됩니다.
+
+<p> <b>원인 1</b>:신뢰할 수 있는 증명서의 pkcs12 키스토어에의 포함은 지원하고 있습니다. PKCS12 는, 주로 비공개키와 관련하는 증명서 체인의 전달에 사용됩니다. 「신뢰할 수 있다」증명서의 개념은 없습니다. 상호 운용성의 관점으로부터, 다른 pkcs12 벤더에도 같은 제한이 있습니다. Mozilla 나 Internet Explorer 등의 브라우저는, 신뢰할 수 있는 증명서만을 가지는 pkcs12 파일은 받아들이지 않습니다.
+
+<p> <b>해결법 1</b>:신뢰할 수 있는 증명서의 포함에는, JKS (또는 JCEKS) 키스토어를 사용합니다.
+</blockquote>
+
+  <!-- ********** end 11.22.05 -->
+
+
+<h3>실행시 예외 :SSL Service Not Available</h3>
+    <blockquote>
+<p> <b>문제</b>:JSSE 를 사용하는 프로그램을 실행하면(자), SSL 서비스를 이용할 수 없다고 하는 예외가 발생합니다. 예를 들어, 다음과 같은 예외가 발생합니다.  </p>
+<pre>    Exception in thread "main"<br>        java.net.SocketException: no SSL Server Sockets<br><br>    Exception in thread "main":<br>        SSL implementation not available<br></pre>
+<p> <b>원인</b>:<code>SSLContext</code> 의 초기화시에 문제가 발생하고 있습니다. 예를 들어, 키스토어에 올바른 패스워드가 입력되지 않았는지, 키스토어가 파손하고 있을 가능성이 있습니다. 덧붙여 이런 종류의 에러가 발생하는 것은, 이전에 미지의 형식의 키스토어를 제공하는 JDK 벤더가 있었기 때문입니다.  </p>
+<p> <b>해결법</b>:초기화 파라미터를 확인합니다. 지정한 키스토어가 유효하고, 지정한 패스워드가 올바른 것을 확인합니다. <a  href="../../../tools/index.html#security">keytool</a>  를 사용하면(자), 키스토어와 그 내용을 조사할 수가 있습니다.  </p>
+    </blockquote>
+    <a name="NoAvailCert"></a> 
+<h3>예외 "No available certificate corresponding to the SSL cipher suites which are enabled"</h3>
+    <blockquote>
+<p> <b>문제</b>:단순한 SSL Server 프로그램을 실행하려고 하면(자), 이하의 예외가 throw 됩니다.  </p>
+      <blockquote>
+<pre>Exception in thread "main" javax.net.ssl.SSLException:<br>No available certificate corresponding to the SSL<br>cipher suites which are enabled...<br></pre>
+      </blockquote>
+<p> <b>원인</b>:필요한 열쇠 데이터의 형태는 암호군에 따라서 다릅니다. 예를 들어, RSA 암호군이 유효하게 되어 있는 경우, 키스토어로 RSA 의 <code>keyEntry</code> 를 유효하게 할 필요가 있습니다. 해당하는 열쇠를 사용할 수 없는 경우, 그 암호군을 사용할 수 없습니다. 유효하게는 모든 암호군의 열쇠의 엔트리를 사용할 수 없는 경우, 이 예외가 throw 됩니다.  </p>
+<p> <b>해결법</b>:암호군의 형태에 있던 열쇠 엔트리를 작성합니다. 또는 익명의 암호군을 사용합니다. 익명의 암호군에는,"man-in-the-middle" 공격에 대해서 취약하다라고 말하는 잠재적인 위험성이 있습니다. 상세한 것에 대하여는 <a  href="http://www.ietf.org/rfc/rfc2246.txt?number=2246">RFC 2246</a>  을 참조해 주세요. 올바른 키스토어 및 증명서를 건네주는 방법에 대해서는, 이하의 마디를 참조해 주세요.  </p>
+      <ul>
+<li><a href="#ClassRelationship">클래스의 관계</a> 
+        </li>
+<li><a href="#CustomizingStores">디폴트의 열쇠와 트러스트 스토어, 스토어형, 및 스토어 패스워드의 커스터마이즈</a>  </li>
+<li><a href="#KeystoreFormats">그 외의 키스토어 형식</a>  </li>
+      </ul>
+    </blockquote>
+<h3>실행시 예외 :No Cipher Suites in Common</h3>
+    <blockquote>
+<p> <b>문제 1</b>:핸드 쉐이크시에 클라이언트나 서버가 이 예외를 throw 합니다.  </p>
+<p> <b>원인 1</b>:SSL 접속의 양측이 공통의 암호군에 대해 합의하고 있을 필요가 있습니다. 클라이언트의 암호군세트와 서버의 암호군세트의 공통점이 없는 경우, 이 예외가 throw 됩니다.  </p>
+<p> <b>해결법 1</b>:유효한 암호군세트를 구성해, 공통의 암호군을 추가합니다. 게다가 비대칭의 암호군에게 적절한 <code>keyEntry</code> 가 제공되도록(듯이) 합니다. 이 마디의<a href="#NoAvailCert">「예외,"No available certificate..."」</a>(을)를 참조해 주세요.  </p>
+<p> <b>문제 2</b>:DSA 베이스의 증명서 밖에 없는 서버의 파일에 Netscape Navigator 나 Microsoft Internet Explorer (IE)로 액세스 하면(자), 공통의 암호군이 없다고 하는 실행시 예외가 발생합니다.  </p>
+<p> <b>원인 2</b>:디폴트에서는, keytool 로 작성된 <code>keyEntries</code> 는 DSA 공개키를 사용합니다. 키스토어내에 DSA 의 <code>keyEntries</code> 가 존재하는 경우, 사용할 수 있는 것은 DSA 베이스의 암호군만입니다. 디폴트에서는, Navigator 와 IE 는 RSA 베이스의 암호군만을 송신합니다. 클라이언트와 서버의 암호군세트의 공통점이 없기 때문에, 이 예외가 throw 됩니다.  </p>
+<p> <b>해결법 2</b>:Navigator 나 IE 를 사용하는 경우는, RSA 베이스의 열쇠를 사용하는 증명서를 작성합니다. 그 때문에(위해)는, keytool 사용시에 <code>-keyalg</code> RSA 옵션을 지정할 필요가 있습니다. 예를 나타냅니다.  </p>
+      <pre>
+    keytool -genkeypair -alias duke \
+	-keystore testkeys -keyalg rsa<br></pre>
+    </blockquote>
+<h3>JSSE 의 최초의 액세스가 늦다</h3>
+    <blockquote>
+<p> <b>문제</b>:최초의 액세스로 JSSE 가 정지한 것처럼 보입니다.  </p>
+<p> <b>원인</b>:JSSE 에는 난수의 안전한 소스가 필요합니다. 초기화에는 시간이 걸립니다.  </p>
+<p> <b>해결법</b>:별의 random number generation 함수를 사용하는지, 오버헤드가 통지되지 않는 경우는 다음의 방법으로 먼저 초기화합니다.  </p>
+      <blockquote>
+<pre>SecureRandom sr = new SecureRandom();<br>sr.nextInt();<br>SSLContext.init(..., ..., sr);<br></pre>
+      </blockquote>
+<code>&lt;java-home&gt;/lib/security/java.security</code> 파일은, SecureRandom 의 배정 데이터의 소스를 지정하는 방법도 제공합니다. 자세한 것은, 파일을 참조해 주세요.
+    </blockquote>
+    <a name="HttpsURLConnectionEx"></a> 
+<h3><code>HttpsURLConnection</code> 클래스를 사용하는 코드가 JSSE 1.0.x 로 <code>ClassCastException</code> 를 throw 한다</h3>
+    <blockquote>
+<p> <b>문제</b>:이하의 코드 (발췌)는, JSSE 1.0.x 의 <code>com.sun.net.ssl.HttpsURLConnection</code> 로 작성된 것입니다.  </p>
+      <blockquote>
+<pre>import com.sun.net.ssl. *;<br>...deleted...<br>HttpsURLConnection urlc = new URL("https://foo.com/"). openConnection();<br></pre>
+      </blockquote>
+현재의 릴리스로 실행하면(자), 이 코드는 <code>javax.net.ssl.HttpsURLConnection</code> 를 돌려주어,<code>ClassCastException</code> 를 throw 합니다.
+<p> <b>원인</b>:디폴트에서는,"https" URL 를 열면(자) <code>javax.net.ssl.HttpsURLConnection</code> 가 작성됩니다.  </p>
+<p> <b>해결법</b>:이전의 릴리스의 JDK (Java SE 6 SDK 이전)에는, 「https」URL 의 구현이 부속되어 있지 않습니다. JSSE 1.0.x 구현은,"https" URL 핸들러를 제공합니다. 인스톨 가이드에도, URL 핸들러의 검색 패스를 설정해 JSSE 1.0.x 의 <code>com.sun.net.ssl.HttpsURLConnection</code> 구현을 취득할 방법이 기재되어 있습니다.  </p>
+<p> 현재의 릴리스에서는, URL 핸들러의 디폴트의 검색 패스에 "https" 핸들러가 지정되고 있습니다. 그 결과,<code>javax.net.ssl.HttpsURLConnection</code> 의 인스턴스가 돌려주어집니다. <code>java.protocol.handler.pkgs</code> 변수를 사용해, 이전의 JSSE 1.0.x 구현 패스를 URL 검색 패스에 추가하는 것으로써,<code>com.sun.net.ssl.HttpsURLConnection</code> 를 취득할 수 있습니다. 이 경우, 상기의 코드가 예외를 throw 할 것은 없습니다.  </p>
+      <blockquote>
+<pre>% java -Djava.protocol.handler.pkgs=\<br>  com.sun.net.ssl.internal.www.protocol YourClass<br></pre>
+      </blockquote>
+또는
+      <blockquote>
+<pre>System.setProperty("java.protocol.handler.pkgs", <br>                   "com.sun.net.ssl.internal.www.protocol");<br></pre>
+      </blockquote>
+    </blockquote>
+<h3><code>ClientHello</code> 메세지의 송신 후 소켓이 절단 된다</h3>
+    <blockquote>
+<p> <b>문제</b>:접속하기 위해서 <code>ClientHello</code> 메세지를 송신한 뒤, 즉시 소켓이 절단 됩니다.  </p>
+<p> <b>원인</b>:SSL/TLS 서버안에는, 수신한 <code>ClientHello</code> 메세지의 형식을 판단할 수  없는 경우나, 이 메세지의 프로토콜의 버젼이 지원 대상외인 경우, 접속을 절단 하는 것이 있습니다.  </p>
+<p> <b>해결법</b>:<code>SSLSocket.setEnabledProtocols</code> 로 프로토콜의 조정을 시도해 주세요. 예를 들어, 종래의 서버 구현에는, SSLv3 에만 대응해, TLS 에 대응하고 있지 않는 것이 있습니다. 이론적으로 말하면, 이러한 구현은 SSLv3 로 협상을 실시할 것입니다만, 실제로는 행업 할 뿐입니다. 후방 호환성이기 때문에, 일부의 서버 구현 (SunJSSE 등)은 SSLv3 /TLS 의 <code>ClientHello</code> 를 SSLv2 의 <code>ClientHello</code> 패킷에 캡슐화해 송신합니다. 그러나, 이 형식을 지원하지 않는 서버도 있습니다. 이 경우는,<code>setEnabledProtocols</code> 를 사용해, 송신시의 SSLv2 의 <code>ClientHello</code> 패킷에의 캡슐화를 무효로 합니다.
+      </p>
+    </blockquote>
+
+<h3>필요한 알고리즘을 지원하는 JCA/JCE 프로바이더를 SunJSSE 를 찾아낼 수 있는 두,<code>NoSuchAlgorithmException</code> 가 발생한다</h3>
+    <blockquote>
+<p> <b>문제</b>:핸드 쉐이크가 시행되어 필요한 알고리즘이 발견되지 않는 경우는 실패합니다. 예는 다음과 같습니다.
+<blockquote><pre>
+Exception in thread ...deleted...
+     ...deleted...
+     Caused by java.security.NoSuchAlgorithmException: Cannot find any
+provider supporting RSA/ECB/PKCS1Padding
+</pre></blockquote>
+또는
+<blockquote><pre>
+     Caused by java.security.NoSuchAlgorithmException: Cannot find any
+provider supporting AES/CBC/NoPadding
+</pre></blockquote>
+<p> <b>원인</b>:SunJSSE 는, 그 암호화 알고리즘 모두로 JCE 를 사용합니다. 디폴트에서는, Sun JDK 는 Standard Extension ClassLoader 를 사용해,<tt>&lt;java-home&gt;/lib/ext/sunjce_provider.jar</tt> 에 있는 SunJCE 프로바이더를 로드합니다. 파일이 발견되지 않는가 로드할 수 없는 경우, 또는 SunJCE 프로바이더가 <code>Provider</code> 기구로부터 등록 해제되고 있어 JCE 로부터의 대체 구현을 이용할 수 없는 경우, 이 예외가 발생합니다.
+</p>
+<p> <b>해결법</b>:파일이 로드 가능한 것을 체크해 SunJCE 가 사용 가능한 것을 확인해, 프로바이더가 <code>Provider</code> 인터페이스에 등록되어 있는 것을 확인합니다. SSL 접속의 문맥으로 다음의 코드를 실행해 보겠습니다.
+
+<blockquote><pre>
+    import javax.crypto. *;
+
+    System.out.println("=====Where did you get AES=====");
+    Cipher c = Cipher.getInstance("AES/CBC/NoPadding");
+    System.out.println(c.getProvider());
+</pre></blockquote>
+    </blockquote>
+  </blockquote>
+  <a name="Debug"></a> 
+<h2>디버그 유틸리티</h2>
+  <blockquote>
+<p> JSSE 에는, 동적 디버그의 트레이스를 지원하는 기능이 있습니다. 이것은, Java SE 6 플랫폼에서 디버그의 액세스 제어에 실패했을 경우에 사용하는 지원 기능을 닮아 있습니다. 총칭 Java 동적 디버그 트레이스 지원에는 시스템 프로퍼티 <code>java.security.debug</code> 로 액세스 합니다만, JSSE 고유의 동적 디버그 트레이스 지원에는 시스템 프로퍼티 <code>javax.net.debug</code> 로 액세스 합니다.
+    </p>
+<p> 주:디버그 유틸리티는, 공식으로 지원되고 있는 JSSE 기능이 아닙니다.  </p>
+<p> JSSE 동적 디버그 유틸리티의 옵션을 표시하려면 ,<code>java</code> 커멘드로 다음의 커멘드행 옵션을 사용합니다.  </p>
+<pre>    -Djavax.net.debug=help<br></pre>
+<p> 주:디버그용으로 설계된 유틸리티로 클래스를 사용하지 않는 프로그램을 실행하고 있을 때, 어느 쪽의 동적 디버그 유틸리티로 <code>help</code> 를 지정해도, 디버그 옵션은 사용할 수 없습니다.  </p>
+<p> 디버그 옵션의 리스트를 표시시키는 방법의 예를, 다음에 나타냅니다.  </p>
+<pre>    java -Djavax.net.debug=help <i>MyApp</i> </pre>
+<i>MyApp</i> 는, JSSE 클래스를 사용하는 어플리케이션입니다. <i>MyApp</i> 는, 디버그의 헬프 정보가 표시되면(자) 동작하지 않게 됩니다. 헬프 코드에 의해 어플리케이션이 종료하기 (위해)때문에입니다.  <p></p>
+<p> 현재의 옵션은 다음과 같습니다.  </p>
+    <pre>
+        all        turn on all debugging
+        ssl        turn on ssl debugging
+
+        The following can be used with ssl:
+            record          enable per-record tracing
+            handshake       print each handshake message
+            keygen          print key generation data
+            session         print session activity
+            defaultctx      print default SSL initialization
+            sslctx          print SSLContext tracing
+            sessioncache    print session cache tracing
+            keymanager      print key manager tracing
+            trustmanager    print trust manager tracing
+
+        handshake debugging can be widened with:
+            data            hex dump of each handshake message
+            verbose         verbose handshake message printing
+
+        record debugging can be widened with:
+            plaintext       hex dump of record plaintext
+            packet          print raw SSL/TLS packets
+    </pre>
+<code>javax.net.debug</code> 프로퍼티치는,<code>all</code> 또는 <code>ssl</code> 를 지정할 필요가 있어, 디버그 지정자가 그 후에 계속되는 경우도 있습니다. 1 개(살) 또는 복수의 옵션을 사용할 수 있습니다. 옵션을 separator로 단락지을<i></i>필요는 없습니다만, 「:」이나 「,」를 사용하면(자) 읽기 쉬워집니다. 어느 separator도 사용할 수 있어 옵션 키워드의 순서도 중요하지는 않습니다.
+<P>
+이 디버그 정보의 견해의 설명은, 가이드<a href="ReadDebug.html">「SSL/TLS 접속의 디버그」</a>를 참조해 주세요.
+
+<h3>례</h3>
+    <ul>
+<li> 디버그 메세지를 모두 표시하는 경우는, 다음과 같이 입력합니다.
+<pre>    java -Djavax.net.debug=all MyApp<br></pre>
+        <p> </p>
+      </li>
+<li>핸드 쉐이크 메세지를 16 진덤프로 표시하려면 , 다음과 같이 입력합니다. 구두점은 생략 할 수 있습니다.
+<pre>    java -Djavax.net.debug=ssl:handshake:data MyApp<br></pre>
+        <p> </p>
+      </li>
+<li>핸드 쉐이크 메세지를 16 진덤프로 표시해, 한층 더 트러스트 매니저의 트레이스 상태를 표시하려면 , 다음과 같이 입력합니다. 칸마는 생략 할 수 있습니다.
+<pre>    java -Djavax.net.debug=SSL, handshake, data, trustmanager MyApp<br></pre>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+<a name="CodeExamples"></a> 
+<h1>코드예</h1>
+<blockquote>
+<p> 이하의 마디에서는, 다음의 코드예에 대해 설명합니다.  </p>
+  <ul>
+<li><a href="#UnsecureSecure">안전하지 않은 소켓으로부터 안전한 소켓에의 변환</a> 
+      <ul>
+<li><a href="#NoSSLSocket">SSL 를<i></i>사용하지 않는 소켓의 예</a> 
+        </li>
+<li><a href="#WithSSLSocket">SSL 를<i></i>사용하는 소켓의 예</a> 
+          <p></p>
+        </li>
+      </ul>
+    </li>
+<li><a href="#SampleCode">JSSE 샘플 코드의 실행</a> 
+      <ul>
+<li><a href="#SecureConnSample">클라이언트와 서버의 안전한 소켓 접속을 나타내는 샘플 코드</a> 
+          <ul>
+<li><a href="#SampleConfig">설정 요건</a>  </li>
+<li><a href="#SSC"><code>SSLSocketClient</code> 의 실행</a> 
+            </li>
+<li><a href="#SSCWT"><code>SSLSocketClientWithTunneling</code> 의 실행</a> 
+            </li>
+<li><a href="#SSCWCA"><code>SSLSocketClientWithClientAuth</code> 의 실행</a> 
+            </li>
+<li><a href="#RunningCFS"><code>ClassFileServer</code> 의 실행</a> 
+            </li>
+<li><a href="#SSCWCAnCFS"><code>SSLSocketClientWithClientAuth</code> 의 실행</a>  </li>
+          </ul>
+        </li>
+<li><a href="#HTTPSSample">HTTPS 접속을 나타내는 샘플 코드</a> 
+          <ul>
+<li><a href="#URLReader">URLReader 의 실행</a>  </li>
+<li><a href="#URLReaderWO">URLReaderWithOptions 의 실행</a> 
+            </li>
+          </ul>
+        </li>
+<li><a href="#RMISample">안전한 RMI 접속을 나타내는 샘플 코드</a>  </li>
+<li><a href="#SSLEngineSample"><code>SSLEngine</code> 의 사용을 나타내는 샘플 코드</a> 
+            <ul>
+<li><a href="#RunningSSLEngineSimpleDemo"><code>SSLEngineSimpleDemo</code> 의 실행</a> </li>
+<li><a href="#RunningNioServer"><code>NIO</code> 베이스의 서버의 실행</a> </li>
+            </ul>
+      </ul>
+
+      <br>
+    </li>
+<li><a href="#CreateKeystore">JSSE 로 사용하는 키스토어의 작성</a> 
+      <ul>
+<li><a href="#CreateSimpleKeystore">단순한 키스토어와 트러스트 스토어의 작성</a>  </li>
+      </ul>
+    </li>
+  </ul>
+  <a name="UnsecureSecure"></a> 
+<h2>안전하지 않은 소켓으로부터 안전한 소켓에의 변환</h2>
+  <blockquote>
+<p> 이 마디에서는, JSSE 를 사용해, 안전하지 않은 소켓 접속을 안전한 소켓 접속으로 변환하는 원시 코드의 예를 설명합니다. 이 마디의 코드는 「Java SE 6 Network Security」(Marco Pistoia 외 저)로부터 인용한 것입니다.  </p>
+<p> 우선, 「SSL 를 사용하지 않는 소켓의 예」로, 안전하지 않은 소켓을 사용해 클라이언트와 서버간의 통신을 설정하는 샘플 코드를 나타냅니다. 다음에, 「SSL 를 사용하는 소켓의 예」에서는 이 코드를 변경해, JSSE 를 사용해 안전한 소켓 통신을 설정합니다.  <a  name="NoSSLSocket"></a> </p>
+ <a name="NoSSLSocket"></a> 
+<h3>SSL 를<i></i>사용하지 않는 소켓의 예</h3>
+    <blockquote>
+<h4>안전하지 않은 소켓 통신의 서버 코드</h4>
+<p> 서버로서 동작해, 소켓을 사용해 클라이언트와 통신하는 Java 프로그램을 작성하는 경우, 다음과 같은 코드로 소켓 통신을 설정합니다.  </p>
+      <blockquote>
+<pre>import java.io. *;<br>import java.net. *;<br><br>.  .  . <br><br>int port = availablePortNumber;<br><br>ServerSocket s;<br><br>try {<br>    s = new ServerSocket(port);<br>    Socket c = s.accept();<br><br>    OutputStream out = c.getOutputStream();<br>    InputStream in = c.getInputStream();<br><br>    // Send messages to the client through<br>    // the OutputStream<br>    // Receive messages from the client<br>    // through the InputStream<br>}<br><br>catch (IOException e) {<br>}<br></pre>
+      </blockquote>
+<h4>안전하지 않은 소켓 통신의 클라이언트 코드</h4>
+<p> 소켓을 사용해 서버와의 통신을 설정하는 클라이언트 코드의 예를, 다음에 나타냅니다.  </p>
+      <blockquote>
+<pre>import java.io. *;<br>import java.net. *;<br><br>.  .  . <br><br>int port = availablePortNumber;<br>String host = "hostname";<br><br>try {<br>    s = new Socket(host, port);<br><br>    OutputStream out = s.getOutputStream();<br>    InputStream in = s.getInputStream();<br><br>    // Send messages to the server through<br>    // the OutputStream<br>    // Receive messages from the server<br>    // through the InputStream<br>}<br><br>catch (IOException e) {<br>}<br></pre>
+      </blockquote>
+    </blockquote>
+    <a name="WithSSLSocket"></a> 
+<h3>SSL 를<i></i>사용하는 소켓의 예</h3>
+    <blockquote>
+<h4>안전한 소켓 통신의 서버 코드</h4>
+<p> 서버로서 동작해, 안전한 소켓으로 클라이언트와 통신하는 Java 프로그램을 작성하는 경우, 다음과 같은 코드로 소켓 통신을 설정합니다. 안전하지 않은 소켓을 사용한 통신의 프로그램과 이 프로그램과의 차이는, 굵은 글씨로 나타나고 있습니다.  </p>
+      <blockquote>
+<pre>import java.io. *;<br>import <b>javax.net.ssl. *</b>;<br><br>.  .  . <br><br>int port = availablePortNumber;<br><br><b>SSLServerSocket</b> s;<br><br>try {<br>    <b>SSLServerSocketFactory sslSrvFact =<br>        (SSLServerSocketFactory)<br>        SSLServerSocketFactory.getDefault();<br>    s =(SSLServerSocket) sslSrvFact.createServerSocket(port);</b>
+
+    <b>SSLSocket</b> c = <b>(SSLSocket)</b>s.accept();<br><br>    OutputStream out = c.getOutputStream();<br>    InputStream in = c.getInputStream();<br><br>    // Send messages to the client through<br>    // the OutputStream<br>    // Receive messages from the client<br>    // through the InputStream<br>}<br><br>catch (IOException e) {<br>}<br></pre>
+      </blockquote>
+<h4>안전한 소켓 통신의 클라이언트 코드</h4>
+<p> 안전한 소켓을 사용해 서버와의 통신을 설정하는 클라이언트 코드의 예를, 다음에 나타냅니다. 안전하지 않은 소켓과의 차이는, 굵은 글씨로 나타나고 있습니다.  </p>
+      <blockquote>
+<pre>import java.io. *;<br>import <b>javax.net.ssl. *</b>;<br><br>.  .  . <br><br>int port = availablePortNumber;<br>String host = "hostname";<br><br>try {<br>    <b>SSLSocketFactory sslFact =<br>      (SSLSocketFactory) SSLSocketFactory.getDefault();<br>    SSLSocket s =<br>      (SSLSocket) sslFact.createSocket(host, port);</b>
+
+    OutputStream out = s.getOutputStream();
+    InputStream in = s.getInputStream();
+
+    // Send messages to the server through
+    // the OutputStream
+    // Receive messages from the server
+    // through the InputStream
+}
+
+catch (IOException e) {
+}
+        </pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+  <a name="SampleCode"></a> 
+<h2>JSSE 샘플 코드의 실행</h2>
+  <blockquote>
+<p> JSSE 샘플 프로그램에서는, JSSE 를 사용해 다음의 처리를 실시하는 방법을 나타냅니다.  </p>
+    <p></p>
+    <ul>
+<li><a href="#SecureConnSample">클라이언트와 서버의 사이의 안전한 소켓 접속의 작성</a> 
+        <p></p>
+      </li>
+<li><a href="#HTTPSSample">HTTPS Web 사이트로의 안전한 소켓 접속</a> 
+        <p></p>
+      </li>
+<li><p><a href="#RMISample">RMI 에서의 안전한 통신</a>  </li>
+
+<li><a href="#SSLEngineSample">SSLEngine 의 사용</a>  </li>
+    </ul>
+<p> 샘플 코드를 사용하는 경우, 샘플 프로그램은 JSSE 의 사용법을 나타내기 위한 것인 점에 주의해 주세요. 견뢰한 어플리케이션을 개발하기 위한의 것이 아닙니다.  </p>
+<p> 주:안전한 통신을 설정하면(자), 알고리즘이 복잡하게 됩니다. 샘플 프로그램에서는, 설정 프로세스중의 피드백이 없습니다. 프로그램 실행시에는, 일정시간 기다려도 결과가 표시되지 않는 경우가 있습니다. 시스템 프로퍼티 <code>javax.net.debug</code> 의 설정을 <code>all</code> 로 해, 프로그램을 실행하면(자), 피드백이 표시됩니다. 이 디버그 정보의 견해의 설명은, 가이드<a href="ReadDebug.html">「SSL/TLS 접속의 디버그」</a>를 참조해 주세요.
+
+
+<a name="SamplesLoc"></a> </p>
+<h3>샘플 코드의 장소</h3>
+    <blockquote>
+<p>대부분의 샘플 코드는, 이 문서와 같은 디렉토리의 <a href="samples/index.html">samples 서브 디렉토리</a>에 포함되고 있습니다. 이하의 링크로부터, 모든 샘플 파일의 리스트와 텍스트 파일을 표시할 수 있습니다. 이 페이지로부터, 모든 샘플 파일이 포함된 zip 파일도 다운로드할 수 있습니다. zip 파일은, 이 문서를 Web 경유로 표시하고 있는 경우에 편리합니다.  </p>
+<p>이하의 마디에서는, 샘플에 대해 설명합니다. 상세한 것에 대하여는,<a href="samples/README.txt">README</a>  를 참조해 주세요.  </p>
+    </blockquote>
+    <a name="SecureConnSample"></a> 
+<h3>클라이언트와 서버의 안전한 소켓 접속을 나타내는 샘플 코드</h3>
+    <blockquote>
+<p> <code>samples/sockets</code> 디렉토리에 있는 샘플 프로그램은, 클라이언트와 서버와의 사이에 안전한 소켓 접속을 설정하는 방법을 나타내고 있습니다.  </p>
+<p> 샘플의 클라이언트 프로그램을 실행중에, 상용 Web 서버등의 기존의 서버와 통신할 수 있습니다. 또, 샘플의 프로그램 서버 <code>ClassFileServer</code> 와 통신할 수도 있습니다. 샘플의 클라이언트 프로그램과 서버 프로그램은, 같은 네트워크에 접속된 별개의 머신으로 실행하는 일도, 다른 터미널 윈도우로부터 동일 머신상에서 실행할 수도 있습니다.  </p>
+<p> <code>samples/sockets/client</code> 디렉토리의 샘플 <code>SSLSocketClient</code>* 프로그램 ( 및 <a href="#HTTPSSample">HTTPS 접속의 샘플 코드</a>로 설명하는 URLReader* 프로그램)은, 모두 <code>ClassFileServer</code> 샘플 서버 프로그램으로 실행할 수 있습니다. 이 예는,<a href="#SSCWCAnCFS">「<code>ClassFileServer</code> 를 사용한 <code>SSLSocketClientWithClientAuth</code> 의 실행」</a>에 나타나고 있습니다. <code>URLReader</code>,<code>SSLSocketClient</code>, 또는 <code>SSLSocketClientWithTunneling</code> 를 <code>ClassFileServer</code> 로 실행하는 경우도, 같은 변경을 할 수 있습니다.  </p>
+<p> 클라이언트와 서버와의 사이에 메세지를 송신하려고 하면(자) 인증 에러가 발생하는 경우, Web 서버와 <code>ClassFileServer</code> 의 어느 쪽을 사용하고 있다고 해도, 필요한 열쇠가<a href="#Stores">트러스트 스토어</a>  (트러스트열쇠 데이타베이스)에 없을 가능성이 있습니다. 예를 들어,<code>ClassFileServer</code> 는 「testkeys」라고 하는 키스토어를 사용합니다. 이것에는, SSL 핸드 쉐이크중에 필요한 「localhost」의 공개키가 포함되어 있습니다. 「testkeys」는 <code>ClassFileServer</code> 소스와 같은 디렉토리 <code>samples/sockets/server</code> 에 있습니다. 참조하는 트러스트 스토어에서, 「localhost」의 공개키에 대응하는 증명서를 클라이언트를 검색할 수 없는 경우, 인증 에러가 발생합니다. 다음의 마디로 설명하도록(듯이),<code>samplecacerts</code> 트러스트 스토어 ( 「localhost」공개키가 있다)의 취급에는 주의해 주세요.  <a name="SampleConfig"></a> </p>
+<h3>설정 요건</h3>
+<p> 클라이언트와 서버와의 사이의 안전한 소켓 접속을 작성하는 샘플 프로그램을 실행하는 경우는, 적절한 증명서 파일 (트러스트 스토어)을 이용할 수 있도록(듯이) 해 둘 필요가 있습니다. 클라이언트 프로그램과 서버 프로그램의 양쪽 모두로,<code>samples</code> 디렉토리의 <code>samplecacerts</code> 증명서 파일을 사용합니다. 이 증명서 파일을 사용하면(자), 클라이언트가 서버를 인증할 수 있게 됩니다. 이 파일에는, JDK (<code>cacerts</code> 파일에 있다)에 부속되는, 일반적인 증명서 발행국의 발행한 증명서가 모두 포함되어 있어 또, 샘플 서버 <code>ClassFileServer</code> 와의 통신시에 클라이언트가 「localhost」를 증명하는데 필요한 「localhost」의 증명서도 포함되어 있습니다. (<code>ClassFileServer</code> 는, 「localhost」의 공개키를 포함한 키스토어를 사용합니다. 이것은,<code>samplecacerts</code> 의 공개키에 대응하고 있습니다.  ) </p>
+<p> 클라이언트와 서버의 양쪽 모두로 <code>samplecacerts</code> 파일을 사용하려면 , 파일을 <code>&lt;java-home&gt;/lib/security/jssecacerts</code> 파일에 카피해 이름을 <code>cacerts</code> 로 변경해,<code>&lt;java-home&gt;/lib/security/cacerts</code> 파일과 옮겨놓는지, 클라이언트와 서버의 <code>java</code> 커멘드를 실행중에, 다음의 옵션을 커멘드행에 추가합니다.  </p>
+<pre>-Djavax.net.ssl.trustStore=path_to_samplecacerts_file<br></pre>
+<p><code>&lt;java-home&gt;</code> 의 상세한 것에 대하여는,<a href="#javaHome">「인스톨 디렉토리 &lt;java-home&gt;」</a>를 참조해 주세요.  </p>
+<p> <code>samplecacerts</code> 트러스트 스토어의 패스워드는 <code>changeit</code> 입니다. keytool 를 사용해, 샘플에 독자적인 증명서를 옮겨놓을 수가 있습니다.  </p>
+<p> Netscape Navigator 나 Internet Explorer 등의 브라우저를 사용해 <code>ClassFileServer</code> 에 있는 샘플의 SSL 서버에 액세스 하면(자), 다이알로그 박스가 열려, 증명서가 인식되지 않는다고 하는 메세지가 표시됩니다. 이것은, 샘플 프로그램으로 사용하는 증명서는 자기 서명 첨부의 것으로, 테스트너무 용 손상하고입니다. 현재의 세션으로 증명서에 동의 할 수 있습니다. SSL 서버의 테스트가 종료한 후, 브라우저를 종료해, 브라우저의 이름 공간으로부터 테스트용 증명서를 삭제합니다.  </p>
+<P>
+클라이언트 인증의 경우, 적절한 디렉토리의 다른 「duke」증명서를 사용할 수 있습니다. 공개키/증명서도, samplecacerts 파일에 포함되고 있습니다.
+      <blockquote>
+<p> 주:<code>samples</code> 디렉토리의 「duke」증명서는,<code>http://java.sun.com/security/signExample12/</code> 의 시큐리티 샘플로 사용하는 「duke」증명서와는 다릅니다. 양쪽 모두의 「duke」증명서를 인스톨 하면(자), 샘플 코드는 올바르게 동작하지 않습니다. 증명서 파일로 이용할 수 있는 증명서를 표시하려면 , keytool 커멘드를 사용합니다.  </p>
+      </blockquote>
+      <a name="SSC"></a> 
+<h3><code>SSLSocketClient</code> 의 실행</h3>
+      <blockquote>
+<p> <a href="samples/sockets/client/SSLSocketClient.java"> SSLSocketClient.java</a>  프로그램은,<code>SSLSocket</code> 를 사용하는 클라이언트를 작성해, HTTP 요구를 송신해 HTTP 서버로부터 응답을 받아들이는 방법을 실제로 가리킵니다. 이 프로그램의 출력이,<code>https://www.verisign.com/index.html</code> 의 HTML 소스입니다.  </p>
+<p> 방화벽의 외측에서, 이 프로그램을 출하시 상태로 실행하지 말아 주세요. 방화벽(fire wall)의 외측에서 실행하면(자), JSSE 는 방화벽(fire wall)를 통한 <code>www.verisign.com</code> 에의 패스를 검출할 수 없기 때문에,<code>UnknownHostException</code> 를 받습니다. 방화벽(fire wall)의 외측으로부터 실행할 수 있는 동등의 클라이언트를 작성하려면 , 샘플 프로그램 <code>SSLSocketClientWithTunneling</code> 로 가리키도록(듯이), 프록시 터널링을 설정합니다.
+        </p>
+      </blockquote>
+      <a name="SSCWT"></a> 
+<h3><code>SSLSocketClientWithTunneling</code> 의 실행</h3>
+      <blockquote>
+<p> <a  href="samples/sockets/client/SSLSocketClientWithTunneling.java"> SSLSocketClientWithTunneling.java</a>  프로그램은, 방화벽(fire wall)의 외측으로부터 안전한 Web 서버에 액세스 하는 프록시 터널링의 방법을 나타냅니다. 이 프로그램을 실행하려면 , 다음의 Java 시스템 프로퍼티에 적절한 값을 설정할 필요가 있습니다.  </p>
+        <blockquote>
+<code>java <font color="blue">-Dhttps.proxyHost=webproxy <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Dhttps.proxyPort=ProxyPortNumber</font> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLSocketClientWithTunneling</code>
+        </blockquote>
+<p> 주:프록시를 지정할 때,<code>-D</code> 옵션 (청자)은 옵션입니다. <code>webproxy</code> 는 사용하는 프록시 호스트명에,<code>ProxyPortNumber</code> 는 적절한 포트 번호에 옮겨놓아 주세요.  </p>
+<p> 프로그램은 <code>https://www.verisign.com/index.html</code> 의 HTML 원시 파일을 돌려줍니다.
+        </p>
+      </blockquote>
+      <a name="SSCWCA"></a> 
+<h3><code>SSLSocketClientWithClientAuth</code> 의 실행</h3>
+      <blockquote>
+<p> <a  href="samples/sockets/client/SSLSocketClientWithClientAuth.java"> SSLSocketClientWithClientAuth.java</a>  프로그램은, 서버로부터 요구되었을 경우에 키 매니저를 설정해, 클라이언트 인증을 실시하는 방법을 나타냅니다. 이 프로그램도, 클라이언트가 방화벽(fire wall)의 외측에는 없는 것을 전제로 하고 있습니다. <code>SSLSocketClientWithTunneling</code> 의 예에 따라 프로그램을 변경하면, 방화벽(fire wall)의 안쪽으로부터 접속할 수도 있습니다.  </p>
+<p> 이 프로그램을 실행하려면 , 다음의 3 개의 파라미터를 지정할 필요가 있습니다. 호스트, 포트 번호, 및 요구된 파일 패스입니다. 전회의 예를 반영시키기 (위해)때문에, 이 프로그램을 클라이언트 인증없이 실행할 수 있습니다. 호스트에게 <code>www.verisign.com</code>, 포트 번호에 <code>443</code>, 요구된 파일 패스에 <code>https://www.verisign.com/</code> 를 설정합니다. 이러한 파라미터를 사용했을 때의 출력이,<code>https://www.verisign.com/</code> 의 HTML 소스입니다.
+        </p>
+<p> <code>SSLSocketClientWithClientAuth</code> 를 실행해 클라이언트 인증을 실시하려면 , 클라이언트 인증을 요구하는 서버에 액세스 할 필요가 있습니다. 이 서버에는, 샘플 프로그램 <code>ClassFileServer</code> 를 사용할 수 있습니다. 이것에 대해서는, 다음의 마디로 설명합니다.  </p>
+      </blockquote>
+      <a name="RunningCFS"></a> 
+<h3><code>ClassFileServer</code> 의 실행</h3>
+      <blockquote>
+<p>여기서 <code>ClassFileServer</code> 로 불리고 있는 프로그램은,<a  href="samples/sockets/server/ClassFileServer.java">ClassFileServer.java</a>  와 <a  href="samples/sockets/server/ClassServer.java">ClassServer.java</a>  의 2 개의 파일로 구성되어 있습니다.  </p>
+<p>이것들을 실행하려면 ,<code>ClassFileServer.class</code> 를 실행합니다. 그 때는 다음의 파라미터가 필요합니다.  </p>
+        <p></p>
+        <ul>
+<li><code>port</code> - 포트의 파라미터는, 이용할 수 있는 미사용의 포트 번호입니다. 예를 들어, 2001 과 같은 숫자를 사용할 수 있습니다.
+            <p></p>
+          </li>
+<li><code>docroot</code> - 이 파라미터는, 검색하는 파일을 포함한 서버의 디렉토리를 나타냅니다. 예를 들어, Solaris 에서는 <code>/home/userid/</code> (<code>userid</code> 는 특정의 사용자 ID), Microsoft Windows 에서는 <code>c:\</code> 가 됩니다.
+            <p></p>
+          </li>
+<li><code>TLS</code> - 옵션의 파라미터입니다. 서버가 SSL 또는 TLS 를 사용하는 것을 나타냅니다.
+            <p></p>
+          </li>
+<li><code>true</code> - 옵션의 파라미터입니다. 클라이언트 인증이 필요한 일을 나타냅니다. 이 파라미터는, TLS 파라미터가 설정되어 있는지 어떤지만을 참조합니다.  </li>
+        </ul>
+<p> 주의 1:<code>TLS</code> 및 <code>true</code> 파라미터는 옵션입니다. 사용하지 않는 경우는, TLS 가 아닌 일반적으로의 파일 서버만이 인증없이 사용되어 아무것도 일어나지 않습니다. 이것은, 다른 한쪽의 옆 (클라이언트)이 TLS 와 협상을 실시하려고 해도, 이제(벌써) 한편의 옆 (서버)은 협상을 실시하려고 하지 않기 때문에, 통신을 할 수 없기 때문입니다.  </p>
+<p> 주의 2:서버는 "GET /..." 의 형식에서 GET 요구를 기대합니다. "..." (은)는 파일에의 패스를 나타냅니다. </p>
+        <p></p>
+      </blockquote>
+      <a name="SSCWCAnCFS"></a> 
+<h3><code>ClassFileServer</code> 를 사용한 <code>SSLSocketClientWithClientAuth</code> 의 실행</h3>
+      <blockquote>
+<p> 샘플 프로그램 <a  href="samples/sockets/client/SSLSocketClientWithClientAuth.java"> SSLSocketClientWithClientAuth</a>  및 <code>ClassFileServer</code> 를 사용해, 인증 끝난 통신을 설정할 수 있습니다. 이 통신에서는, 클라이언트와 서버가 서로 인증합니다. 양쪽 모두의 샘플 프로그램을 같은 네트워크에 접속된 별개의 머신상에서 실행하는 일도, 같은 머신상의 다른 터미널 윈도우 또는 커멘드 prompt 윈도우로부터 실행할 수도 있습니다. 클라이언트와 서버를 설정하려면 , 다음의 조작을 실행합니다.  </p>
+        <ol>
+<li><code>ClassFileServer</code> 프로그램을, 1 대의 머신이나 터미널 윈도우로부터 실행합니다. <a href="#RunningCFS">「<code>ClassFileServer</code> 의 실행</a>」을 참조해 주세요.
+            <p></p>
+          </li>
+<li><code>SSLSocketClientWithClientAuth</code> 프로그램을 다른 머신이나 터미널 윈도우로 실행합니다. <code>SSLSocketClientWithClientAuth</code> 에는, 다음의 파라미터가 필요합니다.
+            <p></p>
+            <ul>
+<li><code>host</code> - <code>ClassFileServer</code> 를 실행하는 머신의 호스트명입니다.
+                <p></p>
+              </li>
+<li><code>port</code> - <code>ClassFileServer</code> 로 지정한 것과 같은 포트입니다.
+                <p></p>
+              </li>
+<li><code>requestedfilepath</code> - 서버로부터 검색하는 파일의 패스입니다. 이 파라미터에는,<code>/filepath</code> 를 사용합니다. GET 문의 일부로서 사용되므로, 파일 패스에는 포워드 slash가 필요합니다. GET 문에는, 가동중의  operating system의 종류에 관계없이, 포워드 slash가 필요합니다. 문장의 구성은 다음과 같이 됩니다.
+                <blockquote>
+<pre>"GET " + requestedfilepath + " HTTP/1. 0"<br></pre>
+                </blockquote>
+              </li>
+            </ul>
+          </li>
+        </ol>
+주:다른 SSLCient* 어플리케이션의 "GET" 커멘드를 변경하면(자),<code>ClassFileServer</code> 가 동작하고 있는 로컬 머신에 접속할 수 있습니다.  </blockquote>
+    </blockquote>
+    <a name="HTTPSSample"></a> 
+<h3>HTTPS 접속을 나타내는 샘플 코드</h3>
+    <blockquote>
+<p> JSSE 를 개입시켜 안전한 통신에 액세스하기 위한 주요한 API 는 2 개 있습니다. 1 개(살)은 임의의 안전한 통신에 사용할 수 있는 소켓 레벨의 API로,<code>SSLSocketClient</code>,<code>SSLSocketClientWithTunneling</code>, 및 <code>SSLSocketClientWithClientAuth</code> (<code>ClassFileServer</code> 를 사용하는 경우와 사용하지 않는 경우가 있다)의 샘플 프로그램에 나타나고 있습니다.  </p>
+<p> 이제(벌써) 1 개(살)은 좀 더 간단한 방법으로, 표준의 Java URL API 를 사용하는 방법입니다. <code>java.net.URL</code> 클래스를 사용한 "https" URL 프로토콜 또는 schema를 사용해, SSL 를 사용할 수 있는 Web 서버와 안전하게 통신할 수 있습니다.  </p>
+<p>"https" URL schema에의 지원는 일반적인 브라우저가 많게 구현되고 있어 JSSE 에 부속의 소켓 레벨 API 를 필요로 하지 않고 안전한 통신에 액세스 할 수 있습니다.  </p>
+<p>URL 의 예를 다음에 나타냅니다.  </p>
+<blockquote><i>"https://www.verisign.com"</i> </blockquote>
+<p>"https" URL 구현의 트러스트 및 열쇠의 관리는, 환경에 고유합니다. JSSE 구현은,"https" URL 구현을 제공합니다. 다른 https 프로토콜 구현을 사용하는 경우는, 패키지명에 <code>java.protocol.handler.pkgs</code> <a href="#SystemProps">시스템 프로퍼티</a>을 설정할 수 있습니다. 상세한 것에 대하여는,<code>java.net.URL</code> 클래스를 참조해 주세요.  </p>
+<p> JSSE 로 다운로드할 수 있는 샘플에는, HTTPS 접속의 작성 방법을 나타내는 샘플 프로그램이 2 개 포함되어 있습니다. 샘플 프로그램 <a  href="samples/urls/URLReader.java"><code>URLReader.java</code></a>  와 <a href="samples/urls/URLReaderWithOptions.java"><code>URLReaderWithOptions.java</code></a>  는, 어느쪽이나 <code>urls</code> 디렉토리에 있습니다.  <a name="URLReader"></a> </p>
+<h3>URLReader 의 실행</h3>
+      <blockquote>
+<p> <a href="samples/urls/URLReader.java">URLReader.java</a>  프로그램은, 안전한 사이트에 액세스 하는 URL 클래스의 사용법을 나타냅니다. 이 프로그램의 출력은,<code>https://www.verisign.com/</code> 의 HTML 소스입니다. 디폴트로, JSSE 에 부속의 HTTPS 프로토콜 구현이 사용됩니다. 다른 구현을 사용하는 경우는, 시스템 프로퍼티 <code>java.protocol.handler.pkgs</code> 의 값을, 구현을 포함한 패키지명으로 설정할 필요가 있습니다.  </p>
+<p> 방화벽(fire wall)의 외측에서 샘플 코드를 실행하고 있는 경우는, 시스템 프로퍼티 <code>https.proxyHost</code> 및 <code>https.proxyPort</code> 를 설정할 필요가 있습니다. 예를 들어, 포트 8080 으로 프록시 호스트 "webproxy" 를 사용하는 경우는,<code>java</code> 커멘드로 다음의 옵션을 사용합니다.  </p>
+<pre>-Dhttps.proxyHost=webproxy<br><br>-Dhttps.proxyPort=8080<br></pre>
+<p> 또는, 원시 코드의 시스템 프로퍼티에 <code>java.lang.System</code> 의 메소드 <code>setProperty</code> 를 설정할 수도 있습니다. 예를 들어, 옵션으로 커멘드행을 사용하는 대신에, 사용하는 프로그램에 다음의 행을 포함할 수가 있습니다.  </p>
+        <blockquote>
+<pre>System.setProperty("java.protocol.handler.pkgs",<br>    "com.ABC.myhttpsprotocol");<br><br>System.setProperty("https.proxyHost",<br>    "webproxy");<br><br>System.setProperty("https.proxyPort",<br>    "8080");<br></pre>
+        </blockquote>
+<p> 주:Windows 95 또는 Windows 98 으로 실행하고 있는 경우, 커멘드행 옵션을 모두 포함하려면 , MS-DOS prompt로 사용할 수 있는 문자수에서는 부족한 경우가 있습니다. 그 경우, entire 커멘드를 사용해 . bat 파일을 작성하는지, 원시 코드에 시스템 프로퍼티을 추가해, 원시 코드를 재컴파일 합니다.  </p>
+      </blockquote>
+      <a name="URLReaderWO"></a> 
+<h3>URLReaderWithOptions 의 실행</h3>
+      <blockquote>
+<p> <a href="samples/urls/URLReaderWithOptions.java">URLReaderWithOptions.java</a>  프로그램은 기본적으로는 URLReader 와 같습니다만, 실행시에 프로그램의 인수로서 다음의 시스템 프로퍼티의 어떤 것인가, 또는 전부를 옵션으로 입력할 수 있는 점이 다릅니다.  </p>
+        <p></p>
+        <ul>
+<li>java.protocol.handler.pkgs
+            <p></p>
+          </li>
+<li>https.proxyHost
+            <p></p>
+          </li>
+<li>https.proxyPort
+            <p></p>
+          </li>
+<li>https.cipherSuites </li>
+        </ul>
+<p> URLReaderWithOptions 를 실행하려면 , 다음의 커멘드를 1 행으로 입력합니다.  </p>
+        <blockquote>
+<pre>java URLReaderWithOptions<br>     [-h proxyhost -p proxyport]<br>     [-k protocolhandlerpkgs]<br>     [-c ciphersarray]<br>     myApp<br></pre>
+        </blockquote>
+<p> 주:복수의 프로토콜 핸들러를, 종선으로 단락지은 항목의 리스트로 <code>protocolhandlerpkgs</code> 에 포함할 수가 있습니다. 복수의 SSL 암호군명을, 칸마로 단락지은 항목의 리스트로 <code>ciphersarray</code> 에 포함할 수가 있습니다. 가능한 암호군명은 <code>SSLSocket.getSupportedCipherSuites()</code> 호출로 반환된 것 것과 같습니다. 암호군은 SSL 및 TLS 프로토콜의 스펙으로부터 명명되고 있습니다.
+        </p>
+<p>미국 Sun Microsystems, Inc.  하지만 제공하는 디폴트의 프로토콜 핸들러 구현 이외의 HTTPS 프로토콜 핸들러 구현을 사용하는 경우는,<code>protocolhandlerpkgs</code> 인수만이 필요합니다.  </p>
+<p> 방화벽(fire wall)의 외측에서 실행하고 있는 경우는, 프록시 호스트 및 프록시 포트의 인수를 포함할 필요가 있습니다. 또, 사용할 수 있는 암호군의 리스트를 포함할 수도 있습니다.  </p>
+<p>다음에, URLReaderWithOptions 의 실행예와 포트 8080 에 프록시 포트 "webproxy" 를 지정하는 경우의 예를 나타냅니다.  </p>
+        <blockquote>
+<pre>java URLReaderWithOptions<br>    -h webproxy -p 8080<br></pre>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <a name="RMISample"></a> 
+<h3>안전한 RMI 접속을 나타내는 샘플 코드</h3>
+    <blockquote>
+<p> <code>samples/rmi</code> 디렉토리의 샘플 코드는, 안전한 RMI 접속의 작성 방법을 나타내고 있습니다. 샘플 코드는,<a  href="../../rmi/socketfactory/index.html">RMI 의 샘플</a>에 근거하고 있습니다. 기본적으로는 "Hello World" 의 샘플을 변경해, 커스텀 RMI 소켓 팩토리를 인스톨 해 사용합니다.  </p>
+<p> RMI 에 대해서는,<a href="../../rmi/index.html">Java RMI 문서</a>를 참조해 주세요. 이 Web 페이지는, RMI 의 튜토리얼과 RMI 에 관한 다른 정보를 기재한 Web 페이지입니다.  </p>
+    </blockquote>
+
+<a name="SSLEngineSample"></a> 
+<h3><code>SSLEngine</code> 의 사용을 나타내는 샘플 코드</h3>
+<blockquote>
+
+<code>SSLEngine</code> 는, 어플리케이션 개발자에게 I/O 및 계산 전략을 선택할 때의 유연성을 제공하기 위해서, Java 2 플랫폼의 Java SE 5 릴리스에 도입되었습니다. <code>SSLEngine</code> 는, SSL/TLS 구현을 특정의 I/O 추상화 (싱글스 레드 <code>SSLSockets</code> 등)에 묶는 것이 아니라, I/O 및 계산의 제약을 SSL/TLS 구현으로부터 제외합니다.
+
+<P>
+전술한 것처럼,<code>SSLEngine</code> 는 고도의 API 이며, 조심성없게 사용할 수 없습니다. 여기에서는, 그 사용을 설명하는데 도움이 되는 입문용 샘플 코드를 나타냅니다. 최초의 데모는, 대부분의 I/O 및 thread의 발행을 제외해, SSLEngine 메소드가 많게 중점을 둡니다. 2 번째의 데모는, 보다 현실적인 예이며,<code>SSLEngine</code> 가 어떻게 Java NIO 와 결합해 기본적인 HTTP/HTTPS 서버를 작성하는지를 나타냅니다.
+
+<a name="RunningSSLEngineSimpleDemo"></a> 
+<h3><code>SSLEngineSimpleDemo</code> 의 실행</h3>
+<blockquote>
+<a href="samples/sslengine/SSLEngineSimpleDemo.java">SSLEngineSimpleDemo</a>  는 단순한 어플리케이션이며, I/O 및 thread의 발행을 단순화 해 <code>SSLEngine</code> 의 조작에 중점을 두고 있습니다. 이 어플리케이션은, 일반적인 <code>ByteBuffer</code> 에 의해 SSL/TLS 메세지를 교환하는 2 개의 <code>SSLEngine</code> 를 작성합니다. 1 개의 루프가 모든 엔진 조작을 차례로 실행해, 안전한 접속의 확립 (핸드 쉐이크), 어플리케이션 데이터의 전송, 및 엔진의 클로즈를 나타냅니다.
+<P>
+<code>SSLEngineResult</code> 는,<code>SSLEngine</code> 의 현재 상태에 관해서 많은 정보를 제공합니다. 이 예에서는, 모든 상태를 조사하고는 있지 않습니다. I/O 및 thread의 발행을 적당히 단순화 하고 있기 (위해)때문에 실전 가동 환경에 적절한 예가 아닙니다만,<code>SSLEngine</code> 의 전체적인 기능의 설명에 유용합니다.
+    </blockquote>
+
+<a name="RunningNioServer"></a> 
+<h3><code>NIO</code> 베이스의 서버의 실행</h3>
+<blockquote>
+
+<hr><b>주:</b> 이 항으로 설명하는 서버의 예는, Java SE Development Kit 6 에 포함되어 있습니다. 코드는,<code>&lt;jdk-home&gt;/samples/nio/server</code> 디렉토리에 번들 되고 있습니다.
+<hr>
+
+<code>SSLEngine</code> 에 의해 제공되는 유연성을 충분히 이용하려면 , 최초로 I/O 나 thread의 모델등의 상보적인 API 를 이해합니다.
+
+<P>
+대규모 어플리케이션의 개발자가 유용이라고 생각하는 I/O 모델은, NIO <code>SocketChannel</code> 입니다. NIO 는, java.net.Socket API 에 내재 하는 슬캘링의 문제의 몇개인가를 해결하기 위해서 부분적으로 도입되었습니다. SocketChannel 에는, 다음과 같은 다양한 조작 모드가 있습니다.
+
+    <ul>
+<li>블록</li>
+<li>비블록</li>
+<li>셀렉터에 의한 비블록</li>
+    </ul>
+
+최소한의 HTTP 서버의 샘플 코드가 제공되고 있습니다. 이 코드는, 새로운 NIO API 의 대부분을 나타낼 뿐만 아니라,<code>SSLEngine</code> 를 사용해 안전한 HTTPS 서버를 작성하는 방법도 가리킵니다. 서버는 실전 가동의 품질이 아닙니다만, 이러한 새로운 API 의 대부분을 실제로 가리키고 있습니다.
+<P>
+샘플 디렉토리에는 README.txt 파일이 있어, 서버의 소개, 구축 및 구성 방법의 설명, 코드 레이아웃의 개요가 포함되어 있습니다. <code>SSLEngine</code> 의 사용자에게 있어 가장 중요한 파일은,<code>ChannelIO.java</code> 및 <code>ChannelIOSecure.java</code> 입니다.
+
+</blockquote>
+
+    </blockquote>
+
+  </blockquote>
+
+
+  <a name="CreateKeystore"></a> 
+<h2>JSSE 로 사용하는 키스토어의 작성</h2>
+  <blockquote> <a name="CreateSimpleKeystore"></a> 
+<h3>단순한 키스토어와 트러스트 스토어의 작성</h3>
+<blockquote> 이 마디에서는,<code>keytool</code> 를 사용해, JSSE 에서의 사용에 적절한 단순한 JKS 키스토어를 작성합니다. 키스토어내에 (공개/비공개키를 가진다) <code>keyEntry</code> 를 작성해, 트러스트 스토어내에 대응하는 <code>trustedCertEntry</code> (공개키만)를 작성합니다. 클라이언트 인증의 경우, 클라이언트의 증명서에 대해서 같은 처리를 실시할 필요가 있습니다. 주:신뢰할 수 있는 엥커의 PKCS12 에서의 포함은 지원되고 있지 않습니다. 신뢰할 수 있는 엥커의 포함에는 JKS, 비공개키의 포함에는 PKCS12 를 사용할 필요가 있습니다.
+<blockquote> <b>주:</b> 여기에서는, 각 스텝에 관한 자세한 해설은 생략 합니다. 상세한 것에 대하여는,<a  href="../../../tools/solaris/keytool.html">Solaris</a>  또는 <a  href="../../../tools/windows/keytool.html">Microsoft Windows</a>  의 keytool 에 관한 문서를 참조해 주세요.  </blockquote>
+사용자 입력은 굵은 글씨로 가리킵니다.  </blockquote>
+    <ol>
+<li> 대응하는 공개/비공개키와 함께, 새로운 키스토어와 자기 서명 첨부 증명서를 작성합니다.
+        <blockquote>
+<pre>% <b>keytool -genkeypair -alias duke -keyalg RSA \<br>  -validity 7 -keystore keystore </b>
+
+ Enter keystore password:  <b>password</b>
+ What is your first and last name?
+ [Unknown]:  <b>Duke</b>
+ What is the name of your organizational unit?
+ [Unknown]:  <b>Java Software</b>
+ What is the name of your organization?
+ [Unknown]:  <b>Sun Microsystems, Inc. </b>
+ What is the name of your City or Locality?
+ [Unknown]:  <b>Palo Alto</b>
+ What is the name of your State or Province?
+ [Unknown]:  <b>CA</b>
+ What is the two-letter country code for this unit?
+ [Unknown]:  <b>US</b> <br> Is CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ",<br> L=Palo Alto, ST=CA, C=US correct? <br> [no]:  <b>있다</b>
+
+ Enter key password for &lt;duke&gt;
+  (RETURN if same as keystore password):  <b>&lt;CR&gt;</b>
+      </pre>
+        </blockquote>
+이것이, 서버의 사용하는 키스토어입니다.
+        <p> </p>
+      </li>
+<li> 키스토어를 조사합니다. 엔트리 타입이 <code>keyEntry</code> (적자)가 되어 있는 점에 주목해 주세요. 이것은, 이 엔트리에 비공개키를 관련지을 수 있고 있는 것을 나타냅니다.
+        <blockquote>
+<pre>% <b>keytool -list -v -keystore keystore</b>
+Enter keystore password:  <b>password</b>
+
+Keystore type: jks
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: duke
+Creation date: Dec 20, 2001
+Entry type: <font color="red">keyEntry</font>
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ",
+L=Palo Alto, ST=CA, C=US
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ", L=Palo Alto, ST=CA, C=US
+Serial number: 3c22adc1
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+Certificate fingerprints:
+    MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+    SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
+      </pre>
+        </blockquote>
+        <p> </p>
+      </li>
+<li> 자기 서명 첨부 증명서를 export 해, 내용을 조사합니다.
+        <blockquote>
+<pre>% <b>keytool -export -alias duke -keystore keystore -rfc \<br>  -file duke.cer</b>
+Enter keystore password:  <b>password</b>
+Certificate stored in file &lt;duke.cer&gt;
+% <b>cat duke.cer</b>
+-----BEGIN CERTIFICATE-----
+MIICXjCCAccCBDwircEwDQYJKoZIhvcNAQEEBQAwdjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNB
+MRIwEAYDVQQHEwlQYWxvIEFsdG8xHzAdBgNVBAoTFlN1biBNaWNyb3N5c3RlbXMsIEluYy4xFjAU
+BgNVBAsTDUphdmEgU29mdHdhcmUxDTALBgNVBAMTBER1a2UwHhcNMDExMjIxMDMzNDI1WhcNMDEx
+MjI4MDMzNDI1WjB2MQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExEjAQBgNVBAcTCVBhbG8gQWx0
+bzEfMB0GA1UEChMWU3VuIE1pY3Jvc3lzdGVtcywgSW5jLjEWMBQGA1UECxMNSmF2YSBTb2Z0d2Fy
+ZTENMAsGA1UEAxMERHVrZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA1loObJzNXsi5aSr8
+N4XzDksD6GjTHFeqG9DUFXKEOQetfYXvA8F9uWtz8WInrqskLTNzwXgmNeWkoM7mrPpK6Rf5M3G1
+NXtYzvxyi473Gh1h9k7tjJvqSVKO7E1oFkQYeUPYifxmjbSMVirWZgvo2UmA1c76oNK+NhoHJ4qj
+eCUCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCRPoQYw9rWWvfLPQuPXowvFmuebsTc28qI7iFWm6BJ
+TT/qdmzti7B5MHOt9BeVEft3mMeBU0CS2guaBjDpGlf+zsK/UUi1w9C4mnwGDZzqY/NKKWtLxabZ
+5M+4MAKLZ92ePPKGpobM2CPLfM8ap4IgAzCbBKd8+CMp8yFmifze9Q==
+-----END CERTIFICATE-----
+      </pre>
+        </blockquote>
+이 예에서는 설명합니다만,<code>-certreq</code> 를 지정해 증명서 서명 요구 (CSR)를 생성해, 증명서 발행국 (CA)에 송부해 서명을 요구할 수도 있습니다.
+        <p> </p>
+      </li>
+<li> 증명서를 새로운 트러스트 스토어에 임포트 합니다.
+        <blockquote>
+<pre>% <b>keytool -import -alias dukecert -file duke.cer \<br>  -keystore truststore</b>
+Enter keystore password:  <b>trustword</b>
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ", L=Palo Alto, ST=CA, C=US
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ", L=Palo Alto, ST=CA, C=US
+Serial number: 3c22adc1
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+Certificate fingerprints:
+    MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+    SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
+Trust this certificate?  [no]:  <b>있다</b>
+Certificate was added to keystore
+      </pre>
+        </blockquote>
+      </li>
+<li> 트러스트 스토어를 조사합니다. 엔트리 타입이 <code>trustedCertEntry</CODE> (적자)가 되어 있는 점에 주목해 주세요. 이것은, 이 엔트리에 비공개키를 관련지을 수 있고 있는 것을 나타냅니다. 이 엔트리 타입으로부터, 이 파일이 <code>KeyManager</code> 의 키스토어로서 적절하지 않은 것도 압니다.
+        <blockquote>
+<pre>% <b>keytool -list -v -keystore truststore</b> <br>Enter keystore password:  <b>trustword</b>
+
+Keystore type: jks
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: dukecert
+Creation date: Dec 20, 2001
+Entry type: <font
+ color="red">trustedCertEntry</font>
+
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ", L=Palo Alto, ST=CA, C=US
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc. ", L=Palo Alto, ST=CA, C=US
+Serial number: 3c22adc1
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+Certificate fingerprints:
+    MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+    SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
+      </pre>
+        </blockquote>
+여기서, 적절한 키스토어를 사용해 어플리케이션을 실행합니다. 이 예에서는, 디폴트의 <code>X509KeyManager</code> 및 <code>X509TrustManager</code> 를 사용하는 것으로 합니다. 따라서,<a href="#Customization">「커스터마이즈」</a>로 설명한 시스템 프로퍼티을 사용해 키스토어를 선택합니다.
+        <blockquote>
+<pre>% java -Djavax.net.ssl.keyStore=keystore \<br>  -Djavax.net.ssl.keyStorePassword=password Server<br><br>% java -Djavax.net.ssl.trustStore=truststore \<br>  -Djavax.net.ssl.trustStorePassword=trustword Client<br></pre>
+        </blockquote>
+        <br>
+        <p> </p>
+      </li>
+    </ol>
+<hr> <b>주:</b> 이 예에서는, 서버의 인증만을 행하고 있습니다. 클라이언트의 인증이 필요한 경우는, 클라이언트의 열쇠에 대해서 같은 키스토어를 준비해, 서버에 대해서 적절한 트러스트 스토어를 제공할 필요가 있습니다.
+    <hr></blockquote>
+</blockquote>
+<hr>
+
+<h1><a name="AppA">부록 A:표준명</a> </h1>
+<blockquote>
+
+<P>
+
+JDK Security API 는, 다양한 알고리즘, 증명서, 및 키스토어의 타입의 표준명을 필요로 해, 이것들을 사용합니다. 이전에 이 부록 A 및 다른 스펙 (JCA/CertPath/그 외)에 있던 스펙명은,<a href="../StandardNames.html">표준명의 문서</a>에 정리했습니다. 특정의 프로바이더의 정보는,<a href="../SunProviders.html">「Sun Provider Documentation」</a>에 있습니다.
+
+
+</blockquote>
+
+<h1><a name="PLUG">부록 B:프로바이더의 플러그 인 가능성</a> </h1>
+<blockquote>
+
+Java SE 6 의 JSSE 는 플러그 인 가능하고, 서드 파티의 JSSE 프로바이더의 사용에는 무슨 제한도 없습니다.
+
+</blockquote>
+<hr size="3" noshade="noshade">
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr valign="top">
+      <td>
+<p><font size="-2"> Copyright &copy; 1998-2006, Sun Microsystems, Inc.  4150 Network Circle Santa Clara, California 95054 All Rights Reserved. </font></p>
+<font size="-1">코멘트의 송부처:<a  href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다.  </font> </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
+
+

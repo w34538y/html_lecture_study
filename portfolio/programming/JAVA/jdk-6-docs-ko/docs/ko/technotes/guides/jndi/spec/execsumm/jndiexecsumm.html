@@ -1,0 +1,99 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+
+<a name="130874"> </a> 
+<center><img src="header.gif"alt="Java Naming and Directory Interface"></center>
+<hr>
+<p><a name="130875"> </a> 
+<blockquote>Java Naming and Directory Interface<font size="-2"><sup>TM</sup></font> 테크놀러지 (<strong>JNDI</strong>)는, 복수의 네임 서비스 및 디렉토리 서비스에, 통일된 인터페이스를 제공합니다. Java Enterprise API 세트의 일부인 <strong>JNDI</strong> 에 의해, 다른 기업의 네임 서비스 및 디렉토리 서비스에 심리스에 접속할 수가 있습니다. 개발자는, 이 업계표준의 인터페이스를 사용해, 강력해 이식성이 있어, 디렉토리 기능을 갖춘 Java 어플리케이션을 구축할 수 있게 되었습니다.
+<p></p><p><a name="130592"> </a> <strong>JNDI</strong> 의 스펙은, 미국 Sun Microsystems, Inc.  라고 Novell, Netscape, SCO, 및 BEA 를 포함한, 업계를 리드하는 다수의 파트너가 개발했습니다.  
+</p><p><a name="130596"> </a>  <img alt="Duke 아이콘" align=left src="jndiexecsumm.doc.anc.gif"> 버젼 1.2 의 스펙 및 레퍼런스 구현은, Java Software 의 Web 사이트로부터 다운로드할 수 있습니다. </p></i>  <a name="130547"> </a> </blockquote>
+<p>
+<br clear=left>
+<h2> 기술의 개요</h2>
+<p><a name="129732"> </a> 디렉토리 서비스는, 사용자, 머신, 네트워크, 서비스, 및 어플리케이션에 관한 다양한 정보에의 액세스를 제공하는 것에 의해, 인트라넷 및 인터넷에 대해 중요한 역할을 완수합니다. 그 성질상, 디렉토리 서비스에는, 인간이 이해할 수 있는 이름 공간을 제공하는 네이밍 기능이 짜넣어지고 있어 다양한 엔티티의 처리 및 식별을 용이하게 실시할 수가 있습니다.
+ 
+</p><p><a name="129713"> </a> 일반적으로, 기업의 컴퓨팅 환경은, 몇개의 네이밍 기능으로 구성되어 있습니다.  많은 경우, 각각이 1 개(살)의 「복합」이름 공간이 다른 부분을 나타내고 있습니다. 예를 들어, 인터넷의 도메인 네임 시스템 (DNS)은, 기업내의 복수의 조직간의
+
+
+최상정도의 네이밍 기능으로서 사용합니다. 각 조직에서는, LDAP, NDS, NIS 등의 디렉토리 서비스를 사용합니다. 사용자의 관점으로부터 보면(자), 복합명으로 구성되는 1 개의 이름 공간이 있는 것처럼 보입니다. 복수명의 예로서 URL 를 들 수가 있습니다.  
+
+
+URL 는, 복수의 네이밍 기능의 이름 공간에 걸치고 있습니다. 디렉토리 서비스를 사용하는 어플리케이션에서는, 이 사용자의 관점을 지원하지 않으면 안됩니다.  
+</p><p><a name="129714"> </a> 디렉토리 서비스 API 는, 특정의 디렉토리 서비스 또는 네임 서비스에 의존하고 있습니다.  또, 복수의 네이밍 기능을 개입시켜 디렉토리 객체에 심리스에 액세스 할 수가 있습니다.  이 때문에, 많은 경우, 디렉토리 서비스 API 를 사용하면(자), Java 어플리케이션을 효율적으로 개발할 수가 있습니다.  
+
+
+예를 들어, 어플리케이션 자체의 객체를, 이름 공간에 첨부할 수가 있습니다. 이 네이밍 기능을 사용해, Java 어플리케이션으로부터, 임의의 형태의 객체의 검출 및 취득을 실시할 수가 있습니다.
+</p><p><a name="129715"> </a>  <strong>JNDI</strong> 에 의해, 디렉토리 기능 및 네이밍 기능이 Java 어플리케이션에 제공됩니다. JNDI 는, 특정의 디렉토리 서비스 구현에 의존하지 않게 정의되고 있습니다. 따라서, 인스톨 베이스내의 새로운 디렉토리나 기존의 디렉토리등의, 다양한 디렉토리에, 공통의 방법으로 액세스 할 수 있습니다.
+ 
+</p><p><a name="129717"> </a>  </a>  또,<strong>JNDI</strong> 에는, 서비스 프로바이더의 인터페이스도 정의되고 있기 (위해)때문에, 다양한 디렉토리 서비스 및 네임 서비스의 드라이버를 플러그 인 할 수 있습니다.
+</p><a name="129718"> </a> 
+<h2> 례</h2>
+<p><a name="130556"> </a> 다음에, 자주(잘) 사용되는 <strong>JNDI</strong> 의 기능을 간단하게 가리킨 예를 2 개 듭니다.
+</p><p><a name="129719"> </a> 프린터에 액세스 하는 어플리케이션에는, 대응하는 프린터 객체가 필요합니다. 이 대응부는, 다음과 같이 해 실시합니다.
+</p>
+<blockquote><pre>prt = (Printer)
+	building7.lookup("puffin");
+prt.print(document);
+</pre></blockquote>
+<p><a name="129722"> </a> <code>building7</code> 는, 물리적인 구축을 나타내는 네이밍 문맥으로, 프린터의 참조에 사용하는 문맥을 제공합니다.
+</p><p><a name="129723"> </a>  <strong>JNDI</strong> 에서는, 프린터 객체의 구축에 필요한 정보의 검색이 모두 행해집니다.
+</p><p><a name="129724"> </a> 다음의 예에서는, 어플리케이션으로부터, 조직의 디렉토리내에 포함되고 있는 특정의 사용자의 전화번호를 검색하고 있습니다.  다음과 같이 기술합니다.
+</p>
+<blockquote><pre>String[] attrs = {"workPhone", "cellPhone", "faxNumber"};
+bobsPhones = directory.getAttributes("cn=Bob, o=Widget, c=US", attrs);
+</pre></blockquote>
+<p><a name="130584"> </a> 또 「Widget」라고 하는 조직에 「Bob」라고 하는 이름의 사용자가 복수 존재하는 경우는, 다음과 같이 하면, 조직의 디렉토리를 검색해 올바른 「Bob」를 찾아낼 수가 있습니다.
+</p>
+<blockquote><pre>
+bob = directory.search("o=Widget, c=US","(cn=Bob)", controls);
+</pre></blockquote>
+<p><a name="130487"> </a> 그 외의 어플리케이션의 예로서 기업 전체의 디렉토리 서비스에 포함된 시큐리티 자격에의 액세스, 전자메일 주소에의 액세스, 및 데이타베이스나 네트워크 파일 시스템등의 기존의 각종 서비스의 주소에의 액세스가 있습니다.
+</p><a name="130115"> </a> 
+<h2> 인터페이스의 개요 </h2>
+<a name="130117"> </a> 
+<h3> 네이밍 인터페이스 - javax.naming </h3>
+<p><a name="130159"> </a>  <code>Context</code> 는, 네이밍 문맥을 지정하는 코어 인터페이스입니다. 기본 조작 (이름과 객체의 바인딩의 추가, 특정의 이름에 바인드 끝난 객체의 룩 업, 바인딩의 일람표시, 이름과 객체의 바인딩의 삭제, 같은 형태의 서브 문맥의 작성과 파기등)을 정의합니다.
+
+</p><p><a name="130160"> </a>  <code>Context.lookup()</code> 는, 사용 빈도가 가장 높은 조작입니다. 이 문맥의 구현은, Java 어플리케이션에 필요한 클래스의 객체를 돌려줄 수가 있습니다. 예를 들어, 어플리케이션에 의해, 프린터명을 사용해 대응하는 <code>Printer</code> 객체를 룩 올라가 거기에 직접 인쇄할 수가 있습니다.
+
+</p>
+<blockquote><pre>Printer printer = (Printer)
+ ctx.lookup("treekiller");
+printer.print(report);
+</pre></blockquote>
+<p><a name="130576"> </a> 어플리케이션은, 네임 서비스의 구현에 영향을 받지 않습니다. 또, 새로운 형태의 네임 서비스를 도입할 경우에, 어플리케이션을 변경하거나 실행중의 어플리케이션을 중단할 필요는 없습니다.
+</p><a name="130165"> </a> 
+<h3> 디렉토리 인터페이스 - javax.naming.directory </h3>
+<p><a name="130193"> </a>  <em>「디렉토리 객체와 속성」. </em><strong></strong><code>DirContext</code> 인터페이스에서는, 디렉토리 객체에 관련한 속성의 검사 및 갱신을 실시하는 메소드가 정의되고 있기 (위해)때문에, 디렉토리 기능을 사용할 수 있습니다. 각 디렉토리 객체에는,<code>Attribute</code> 클래스의 0 으로부터 복수의 일련의 객체가 포함되어 있습니다.
+각 속성은, 캐릭터 라인의 식별자로 식별됩니다.  또, 임의의 형태의 값을 0 개 이상 지정할 수 있습니다.
+</p><p><a name="130195"> </a>  <em>「네이밍 문맥으로서의 디렉토리 객체」. </em><code>DirContext</code> 인터페이스가 <code>Context</code> 인터페이스를 상속했을 경우는, 네이밍 문맥으로서 동작합니다. 즉, 임의의 디렉토리 객체로부터 네이밍 문맥을 제공할 수 있습니다. 다양한 사용자 정보를 보관 유지하고 있는 디렉토리 객체는, 프린터, 파일 시스템, 달력 등, 개인과 관계되는 자원의 본래의 네이밍 문맥으로도 됩니다.
+</p><p><a name="130198"> </a>  <em>「검색」. </em><code>DirContext</code> 인터페이스에서는, 컨텐츠 베이스의 디렉토리 검색이 지원되고 있습니다. 무엇보다 간단하고 일반적인 예로서 어플리케이션으로, 특정의 값을 설정하고 싶은 구두인가의 속성을 지정해, 조합에 사용할 수가 있습니다. 이 경우,<code>DirContext.search()</code> 메소드가 그 디렉토리 객체상에서 불려 가 일치한 디렉토리 객체라고 요구한 속성이 돌려주어집니다.
+
+</p><a name="130792"> </a> 
+<h3> 이벤트 인터페이스 - javax.naming.event</h3>
+<p><a name="130808"> </a>  </a>  「네이밍 이벤트」. <code>NamingEvent</code> 클래스는, 네임 서비스 또는 디렉토리 서비스에 의해 생성된 이벤트를 나타냅니다. <code>NamingEvent</code> 의 예로서 디렉토리 엔트리의 속성의 변경이나, 디렉토리 엔트리의 이름의 변경이 있습니다.  
+</p><p><a name="130898"> </a>  「네이밍 청취자」. <code>NamingListener</code> 는,<code>NamingEvent</code> 의 영향을 등록하는 객체입니다.  청취자는, 문맥에 등록해, 문맥, 그 아이, 또는 그 서브 트리내의 변경의 통지를 받습니다.
+</p><a name="130796"> </a> 
+<h3> LDAP 인터페이스 - javax.naming.ldap </h3>
+<p><a name="130837"> </a> <code>LdapContext</code> 인터페이스에서는, 「확장 기능」 및 「컨트롤」 등, 총칭적인 <code>DirContext</code> 인터페이스에 짜넣어지지 않은 LDAP v3 고유의 기능을 어플리케이션으로 사용할 수가 있습니다.
+</p><a name="130245"> </a> 
+<h3> 서비스 프로바이더 인터페이스 - javax.naming.spi</h3>
+<p><a name="130253"> </a> <strong>JNDI</strong> SPI 에서는, 다양한 네임 서비스 및 디렉토리 서비스 프로바이더의 구현의 개발 및 접속을 실시할 수가 있습니다.  이 때문에, 어플리케이션으로 <strong>JNDI</strong> 를 사용하고 있는 경우는, 대응하는 서비스에 액세스 할 수가 있습니다. 또,<strong>JNDI</strong> 는 복수의 이름 공간에 걸려 이름을 지정할 수가 있습니다.  이 때문에, 특정의 서비스 프로바이더 구현으로, 조작을 완료하기 위해서 다른 서비스 프로바이더와의 대화가 필요하게 되는 경우는, SPI 는, 다른 프로바이더 구현에, 제휴해 클라이언트의 <strong>JNDI</strong> 조작을 완료시키는 메소드를 제공합니다.
+
+</p><a name="130278"> </a> 
+<center><h2> http://java.sun.com/jndi<p>
+<img alt="Sun 로고" src="jndiexecsumm.doc.anc1.gif"></h2></center>
+
+<hr><br>
+
+
+
+
+<i>Copyright &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>주석 처리 툴 (apt) 입문 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR>
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>주석 처리 툴 (<code>apt</code>) 입문</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">apt&nbsp;목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+
+
+<h2><tt>apt</tt> 란 무엇인가</h2>
+
+<code>apt</code> 는 커멘드행 유틸리티로, 주석 처리 툴입니다. 검증을 하고 있는 일련의 지정된 원시 파일에 존재하는 주석에 근거해,<a href="#AnnotationProcessor">「주석 프로세서」</a>  를 검출해 실행합니다. apt</tt> 리플렉트 API 는, 구축시의 소스 베이스로, 프로그램 구조에 관한 읽기 전용 뷰를 제공합니다. 이러한 관련하는 API 는,<a href="../language/generics.html">총칭</a>  (<a href="http://www.jcp.org/en/jsr/detail?id=14">JSR 14</a> ) 프로그램의 추가 후에, Java<sup><small>TM</small></sup> 프로그램 언어의 형태 시스템을 정상적으로 모델화하기 위해서(때문에) 설계되었습니다. 최초로,<code>apt</code> 는, 새로운 원시 코드와 다른 파일을 작성하는 주석 프로세서를 실행합니다. 다음에,<code>apt</code> 는, 원의 파일과 작성된 원시 파일의 컴파일을 실시합니다.  이것에 의해 개발 사이클은 간소화됩니다.
+
+<hr>
+
+<h2><tt>apt</tt> 를 사용하는 이유</h2>
+
+주석의 사용이 필요한 것은, 새로운 파생 파일 (원시 파일, 클래스 파일, 배치 기술자등)의 작성에 사용되는 정보를 보관 유지하는 베이스 파일에 주석이 있어, 베이스 파일과 그 주석에 논리적으로 일관성이 있는 경우입니다. 즉, 일련의 파일 모든 일관성을 수동으로 유지하는 것이 아니라, 파생 파일은 베이스 파일로부터 작성되므로, 베이스 파일만을 유지할 필요가 있다고 하는 것입니다. <tt>apt</tt> 툴은 파생 파일을 작성하는 것을 목적으로 해 설계되었습니다.
+
+<p>주석에 근거해 파생 파일을 생성하는 경우, 도크 렛과 비교하면(자) <tt>apt</tt> 에는 다음의 이점이 있습니다.  
+
+<ul>
+
+<li> 정리된 선언의 모델과 프로그램의 현재의 형태의 구조를 가진다
+
+<li> 최신의 API 설계를 사용해, 배열 대신에 일반적인 컬렉션을 돌려주거나 선언과 형태를 조작하기 위한 방문객을 제공한다
+
+<li> 새롭게 생성된 파일의 재귀적인 처리를 지원해, 원이 되는 원시 파일과 생성된 원시 파일의 컴파일을 자동적으로 실행할 수 있다
+
+</ul>
+
+주석 처리의 목적 이외에,<tt>apt</tt> 는 다른 관련하는 프로그래밍 태스크에 대해서도 사용할 수 있습니다.
+
+<hr>
+
+<h2><tt>apt</tt> 의 사용 방법</h2>
+
+<h3>개요</h3>
+
+우선,<tt>apt</tt> 는, 조작되고 있는 원시 코드에 존재하는 주석을 결정합니다. 다음에, 기술한 「주석 프로세서 팩토리」를 검색합니다. 팩토리로 처리되고 있는 주석이 확인됩니다. 다음에, 팩토리가 조작되고 있는 원시 파일에 존재하는 주석을 처리하는 경우, 「주석 프로세서」를 건네주도록(듯이) 팩토리에 요구합니다. 다음에, 주석 프로세서가 실행됩니다. 프로세서에 생성된 새로운 원시 파일이 있는 경우,<tt>apt</tt> 는 새로운 원시 파일이 생성되지 않게 될 때까지, 이 처리를 반복합니다.
+
+<h3><a name="AnnotationProcessor">주석 프로세서의 개발</a> </h3>
+
+주석 프로세서의 기입은, 다음의 4 개의 패키지에 의존합니다.
+
+<ul>
+
+<li><a href="../../../jdk/api/apt/mirror/com/sun/mirror/apt/package-summary.html"><tt>com.sun.mirror.apt</tt></a> :툴이라고 대화하는 인터페이스
+
+<li><a href="../../../jdk/api/apt/mirror/com/sun/mirror/declaration/package-summary.html"><tt>com.sun.mirror.declaration</tt></a> :필드, 메소드, 클래스등의 원시 코드의 선언을 모델화하는 인터페이스
+
+<li><a href="../../../jdk/api/apt/mirror/com/sun/mirror/type/package-summary.html"><tt>com.sun.mirror.type</tt></a> :원시 코드에 검출된 형태를 모델화하는 인터페이스
+
+<li><a href="../../../jdk/api/apt/mirror/com/sun/mirror/util/package-summary.html"><tt>com.sun.mirror.util</tt></a> :방문객을 포함한, 형태와 선언을 처리하기 위한 다양한 유틸리티
+
+</ul>
+
+각 프로세서는,<tt>com.sun.mirror.apt</tt> 패키지의 <tt>AnnotationProcessor</tt> 인터페이스를 구현합니다. 이 인터페이스에는 프로세서를 호출하기 위해서(때문에),<tt>apt</tt> 툴에 의해 사용되는, 1 개의 메소드 <tt>process</tt> 가 있습니다. 프로세서는 하나 또는 복수의 주석형을 처리합니다.
+
+<p>프로세서의 인스턴스가, 관련하는 팩토리 <tt>AnnotationProcessorFactory</tt> 에 의해 돌려주어집니다. <tt>apt</tt> 툴은 팩토리의 <tt>getProcessorFor</tt> 메소드를 호출해 프로세서를 보관 유지합니다. 이 호출동안에, 툴은 <tt>AnnotationProcessorEnvironment</tt> 를 제공합니다.  이 환경에서는, 프로세서는 기동하기 위해서 필요한 모든 정보를 검출합니다. 이 정보에는, 조작하고 있는 프로그램 구조의 참조, 새로운 파일의 작성 및 경고와 에러 메세지를 건네주는 것으로,<tt>apt</tt> 툴과 통신 및 제휴할 방법이 포함됩니다.  
+
+<p>팩토리를 보려면 2 개의 방법이 있습니다. 사용하는 팩토리는 「<tt>-factory</tt>」커멘드행 옵션을 사용해 지정할 수 있습니다. 또는 팩토리는,<tt>apt</tt> <i>discovery</i> 프로시저중에 포함하는 것이 가능합니다. 「<tt>-factory</tt>」옵션을 사용하면(자), 기존의 단일의 팩토리를 가장 간단하게 실행할 수 있습니다.  이 옵션은 팩토리가 실행하는 방법을 보다 제어할 필요가 있는 경우에도 사용됩니다. 특정의 패스에 대해 팩토리를 검출하려면 , jar 파일 <tt>META-INF/services</tt> 정보에 의해 취득되는 검출 프로시저는, 다음에 나타내는 포맷에 따릅니다.
+
+<p>「<tt>-factory</tt>」옵션을 사용하는 주석 프로세서를 작성해 사용하려면 , 다음의 순서로 실시합니다.
+
+<ol>
+
+<li><tt>AnnotationProcessorFactory</tt> 를 기술합니다.  이것에 의해, 대상의 주석 타입에 대한 <tt>AnnotationProcessor</tt> 를 작성할 수 있습니다.
+
+<li>클래스 패스 <tt>tools.jar</tt> 와 함께 <tt>javac</tt> 를 사용하는 프로세서 및 팩토리를 컴파일 합니다. <tt> tools.jar</tt> 에는,<tt>com.sun.mirror. *</tt> 인터페이스가 포함됩니다.
+
+<li>컴파일 된 클래스 파일, 또는 클래스 파일을 포함한 jar 파일을,<tt>apt</tt> 를 호출하는 경우에 적절한 패스에 둡니다.
+
+</ol>
+
+디폴트의 검출 프로시저와 함께 주석 프로세서를 작성해 사용하려면 , 최초의 2 개의 스텝을 사용합니다.
+
+<ol start=3>
+
+<li><tt>META-INF/services</tt> 로,<tt>com.sun.mirror.apt.AnnotationProcessorFactory</tt> 라는 이름의 UTF-8 로 encode 된 텍스트 파일을 작성합니다. 그 내용은, 각 행이 고정 팩토리 클래스의 완전 지정명의 리스트입니다 (<tt>sun.misc.Service</tt> 에 의해 사용되는 리스트와 같은 형식입니다).
+
+<li> 팩토리, 프로세서, 및 <tt>META-INF/services</tt> 정보를 jar 파일에 패키지 합니다.
+
+<li>jar 파일을 <tt>apt</tt> 를 호출하는 경우에 적절한 장소에 둡니다. 적절한 패스에 대해서는,<a href="#Discovery">「검출」</a>  로 설명합니다.
+
+</ol>
+
+<h3>주석 프로세서의 간단한 예</h3>
+
+<pre>
+import com.sun.mirror.apt. *;
+import com.sun.mirror.declaration. *;
+import com.sun.mirror.type. *;
+import com.sun.mirror.util. *;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.Arrays;
+
+import static java.util.Collections. *;
+import static com.sun.mirror.util.DeclarationVisitors. *;
+
+/*
+ * This class is used to run an annotation processor that lists class
+ * names.   The functionality of the processor is analogous to the
+ * ListClass doclet in the Doclet Overview.
+ */
+public class ListClassApf implements AnnotationProcessorFactory {
+    // Process any set of annotations
+    private static final Collection&lt;String&gt; supportedAnnotations
+        = unmodifiableCollection(Arrays.asList(&quot;*&quot;));
+
+    // No supported options
+    private static final Collection&lt;String&gt; supportedOptions = emptySet();
+
+    public Collection&lt;String&gt; supportedAnnotationTypes() {
+        return supportedAnnotations;
+    }
+
+    public Collection&lt;String&gt; supportedOptions() {
+        return supportedOptions;
+    }
+
+    public AnnotationProcessor getProcessorFor(
+            Set&lt;AnnotationTypeDeclaration&gt; atds,
+            AnnotationProcessorEnvironment env) {
+        return new ListClassAp(env);
+    }
+
+    private static class ListClassAp implements AnnotationProcessor {
+        private final AnnotationProcessorEnvironment env;
+        ListClassAp(AnnotationProcessorEnvironment env) {
+            this.env = env;
+        }
+
+        public void process() {
+	    for (TypeDeclaration typeDecl : env.getSpecifiedTypeDeclarations())
+		typeDecl.accept(getDeclarationScanner(new ListClassVisitor(),
+						      NO_OP));
+        }
+
+	private static class ListClassVisitor extends SimpleDeclarationVisitor {
+	    public void visitClassDeclaration(ClassDeclaration d) {
+		System.out.println(d.getQualifiedName());
+	    }
+	}
+    }
+}
+</pre>
+
+<p>이 프로세서의 예에서는, 수많은 새로운 언어와 라이브러리의 특징이 사용되고 있습니다. 우선,<tt>static</tt> 임포트가 사용되어 다양한 유틸리티 메소드로 단순명을 사용할 수 있습니다. 예를 들어<br>「<tt>unmodifiableCollection</tt>」<br>하지만<br>「<tt>Collections.unmodifiableCollection</tt>」대신에 사용되고 있습니다. <br>
+
+다음에, 일반적인 컬렉션이 전체로 사용되고 있습니다. <tt>Arrays.asList</tt> 메소드는, var-args 메소드이기 위해서(때문에), 콤마 단락의 캐릭터 라인의 리스트를 받아, 목적의 요소를 사용하는 리스트를 작성할 수 있습니다. <tt>Collections.emptySet</tt> 메소드는 일반적인 메소드이며, 형태 보증된 빈 상태(empty)세트를 작성하기 위해서 사용할 수 있습니다. 프로세스 메소드의 <tt>for</tt> 루프는, 컬렉션에 대한 반복 처리를 실시하는, 확장된 <tt>for</tt> 루프입니다.
+
+<h4>주석을 프로세스로 지정한다</h4>
+
+처리하고 있는 주석을 툴에 지시하기 위해서, 이 예에 나타나도록(듯이), 팩토리는 <tt>import</tt> 형의 캐릭터 라인의 컬렉션을 돌려줍니다. 특정의 캐릭터 라인의 엔트리에는 다음의 3 개중 1 개의 형식이 있습니다.
+
+<blockquote>
+<dl>
+
+<dt><b><tt>*</tt></b>
+
+<dd>「모든 것」의 주석을 처리한다. 이것은 주석의 리스트가 빈 상태(empty)의 경우에도 처리한다.  즉,<tt>*</tt> 을 처리하는 팩토리는, 주석이 존재하지 않는 경우에서도 중요한 프로세서가 요구될 가능성이 있다. 이 기능에 의해 <tt>com.sun.mirror</tt> API 는, 일반적인 원시 코드 처리 툴을 기술하기 위해서 사용할 수 있는 foo.bar.Baz
+
+<dt><b><tt>foo.bar.Baz</tt></b>
+
+<dd>표준적인 이름이 「<tt>foo.bar.Baz</tt>」라고 하는 주석을 처리한다.
+
+<dt><b><tt>foo.bar. *</tt></b>
+
+<dd>표준적인 이름이 「<tt>foo.bar. </tt>」(으)로 시작되는 주석을 처리한다.
+
+</dl>
+</blockquote>
+
+<p>
+
+<tt>apt</tt> 툴은 처리하는 팩토리에 대해서 일련의 주석을 나타냅니다. 일련의 주석과 주석 프로세서 환경에 근거해, 팩토리는 단일의 주석 프로세서를 돌려줍니다. 팩토리가 복수의 주석 프로세서를 돌려주도록(듯이) 지정하는 경우는 어떻게 되는 것일까요. 팩토리는 <tt>com.sun.mirror.apt.AnnotationProcessors.getCompositeAnnotationProcessor</tt> 를 사용해, 복수의 주석 프로세서의 조작을 조합해 배열할 수 있습니다.
+
+
+<h4>인식하는 커멘드행 옵션을 지정한다</h4>
+
+<tt>supportedOptions</tt> 메소드에 의해, 팩토리는 인식하는 커멘드행 옵션의 <tt>apt</tt> 와 통신합니다. 「<tt>-A</tt>」로 시작되는 커멘드행 옵션은, 주석 프로세서와 통신하기 위해서 예약되고 있습니다. 예를 들어, 이 팩토리가 <tt>-Adebug</tt> 및 <tt>-Aloglevel=3</tt> 등의 옵션을 인식하는 경우, 「<tt>-Adebug</tt>」 및 「<tt>-Aloglevel</tt>」의 캐릭터 라인을 돌려줍니다. 후에, 팩토리가 인식하지 않는다 <tt>-A</tt> 옵션이 지정되었을 경우,<tt>apt</tt> 는 그 통지를 실시합니다.
+
+<h3><tt>apt</tt> 커멘드행</h3>
+
+독자적인 옵션에 가세해,<tt>apt</tt> 툴은 <tt>javac</tt> 가 받아들이는 모든 커멘드행 옵션을 받아들입니다. <tt>javac</tt> 옵션이 존재하는 경우는, 마지막 <tt>javac</tt> 의 호출에게 건네집니다.
+
+<p>
+<tt>apt</tt> 에 고유의 옵션을 다음에 나타냅니다.
+
+<dl>
+
+<dt>	<tt>-s</tt> <i>dir</i>
+
+<dd>	 프로세서가 생성한 원시 파일이 배치되는 디렉토리의 루트를 지정한다.  파일은 패키지 이름 공간에 근거해 서브 디렉토리에 배치된다
+
+<dt>	<tt>-nocompile</tt>
+
+<dd>	원시 파일을 클래스 파일에 컴파일 하지 않습니다.
+
+
+<dt>	<tt>-print</tt>
+
+<dd> 지정한 타입의 텍스트 표현을 출력합니다.  주석 처리 또는 컴파일은 실시하지 않습니다.
+
+
+<dt>	<tt>-A</tt>[<i>key</i>[<tt>=</tt><i>val</i>]]
+
+<dd> 주석 프로세서에 건네주는 옵션입니다.  이 옵션은,<tt>apt</tt> 가 직접 해석하는 것이 아니라, 각각의 프로세서에 의해 사용할 수 있도록(듯이) 바꿀 수 있습니다.
+
+<dt>   <tt>-factorypath</tt> <i>path</i>
+<dd> 주석 프로세서 팩토리를 검색하는 장소를 지정합니다.  이 옵션을 사용하는 경우, 클래스 패스의 팩토리는 검색되지 않습니다.
+
+<dt>   <tt>-factory</tt> <i>classname</i>
+
+<dd>   사용하는 <tt>AnnotationProcessorFactory</tt> 명.  디폴트의 검출 프로세스를 우회도로 한다
+
+</dl>
+
+
+<tt>apt</tt> 가,<tt>javac</tt> 의 옵션의 몇개인가를 공유하는 방법을 다음에 나타냅니다.
+
+<dl>
+
+<dt>	<tt>-d</tt> <i>dir</i>
+
+<dd> 프로세서와 javac 생성의 클래스 파일을 두는 장소를 지정합니다.
+
+<dt>	<tt>-cp</tt> <i>path</i> or <tt>-classpath</tt> <i>path</i> 
+
+<dd> 사용자 클래스 파일과 주석 프로세서 팩토리를 검색하는 장소를 지정합니다. <tt>-factorypath</tt> 가 지정되고 있는 경우, 클래스 패스의 팩토리는 검색되지 않습니다.
+
+</dl>
+
+디버그에 유용한,<tt>apt</tt> 의 은폐 옵션을 다음에 나타냅니다.
+
+<dl>
+
+<dt>	<tt>-XListAnnotationTypes</tt>
+
+<dd> 주석의 형태에 검출되는 리스트
+
+
+<dt>	<tt>-XListDeclarations</tt>
+
+<dd>	지정 및 선언이 인클루드 되는 리스트
+
+
+<dt>	<tt>-XPrintAptRounds</tt>
+
+<dd>	초기 및 재귀적인 <tt>apt</tt> 라운드에 관한 정보를 출력한다
+
+
+<dt>	<tt>-XPrintFactoryInfo</tt>
+
+<dd>	처리를 요구하는 팩토리의 주석에 관한 정보를 출력한다
+
+</dl>
+
+<hr>
+
+<h2><tt>apt</tt> 툴의 동작 방법 검출</h2>
+
+<h3><a name="Discovery">검출</a> </h3>
+
+커멘드행에 존재하는 주석을 결정하기 (위해)때문에, 원시 파일을 스캔 한 후에, 디폴트에서는,<tt>apt</tt> 툴은 적절한 패스에 존재하는 주석 프로세서 팩토리를 검색합니다. -factorypath</tt> 옵션이 사용되었을 경우, 그 패스가 팩토리를 검색하기 위한 적절한 패스가 됩니다.  그 이외에서는, 클래스 패스가 적절한 패스가 됩니다. 팩토리가 처리하는 주석을 결정하기 위해서(때문에) 조회됩니다. 팩토리가 존재하는 주석의 1 개에 처리하는 경우, 그 주석이 요구가 끝난 상태이다고 보입니다. 모든 주석이 요구되면(자), 툴은 추가의 팩토리를 검색하지 않습니다. 주석이 모두 요구된 후, 또는 새로운 팩토리를 검색할 수 없는 경우,<tt>apt</tt> 는 팩토리의 <tt>getProcessorFor</tt> 메소드를 호출해, 그 팩토리가 요구한 일련의 주석을 건네줍니다. 각 팩토리는 단일의 프로세서를 돌려주어, 해당하는 일련의 주석에 대한 적절한 처리를 실시합니다. 모든 프로세서가 반환된 후,<tt>apt</tt> 는 차례로 각 프로세서를 호출합니다. 프로세서가 새로운 원시 파일을 생성했을 경우,<tt>apt</tt> 의 재귀적인 라운드가 발생합니다. 재귀적인 <tt>apt</tt> 라운드에서는, 팩토리가 현재의 주석을 처리하고 있지 않아도, 검출 프로시저는 이전의 라운드로 프로세서를 공급한 팩토리로 <tt>getProcessorFor</tt> 를 호출합니다. 이것에 의해, 팩토리가 후속의 <tt>apt</tt> 라운드로<a href="#Listeners">청취자</a>를 등록할 수 있게 됩니다.  다만 대부분의 팩토리는, 이 경우 단순하게 <tt>AnnotationProcessors.NO_OP</tt> 를 돌려줍니다. 새로운 원시 파일이 생성되지 않았던 라운드의 뒤에,<tt>apt</tt> 는 원의 것 및 생성된 원시 파일상에서,<tt>javac</tt> 를 호출합니다. 프로세서가 검출되지 않는, 또는 프로세서가 기존의 주석을 처리할 수 없는 경우,<tt>apt</tt> 를 호출하는 것은, 원시 파일상에서 직접 <tt>javac</tt> 를 호출하는 것으로 본질적으로는 같습니다.
+
+<p>팩토리 클래스가 주석 처리의 복수의 라운드로 사용되는 경우, 팩토리 클래스는 1 회 로드 되어 팩토리의 <tt>getProcessorFor</tt> 메소드가 라운드 마다 1 회 불려 갑니다. 이것에 의해 팩토리는 라운드를 넘어 정적 상태를 포함할 수 있습니다.  
+
+<p><tt>-factory</tt> 옵션이 사용되고 있는 경우, 지정된 팩토리만이 조회됩니다.
+
+<h3><tt>apt</tt> 처리의 라운드</h3>
+
+<tt>apt</tt> 의 최초의 라운드는, 입력 원시 파일을 분석해, 검출 프로시저를 실행해, 출력되는 주석 프로세서를 호출합니다. <tt>apt</tt> 의 2 번째의 라운드에서는, 최초의 라운드 (존재하는 경우)로 생성된 새로운 원시 파일을 분석해, 그러한 새로운 파일의 검출 프로시저를 실행해, 출력되는 주석 프로세서를 호출합니다. 같이 2 번째의 라운드가 새로운 원시 파일을 생성했을 경우, 3 번째의 라운드는 새로운 소스를 분석해, 검출 프로시저를 실행합니다. <tt> apt</tt> 라운드는 새로운 원시 파일이 생성되지 않게 될 때까지 계속됩니다. 디폴트에서는, 마지막 라운드의 뒤에,<tt>apt</tt> 툴이 원의 원시 파일 및 생성된 원시 파일상에서 <tt>javac</tt> 를 실행합니다.
+
+<h3><a name="Listeners">청취자</a> </h3>
+
+청취자 주석 프로세서 또는 팩토리는, 그 환경에 있어 <tt>addListener</tt> 메소드를 사용해, 라운드의 마지막에 청취자를 등록할 수 있습니다. 툴은 등록된 청취자를, 그 라운드에 대한 모든 주석 프로세서가 완료한 시점에서 호출합니다. 청취자는 라운드의 상태에 대한 정보를 건네줍니다.  그 정보에는, 새로운 원시 파일이 기술되었을 경우, 에러가 발생했을 경우, 완성한 라운드가 마지막 라운드인 경우등이 있습니다. 청취자는 모든 주석 프로세스가 완료했을 경우에, 마지막 파일의 말미를 써내기 위해서(때문에) 사용되는 일이 있습니다. 같은 클래스는 <tt>AnnotationProcessor</tt> 및 <tt>RoundCompleteListener</tt> 의 양인터페이스에 구현할 수 있기 위해서(때문에), 같은 객체가 양문맥내에서 기능합니다.  return code
+
+<h3>return code</h3>
+
+마지막 <tt>apt</tt> 라운드의 뒤에 <tt>javac</tt> 가 불려 갔을 경우,<tt>apt</tt> 의 return code은, 그러한 파일을 컴파일 하는 <tt>javac</tt> 의 return code가 됩니다. javac</tt> 가 불려 가지 않았던 경우,<tt>apt</tt> 는, 툴 자체 또는 프로세서에 의해 에러가 보고되지 않았던 경우에는 0 의 종료 상태가 됩니다. 부정한 원시 파일 또는 불완전한 원시 파일 자체의 조작에서는 0 이외의 종료 상태로는 되지 않습니다.
+
+<hr>
+
+<h2>개요</h2>
+
+<p>API 의 밀러는, 주로 <tt>Declaration</tt> 인터페이스와<tt>com.sun.mirror.declaration</tt> 패키지의 서브 인터페이스의 계층을 개입시켜, 원시 코드를 구축하는 것을 나타내고 있습니다. <tt>Declaration</tt> 는, 패키지, 클래스, 메소드등의 프로그램의 요소를 나타내, 일반적으로 원시 코드의 특정의 부분에, 1 대 1 으로 대응합니다. <tt>Declarations</tt> 는 주석 되는 구조입니다.
+
+<p>형태는 <tt>TypeMirror</tt> 인터페이스, 및 <tt>com.sun.mirror.type</tt> 패키지내의 서브 인터페이스의 계층에 의해 나타내집니다. 형태에는 원시형, 클래스 및 인터페이스형, 배열형, 형태 변수, 및 와일드 카드형이 포함됩니다.
+
+<p>API 는 선언과 형태를 신중하게 구별합니다. 이것은 1 개의 선언이 모든 패밀리의 형태를 정의하는, 범용 데이터형에 있어서도 와도 중요합니다. 예를 들어,<tt>java.util.Set</tt> 클래스의 선언은 다음에 대응합니다.  
+
+<ul>
+<li>파라미터화 된 형태 <tt>java.util.Set&lt;String&gt;</tt>
+
+<li>파라미터화 된 형태 <tt>java.util.Set&lt;Number&gt;</tt>
+
+<li> 파라미터화 된 형태 <tt>java.util.Set&lt;<i>T</i>&gt;</tt>. 형태에 따라서는,<tt>String</tt> 또는 <tt>Number</tt> 이외의 「T」<i></i>
+
+<li>raw 형 <tt>java.util.Set</tt>
+
+</ul>
+
+선언에는, 문서 코멘트, 소스의 위치, 수식자, 및 주석이 포함됩니다. 선언에는 다른 종류의 이름 (단순, 지정)이 포함될 가능성이 있습니다. 보다 특정한 선언 서브 클래스에 의해, 그 구조에 적절한 추가의 정보가 주어집니다. 예를 들어, 클래스 선언에 의해, 생성자  및 슈퍼 클래스에의 액세스가 가능하게 됩니다. <tt>enum</tt> 에 대한 선언에는,<tt>enum</tt> 정수에 제공하는 메소드가 포함되어 있습니다.
+
+<p><tt>TypeMirror</tt> 는 원시 코드의 반환값의 형태, 파라미터형등을 모델화하기 위해서(때문에) 사용됩니다. 참조형에 대한 <tt>TypeMirror</tt> 는, 형태로부터 대응하는 선언에의 매핑을 실시합니다. 예를 들어,<tt>java.util.Set&lt;String&gt;</tt> 에 대한 밀러형으로부터 <tt>java.util.Set</tt> 에 대한 선언에의 매핑을 실시합니다.
+
+<hr>
+
+<h2>FAQ</h2>
+
+<ul>
+
+<li><b>「Debian Advanced Packaging Tool」에 대해 알고 있습니까. </b><br> 
+
+네.
+
+<li><b>주석 프로세서는 도크 렛으로 어떻게 비교할 수 있습니까. </b><br>
+
+2 개의 엔티티에는 확실히 몇개의 유사점이 있습니다. 예를 들어, 양쪽 모두 빌드시에 리플렉트 API 를 사용해 원시 코드에 처리합니다. 다만, 주석 프로세서로 사용된 밀러 API 는, Java 프로그램 언어의 현상의 형태 시스템을 보다 모델화합니다. 또 디폴트에서는, 실행하는 주석 프로세서는,<tt>-doclet</tt> 옵션 과 유사한 기구는 아니고 원시 코드에 존재하는 주석에 의해 결정됩니다. 즉, 단일의 고정 도크 렛을 실행하는 대신에,<tt>apt</tt> 는 동적으로 실행할 가능성이 있는 복수의 프로세서를 선택합니다.
+
+
+<li><b>로컬 변수의 주석을 처리하려면  어떻게 하면 좋습니까. </b><br>
+
+로컬 변수의 주석은, 선언의 계층이 메소드 또는 생성자  내부의 프로그램 구조를 모델화하지 않기 때문에, 표시되지 않습니다.
+
+
+<li><b><tt>com.sun.mirror.apt</tt> 내의 팩토리와 프로세서 인터페이스가 나뉘고 있는 것은 왜입니까. </b><br>
+
+「어떻게」처리하는지, 및 「언제」처리하는지를 제어하는 것을 조합해 결정하는 것은 가능합니다.  그러나, 폐사는 이 2 개의 스텝을 팩토리와 프로세서 인터페이스에 구별해 분리하는 선택을 했습니다.
+
+
+<li><b><tt>apt</tt> ant task 는 있습니까. </b><br>
+
+현재 상태로서는 없습니다.
+
+
+<li><b>밀러란 무엇입니까. </b><br>
+
+리플렉션을 검출하는 장소를 나타냅니다. 리플렉션 프로그래밍에서는, 밀러는 표시된 객체와 표시를 실시하고 있는 객체간의 일관성이 있는 분할을 유지합니다.
+
+
+<li><b>팩토리의 주석의 지원와 팩토리의 옵션의 지원가, 팩토리의 클래스의 주석으로서 encode 하는 대신에 메소드에 의해 반환되는 것은 왜입니까. </b><br>
+
+인터페이스의 구현은, 필요한 기능을 가지는 클래스를 나타내기 위한 일반적으로의 기구입니다.  예를 들어 어느 주석에 처리하고 있는지를 나타낼 수가 있습니다. 특정의 주석형을 사용해 주석 되는 클래스를 필요로 하는 언어 기구는 없습니다. 따라서, 주석에 있는 그러한 정보를 encode 하는 것은 기술적으로는 가능합니다만, 그것은 인터페이스내의 메소드가 가지는 형태의 안전성을 빠뜨리게 됩니다.
+
+<li><b>방문객에게는 익숙해져 있지 않습니다만, 사용할 필요가 있습니까. </b><br>
+
+방문객 패턴은 「Gang of Four」의 「Design Patterns」라고 하는 책 중(안)에서 소개되고 있는 표준적인 패턴의 1 개입니다. <i></i>이 패턴은 형태에 대한 명시적인 테스트를 실시하지 않고 , 형태 의존의 조작을 호출할 수가 있는 강력한 기구를 제공합니다. 그러나 방문객의 사용은 필수가 아닙니다.
+
+</ul>
+
+<hr>
+
+<h2>관련 항목</h2>
+
+<ul>
+<li>
+<a href="../../tools/share/apt.html"><code>apt 툴의 레퍼런스 페이지</code></a> 
+</li>
+<li>
+<a href="../../../jdk/api/apt/mirror/overview-summary.html">밀러 API 의 스펙</a> 
+</li>
+</ul>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR VALIGN=TOP>
+<TD>
+
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/index.html">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+
+</body>
+</html>

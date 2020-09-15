@@ -1,0 +1,390 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>
+JNDI/DNS 서비스 프로바이더
+ - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077
+ALINK=#ff0000>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<center>
+<h1>
+DNS 서비스 프로바이더<br> Java Naming Directory Interface<font size=4><sup>TM</sup></font> (JNDI)
+</h1>
+</center>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<P><FONT SIZE=-1>코멘트의 송부처: <a href="mailto:jndi@java.sun.com">jndi@java.sun.com</a> </FONT>
+
+<P>
+<P><I>목차</I>
+<UL>
+<LI>
+<A HREF="#INTRO">처음에</A> </LI>
+
+<LI> 
+<A HREF="#CONF">적합성</A> </LI>
+
+<LI>
+<A HREF="#PROP">환경 프로퍼티</A> </LI>
+
+<LI>
+<A HREF="#TYPE">DNS 컨텐츠의 JNDI 에의 매핑</A> </LI>
+
+<LI>
+<A HREF="#URL">DNS 의 의사 URL</A> </LI>
+
+<LI>
+<A HREF="#API">API 매핑</A> </LI>
+
+<LI>
+<A HREF="#USAGE">사용예</A> </LI>
+
+<LI>
+<A HREF="#SEC">시큐리티에 대해</A> </LI>
+
+<li>
+<A HREF="#FED">연합</A> </LI>
+</UL>
+<P>
+
+
+<HR>
+<P> 
+<A NAME="INTRO"></a> 
+<H2>처음에</H2>
+
+<p>
+DNS 서비스 프로바이더에 의해, JNDI 어플리케이션이, 인터넷 도메인 네임 시스템에 포함된 정보에 액세스 할 수 있게 됩니다. 이 프로바이더에는, JNDI 디렉토리 문맥의 트리로서의 DNS 이름 공간과 JNDI 의 속성으로서의 DNS 자원 레코드가 준비되어 있습니다.
+
+<p>
+이 문서에서는, DNS 서비스 프로바이더의 기능과 DNS 가 JNDI 에 매핑 되는 방법의 상세한 것에 대하여 설명합니다.
+
+
+<p>
+<hr>
+<p>
+<A NAME="CONF"></a> 
+<H2>적합성</H2>
+
+<p>
+DNS 서비스 프로바이더는 도메인 네임 시스템을 지원합니다.  그 규정은,<a href=http://www.ietf.org/rfc/rfc1034.txt>RFC 1034</a> ,<a href=http://www.ietf.org/rfc/rfc1035.txt>RFC 1035</a>  및 그 갱신과 명세는 <a href=http://www.ietf.org/rfc/rfc1123.txt> RFC 1123</a> ,<a href=http://www.ietf.org/rfc/rfc2181.txt> RFC 2181</a>  에 기술되고 있습니다. 현재로서는, 다음의 자원 레코드의 형태와 클래스를 지원하고 있습니다.  <br>
+<blockquote>
+<table summary="layout">
+<tr valign=top>
+<td>
+  <table summary="types and location specified" border>
+<tr><th> <em>형</em>		</th>
+<th> <em>스펙</em>	</table></td></tr>
+<tr><td> A	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> NS	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> CNAME</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> SOA	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> PTR	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> MX	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> TXT	</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> HINFO</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> AAAA	</td> <td align=center> RFC 1886 </td></tr>
+<tr><td> NAPTR</td> <td align=center> RFC 2915 </td></tr>
+<tr><td> SRV	</td> <td align=center> RFC 2782 </td></tr>
+  </table>
+
+<td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </td>
+<td>
+  <table summary="classes and location specified" border>
+<tr><th> <em>클래스</em>		</th>
+<th> <em>스펙</em>	</th></tr>
+<tr><td> IN</td> <td align=center> RFC 1035 </td></tr>
+<tr><td> HS</td> <td align=center> RFC 1035 </td></tr>
+  </table>
+</td>
+
+
+</blockquote>
+
+각각의 검색은, 최초로 UDP 를 사용해 실행됩니다. 응답이 너무 길어, 잘라 버리지 않으면 UDP 패킷에 돌려줄 수가 없는 경우는, TCP 를 사용해 검색이 반복해집니다.
+
+
+<p>
+<hr>
+<p>
+<A NAME="PROP"></a> 
+<H2>환경 프로퍼티</H2>
+<p>
+
+DNS 서비스 프로바이더에서는, 다음의 JNDI 환경 프로퍼티을 사용합니다. 초기 문맥 생성자 , 시스템 프로퍼티, 애플릿 파라미터, 및 resource file를 사용해 프로퍼티을 초기화하는 방법에 대해서는,<a href=../../../api/javax/naming/InitialContext.html#ENVIRONMENT>「JNDI 의 문서」</a>를 참조해 주세요.
+
+<b><pre>java.naming.authoritative</pre></b>
+<blockquote>
+이 프로퍼티은, 모든 응답이 권한을 갖고 있을 필요가 있을지 어떨지를 지정하기 위해서 사용합니다. 이 값이 <tt>true</tt> 의 경우, 권한이 있는 응답만을 DNS 서버로부터 받아들입니다. 그 외의 경우는, 모든 응답을 받아들입니다. 이 프로퍼티이 설정되지 않는 경우는, 디폴트 값의<tt> false </tt>가 사용됩니다. 모든 응답이 권한을 가질 필요가 있는 것을 지정하는 경우의 예를 나타냅니다.
+<blockquote>
+<pre>
+env.put(Context.AUTHORITATIVE, "true");
+</pre>
+</blockquote>
+권한이 있는 응답만이 돌려주어지도록(듯이) 요구했을 경우, 일부의 정보를 이용할 수 없게 되는 경우가 있습니다. 이것은, DNS 프로토콜이 권한을 갖고 있는 정보를 요구하는 방법을 제공하고 있지 않기 때문입니다. 예를 들어, DNS 서비스 프로바이더가 쿠에리의 결과로서 권한이 없는 데이터를 취득했을 경우는, 권한이 있는 데이터만을 돌려주기 (위해)때문에, 그 데이터를 파기합니다.
+
+</blockquote>
+
+<b><pre>java.naming.factory.initial</pre></b>
+<blockquote>
+DNS 서비스 프로바이더를 선택할 경우에, 초기 문맥으로서 사용됩니다. 프로바이더에서는 사용되지 않습니다. 프로바이더의 초기 문맥 팩토리의 클래스명을 지정해, 다음의 예의 같게 설정할 수 있습니다.
+<blockquote>
+<pre>
+env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+</pre>
+</blockquote>
+</blockquote>
+
+<b><pre>java.naming.factory.object</pre></b>
+<blockquote>
+이 프로퍼티에는, DNS 로부터 읽어내진 객체를 변환하기 위한 , 객체 팩토리 클래스의 완전 수식명의 리스트가 포함됩니다. 각 클래스명은 구두점으로 단락짓습니다. 이 기구를 사용해, 어플리케이션으로 보다 사용하기 쉬운 형식의 객체에 변환됩니다. 상세한 것에 대하여는,<a href="../../../api/javax/naming/spi/DirectoryManager.html#getObjectInstance(java.lang.Object,%20javax.naming.Name,%20javax.naming.Context,%20java.util.Hashtable,%20javax.naming.directory.Attributes)"><tt>DirectoryManager.getObjectInstance()</tt></a>  를 참조해 주세요.
+</blockquote>
+
+<b><pre>java.naming.provider.url</pre></b>
+<blockquote>
+초기 DNS 문맥으로 사용되는 DNS 서버의 호스트명과 포트 외에, 초기 문맥의 도메인명을 지정합니다. URL 형식의 상세한 것에 대하여는, 아래의<a href="#URL">「DNS 의 의사 URL」</a>를 참조해 주세요.
+    <p>
+예를 나타냅니다.
+<blockquote>
+<pre>
+env.put(Context.PROVIDER_URL, "dns://server1.sun.com/java.sun.com");
+</pre>
+</blockquote>
+프로바이더가 server1.sun.com 에 있는 DNS 서버를 사용하도록(듯이) 해, 초기 문맥의 도메인명을 java.sun.com 로 설정합니다. 이 프로퍼티이 설정되지 않는 경우, 디폴트 값의 「dns:」가 사용됩니다. (사용되는 디폴트 값는, 「DNS 의 의사 URL」섹션에 기재되어 있습니다. )
+    <p>
+이 프로퍼티에 공백 문자로 단락지은 URL 의 리스트를 지정해, 복수의 DNS 서버를 지정할 수 있습니다. 서버의 1 개가 응답할 때까지, 각 서버에 차례로 접속합니다. 초기 문맥에는 1 개의 도메인명 밖에 포함되지 않기 때문에, 복수의 URL 를 지정하는 경우는, 각각의 도메인 부분이 같은 필요가 있습니다. 예를 나타냅니다.
+<blockquote>
+<pre>
+env.put(Context.PROVIDER_URL,
+    "dns://server1.sun.com/java.sun.com dns://server2.sun.com/java.sun.com");
+</pre>
+</blockquote>
+</blockquote>
+
+<b><pre>com.sun.jndi.dns.lookup.attr</pre></b>
+<blockquote>
+디폴트에서는, JNDI 가 DNS 문맥으로 객체 팩토리를 호출하기 전에, 문맥의 인터넷 TXT 속성을 읽어내, 팩토리에 건네줍니다. 이 프로퍼티은, 설정하는 경우는, 사용하는 다른 속성 식별자를 지정합니다. 속성 식별자의 형식에 대해서는, 다음의<a href=#TYPE>「DNS 컨텐츠의 JNDI 에의 매핑」</a>을 참조해 주세요.
+</blockquote>
+
+<b><pre>com.sun.jndi.dns.recursion</pre></b>
+<blockquote>
+이 프로퍼티은, DNS 쿼리로 회귀를 허가하지 않는 것을 지정하기 위해서 사용합니다. 이 프로퍼티이 설정되어 있지 않은 경우나, 「true」로 설정되어 있는 경우, 회귀를 허가합니다. 그 외의 경우는, 회귀를 허가하지 않습니다. DNS 쿼리에서의 회귀를 허가하지 않는 것을 지정하는 경우의 예를 나타냅니다.  
+<blockquote>
+<pre>
+env.put("com.sun.jndi.dns.recursion", "false");
+</pre>
+</blockquote>
+</blockquote>
+
+<a name="TIMEOUT"></a>  <b><pre>com.sun.jndi.dns.timeout.initial
+com.sun.jndi.dns.timeout.retries</pre></b>
+<blockquote>
+이러한 프로퍼티은, DNS 프로바이더가 UDP 쿼리의 발행시에 사용하는 타임 아웃 관련의 디폴트를 변경하는 경우에 사용됩니다. DNS 프로바이더는, 다음의 지수 백 오프 알고리즘을 사용해 UDP 쿼리를 발행합니다. 프로바이더는, DNS 서버에 쿼리를 발행해, 타임 아웃 기간내 (디폴트에서는 1 초)에 응답이 도착하는 것을 대기합니다. 프로바이더에 타임 아웃 기간내에 응답이 도착하지 않았던 경우, 프로바이더는 다음의 서버에 쿼리를 발행해, 응답을 받아들일 때까지, 이것을 반복합니다. 프로바이더가 어느 서버로부터도 응답을 받아들이지 않았던 경우, 타임 아웃 기간을 2 배로 해, 리트라이의 최대 회수까지 (디폴트에서는 4 회) 각 서버에 쿼리를 발행하는 프로세스를 반복합니다.
+    <p>
+<tt>com.sun.jndi.dns.timeout.initial</tt>」프로퍼티이 설정되어 있는 경우, 초기 타임 아웃 기간 (즉 2 배로 하기 전의 기간)으로서 사용하는 수치 (밀리 세컨드)를 지정합니다. 이 프로퍼티이 설정되지 않는 경우는, 디폴트의 초기 타임 아웃은 1000 밀리 세컨드입니다.
+    <p>
+<tt>com.sun.jndi.dns.timeout.retries</tt>」프로퍼티이 설정되어 있는 경우, 상기의 지수 백 오프 알고리즘을 사용해 각 서버에 대해서 리트라이 하는 회수를 지정합니다. 이 프로퍼티이 설정되지 않는 경우는, 디폴트의 리트라이 회수는 4 입니다.
+    <p>
+다음의 예에서는, 타임 아웃의 합계의 길이를 그다지 바꾸지 않고 , 초기 타임 아웃 기간을 2 배로 하고 있습니다.
+<blockquote>
+<pre>
+env.put("com.sun.jndi.dns.timeout.initial", "2000");
+env.put("com.sun.jndi.dns.timeout.retries", "3");
+</pre>
+</blockquote>
+
+<p><b>주 - </b>Java 2 SDK, v 1.4. 1 보다 전의 시스템에서는, 상기의 2 개의 프로퍼티은 무시되어 항상 디폴트가 적용됩니다.
+
+</blockquote>
+
+<hr>
+<p>
+<A NAME="TYPE"></a> 
+<H2>DNS 컨텐츠의 JNDI 에의 매핑</H2>
+
+DNS 서비스 프로바이더는, DNS 명, 노드, 및 자원 레코드를, 다음과 같이 해 JNDI 의 데이터형에 매핑 합니다.
+
+<h4>이름</h4>
+
+DNS 도메인명은, JNDI 의 복합 <tt>Name</tt> 객체로 표현됩니다. 왼쪽에서 오른쪽에 닷으로 단락지어진 구문으로, backslash (<tt>\</tt>)가 이스케이프 문자로서 사용됩니다. \DDD</tt> 형식의 escape sequence도 사용할 수 있습니다.  여기서 <tt>DDD</tt> 는 3 자리수의 10 진수입니다. 이름에서는, 대문자와 소문자는 구별되지 않습니다. 명시적인 루트 도메인 라벨 ( 「<tt>. </tt>」)로 끝나는 완전 수식명은, 가장 중요한 위치를 공백 요소로 한 복합 <tt>Name</tt> 객체로 나타내집니다.
+
+<p> 호스트명은 도메인명의 부분집합입니다. <em></em>호스트명의 라벨에는, US-ASCII 문자, 숫자, 하이픈만을 사용할 수 있어 선두 또는 말미에 하이픈은 사용할 수 없습니다. 이러한 규칙에 따르지 않은 이름은 도메인명으로서 유효하게 되는 경우도 있습니다만, 일부의 DNS 어플리케이션으로 사용할 수 없기 때문에, 대부분의 경우, 이러한 이름의 사용은 피해야 합니다.
+
+<p> DNS 에서는, US-ASCII 이외의 문자에 사용하기 위한 (UTF-8 등의) 인코딩을 지정하고 있습니다. 그 결과, DNS 명의 문자가 제로 이외의 고위의 바이트를 사용할 것은 없습니다. 도메인명의 국제화의 작업이 종료한 시점에서, 그 작업에 맞추어 DNS 서비스 프로바이더를 갱신할 수가 있습니다.
+
+<h4>노드 및 자원 레코드</h4>
+
+DNS 의 노드는,<tt>DirContext</tt> 객체로 표현됩니다. 노드의 자원 레코드는, 문맥의 속성으로 표현됩니다. 예를 들어, DNS 노드의 sun.com 에 주소가 「192.9. 49.33」의 A 레코드와 데이터가 「10 sun.com」의 MX 레코드가 포함되어 있는 경우에, 대응하는 JNDI 문맥에는, 식별자가 「<tt>A</tt>」로 캐릭터 라인치가 「192.9. 49.33」의 속성과 식별자가 「<tt>MX</tt>」로 캐릭터 라인치가 「10 sun.com」의 속성이 있습니다.
+
+<p> 같은 형태의 복수의 레코드는, 복수의 값이 있는 속성으로서 표현됩니다. 지원되지 않는 레코드형은, 숫자의 식별자 및 바이트열의 값으로 표현됩니다.
+
+<h4>속성 식별자</h4>
+
+<p> DNS 자원 레코드의 클래스명과 형명이, JNDI 속성 식별자에 매핑 됩니다. 레코드가 인터넷 클래스의 경우, 대응하는 속성 ID 는 레코드의 형명입니다. 지원되지 않는 형태의 경우는, 대신에 정수치가 사용됩니다. 레코드가 인터넷 클래스가 아닌 경우는, 클래스명 (또는 정수의 클래스치)이, 공백 문자로 단락지어져 속성 ID 에 부가됩니다. 예를 들어, 속성 식별자의 「<tt>AAAA</tt>」로 IPv6 주소 레코드가 표현되어 속성 식별자 「<tt>HS 97</tt>」으로 Hesiod 클래스의 97 형의 자원 레코드가 표현됩니다.
+
+<p> 또, 「슈퍼 클래스」속성 식별자도 정의됩니다. <tt>DirContext.getAttributes()</tt> 메소드를 사용해 레코드를 문의할 때에, 이러한 식별자가 편리한 경우가 있습니다. 속성명으로 형명 또는 클래스명 대신에 「<tt>*</tt>」이 있는 경우는, 임의의 형태 또는 클래스의 레코드인 것을 나타냅니다. 예를 들어, 속성 식별자의 「<tt>IN&nbsp;*</tt>」를 <tt>getAttributes()</tt> 메소드에 건네주면, 인터넷 클래스의 모든 레코드를 검출할 수 있습니다. 속성 식별자 「<tt>*&nbsp;*</tt>」는, 임의의 클래스 또는 타입을 나타내고 있습니다.
+<p>
+속성 식별자에서는, 대문자와 소문자는 구별되지 않습니다.
+
+<p>
+<hr>
+<p>
+<A NAME="URL"></a> 
+<H2>DNS 의 의사 URL</H2>
+
+URL 를 닮은 기술을 사용해, DNS 서버, 포트,<tt>java.naming.provider.url</tt> 프로퍼티 및 초기 문맥에게 건네지는 URL 나우치의 도메인을 나타냅니다. 이 의사 URL 의 형식은, 다음과 같습니다.
+<pre>
+   dns:[//host[:port]][/domain]
+</pre>
+「host」 및 「port」로, 사용하는 DNS 서버를 나타냅니다. 「host」만이 지정되고 있는 경우, 포트에는 디폴트의 53 이 사용되어 「port」만이 지정되고 있는 경우, 호스트는 디폴트의 「localhost」가 됩니다. 모두 지정되지 않는 경우, 프로바이더는 기본 플랫폼용으로 구성된 서버를 판단해, 이 서버의 사용을 시도합니다. 이것에 성공했을 경우, 프로바이더는 <tt>java.naming.provider.url</tt> 프로퍼티을, 서버로 구축된 스페이스 단락의 URL 리스트로 설정합니다 (예를 들어, Solaris 또는 Linux 의 경우, 프로바이더는 <tt>/etc/resolv.conf</tt> 파일을 읽어들인다). DNS 가 기본 플랫폼으로 설정되어 있지 않은 경우, 호스트와 포트는 디폴트의 「localhost」라고 53 이 됩니다.
+
+<p><b>주 - </b>Java 2 SDK, v 1.4. 1 보다 전의 시스템에서는, 프로바이더는 기본 플랫폼의 DNS 설정의 사용을 시도하지 않습니다. 호스트도 포트도 지정되어 있지 않은 경우, 호스트와 포트는 디폴트의 「localhost」라고 53 이 됩니다.
+
+<p> 「domain」는 문맥의 DNS 도메인명이며, 반드시 서버의 도메인에 관련지을 수 있고 있을 필요는 없습니다.  디폴트는 「.」입니다. (루트 도메인)(을)를 사용합니다. (루트 도메인)(을)를 사용합니다.
+
+
+<p>
+<hr>
+<p>
+<A NAME="API"></a> 
+<H2>API 매핑</H2>
+
+DNS 서비스 프로바이더에는,<tt>DirContext</tt> 인터페이스가 구현되고 있습니다. 메소드가 DNS 의 조작에 매핑 되는 방법은, 다음과 같습니다. 여기 로 거론되지 않은 메소드는 지원되고 있지 않습니다.
+
+<b><pre>
+addToEnvironment()</pre></b>
+    <blockquote>
+새로운 프로퍼티을 환경에 추가하는지, 기존의 프로퍼티을 변경합니다.
+    </blockquote>
+    
+<b><pre>
+close()</pre></b>
+    <blockquote>
+내부 데이터 구조를 해제합니다.
+    </blockquote>
+    
+<b><pre>
+composeName()</pre></b>
+    <blockquote>
+2 개의 이름을 거듭해 맞춥니다.
+    </blockquote>
+    
+<b><pre>
+getAttributes()</pre></b>
+    <blockquote>  
+DNS 자원 레코드를 나타내는 속성을 돌려줍니다.
+    </blockquote>
+    
+<b><pre>
+getEnvironment()</pre></b>
+    <blockquote>  
+이 문맥에 관련하는 환경 프로퍼티을 돌려줍니다.
+    </blockquote>
+
+<b><pre>
+getNameInNamespace()</pre></b>
+    <blockquote>
+이 노드의 완전 수식 도메인명을 돌려줍니다.  
+    </blockquote>
+
+<b><pre>
+getNameParser()</pre></b>
+    <blockquote>
+DNS 도메인명을 해석하기 위해서, 이름 퍼서를 돌려줍니다.
+    </blockquote>
+
+<b><pre>
+lookup()
+lookupLink()</pre></b>
+    <blockquote>
+지정된 노드를 나타내는 <tt>DirContext</tt> 를 돌려줍니다. 어플리케이션 또는 사용자가 객체 팩토리를 공급하고 있었을 경우는, 돌려주어지기 전에 객체로 <tt>DirectoryManager.getObjectInstance()</tt> 메소드가 불려 갑니다.
+    </blockquote>
+
+<b><pre>
+list()
+listBindings()</pre></b>
+    <blockquote>
+DNS 이름 공간의 리스트가 존 전송을 사용해 구현되고 있으므로, 이러한 조작은 컴퓨터 및 네트워크에 집중해, 모든 DNS 인스톨에서는 지원되지 않을 가능성이 있습니다. 어플리케이션 또는 사용자가 객체 팩토리를 공급하고 있었을 경우는, 돌려주어지기 전에 객체로 <tt>DirectoryManager.getObjectInstance()</tt> 메소드가 불려 가 속성은 건네받지 않습니다.
+    </blockquote>
+
+<b><pre>
+removeFromEnvironment()</pre></b>
+    <blockquote>
+환경으로부터 프로퍼티을 삭제합니다.
+    </blockquote>
+
+
+<hr>
+<p>
+<A NAME="USAGE"></a> 
+<H2>사용예</H2>
+
+<h4>프로그램예 1</h4>
+
+이 예에서는, 최초로 sun.com 도메인을 나타내는 초기 문맥을 작성해, 다음에 그 도메인내의 2 살의 호스트의 IP 주소 (A 레코드)를 읽어들입니다.
+
+<blockquote><pre>
+Hashtable env = new Hashtable();
+env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+env.put("java.naming.provider.url",    "dns://server1.sun.com/sun.com");
+
+DirContext ictx = new InitialDirContext(env);
+Attributes attrs1 = ictx.getAttributes("host1", new String[] {"A"});
+Attributes attrs2 = ictx.getAttributes("host2", new String[] {"A"});
+</pre></blockquote>
+
+<h4>프로그램예 2</h4>
+
+프로그램예 1 의 프로퍼티을 사용하지 않고, 디폴트의 초기 문맥의 메소드에 DNS 의 의사 URL 를 건네줍니다. 이 예에서는, sun.com 도메인내의 호스트의 MX 레코드를 읽어들입니다.
+
+<blockquote><pre>
+DirContext ictx = new InitialDirContext();
+Attributes attrs3 = ictx.getAttributes("dns://server1.sun.com/host3.sun.com",
+                                       new String[] {"MX"});
+</pre></blockquote>
+
+
+<hr>
+<p>
+<A NAME="SEC"></a> 
+<h2>시큐리티에 대해</h2>
+
+시큐리티 매니저가 인스톨 되고 있으면(자), 이것을 사용하는 DNS 서비스 프로바이더와 어플리케이션의 양쪽 모두에, 다음의 액세스권이 허가됩니다.
+<p>
+<pre>permission java.net.SocketPermission "host[:port]", "connect, accept";
+</pre>
+각 호스트 또는 포트는,<tt>java.naming.provider.url</tt> 프로퍼티, 문맥 메소드에게 건네진 URL 캐릭터 라인명, 및 객체 참조로부터 식별됩니다.
+
+
+<p>
+<hr>
+<p>
+<A NAME="FED"></a> 
+<H2>연합</H2>
+
+DNS 서비스 프로바이더에서는, 복합명은 「강하게 구분되고 있다」라고 보입니다. 즉, 복합명의 최초의 컴퍼넌트가 DNS 도메인명으로서 처리되어 나머지의 컴퍼넌트는<a href=spec/spi/jndispi.fm.html#1003689>다음의 네임 시스템</a>  (<i>nns</i>)의 이름으로서 처리됩니다. 암시적인 다음의 네임 시스템은 동적으로 결정됩니다.
+
+<p>
+예를 들어, 다음의 예에서는, 다음의 네임 시스템의 루트의 리스트를 출력하고 있습니다. 이 네임 시스템은, DNS 문맥을 넘어 연합 되고 있습니다. 다음에, 멀티 컴퍼넌트의 복합명을 사용해 이름이 참조됩니다.
+<blockquote>
+<pre>
+// List the root of the nns.
+// Note the use of a trailing slash to indicate traversal into the nns.
+NamingEnumeration enum = ctx.list("java.sun.com/");
+
+// A composite name lookup.
+Object obj = ctx.lookup("sun.com/some/x/y/z");
+</pre>
+</blockquote>
+
+        
+
+<p>
+<HR SIZE=3 NOSHADE WIDTH=100%>
+<br><i>Copyright &copy; 2002 Sun Microsystems, Inc.  All rights reserved. </i> 
+
+</body>
+</html>

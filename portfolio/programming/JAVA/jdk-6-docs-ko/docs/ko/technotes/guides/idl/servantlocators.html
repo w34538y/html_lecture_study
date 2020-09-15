@@ -1,0 +1,470 @@
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--updated dcarson 6/2002-->
+<TITLE>Java IDL:서번트 locator의 사용 - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN=CENTER>서번트 locator의 사용</H1>
+<HR>
+<P>
+
+<H2>서번트 locator란</H2>
+<P>어플리케이션 개발자는, 새로운 <a href="POA.html">POA</a>  를 작성할 경우에, 새로운 POA 용으로 선택한 특정의 정책를 선언해, 다른<a  href="adapteractivator.html">어댑터 activator </a>및 서번트 매니저 (이것들은, 필요시의 POA 의 기동과 서번트의 기동을 실시하기 위해서(때문에) POA 가 사용하는 콜백 객체)를 제공할 수 있습니다. 객체 ID 는 POA 에 대해서 상대적으로 해석되기 (위해)때문에, 어플리케이션 개발자는, 새로운 POA 를 작성하는 것에 의해 한층 더 객체의 이름 공간의 구분도 실시할 수가 있습니다. 또, 새로운 POA 를 작성하면(자), 개발자는, 복수의 객체세트에 대한 요구의 처리를 개별적으로 제어할 수 있습니다.
+
+<P>서번트 activator는, 서번트 매니저의 1 개의 형태입니다. 서번트 매니저는 옵션입니다. 서번트 매니저를 사용하면(자), POA 가, 무효인 객체에 대한 요구를 받아들였을 때에, 필요한 서번트를 기동할 수 있게 됩니다. 서버가 기동시에 모든 객체를 로드하는 경우는, 서번트 매니저는 필요 없습니다.   
+
+<P><strong>서번트 매니저</strong> 는, 어플리케이션 개발자가 POA 와 관련지을 수가 있는 콜백 객체입니다. ORB 는 서번트 매니저의 오퍼레이션을 호출해, 필요에 따라서 서번트를 기동하거나 정지하거나 합니다. 서번트 매니저에게는, 객체 ID 치로 특징지워지는 객체 참조와 특정의 서번트의 관련을 관리해, 객체 참조가 존재할지 어떨지를 결정하는 기능이 있습니다. 각 형의 서번트 매니저는 2 개의 오퍼레이션을 실행할 수 있습니다. 1 개(살)은 서번트를 찾아내 돌려주기 위한 오퍼레이션으로, 이제(벌써) 1 개(살)은 서번트를 정지하기 위한 오퍼레이션입니다. 오퍼레이션은, 그 상황으로 사용할 수 있는 정보의 양에 따라서 다릅니다.
+
+<P>서번트 매니저를 사용하려면 ,<code>USE_SERVANT_MANAGER</code> 정책를 설정할 필요가 있습니다. 이 정책를 설정하면(자), POA 내외의 정책에 응해, 특정의 상황으로 사용되는 서번트 매니저의 형태가 정해집니다. 서번트 매니저에게는 다음의 2 개의 형태가 있습니다.
+<P>
+<UL>
+<LI><code><a  href="../../../api/org/omg/PortableServer/ServantActivatorOperations.html">ServantActivator</a> </code>
+<P>POA 에 <code>RETAIN</code> 정책가 정의되고 있는 경우, POA 는,<code>ServantActivator</code> 형의 서번트 매니저를 사용합니다. ServantActivator</code> 에서는 항상, 액티브 객체 맵에 엔트리가 생성됩니다. 서번트는 그 후, 정지할 때까지 그 엔트리를 사용합니다. 서번트를 정지하려면 , POA, POA 매니저, 또는 ORB 를 파기하는지, 명시적으로 <code>deactivate</code> 를 호출합니다.
+
+<P><UL>
+<LI><STRONG>서번트 activator를 사용한 어플리케이션의 예는,<a href="servantactivator.html">「서번트 activator의 사용」</a>을 참조해 주세요. </STRONG>
+</UL>
+
+<P>
+<LI><code><a  href="../../../api/org/omg/PortableServer/ServantLocatorOperations.html">ServantLocator</a> </code>
+<P>POA 에 <code>NON_RETAIN</code> 정책가 정의되고 있는 경우, POA 는,<code>ServantLocator</code> 형의 서번트 매니저를 사용합니다. POA 는, 이 서번트 매니저에 의해 반환되는 서번트가 단일의 요구의 처리에만 사용되는 것을 인식하고 있습니다. 그 때문에, POA 는, 서번트 매니저의 오퍼레이션에 추가의 정보를 제공할 수가 있어 서번트 매니저의 복수의 오퍼레이션을 제휴시켜,<code>ServantActivator</code> 와는 다른 처리를 실행할 수 있습니다. POA 가 <code>ServantLocator</code> 인터페이스를 사용하는 경우, 사전 호출에 의해 반환된 서번트의 호출 오퍼레이션을 실행한 직후에, POA 는, 서번트 매니저의 사후 호출을 실행해, ObjectId 치 및 Servant 치를 파라미터의 일부로서 건네줍니다. 이 기능을 사용하면(자), POA 에 관련지을 수 있고 있는 객체에 대한 모든 요구를 확실히 서번트 매니저로 조정할 수 있습니다.  
+
+<P><UL>
+<LI>이 문서에는, 서번트 locator를 사용한 어플리케이션의 예가 게재되고 있습니다.  <a href="#examplecode">「서번트 locator의 사용예」</a>를 참조해 주세요. </STRONG>
+</UL>
+</UL> 
+
+
+<a name="examplecode"></a> 
+<H1>서번트 locator의 사용예 ** 작성중입니다. </H1>
+후일, 갱신판을 체크해 주세요.
+
+<P>다음의 코드는, POA 가 일시 객체를 기동할 수 있도록(듯이) 하기 위해서, 서번트 locator를 사용하는 어플리케이션의 예를 나타내고 있습니다. 이 어플리케이션은,<a  href="GShome.html">「Hello World」</a>의 예를 기본으로 해 작성한 것입니다. 참고용으로, 다음의 파일이 포함되어 있습니다.
+<P>
+<UL>
+<LI><code><a href="#client.java">Client.java</a> </code>
+<LI><code><a href="#server.java">Server.java</a> </code>
+<LI><code><a href="#hello.idl">Hello.idl</a> </code>
+<LI><code><a href="#helloimpl.java">HelloImpl.java</a> </code>
+<LI><code><a href="#makefile">Makefile</a> </code>
+<LI><code><a href="#runsample">runSample</a> </code>
+</UL>
+
+<HR>
+<H2><a name="client.java">Client.java</a> </H2>
+
+<HR>
+<UL><pre>
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming. *;
+
+public class Client {
+    public Client(String[] args) {
+        try {
+    	    ORB orb = ORB.init(args, System.getProperties());
+	    NamingContext rootContext = NamingContextHelper.narrow(
+                orb.resolve_initial_references("NameService"));
+
+            // Resolves for remote object reference of HelloServer
+	    NameComponent name[] = {new NameComponent("HelloServer", "")};
+	    Hello helloRef = HelloHelper.narrow(rootContext.resolve(name));
+            System.out.println("\nClient: Obtained the remote object " +
+                               "reference");
+
+            // Invokes the remote sayHello() method
+            System.out.println("Client: Invoking the remote operation ...");
+	    System.out.println(helloRef.sayHello());
+        } catch (Exception e) {
+            System.err.println("\nClient: Caught exception - " + e);
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String [] args) {
+	Client servantLocatorClient = new Client(args);
+    }
+}
+</pre></UL>
+<HR>
+
+<H2><a name="server.java">Server.java</a> </H2>
+<HR>
+<UL><pre>
+import org.omg.CORBA. *;
+import org.omg.PortableServer. *;
+import org.omg.PortableServer.ServantLocatorPackage. *;
+import org.omg.CosNaming. *;
+
+public class Server {
+    public Server(String[] args) {
+        try {
+            ORB orb = ORB.init(args, System.getProperties());
+            POA rootPoa = (POA) orb.resolve_initial_references("RootPOA");
+            rootPoa.the_POAManager(). activate();
+            System.out.println("\nServer: Obtained from ORB and activated " +
+                               "the " + rootPoa.the_name());
+
+            Policy poaPolicy[] = new Policy[2];
+            poaPolicy[0] = rootPoa.create_servant_retention_policy(
+                ServantRetentionPolicyValue.NON_RETAIN);
+            poaPolicy[1] = rootPoa.create_request_processing_policy(
+                RequestProcessingPolicyValue.USE_SERVANT_MANAGER);
+            System.out.println("Server: Set POA policy as NON_RETAIN and " +
+                               "USE_SERVANT_MANAGER");
+
+            POA poa1 = rootPoa.create_POA("HelloPoa", null, poaPolicy);
+            poa1.the_POAManager(). activate();
+            System.out.println("Server: Created and activated child POA " +
+                               "\"" + poa1.the_name() + "\"");
+
+            poa1.set_servant_manager(new PoaServantLocator());
+            System.out.println("Server: Associated the servant manager of " +
+                               "type servant locator with \"" + 
+                               poa1.the_name() + "\"");
+
+            // This create_reference operation does not cause an activation, 
+            // the resulting object reference will be exported and passed to 
+            // client, so that subsequent requests on the reference will cause
+            // the appropriate servant manager to be invoked
+            org.omg.CORBA.Object objectRef = poa1.create_reference(
+                HelloHelper.id());
+            System.out.println("Server: Created a CORBA object reference " +
+                               "from id \"" + HelloHelper.id() + "\""); 
+
+            NamingContext rootContext = NamingContextHelper.narrow(
+                orb.resolve_initial_references("NameService"));
+            NameComponent name[] = {new NameComponent("HelloServer", "")};
+            rootContext.rebind(name, objectRef);
+            System.out.println("Server: Exported the CORBA object reference " +
+                               "to NameService");
+
+            System.out.println("Server: Ready and waiting for requests ...");
+            orb.run();
+        } catch (Exception e) {
+            System.err.println("\nServer: Caught exception - " + e);
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String [] args) {
+        Server serverServantLocator = new Server(args) ;
+    }
+}
+
+class PoaServantLocator extends LocalObject implements ServantLocator {
+    public Servant preinvoke(byte[] oid, POA adapter,
+                             String operation,
+                             CookieHolder the_cookie) throws ForwardRequest {
+        try {
+            HelloImpl servantObj = new HelloImpl();
+            System.out.println("PoaServantLocator.preinvoke(): Created \"" +
+                               servantObj.getClass(). getName() + "\" " +
+                               "servant object for \"" + adapter.the_name() +
+                               "\"");
+            return servantObj;
+        } catch (Exception e) {
+            System.err.println("preinvoke: Caught exception - " + e);
+        }
+        return null;
+    }
+
+    public void postinvoke(byte[] oid, POA adapter,
+                           String operation,
+                           java.lang.Object the_cookie,
+                           Servant the_servant) {
+        try {
+            System.out.println("PoaServantLocator.postinvoke(): For \"" +
+                               adapter.the_name() + "\" adapter of servant " +
+                               "object type \"" +
+                               the_servant.getClass(). getName() + "\"");
+        } catch (Exception e) {
+            System.err.println("postinvoke: Caught exception - " + e);
+        }
+    }
+}
+</pre></UL>
+<HR>
+
+<H2><a name="hello.idl">Hello.idl</a> </H2>
+<HR>
+<UL><pre>
+interface Hello {
+    string sayHello();
+};
+</pre></UL>
+<HR>
+
+<H2><a name="helloimpl.java">HelloImpl.java</a> </H2>
+<HR>
+<UL><pre>
+public class HelloImpl extends HelloPOA {
+
+    public String sayHello() {
+        return "Hello :)";
+    }
+
+}
+</pre></UL>
+<HR>
+
+<H2><a name="makefile">Makefile</a> </H2>
+<HR>
+<UL><pre>
+IDLJ=${JAVA_HOME}/bin/idlj
+JAVAC=${JAVA_HOME}/bin/javac
+JAVA=${JAVA_HOME}/bin/java
+
+CLASSFILES=. /classes_dir
+IDLJFLAGS=-fall -verbose -td ${CLASSFILES}
+JFLAGS=-g -d $(CLASSFILES) -classpath $(CLASSFILES)
+JAVAFLAGS=-cp $(CLASSFILES) -Dorg.omg.CORBA.ORBInitialHost=localhost \
+          -Dorg.omg.CORBA.ORBInitialPort=1950
+ORBD_FLAGS=-port 1949 -ORBInitialHost ${SERVER_HOSTNAME} \
+           -ORBInitialPort 1950 -ORBDebug
+ORBD=${JAVA_HOME}/bin/orbd $(ORBD_FLAGS) orbd
+
+client = Client.java
+
+server = HelloImpl.java \
+	 Server.java
+
+all: clean build run
+
+clean:
+	@echo ""
+	@echo "*** Clean up old files and directories ***"
+	-$(RM) $(CLASSFILES)
+	-$(RM) . /orb.db
+	-$(RM) . /kill_started_processes.sh
+
+build: stubs client_server
+
+stubs: Hello.idl
+	@echo ""
+	@echo "*** Generate stubs and helpers ***"
+	@-$(MKDIR) $(CLASSFILES)
+	$(IDLJ) $(IDLJFLAGS) Hello.idl
+
+client_server: $(client) $(server)
+	@echo ""
+	@echo "*** Compile client, server and implementation ***"
+	$(JAVAC) $(JFLAGS) $(client) $(server)
+
+run: run_orbd run_server run_client terminate_servers
+
+run_orbd:
+	@echo ""
+	@echo "*** Start the orbd ***"
+	$(ORBD) & \
+	echo "kill -9 $$! " &gt; . /kill_started_processes.sh; \
+	if [ $(OS) = "WinNT" ] ; then \
+	    tpid=`ps -o pid, ppid, comm | grep $$!  | grep -v "sh" | cut -c1-6` ; \
+	    echo "kill -9 $$tpid" &gt;&gt; . /kill_started_processes.sh ; \
+	fi ; \
+	$(SLEEP) $(SLEEP_LONG)
+	
+run_server: run_orbd
+	@echo ""
+	@echo "*** Start the Server ***"
+	$(JAVA) $(JAVAFLAGS) Server & \
+	echo "kill -9 $$! " &gt;&gt; . /kill_started_processes.sh; \
+	if [ $(OS) = "WinNT" ] ; then \
+	tpid=`ps -o pid, ppid, comm | grep $$!  | grep -v "sh" | cut -c1-6` ; \
+	echo "kill -9 $$tpid" &gt;&gt; . /kill_started_processes.sh ; \
+	fi ; \
+	$(SLEEP) $(SLEEP_NORMAL)
+
+run_client:
+	@echo ""
+	@echo "*** Start the Client ***"
+	$(JAVA) $(JAVAFLAGS) Client
+
+terminate_servers:
+	@echo ""
+	@echo "*** Terminate the Server and orbd ***"
+	@$(SLEEP) $(SLEEP_SHORT)
+	@if [ -f . /kill_started_processes.sh ]; then \
+		$(CHMOD) u+x . /kill_started_processes.sh; \
+		. /kill_started_processes.sh; \
+		$(SLEEP) $(SLEEP_SHORT) ; \
+	fi
+</pre></UL>
+<HR>
+
+<H2><a name="runsample">runSample</a> </H2>
+<HR>
+<UL><pre>
+#! /bin/ksh
+
+if [ `uname` = "SunOS" ] ; then
+    OS="Solaris_sparc"
+    JAVA_HOME=/path_to_your_java_installation
+    SEP=:
+    SLEEP=/bin/sleep
+    RM="/bin/rm -rf"
+    CHMOD=/bin/chmod
+    MKDIR=/bin/mkdir
+    SLEEP_SHORT=2
+    SLEEP_NORMAL=5
+    SLEEP_LONG=7
+elif [ `uname` = "Windows_NT" ] ; then
+    OS="WinNT"
+    if [ !  -d "y:/path_to_your_java_installation" ] ; then
+        echo; echo "Please map drive y: to \\\\\path_to_your_java_installation before 
+runSample"
+        exit 1
+    fi
+    JAVA_HOME="y:/path_to_your_java_installation"
+    SEP=";"
+    SLEEP=sleep
+    RM="rm -rf"
+    CHMOD=chmod
+    MKDIR="mkdir -p"
+    SLEEP_SHORT=5
+    SLEEP_NORMAL=10
+    SLEEP_LONG=15
+fi
+
+while [ $# -gt 0 ] ; do
+   case $1 in
+   -host ) SERVER_HOSTNAME=$2 ;
+           shift;;
+   * ) TARGET=$* ;
+       break ;;
+   esac
+   shift
+done
+
+DEFAULT_HOSTNAME=localhost
+SERVER_HOSTNAME=${HOSTNAME-$DEFAULT_HOSTNAME}
+
+make ${TARGET} \
+   "OS=${OS}" \
+   "JAVA_HOME=${JAVA_HOME}" \
+   "SERVER_HOSTNAME=${SERVER_HOSTNAME}" \
+   "SLEEP=${SLEEP}" \
+   "RM=${RM}" \
+   "CHMOD=${CHMOD}" \
+   "MKDIR=${MKDIR}" \
+   "SLEEP_SHORT=${SLEEP_SHORT}" \
+   "SLEEP_NORMAL=${SLEEP_NORMAL}" \
+   "SLEEP_LONG=${SLEEP_LONG}"
+</pre></UL>
+<HR>
+
+<H2><a name="running">서번트 activator의 어플리케이션 예의 실행</a> </H2>
+
+<P>이 예를 실행하려면 , 다음과 같이 합니다.
+<P>
+<OL>
+<LI>위에서 설명한 코드를 사용해 파일을 작성합니다.
+<LI><a href="#runsample"><code>runSample</code></a>  에 나타나고 있는 대로, 예를 실행합니다.
+</OL>
+
+<P>단말 윈도우에 다음의 예의 같은 출력이 표시됩니다.
+
+<P><HR>
+<UL><pre>
+
+*** Clean up old files and directories ***
+/bin/rm -rf . /classes_dir
+/bin/rm -rf . /orb.db
+/bin/rm -rf . /kill_started_processes.sh
+
+*** Generate stubs and helpers ***
+/path_to_your_java_installation/bin/idlj -fall -verbose -td . /classes_dir Hello.idl
+Parsing Hello.idl
+done  - Hello.idl
+
+Generating Hello
+done   -   Hello
+
+*** Compile client, server and implementation ***
+/path_to_your_java_installation/bin/javac -g -d . /classes_dir -classpath . /classes_dir 
+Client.java HelloImpl.java Server.java
+
+*** Start the orbd ***
+/path_to_your_java_installation/bin/orbd -port 1949 -ORBInitialHost localhost -ORBInitialPort 
+1950 -ORBDebug orbd & \
+echo "kill -9 $! " > . /kill_started_processes.sh; \
+if [ Solaris_sparc = "WinNT" ] ; then \
+    tpid=`ps -o pid, ppid, comm | grep $!  | grep -v "sh" | cut -c1-6` ; \
+    echo "kill -9 $tpid" >> . /kill_started_processes.sh ; \
+fi ; \
+/bin/sleep 7
+ORBD begins initialization.
+ORBD is ready.
+ORBD serverid: 1
+activation dbdir: /home/dcarson1/samples/POA_samples/ServantLocator/. /orb.db
+activation port: 1949
+activation Server Polling Time: 1000 milli-seconds 
+activation Server Startup Delay: 1000 milli-seconds 
+
+*** Start the Server ***
+/path_to_your_java_installation/bin/java -cp . /classes_dir 
+-Dorg.omg.CORBA.ORBInitialHost=localhost -Dorg.omg.CORBA.ORBInitialPort=1950 Server & \
+echo "kill -9 $! " >> . /kill_started_processes.sh; \
+if [ Solaris_sparc = "WinNT" ] ; then \
+tpid=`ps -o pid, ppid, comm | grep $!  | grep -v "sh" | cut -c1-6` ; \
+echo "kill -9 $tpid" >> . /kill_started_processes.sh ; \
+fi ; \
+/bin/sleep 5
+
+Server: Obtained from ORB and activated the RootPOA
+Server: Set POA policy as NON_RETAIN and USE_SERVANT_MANAGER
+Server: Created and activated child POA "HelloPoa"
+Server: Associated the servant manager of type servant locator with "HelloPoa"
+Server: Created a CORBA object reference from id "IDL:Hello:1. 0"
+Server: Exported the CORBA object reference to NameService
+Server: Ready and waiting for requests ...
+
+*** Start the Client ***
+/path_to_your_java_installation/bin/java -cp . /classes_dir 
+-Dorg.omg.CORBA.ORBInitialHost=localhost -Dorg.omg.CORBA.ORBInitialPort=1950 Client
+
+Client: Obtained the remote object reference
+Client: Invoking the remote operation ...
+PoaServantLocator.preinvoke(): Created "HelloImpl" servant object for "HelloPoa"
+PoaServantLocator.postinvoke(): For "HelloPoa" adapter of servant object type "HelloImpl"
+Hello :)
+
+*** Terminate the Server and orbd ***
+</pre></UL>
+<hr>
+
+
+<H1>관련 정보</H1>
+
+<P>서번트 locator의 상세한 것에 대하여는,<a href="http://www.omg.org/docs/formal/99-10-07.pdf">CORBA 2.3. 1 스펙</a>의 서번트 매니저에 관한 섹션 (섹션 11.3. 4)를 참조해 주세요.
+
+
+
+
+
+
+
+<P><HR>
+<CENTER><P>
+
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">Java IDL 탑에</A> </TD>
+</TR>
+</TABLE>
+<P>
+<P>
+<!-- server side include for page footer -->
+
+  <!--#include virtual="/share/include/normal.footer.v4.0.html"-->
+
+<!-- end server side include for footer -->
+
+</CENTER>
+</BODY>
+</HTML>

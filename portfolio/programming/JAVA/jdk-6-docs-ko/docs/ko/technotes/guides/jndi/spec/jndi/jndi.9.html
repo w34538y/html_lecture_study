@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>9 설계의 선택 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><TABLE summary="layout" WIDTH="100%" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD>
+<A HREF="jndiTOC.html">목차</A>  | <A HREF="jndi.8.html">전의 항목</A>  | <A HREF="properties.html">다음의 항목</A> </TD> 
+    <TD ALIGN="RIGHT">
+<I><FONT COLOR="#707070">JNDI API</FONT></I></TD> 
+  </TR>
+</TABLE><HR ALIGN=LEFT SIZE="8" WIDTH="35%" NOSHADE><p></P>
+
+<H2 CLASS="chapter"><A NAME="pgfId=998522"></A> 9.  설계의 선택</H2>
+
+<DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998524"></A> 9.1 인터페이스를 Context 와 DirContext 에 분할한다</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998525"></A> JNDI 에는,<CODE>Context</CODE> 및 <CODE>DirContext</CODE> 라고 하는 2 개의 코어 인터페이스가 있습니다. <CODE>DirContext</CODE> 는,<CODE>Context</CODE> 의 기본 네이밍 조작을 확장해, 디렉토리 서비스 조작을 추가한 인터페이스입니다. 이러한 인터페이스는, 모듈성, 및 JNDI 의 「사용하는 것에만 돌려준다」라고 할 방침에 근거해 분할되었습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998526"></A> 네이밍은, 파일 시스템, 스프레드쉬트, 달력 서비스, 디렉토리 서비스 등, 많은 컴퓨팅 서비스로 사용되는 기본 컴퍼넌트입니다. 네이밍 조작의 베이스가 되는 <CODE>Context</CODE> 인터페이스에서는, 디렉토리 서비스 이외에 이러한 서비스에서도 네이밍을 사용할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998527"></A> <CODE>Context</CODE> 를 확장한 <CODE>DirContext</CODE> 에서는, 디렉토리 서비스의 기본 조작이 제공됩니다. <CODE> DirContext</CODE> 로 제공되는 조작에는, 이름 첨부 객체에 관련지을 수 있었던 속성의 조작, 속성에 근거하는 검색, 및 속성과 이름 첨부 객체에 관한 schema 관련의 조작이 포함됩니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998528"></A> 9.2 JNDI 를 다양한 기능의 패키지에 분할한다</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998529"></A> JNDI 는, 4 개의 클라이언트 패키지 (<CODE>javax.naming</CODE>,<CODE>javax.naming.directory</CODE>,<CODE>javax.naming.event</CODE>,<CODE>javax.naming.ldap</CODE>), 및 1 개의 서비스 프로바이더 패키지 (<CODE>javax.naming.spi</CODE>)에 분할되고 있습니다. 각 패키지에는, 특정의 카테고리의 어플리케이션으로 필요한 인터페이스 및 클래스가 포함되어 있어 여기에서도, JNDI 의 「사용하는 것에만 돌려준다」라고 할 방침이 유지되고 있습니다. 예를 들어, 이름의 룩 업만을 실시하는 어플리케이션의 경우는,<CODE>javax.naming</CODE> 패키지 이외는 사용할 필요가 없습니다. 객체에 관련지을 수 있었던 속성의 검사 및 변경을 실시하는 어플리케이션의 경우는,<CODE>javax.naming</CODE> 및 <CODE>javax.naming.directory</CODE> 패키지가 사용됩니다. LDAP 고유의 컨트롤 또는 확장 조작을 사용할 필요가 있는 어플리케이션의 경우는,<CODE>javax.naming.ldap</CODE> 패키지가 사용됩니다. 이해 및 사용해야 하는 클래스 및 인터페이스는, 어플리케이션의 개발 카테고리에 따라서 다릅니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998530"></A> 9.3 클라이언트 API 와 서비스 프로바이더 인터페이스의 분할</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998531"></A> JNDI 에서는, 서비스 프로바이더 관련의 인터페이스 및 클래스로부터, 클라이언트 어플리케이션으로 사용되는 인터페이스 및 클래스가 분할되어 몇개의 패키지가 작성되고 있습니다. 예를 들어, 클라이언트에서는 <CODE>javax.naming</CODE> 의 인터페이스와 클래스가 사용되어 네임 서비스에 접속된 서비스 프로바이더에서는 <CODE>javax.naming</CODE> 및 <CODE>javax.naming.spi</CODE> 가 사용되는 경우가 있습니다. 패키지를 분할하면(자), 어플리케이션 개발자의 혼란이 적게 되어, 프로그램을 작성할 경우에 조사가 필요한 패키지가 명확하게 됩니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998532"></A> 9.4 문맥의 일람을 출력하는 복수의 메소드</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998533"></A> 문맥의 일람을 출력하는 어플리케이션에는, 2 종류의 어플리케이션이 있습니다. 1 개(살)은 브라우저형의 어플리케이션으로, 이제(벌써) 1 개(살)은 문맥내의 모든 객체에 대해서 조작을 실행하는 어플리케이션입니다. 브라우저형의 어플리케이션의 경우는 일반적으로, 문맥의 내용의 이름이 표시됩니다. 많은 브라우저에서는, 이름 이외에, 이름에 바인드 된 객체의 형태 정보가 필요합니다.  형태 정보에 응해, 객체의 화상 표현이 적절히 표시됩니다. 이 브라우저는 일반적으로, 대화형입니다. 브라우저를 사용해 문맥의 내용이 표시되었을 때에, 표시된 엔트리로부터 몇개의 엔트리를 선택하면(자), 그 엔트리의 상세 정보가 표시됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=998534"></A> 일부의 어플리케이션에서는, 문맥내의 모든 객체에 대해서 조작을 실행할 필요가 있습니다. 예를 들어, 백업 프로그램에서는, 파일 디렉토리내의 모든 객체에 대해서, 「file stats」조작을 실행합니다. 또, 프린터 관리 프로그램에서는, 1 개의 건물내에 있는 모든 프린터를 재기동합니다. 이러한 조작을 실행하려면 , 프로그램에서는, 문맥에 바인드 떠날 수 있어 모든 객체를 취득할 필요가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998535"></A> 이러한 2 종류의 사용법을 전제로서<CODE>Context</CODE> 인터페이스에는,<CODE>list()</CODE> 및 <CODE>listBindings()</CODE> 라고 하는 2 종류의 리스트 메소드가 있습니다. <CODE> list()</CODE> 는, 이름과 클래스명을 대로 돌려줍니다. <CODE>listBindings()</CODE> 는, 이름, 클래스명, 및 객체를 3 개 맞추어 돌려줍니다. <CODE> list()</CODE> 는, 문맥에 바인드 된 객체의 이름 및 형태만을 주로 필요로 하는, 브라우저형의 어플리케이션용으로 설계되고 있습니다. <CODE>listBindings()</CODE> 조작과 <CODE>Binding</CODE> 클래스의 메소드 (<CODE>getObject()</CODE> 등)의 호출은, 적당 최적화됩니다. <CODE>listBindings()</CODE> 를 사용하는 경우는, 호출측이 문맥내의 모두 또는 대부분의 객체를 취득하는 것을 전제로서 구현이 문맥에 대해서 최적화됩니다. <CODE>list()</CODE> 를 사용하는 경우는, 호출원이 반드시 문맥내의 모든 객체를 취득하지 않는 것을 전제로서 구현이 문맥에 대해서 최적화됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=998536"></A> 대신에, 1 개의 리스트 조작만을 구현했을 경우는,<CODE>Binding</CODE> 의 구현의 일부로서 동작이 최적화됩니다. 이 방법의 이점은, 이해가 필요한 리스트 조작이 1 개만으로 되는 것입니다. 다만, 리스트로부터 반환되는 정보를 호출해 옆으로부터 지정할 수 없게 되어, 프로그램의 목적의 동작에 응해 구현이 최적화되지 않게 됩니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998537"></A> 9.5 연합의 지원</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998538"></A> 연합은, JNDI 의 중요한 개념입니다. 클라이언트 인터페이스에서는, 1 개(살) 이상의 이름 공간에 걸치는 이름을 지정할 경우에,<CODE>Name</CODE> 인터페이스를 사용할 수 있습니다. 클라이언트 인터페이스의 메소드의 호출측에서는, 연합의 정보는 필요 없습니다. 복수의 시스템에 걸치는 이름은 SPI 에 의해 해결되기 (위해)때문에, 호출측의 개입은 발생하지 않습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998539"></A> 연합은 중요한 개념입니다만, 모든 호출측 및 서비스 프로바이더로 연합을 사용할 필요는 없습니다. 어플리케이션 또는 서비스로 연합을 사용하지 않는 경우는,<CODE>Name</CODE> 는 복수의 이름 공간에 걸칠 필요는 없습니다. <CODE>Name</CODE> 에서는, 1 개의 이름 공간내에서 객체의 이름부를 합니다.  SPI 에서는, 복수의 이름 공간의 지원의 일부로서 1 개의 이름 공간내에서 이름이 해결됩니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998540"></A> 9.6 DirContext 와 DirObject</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998541"></A> <CODE>DirContext</CODE> 가 <CODE>Context</CODE> 를 확장하는 대신에,<CODE>Context</CODE> 를 확장하지 않고,<CODE>DirObject</CODE> 로 불리는 다른 인터페이스를 사용할 수도 있습니다. <CODE> DirObject</CODE> 에서는, 디렉토리 관련의 메소드가 모두 캡슐화됩니다. 이 경우, 객체로 네이밍 및 디렉토리 조작이 지원되고 있을 때는,<CODE>Context</CODE> 및 <CODE>DirObject</CODE> 를 구현할 수 있습니다.  네이밍 및 디렉토리 조작이 지원되어 있지 않을 때는,<CODE>DirObject</CODE> 만을 구현할 수 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998542"></A> <CODE>DirContext</CODE> 를 삭제할 때는, 네이밍과 디렉토리의 양쪽 모두의 조작을 포함한 하이브리드(hybrid) 조작이 짜넣어지고 있는 것이 문제가 됩니다.  구체적으로는, 속성을 인수로서 지정할 수 있는 <CODE>bind()</CODE> 및 <CODE>createSubcontext()</CODE> 메소드가 짜넣어지고 있습니다. 이러한 조작을 보관 유지하면서 <CODE>DirObject</CODE> 를 사용하려면 , 제 3 의 인터페이스 (많은 경우,<CODE>DirContext</CODE>)에도 이러한 하이브리드(hybrid) 조작이 짜넣어지지 않으면 안됩니다. </P>
+<P CLASS="body"><A NAME="pgfId=998543"></A> <CODE>DirObject</CODE> 대신에 <CODE>DirContext</CODE> 를 사용하면(자), 1 개의 수속으로 몇개의 조작을 실행할 수 있어 2 개의 수속을 실행할 필요는 없습니다. 예를 들어,<CODE>DirContext.getAttributes()</CODE> 를 사용하면, 이름 첨부 객체에 관련지을 수 있었던 속성을 취득할 수 있습니다.  다만,<CODE>DirObject</CODE> 를 사용할 때는, 우선 객체 (<CODE>Context.lookup()</CODE>)를 해결하고 나서,<CODE>DirObject.getAttributes()</CODE> 를 사용해 그 속성을 취득할 필요가 있습니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998544"></A> 9.7 schema의 지원</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998545"></A> <CODE>DirContext</CODE> 인터페이스에서는, schema가 지원되고 있습니다. 예를 들어,<CODE>DirContext</CODE> 객체로부터 schema 객체를 취득할 수 있습니다.  schema 객체는, 이 특정의 <CODE>DirContext</CODE> 인스턴스의 schema가 정의되고 있는 디렉토리 공간을 가리키고 있습니다. <CODE>DirContext</CODE> 객체로부터, schema의 클래스 정의를 취득할 수도 있습니다.  클래스 정의란, 디렉토리내에서 표현되는 객체의 형태에 관한 정보입니다. <CODE>Attribute</CODE> 클래스에서도 schema가 지원되고 있습니다. <CODE> Attribute</CODE> 클래스에는, 속성의 구문 정보 (속성치의 형태) 및 속성의 정의 (복수치인가 부디 구문, 구문에 대한 제약등)를 취득하기 위한 메소드가 포함되어 있습니다. 이 schema 정보에 동적으로 액세스 할 수 있을 (라이브 디렉토리 공간을 가리키고 있을) 필요는 없습니다. 이 schema 정보의 지원는, 서비스 프로바이더에 의해 정적으로 생성되는 경우도 있습니다. 예를 들어, 특정의 디렉토리 서비스에서는, 캐릭터 라인의 속성치 이외는 지원되어 있지 않은 것이 있습니다.  이 경우는, 속성을 돌려줄 때 속성의 구문이 강제적으로 적용됩니다. 디렉토리에 따라서는, 정적 schema (schema내의 정보를 변경할 수 없다) 이외는 지원되어 있지 않은 것이 있습니다. 또, 동적 schema가 모두 지원되고 있는 디렉토리도 있습니다. <CODE>DirContext</CODE> 내의 인터페이스와 클래스는, 유연성이 높고, 이러한 다양한 schema가 지원되고 있습니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998546"></A> 9.8 Context 및 DirContext 내에서 overload 되고 있는 메소드</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998547"></A> <CODE>Context</CODE> 및 <CODE>DirContext</CODE> 인터페이스내의 <CODE>Name</CODE> 인수를 지정하는 모든 메소드에는, 이름을 지정할 경우에 <CODE>String</CODE> 인수를 지정하는 overload가 반드시 존재합니다. </P>
+<P CLASS="body"><A NAME="pgfId=998548"></A> <CODE>String</CODE> 베이스의 메소드는, 최종 사용자로부터 캐릭터 라인의 이름을 받아, 그 이름의 객체에 대해서 문맥 메소드를 실행하는 어플리케이션이 많은 경우에 사용합니다. 이러한 어플리케이션에서는, 문맥 메소드로 그 이름의 캐릭터 라인을 직접 받을 때, 이 형식의 메소드를 사용합니다.  이 경우, 캐릭터 라인의 이름을 사용해, 최초로 <CODE>Name</CODE> 객체를 구축할 필요는 없습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998549"></A> <CODE>Name</CODE> 베이스의 메소드는, 이름을 조작하는 어플리케이션이 많아, 이름의 작성 및 변경을 실시할 때 이름의 캐릭터 라인의 구문에의 대응을 생략 하고 싶은 경우에 사용합니다. 이러한 어플리케이션에서는, 구문 분석 된 이름이 처리되므로, 캐릭터 라인의 이름보다 <CODE>Name</CODE> 객체가 처리에 적절하고 있습니다. 이 때문에, 문맥 인터페이스에서는,<CODE>Name</CODE> 베이스의 메소드가 사용됩니다. 이러한 메소드를 사용하지 않는 경우는, JNDI 의 상위에서 개발된 어플리케이션으로 사용되고 있는 형식의 이름을 조작하기 위해서,<CODE>Name</CODE> 형식의 인터페이스나 클래스가 필요이상으로 생성되게 됩니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998550"></A> 9.9 Reference 와 Referenceable</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998551"></A> 어플리케이션 및 서비스로부터 디렉토리를 사용해 객체를 검색하는 경우, 다양한 방법이 있습니다. JNDI 는 범용성이 높기 때문에, 다양한 모델에 대응할 수가 있습니다. 예를 들어, 디렉토리내의 객체가, 객체 자체에 바인드 되는 일이 있습니다. 어플리케이션이 액티브한 때에 동적 디렉토리가 구축되어 어플리케이션이 종료하면(자) 그 디렉토리가 삭제되는 일도 있습니다. 이름 공간내에서 객체를 검색하기 위한 속성으로서 URL 를 포함하는 일도 있습니다. 시스템에 따라서는, 디렉토리내의 일부의 참조 정보가 바인드 되어 실제의 객체의 검색 또는 액세스를 실시할 때 그 정보가 사용되는 일도 있습니다. 인스톨 끝난 베이스에 구현되고 있는 서비스를 Java 어플리케이션으로 사용할 경우에, 이 마지막 예가 자주(잘) 사용됩니다. 이 디렉토리내의 참조는, 실제의 객체에의 포인터로서 기능합니다. </P>
+<P CLASS="body"><A NAME="pgfId=998552"></A> JNDI 에는 <CODE>Reference</CODE> 클래스가 정의되고 있어 참조 정보를 표현하기 위한 방법이 통일되고 있습니다. <CODE>Reference</CODE> 에는, 객체에의 액세스 방법에 관한 정보가 포함되어 있습니다. 이 정보는, 주소의 리스트, 및 이 참조가 표현하는 객체의 클래스 정보로 구성됩니다. 즉, 디렉토리내에서 참조로서 표현되는 객체에 이름을 바인드 했을 때는, 객체의 참조의 전개 및 바인드를 하게 됩니다. 이 동작을 실현하려면 , 그 객체의 클래스에서,<CODE>getReference()</CODE> 메소드가 짜넣어진 <CODE>Referenceable</CODE> 인터페이스를 구현할 필요가 있습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998553"></A> <CODE>Serializable</CODE> 인터페이스와 <CODE>Referenceable</CODE> 인터페이스는 유사하고 있습니다만,<CODE>Serializable</CODE> 는 사용하지 않습니다. 직렬화 된 객체의 경우는, 그 객체는 고정되고 있습니다만, 참조의 경우는, 객체의 구축에 필요한 정보만이 포함되어 있습니다. 또, 직렬화 된 객체에는, 디렉토리에의 포함에 적절하지 않은 상태가 많이 포함되어 있을 가능성이 있습니다. </P>
+</BLOCKQUOTE>
+
+</DIV><DIV>
+
+<H3 CLASS="section"><A NAME="pgfId=998554"></A> 9.10 참조를 자동적으로 객체로 변환한다</H3>
+
+<BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998555"></A> 디렉토리내에서 <CODE>Reference</CODE> 로서 바인드 되고 있는 객체에서는, JNDI SPI 시스템에 의해, 참조에 의해 특정된 객체의 생성 및 인스턴스의 생성이 자동적으로 행해집니다. 이 때, 프로그램에서는,<CODE>lookup()</CODE> 의 결과가 목적의 클래스에 네로우 변환됩니다. <CODE> lookup()</CODE> 의 결과를 목적의 클래스의 객체로 변환하는 조작은 불려 가지 않습니다. </P>
+<P CLASS="body"><A NAME="pgfId=998556"></A> 예를 들어, 프린터 객체를 룩 올라가고 있는 경우는, 룩 업이 정상 종료했을 때에 프린터 객체가 돌려주어져 그것을 직접 사용할 수가 있습니다. </P>
+  <BLOCKQUOTE>
+<pre>Printer prt = (Printer) ctx.lookup(somePrinterName);
+prt.print(someFileName);</pre>
+  </BLOCKQUOTE>
+<P CLASS="body"><A NAME="pgfId=998559"></A> JNDI 에서는, 이 처리가 자동적으로 실행됩니다.  명시적인 변환 스텝은 필요 없습니다.  이 처리가 표준으로 사용되는 것을 전제로 하고 있습니다. JNDI 에서는,<CODE>Reference</CODE> 클래스, 및 <CODE>Reference</CODE> 클래스를 이 클래스에 의해 특정된 객체로 변환하는 공통의 기구를 제공하고 있습니다.  이 때문에, 각 어플리케이션 및 시스템 프로바이더에 대해서, 독자적인 기구를 개발하지 않고 이 기구를 이용하는 것을 추천 하고 있습니다. </P>
+</BLOCKQUOTE>
+
+<P>&nbsp;</P>
+
+<P><HR ALIGN=LEFT><A HREF="jndiTOC.html">목차</A>  | <A  HREF="jndi.8.html">전의 항목</A>  | <A HREF="properties.html">다음의 항목</A> <HR ALIGN=LEFT><I><FONT  SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright</A>  &COPY;1997-1999 Sun Microsystems, Inc.  All Rights Reserved. </FONT></I>
+
+</div></BODY>
+</HTML>

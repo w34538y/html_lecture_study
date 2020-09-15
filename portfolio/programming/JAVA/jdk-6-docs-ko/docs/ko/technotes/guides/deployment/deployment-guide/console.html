@@ -1,0 +1,122 @@
+<html>
+<head>
+<title><font size="+1">Java 콘솔 - xrath.com 에서 번역됨</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center"><font size="+1">Java 콘솔</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+
+<hr>
+<p>Java 콘솔</strong>에는 다음의 내용이 모두 포함됩니다. </p>
+<table width="33%" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+    <td><ul>
+<li><a href="#what">Java 콘솔이란</a> </li>
+<li><a href="#debugging">디버그 옵션</a> </li>
+<li><a href="#task-bar">태스크바의 통합</a> </li>
+<li><a href="#startup">기동의 동작</a> </li>
+      </ul></td>
+  </tr>
+</table>
+<h3><a name="what"></a> Java 콘솔이란</h3>
+<p>Java 콘솔은,<code>System.out</code> 및 <code>System.err</code> 를 모두 콘솔 윈도우에 리다이렉트(redirect) 하는 디버그용의 단순한 툴입니다. Java Plug-in 로 동작하는 애플릿이나, Java Web Start 로 동작하는 어플리케이션으로 이용할 수 있습니다. </p>
+<h3><a name="debugging"></a> 디버그 옵션</h3>
+<p>Java 콘솔에서는, 애플릿이나 어플리케이션의 디버그가 용이하게 실행할 수 있도록(듯이) 다음에 나타내는 다양한 옵션이 제공되고 있습니다.  </p>
+<p align="center"> <img src="images/java-console-1.gif" width="450" height="400"></p>
+<p>액션/옵션은, Java 콘솔 윈도우가 포커스를 가지고 있는 동안에 해당의 영문자/숫자를 입력하는 것에 의해 선택합니다. </p>
+<table width="90%" cellpadding="5" align="center" border="2">
+  <tr> 
+    <td width="10%" align="left" valign="top" bgcolor="#CCCCCC"> 
+<div align="center"><font size="4"><b>키</b></font></div>
+    </td>
+    <td bgcolor="#CCCCCC"> 
+<div align="center"><font size="4"><b>설명</b></font></div>
+    </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">c:</td>
+<td> Java 콘솔 윈도우를 클리어 합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">f: </td>
+<td>finalize큐내의 객체의 finalize를 트리거하고 나서, 메모리 정보를 표시합니다. <i>Memory</i> 는, JRE 가 사용하는 현재의 heap 사이즈를 나타냅니다. <i>Free</i> 는, heap내에서 사용하고 있지 않는 사용 가능한 메모리입니다. 퍼센트 <i>(xx%)</i> 는, 전heap 사이즈에 차지하는 빈기억 영역의 비율입니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">g: </td>
+<td>가베지 컬렉션을 트리거해, 상기와 같은 메모리 정보를 표시합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">h: </td>
+<td>여기서 설명하고 있는 것과 같은 헬프 메세지를 표시합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">l: </td>
+<td>Java Plug-in 의 캐쉬된 <code>ClassLoader</code> 객체의 리스트를 표시합니다 (이러한 객체는, 디스크는 아니고 반도체 메모리에 캐쉬된 런타임 객체입니다. <a href="../../plugin/developer_guide/applet_caching.html">「애플릿 캐쉬」</a>  로 설명하는 캐쉬된 JAR 파일과는 다른 것에 유의해 주세요). 클래스는 캐쉬되기 (위해)때문에, 이전에 표시한 페이지에 돌아올 때에도, 페이지를 재차 로드할 필요는 없습니다. 최초로 페이지를 표시했을 때에,<code>ClassLoader</code> 객체가 작성되어 다운로드되는 클래스 모든 것이 그 객체에 캐쉬됩니다. 이러한 객체는, 그 <code>codebase</code> 에 따라 작성되어 캐쉬됩니다. <code>ClassLoader</code> 객체를 식별하기 위해(때문에), &quot;클래스 로더 리스트 &quot; 에 해당의 객체의 <code>codebase</code> 가 표시됩니다. <code>ClassLoader</code> 객체와 함께 표시되는 추가 정보에는,<code>zombie</code>,<code>cache</code>, 및 <code>info</code> 가 포함됩니다. <code>zombie = true</code> 는 <code>ClassLoader</code> 객체가 사용중이 아닌 (애플릿이 현재 페이지에 로드되어 있지 않다) 것을 나타냅니다. <code>cache = true</code> 는 애플릿이 캐쉬되는 것을 나타내,<code>false</code> 는 페이지를 그대로 해 두면(자) 애플릿이 파기되는 것을 나타냅니다. <code>info</code> 는 디버그에 사용되는 값입니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">m: </td>
+<td>상기와 같이, 히프메모리의 사용율을 표시합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">o:</td>
+<td>로그 기능을 트리거해, Java Plug-in 콘솔로부터 로그 파일에의 출력을 지시합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">p:</td>
+<td>프록시 구성을 재로드합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">q: </td>
+<td>Java 콘솔을 메인 화면으로부터 지웁니다. </td>
+  </tr>
+  <tr>
+<td width="10%" align="left" valign="top">r:</td>
+<td>정책 구성을 재로드합니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">s: </td>
+<td>시스템 프로퍼티을 출력합니다. 이것은, 주로 디버그에 사용합니다.  </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">t: </td>
+<td>기존의 thread 그룹을 모두 출력합니다. 최초로 나타나는 그룹은 <code>Group main</code> 입니다. <code>ac</code> 는 <i>active count</i> 의 약어로, thread 그룹과 그 아이 thread 그룹내의 액티브한 thread의 총수입니다. <code>agc</code> 는 <i>active group count</i> 의 약어로, thread 그룹의 액티브한 아이 thread 그룹의 수입니다. <code>pri</code> 는 <i>priority</i> 의 약어로, thread 그룹의 우선 순위입니다. <code>Group main</code> 의 다음에, 다른 thread 그룹이 <code>Group &lt;</code><i>name</i><code>&gt;</code> 라고 하는 형식에서 표시됩니다. 여기서 <i>name</i> 는, 애플릿과 관련하는 URL 입니다. thread의 각 리스트에는, thread명, thread의 우선 순위가 나타납니다. 또, thread가 실행중의 경우에는 <code>active</code>, thread가 파기의 처리중의 경우에는 <code>destroyed</code> 라고 표시되어 thread가 demon thread의 경우에는 <code>daemon</code> 라고 표시됩니다. </td>
+  </tr>
+  <tr> 
+<td width="10%" align="left" valign="top">x: </td>
+    <td>
+<p>캐쉬내의 모든 <code>ClassLoader</code> 객체를 삭제 (파기)합니다. </p>
+<p>미리 Java 콘솔에 「x」라고 입력해, 클래스 로더 캐쉬를 클리어 해 두면(자), 애플릿이 포함되어 있는 페이지를 재표시하는지, 그 페이지에 다시 돌아왔을 때에, 변경된 JAR 파일이 서버로부터 다운로드됩니다. </p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="10%" align="left" valign="top">0-5: </td>
+<td>다음의 섹션의<a href="plugin.html#tracing">「트레이스 및 로그」</a>로 설명하도록(듯이), 트레이스 레벨의 옵션을 설정합니다. </td>
+  </tr>
+</table>
+<p>
+<h3><a name="task-bar"></a> 태스크바의 통합</h3>
+<p>Java Plug-in 의 실행중에, Windows 에서는 태스크바에, Solaris 에서는 데스크탑에 아이콘이 표시됩니다. 오른쪽 클릭하면(자) 메뉴 옵션이 표시되어[Open/Hide the Java Console] 를 선택할 수 있습니다. 이것에 의해 사용자는, 같은 브라우저 세션내에서 몇 번이라도 Java 콘솔을 열거나 숨기거나 할 수가 있습니다.  </p>
+<h3><a name="startup"></a> 기동의 동작</h3>
+<p>Java 콘솔은, Java 컨트롤 패널의 [상세] 탭에서의 구성에 따라, 기동시에 표시하거나 비표시로 하거나 기동하지 않거나 하는 것이 가능합니다. </p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>고도의 JGSS 시큐리티 프로그래밍  - xrath.com 에서 번역됨</title>
+  
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="keywords" value="">
+  <meta name="description" value="">
+  
+  <!-- <link rel="stylesheet"  href="index-j1_files/default.css">stopindex   --> 
+  
+  <!-- .style1 { 	color: #FF0000; 	font-style: italic; 	font-weight: bold; } .style8 {font-size: 12pt} .style10 {color: #594fbf} -->
+
+<style type="text/css">
+
+. style1 {
+	color: #FF0000;
+	font-style: italic;
+	font-weight: bold;
+}
+. style8 {font-size: 12pt}
+. style10 {color: #594fbf}
+
+p, li,  ul li { margin-left: 40pt;
+                   font-family: Helvetica, Arial, sans-serif;
+			    font-size: medium; 
+			    }
+
+h2  { margin-left: 40pt;
+      margin-top:32pt;
+      font-family: Helvetica, Arial, sans-serif;
+	 font-size: larger; }
+	 
+h3	{ font-family: helvetica, arial, sans-serif;
+       font-size: medium;
+       font-weight: bold; 
+
+	  margin-left: 40pt;
+	  }
+			    
+</style>
+
+<meta name="author" content="Seema Malkani">
+<meta name="author" content="Seema Malkani"></head>
+
+<body leftmargin="0" topmargin="0" style="background-color: rgb(255, 255, 255);" marginheight="0" marginwidth="0">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- part II -->
+
+ <a name="PART2">
+<h2 class="main1">제 II 부 :Java SE 6 Security API 를 사용한 안전한 통신</h2>
+
+</a> 
+
+<p>여기에서는, 안전한 통신을 실행하는 어플리케이션을 구축하는 방법에 대해 설명합니다. Java SE 6 플랫폼은, 어플리케이션이 안전한 통신을 실행할 수 있도록(듯이) 하는 3 개의 표준 API 를 제공합니다. Java Generic Security Service (GSS), Java SASL API, 및 Java Secure Socket Extension (JSSE)입니다. 어플리케이션을 구축하는 경우, 이러한 API  가운데 어떤 것을 사용하면 좋을까요. 그 대답은, 프로토콜 또는 서비스의 요건, 배치 인프라스트럭쳐(infrastructure), 다른 시큐리티 서비스와의 통합 등, 수많은 요인에 따라서 다릅니다. 예를 들어, LDAP 클라이언트 라이브러리를 구축하는 경우는, Java SASL API 를 사용할 필요가 있습니다. SASL 의 사용은, LDAP 의 프로토콜 정의의 일부이기 (위해)때문에입니다. 다른 예로서 서비스가 SSL 를 지원하는 경우, 서비스에 액세스 하려고 하는 클라이언트 어플리케이션은 JSSE 를 사용할 필요가 있습니다. </p>
+
+
+<h2 class="main1"><a name="JGSS"></a> 과제 3:Java Generic Security Service (GSS) API 의 사용
+</h2><br>
+
+
+<h3>이 과제의 목표:</h3>
+
+<p style="font-family: helvetica,arial,sans-serif;"><br> 이 과제의 목표는, Java GSS API 를 사용해 안전한 인증 및 통신을 실행하는 방법에 대해 학습하는 것입니다. </p> 
+
+<a name="JGSSBG"></a> 
+<h3>이 과제의 내용:</h3>
+
+<p> Generic Security Service API 는, 인증, 메세지의 무결성, 메세지의 기밀성등이 다양한 시큐리티 서비스에 액세스하기 위한 , 통일된 C 언어 인터페이스를 제공합니다. Java GSS API 는, 대응하는 인터페이스를 Java 어플리케이션에 제공합니다. 이 API 를 사용하면(자), 어플리케이션은 인증을 실행해 피어와의 안전한 통신을 확립할 수 있습니다. GSS-API 및 Java GSS-API 에 의해 액세스 되는 가장 일반적인 시큐리티 서비스의 1 개는, Kerberos 입니다. </p>
+
+<h3>이 과제의 자원:</h3>
+
+<ol>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/index.html">JAAS 및 Java GSS-API 튜토리얼</a> </li>
+<li><a href="http://www.ietf.org/rfc/rfc2853.txt">「Generic Security Service API Version 2:Java Bindings」(RFC 2853)</a> </li>
+<li>Java GSS javadoc:<a href="http://java.sun.com/j2se/1.5.0/docs/api/org/ietf/jgss/package-summary.html">org.ietf.jgss</a> 
+  </li>
+</ol>
+
+
+<h3>이 과제의 개요:</h3>
+
+
+<p><span style="font-family: helvetica,arial,sans-serif;">이 과제에서는, Java GSS API 를 사용해 안전하게 통신하는 방법을 나타내는 클라이언트서버 어플리케이션을 취급합니다. 클라이언트 부분과 서버 부분은,<a href="part1.html#JAAS">과제 1</a>  에 나타나고 있도록(듯이), 최초로 Kerberos 에의 인증을 실시합니다. 이것에 의해, 자격이 피인증자 (subject)에게 포함됩니다. 어플리케이션은, 피인증자를 사용해 <tt>Subject.doAs</tt> 의 내부에서, (기반이 되는 GSS 기구로서 Kerberos 를 사용해) Java GSS 조작을 실행하는 액션을 실행합니다. Java GSS Kerberos 기구는 <tt>doAs</tt> 의 내부에서 실행되기 (위해)때문에, Kerberos 자격을 피인증자로부터 취득해, 그것들을 사용해 피어와의 인증 및 메세지의 안전한 교환을 실시합니다.
+</p>
+
+<h3>실행 순서:</h3>
+
+
+<ol>
+<li> 다음의 코드를 참조해 주세요. 이것은 <a href="./src/GssServer.java"><code>src/GssServer.java</code></a>  에 있습니다.
+    
+<br><br>이 코드는, 서비스 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="part1.html#JAAS">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 이 코드는, 최초로 <b><code>GSSManager</code></b> 의 인스턴스를 작성해 (행 8), 그것을 사용해 독자적인 자격을 취득해 (행 10 ?  11) <b><code>GSSContext</code></b> 의 인스턴스를 작성합니다 (행 18). 이 문맥을 사용해 인증을 실행합니다 (행 22 ?  34 의 루프). 인증이 완료하면(자), 암호화된 입력을 클라이언트로부터 받아들여 확립된 시큐리티 문맥을 사용해 데이터를 복호화 합니다 (행 45). 다음에, 시큐리티 문맥을 사용해 원의 입력과 일자를 포함한 응답을 암호화해 (행 49), 클라이언트에 답장하겠습니다.  
+  </li>
+</ol>
+
+<p><code>GssServer.java</code> 의 코드 리스트</p> <br>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class GssServerAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create server socket for accepting connections</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;ServerSocket ss = new ServerSocket(localPort);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Get own Kerberos credentials for accepting connection</code> </li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;GSSManager manager = GSSManager.getInstance();</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;Oid krb5Oid = new Oid("1.2. 840.113554. 1.2. 2");</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<b>GSSCredential serverCreds = manager.createCredential(null,</b></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>GSSCredential.DEFAULT_LIFETIME, krb5Oid, GSSCredential.ACCEPT_ONLY);</b></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;while( true ) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Socket socket = ss.accept();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream inStream = new DataInputStream(socket.getInputStream());</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());</code></li>
+        <li><br>
+        </li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GSSContext context = manager.createContext((GSSCredential) serverCreds);</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Do the context establishment loop</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] token = null;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (! <strong>context.isEstablished()</strong>) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Read token</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token = new byte[inStream.readInt()];</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inStream.readFully(token);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Process token</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token = context.acceptSecContext(token, 0, token.length);</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Send a token to the peer if one was generated by acceptSecContext</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.writeInt(token.length);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.write(token);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.flush();</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Context established! </code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create MessageProp for use with unwrap (will be set upon return from unwrap)</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageProp prop = new MessageProp(0, false);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Read token from client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token = new byte[inStream.readInt()];</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inStream.readFully(token);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Unwrap (decrypt) token sent by client</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] input = context.unwrap(token, 0, token.length, prop);</code></strong></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create new token and send to client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] reply = ...;</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token = context.wrap(reply, 0, reply.length, prop);</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.writeInt(token.length);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.write(token);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.flush();</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context.dispose();</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;socket.close();</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<ol start="2">
+<li>샘플 코드를 컴파일 합니다.  <b><code></code>
+    <pre><blockquote>
+% javac GssServer.java
+</blockquote></pre>
+    </b> </li>
+<li>다음의 코드를 참조해 주세요. 이것은 <a href="src/GssClient.java"><code>src/GssClient.java</code></a>  에 있습니다.  <br><br>
+
+이 코드는, 클라이언트 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="part1.html#JAAS">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 이 코드는, 최초로 <b><code>GSSManager</code></b> 의 인스턴스를 작성해 (행 10), 그것을 사용해 통신 대상의 서비스의 주체명을 가져옵니다 (행 12). 다음에,<b><code>GSSContext</code></b> 의 인스턴스를 작성해 (행 15, 16)], 서비스와의 인증을 실시합니다 (행 22 ?  33 의 루프). 인증이 완료하면(자), 확립된 시큐리티 문맥을 사용해 메세지를 암호화해 (행 42), 서버에 송신합니다. 다음에, 암호화된 메세지를 서버로부터 읽어내, 확립된 시큐리티 문맥을 사용해 복호화 합니다 (행 53).  </li>
+</ol>
+<code>GssClient.java</code> 의 코드 리스트<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class GssClientAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create socket to server</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;Socket socket = new Socket(hostName, port);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream inStream = new DataInputStream(socket.getInputStream());</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Get service's principal name</code> </li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;GSSManager manager = GSSManager.getInstance();</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;Oid krb5Oid = new Oid("1.2. 840.113554. 1.2. 2");</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<b>GSSName serverName = manager.createName(serverPrinc, GSSName.NT_HOSTBASED_SERVICE);</b></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Get the context for authentication</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;GSSContext context = manager.createContext(serverName, krb5Oid, null,</code></strong></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GSSContext.DEFAULT_LIFETIME);</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;context.requestMutualAuth(true); // Request mutual authentication</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;context.requestConf(true); // Request confidentiality</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Do the context establishment loop</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] token = new byte[0];</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;while (! <strong>context.isEstablished()</strong>) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>token = context.initSecContext(token, 0, token.length);</b></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.writeInt(token.length);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.write(token);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStream.flush();</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Check if we're done</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (! <b>context.isEstablished()</b>) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token = new byte[inStream.readInt()];</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inStream.readFully(token);</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Context established! </code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create MessageProp for use with unwrap (true means request confidentiality)</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;MessageProp prop =  new MessageProp(0, true);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create encrypted message and send to server</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] reply = ...;</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;token = context.wrap(reply, 0, reply.length, prop);</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;outStream.writeInt(token.length);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;outStream.write(token);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;outStream.flush();</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Read token from server</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;token = new byte[inStream.readInt()];</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;inStream.readFully(token);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Unwrap (decrypt) token sent by server</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] input = context.unwrap(token, 0, token.length, prop);</code></strong></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;...</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;context.dispose();</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;socket.close();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;return null;</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<ol start="4">
+
+<li>샘플 코드를 컴파일 합니다.  <b>
+    <pre>
+% javac GssClient.java
+</pre></b> </li>
+
+<li>신규의 윈도우를 기동해 서버를 기동합니다.  <b>  
+    <pre>
+% xterm &amp;
+% java -Djava.security.auth.login.config=jaas-krb5.conf \
+       GssServer
+</pre></b> </li>
+
+<li>클라이언트 어플리케이션을 실행합니다. <tt>GssClient</tt> 는, 다음의 2 개의 파라미터를 취합니다. 서비스명, 및 그 서비스가 실행되고 있는 서버의 이름입니다. 예를 들어, 서비스가 머신 <b><code>j1hol-001</code></b> 상에서 실행되고 있는 <b><code>host</code></b> 의 경우는, 다음을 입력합니다. 패스워드의 입력이 요구되었을 경우는,<b><tt>changeit</tt></b> 를 입력합니다.  <b>   <pre>
+    
+% java -Djava.security.auth.login.config=jaas-krb5.conf \
+       GssClient host j1hol-001
+</pre>    </b> </li>
+
+<li>클라이언트와 서버의 어플리케이션 윈도우에 다음의 출력이 표시됩니다. </li>
+</ol>
+
+
+<p>GssServer 의 예를 실행했을 경우의 출력</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Authenticated principal:[host/j1hol-001@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Waiting for incoming connections...</code></li>
+<li><code>Got connection from client /129. 145.128. 102</code></li>
+<li><code>Context Established! </code></li>
+<li><code>Client principal is test@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Server principal is host/j1hol-001@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Mutual authentication took place! </code></li>
+<li><code>Received data "Hello There! " of length 12</code></li>
+<li><code>Confidentiality applied:true</code></li>
+<li><code>Sending:Hello There! Thu May 06 12:11:15 PDT 2005</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>GssClient 의 예를 실행했을 경우의 출력</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Kerberos password for test:changeit</code></li>
+<li><code>Authenticated principal:[test@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Connected to address j1hol-001/129. 145.128. 102</code></li>
+<li><code>Context Established! </code></li>
+<li><code>Client principal is test@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Server principal is host@j1hol-001</code></li>
+<li><code>Mutual authentication took place! </code></li>
+<li><code>Sending message:Hello There! </code></li>
+<li><code>Will read token of size 93</code></li>
+<li><code>Received message:Hello There! Thu May 06 12:11:15 PDT 2005</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><span style="font-family: helvetica,arial,sans-serif;"><span style="font-weight: bold; color: rgb(0, 0, 0); text-decoration: underline;">통계:</span></span></p>
+
+<P><span style="color: rgb(0, 0, 0);">이 과제에서는, Java GSS API 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습했습니다.  </p>
+
+
+<h3>다음의 순서</h3>
+
+<ol>
+<li><a href="#SASL">과제 4</a>  에 진행되어, Java SASL API 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습합니다.  </li>
+  
+  
+<li><a href="#JSSE">과제 5</a>  에 진행되어, JSSE 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습합니다.  </li>
+  
+<li><a href="part3.html#SSO">과제 6</a>  에 진행되어, Kerberos 환경에서 싱글 싸인온을 실시하는 경우에 사용한 샘플 프로그램을 구성하는 방법에 대해 학습합니다.  </li>
+</ol>
+
+<hr>
+
+<h2 class="main1"><a name="SASL"></a> 과제 4:Java SASL API 의 사용<br>
+</h2>
+
+
+<h3>이 과제의 목표:</h3>
+
+<P>
+이 과제의 목표는, Java SASL API 를 사용해 안전한 인증 및 통신을 실행하는 방법에 대해 학습하는 것입니다. </p>
+
+
+<h3>이 과제의 내용:</h3>
+
+<p>Simple Authentication and Security Layer (SASL)는, 챌린지 응답 프로토콜을 지정합니다. 이 프로토콜에서는, 인증 및 (옵션의) 후속의 통신을 행하기 위한 시큐리티층을 확립하기 위해서, 클라이언트와 서버간에 데이터가 교환됩니다. SASL 에서는 다른 「기구」를 사용할 수 있습니다. 이러한 기구는 각각, 교환되는 데이터와 이름을 정의하는 프로파일에 의해 식별됩니다. SASL 는, LDAPv3 나 IMAPv4 등의 접속 베이스의 프로토콜과 함께 사용됩니다. SASL 에 대해서는,<a href="http://www.ietf.org/rfc/rfc4422.txt">RFC 4422</a>  를 참조해 주세요. </p>
+
+
+<p> Java SASL API 는, 기구에 의존하지 않는 방법으로 SASL 를 사용하는 어플리케이션용의 API 를 정의합니다. 예를 들어, SASL 를 사용하는 네트워크 프로토콜의 라이브러리를 기술하는 경우, Java SASL API 를 사용해, 피어와 교환하는 데이터를 생성할 수 있습니다. 라이브러리가 배치될 때, 라이브러리에서 사용하는 기구를 동적으로 구성할 수 있습니다.  </p>
+
+
+<p> 인증 이외에, SASL 를 사용해 인증 후에 사용되는 시큐리티층과의 협상을 실시할 수가 있습니다. 다만, GSS-API 과는 달리, 시큐리티층의 프로퍼티 (무결성을 요구할까 기밀성을 요구할까 등)은 협상시로 결정됩니다. GSS-API 에서는, 메세지 마다 기밀성을 온 또는 오프로 할 수 있습니다.  </p>
+<h3>이 과제의 자원:</h3>
+
+
+
+<ol>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/sasl/sasl-refguide.html">Java SASL API 프로그래밍 및 배치 가이드</a> </li>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/security/sasl/package-summary.html">Java SASL API javadoc</a> </li>
+<li><a href="http://www.ietf.org/rfc/rfc4422.txt">Simple Authentication and Security Layer (SASL) (RFC 4422)</a> <br>
+  </li>
+</ol>
+<h3>이 과제의 개요:</h3>
+
+
+<p>이 과제에서는, Java SASL API 를 사용해 안전하게 통신하는 방법을 나타내는 클라이언트서버 어플리케이션을 취급합니다. 클라이언트 부분과 서버 부분은,<a href="part1.html#JAAS">과제 1</a>  을 사용해 최초로 Kerberos 에의 인증을 실시합니다. 이것에 의해, 자격이 피인증자에게 포함됩니다. 어플리케이션은, 피인증자를 사용해 <tt>Subject.doAs</tt> 의 내부에서, (기반이 되는 SASL 기구로서 Kerberos 를 사용해) Java SASL API 조작을 실행하는 액션을 실행합니다. SASL/Kerberos 기구는,<tt>doAs</tt> 의 내부에서 실행되기 (위해)때문에, Kerberos 자격을 피인증자로부터 취득해, 그것들을 사용해 피어와의 인증 및 메세지의 안전한 교환을 실시합니다. </p>
+
+<p>
+이 예는,<code><a href="src/AppConnection.java">AppConnection</a> </code> 클래스에 의해 구현되는 단순한 프로토콜을 사용합니다. 이 프로토콜은, 인증 커멘드 및 데이터 커멘드를 교환합니다. 각 커멘드는, 타입 (<tt>AppConnection.AUTH_CMD</tt> 등), 후속의 데이터의 길이, 및 데이터 자체로 구성되어 있습니다. 데이터가 인증 또는 암호화된/무결성이 보호된 어플리케이션 데이터용의 경우, 그 데이터는 SASL 버퍼입니다. 그 이외의 경우는, 프레인인 어플리케이션 데이터입니다.
+</p>
+
+</span>
+
+<h3>실행 순서:</h3> 
+
+<ol>
+<li> 다음의 코드를 참조해 주세요. 이것은 <a href="src/SaslTestServer.java"><code>src/SaslTestServer.java</code></a>  에 있습니다. <br><br>이 코드는, 서비스 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="part1.html#JAAS">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 서버는, 지원하는 보호의 품질을 지정해 (행 9),<b><tt>SaslServer</tt></b> 의 인스턴스를 작성해 인증을 실행합니다 (행 21). SASL 의 챌린지 응답 프로토콜은, while 루프 (행 33 ?  49) 중(안)에서 실행되고 있습니다. 거기서 서버는, 챌린지를 클라이언트에 송신해 클라이언트로부터의 응답을 처리합니다. 인증 후, 인증된 클라이언트의 아이덴티티를 <b><tt>getAuthorizedID()</tt></b> 의 호출에 의해 취득할 수 있습니다 (행 61). 시큐리티층이 협상 되었을 경우, 서버는 클라이언트와 안전하게 데이터를 교환할 수 있습니다 (행 66, 70).  
+  </li>
+</ol>
+<p><code>SaslTestServer.java</code> 의 코드 리스트</p>
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class SaslServerAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create server socket for accepting connections</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;ServerSocket ss = new ServerSocket(localPort);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Support all quality-of-protection options</code> </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;HashMap&lt;String, Object&gt; props = new HashMap&lt;String, Object&gt;();</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;props.put(Sasl.QOP, "auth-conf, auth-int, auth");</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;while( true ) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create application-level connection to handle request</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Socket socket = ss.accept();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AppConnection conn = new AppConnection(socket);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Normally, the application protocol will negotiate which</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// SASL mechanism to use.In this simplified example, we</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// will always use "GSSAPI" (the name of the mechanism that does Kerberos via GSS-API)</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create SaslServer to perform authentication</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SaslServer srv = Sasl.createSaslServer("GSSAPI", service, serviceName, props, cbh);</code></strong></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (srv == null) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// ... handle error</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Read the initial response from client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] <strong>response</strong> = conn.receive(AppConnection.AUTH_CMD);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AppConnection.AppReply clientMsg;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boolean auth = false;</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Perform authentication</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (! <strong>srv.isComplete()</strong>) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Generate challenge based on response</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] challenge = srv.evaluateResponse(response);</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (<strong>srv.isComplete()</strong>) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.send(AppConnection.SUCCESS, <strong>challenge</strong>);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auth = true;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clientMsg = conn.send(AppConnection.AUTH_IN_PROGRESS, <strong>challenge</strong>);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>response</strong> = clientMsg.getBytes();</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} catch (SaslException e) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Send failure notification to client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.send(AppConnection.FAILURE, null);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Authentication completed! </code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Check status of authentication</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (<strong>srv.isCompleted()</strong> &amp;&amp; auth) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("authorized client is:" + <strong>srv.getAuthorizationID()</strong>);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Report failure ... </code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Find out whether security layer was negotiated</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String qop = (String) <strong>srv.getNegotiatedProperty(Sasl.QOP)</strong>;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boolean sl = (qop.equals("auth-conf") || qop.equals("auth-int"));</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Read and decrypt message from client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] msg = conn.receive(AppConnection.DATA_CMD);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] realMsg = (sl ?  <strong>srv.unwrap(msg, 0, msg.length)</strong> :msg);</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create and encrypt message to send to client</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] reply = ...;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] realReply = (sl ?  <strong>srv.wrap(reply, 0, reply.length)</strong> :reply);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.send(AppConnection.SUCCESS, realReply);</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<ol start="2">
+<li>샘플 코드를 컴파일 합니다.  <b>
+  
+<pre>% javac SaslTestServer.java<br></blockquote></pre>
+    </b> </li>
+    
+<li>다음의 코드를 참조해 주세요. 이것은 <a href="src/SaslTestClient.java"><code>src/SaslTestClient.java</code></a>  에 있습니다. 이 코드는, 클라이언트 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="part1.html#JAAS">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 프로그램은, 필요한 보호의 품질 (이 경우는, 기밀성)을 최초로 지정해 (행 8), 다음에 <b><tt>SaslClient</tt></b> 의 인스턴스를 작성해 인증에 사용합니다 (행 11 ?  12). 다음에, 기구에 초기 응답이 있을지 어떨지를 체크해, 어느 경우는, 빈 상태(empty)의 바이트 배열로 <b><tt>evaluateChallenge()</tt></b> 를 호출하는 것에 의해 응답을 가져옵니다 (행 20). 다음에, 응답을 서버에 송신해 인증을 개시합니다. SASL 의 챌린지 응답 프로토콜은, while 루프 (행 24 ?  39) 중(안)에서 실행되고 있습니다. 거기서 클라이언트는, 서버로부터 취득한 챌린지를 평가해 챌린지에 대응하는 응답을 서버에 송신합니다. 인증 후, 클라이언트는, 협상 된 시큐리티층을 사용해 서버와의 통신하러 진행될 수가 있습니다 (행 48, 55).  </li>
+</ol>
+
+
+<p><code>SaslTestClient.java</code> 의 코드 리스트</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class SaslClientAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create application-level connection</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;AppConnection conn = new AppConnection(serverName, port);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;HashMap&lt;String, Object&gt; props = new HashMap&lt;String, Object&gt;();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>props.put(Sasl.QOP, "auth-conf");</strong> // Request confidentiality</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create SaslClient to perform authentication</code></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;SaslClient clnt = Sasl.createSaslClient(</code></strong></li>
+<li><strong><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new String[]{"GSSAPI"}, null, service, serverName, props, cbh);</code></strong></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;if (clnt == null) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// ... handle error</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] challenge;</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Get initial response for authentication</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>byte[] response = clnt.hasInitialResponse() ?  clnt.evaluateChallenge(EMPTY) :EMPTY;</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;AppConnection.AppReply reply = conn.send(AppConnection.AUTH_CMD, response);</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Repeat until authentication terminates</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;while (! <strong>clnt.isComplete()</strong> &amp;&amp; </code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(reply.getStatus() == AppConnection.AUTH_INPROGRESS ||</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reply.getStatus() == AppConnection.SUCCESS))</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Evaluate challenge to generate response</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>challenge</strong> = reply.getBytes()</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>response = clnt.evaluateChallenge(challenge)</strong></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (reply.getStatus() == AppConnection.SUCCESS) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (response ! = null) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new Exception("Protocol error")</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Send response to server and read server's next challenge</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reply = conn.send(AppConnection.AUTH_CMD, <strong>response</strong>);</code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Authentication completed! </code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Find out whether security layer was negotiated</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;String qop = (String) <strong>srv.getNegotiatedProperty(Sasl.QOP)</strong>;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;boolean sl = (qop.equals("auth-conf") || qop.equals("auth-int"));</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] msg = ...;</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create and send encrypted data to server</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] encrypted = (sl ?  <strong>clnt.wrap(msg, 0, msg.length)</strong> :msg);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;reply = conn.send(AppConnection.DATA_CMD, encrypted);) {</code></li>
+        <li><br>
+        </li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;...</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Read and decrypt data from server</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] encryptedReply = reply.getBytes();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;byte[] clearReply = (sl ?  <strong>clnt.unwrap(encryptedReply, 0, encryptedReply.length)</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: encryptedReply);</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;conn.close();</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;return null;</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<ol start="4">
+<li>샘플 코드를 컴파일 합니다.  <b>
+  
+<pre>% javac SaslTestClient.java<br></blockquote></pre>
+    </b> </li>
+    
+<li>신규의 윈도우를 기동해 서버를 기동합니다. <tt>SaslTestServer</tt> 는, 다음의 2 개의 파라미터를 취합니다. 서비스명, 및 그 서비스가 실행되고 있는 서버의 이름입니다. 예를 들어, 서비스가 머신 <b><code>j1hol-001</code></b> 상에서 실행되고 있는 <b><code>host</code></b> 의 경우는, 다음을 입력합니다.  <b> 
+<pre>% xterm &amp;<br>% java <br> -Djava.security.auth.login.config=jaas-krb5.conf \<br>       SaslTestServer host j1hol-001<br></blockquote><br>    </pre>
+    </b> </li>
+<li>클라이언트 어플리케이션을 실행합니다. <tt>SaslTestClient</tt> 는, 다음의 2 개의 파라미터를 취합니다. 서비스명, 및 그 서비스가 실행되고 있는 서버의 이름입니다. 예를 들어, 서비스가 머신 <b><code>j1hol-001</code></b> 상에서 실행되고 있는 <b><code>host</code></b> 의 경우는, 다음을 입력합니다. 패스워드의 입력이 요구되었을 경우는,<b><tt>changeit</tt></b> 를 입력합니다.  <b> <code> </code>
+<pre><blockquote><br>% java -Djava.security.auth.login.config=jaas-krb5.conf \<br>       SaslTestClient host j1hol-001<br></blockquote></pre>
+    </b> </li>
+<li>클라이언트와 서버의 어플리케이션 윈도우에 다음의 출력이 표시됩니다. </li>
+</ol>
+
+<p><code>SaslTestServer</code> 의 예를 실행했을 경우의 출력 </p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Authenticated principal:[host/j1hol-001@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Waiting for incoming connections...</code></li>
+<li><code>Got connection from client /129. 145.128. 102</code></li>
+<li><code>Client authenticated; authorized client is:test@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Negotiated QOP:auth-conf</code></li>
+<li><code>Received:Hello There! </code></li>
+<li><code>Sending:Hello There! Fri May 07 15:32:37 PDT 2005</code></li>
+<li><code>Received data "Hello There! " of length 12</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<P><code>SaslTestClient</code> 의 예를 실행했을 경우의 출력</p>
+
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Kerberos password for test:changeit</code></li>
+<li><code>Authenticated principal:[test@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Connected to address j1hol-001/129. 145.128. 102</code></li>
+<li><code>Client authenticated. </code></li>
+<li><code>Negotiated QOP:auth-conf</code></li>
+<li><code>Sending:Hello There! </code></li>
+<li><code>Received:Hello There! Fri May 07 15:32:37 PDT 2005</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<ol start="8">
+<li>다른 보호의 품질을 사용해 프로그램을 시행하려면 ,<code>SaslTestClient</code> 의 행 8 을 변경합니다. 예를 들어, 행 8 을 다음의 행으로 옮겨놓아, 무결성 보호를 사용합니다 (기밀성 없음).  <b>
+<pre>props.put(Sasl.QOP, "auth-int");</pre>
+</b> </li>
+
+</ol>
+
+
+<h3>통계:</h3>
+
+
+<p>이 과제에서는, Java SASL API 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습했습니다.  </p>
+
+<h3>다음의 순서</h3>
+
+
+<ol>
+<li><a href="#JSSE">과제 5</a>  에 진행되어, JSSE 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습합니다.  </li>
+<li><a href="part3.html#SSO">과제 6</a>  에 진행되어, Kerberos 환경에서 싱글 싸인온을 실시하는 경우에 사용한 샘플 프로그램을 구성하는 방법에 대해 학습합니다.  </li>
+</ol>
+
+
+<hr>
+
+
+<h2><a name="JSSE"></a> 과제 5:Kerberos 에서의 Java Secure Socket Extension 의 사용
+</h2>
+<h3>이 과제의 목표:</h3>
+
+<p>
+이 과제의 목표는, JSSE API 를 사용해, Kerberos 암호화 방식을 사용한 안전한 인증 및 통신을 실행하는 방법에 대해 학습하는 것입니다.  </p>
+
+
+<h3>이 과제의 내용:</h3>
+<p>Secure Socket Layer (SSL)와 Transport Layer Security (TLS)는, 인터넷으로 암호화를 구현하는 경우에 가장 자주(잘) 사용되는 프로토콜입니다. TLS 는, SSL 로부터 발전한 인터넷 표준입니다. SSL/TLS 는, 어플리케이션 레벨의 프로토콜 (HTTP 나 LDAP 등)에 안전한 인증과 통신을 제공합니다. 예를 들어, HTTPS 는 SSL/TLS 를 개입시켜 HTTP 를 사용한 결과의 프로토콜입니다. SSL/TLS 는, HTTP 등의 표준 프로토콜에 대해서 사용될 뿐만 아니라, 안전하게 통신할 필요가 있는, 커스텀 프로토콜을 사용하는 커스텀 어플리케이션을 구축하는 경우에도 넓게 사용됩니다.  </p>
+
+
+<p>SSL/TLS 는, 종래는 증명서 베이스의 인증을 사용하고 있어, 일반적으로 서버 인증에 사용됩니다. 예를 들어, 브라우저등의 Web 클라이언트가 사용자에 대신해 안전한 Web 사이트 (서버)에 액세스 하면(자), 서버는, 브라우저가 서버의 아이덴티티를 검증할 수 있도록(듯이) 서버의 증명서를 브라우저에 송신합니다. 이것에 의해, 사용자가 기밀 정보 (크레디트 카드 정보등)를 가짜의 서버에 공개할 것은 없습니다. 최근, 새로운 표준에 의해, TLS 로 Kerberos 를 사용할 수 있게 되었습니다. 즉, 증명서 베이스의 인증을 사용하는 대신에, 어플리케이션은 Kerberos 자격을 사용해, 배치 환경에서 Kerberos 인프라스트럭쳐(infrastructure)를 이용할 수 있습니다. Kerberos 암호화 방식을 사용하면(자), 서버 뿐만이 아니라 클라이언트도 인증되는 상호 인증이 자동적으로 지원됩니다.
+</p>
+<p>
+특정의 어플리케이션으로 Java GSS, Java SASL, 또는 JSSE 를 사용할지 어떨지의 결정은, 복수의 요인으로 의존하는 경우가 있습니다. 어플리케이션이 서로 작용하는 서비스 (에 의해 사용되고 있는 프로토콜), 배치 환경 (PKI 또는 Kerberos 베이스), 어플리케이션의 시큐리티 요건 등입니다. JSSE 는, I/O 및 트랜스폴트를 실시하는 안전한 끝간 채널을 제공합니다. 한편, Java GSS 및 Java SASL 는, 데이터의 암호화 및 무결성 보호를 제공합니다만, 안전한 데이터를 피어에 트랜스폴트 하는 것은 어플리케이션입니다. JSSE 와 Java GSS 를 언제 사용할까를 결정하는 요인의 상세한 일부가, 문서<a href="http://java.sun.com/j2se/1.5.0/ja/docs/ja/guide/security/jgss/tutorials/JGSSvsJSSE.html">「Java GSS-API 및 JSSE 를 언제 사용할까」</a>에 나타나고 있습니다.  </p>
+
+<h3>이 과제의 자원:</h3>
+
+
+<ol>
+<li><a href="../../jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) 레퍼런스 가이드</a> </li>
+<li>JSSE javadoc:<tt><a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/net/package-summary.html">javax.net</a> </tt> 및 <a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/net/ssl/package-summary.html">javax.net.ssl</a> </li>
+  
+<li><a href="http://wp.netscape.com/eng/ssl3/ssl-toc.html">The SSL Protocol version 3.0</a> </li>
+<li><a href="http://www.ietf.org/rfc/rfc2246.txt">The TLS Protocol Version 1.0 (RFC 2246)</a> </li>
+<li><a href="http://www.ietf.org/rfc/rfc2712.txt">Addition of Kerberos Cipher Suites to Transport Layer Security TLS (RFC 2712)</a>  </li>
+<li> <a href="http://java.sun.com/j2se/1.5.0/ja/docs/ja/guide/security/jgss/tutorials/JGSSvsJSSE.html">Java GSS-API 및 JSSE 를 언제 사용할까</a>  </li>
+</ol>
+
+
+<h3>이 과제의 개요:</h3>
+
+
+
+<p>이 과제에서는, JSSE 및 Kerberos 암호화 방식을 사용해 안전하게 통신하는 방법을 나타내는 클라이언트서버 어플리케이션을 취급합니다. 클라이언트 부분과 서버 부분은,<a href="part1.html#JAAS">과제 1</a>  을 사용해 최초로 Kerberos 에의 인증을 실시합니다. 이것에 의해, 자격이 피인증자에게 포함됩니다. 어플리케이션은, 피인증자를 사용해 <tt>Subject.doAs</tt> 의 내부에서, (Kerberos 암호화 방식을 사용해) JSSE 조작을 실행하는 액션을 실행합니다. Kerberos 암호화 방식의 구현은 <tt>doAs</tt> 의 내부에서 실행되기 (위해)때문에, Kerberos 자격을 피인증자로부터 취득해, 그것들을 사용해 피어와의 인증 및 메세지의 안전한 교환을 실시합니다. 이 예에서는, 개행으로 종료되는 메세지 (협상을 한 암호군을 사용해 암호화되어 무결성이 보호된다)를, 클라이언트와 서버간에 송수신 합니다.
+</p>
+<p>표준 (RFC 2712)에 따라, Kerberos 가 유효한 모든 TLS 어플리케이션은, 같은 서비스명, 즉<b>「host」</b>를 사용합니다. 이 때문에, 이 과제에서는, Kerberos 서비스명을 명시적으로 지정할 필요는 없습니다.
+</p>
+</span>
+<h3>실행 순서:</h3>
+
+
+
+<ol>
+<li> 다음의 코드를 참조해 주세요. 이것은,<a href="src/JsseServer.java"><code>src/JsseServer.java</code></a>  에 있습니다. <br><br>이 코드는, 서비스 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="part1.html#JAAS">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 서버는 최초로,<strong><tt>SSLServerSocket</tt></strong> 를 작성합니다 (행 5 ?  8). 이것은,<tt>SSLServerSocket</tt> 가 필요에 따라서 자동적인 인증, 암호화, 및 복호화를 제공하는 점을 제외해, 프레인인 <tt>ServerSocket</tt> 를 작성하는 어플리케이션과 닮아 있습니다. 다음에, 서버는 사용하는 암호군을 설정합니다 (행 11 ?  12). 다음에, 서버는 루프로 실행되어 SSL 클라이언트로부터의 접속을 수락 (행 17), SSL 소켓으로부터 읽고 쓰기합니다 (행 23, 28). 서버는,<strong><tt>getLocalPrincipal()</tt></strong> 및 <strong><tt>getPeerPrincipal()</tt></strong> 메소드를 호출하는 것에 의해 (행 32 ?  33), 소켓의 소유자의 아이덴티티를 조사할 수가 있습니다.  </p>
+  </li>
+</ol>
+
+
+<p><code>JsseServer.java</code> 의 코드 리스트</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class JsseServerAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create TLS socket for accepting connections</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>SSLServerSocketFactory sslssf =</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>SSLServerSocket sslServerSocket =</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>(SSLServerSocket) sslssf.createServerSocket(localPort);</strong></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Enable only a Kerberos cipher suite </code> </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;String enabledSuites[] = { "TLS_KRB5_WITH_3DES_EDE_CBC_SHA" };</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslServerSocket.setEnabledCipherSuites(enabledSuites);</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Should handle exception if enabledSuites is not supported</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;while( true ) {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create socket to handle request</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BufferedReader in = new BufferedReader(new InputStreamReader(</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.getInputStream()</strong>));</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BufferedWriter out = new BufferedWriter(new OutputStreamWriter(</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.getOutputStream()</strong>));</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String inStr = <strong>in.readLine()</strong>;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// ... use inStr</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Compose and send reply</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String outStr = inStr + " " + new Date(). toString() + "\n";</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>out.write(outStr);</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.flush();</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get names of principal at both ends of secure connection</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Principal self = sslSocket.getSession(). getLocalPrincipal();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Principal peer = sslSocket.getSession(). getPeerPrincipal();</strong></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.close();</strong></code></li>
+        <li><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<ol start="2">
+<li>샘플 코드를 컴파일 합니다.  <b><code></code>
+<pre><blockquote><br>% javac JsseServer.java<br></blockquote></pre>
+    </b> </li>
+<li>다음의 코드를 참조해 주세요. 이것은 <a href="src/JsseClient.java"><code>src/JsseClient.java</code></a>  에 있습니다. 이 코드는, 클라이언트 주체가 KDC 에 대해서 인증한 후에 실행하는 액션을 정의합니다. 이 코드에 의해,<a href="#JAAScode">과제 1</a>  의 행 11 의 <tt>MyAction</tt> 를 옮겨놓을 수 있습니다. 강조 표시되고 있는 행에 주목해 주세요. 클라이언트는 최초로,<tt><strong>SSLSocket</strong></tt> 를 작성합니다. 다음에, 클라이언트는 사용하는 암호군을 설정합니다 (행 11 ?  12). 다음에, 클라이언트는,<tt>SSLSocket</tt> 를 사용해 소켓의 입력/출력 스트림을 읽고 쓰기하는 것에 의해, 서버와 메세지를 교환합니다. 클라이언트는,<strong><tt>getLocalPrincipal()</tt></strong> 및 <strong><tt>getPeerPrincipal()</tt></strong> 메소드를 호출하는 것에 의해 (행 26 ?  27), 소켓의 소유자의 아이덴티티를 조사할 수가 있습니다.  </li>
+</ol>
+
+
+<p><code>JsseClient.java 의 코드 리스트</code></p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>static class JsseClientAction implements PrivilegedExceptionAction {</code> </li>
+        <li><code>...</code> </li>
+<li><code>&nbsp;&nbsp;public Object run() throws Exception {</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Create SSL connection</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>SSLSocketFactory sslsf = (SSLSocketFactory) SSLSocketFactory.getDefault();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>SSLSocket sslSocket = (SSLSocket) sslsf.createSocket(server, port);</strong></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Enable only a Kerberos cipher suite </code> </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;String enabledSuites[] = { "TLS_KRB5_WITH_3DES_EDE_CBC_SHA" };</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.setEnabledCipherSuites(enabledSuites);</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Should handle exception if enabledSuites is not supported</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;BufferedReader in = new BufferedReader(new InputStreamReader(</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.getInputStream()</strong>));</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;BufferedWriter out = new BufferedWriter(new OutputStreamWriter(</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.getOutputStream()</strong>));</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;String outStr = ...;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>out.write(outStr);</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;out.flush();</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;String inStr = <strong>in.readLine()</strong>;</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// ... use inStr</code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;// Get names of principal at both ends of secure connection</code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Principal self = sslSocket.getSession(). getLocalPrincipal();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Principal peer = sslSocket.getSession(). getPeerPrincipal();</strong></code></li>
+        <li><br>
+        </li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;<strong>sslSocket.close();</strong></code></li>
+<li><code>&nbsp;&nbsp;&nbsp;&nbsp;return null;</code></li>
+        <li><code>&nbsp;&nbsp;}</code></li>
+        <li><code>}</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+
+<ol start="4">
+<li>샘플 코드를 컴파일 합니다.  <b>
+<pre>% javac JsseClient.java<br></pre>
+    </b> </li>
+    
+<li>신규의 윈도우를 기동해 서버를 기동합니다. <tt>JsseServer</tt> 는, 파라미터를 1 개 취합니다. JSSE 서비스가 실행되고 있는 서버의 이름입니다. 예를 들어, 머신 <b><code>j1hol-001</code></b> 상에서 실행되고 있는 경우는, 다음과 같이 입력합니다.  <b> 
+<pre>% xterm &amp;<br>% java <br> -Djava.security.auth.login.config=jaas-krb5.conf \<br>       JsseServer j1hol-001<br></blockquote><br>    </pre>
+    </b> </li>
+    
+    
+<li>클라이언트 어플리케이션을 실행합니다. <tt>JsseClient</tt> 는, 파라미터를 1 개 취합니다. JSSE 서비스가 실행되고 있는 서버의 이름입니다. 예를 들어, 서비스가 머신 <b><code>j1hol-001</code></b> 상에서 실행되고 있는 경우는, 다음과 같이 입력합니다. 패스워드의 입력이 요구되었을 경우는,<b><tt>changeit</tt></b> 를 입력합니다.  <b> <code> </code>
+<pre><blockquote><br>% java -Djava.security.auth.login.config=jaas-krb5.conf \<br>       JsseClient j1hol-001<br></blockquote></pre>
+    </b> </li>
+<li>클라이언트와 서버의 어플리케이션 윈도우에 다음의 출력이 표시됩니다. </li>
+</ol>
+
+<p><code>JsseServer</code> 의 예를 실행했을 경우의 출력</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Authenticated principal:[host/j1hol-001@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Waiting for incoming connections...</code></li>
+<li><code>Got connection from client /129. 145.128. 102</code></li>
+<li><code>Received:Hello There! </code></li>
+<li><code>Sending:Hello There! Fri May 07 15:32:37 PDT 2005</code></li>
+<li><code>Cipher suite in use:TLS_KRB5_WITH_3DES_EDE_CBC_SHA</code></li>
+<li><code>I am:host/j1hol-001@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Client is:test@J1LABS.EXAMPLE.COM</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>JsseClient</code> 의 예를 실행했을 경우의 출력</p>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"> <br>
+      <ol>
+<li><code>Kerberos password for test:changeit</code></li>
+<li><code>Authenticated principal:[test@J1LABS.EXAMPLE.COM]</code></li>
+<li><code>Sending:Hello There! </code></li>
+<li><code>Received:Hello There! Fri May 07 15:32:37 PDT 2005</code></li>
+<li><code>Cipher suite in use:TLS_KRB5_WITH_3DES_EDE_CBC_SHA</code></li>
+<li><code>I am:test@J1LABS.EXAMPLE.COM</code></li>
+<li><code>Server is:host/j1hol-001@J1LABS.EXAMPLE.COM</code></li>
+      </ol>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h3>통계:</h3>
+
+
+<p>이 과제에서는, 기반이 되는 인증 시스템으로서 Kerberos 를 사용해, JSSE 를 사용해 서로 안전하게 인증 및 통신을 실시하는 클라이언트/서버 어플리케이션을 기술하는 방법에 대해 학습했습니다.  <p>
+
+<h3>다음의 순서</h3>
+
+
+<ol>
+<li><a href="part3.html#SSO">과제 6</a>  에 진행되어, 과제 3, 4, 및 5 의 샘플 프로그램을 구성해 Kerberos 환경에서 싱글 싸인온을 실시하는 방법에 대해 학습합니다.  </li>
+</ol>
+
+<hr>
+
+</body></html>

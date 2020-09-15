@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>프로그램 실행 속도의 개선 - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>프로그램 실행 속도의 개선</h1>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+<!-- Body text begins here -->
+
+<h3>JDK 6 의 확장 기능 </h3>
+<blockquote>
+JDK 6 에서의 많은 퍼포먼스 확장의 설명은, 퍼포먼스 Web 사이트의<a href="http://java.sun.com/performance/reference/whitepapers/6_performance.html">「Java SE 6 Performance Whitepaper」</a>를 참조해 주세요.
+</blockquote>
+<p>
+
+<h3>JDK 5.0 의 확장 기능 </h3>
+<blockquote>
+다음에 드는 것은, 프로그램 실행 속도를 개선하기 위해서 JDK 5.0 으로 행해진 확장의 일부입니다.
+<ul>
+<li><b>가베지 컬렉션의 인간공학</b> - 클라이언트 또는 서버의 실행시 컴파일러를 자동적으로 검출해 선택합니다.  이것에 의해, 서버 클래스의 머신에서의 퍼포먼스가 향상합니다. 자세한 것은,<a href="../vm/index.html">「Java 가상 머신」</a>의 「서버 - 클래스 머신의 검출」 및 「가베지 컬렉션 인간공학」을 참조해 주세요.
+<p>
+
+<li><b>StringBuilder 클래스</b> - 새로운 클래스 <a href="../../../api/java/lang/StringBuilder.html"><tt>StringBuilder</tt></a>  를 추가했습니다.  이 클래스는, 퍼포먼스를 향상하기 위해(때문에), 기본적으로 비동기의 StringBuffer 로서 동작합니다. 동기가 필요하지 않은 한은, StringBuffer 를 모두 StringBuilder 에 옮겨놓아 주세요.  동기는 거의 필요 없습니다. StringBuilder 는, 대부분의 경우 StringBuffer 보다 고속으로.
+<p>
+
+<li><b>Java 2D<sup><font size=-2>TM</font></sup> 테크놀러지</b> - Java 2D 의 퍼포먼스 확장에 의한 부산물로서 Swing 나 JFC 등, 다른 분야의 퍼포먼스에도 좋은 영향이 미치고 있습니다. 예를 들어, BufferedImage 객체의 고속화 향상, OpenGL 를 사용한 하드웨어 고속화에 의한 렌더링의 지원, 텍스트 렌더링의 퍼포먼스 향상등을 들 수 있습니다. 자세한 것은,<a href="../2d/new_features.html">「Java 2D 의 신기능」</a>을 참조해 주세요.
+<p>
+
+<li><b>Image I/O</b> - JPEG 이미지의 읽고 쓰기 처리시의 퍼포먼스 및 메모리 사용이 향상했습니다. <a href="../imageio/new_features.html">「Image I/O 의 신기능」</a>의 「퍼포먼스의 향상」을 참조해 주세요.
+
+</ul>
+
+</blockquote>
+<p>
+
+<h3>J2SDK 1.4 의 확장 기능 </h3>
+<blockquote>
+다음에 드는 것은, 프로그램 실행 속도를 개선하기 위해서 J2SDK 1.4 로 행해진 확장의 일부입니다.
+<ul>
+<li><b>Java 2D<sup><font size=-2>TM</font></sup> 테크놀러지</b> - Java 2D 의 퍼포먼스 확장에 의한 부산물로서 Swing 나 JFC 등, 다른 분야의 퍼포먼스에도 좋은 영향이 미치고 있습니다. J2SDK 에서의 퍼포먼스 개선의 일례로서 Solaris 에서의 원격 X 표시가 큰폭으로 개선되고 있습니다. 퍼포먼스의 확장을 포함한, Java 2D 의 확장 기능의 자세한 것은,<a href="http://java.sun.com/j2se/1.4.2/docs/guide/2d/new_features.html">「Java 2D 의 신기능」</a>을 참조해 주세요.
+<p>
+<li><b>java.nio</b> - New I/O API 에서는, 버퍼 관리, 측정할 수 있는 네트워크와 파일 입출력, 캐릭터 세트의 지원, 및 정규 표현 매칭의 분야에서 퍼포먼스가 향상하고 있습니다. New I/O API 는,<tt>java.io</tt> 패키지의 입출력 기능을 추가하는 것입니다. 자세한 것은,<a href="../io/index.html"><b>「I/O API」</b></a> 를 참조해 주세요.  
+<p>
+<li><b>리플렉션</b> - J2SDK 1.4. 0 이후에서는, 일부의 리플렉트 처리, 특히 <a href="../../../api/java/lang/reflect/Field.html">java.lang.reflect.Field</a> ,<a href="../../../api/java/lang/reflect/Method.html#invoke(java.lang.Object,%20java.lang.Object...)">java.lang.reflect.Method.invoke()</a>,<a href="../../../api/java/lang/reflect/Constructor.html#newInstance(java.lang.Object...)">java.lang.reflect.Constructor.newInstance()</a>, 및 <a href="../../../api/java/lang/Class.html#newInstance()">Class.newInstance()</a>  가 고쳐 써져, 퍼포먼스가 향상했습니다. 리플렉트에 의한 호출이나 인스턴스화는, 이전의 릴리스에 비해 수배속구 되었습니다.  
+<p><li><b>네트워크 기능</b> - J2SDK 의 네트워크 기능에서는, HTTP 스트리밍의 퍼포먼스가 개선되었습니다.
+<p>
+<li><b>java.math</b> - <tt>BigInteger</tt> 클래스에, 소수를 생성하기 위한 새로운 static 메소드 <a href="../../../api/java/math/BigInteger.html#probablePrime(int,%20java.util.Random)"><tt>probablePrime</tt></a>  가 추가되었습니다. 종래는,<tt>BigInteger</tt> 의 소수를 생성하는 방법은 1 개 밖에 없고, 메소드의 호출측으로부터, 「확실성」(호출측을 허용 할 수 있는, 결과가 소수가 아닌 확률의 대수)을 제공할 필요가 있었습니다. 그러나, 제공하는 확실성의 값이 부적절하다면, 퍼포먼스가 저하하거나 (확실성의 값이 너무 비싼 경우), 중대한 버그가 발생하거나 (값이 너무 낮은 경우) 하는 일이 있었습니다. 이 새로운 소수 생성 메소드는, ANSI 의 드래프트 스펙에 근거해 자동적으로 판별되는 적절한 확실성의 값을 사용하는, 소수 생성을 위한 효율적인 알고리즘을 제공합니다.
+<p>
+<li><b>Hotspot</b> - Java HotSpot[TM] 가상 머신에서는, 「풀 스피드 디버그」를 사용하게 되었습니다. 구버젼의 HotSpot 에서는, 디버그가 유효하게 되고 있는 경우, 프로그램은 interpreter만을 사용해 실행하고 있었습니다. 이 버젼에서는, HotSpot 테크놀러지의 퍼포먼스면의 이점을, 디버그가 유효한 상태로 동작하고 있는 프로그램에 대해 살릴 수가 있습니다. 퍼포먼스가 향상하면(자), 장시간 동작하는 프로그램을 보다 간단하게 디버그 할 수 있게 됩니다. 또, 풀 스피드로 실험을 실시하거나 예외상에서 디버거를 기동할 수 있게 되었습니다.
+
+</ul>
+</blockquote>
+
+<h3>J2SDK 1.3 의 확장 기능 </h3>
+<blockquote>
+다음에 드는 것은, 프로그램 실행 속도 및 일반적인 실행시 퍼포먼스를 개선하기 위해서, 이전의 릴리스인 J2SDK 1.3 으로 더해진 변경의 일부입니다. 이러한 확장은, J2SDK 1.4 에도 인계되고 있습니다.  
+<p> 
+자세한 것은, BugParade 의 Web 사이트에 있는 관련하는 버그 리포트의 링크를 참조해 주세요.
+<p>
+<ul>
+<li><b>readUTF 및 writeUTF 의 퍼포먼스의 개선</b> - <tt>DataInputStream</tt> 및 <tt>DataInputStream</tt> 의 <tt>readUTF</tt> 메소드 및 <tt>writeUTF</tt> 메소드의 구현이 변경되어 퍼포먼스가 개선되었습니다. 이것은, BugParade 의 Web 사이트에 있는 버그 번호 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4219771.html">4219771</a>  의 수정입니다.
+<p>
+<li><b>JScrollPane 페인트의 퍼포먼스의 개선</b> - JScrollPane 의 구현이 개선되어 더블 버퍼링이 사용되어 있지 않을 때에 과잉인 페인트와 화면후들 다하고가 일어나지 않게 되었습니다.
+<p>
+<li><b>JTable 의 퍼포먼스의 개선</b> - JTable 의 열처리 기능의 퍼포먼스가 개선되었습니다. 이전에는, 열의 추가 조작 또는 렬폭의 재계산 조작의 퍼포먼스는, 렬수가 증가하는 것에 따라 충분히 슬캘링 하지 않았습니다. 이번, 열처리 기능의 구현이 변경되어 스케이라비리티가 개선되었습니다. 이것은, BugParade 의 Web 사이트에 있는 버그 번호 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4223642.html">4223642</a>  의 수정입니다.
+<p>
+<li><b>페인트의 합체</b> - 개선된 페인트 합체 알고리즘의 구현에 의해, 페인트의 퍼포먼스가 확장되었습니다. 재페인트가 필요한 영역은, 이벤트 큐에 송신될 때, 단일의, 사각형이 아닌 재페인트 영역에 합체 됩니다. 이것에 의해, 재페인트가 배치처리 되어 이전의 릴리스보다 효율적으로 복수의 재페인트가 동시 실행됩니다.   
+<p>
+<li><b>프레임의 사이즈 변경</b> - 톱 레벨 프레임의 사이즈 변경이 개선되었습니다.
+<p>
+<li><b>프레임의 내부 이동</b> - <tt>Graphics.copyArea</tt> 호출의 사용에 의해, Swing 의 DefaultDesktopManager 가 재draw 하는 양은, 프레임을 드래그 할 경우에 비교해 큰폭으로 적게 되었습니다.
+<p>
+<li><b><tt>BigIntenger</tt> 의 퍼포먼스 향상</b>  - Pure Java 의 프로그램 언어 코드에 클래스 <tt>java.math.BigInteger</tt> 가 다시 구현했습니다. 이전에는,<tt>BigInteger</tt> 의 구현은 Plumb C 라이브러리를 베이스로 하고 있었습니다. 새로운 구현에 의해, 모든 표준 조작이 낡은 구현보다 쭉 고속으로 실행됩니다. 새로운 구현에서는, 실행하는 조작에 따라서는 5 배 이상 고속으로 됩니다.
+
+<p>
+<li><b>수치 연산의 퍼포먼스를 향상시키는 기능의 제공</b> - Java 2 플랫폼에, 일반적인 수치 연산을 실행하기 위한 API 를 제공하는 2 개의 클래스가 추가되었습니다.   
+<ul>
+<li><tt><a href=../../../api/java/lang/StrictMath.html>java.lang.StrictMath</a> </tt> - 클래스 <tt>java.lang.StrictMath</tt> 는, 이전의 버젼의 Java 플랫폼의 클래스 <tt>java.lang.Math</tt> 의 이름이 바뀐 것입니다만, 다른 점에서는 <tt>Math</tt> 의 스펙을 보관 유지하고 있습니다. 이 클래스는, 특히 모든 구현으로 비트 단위까지 재현 가능한 결과를 돌려주도록(듯이) 정의되고 있습니다.
+<li><tt><a href=../../../api/java/lang/Math.html>java.lang.Math</a> </tt> - 클래스 <tt>java.lang.Math</tt> 는, 클래스 <tt>StrictMath</tt> 와 같은 API 세트를 제공합니다. 다만, 클래스 <tt>StrictMath</tt> 의 일부의 수치 함수와는 달라, 클래스 <tt>Math</tt> 의 등가인 함수의 모든 구현은, 비트 단위까지 같은 결과를 돌려주도록(듯이)는 정의되지 않고, 특정의 제약내에서 결과가 다른 일이 있습니다. 이 완만함에 의해, 엄밀한 재현성이 요구되지 않는 구현에 대해 퍼포먼스의 향상이 가능하게 됩니다.
+</ul>
+</ul>
+</blockquote>
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2001
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <br>
+
+   <br>
+
+
+<!-- <FONT SIZE="-1"> Please send comments to: </FONT> -->
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>
+
+
+

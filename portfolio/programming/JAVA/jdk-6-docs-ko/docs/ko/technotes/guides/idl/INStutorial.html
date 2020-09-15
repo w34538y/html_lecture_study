@@ -1,0 +1,520 @@
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java IDL:Interoperable Naming Service (INS)의 예 - xrath.com 에서 번역됨</TITLE>
+
+<!-- Changed by: carson 9/2001 for j2se 1.4 -->
+
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+
+<H1 ALIGN=CENTER>Java IDL:Interoperable Naming Service (INS)의 예</H1>
+
+<HR>
+<P>
+<P>Interoperable Naming Service (INS)는,<a href="jidlNaming.html"><tt>CosNaming</tt> 서비스</a>의 확장 기능입니다. INS 에는 다음과 같은 기능이 추가되고 있습니다. <P>
+	<UL>
+	<LI><a href="#string">캐릭터 라인화한 이름</a>으로 해결하는 기능 (Department/Accounting/TravelExpenses 등)
+	<LI>CORBA 객체 참조용 URL (<a href="#corbaloc">corbaloc:</a> 및 <a href="#corbaname">corbaname:</a> 형식)
+	<LI>CosName 및 URL 를 취급하기 위한 편리한 <a href="#extAPI"><tt>NamingContextExt</tt> 의 API</a> 
+	<LI><a href="#bootstrap">bootstrap</a>용의 ORB 인수 (<tt>ORBInitRef</tt> 및 <tt>ORBDefaultInitRef</tt>)
+	</UL>
+	
+<P>다음의 그림은, INS 가 어떻게 ORBD 에 적합하는지를 나타내고 있습니다.
+ 
+<P>
+<P>
+<center><IMAGE SRC="images/ORBDNS.gif" ALT="ORBD"></center>
+<P><P>
+<BR> <BR><P>
+<P>
+
+<P>
+객체 참조는, 적어도, 주소, 객체 참조를 작성한 POA 의 이름, 및 객체 ID 라고 하는 3 개의 정보를 포함하고 있습니다.
+
+<a name="string"></a> 
+<P>INS 를 사용하면(자), 캐릭터 라인화 된 Interoperable Object References (IOR)보다 읽기 쉬운, CORBA 객체에 액세스하기 위한 URL 를 제공할 수 있습니다. 다음과 같은 캐릭터 라인화 된 객체 참조 형식을 사용할 수 있습니다.
+ <P>
+ <UL>
+<LI>Interoperable Object References (IOR)
+<P>IOR 는, 객체 참조이며, OMG 에 의해 정의된 GIOP (General Inter-ORB Protocol)나 IIOP (Internet Inter-ORB Protocol)를 사용해 정보를 교환하는 ORB 에 의해 인식됩니다. 클라이언트는,<a href="jidlNaming.html#example3">「이름 공간의 브라우즈」</a>의 예에 나타내도록(듯이),<tt>orb.object_to_string(objRef)</tt> 를 사용해 객체 참조를 취득하는지, 또는 다른 객체 참조의 기동의 결과로서, 객체 참조를 가져옵니다.
+ <P>
+<LI>인간이 읽을 수 있는 URL 형식의 CORBA 객체 참조
+<P><tt>corbaloc</tt> 와 <tt>corbaname</tt> 의 형식을 사용하면(자), CORBA 객체에 액세스하기 위한 URL 를 제공할 수 있습니다. <tt>corbaloc</tt> 형식은, 네임 서비스를 경유하지 않고, 특정의 CORBA 서비스를 해결하는 경우에 사용합니다. <tt>corbaname</tt> 형식은, 특정의 네이밍 문맥의 캐릭터 라인화 된 이름을 해결하는 경우에 사용합니다.
+ <P>
+ 	<UL>
+ 	<a name="corbaloc"></a> 
+	<LI>corbaloc:
+	<P><tt>corbaloc:</tt>형식은, CORBA 클라이언트에 있어 유효한 형식에서, CORBA 서비스를 찾기 위해서(때문에) 사용됩니다. 이 형식은, 일반적으로, GIOP 의 <tt>LocateRequest</tt> 메세지 또는 <tt>Request</tt> 메세지를 사용해, 참조를 해결하기 위해서 사용됩니다. 예를 들어,<tt>corbaloc:</tt> 객체 참조는 다음과 같이 지정합니다.
+ 	<pre>
+ 	corbaloc:iiop:1. 2@MyBank.com:2050/TraderService
+ 	</pre>
+	<P>이 예는, 호스트 <tt>myBank.com</tt> 의 포트 <tt>2050</tt> 으로부터 <tt>TraderService</tt> 의 객체 참조를 취득하는 방법을 나타내고 있습니다.
+	<P><STRONG>주: </STRONG>URL 의 예의 <STRONG>1.2</STRONG> 는,<tt>corbaloc</tt> URL 에 대응하는 IOR 의 GIOP 버젼 1.2 를 의미합니다. GIOP 1.2 는, Sun 의 Java CORBA ORB 의 디폴트 값입니다. 이 예에서는, 다른 버젼을 관련짓는 방법을 나타내기 위해서(때문에) 사용되고 있습니다.
+ 	
+ 	<P>
+ 	<a name="corbaname"></a> 
+	<LI>corbaname:
+	<P><tt>corbaname:</tt>형식은, 클라이언트가 직접 bootstrap하기 위한 기구를 제공해서 , 일반적으로, 루트 네이밍 문맥의 캐릭터 라인화 된 이름을 해결하기 위해서 사용됩니다. 예를 들어,<tt>corbaname:</tt> 객체 참조는 다음과 같이 지정합니다.
+ 	<pre>
+ 	corbaname::myBank.com:2050#Personal/schedule
+ 	</pre>
+	<P><tt>myBank.com</tt> 는 호스트로,<tt>2050</tt> 은 포트입니다. 해시 마크까지의 부분의 참조 (<tt>corbaname::myBank.com:2050 </tt>)는, 루트 네이밍 문맥을 돌려주는 URL 입니다. 이 예는, a) 네임 서비스를 찾아, b) 네임 서비스의 <tt>Personal/schedule</tt> 라는 이름을 해결하기 위해서 사용되는 URL 를 나타내고 있습니다.
+ 	<P>
+ 	</UL>
+ 	
+ </UL>
+ 
+ <a name="extAPI"></a> 
+<H4><tt>NamingContextExt</tt> API</H4>
+
+ 
+<P><tt>NamingContext</tt> 로부터 파생한 <a href="../../../api/org/omg/CosNaming/NamingContextExt.html"><tt>NamingContextExt</tt></a>  인터페이스는, URL 와 캐릭터 라인화 된 이름을 사용하기 위해서 필요한 조작을 제공합니다. CosName, 캐릭터 라인화 된 이름, 및 URL 간의 변환에 사용하는 <tt>NamingContextExt</tt> API 를 몇개인가다음에 나타냅니다. 이러한 API 의 상세한 것에 대하여는,<a href="ftp://ftp.omg.org/pub/docs/ptc/00-08-07.pdf">COS Naming Specification</a>  의 3.6. 4 절을 참조해 주세요.
+ 
+ <UL>
+<LI><tt>to_string</tt>
+<P>이 오퍼레이션은,<tt>Name</tt> 를 받아, 캐릭터 라인화 된 이름을 돌려줍니다. <tt>Name</tt> 가 무효인 경우는,<tt>InvalidName</tt> 예외가 발생합니다.
+ <P>
+<LI><tt>to_name</tt> 
+<P>이 오퍼레이션은, 캐릭터 라인화 된 이름을 받아,<tt>Name</tt> 를 돌려줍니다. 캐릭터 라인화 된 이름이, 구문적으로 잘못되어 있는지, 또는 구현의 제한으로 적합하지 않은 경우는,<tt>InvalidName</tt> 예외가 발생합니다.  
+ <P>
+<LI><tt>resolve_str</tt> 
+<P><tt>NamingContext.resolve()</tt> 와 같은 방법으로 해결을 실행하는 편리한 오퍼레이션입니다. 이 오퍼레이션은,<tt>Name</tt> 는 아니고, 캐릭터 라인화 된 이름을 인수로서 받습니다.  
+ <P>
+<LI><tt>to_url</tt> 
+<P>이 오퍼레이션은, 다음과 같은 corbaloc URL &lt;address&gt; and &lt;<tt>key_string</tt>&gt; 컴퍼넌트를 최초의 파라미터로서 취합니다.
+ <P>
+ 	<UL>
+	<LI><tt>:myhost. 555xyz.com</tt>
+	<LI><tt>:myhost. 555xyz.com/a/b/c </tt>
+	<LI><tt>atm:00002112...,:myhost.xyz.com/a/b/c</tt> 
+ 	</UL>
+ 	
+<P>게다가 2 번째의 파라미터로서 캐릭터 라인화 된 이름을 취합니다. 이 오퍼레이션은, 파라미터상의 필요한 이스케이프를 모두 실행해, 완전한 형식의 URL 캐릭터 라인을 돌려줍니다. corbaloc 주소, 키파라미터, 이름 파라미터의 어떤 것인가에 실수가 있으면(자), 예외가 발생합니다.  
+<P>stringified_name 는 비울 수도 있습니다. 주소가 빈 상태(empty)의 경우는,<tt>InvalidAddress</tt> 예외가 발생합니다.  <P>
+ 
+</UL> 
+
+
+<P>URL 로부터 객체에의 변환은, CORBA 2.3 스펙의 13.6. 6 절에 기재되어 있도록(듯이),<tt>org.omg.CORBA.ORB.string_to_object()</tt> 에 의해 처리됩니다.
+
+<P>이하의 Java IDL 튜토리얼에서는,<tt>NamingContextExt</tt> 를 사용합니다.
+<P>
+<UL>
+<LI><a href="jidlExample.html">Java IDL: 「Hello World」의 예</a>  (POA와 일시 서버의 사용)
+<LI><a href="jidlExample2.html">Java IDL: 「Hello World의 예」</a>  (POA, 지속 서버, 및 지속 네임 서비스의 사용)
+<LI><a href="jidlTieServer.html">Java IDL: 「Hellow World」의 예</a>  (POA-Tie 서버측 모델의 사용)
+</UL>
+<P>
+ 
+<a name="bootstrap"></a> 
+<H4>ORB 의 bootstrap option</H4>
+<P><tt>ORBInitRef</tt> 또는 <tt>ORBDefaultInitRef</tt> 를 사용해,<tt>resolve_initial_references()</tt> 로부터 커스터마이즈 된 CORBA 서비스의 핸들을 돌려주도록(듯이) ORB 를 구성할 수가 있습니다. 다음에 예를 나타냅니다.
+<P>
+<UL>
+<LI>예를 들어 다음과 같이 <tt>-ORBInitRef</tt> 를 사용해, 특정의 CORBA 서비스에 해결됩니다.
+<P>
+<pre>
+-ORBInitRef TraderService=corbaloc::myBank.com:2050/TraderService
+</pre>
+<P>
+<LI><tt>-ORBInitRef</tt> 를 지정하지 않는 경우는,<tt>-ORBDefaultInitRef</tt> 를 사용해 해결됩니다. 예를 들어,<tt>TraderService</tt> 의 예에서는 다음과 같이 지정합니다.
+<P><pre>
+-ORBDefaultInitRef corbaloc:iiop:1. 2:myBank.com:2050
+</pre>
+</UL>
+
+<P>이러한 옵션을 사용했을 경우, 해결의 차례는 다음과 같이 됩니다.
+<P>
+<OL>
+<LI><tt>register_initial_references</tt> 를 사용해 등록된 객체
+<LI><tt>-ORBInitRef</tt>
+<LI><tt>-ORBDefaultInitRef</tt>
+<LI>독자적인 bootstrap (Sun ORB 마셔)
+</OL>
+
+
+<P>
+	
+<P>INS 의 상세한 것에 대하여는, OMG 스펙 (<a  href="http://www.omg.org/cgi-bin/doc?ptc/00-08-07">ptc/00-08-07</a> )을 참조해 주세요.
+
+<P>
+
+<HR>
+<a name="tutorial"></a> 
+<H1>INS 의 예:INS URL 에 의해 액세스 되는 참조의 공개</H1>
+
+
+<P>이 문서에서는, Interoperable Naming Service (INS)를 사용해 완전한 CORBA (Common Object Request Broker Architecture) 어플리케이션을 작성하는 방법의 고레벨인 개요에 대해 설명합니다.  
+
+
+
+
+
+
+<P>이 예에서는, 이하의 파일을 사용합니다.
+<UL>
+
+<LI>이 예의 단순한 인터페이스의 <A href="#IDL">IDL</A> 
+
+   
+
+<LI>객체를 작성해, INS URL 로 사용할 수 있도록(듯이) 그 객체를 공개하는<A href="#server">서버</A> 
+   
+<LI><tt>Service</tt> 인터페이스의<a href="#impl">구현</a> 
+
+   
+
+<LI><tt>corbaloc:</tt> URL 를 사용해 서버로부터 참조를 취득하는<A HREF="#application">어플리케이션 클라이언트</A> 
+
+   
+<LI>샘플의 컴파일 방법과 실행 방법에 대한<A href="#instructions">설명</A> 
+
+   </UL>
+
+
+<P><img src="images/computer.gif" alt="스텝">튜토리얼의 각 스텝은 이 기호로 가리킵니다.
+<P>
+
+
+
+
+
+
+<!--************IDL*************-->
+
+
+
+<A name="IDL">
+
+<H2>인터페이스의 정의 (<code>Service.idl</code>)</H2></A> 
+
+<P>CORBA 어플리케이션 작성의 제일 단계는, OMG 의 인터페이스 정의 언어 (IDL)를 사용해, 객체와 인터페이스를 모두 기술하는 것입니다.  
+
+<P>다음의 코드는 OMG IDL 로 기술된 것으로, CORBA 객체의 <TT>ping()</TT> 오퍼레이션이 INS <tt>Service</tt> 에 대한 ping 를 실행하고 있습니다. </P>
+ 
+<P><img src="images/computer.gif" alt="스텝"><tt>Service.idl</tt> 파일을 작성해, 다음의 코드를 추가합니다.
+<P>
+<EM><STRONG>Service.idl</STRONG></EM>
+<P>
+
+<pre>
+// A very simple interface to explain this example
+interface Service {
+    void ping();
+};
+</pre>
+
+
+
+<!--************TRANSIENT SERVER*************-->
+
+
+
+<A NAME="server">
+
+<H2>서버의 구현 (<code>INSServer.java</code>)</H2></A> 
+
+
+<P><tt>INSServer</tt> 클래스에는 서버의 <TT>main()</TT> 메소드가 포함됩니다. 이 <TT>main()</TT> 메소드에서는, 다음의 처리를 실시합니다.
+
+</P>
+<UL>
+
+<LI>INS 요구를 대기하는 포트를 열기 위한 <tt>ORBPeristentServerPort</tt> 프로퍼티 (Sun 독자적인 프로퍼티)을 설정한다
+
+<LI>ORB 의 인스턴스를 생성해 초기화한다
+   
+<LI>루트 POA 의 참조를 취득해,<tt>POAManager</tt> 를 기동한다
+
+<LI>서번트를 작성한다 (1 개의 CORBA
+
+<TT>ServiceImpl</TT> 객체의 구현)
+
+
+<LI>새로운 객체를 「PingService」라고 하는 이름으로 네이밍 문맥에 등록한다
+
+
+<LI>클라이언트로부터 새로운 객체가 불려 가는 것을 기다린다
+</UL>
+
+<P><img src="images/computer.gif" alt="스텝"><tt>INSServer.java</tt> 파일을 작성해, 다음의 코드를 추가합니다.
+<P>
+<EM><STRONG>INSServer.java</STRONG></EM>
+<P>
+
+<pre>
+// <STRONG>INSServer.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+import java.util.Properties;
+import org.omg.CORBA.Object;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.Policy;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer. *;
+import org.omg.PortableServer.Servant;
+
+public class INSServer {
+    public static void main( String args[] ) {
+        try {
+            Properties properties = System.getProperties( );
+            // STEP 1: Set ORBPeristentServerPort property
+            // Set the proprietary property to open up a port to listen to
+            // INS requests.  
+            // <STRONG>Note: This property is subject to change in future releases</STRONG>
+            properties.put( "com.sun.CORBA.POA.ORBPersistentServerPort",
+                Integer.toString(1060) );
+
+            // STEP 2: Instantiate the ORB, By passing in the 
+            // ORBPersistentServerPort property set in the previous step
+            ORB orb = ORB.init( args, properties );
+
+
+            // STEP 3: Instantiate the Service Object that needs to be published
+            // and associate it with RootPOA.
+            ServiceImpl servant = new ServiceImpl( );
+            POA rootPOA = POAHelper.narrow( orb.resolve_initial_references( "RootPOA" ));
+            rootPOA.the_POAManager(). activate();
+            rootPOA.activate_object( servant );
+
+            // STEP 4: Publish the INS Service using 
+            // orb.register_initial_reference( &lt;ObjectKey&gt;, &lt;ObjectReference&gt; 
+            // <STRONG>NOTE: Sun private internal API, not part of CORBA 2.3. 1. </STRONG>
+            // <STRONG>May move as our compliance with OMG standards evolves. </STRONG>
+            ((com.sun.corba.se.internal.Interceptors.PIORB) orb).
+                register_initial_reference( 
+                "PingService", rootPOA.servant_to_reference(servant) );
+
+            System.out.println( "INS Server is Ready..." );
+             
+            // STEP 5: We are ready to receive requests
+            orb.run( );
+        } catch ( Exception e ) {
+             System.err.println( "Error in setup : " + e );
+        }
+    } 
+}
+&nbsp;</pre>
+
+
+<!--************  IMPL  *************-->
+
+<A NAME="impl">
+
+<H2>서비스의 구현 (<code>ServiceImpl.java</code>)</H2></A> 
+
+
+
+<P>구현예 <TT>ServiceImpl</TT> 에서는,<TT>Service</TT> IDL 인터페이스를 구현합니다. </P>
+
+<P><img src="images/computer.gif" alt="스텝"><tt>ServiceImpl.java</tt> 파일을 작성해, 다음의 코드를 추가합니다.
+<P>
+<EM><STRONG>ServiceImpl.java</STRONG></EM>
+<P>
+
+<pre>
+// <STRONG>ServiceImpl.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+
+// Implementation of Service interface
+public class ServiceImpl extends ServicePOA {
+    public void ping( ) {
+        System.out.println( "PingService.ping called..." );
+    }
+}
+</pre>
+
+<!--************APPLICATION*************-->
+
+
+
+<A name="application">
+
+<H2>클라이언트 어플리케이션의 구현 (<code>INSClient.java</code>)</H2></A> 
+
+
+
+<P>이 어플리케이션 클라이언트에서는, 다음의 처리를 실시합니다. </P>
+
+
+
+<UL>
+
+<LI>ORB 를 생성해 초기화한다
+
+   
+
+<LI><tt>resolve_initial_references()</tt> 를 사용해,<tt>PingService</tt> 객체 참조를 취득한다
+
+   
+
+<LI><tt>PingService</tt> 의 <TT>ping()</TT> 오퍼레이션을 호출해, 결과를 표시한다
+
+</UL>
+
+<P><img src="images/computer.gif" alt="스텝"><tt>INSClient.java</tt> 파일을 작성해, 다음의 코드를 추가합니다.
+<P>
+<EM><STRONG>INSClient.java</STRONG></EM>
+<P>
+
+<pre>
+// <STRONG>INSClient.java</STRONG>
+// <A HREF="examplelicense.html">Copyright and License</A>  
+&nbsp;
+import org.omg.CORBA.ORB;
+
+public class INSClient {
+    public static void main( String args[] ) {
+        try {
+            // STEP 1: Instantiate the ORB
+            ORB orb = ORB.init( args, null );
+
+            // STEP 2: Resolve PingService using orb.resolve_initial_references()
+            // In this example we have used <a href="#client">-ORBInitRef</a>  argument to locate the
+            // PingService.  User can also choose to pass the corbaloc: url to
+            // orb.string_to_object to resolve the published PingService 
+            // reference.
+            org.omg.CORBA.Object object = orb.resolve_initial_references(
+                "PingService" );
+
+            // STEP 3: Narrow the reference and we are ready to invoke method
+            // on PingService.
+            Service insService = ServiceHelper.narrow( object );
+
+            insService.ping( );
+            System.out.println( "The server has been pinged" );
+            
+        } catch ( Exception e ) {
+            System.err.println( "Exception in INSClient " + e );
+            e.printStackTrace( );
+        }
+    }
+}
+&nbsp;</pre>
+
+
+
+
+<!--************COMPILING THE EXAMPLES************-->
+
+
+
+<A name="instructions">
+
+<H2>INS 구축 방법과 실행 방법의 예</H2></A> 
+
+
+
+<P>이 예를 실행하는 경우는, 1024 이상의 포트 번호를 사용하는 것을 추천합니다. 이것은, Solaris 를 사용하는 경우, 1024 보다 작은 포트 번호로 프로세스를 기동할 경우에, root 로서 액세스 할 필요가 있기 (위해)때문에입니다. 이 예에서는, 서버의 <tt>ORBPersistentServerPort</tt> 프로퍼티을 1060 으로 설정해 있습니다. </P>
+
+
+<H3>인터페이스 정의의 컴파일</H3>
+
+<P><img src="images/computer.gif" alt="스텝"><TT>Service.idl</TT> 파일이 놓여져 있는 디렉토리로 이동해, 다음과 같이 IDL-to-Java 컴파일러를 실행합니다.
+
+<pre>
+  idlj -fall  Service.idl
+</pre>
+
+<P><TT>idlj</TT> 컴파일러의 <TT>-fall</TT> 옵션을 사용해, 클라이언트와 서버측의 바인딩의 양쪽 모두를 생성할 필요가 있습니다. <TT>idlj</TT> 옵션의 상세한 것에 대하여는,<A HREF = "../../tools/share/idlj.html">「IDL-to-Java 컴파일러의 옵션」</a>을 참조해 주세요.   
+
+<P><TT>Service.idl</TT> 의 <TT>idlj</TT> 컴파일러로, 커멘드행의 <TT>-fall</TT> 옵션을 사용해 생성되는 파일은 다음과 같습니다.  
+<P>
+<UL>
+<LI><TT>ServicePOA.java</TT> - 서버 스켈리턴  
+<P>
+<LI><TT>_ServiceStub.java</TT> - 클라이언트 Stub
+<P>
+<LI><TT>Service.java</TT> - IDL 인터페이스의 Java 판
+<P>
+<LI><TT>ServiceHelper.java</TT> -  보조적인 기능, 특히 <TT>narrow()</TT> 메소드 
+<P>
+<LI><TT>ServiceHolder.java</TT> - <TT>INS</TT> 형의 퍼블릭 인스턴스 멤버를 포함한다
+<P>
+<LI><TT>ServiceOperations.java</TT> - <TT>ping()</TT> 메소드를 포함한다 
+</UL>
+
+<P>
+<h3>Java 파일의 컴파일</h3>
+<P><img src="images/computer.gif" alt="스텝">다음과 같이 해, Stub와 스켈리턴도 포함해<TT>. java</TT> 파일을 컴파일 합니다.
+<pre>
+   javac *. java 
+</pre>
+
+<H3>INS 서버의 기동</H3>
+
+<P><img src="images/computer.gif" alt="스텝">INS 서버를 기동합니다.
+
+
+   <P>   
+<pre>
+  java -classpath .  INSServer 
+</pre>
+
+<P>INS 서버가 올바르게 실행되면(자), 다음의 메세지가 표시됩니다.
+<P>
+<pre>
+INS Server is Ready...
+</pre>
+
+
+<a name="client"></a> 
+<H3>클라이언트 어플리케이션의 기동</H3>
+  
+<P><img src="images/computer.gif" alt="스텝">별의 단말 윈도우 또는 DOS 쉘을 열어, 클라이언트 어플리케이션을 실행합니다. <P>
+<pre>
+  java -classpath .  INSClient -ORBInitRef 
+    PingService=corbaloc:iiop:1. 2@localhost:1060/PingService
+</pre>
+
+
+<P><tt>-ORBInitRef</tt> 옵션을 사용해 클라이언트를 실행하면(자),<tt>PingService</tt> 를 찾아낼 수가 있습니다. 클라이언트 윈도우에 다음의 메세지가 표시됩니다.
+<P>
+<pre>
+The server has been pinged
+</pre>
+
+<P>서버 윈도우에 다음의 메세지가 표시됩니다.
+
+<P>
+<pre>
+PingService.ping called...
+</pre>
+   
+   
+<P>이 튜토리얼을 종료하면(자), INS 서버지 하든가 종료해 주세요. DOS prompt에서는, 서버를 실행하고 있는 윈도우를 선택해 <TT>Ctrl+C</TT> 라고 입력하면(자) 정지합니다. Unix 쉘에서는, 클라이언트를 실행하고 있던 쉘을 열어,<tt>pkill INSServer</tt> 라고 입력합니다.
+
+
+
+
+<CENTER><P><HR>
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">홈</A> </TD>
+</TR></TABLE>
+
+
+<HR><P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</CENTER>
+
+
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,100 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>종래의 APPLET 태그의 사용 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>종래의 <code>APPLET</code> 태그의 사용 </h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <script src="menu_script.js" language="JavaScript"></script>
+  </select>
+</form>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><b><a href="#applet"><tt>APPLET</tt> 태그에 대한 지원</a> </b></li>
+<li><b><a href="#object"><tt>OBJECT</tt> 태그와의 호환성</a> </b></li>
+<li><b><a href="#update">낡은 클래스 파일의 갱신</a> </b></li>
+<li><b><a href="#enhancements">그 외의 확장 기능</a> </b></li>
+</ul>
+<h2><a name="applet"><tt>APPLET</tt> 태그에 대한 지원</a> </h2>
+<p> Java<sup><font size="-2">TM</font></sup> Plug-in 에서는, 애플릿의 기동용으로 HTML <tt>APPLET</tt> 태그를 지원하고 있습니다. 사용자는 <tt>APPLET</tt> 태그를 처리하기 위해서, Sun 의 JRE 가 디폴트의 실행 환경이 되도록(듯이) 브라우저를 구성할 수가 있습니다.  </p>
+<table width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u>설명</u></h2>
+      <ol>
+<li><code>APPLET</code> 태그는, 지원되고 있는  operating system와 브라우저로 사용할 수 있습니다 (<a href="../../../../../system-configurations.html">「지원되고 있는 시스템 구성」</a>을 참조).  다만, Netscape 4.7x 는 Solaris 에서만 지원되고 있습니다. </li>
+<li>Java Plug-in 에서는 <tt>APPLET</tt> 태그가 지원되게 되었습니다만, 독자적인 기술을 사용하는 애플릿은 지원되고 있지 않습니다. 이러한 기술에는 이하의 것이 있습니다.  
+          <ul>
+<li>CAB 파일 </li>
+<li>Authenticode 서명 </li>
+<li>Java Moniker</li>
+          </ul>
+        </li>
+<li>종래의 애플릿 형식에서는,<code>object</code> 라는 이름의 속성을 <code>PARAM</code> 요소에 사용하면(자), Sun VM 로 「Either "code" or "object" should be specified, but not both.」라고 하는 예외가 발생합니다. Microsoft VM 에서는, 예외는 throw 되지 않습니다. 이것은 호환성의 문제입니다. Sun VM 로 이 예외를 회피하려면 , 애플릿으로 <code>object</code> 라는 이름의 속성을 <code>PARAM</code> 요소에 사용하지 말아 주세요. </li>
+      </ol>
+    </td>
+  </tr>
+</table>
+<h2><a name="object"><tt>OBJECT</tt> 태그와의 호환성</a>  (Windows 플랫폼상의 Internet Explorer)</h2>
+<p> 이 릴리스의 Java Plug-in 에서는, 애플릿의 기동용으로 <tt>APPLET</tt> 태그의 사용을 지원하고 있습니다. 다만, 지금까지의 Java Plug-in 와의 후방 호환성도 충분히 확보되고 있어 Windows 플랫폼상에서 가동하는 Internet Explorer 로 애플릿을 기동하기 위한 <tt>OBJECT</tt> 태그도 지원하고 있습니다. 개발자는 이전과 같이, 옵션으로 HTML 컨버터를 사용해 애플릿의 Web 페이지를 설정해,<tt>OBJECT</tt> 태그를 사용할 수가 있습니다.  </p>
+<p> <tt>OBJECT</tt> 를 사용해 Java Plug-in 상에서 애플릿을 기동하는 방법에 대해서는,<a href="using_tags.html">「Java Plug-in 에서의 OBJECT, EMBED, 및 APPLET 태그의 사용」</a>  및 <a href="html_converter.html">「HTML 컨버터를 사용한 Java Plug-in 용 APPLET 태그의 변환」</a>  을 참조해 주세요.  </p>
+<h2><a name="update">낡은 클래스 파일의 갱신</a> </h2>
+<p>이번 릴리스의 Java Plug-in 에 관련한 새로운 Java Runtime Environment 에서는, 종래의 컴파일러로 생성된 클래스 파일이 실행되지 않는 경우가 있습니다. 주로 볼 수 있는 증상은, 이러한 클래스 파일을 로드하려고 했을 때에 가상 머신이 <tt>java.lang.ClassFormatError</tt> 를 throw 하는 것입니다. 이 실패는, 이번 릴리스에 있어서의 변경과는 특히 관계 없습니다. 이것은, 종래의 바이트 코드 컴파일러가 클래스 파일을 생성하는 모든 상황에 있어, 적절한 클래스 파일 형식에 엄밀하게 준거하고 있지 않았던 것이 원인입니다. 최근의 가상 머신은 적절한 클래스 파일 형식에 엄밀하게 준거하도록(듯이) 구현되고 있으므로, 부정한 형식의 낡은 클래스 파일을 로드하려고 하면(자) 에러가 발생합니다. 낡은 클래스 파일에 관한 전형적인 문제점은 이하대로입니다 (다만 모든 것을 망라한 것이 아닙니다).  </p>
+<ul>
+<li>클래스 파일의 마지막에 여분의 바이트가 존재한다 </li>
+<li>클래스 파일에, 문자로 시작되지 않는 메소드명이나 필드명이 포함되어 있다 
+  </li>
+<li>클래스가 다른 클래스의 private 멤버에게 액세스 하려고 한다 </li>
+<li>클래스 파일에, 부정한 정수 풀 인덱스나 부정한 UTF-8 캐릭터 라인 등, 그 외의 형식 에러가 존재한다 </li>
+<li>이전의 (서드 파티의) 바이트 코드의 오브파스케이타에 의해, 적절한 클래스 파일 형식에 위반하는 클래스 파일이 작성되고 있다 </li>
+</ul>
+<p> 이 종류의 문제는, 현재의 JDK 에 있는 Javac 바이트 코드 컴파일러를 사용해 클래스를 재컴파일 하면 회피할 수가 있습니다. 서드 파티의 오브파스케이타를 사용하는 경우는, 그것이 올바른 클래스 파일 형식에 준거한 클래스 파일을 작성할지 어떨지를 확인해 주세요.  </p>
+<p>상세한 것에 대하여는,<a href="../../deployment/deployment-guide/contents.html">「Java 배치 가이드」</a>의<a  href="../../deployment/deployment-guide/upgrade-guide/index.html">「Java 업그레이드 가이드」</a>를 참조해 주세요.  </p>
+<h2><a name="enhancements">그 외의 확장 기능</a> </h2>
+<p><a href="#applet">상기</a>로 설명한 <tt>APPLET</tt> 태그의 지원에 가세해, Java Plug-in 는 퍼포먼스면 및 아키텍쳐(architecture)면에서 많은 확장 기능을 갖추고 있어 일반적으로은 기업 환경과 같이 강력한 클라이언트 플랫폼을 갖추지 않은 소비자전용의 클라이언트 머신에서도, 광범위하게 사용할 수 있는 것이 되어 있습니다. 이러한 확장 기능의 개요를 다음에 나타냅니다.  </p>
+<h3>메모리 메니지먼트</h3>
+<ul>
+<li> 동적인 최대 heap 사이즈가 128 MB 에서 96 MB 에 억제 당해 시스템상에서 불필요한 페이징이 발생하는 문제를 회피하고 있습니다. </li>
+<li> 클래스 로더의 구현이 조정되어 메모리가 가비지 컬렉터에 의해 이전보다 빈번하게 재사용되게 되었습니다. </li>
+<li> 발생할 가능성이 있는 메모리 리크의 문제는, 이 구현의 JNI/COM 스마트 포인터를 사용해 대처합니다. </li>
+</ul>
+<h3> 퍼포먼스</h3>
+<ul>
+<li> 가능한 한 브라우저의 캐쉬에 의존하는 것으로써, 애플릿의 다운로드 시간이 큰폭으로 단축되었습니다. 정말로 필요한 때 이외, 서버측에서는 접속이 열리지 않습니다. </li>
+<li> 애플릿의 라이프 사이클이 비동기에게 제어되고 있어 페이지의 변환이 매우 고속으로 실시할 수 있습니다. </li>
+<li> <tt>finalize()</tt> 메소드를 삭제하는 것으로, 클래스 로더 객체의 재생이 고속으로 되었습니다. </li>
+<li> 버퍼 사이즈가 증가했으므로, HTTPS 의 read 속도가 큰폭으로 향상했습니다. </li>
+<li> 매회 동적인 함수 검색을 실시하는 것이 아니라, Microsoft 의 Wininet 에 정적으로 링크하는 것으로써, HTTPS 의 호출이 매우 고속으로 되었습니다. </li>
+<li> 네트워크를 경유한 <i>BeanInfo</i> 검색을 폐지하는 것으로, JavaScript 의 퍼포먼스가 큰폭으로 강화되었습니다. </li>
+<li> Console Writer thread를 사용해 가능한 한 <tt>System.out</tt> 및 <tt>System.err</tt> 의 블록을 회피하는 것으로, Java 콘솔의 퍼포먼스가 강화되었습니다. </li>
+</ul>
+<h3> 설계</h3>
+<ul>
+<li> 디폴트의 JavaScript 와 Java 와의 대화가 「스크립트 불가능」<i></i>으로부터 「스크립트 가능」<i></i> 으로 변경되어<tt>APPLET</tt> 태그를 통해 실행되고 있는 애플릿은 모두, 변경하지 않고 JavaScript 로 사용할 수 있게 되었습니다. </li>
+</ul>
+<h3> JDK 1.1 의 호환성</h3>
+<ul>
+<li>Java Plug-in 에 의해 <tt>sun.audio</tt> 패키지에 액세스 할 수 있게 되었습니다. </li>
+<li>애플릿안에는, 클래스 파일 스펙에 준거한 적절한 클래스 파일 형식을 생성하지 않는 컴파일러에 의해 컴파일 된 것이 존재하고 있습니다. 이러한 애플릿을 Java Plug-in 가 로드하려고 하면(자),<tt>ClassFormatError</tt> 가 발생합니다. 이 문제에 대처하기 위해서,<tt>PluginClassLoader</tt> 는 바이트 코드 스캐너를 제공하고 있습니다. 이것에 의해 부정한 클래스 파일이 즉시에 적합하게 되어, 애플릿을 실행할 수 있게 됩니다. 현시점에서는, 이하의 에러에 의한 부정한 클래스 파일만이 변환됩니다.  
+    <ul>
+<li>로컬의 변수명에 부정한 정수 풀 인덱스가 존재한다</li>
+<li>클래스 파일의 마지막에 여분의 바이트가 존재한다</li>
+<li>code segment의 길이가 잘못하고 있다</li>
+<li>부정한 필드/메소드명</li>
+<li>부정한 필드/메소드 수식자</li>
+<li>로컬 var 테이블에 있어서의 부정한 start_pc/length</li>
+    </ul>
+  </li>
+</ul>
+<p>상기의<a href="#update">「낡은 클래스 파일의 갱신」이라고</a>,<a  href="../../deployment/deployment-guide/contents.html">「Java 배치 가이드」</a>의<a  href="../../deployment/deployment-guide/upgrade-guide/index.html">「Java 업그레이드 가이드」</a>도 참조해 주세요.  </p>
+<pre>
+</pre>
+</body>
+</html>

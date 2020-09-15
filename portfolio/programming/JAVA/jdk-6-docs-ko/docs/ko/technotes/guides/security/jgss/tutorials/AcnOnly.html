@@ -1,0 +1,507 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>「JAAS 인증」 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="BasicClientServer.html" target="_top"><img src="images/PreviousArrow.gif" width="26" height="26" align="center"  border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="AcnAndAzn.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>「JAAS 인증」</H1>
+</center>
+
+<br> <br>
+
+<blockquote>
+
+<p> 당초, Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 인증·승인 서비스 (Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Authentication and Authorization Service： JAAS)는, Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition (J2SDK), v 1.3 의 옵션 패키지였습니다. 현재, JAAS 는 J2SDK, v 1.4 에 통합되고 있습니다.
+
+<p> JAAS 는, 다음의 2 개의 목적으로 사용할 수 있습니다.
+
+<ul>
+
+<li>사용자를 「인증한다」때, 코드가 어플리케이션, 애플릿, Bean, 또는 서브 렛일까에 관계없이, Java 코드를 실행중의 사용자를 신뢰 한편 안전한 방법으로 확인한다<p>
+
+<li>사용자를 「승인한다」때, 동작의 실행에 필요한 액세스 제어권 (액세스권)을 사용자가 보관 유지하고 있는 것을 확인한다
+
+</ul>
+
+<p>이 섹션에서는, 인증 컴퍼넌트의 기본적인 튜토리얼을 제공합니다. 승인 컴퍼넌트에 대해서는,<a href="AcnAndAzn.html">「JAAS 승인」</a>튜토리얼로 설명합니다.
+
+<p> JAAS 인증은, 「플러그 인 가능」방식에서 실행됩니다. 즉, Java 어플리케이션은, 기반이 되는 인증 기술로부터 독립해 기능합니다. 신규 또는 갱신된 기술을, 어플리케이션 자체를 변경하지 않고 , 플러그 인으로서 사용 가능합니다. 사용하는 인증 기술의 구현은 실행시로 결정됩니다. 그 내용은, 로그인 구성 파일로 지정합니다. 이 튜토리얼에서는, 인증 테크놀러지로서 Kerberos 를 사용합니다. <a href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+
+<p>이 튜토리얼은, 다음의 섹션으로 구성됩니다.
+
+<ol>
+
+<li><a href="#AcCode">인증 튜토리얼 코드</a>  <p>
+
+<li><a href="#ConfigFile">로그인 구성</a>  <p>
+
+<li><a href="#RunAc">코드의 실행</a> <p>
+
+<li><a href="#RunAcWSM">시큐리티 매니저를 사용한 코드의 실행</a> 
+
+</ol>
+
+<p>튜토리얼의 코드를 최초로 실행해 보는 경우는,<a href="#RunAc">「코드의 실행」</a>을 먼저 읽고 나서, 최초로 돌아와, 코드의 기술 및 구성 파일의 상세한 것에 대하여 학습해 주세요.
+
+
+<a name="AcCode">
+<H2>인증 튜토리얼 코드</H2></a> 
+
+<blockquote>
+
+<p>인증 튜토리얼 코드는, 단일의 원시 파일 <a href = "JaasAcn.java">JaasAcn.java</a>  에 포함되어 있습니다. 이 파일의 <code>main</code> 메소드는, 인증의 실행 후에, 인증이 성공했는지의 여부를 리포트합니다.
+
+<p>사용자의 인증용 코드는, 매우 간결합니다. 다음의 2 개의 스텝으로 구성되어 있습니다.
+
+<ol>
+
+<li><a href="#ClientLC">LoginContext 의 인스턴스화</a>  <p>
+<li><a href="#ClientLogin">LoginContext 의 <code>login</code> 메소드의 호출</a> 
+
+</ol> 
+
+<p>최초로 기본적인 코드가, 계속되어, import 문 및 에러 처리를 포함한 <code>JaasAcn.java</code> 원시 파일의 <a href="#AcnFullCode">완전한 코드</a>가 표시됩니다.
+
+<H3><a name="ClientLC"></a> LoginContext 의 인스턴스화</H3>
+
+<blockquote>
+
+<p>사용자의 인증에는, 우선 <code>javax.security.auth.login.LoginContext</code> 가 필요합니다. 다음에, LoginContext 를 인스턴스화하는 기본적인 방법을 나타냅니다.
+
+<blockquote>
+<pre>
+import javax.security.auth.login. *;
+.  .  .
+LoginContext lc = 
+    new LoginContext(&lt;config file entry name&gt;,
+           &lt;CallbackHandler to be used for user interaction&gt;); 
+</pre>
+</blockquote>
+
+다음에, 이 튜토리얼 코드에 의한 인스턴스화의 실행 방법을 구체적으로 가리킵니다.
+
+<blockquote>
+<pre>
+import javax.security.auth.login. *;
+import com.sun.security.auth.callback.TextCallbackHandler;
+.  .  .
+<b>LoginContext lc = 
+    new LoginContext("JaasSample", 
+          new TextCallbackHandler());</b>
+</pre>
+</blockquote>
+
+<p>인수에 대해, 다음에 설명합니다.  
+
+<ol>
+
+<li><b>JAAS 로그인 구성 파일의 엔트리명</b>
+
+<p>이것은, LoginContext 가, JAAS 로그인 구성 파일내에서 이 어플리케이션의 엔트리 검색에 사용하는 이름입니다. 자세한 것은,<a href="#ConfigFile">여기</a>를 참조해 주세요. 이러한 엔트리는, 기반이 되는 적절한 인증 기술을 구현하는 클래스를 지정합니다. 클래스는,<code>javax.security.auth.spi</code> 패키지내의 LoginModule 인터페이스를 구현할 필요가 있습니다.
+
+<p>샘플 코드에서는, Kerberos 인증을 실시하는 <code>com.sun.security.auth.module</code> 패키지의 <code>Krb5LoginModule</code> 를 사용합니다.
+
+<p>이 튜토리얼로 사용하는 로그인 구성 파일 (<a href = "jaas.conf">jaas.conf</a> )의 엔트리는,"JaasSample" 라는 이름입니다. LoginContext 생성자 의 최초의 인수에는, 이 이름을 지정해 주세요.
+
+<p>
+
+<li><b>CallbackHandler 의 인스턴스</b>
+
+<p>LoginModule 가 사용자와 통신할 필요가 있는 경우 (예를 들어 사용자명이나 패스워드의 입력을 요구하는 경우), 통신은 직접 하행 깨지지 않습니다. 이 때문에, 사용자와의 다양한 통신 방법이 존재합니다. 실제의 곳, 로그인 모듈이 사용자와 통신할 때, 특정의 방법으로 의존하지 않게 하는 것은, 바람직한 방법입니다. LoginModule 은, CallbackHandler 를 호출해 사용자와의 통신을 실행해, 요구된 정보 (사용자명, 패스워드등)를 가져옵니다. CallbackHandler 는,<code>javax.security.auth.callback</code> 패키지내의 인터페이스입니다.
+
+<p>사용하는 CallbackHandler 의 인스턴스를, LoginContext 생성자 의 2 번째의 인수로서 지정합니다. LoginContext 는, 이 인스턴스를 기반이 되는 LoginModule (여기에서는 Krb5LoginModule)에 전송 합니다. 일반적으로, 어플리케이션은, 고유의 CallbackHandler 구현을 제공합니다. <code>com.sun.security.auth.callback</code> 패키지에는, 샘플 구현으로서 2 개의 단순한 CallbackHandler (TextCallbackHandler 와 DialogCallbackHandler)를 제공합니다. 이 튜토리얼의 코드에서는, 커멘드행에 정보를 출력해, 커멘드행으로부터 입력을 읽어내는 TextCallbackHandler 를 사용합니다.
+
+</ol>
+
+</blockquote>
+
+
+<H3><a name="ClientLogin">LoginContext 의 <code>login</code> 메소드의 호출</a> </H3>
+
+<blockquote>
+
+<p>이것으로 LoginContext <code>lc</code> 를 보관 유지할 수 있었으므로,<code>login</code> 메소드를 호출해 인증 처리를 실행합니다.
+
+<blockquote>
+<pre>
+<b>lc.login();</b>
+</pre>
+</blockquote>
+
+<p>LoginContext 는, 새로운 빈 상태(empty)의 <a href="../../../../../api/javax/security/auth/Subject.html"><code>javax.security.auth.Subject</code></a>  객체 (인증되는 사용자 또는 서비스)를 인스턴스화합니다. LoginContext 는, 구성이 끝난 LoginModule (이 예에서는 Krb5LoginModule)을 구축해, 이 새로운 주제 및 TextCallbackHandler 를 사용해 초기화합니다.
+
+<p>LoginContext 의 <code>login</code> 메소드는, Krb5LoginModule 내의 메소드를 호출해, 로그인 및 인증을 실행합니다. Krb5LoginModule 은, TextCallbackHandler 를 이용해, 사용자명 및 패스워드를 가져옵니다. 다음에, Krb5LoginModule 는, 이 정보를 사용해 Kerberos KDC 로부터 유자크레덴샤르를 가져옵니다. 자세한 것은,<a href="http://web.MIT.edu/kerberos/www/index.html">Kerberos 의 문서</a>를 참조해 주세요.
+
+<p>인증에 성공했을 경우, Krb5LoginModule 는, 주제를 (1) 사용자를 나타내는 Kerberos 법칙과 (2) 사용자의 쿠레덴샤르 (TGT)에 추가합니다. 이러한 용어의 자세한 것은,<a href="glossary.html">「주제, 법칙, 인증, 및 쿠레덴샤르」</a>를 참조해 주세요.
+
+<p>그 후, 호출측 어플리케이션은, LoginContext 의 <code>getSubject</code> 메소드를 호출해 (이 스텝은, 이 튜토리얼에서는 옵션), 인증된 주제를 가져옵니다.
+
+
+</blockquote>
+
+
+<a name="AcnFullCode">
+<H3>완전한 <code>JaasAcn.java</code> 코드</H3></a> 
+
+<blockquote>
+
+<p>여기까지로, 사용자의 인증에 필요한 기본 코드를 봐 왔습니다. 여기서, 모든 것을 통합해, 관련하는 import 문 및 에러 처리를 포함한 완전한 클래스를 <a href = "JaasAcn.java">JaasAcn.java</a>  내에 작성할 수 있습니다.
+
+<blockquote>
+<pre>
+import javax.security.auth. *;
+import javax.security.auth.callback. *;
+import javax.security.auth.login. *;
+import com.sun.security.auth.callback.TextCallbackHandler;
+
+/**
+ * This JaasAcn application attempts to authenticate a user
+ * and reports whether or not the authentication was successful.
+ */
+public class <b>JaasAcn</b> {
+
+  public static void main(String[] args) {
+
+      // Obtain a LoginContext, needed for authentication.  Tell 
+      // it to use the LoginModule implementation specified by 
+      // the entry named "JaasSample" in the JAAS login 
+      // configuration file and to also use the specified 
+      // CallbackHandler.
+      LoginContext lc = null;
+      try {
+          <b>lc = new LoginContext("JaasSample", 
+                      new TextCallbackHandler());</b>
+      } catch (LoginException le) {
+          System.err.println("Cannot create LoginContext.  "
+              + le.getMessage());
+          System.exit(-1);
+      } catch (SecurityException se) {
+          System.err.println("Cannot create LoginContext.  "
+              + se.getMessage());
+          System.exit(-1);
+      } 
+
+      try {
+    
+          // attempt authentication
+          <b>lc.login();</b>
+    
+      } catch (LoginException le) {
+    
+          System.err.println("Authentication failed: "
+          System.err.println("  " + le.getMessage());
+          System.exit(-1);
+    
+      }
+    
+      System.out.println("Authentication succeeded! ");
+    
+    }
+}
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+
+</blockquote>
+
+
+
+<a name="ConfigFile">
+<H2>로그인 구성</H2></a> 
+
+<blockquote>
+
+<p> JAAS 인증은 플러그 인 가능한 형식에서 실행되기 (위해)때문에, 어플리케이션은, 기반이 되는 인증 기술로부터 독립한 상태를 유지할 수 있습니다. 시스템 관리 책임자는, 각 어플리케이션으로 사용하는 인증 기술 (로그인 모듈)을 결정해, 로그인 구성내에 구성합니다. 구성 정보의 소스 (파일이나 데이타베이스)는, 현재의 <a href="../../../../../api/javax/security/auth/login/Configuration.html">javax.security.auth.login.Configuration</a>  구현에 따라서 다릅니다. Sun Microsystems 의 디폴트의 <code>Configuration</code> 구현은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/login/ConfigFile.html"> com.sun.security.auth.login.ConfigFile.html</a>  로 설명하도록(듯이), 구성 파일로부터 구성 정보를 읽어냅니다.
+
+<p>로그인 구성 파일과 그 내용, 및 로그인 구성 파일의 지정 방법에 대해서는,<a href="LoginConfigFile.html">「JAAS 로그인 구성 파일」</a>을 참조해 주세요.
+
+
+
+<a name="AcLCF">
+<H3>이 튜토리얼의 로그인 구성 파일</H3></a> 
+
+<blockquote>
+
+<p>벌써 설명한 것처럼, 이 튜토리얼로 사용하는 로그인 구성 파일 <a href = "jaas.conf">jaas.conf</a>  에는, 다음의 엔트리만이 포함됩니다.
+
+<blockquote>
+<pre>
+<b>JaasSample {
+  com.sun.security.auth.module.Krb5LoginModule required;
+};</b>
+</pre>
+</blockquote>
+
+<p>이 엔트리의 이름은 「JaasSample」입니다. 튜토리얼 어플리케이션 <code>JaasAcn</code> 가 엔트리를 참조할 경우에, 이 이름을 사용합니다. 이 엔트리는, 사용자 인증에 사용하는 로그인 모듈이 <code>com.sun.security.auth.module</code> 패키지내의 Krb5LoginModule 인 것, 및 인증이 성공했다고 보여지기 위해서(때문에)는 이 Krb5LoginModule 가 「성공한다」필요가 있는 것을 나타냅니다. Krb5LoginModule 가 성공하는 것은, 사용자가 입력한 이름 및 패스워드를 사용해, Kerberos KDC 에의 로그인에 성공했을 경우만입니다.
+
+<p>Krb5LoginModule 에 인도해 가능한 모든 옵션의 자세한 것은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule 문서</a>를 참조해 주세요.
+
+
+</blockquote>
+
+
+</blockquote>
+
+
+<a name="RunAc">
+<H2>코드의 실행</H2></a> 
+
+<blockquote>
+
+<p>JAAS 인증 튜토리얼 코드를 실행하려면 , 다음의 조작을 실시할 필요가 있습니다.  
+
+<ol>
+
+<li>어플리케이션의 원시 파일 <a href = "JaasAcn.java">JaasAcn.java</a>  및 로그인 구성 파일 <a href = "jaas.conf">jaas.conf</a>  를 디렉토리내에 배치합니다.  <p>
+
+<li><code>JaasAcn.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac JaasAcn.java
+</pre>
+</blockquote>
+
+<li>이하를 지정해,<code>JaasAcn</code> 어플리케이션을 실행합니다.  <p>
+
+<ul>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) 예를 들어, 영역이 "KRBNT-OPERATIONS.ABC.COM" 의 경우,<code>-Djava.security.krb5.realm=KRBNT-OPERATIONS.ABC.COM</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) 예를 들어, KDC 가 "samplekdc.abc.com" 의 경우,<code>-Djava.security.krb5.kdc=samplekdc.abc.com</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.auth.login.config=jaas.conf</code> (로그인 구성 파일 <code>jaas.conf</code> 를 사용)
+
+</ul>
+
+</ol>
+
+<p>다음에, 완전한 커멘드를 나타냅니다. <b><code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역과<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 와 옮겨놓아 주세요.
+
+<blockquote>
+<pre>
+java -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.auth.login.config=jaas.conf JaasAcn
+</pre>
+</blockquote>
+
+<p>커멘드 전체는, 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다.
+
+<p>Kerberos 사용자명과 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된, 기반이 되는 Kerberos 인증 기구에 의해, Kerberos 에의 로그인을 합니다. 로그인이 성공하면(자), 다음의 메세지가 표시됩니다.
+
+<blockquote>
+<pre>
+Authentication succeeded!
+</pre>
+</blockquote>
+
+로그인이 실패했을 경우 (패스워드의 스펠 미스 등에 의해), 다음의 메세지가 표시됩니다.
+
+<blockquote>
+<pre>
+Authentication failed:
+</pre>
+</blockquote>
+
+이 후에, 실패의 원인이 나타납니다. 예를 들어, 사용자명의 스펠이 잘못되어 있는 경우, 다음과 같은 메세지가 표시됩니다 (읽기 쉽게하기 위해(때문에), 서식을 일부 변경되어 있습니다).
+
+<blockquote>
+<pre>
+Authentication failed:
+  Kerberos Authentication Failed:
+    javax.security.auth.login.LoginException: 
+      KrbException: Client not found in Kerberos database
+</pre>
+</blockquote>
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+<p>문제를 수정하면(자), 프로그램을 재차 실행합니다.
+
+
+
+</blockquote>
+
+
+
+<a name="RunAcWSM">
+<H2>시큐리티 매니저를 사용한 코드의 실행</H2></a> 
+
+<blockquote>
+
+<p>시큐리티 매니저가 인스톨 된 환경에서 Java 프로그램을 실행하는 경우, 유효한 시큐리티 정책에 의해<a href = "../../permissions.html">액세스권</a>이 명시적으로 부여되고 있으므로 않은 한, 자원에의 액세스나 시큐리티 관련 조작의 실행은 허가되지 않습니다. J2SE v 1.2 이후호환성이 있는 Java 플랫폼에서는, 액세스권의 부여를<a href = "../../PolicyFiles.html">정책 파일</a>내의 엔트리로 지정할 필요가 있습니다.
+
+<p>대부분의 브라우저는 시큐리티 매니저를 인스톨 합니다. 이 때문에, 일반적으로 「애플릿」은, 시큐리티 매니저에게 감시되면서 실행됩니다. 한편, 「어플리케이션」에서는 그러한 일은 없습니다. 이것은, 어플리케이션의 실행시에는, 시큐리티 매니저는 자동적으로 인스톨 되지 않기 때문입니다. 이 때문에,<code>JaasAcn</code> 등의 어플리케이션에서는, 디폴트로 자원에의 풀 액세스가 가능합니다.
+
+<p><b>시큐리티 매니저를 사용해 어플리케이션을 실행하려면</b>, 커멘드행에 <code>-Djava.security.manager</code> 인수를 포함해 interpreter를 호출할 뿐입니다.  
+
+<p>정책 파일은 지정하지 않고 , 시큐리티 매니저를 사용해 <code>JaasAcn</code> 를 호출하자 하면(자) (필요한 액세스권 또는 <code>AllPermission</code> 를 부여하는 디폴트 정책 설정을 다른 장소에서 보관 유지하지 않는 한), 이하의 메세지가 표시됩니다.
+
+<pre>
+% java -Djava.security.manager \
+ -Djava.security.krb5.realm=&lt;your_realm&gt; \
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; \
+ -Djava.security.auth.login.config=jaas.conf JaasAcn
+Exception in thread "main" java.security.AccessControlException: 
+  access denied (
+  javax.security.auth.AuthPermission createLoginContext.JaasSample)
+</pre>
+
+<p>LoginContext 의 작성에 필요한 액세스권을 코드에 부여하는 정책 파일이 작성 및 사용되어 있지 않기 때문에, 위에 나타내도록(듯이) AccessControlException 가 표시됩니다.
+
+<p>시큐리티 매니저를 인스톨 한 환경에서 <code>JaasAcn</code> 어플리케이션을 실행하기 위해서 필요한 모든 스텝을, 다음에 나타냅니다. <a href="#RunAc">「코드의 실행」</a>으로 설명한 순서를 실행 끝난 경우는, 최초의 2 개의 스텝을 생략 할 수 있습니다.  
+
+<ol>
+
+<li>어플리케이션의 원시 파일 <a href = "JaasAcn.java">JaasAcn.java</a>  및 로그인 구성 파일 <a href = "jaas.conf">jaas.conf</a>  를 디렉토리내에 배치합니다.  <p>
+
+<li><code>JaasAcn.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac JaasAcn.java
+</pre>
+</blockquote>
+
+<li><code>JaasAcn.class</code> 를 포함한 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf JaasAcn.jar JaasAcn.class
+</pre>
+</blockquote>
+
+<p>이 커멘드에 의해, JAR 파일 <code>JaasAcn.jar</code> 가 작성되어 그 내부에 <code>JaasAcn.class</code> 가 포함됩니다.
+
+<p>
+
+<li>JAR 파일내의 코드에 필요한 액세스권을 부여하는 정책 파일을 작성합니다.
+
+<p>LoginContext 의 인스턴스화를 실행하는 코드에 필요한 액세스권은, 타겟을 "createLoginContext. &lt;entry name&gt;" 로 하는 <code>javax.security.auth.AuthPermission</code> 입니다. 여기서, &lt;entry name&gt; 는, 어플리케이션이 LoginContext 의 인스턴스화로 참조하는, 로그인 구성 파일의 엔트리명입니다. 코드내에 나타나고 있도록(듯이),<code>JaasAcn</code> 어플리케이션이 LoginContext 의 인스턴스화로 사용하는 이름은,"JaasSample" 입니다.
+
+<blockquote>
+<pre>
+LoginContext lc = 
+    new LoginContext("JaasSample", 
+          new TextCallbackHandler());
+</pre>
+</blockquote>
+
+이 때문에, 이하의 액세스권을 <code>JaasAcn.jar</code> 에 부여할 필요가 있습니다.
+
+<blockquote>
+<pre>
+permission javax.security.auth.AuthPermission 
+  "createLoginContext.JaasSample";
+</pre>
+</blockquote>
+ 
+정책 파일 <a href = "jaasacn.policy">jaasacn.policy</a>  를,<code>JaasAcn.java</code> 등의 포함처 디렉토리에 카피합니다. 이것은, 다음의 <code>grant</code> 문을 포함한 텍스트 파일로,<code>JaasAcn.jar</code> (현재의 디렉토리내)에 필요한 액세스권을 부여합니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /JaasAcn.jar" {
+   permission javax.security.auth.AuthPermission 
+                    "createLoginContext.JaasSample";
+};
+</pre>
+</blockquote>
+
+<p>주:정책 파일 및 그 내부의 엔트리 구조의 자세한 것은,<a href = "../../PolicyFiles.html"> 「디폴트의 Policy 의 구현과 정책 파일의 구문」</a>을 참조해 주세요. 액세스권의 자세한 것은,<a href = "../../permissions.html">여기</a>를 참조해 주세요. <p>
+
+<li>이하를 지정해,<code>JaasAcn</code> 어플리케이션을 실행합니다.  <p>
+
+<ol>
+
+<li>적절한 <code>-classpath</code> 절 (<code>JaasAcn.jar</code> JAR 파일내의 클래스를 검색하기 위해(때문에)) <p>
+
+<li><code>-Djava.security.manager</code>. 시큐리티 매니저의 인스톨을 지정합니다.  <p>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) 예를 들어, 영역이 "KRBNT-OPERATIONS.ABC.COM" 의 경우,<code>-Djava.security.krb5.realm=KRBNT-OPERATIONS.ABC.COM</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) 예를 들어, KDC 가 "samplekdc.abc.com" 의 경우,<code>-Djava.security.krb5.kdc=samplekdc.abc.com</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.policy=jaasacn.policy</code> (정책 파일 <code>jaasacn.policy</code> 를 사용) <p>
+
+<li><code>-Djava.security.auth.login.config=jaas.conf</code> (로그인 구성 파일 <code>jaas.conf</code> 를 사용)
+
+</ol>
+
+<p>다음에, 완전한 커멘드를 나타냅니다. <b><code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역과<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 와 옮겨놓아 주세요.
+
+<pre>
+java -classpath JaasAcn.jar -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=jaasacn.policy 
+ -Djava.security.auth.login.config=jaas.conf JaasAcn
+</pre>
+
+<p>커멘드 전체는, 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. 커멘드가 너무 긴 경우는,. bat 파일 (Windows) 또는 . sh 파일 (UNIX)에 기술합니다.  이 파일을 실행하는 것으로, 커멘드를 실행할 수 있습니다.
+
+<p>지정된 정책 파일에는, 필요한 액세스권을 코드에 부여하는 엔트리가 포함되기 (위해)때문에,<code>JaasAcn</code> 에 대해 LoginContext 의 인스턴스화가 허가되어 실행이 계속됩니다. Kerberos 사용자명과 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된, 기반이 되는 Kerberos 인증 기구에 의해, Kerberos 에의 로그인을 합니다. 로그인에 성공하면(자) 「Authentication succeeded!」라고 하는 메세지가, 실패하면(자) 「Authentication failed.」라고 하는 메세지가 표시됩니다. 이 후에, 실패의 원인이 나타납니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+
+
+
+</blockquote>
+
+
+</blockquote>
+
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="BasicClientServer.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="AcnAndAzn.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</ol></body>
+
+</html>
+

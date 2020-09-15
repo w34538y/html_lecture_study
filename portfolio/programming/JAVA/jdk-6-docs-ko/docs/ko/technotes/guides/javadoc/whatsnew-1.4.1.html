@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Javadoc 1.4. 2 의 신기능 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="white">
+
+
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+
+<TD>
+<center>
+<h1>Javadoc 1.4. 2 의 신기능</h1>
+</center>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Javadoc 툴</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<!-- ==================== CONTENTS ============================== -->
+
+
+이 문서에서는, 버젼 1.4. 0 에서 1.4. 1 에의 이행으로 Javadoc 툴에 대해서 행해진 변경에 대해 설명합니다.  또, 미해결의 버그의 간이판 리스트에 대해서는<a href="http://java.sun.com/j2se/1.4.1/relnotes.html#javadoc">중요한 새로운 버그와 리그렛션의 설명</a>, 데이타베이스의 일람표에 대해서는 <a href="http://java.sun.com/j2se/1.4.1/fixedbugs/index.html">Important Bug Fixes and Changes</a>  를 참조해 주세요.
+<p>
+게재되고 있는 변경점에는, 버그 번호와 그 수정이 Javadoc 툴의 프론트엔드에 대하는 것 ( 「툴」)인지, 또는 표준 도크 렛에 대하는 것 ( 「표준 도크 렛」)일지가 나타나고 있습니다. 「리그렛션」이라고 하는 용어는, 1.3.x 에서는 동작하고 있었는데, 1.4. 0 에서는 동작하지 않게 되어, 1.4. 1 으로 수정된 기능에 대해서 사용됩니다.
+
+<ul>
+<li><a href="#newfeatures">신기능</a> 
+<li><a href="#bugfixes">버그의 수정</a> 
+  <ul type="disc">
+<li><a href="#runningjavadoc">Javadoc 의 실행</a> 
+<li><a href="#messages">에러 메세지와 경고 메세지</a> 
+<li><a href="#commandlineoptions">커멘드행 옵션</a> 
+<li><a href="#tags">태그</a> 
+<li><a href="#miscellaneous">그 외</a> 
+  </ul>
+</ul>
+
+<p>
+
+<!-- ================== NEW FEATURES ====================== --> <a name="newfeatures"></a> 
+<h3>신기능</h3>
+
+<blockquote>
+패키지명과 클래스명을,<code>&lt;META&gt;</code> 태그내의 키워드로서 추가했습니다. 이것에 의해,<code>&lt;META&gt;</code> 태그를 참조하는 검색 엔진에서의 검색 결과가 개선됩니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4034096.html">4034096</a> , 표준 도크 렛)
+</blockquote>
+
+<!-- ================== BUG FIXES ====================== -->
+
+<a name="bugfixes"></a> 
+<h3>버그의 수정</h3>
+
+<blockquote>
+
+<a name="runningjavadoc"></a>  <b>Javadoc 의 실행</b>
+
+<p>
+리그렛션 :classpath 상에 발견되었다 . class 파일 (그 클래스가 커멘드행으로 지정된 패키지에 속하고 있는 경우)을 잘못해 문서화한다고 하는 버그를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4548768.html">4548768</a> , 툴)
+<p>
+리그렛션:*. java 라는 이름의 패키지를 처리하도록(듯이) 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4507380.html">4507380</a> , 툴)
+<p>
+유효한 원시 파일명과 패키지명만을 받아들이도록(듯이), 개선된 체크 기능을 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4434834.html">4434834</a> , 툴)
+<p>
+
+<a name="messages"></a>  <b>에러 메세지와 경고 메세지</b>
+
+<p>
+com.sun.tools.javadoc.Main.execute 를 수정해, PrintWriters 를 무시하지 않게 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4587487.html">4587487</a> , 툴)
+<p>
+「\ 」 (엔기호 또는 backslash + 공백 문자)을 건네주었을 때의 에러 메세지로, 패키지명을 인용부호로 둘러싸도록(듯이) 했습니다.  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4370719.html">4370719</a> , 툴)
+<p>
+
+<a name="commandlineoptions"></a>  <b>커멘드행 옵션</b>
+
+<p>
+리그렛션:중대한 문제를 일으키고 있던 -use 옵션을 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4496290.html">4496290</a> , 표준 도크 렛)
+<p>
+리그렛션:원시 파일을 읽어낼 때의 -encoding 옵션을 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4661481.html">4661481</a> , 표준 도크 렛)
+<p>
+리그렛션 :-link 옵션을 수정해, 절대 패스를 처리하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4640745.html">4640745</a> , 표준 도크 렛)
+<p>
+-subpackages 에 최상정도의 패키지명을 건네주었을 때에 헹 한다고 하는 버그를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4628237.html">4628237</a> , 툴)
+<p>
+-help 의 표시를 「Display command line options and exit (커멘드행 옵션을 표시해 종료)」로 변경했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4501697.html">4501697</a> , 툴)
+<p>
+
+<a name="tags"></a>  <b>태그:</b>
+
+<p>
+리그렛션:복수의 @author 태그를 사용했을 때, 올바르게 <code>&lt;/DD&gt;</code> 가 삽입되도록(듯이) 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4651598.html">4651598</a> , 표준 도크 렛)
+<p>
+리그렛션:여분의 slash 「/」이 삽입되고 있던 {@docRoot} 를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4524350.html">4524350</a> , 표준 도크 렛)
+<p>
+리그렛션:인터페이스의 @throws 를 구현 클래스의 @throws 가 오버라이드(override) 하도록(듯이) 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/463396.html">4633969</a> , 표준 도크 렛)
+<p>
+리그렛션:복수의 에러 클래스명을 기술할 수 있도록(듯이) @throws 태그를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4525364.html">4525364</a> , 표준 도크 렛)
+<p>
+리그렛션:동작하지 않게 된 {@inheritDoc} 를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4618686.html">4618686</a> , 표준 도크 렛)
+<p>
+{@docRoot} 는 아니고 소문자의 {@docroot} 가 사용되었을 때의 경고를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4662945.html">4662945</a> , 표준 도크 렛)
+<p>
+
+<a name="miscellaneous"></a>  <b>그 외</b>
+
+<p>
+「정수 필드치」의 일람에, 인터페이스 정수를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4526070.html">4526070</a> , 표준 도크 렛)
+<p>
+boolean 정수 필드에서 「0/1」은 아니고 「true/false」를 사용하도록(듯이) 수정했습니다.  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4587494.html">4587494</a> , 툴)
+<p>
+선두의 asterisk를 생략 하고 있는 코멘트로, 인덴트의 여분의 공백 문자를 삭제했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4587562.html">4587562</a> , 툴)
+<p>
+리그렛션:복수의 <code>&lt;a href&gt;</code> 태그가 있는 경우에 StringIndexOutOfBoundsException 가 throw 되는 버그를 수정했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4638015.html">4638015</a> , 표준 도크 렛)
+<p>
+Serializable 가 -bootclasspath 상에 없을 때, 아무것도 직렬화 가능하게 하지 않게 변경했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4644960.html">4644960</a> , 툴)
+<p>
+프레임 없음 때, 윈도우의 타이틀로부터 「( )」를 삭제했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4530730.html">4530730</a> , 표준 도크 렛)
+
+</blockquote>
+
+<b>1.4. 0 에서는 Doc 객체가 일의는 아니게 되었기 때문에, -use 옵션이 문제를 일으키게 되었습니다. </b>
+<p>
+
+표준 도크 렛에서는, 클래스 및 패키지의 사용 상황을 기록하기 위해서, Doc 및 List 해시 테이블 (키는 ClassDoc 또는 PackageDoc)을 작성합니다.  List 는, 키를 사용하고 있는 Doc 객체의 리스트입니다. 이 방법에 따르는 클래스와 패키지의 사용 상황의 판별은, 이전의 버젼의 Javadoc 툴에서는 올바르게 동작하고 있었습니다만, 1.4.x 에서는 올바르게 동작하지 않습니다.  Doc 객체를 해시 테이블의 키로서 사용하지 말아 주세요. Doc 객체는 일의가 아닙니다.  즉, Javadoc 툴은, 같은 클래스를 나타내는 2 개(살)이 다른 ClassDoc 객체를 작성할 수 있는 것 같습니다. 이 버그를 수정하기 위해서, 해시 테이블의 키로서 완전 수식명을 사용하도록(듯이) 했습니다. 장래적으로는, Doc 객체가 일의가 되도록(듯이) 되돌릴 예정입니다.
+
+
+<!-- ======================================================= --> 
+<p>
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2002 <A HREF="http://www.sun.com">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+</TR>
+</TABLE>
+
+
+
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+
+</body>
+</html>

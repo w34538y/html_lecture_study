@@ -1,0 +1,198 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>입력 메소드 엔진 SPI 튜토리얼 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>입력 메소드 엔진 SPI 튜토리얼</CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<H2>목차</H2>
+
+<OL>
+<LI><A HREF="#Introduction">처음에</A> 
+   
+<LI><A HREF="#Describing the Input Method">입력 메소드에 대해</A> 
+   
+<LI><A HREF="#Communicating with the Client Component">클라이언트 컴퍼넌트와의 통신</A> 
+   
+<LI><A HREF="#Using Input Method Windows">입력 메소드 윈도우의 사용</A> 
+   
+<LI><A HREF="#Implementing Composition">변환의 구현</A> 
+   
+<LI><A HREF="#Providing Engine-Specific Functionality">엔진 고유의 기능의 제공</A> 
+   
+<LI><A HREF="#Packaging the Input Method">입력 메소드의 패키지화</A> 
+   
+<LI><A HREF="#Sample Code">샘플 코드</A> 
+</OL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Introduction"></A> 1.  처음에</H2>
+
+<P>입력 메소드 엔진 SPI 를 사용하면(자), 임의의 Java 2 Runtime Environment 로 사용할 수 있는 Java 프로그램 언어의 입력 메소드를 개발할 수 있습니다. Input Method Framework 에서는, 입력 메소드는,<CODE>InputMethodDescriptor</CODE> 인터페이스 및 <CODE>InputMethod</CODE> 인터페이스를 구현하는 2 개의 클래스로 구성되어 확장 기능으로 하고 있고 구두인가의 추가 정보와 함께 패키지화되어 Java 실행 환경에 인스톨 됩니다. <CODE><A HREF="../../../api/java/awt/im/spi/package-summary.html#package_specification">java.awt.im.spi</A> </CODE> 패키지의 스펙, 및 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethodDescriptor.html">InputMethodDescriptor</A> </CODE> 와 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html">InputMethod</A> </CODE> 인터페이스에 의해, 입력 메소드의 구현에 필요한 코어의 정보가 제공됩니다. 이 튜토리얼의 추가 정보를 읽으면, 입력 메소드를 간단하게 개발할 수가 있어 Java 2 플랫폼이 다른 구현간에 발생하는 호환성의 문제를 회피하는데 도움이 되는 정보를 얻을 수 있습니다.
+</P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Describing the Input Method"></A> 2.  입력 메소드에 대해</H2>
+
+<P>Input Method Framework 로 입력 메소드의 사용을 개시하기 전에, 그 기능에 대해 이해할 필요가 있습니다. 필요한 정보는, 입력 메소드의 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethodDescriptor.html">InputMethodDescriptor</A> </CODE> 클래스의 구현에 의해 제공됩니다. 이 정보는,<A HREF="spec.html#Selecting%20Input%20Methods">입력 메소드를 선택</a>할 경우에 사용됩니다. </P>
+
+<P><CODE><A HREF="../../../api/java/awt/im/spi/InputMethodDescriptor.html#getAvailableLocales()">getAvailableLocales</A> </CODE> 로부터 반환되는 이용 가능한 로케일의 리스트는, 입력 메소드의 설계에 실제로 사용되고 있는 언어만으로 구성되어 있을 필요가 있습니다. 예를 들어, 중국어의 중공에서 정식으로 쓰는 약자체으�작성하는 Pinyin 입력 메소드에서는, 키 이벤트는 통과하는 것만으로, 영어 또는 말레이어도 기술할 수 있는 모드의 경우에서도,<CODE><A HREF="../../../api/java/util/Locale.html#SIMPLIFIED_CHINESE">SIMPLIFIED_CHINESE</A> </CODE> 만을 돌려주지 않으면 안됩니다. 한편,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#setLocale(java.util.Locale)">InputMethod.setLocale</A> </CODE> 메소드를 사용했을 경우는, 실제로 사용되어 있지 않은 언어로 구성되어 있는 경우에도 true 를 돌려주는 일이 있습니다. 즉,<CODE>getAvailableLocales</CODE> 는, 로드해 입력 메소드로 전환할지 어떨지를 결정할 때 사용됩니다.  이것은, 입력 메소드로, 그 언어를 처리할 수 있는 경우에게만 유효합니다.  한편,<CODE>setLocale</CODE> 는, 입력 메소드로부터 바꿀지 어떨지를 결정할 때 사용됩니다.  이것은, 입력 메소드로 언어를 전혀 처리할 수 없는 경우에게만 유효합니다.
+</P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Communicating with the Client Component"></A> 3.  클라이언트 컴퍼넌트와의 통신</H2>
+
+<P>입력 메소드의 인스턴스가 생성되면(자),<CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#setInputMethodContext(java.awt.im.spi.InputMethodContext)">setInputMethodContext</A> </CODE> 를 개입시켜 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html">InputMethodContext</A> </CODE> 인스턴스를 받습니다. <CODE>InputMethodContext</CODE> 인스턴스에 의해, Input Method Framework, 클라이언트 컴퍼넌트, 또는 변환용 윈도우와 통신할 경우에 필요한 기능이 모두 제공됩니다. 변환 텍스트 및 확정 텍스트의 정보는,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html#dispatchInputMethodEvent(int,%20java.text.AttributedCharacterIterator,%20int,%20java.awt.font.TextHitInfo,%20java.awt.font.TextHitInfo)">dispatchInputMethodEvent</A> </CODE> 메소드를 사용해 입력 메소드로부터 송신됩니다. 또,<CODE><A HREF="../../../api/java/awt/im/InputMethodRequests.html">InputMethodRequests</A> </CODE> 인터페이스로부터 상속한 메소드를 사용해, 입력 메소드로부터 클라이언트 컴퍼넌트의 정보를 요구할 수가 있습니다. </P>
+
+<P>Input Method Framework 에서는, 온더 스포트<A HREF="spec.html#Input%20Styles">입력 방식</a>을 사용해<A HREF="spec.html#Client%20Components">액티브 클라이언트 </a>컴퍼넌트와 항상 통신하고 있는 것을 전제로 하는 환경이, 입력 메소드에 제공됩니다. 실제의 클라이언트 컴퍼넌트가 액티브 클라이언트가 아닌 경우, 또는 다른 입력 방식이 사용되고 있는 경우는, 이벤트 및 요구는, 필요에 따라서<A HREF="spec.html#Information%20Flow%20Through%20the%20Framework">리다이렉트(redirect) </a>됩니다. </P>
+
+<P>입력 메소드로부터, 클라이언트 컴퍼넌트에 직접 액세스 하지 말아 주세요. 직접 액세스 하면(자), 시스템의 바꾸기 기능                    및 리다이렉트(redirect) 기능과 충돌합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Using Input Method Windows"></A> 4.  입력 메소드 윈도우의 사용</H2>
+
+<P>입력 메소드에서는, 사용자와 통신할 경우에 몇개의 윈도우가 사용되는 일이 있습니다. 입력 메소드에서는, 일반적으로, 다음의 윈도우가 사용됩니다. </P>
+
+<UL>
+<LI>룩 업 윈도우.  사용자 입력의 해석을 몇개인가 표시해, 사용자가 적절한 해석을 선택한다
+   
+<LI>상태 윈도우.  선택되고 있는 언어 또는 타겟 캐릭터 세트 등, 입력 메소드의 현재 상태의 정보를 표시한다
+   
+<LI>컨트롤 패널.  많은 경우, 상태 윈도우와 결합된다.  다른 언어 또는 타겟 캐릭터 세트의 선택 등, 입력 메소드 상태를 변경한다
+   
+<LI>설정 윈도우.  필요에 따라서 입력 메소드를 변경한다
+   
+<LI>사전 편집 윈도우.  변환의 추가 또는 정정을 실시한다
+</UL>
+
+<P>주:플랫폼에 따라서는, 변환 텍스트를 표시하는 변환용 윈도우가, 입력 메소드에 의해 표시되는 일이 있습니다. Java 의 Input Method Framework 에서는, 변환 텍스트는, 항상 클라이언트 컴퍼넌트 또는 Input Method Framework 에 의해 표시되어 입력 메소드에 의해 표시될 것은 없습니다.
+</P>
+
+<P>다음의 3 개의 그룹의 윈도우에 대해 이해해 두면(자) 도움이 됩니다. </P>
+
+<UL>
+<LI>일시 윈도우. 이 윈도우는, 변환 조작시에, 짧은 시간 pop-up 표시됩니다. 표시되는 기능은, 특정의 변환에 관련하고 있습니다. 사용자가 윈도우라고 대화하면(자) 변환이 중단해 버리기 (위해)때문에, 오픈, 클로즈, 자리 매김을 해 및 사이즈 조정은, 일반적으로 자동적으로 행해집니다. 특히, 변환 조작에 대해서 종료 또는 인터럽트를 하면(자), 일시 윈도우는 닫습니다. 예:룩 업 윈도우.
+   
+<LI>고정 윈도우. 이 윈도우는, 일정한 기간 열려 있습니다.  즉, 사용자가 입력 메소드를 사용하고 있는 동안은 닫을 것은 없습니다. 이 윈도우의 기능은, 입력 메소드의 현재 액티브한 인스턴스, 또는 입력 메소드 클래스에 관련지을 수 있습니다. 일반적으로은, 윈도우의 오픈, 클로즈, 자리 매김을 해 및 사이즈 변경은 액티브하게 실시할 수가 있습니다.  다만, 다른 입력 메소드로 전환했을 때에는 자동적으로 닫습니다.  또, 현재의 클라이언트 컴퍼넌트를 포함한 윈도우의 위치를 고려해, 자동적으로 자리매김되는 일이 있습니다. 예:상태 윈도우, 컨트롤 패널.
+   
+<LI>document window. 이 윈도우는, 표준의 윈도우입니다. 이 윈도우의 기능은, 입력 변환에는 관련지을 수 없습니다. 사용자는, 윈도우의 오픈, 클로즈, 자리 매김을 해 및 사이즈 변경을 모두 제어할 수 있습니다. 예:사전 편집 윈도우.
+</UL>
+
+<P>Java 2 플랫폼용으로 기술된 입력 메소드에 의해, 이러한 윈도우 그룹에 대해서 행해지는 처리에 대해 설명합니다. </P>
+
+<UL>
+<LI>일시 윈도우는,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html#createInputMethodWindow(java.lang.String,%20boolean)">InputMethodContext.createInputMethodWindow</A> </CODE> 를 사용해 작성됩니다.  표준에서는,<CODE>attachToInputContext</CODE> 에 true 가 설정됩니다. 일시 윈도우는, 입력 메소드의 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#activate()">activate</A> </CODE> 구현내에서 열리는지, 사용자 입력에 대한 응답이 필요하게 되었을 때에 엽니다. 또, 입력 메소드의 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#deactivate(boolean)">deactivate</A> </CODE> 또는 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#hideWindows()">hideWindows</A> </CODE> 구현내에서 닫는지, 사용이 완료했을 때에 닫습니다.
+   
+<LI>고정 윈도우는,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html#createInputMethodWindow(java.lang.String,%20boolean)">InputMethodContext.createInputMethodWindow</A> </CODE> 를 사용해 작성됩니다. 이 때,<CODE>attachToInputContext</CODE> 에는, false 가 설정됩니다.  고정 윈도우는, 표준에서는 입력 메소드의 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#activate()">activate</A> </CODE> 구현내에서 열려, 입력 메소드의  <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#hideWindows()">hideWindows</A> </CODE> 구현내에서 닫습니다.
+   
+<LI>document window는, 표준의 AWT 윈도우로서 작성되어 오픈 및 클로즈는 일반적으로 사용자가 제어합니다.
+</UL>
+
+<P><CODE>createInputMethodWindow</CODE> 에 의해 작성된 윈도우의 포커스의 동작은, 구현에 의존하고 있습니다. 윈도우가 최초로 표시되었을 때, 또는 사용자가 윈도우를 클릭했을 때에 포커스를 취득하도록(듯이) 하거나 전혀 포커스를 취득하지 않게 할 수도 있습니다. 입력 메소드는, 어느 경우에도 대응할 수 없으면 안됩니다. </P>
+
+<P>변환 텍스트에 윈도우 (룩 업 윈도우등)가 자동적으로 대응하도록(듯이) 하려면 , 입력 메소드로 그 입력 메소드 문맥의 <CODE><A HREF="../../../api/java/awt/im/InputMethodRequests.html#getTextLocation(java.awt.font.TextHitInfo)">getTextLocation</A> </CODE> 메소드를 사용할 수 없으면 안됩니다. 현재의 클라이언트 컴퍼넌트를 포함한 윈도우를 고려해, 윈도우 (상태 윈도우등)가 자동적으로 대응하도록(듯이) 하려면 , 입력 메소드로부터, 입력 메소드 문맥의 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html#enableClientWindowNotification(java.awt.im.spi.InputMethod,%20boolean)">enableClientWindowNotification</A> </CODE> 메소드를 사용해 윈도우의 위치와 상태에 관한 통지를 등록합니다. 그 후,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#notifyClientWindowChange(java.awt.Rectangle)">notifyClientWindowChange</A> </CODE> 메소드를 구현해 통지를 받습니다. </P>
+
+<P>입력 메소드로 작성하는 윈도우가 불필요하게 되었을 경우는, 모든 윈도우에 대해서 <A HREF="../../../api/java/awt/Window.html#dispose()">Window.dispose</A>  를 호출할 필요가 있습니다. 이것에 의해, 어플리케이션에 의해 기동 떠날 수 있어 모든 비demon thread가 종료하면(자), JVM 가 종료되게 됩니다. 자세한 것은,<A HREF="../../../api/java/awt/doc-files/AWTThreadIssues.html">「AWT thread의 문제」</a>를 참조해 주세요. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Implementing Composition"></A> 5.  변환의 구현</H2>
+
+<P>입력 메소드에서는, 주로 텍스트 입력을 변환할 때의 사용자 액션의 해석을 합니다. 사용자 액션에는, 키보드로부터의 입력, 마우스의 사용, 자필, 또는 음성등이 있습니다. </P>
+
+<P><CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#activate()">activate</A> </CODE> 및 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#deactivate(boolean)">deactivate</A> </CODE> 메소드로부터 입력 메소드에 대해서, 클라이언트 컴퍼넌트에 포커스가 설정되어 있는지 어떤지, 및 텍스트 입력의 타겟으로 되어 있는지 어떤지가 통지됩니다. 표준에서는, 입력 메소드에서는, 이벤트가 액티브한 때에게만 텍스트를 변환하는 이벤트가 처리됩니다.
+</P>
+
+<P>입력 메소드가 액티브한 때는, 특정의 종류의 이벤트가 <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#dispatchEvent(java.awt.AWTEvent)">dispatchEvent</A> </CODE> 메소드에 의해 입력 메소드에 발송 되어 클라이언트 컴퍼넌트에 의해 처리됩니다. 입력 메소드에서는, 이벤트 마다 처리할지 어떨지가 결정됩니다. 처리되었을 경우는, 그 이벤트에 소비가 끝난 상태인 것이 지정되어 클라이언트 컴퍼넌트에서는 처리되지 않습니다. </P>
+
+<P><EM>주</EM>:<A HREF="../../../api/java/awt/event/KeyEvent.html">키 이벤트</a>의 경우는, 이벤트 메소드에서는,KEY_TYPED 이벤트는, 입력중의 문자의 정보를 취득할 때인 만큼 사용해, KEY_PRESSED 또는 KEY_RELEASED 이벤트는, KEY_TYPED 이벤트가 발생하지 않는 function key의 정보를 취득할 때인 만큼 사용합니다. 키의 눌러 인하와 문자의 매핑은, 플랫폼, 하드웨어, 로케일, 및 그 외의 요소에 의존하고 있기 (위해)때문에, 기본적인  operating system의 설정을 사용하는 것을 추천합니다.
+</P>
+
+<P>입력 메소드에서는, 텍스트의 변환 및 확정을 하고 있을 때, 클라이언트 컴퍼넌트로 텍스트가 재draw 되도록(듯이), 클라이언트 컴퍼넌트에 대해서 변경을 모두 통지할 필요가 있습니다. 이 통지는,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethodContext.html#dispatchInputMethodEvent(int,%20java.text.AttributedCharacterIterator,%20int,%20java.awt.font.TextHitInfo,%20java.awt.font.TextHitInfo)">InputMethodContext.dispatchInputMethodEvent</A> </CODE> 를 사용해, 클라이언트 컴퍼넌트에 대해서 입력 메소드 이벤트의 구축 및 발송를 하는 것에 의해 실시합니다. Input Method Framework 에서는, 현재의 이벤트 플로우 모델에 근거해, 이벤트가 변환용 윈도우에 리다이렉트(redirect) 됩니다. Java 의 입력 메소드에서는, 입력 메소드 이벤트를 발송 하지 않으면 변환된 텍스트는 표시되지 않습니다. </P>
+
+<P>변환된 텍스트는, 일반적으로, 현재의 변환 상태를 알 수 있도록(듯이) 반전 표시됩니다. 텍스트에 대해서 <CODE><A HREF="../../../api/java/awt/font/TextAttribute.html#INPUT_METHOD_HIGHLIGHT">TextAttribute.INPUT_METHOD_HIGHLIGHT</A> </CODE> 키 및 <CODE><A HREF="../../../api/java/awt/im/InputMethodHighlight.html">InputMethodHighlight</A> </CODE> 의 인스턴스를 속성치로서 추가하면(자), 반전 표시됩니다. 일반적으로은, 입력 메소드에는, 입력 메소드 반전 표시 상태 및 특정의 프로퍼티을 사용해 추상적 반전 표시만을 정의해, 구체적인 스타일에의 매핑은 렌더링 시스템으로 지정합니다. 다만, 필요에 따라서, 입력 메소드의 스타일 프로퍼티을 사용해, 반전 표시에 구체적인 스타일 정보를 추가할 수가 있습니다. 구체적인 스타일은,<CODE><A HREF="../../../api/java/awt/Toolkit.html#mapInputMethodHighlight(java.awt.im.InputMethodHighlight)">Toolkit.mapInputMethodHighlight</A> </CODE> 로부터의 반환값으로 변경할 수 있도록(듯이) 설계하는 것을 추천합니다.
+</P>
+
+<P>클라이언트 컴퍼넌트 및 Input Method Framework 에서는, 현재의 변환을 종료해야 하는 상황, 및 모든 변환 텍스트를 확정 또는 캔슬해야 하는 상황이 인식되고 있습니다. 이러한 정보는, <CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#endComposition()">endComposition</A> </CODE> 메소드를 사용해 입력 메소드에 통지됩니다. <CODE>endComposition</CODE> 는, 입력 메소드가 액티브하지 않을 때에 불려 갑니다. </P>
+
+<P>클라이언트 컴퍼넌트에서는, 몇개의 메소드를 사용해, 변환의 캐릭터 세트의 설정을 변경할 수 있습니다. <CODE><A HREF="../../../api/java/awt/im/InputContext.html#setCharacterSubsets(java.lang.Character.Subset%5B%5D)">InputContext.setCharacterSubsets</A> </CODE> 메소드를 사용해, 입력 메소드로부터 입력할 수 있는 Unicode 캐릭터 세트의 부분집합을 제한할 수가 있습니다. 입력 메소드에서는, 일반적으로은, 특정의 부분집합 이외의 문자는 작성되지 않고, 특정의 문자 부분집합이 지원되는 다른 입력 모드로 전환할 수 있습니다. <CODE><A HREF="../../../api/java/awt/im/InputContext.html#setCompositionEnabled(boolean)">InputContext.setCompositionEnabled</A> </CODE> 및 <CODE><A HREF="../../../api/java/awt/im/InputContext.html#isCompositionEnabled()">isCompositionEnabled</A> </CODE> 메소드를 사용하면(자), 현재의 입력 메소드가 변환 가능한가 어떤가를 검사 및 제어할 수 있습니다. <CODE><A HREF="../../../api/java/awt/im/InputContext.html#reconvert()">InputContext.reconvert</A> </CODE> 메소드를 사용하면(자), 재변환을 개시할 수 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Providing Engine-Specific Functionality"></A> 6.  엔진 고유의 기능의 제공</H2>
+
+<P>입력 메소드에 따라서는, 그 Input Method Framework 의 API 에서는 이용할 수 없는 기능을, 클라이언트 컴퍼넌트에 제공해야 하는 것이 있습니다. 이러한 기능은, 「입력 메소드 컨트롤 객체」를 개입시켜 제공할 수 있습니다. 입력 메소드를 개발할 때는, 이 객체의 인터페이스를 공개해,<CODE><A HREF="../../../api/java/awt/im/spi/InputMethod.html#getControlObject()">InputMethod.getControlObject</A> </CODE> 를 개입시켜 인스턴스를 돌려줄 필요가 있습니다. 클라이언트 컴퍼넌트로 추가의 기능을 이용하는 경우는, 그 컴퍼넌트로부터 <CODE><A HREF="../../../api/java/awt/im/InputContext.html#getInputMethodControlObject()">InputContext.getInputMethodControlObject</A> </CODE> 를 호출해, 반환된 객체가 기존의 컨트롤 객체 클래스의 인스턴스일지 어떨지를 확인합니다.  확인할 수 있었을 경우는, 그 메소드를 호출합니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Packaging the Input Method"></A> 7.  입력 메소드의 패키지화</H2>
+
+<P>입력 메소드는, 인스톨 되는 확장 기능으로서 패키지화됩니다.  설정 내용에 대해서는, SPI 스펙의<A HREF="../../../api/java/awt/im/spi/package-summary.html#Packaging">「입력 메소드의 패키지화」</a>를 참조해 주세요. Java 어플리케이션 환경에 인스톨 되는 확장 기능은, 모두 같은 이름 공간을 공유합니다. 이름의 충돌을 회피하려면 , 패키지의 명명 규약에 준거할 필요가 있습니다.  상세한 것에 대하여는,<A HREF="http://java.sun.com/docs/books/jls/second_edition/html/packages.doc.html#40169">Java 언어 스펙</a>을 참조해 주세요. 이러한 규약은, 사전등의 입력 메소드 JAR 파일에 패키지화되는, 클래스 파일 이외의 파일의 명명에도 적용할 필요가 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Sample Code"></A> 8.  샘플 코드</H2>
+
+<P>City 입력 메소드는, 입력 메소드 엔진 SPI 의 제공하는 인터페이스의 사용 방법을 나타내는, 단순한 입력 메소드입니다. </P>
+
+<UL>
+<LI><A HREF="spi-sample/CityIM.html">City 입력 메소드의 문서</A>  - 이 입력 메소드의 인스톨 방법 및 사용 방법의 설명
+   
+<LI><A HREF="spi-sample/CityIM.jar">City 입력 메소드</A>  - 입력 메소드가 포함되고 있는 JAR 파일. 브라우저안에는, 이 파일을 자동적으로 다운로드하는 것도 있습니다. 다른 브라우저는 윈도우에 그 내용을 나타내, 사용자는 「보존」커멘드를 사용해 파일을 보존할 필요가 있습니다. 자세한 것은,<A HREF="spi-sample/CityIM.html#Installing%20and%20Selecting%20the%20Input%20Method">인스톨 방법</A>  을 참조해 주세요.
+   
+
+<LI><A HREF="spi-sample/CityInputMethodDescriptor.java">CityInputMethodDescriptor.java</A>  - 이 입력 메소드의 InputMethodDescriptor 구현
+   
+
+<LI><A HREF="spi-sample/CityInputMethod.java">CityInputMethod.java</A>  - 이 입력 메소드의 InputMethod 구현
+</UL>
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2004 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT          SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/1.5.0/docs/technotes/guides/imf/spi-tutorial.html&category=api&mailsubject=Internationalization">연락처</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I><FONT SIZE="+1"></FONT>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

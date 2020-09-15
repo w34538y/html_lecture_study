@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+	<TITLE>HTTP 의 지속 접속 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<h1>
+지속 접속</h1>
+<h2>HTTP 의 지속 접속이란</h2>
+<P>HTTP 킵얼라이브라고도 불리는 HTTP 의 지속 접속 또는 HTTP 의 접속 재사용에서는, 각각의 요구와 응답의 페어에 대해 새로운 접속을 여는 경우와는 대조적으로, HTTP 요구/응답의 복수의 페어를 송신 또는 수신할 때에 동일한 TCP 접속을 사용하고 있습니다. 지속 접속을 사용하는 것은, HTTP 퍼포먼스를 향상시키는데 매우 중요한 점입니다.
+</P>
+<P>지속 접속을 사용하는 메리트에는, 다음의 것이 있습니다. </P>
+<UL>
+	<LI>네트워크 프렌들리. TCP 접속의 설정량 및 절단 회수가 적기 때문에, 네트워크 트래픽이 낮아집니다.
+	<LI>이후의 요구에 대해 대기 시간이 단축됩니다. 이것은, 초기의 TCP 핸드 쉐이크를 회피하고 있기 (위해)때문에입니다.
+	<LI>장기 지속의 접속에 의해, TCP 로 네트워크의 부하 상황을 판단하는 시간이 충분히 확보되기 (위해)때문에, 정상적인 응답을 실시할 수가 있습니다.  
+</UL>
+<P>SSL/TLS 경유로 HTTPS 또는 HTTP 를 사용하는 것으로써, 메리트가 한층 더 명확이 됩니다. 그러한 상황에서는, 지속 접속에 의해, TCP 접속의 초기설정에 가세해, 시큐리티가 관련짓고를 확립하기 위한 손실의 큰 SSL/TLS 핸드 쉐이크의 회수가 감소됩니다. </P>
+<P >HTTP/1. 1 에서는, 어느 접속에 대해도 지속 접속이 디폴트의 동작이 됩니다. 즉, 지시가 없는 한, 서버로부터의 에러 응답의 나중에 있어도, 클라이언트는 서버가 지속 접속을 보관 유지하는 것으로 간주합니다. 다만, 프로토콜은, 클라이언트와 서버가 TCP 접속을 닫는 것을 신호로 알리도록(듯이) 하는 수단을 제공합니다. </P>
+<h2>접속을 재사용할 수 있도록(듯이) 하려면</h2>
+<P>TCP 는 그 성질상, 스트림 베이스의 프로토콜이기 (위해)때문에, 기존의 접속을 재사용하려면 , HTTP 프로토콜에 전의 응답의 최후와 다음의 응답의 초를 나타내는 수법을 설정할 필요가 있습니다. 즉, 이것은, 접속중에 보내지는 모든 메세지는, 메세지의 길이 (접속 종료시에 정의되지 않는다)를 각각 독자적으로 정의할 필요가 있다고 하는 것입니다. 자기의 경계 설정은, Content-Length 헤더를 설정하는지, 엔티티 본체를 encode 해 체크 단위에 단락지어 전송 하는 것으로써 달성됩니다. 또한 각 체크는 특정의 사이즈로 개시되어 응답 본체는 지정의 마지막 체크로 종료합니다. </P>
+<h2>중간에 프록시 서버-가 존재하는 경우의 처리</h2>
+<P>지속 접속은 1 개의 트랜스폴트 링크에만 적용되기 (위해)때문에, 프록시 서버-로, 그 클라이언트 및 원의 서버 (또는 다른 프록시 서버-에 대해서)와의 영속적/비영속적인 접속을 개별적으로 올바르게 신호하는 것이 중요합니다. HTTP 클라이언트 또는 서버의 관점으로부터 보면(자), 지속 접속에 관한 한, 프록시 서버-의 존재의 유무는 투과적이 됩니다. </P>
+<h2>현재의 JDK 로 실시하는 킵얼라이브의 처리</h2>
+<P>JDK 에서는, HTTP/1. 1 으로 HTTP/1. 0 의 양쪽 모두의 지속 접속을 지원합니다. </P>
+<P>어플리케이션으로 응답 본체의 read가 종료했을 때, 또는 <code>URLConnection.getInputStream()</code> 에 의해 반환되는 <code>InputStream</code> 의 close()가 어플리케이션에 의해 불려 가는 경우, JDK 의 HTTP 프로토콜 핸들러에서는, 접속을 클린 업 하려고 해, 성공했을 경우는, 장래의 HTTP 요구에 의한 재사용을 예측해 그 접속을 접속 캐쉬에 보냅니다. </P> <P>HTTP 킵얼라이브의 지원는 투과적으로 행해집니다. 다만, 그 제어는, 시스템 프로퍼티 <code>http.keepAlive</code>,<code>http.maxConnections</code> 외, 요구 헤더나 응답 헤더를 지정한 HTTP/1. 1 에 의해 행해집니다. 킵얼라이브의 처리를 제어하는 시스템 프로퍼티은 다음과 같습니다. </P> <P><code>http.keepAlive=&lt;boolean&gt;<BR> default: true</code></P> <P>킵얼라이브 (지속) 접속을 지원해야할 것인가 제발을 나타냅니다. </P> <P><code>http.maxConnections=&lt;int&gt;<BR> default: 5</code></P> <P>특정의 시간내에 킵얼라이브 되는 접속처 마다의 최대 접속수를 나타냅니다. </P> <P>접속의 지속성에 영향을 주는 HTTP 헤더는 다음과 같습니다. </P> <P><code>Connection: close</code></P> <P>요구 헤더 또는 응답 헤더의 몇개의 필드에서 값 「close」를 사용해 「Connection」헤더의 지정을 행했을 경우, 현재의 요구/응답이 완료한 뒤는, 접속이 「지속적」이라고 보여야 하는 것이 아닌 것을 나타내고 있습니다. </P> <P>현재의 구현에서는, 응답 본체는 버퍼 되지 않습니다. 이것은, 접속의 재사용을 목적으로 해, 어플리케이션으로 응답 본체의 read를 종료할 필요가 있는지, 또는 close()를 호출해 응답 본체의 나머지를 파기하는 필요성이 있는 것을 의미하고 있습니다. 게다가 현재의 구현에서는, 접속이 클린 업 되는 경우에 블록 단위의 read를 실시하려고는 하지 않습니다. 이것은, 응답 본체가 전혀 기능하지 않는 경우에 접속이 재사용되지 않는 것을 의미합니다. </P> <h2>Tiger 의 신기능</h2> <P>어플리케이션은 HTTP 400 또는 500 응답을 검출했을 경우,<code>IOException</code> 를 무시해, 다른 HTTP 요구를 발행하는 경우가 있습니다. 이 경우, 기초의 TCP 접속은 킵얼라이브 되지 않습니다. 이것은, 응답 본체가 소비되도록(듯이) 계속 여전히 존재하기 때문 입니다. 이 때문에, 소켓 접속은 클리어 되지 않고, 재사용 불가능이 됩니다. 어플리케이션에서는,<code>IOException</code> 을 취득한 후에 <code>HttpURLConnection.getErrorStream()</code> 를 호출해, 다음에 응답 본체를 읽어들여, 스트림을 닫을 필요가 있습니다. 다만, 기존의 어플리케이션에 따라서는 이 처리를 실시하지 않는 것도 있습니다. 이 때문에, 이러한 어플리케이션은 지속 접속으로부터 메리트를 얻을 수 없습니다. 이 문제에 대처하기 위해서 회피 방법을 준비했습니다. </P> <P>이 회피 방법에서는, 응답이 400 이상 있는 일정량까지의 사이에 시간제한내인 경우에, 응답 본체를 버퍼링 해, 재사용할 수 있도록(듯이) 기초의 소켓 접속을 해제합니다. 이 배경이 되고 있는 근거는, 서버가 400 이상의 에러로 응답하는 경우 (클라이언트 에러 또는 서버 에러, 예: 「404: File Not Found」에러), 서버는, 일반적으로, 컨택트처와 복원에 필요한 처리를 통지하기 위해서 소규모의 응답 본체를 송신합니다. </P> <P>서버로부터의 에러 응답 후의 접속의 클린 업에 도움이 되도록, 몇개의 새로운 Sun 구현에 대해 특수한 프로퍼티이 준비되어 있습니다. </P> <P>주된 프로퍼티은 다음과 같습니다. </P> <p><code>sun.net.http.errorstream.enableBuffering=&lt;boolean&gt;</code><br> <code>default: false</code></P> <P>상의 시스템 프로퍼티에 true (디폴트는 false)를 설정해 있는 상태로, 응답 코드가 400 이상의 경우, HTTP 핸들러에서는, 응답 본체의 버퍼링을 시도합니다. 그 때문에, 재사용에 사용하는, 기초의 소켓 접속이 해제됩니다. 또, 어플리케이션으로 <code>getErrorStream()</code> 를 호출하지 않고 응답 본체를 읽어들여, 다음에 close()를 호출하는 경우조차도, 기초의 소켓 접속은 여전히 킵얼라이브 및 재사용됩니다. </P> <P>다음의 2 개의 시스템 프로퍼티에서는, 에러 스트림의 버퍼링에 관한 동작에 대해 상세한 제어를 실시합니다. </P> <P><code>sun.net.http.errorstream.timeout=&lt;int&gt; in millisecond<br> default: 300 millisecond</code></P> <P><code>sun.net.http.errorstream.bufferSize=&lt;int&gt; in bytes<BR> default: 4096 bytes</code></P> <h2>킵얼라이브의 활용법</h2> <P>응답 본체를 무시해 접속을 중단할 수 없습니다. 중단하면(자), TCP 접속이 IDLE 상태가 됩니다. 접속이 벌써 참조되지 않는 경우는 가베지 컬렉트가 필요합니다. </P> <P><code>getInputStream()</code> 가 정상적으로 반환되는 경우는, 응답 본체의 전체가 읽힙니다. </P> <P><code>HttpURLConnection</code> 로부터 <code>getInputStream()</code> 를 호출하는 경우,<code>IOException</code> 가 발행되면(자), 예외를 받아,<code>getErrorStream()</code> 을 호출해 응답 본체를 가져옵니다 (응답 본체가 존재하는 경우). </P> <P>응답의 내용 자체에 관여하지 않는 경우여도 응답 본체의 read에 의해 접속이 클린 업 됩니다. 다만, 응답 본체가 길고, 개시 부분을 확인한 후에 남은 부분을 무시하는 경우는 InputStream 를 닫을 수가 있습니다. 다만, 한층 더 데이터가 계속되는 일도 확인해 둘 필요가 있습니다. 접속은 재사용을 위해서(때문에) 클리어 되지 않습니다. </P>
+<P>여기에 위의 추천 사항에 준거한 코드예를 나타냅니다. </P>
+<pre>
+try {
+	URL a = new URL(args[0]);
+	URLConnection urlc = a.openConnection();
+	is = conn.getInputStream();
+	int ret = 0;
+	while ((ret = is.read(buf)) &gt; 0) {
+	  processBuf(buf);
+	}
+	// close the inputstream
+	is.close();
+} catch (IOException e) {
+	try {
+		respCode = ((HttpURLConnection) conn). getResponseCode();
+		es = ((HttpURLConnection) conn). getErrorStream();
+		int ret = 0;
+		// read the response body
+		while ((ret = es.read(buf)) &gt; 0) {
+			processBuf(buf);
+		}
+		// close the errorstream
+		es.close();
+	} catch(IOException ex) {
+		// deal with the exception
+	}
+}
+</pre>
+<P>응답의 본체에 관여하지 않는 것을 미리 알고 있는 경우는, GET 요구 대신에 HEAD 요구를 발행할 필요가 있습니다. 예를 들어, Web 자원의 메타 정보만을 고려하는 경우, 또는 타당성, 액세스 가능성, 최신의 수정을 테스트하는 경우 등입니다. 다음에 코드예를 나타냅니다. </P>
+<pre>
+URL a = new URL(args[0]);
+URLConnection urlc = a.openConnection();
+HttpURLConnection httpc = (HttpURLConnection) urlc;
+// only interested in the length of the resource
+httpc.setRequestMethod(&quot;HEAD&quot;);
+int len = httpc.getContentLength();
+</pre>
+<h2>Java SE 6 에 있어서의 변경점</h2> Java SE 6 이전으로는, 읽어들여야 할 데이터가 상당한 양 남아 있을 때 어플리케이션으로 HTTP InputStream 를 닫는 경우는, 캐쉬하지 않고 접속을 닫지 않으면 안되었습니다. Java SE 6 에서는, 백그라운드의 thread의 접속으로부터 최대 512K 바이트를 읽어들이기 (위해)때문에, 접속의 재사용이 가능해집니다. 읽어들이는 데이터의 정확한 양을 설정하려면 ,<code>http.KeepAlive.remainingData</code> 시스템 프로퍼티을 사용합니다.  </BODY> </HTML>

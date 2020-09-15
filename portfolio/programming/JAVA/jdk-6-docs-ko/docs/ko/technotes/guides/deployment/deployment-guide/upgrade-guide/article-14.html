@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>java.lang.InstantiationException: 「code」또는 「object」의 어느 쪽인지 ... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2> <span class="bg2"><code>java.lang.InstantiationException</code>:「code」와「object」의 양쪽 모두는 아니고, 어느 쪽인지 다른 한쪽만을 지정한다. </span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote> 
+<p> 애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>InstantiationException</code> 가 throw 됩니다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있습니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote>
+<p> 이하의 2 개의 원인이 있습니다.  </p>
+    <ol>
+<li><code>code</code> 와 <code>object</code> 속성의 양쪽 모두를 <code>&lt;APPLET&gt;</code> 태그로 지정하고 있습니다. <br><br> <code>&lt;APPLET code=MyApplet object=MyApplet.ser width=100 height=100&gt;</code><br> <code>&lt;/APPLET&gt;</code><br> <br>Sun JRE 는 <code>code</code> 또는 <code>object</code> 어느 쪽인지 다른 한쪽의 속성에 액세스 할 수 있습니다만, 양쪽 모두에는 액세스 할 수 없습니다. <br> &nbsp;</li>
+<li><code>code</code> 속성이 <code>&lt;APPLET&gt;</code> 태그로 지정되어<code>object</code> 속성이 <code>&lt;PARAM&gt;</code> 태그로 지정되고 있습니다. <br><br> <code>&lt;APPLET code=MyApplet width=100 height=100&gt;</code><br> <code>&lt;PARAM name=&quot;object&quot; value=&quot;someValue&quot;&gt;</code><br> <code>&lt;/APPLET&gt;</code><br> <br> <code>public class MyApplet extends java.applet.Applet</code><br> <code>{</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>public void init()</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>{</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>String value = getParameter(&quot;object&quot;);</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>}</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>....</code><br><code>}</code><br> <br>Sun JRE 는 파라미터명으로서 <code>object</code> 를 지원하지 않습니다. </li>
+    </ol>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 최초의 예의 경우는,<code>code</code> 속성을 <code>&lt;APPLET&gt;</code> 태그로부터 삭제합니다. <br><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;APPLET object=MyApplet.ser width=100 height=100&gt;</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/APPLET&gt;</code><br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 번째의 예의 경우는, 파라미터명을 다른 이름으로 변경합니다. <br><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;APPLET code=MyApplet width=100 height=100&gt;</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;PARAM name=&quot;property1&quot; value=&quot;someValue&quot;&gt;</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/APPLET&gt;</code><br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public class MyApplet extends java.applet.Applet</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public void init()</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String value = getParameter(&quot;property1&quot;);</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;....</code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></p>
+<h3><font color="#CC0033">상세 정보</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 없음</p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

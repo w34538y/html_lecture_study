@@ -1,0 +1,346 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>열거형 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>열거형</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Language 의 목차</a> </font>
+<p>
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+
+<hr size=3 noshade>
+
+전의 릴리스에서는, 열거형을 나타내는 표준적인 방법은,<tt>int</tt> 열거 패턴이었습니다.
+<blockquote>
+<pre><b><font color="#cc0000">// int Enum Pattern - has severe problems! </font></b>
+public static final int SEASON_WINTER = 0;
+public static final int SEASON_SPRING = 1;
+public static final int SEASON_SUMMER = 2;
+public static final int SEASON_FALL   = 3;
+</pre>
+</blockquote>
+이 패턴에는 다음과 같은 문제가 많이 있습니다.
+<ul>
+<li><b>형태 보증 없음</b> - 상기의 경우 SEASON 가 <code>int</code> 이기 (위해)때문에, SEASON 가 필요한 장소에서 그 외의 <tt>int</tt> 치를 건네주거나 2 개의 SEASON 를 서로 더할 수가 있다 (의미가가 없다)
+</li><li><b>이름 공간 없음</b> - int 열거의 정수에 캐릭터 라인 (이 경우는 <code>SEASON_</code>)을 접두사로서 추가해, 그 외의 int 열거형과 경합 하지 않게 해야 한다
+</li><li><b>취약</b> - int 열거는 컴파일 완화시간이기 (위해)때문에, int 열거를 사용하는 클라이언트에 컴파일 된다. 신규 정수가 기존의 2 정수간에 추가되거나 차례가 변경이 되면(자), 클라이언트를 재컴파일 해야 한다. 컴파일 하지 않으면 실행은 가능하지만, 동작은 예측할 수 없다
+</li><li><b>출력치의 정보 가치가 없는</b> - 출력치는 단지 int 이기 (위해)때문에, 출력해도 취득한 값이 모두 수치가 된다.  의미를 알 수 있지 않고, 그 형태가 무엇으로 있을지도 모른다
+</li></ul>
+이러한 문제를 회피하려면 , 「형태 보증된 열거」패턴 (<A HREF="http://java.sun.com/docs/books/effective/">「Effective Java」</a>의 제 21 항을 참조)을 사용하는 방법이 있습니다만, 그 패턴에도 독자적인 문제가 있습니다. 매우 상세하기 때문에, 에러가 일어나기 쉽고, 또 열거 정수를 <code>switch</code> 문으로 사용할 수 없습니다.
+
+<p>5.0 에서는, Java&trade; 프로그램 언어로 열거된 형태를 언어적으로 지원했습니다. 열거의 가장 간단한 형식에서는, C, C++, 및 C# 의 형식을 닮아 있습니다.
+
+<blockquote>
+<pre>enum Season { WINTER, SPRING, SUMMER, FALL }
+</pre>
+</blockquote>
+
+<p>그러나, 외관에 속는 일도 있습니다. Java 프로그램 언어의 열거는, 그 외의 언어의 경우에 비해 매우 강력해, 확장된 정수 이상의 기능이 있습니다. 새로운 <code>enum</code> 선언에서는, 완전한 클래스를 정의합니다.  이것은 「열거형」이라고 불립니다. 전술의 문제를 모두 해결할 뿐만 아니라, 임의의 메소드나 필드를 열거형에 추가하거나 임의의 인터페이스를 구현하거나 할 수가 있습니다. 열거형에서는, 모든 <tt>Object</tt> 메소드에 대해, 품질의 높은 구현이 가능합니다. 비교 가능한 동시에 직렬화 가능해, 직렬화 형식은, 열거형의 임의의 변경에 대응할 수 있도록(듯이) 설계되고 있습니다.
+
+<p>간단한 열거형 위에 구축된 트럼프의 클래스의 예입니다. <code>Card</code> 클래스는 불변이며, 각 <code>Card</code> 의 인스턴스는 1 개만 작성됩니다.  그 때문에,<code>equals</code> 나 <code>hashCode</code> 를 오버라이드(override) 할 필요는 없습니다.
+
+<blockquote>
+<pre>
+<a name=Card>import java.util. *;</a> 
+
+public class Card {<font color="#009900">
+    public enum Rank { DEUCE, THREE, FOUR, FIVE, SIX,
+        SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE }
+
+    public enum Suit { CLUBS, DIAMONDS, HEARTS, SPADES }</font>
+
+    private final Rank rank;
+    private final Suit suit;
+    private Card(Rank rank, Suit suit) {
+        this.rank = rank;
+        this.suit = suit;
+    }
+
+    public Rank rank() { return rank; }
+    public Suit suit() { return suit; }
+    public String toString() { return rank + " of " + suit; }
+
+    private static final List&lt;Card&gt; protoDeck = new ArrayList&lt;Card&gt;();
+
+    // Initialize prototype deck
+    static {
+        for (Suit suit : Suit.values())
+            for (Rank rank : Rank.values())
+                protoDeck.add(new Card(rank, suit));
+    }
+
+    public static ArrayList&lt;Card&gt; newDeck() {
+        return new ArrayList&lt;Card&gt;(protoDeck); // Return copy of prototype deck
+    }
+}
+</pre>
+</blockquote>
+<code>Card</code> 의 <code>toString</code> 메소드는,<code>Rank</code> 및 <code>Suit</code> 의 <code>toString</code> 메소드를 이용합니다. <code>Card</code> 클래스의 코드는 짧은 일 ( 약 25 행)로 주의해 주세요. 형태 보증된 열거 (<code>Rank</code> 및 <code>Suit</code>)를 수작업으로 작성했을 경우, 어느쪽이나 <code>Card</code> 클래스 전체보다 훨씬 긴 것이 되겠지요.
+
+<p><code>Card</code> 의 private 의 생성자 에는 <code>Rank</code> 및 <code>Suit</code> 의 2 개의 파라미터가 있습니다. 이러한 파라미터를 반대로 해 생성자 을 호출해 버리면(자), 컴파일러가 에러를 통지합니다. <code>int</code> 열거 패턴의 경우는 대조적으로, 프로그램의 실행시에 실패합니다.
+
+<p>각 열거형에는, static <code>values</code> 메소드가 있습니다.  이 메소드는, 열거형의 값이 선언순서에 모두 포함된 배열을 돌려줍니다. 이 메소드는, 열거된 형태의 값으로 반복 처리를 실시하기 위해서(때문에),<a href="foreach.html">for-each 루프</a>  와 조합해 사용되는 것이 일반적입니다.
+
+<p>다음의 예는,<code>Card</code> 를 취급하는 <code>Deal</code> 라고 하는 간단한 프로그램입니다. 커멘드행으로부터 2 개의 값을 읽어냅니다.  이 값은 카드를 나눠주는 (deal) 회수 (hand)와 한 번에 나눠주는 매수를 나타내고 있습니다. 다음에 1조의 카드 (deck)를 새롭게 작성해, 카드를 자릅니다.  그리고 배부된 카드의 정보를 출력합니다.
+<blockquote>
+<pre>
+import java.util. *;
+
+public class Deal {
+    public static void main(String args[]) {
+        int numHands = Integer.parseInt(args[0]);
+        int cardsPerHand = Integer.parseInt(args[1]);
+        List&lt;Card&gt; deck  = Card.newDeck();
+        Collections.shuffle(deck);
+        for (int i=0; i &lt; numHands; i++)
+            System.out.println(deal(deck, cardsPerHand));
+    }
+
+    public static ArrayList&lt;Card&gt; deal(List&lt;Card&gt; deck, int n) {
+         int deckSize = deck.size();
+         List&lt;Card&gt; handView = deck.subList(deckSize-n, deckSize);
+         ArrayList&lt;Card&gt; hand = new ArrayList&lt;Card&gt;(handView);
+         handView.clear();
+         return hand;
+     }
+}
+
+$ java Deal 4 5
+[FOUR of HEARTS, NINE of DIAMONDS, QUEEN of SPADES, ACE of SPADES, NINE of SPADES]
+[DEUCE of HEARTS, EIGHT of SPADES, JACK of DIAMONDS, TEN of CLUBS, SEVEN of SPADES]
+[FIVE of HEARTS, FOUR of DIAMONDS, SIX of DIAMONDS, NINE of CLUBS, JACK of CLUBS]
+[SEVEN of HEARTS, SIX of CLUBS, DEUCE of DIAMONDS, THREE of SPADES, EIGHT of CLUBS]
+</pre>
+</blockquote>
+
+<p>열거에 데이터와 동작을 추가하는 것을 생각해 보겠습니다. 태양계의 혹성을 예로 합니다. 각 혹성은, 그 체적과 반경이 판명하고 있어, 혹성면에서의 인력과 혹성상의 물질의 무게를 계산할 수 있습니다. 다음과 같은 코드가 됩니다.
+<blockquote>
+<pre>public enum Planet {
+    MERCURY (3.303e+23, 2.4397e6),
+    VENUS   (4.869e+24, 6.0518e6),
+    EARTH   (5.976e+24, 6.37814e6),
+    MARS    (6.421e+23, 3.3972e6),
+    JUPITER (1.9e+27,   7.1492e7),
+    SATURN  (5.688e+26, 6.0268e7),
+    URANUS  (8.686e+25, 2.5559e7),
+    NEPTUNE (1.024e+26, 2.4746e7),
+    PLUTO   (1.27e+22,  1.137e6);
+
+    private final double mass;   // in kilograms
+    private final double radius; // in meters
+    Planet(double mass, double radius) {
+        this.mass = mass;
+        this.radius = radius;
+    }
+    public double mass()   { return mass; }
+    public double radius() { return radius; }
+
+    // universal gravitational constant  (m<sup>3</sup> kg<sup>-1</sup> s<sup>-2</sup>)
+    public static final double G = 6.67300E-11;
+
+    public double surfaceGravity() {
+        return G * mass / (radius * radius);
+    }
+    public double surfaceWeight(double otherMass) {
+        return otherMass * surfaceGravity();
+    }
+}
+</pre>
+</blockquote>
+
+<p>열거형 <code>Planet</code> 에는 생성자 이 있어, 각 열거 정수는, 작성시에 생성자 에게 건네지는 파라미터로 선언되고 있습니다.
+
+<p>다음의 샘플 프로그램에서는, 지구상에서의 체중 (임의의 단위)을 입력해, 모든 혹성상에서의 체중 (단위는 같다)을 계산해 출력합니다.
+
+<blockquote>
+<pre>    public static void main(String[] args) {
+        double earthWeight = Double.parseDouble(args[0]);
+        double mass = earthWeight/EARTH.surfaceGravity();
+        for (Planet p : Planet.values())
+           System.out.printf("Your weight on %s is %f%n",
+                             p, p.surfaceWeight(mass));
+    }
+
+$ java Planet 175
+Your weight on MERCURY is 66.107583
+Your weight on VENUS is 158.374842
+Your weight on EARTH is 175.000000
+Your weight on MARS is 66.279007
+Your weight on JUPITER is 442.847567
+Your weight on SATURN is 186.552719
+Your weight on URANUS is 158.397260
+Your weight on NEPTUNE is 199.207413
+Your weight on PLUTO is 11.703031
+</pre>
+</blockquote>
+
+<p>동작을 열거 정수에 추가하려면, 이제(벌써) 1 스텝 필요합니다. 열거 정수 마다, 몇개의 메소드가 다른 동작을 할당합니다. 그방법으로서 열거 정수로 스윗치 합니다. 다음의 예에서는, 열거 정수가 4 개의 기본적인 산술 연산을 나타내,<code>eval</code> 메소드가 조작을 실행합니다.
+<blockquote>
+<pre>
+public enum Operation {
+    PLUS, MINUS, TIMES, DIVIDE;
+
+    // Do arithmetic op represented by this constant
+    double eval(double x, double y){
+        switch(this) {
+            case PLUS:   return x + y;
+            case MINUS:  return x - y;
+            case TIMES:  return x * y;
+            case DIVIDE: return x / y;
+        }
+        throw new AssertionError("Unknown op: " + this);
+    }
+}
+</pre>
+</blockquote>
+이 코드는 정상적으로 동작합니다. <tt> throw</tt> 문없이는 컴파일 되지 않습니다만, 별 문제가 아닙니다. 새로운 정수를 <tt>Operation</tt> 에 추가할 때마다, 새로운 case 를 <tt>switch</tt> 문에 추가해야 하는 것에 주의해 주세요. 추가를 잊으면(자),<tt>eval</tt> 메소드가 실패해, 전술의 <tt>throw</tt> 문이 실행됩니다.
+
+<p>메소드로 이러한 문제를 회피하도록(듯이), 열거 정수 마다 다른 동작을 시키는 다른 방법이 있습니다. 열거형으로 메소드의 추상을 선언해, 정수 마다 구상 메소드로 오버라이드(override) 할 수 있습니다. 그러한 메소드를 「정수 고유」메소드라고 부릅니다. 이 방법을 사용해, 전술의 예를 나타냅니다.
+<blockquote>
+<pre>public enum Operation {
+  PLUS   { double eval(double x, double y) { return x + y; } },
+  MINUS  { double eval(double x, double y) { return x - y; } },
+  TIMES  { double eval(double x, double y) { return x * y; } },
+  DIVIDE { double eval(double x, double y) { return x / y; } };
+
+  // Do arithmetic op represented by this constant
+  abstract double eval(double x, double y);
+}
+</pre>
+</blockquote>
+
+<p>다음에,<code>Operation</code> 클래스를 실행하는 샘플 프로그램을 나타냅니다. 2 개의 오퍼랜드를 커멘드행으로부터 취득해, 모든 조작으로 반복하면서, 각 조작에서는 조작을 실행해 결과의 등식을 출력합니다.
+
+<blockquote>
+<pre>    public static void main(String args[]) {
+        double x = Double.parseDouble(args[0]);
+        double y = Double.parseDouble(args[1]);
+        for (Operation op : Operation.values())
+            System.out.printf("%f %s %f = %f%n", x, op, y, op.eval(x, y));
+    }
+
+$ java Operation 4 2
+4.000000 PLUS 2.000000 = 6.000000
+4.000000 MINUS 2.000000 = 2.000000
+4.000000 TIMES 2.000000 = 8.000000
+4.000000 DIVIDE 2.000000 = 2.000000
+</pre>
+</blockquote>
+
+정수 고유의 메소드는 약간 복잡한 방법이기 (위해)때문에, 많은 프로그래머는 사용할 필요가 없습니다만, 알아 두면(자) 편리합니다.
+
+<p>열거를 지원하기 위해서, 2 개의 클래스가 <code>java.util</code> 에 추가되었습니다. 특수한 목적을 가지는 <code>Set</code> 및 <code>Map</code> 의 구현으로, 각각 <a href="../../../api/java/util/EnumSet.html"><code>EnumSet</code></a>  및 <a href="../../../api/java/util/EnumMap.html"><code>EnumMap</code></a>  로 불립니다. EnumSet</code> 는, 열거용의 고퍼포먼스인 <code>Set</code> 구현입니다. 열거 세트의 전멤버는, 열거형이 같지 않으면 안됩니다. 내부적으로는, 비트 벡터로 나타내집니다.  비트 벡터는 일반적으로, 단일의 <code>long</code> 치입니다. 열거 세트에서는, 열거형의 범위에 걸치는 반복을 지원하고 있습니다. 예를 들어 다음의 열거 선언을 생각해 보겠습니다.
+<pre>    enum Day { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
+</pre>
+평일에 걸쳐서 반복 처리를 실시할 수가 있습니다. <code>EnumSet</code> 클래스는, 간단하게 반복 처리를 행하기 위한 static 팩토리를 제공합니다.
+<pre>    for (Day d : EnumSet.range(Day.MONDAY, Day.FRIDAY))
+        System.out.println(d);
+</pre>
+열거 세트는, 종래의 비트 플래그에 대해, 풍부해 형태 보증된 치환도 제공합니다.
+<pre>    EnumSet.of(Style.BOLD, Style.ITALIC)
+</pre>
+
+<p>(와)과 같이 <code>EnumMap</code> 는, 열거 키로 사용하는 고퍼포먼스인 <code>Map</code> 구현입니다.  내부적으로는 배열로서 구현됩니다. 열거 맵은,<code>Map</code> 인터페이스의 풍부함이나 안전함과 배열의 고속의 어프로치가 결합된 것입니다. 열거를 값에 맵 하는 경우는, 배열은 아니고, 항상 <tt>EnumMap</tt> 를 사용해 주세요.
+
+<p>상기의 <a href="#Card"><code>Card</code></a>  클래스에는, deck 를 돌려주는 static 팩토리가 포함되어 있습니다.  그러나, rank 와 suit 로부터 개별의 카드를 취득하는 방법은 없습니다. 단지 생성자 을 공개하면(자), 단독의 속성이 망가져 버립니다 ( 각 카드의 인스턴스는, 1 개(살) 밖에 존재할 수 없기 때문에). 단독의 속성을 유지하는 static 팩토리의 기술예를 나타냅니다.  상자로 된 <tt>EnumMap</tt> 를 사용합니다.
+<blockquote>
+<pre>
+private static Map&lt;Suit, Map&lt;Rank, Card&gt;&gt; table =
+    new EnumMap&lt;Suit, Map&lt;Rank, Card&gt;&gt;(Suit.class);
+static {
+    for (Suit suit : Suit.values()) {
+        Map&lt;Rank, Card&gt; suitTable = new EnumMap&lt;Rank, Card&gt;(Rank.class);
+        for (Rank rank : Rank.values())
+            suitTable.put(rank, new Card(rank, suit));
+        table.put(suit, suitTable);
+    }
+}
+
+public static Card valueOf(Rank rank, Suit suit) {
+    return table.get(suit). get(rank);
+}
+</pre>
+</blockquote>
+
+<code>EnumMap</code> (<code>table</code>)는, 각 rank 를 카드로 맵 하는 <code>EnumMap</code> 에, 각 suit 를 맵 합니다. <code>valueOf</code> 메소드에 의한 검색은, 내부적으로는 2 회의 배열 액세스로 구현되고 있습니다만, 코드는 알기 쉽고 안전합니다. 단독의 속성을 유지하려면 ,<code>Card</code> 내의 prototype deck 의 초기화에 있어서의 생성자 의 호출을, 다음의 새로운 static 팩토리의 호출로 치환하는 것이 필수입니다.
+<blockquote>
+<pre>
+    // Initialize prototype deck
+    static {
+        for (Suit suit : Suit.values())
+            for (Rank rank : Rank.values())
+                protoDeck.add(<font color="#009900">Card.valueOf(rank, suit)</font>);
+    }
+</pre>
+</blockquote>
+또,<code>table</code> 의 초기화는,<tt>protoDeck</tt> 의 초기화보다 먼저 실시하지 않으면 안됩니다. <tt> protoDeck</tt> 는 <code>table</code> 에 의존하고 있기 (위해)때문에입니다.
+
+<p>열거는, 정수의 고정 세트가 필요한 경우는 언제라도 사용할 수 있습니다. 원래 열거된 형태 (혹성, 요일, 트럼프의 마크등) 뿐만이 아니라, 메뉴의 선택 항목, 둥근 모드, 커멘드행 플래그 등, 가능한 값 모든 것이 컴파일시 갑작스럽다고 있는 세트에도 사용할 수 있습니다. 열거형의 정수 세트는 항상 고정되고 있을 필요는 없습니다. 이 기능은, 열거형의 binary level compatibility를 촉진하기 위해서 설계되었습니다.
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+   <FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved.
+
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:3 - Image I/O 어플리케이션의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="goals.fm2.html">전의 항목</a>  | <a href="apps.fm2.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 3 장</FONT></B></U>
+
+<a name="5529"><!-- --></a> 
+<h1>
+Image I/O 어플리케이션의 작성
+</h1>
+
+<h2><a name="996883"><i>3.1	</i> 이미지의 read와 기입해</a> </h2>
+
+<blockquote>
+<a name="996884"><!-- --></a>  <code>javax.imageio.ImageIO</code> 클래스는, 단순한 이미지 입출력 조작의 대부분을 실행하는 정적인 편리한 메소드 일식을 제공하고 있습니다. <p>
+<a name="996885"><!-- --></a>  표준 형식 (GIF, PNG, 또는 JPEG)의 이미지의 read는, 다음의 예의 같게 간단합니다. <p>
+</blockquote><blockquote><pre>
+File f = new File(&#34;c:\images\myimage.gif&#34;);
+BufferedImage bi = ImageIO.read(f);
+</pre></blockquote><blockquote>
+<a name="996887"><!-- --></a>  이미지의 형식은, 파일의 내용에 근거해 API 가 자동적으로 검출합니다. 대부분의 이미지 파일에는, 선두의 수바이트에, 파일 형식을 식별하는 「magic number-」가 포함되어 있습니다. magic number-가 없는 이미지 형식에 대해서는, 자동 검출이 실패하기 위해(때문에), 한층 더 복잡한 어플리케이션 코드가 필요하게 됩니다. <p>
+<a name="996888"><!-- --></a>  추가의 이미지 형식의 처리는, 적절한 플러그 인이 들어간 JAR 파일을 인스톨 하면 가능하게 됩니다. 상세한 것에 대하여는, 다음의 장으로 설명합니다. 플러그 인을 인스톨 한 뒤는, 어플리케이션 코드를 전혀 변경하지 않고 구라고도, 새로운 이미지 형식을 자동적으로 인식할 수 있게 됩니다. <p>
+<a name="996889"><!-- --></a>  읽어들여 가능한 이미지 형식의 리스트는,<code>ImageIO.getReaderFormatNames</code> 를 호출하면 입수할 수 있습니다. 이 메소드로부터는, 이용할 수 있는 이미지 형식의 이름 ( 「gif」나 「png」등)이 들어간 <code>String</code> 의 배열이 돌려주어집니다. <p>
+<a name="996890"><!-- --></a>  지원되고 있는 형식에서 이미지를 기입하는 조작도, 똑같이 간단합니다. <p>
+</blockquote><blockquote><pre>
+BufferedImage bi;
+File f = new File(&#34;c:\images\myimage.png&#34;);
+ImageIO.write(im, &#34;png&#34;, f);
+</pre></blockquote><blockquote>
+<a name="996892"><!-- --></a>  지원되고 있는 형식의 리스트는,<code>ImageIO.getWriterFormatNames</code> 를 호출하면 입수할 수 있습니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="goals.fm2.html">전의 항목</a>  | <a href="apps.fm2.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

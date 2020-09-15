@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>복수 버젼의 JRE 및 Java Plug-in 의 지원 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<hr>
+<h1>복수 버젼의 JRE 및 Java Plug-in 의 지원</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+  <script src="menu_script.js" language="JavaScript"></script>
+  </select>
+</form>
+<p>이 장에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#clsid">일의의 <code>CLSID</code></a> </li>
+<li><a href="#mime">일의의 MIME 타입 및 dll</a> </li>
+<li><a href="#registry">일의의 Java Plug-in 레지스트리 키</a> </li>
+<li><a href="#property">일의의 Java Plug-in 프로퍼티 파일</a> </li>
+<li><a href="#trace">일의의 Java Plug-in 트레이스 및 로그 파일</a> </li>
+<li><a href="#control">일의의 Java 컨트롤 패널</a> </li>
+<li><a href="#jre-jdk">JRE/JDK 용의 일의의 레지스트리 키</a> <br>
+  </li>
+<li><a href="#collision">브라우저 세션에서의 복수 버젼의 지원</a> <br>
+  </li>
+</ul>
+<p>Java Plug-in 의 모든 신규 또는 패치 릴리스에서는, 레지스트리 키,<code>CLSID</code>, MIME 타입, 및 다른 자원을 일의에 식별하게 되었습니다. 이것에 의해, 같은 환경에 복수의 JRE 버젼을 배치할 수 있습니다. </p>
+<h3><a name="clsid"></a> 일의의 <code>CLSID</code></h3>
+<p>Java Plug-in 의 모든 신규 또는 패치 버젼에, 일의의 CLSID 가 존재합니다. <code>CLSID</code> 는, Windows 상에서 가동하는 Internet Explorer 의 <code>OBJECT</code> 태그로 사용됩니다. 최소 버젼의 Java Plug-in 를 사용하는 경우,<code>OBJECT</code> 태그로 이 일의인 <code>CLSID</code> 를 지정해 주세요. <code>CLSID</code> 는, 레지스트리내의 다음의 위치에 포함됩니다. </p>
+<blockquote>
+<p><code>HKEY_CLASSES_ROOT\CLSID\</code></p>
+</blockquote>
+<p>일반적으로, CLSID 는 다음과 같은 형식이 됩니다. </p>
+<p><code>CAFEEFAC-&lt;<i>major version</i>&gt;-&lt;<i>minor version</i>&gt;-&lt;<i>patch version</i>&gt;-ABCDEFFEDCBA</code></p>
+<p><code><i>major version</i></code>,<code><i>minor version</i></code>, 및 <code><i>patch version</i></code> 는, 모두 4 자리수의 16 진수입니다. </p>
+<h4>례:</h4>
+<p>예를 들어, Java Plug-in 6 의 CLSID 는, 다음과 같이 됩니다.  </p>
+<blockquote>
+<p><code>clsid:CAFEEFAC-0016-0000-0000-ABCDEFFEDCBA</code></p>
+</blockquote>
+<p>이것은, 다음의 레지스트리에 포함됩니다. </p>
+<blockquote>
+<p><code>HKEY_CLASSES_ROOT\CLSID\CAFEEFAC-0016-0000-0000-ABCDEFFEDCBA</code></p>
+</blockquote>
+<p>CLSID 는, 레지스트리내의 다음의 위치에도 포함됩니다. &nbsp;
+</p>
+<blockquote>
+<p><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Code Store Database\Distribution Units\</code></p>
+</blockquote>
+<h3><a name="mime"></a> 일의의 MIME 타입 및 dll</h3>
+<p>신규 또는 패치 버젼의 모든 Java Plug-in 에는, 일의의 MIME 타입 및 <code>NP*.dll</code> 가 존재합니다. MIME 타입은, Java Plug-in 에 의해 로드 및 초기화되는 Java 실행 가능 파일의 타입 또는 버젼을 식별합니다. MIME 타입은, 지원되고 있는 Mozilla 브라우저에서는 <code>EMBED</code> 태그내의 요소형에 의해, Internet Explorer 에서는 <code>OBJECT</code> 태그내의 <code>&lt;PARAM name=&quot;type&quot;&gt;</code> 에 의해 지정됩니다. 지원되고 있는 Mozilla 브라우저로 Java Plug-in 의 최소 버젼을 사용하는 경우,<code>EMBED</code> 태그에 일의의 MIME 타입을 지정합니다.  </p>
+<table summary="layout" width="100%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+<td><h2><u>주:</u></h2>
+<p> <code>NP*.dll</code> 는, 신규 또는 패치 버젼 마다 일의인 이름을 사용해, MIME 타입을 지원합니다. 이 때문에, 버젼이 다른 Java Plug-in 를 인스톨 해도, 지원되고 있는 Mozilla 브라우저의 <code>Plugins</code> 디렉토리내외의 <code>. dll</code> 파일은 덧쓰기되지 않습니다. </p></td>
+  </tr>
+</table>
+<p>일반적으로, MIME 타입은 다음과 같은 형식이 됩니다. </p>
+<blockquote>
+<p><code>application/x-java-applet;jpi-version=<version>&lt;<i>version</i>&gt;</version></code></p>
+</blockquote>
+<p><code><i>version</i></code> 에는, 메이저, 마이너, 및 패치 버젼 번호가 포함됩니다. </p>
+<p> MIME 타입은, 다음의 파일로 지원됩니다. <br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>NPJPI<i>&lt;modified version number&gt;</i>. dll</code><code> </code></p>
+<h4>례:</h4>
+<p>Java Plug-in 1.6. 0 에서는, 일의의 MIME 타입은 다음과 같이 됩니다.  </p>
+<blockquote>
+<p><code>application/x-java-applet;jpi-version=1. 6.0</code></p>
+</blockquote>
+<p>이것은, Mozilla 의 <code>Plugins</code> 디렉토리내의 다음의 파일로 지원됩니다.  </p>
+<blockquote>
+<p><code>NPJPI160.dll</code> </p>
+</blockquote>
+<p></p>
+<h3><a name="registry"></a> 일의의 Java Plug-in 레지스트리 키</h3>
+<p>Java Plug-in 의 신규 또는 패치 버젼 마다, 일의의 Java Plug-in 레지스트리 키가 존재합니다. 주요한 Java Plug-in 레지스트리 키를 다음에 나타냅니다. </p>
+<blockquote>
+<p><code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Plug-in\<i>&lt;version number&gt;</i></code></p>
+<p><i>&lt;version number&gt;</i> 에는, 메이저, 마이너, 및 팟치파젼 번호가 포함됩니다. </p>
+</blockquote>
+<h4><code>례:</code></h4>
+<p>Java Plug-in 1.6. 0 에서는, 레지스트리내에 이하의 엔트리가 존재합니다. </p>
+<blockquote>
+<p><code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Plug-in\1. 6.0</code></p>
+</blockquote>
+<h3><a name="property"></a> 일의의 Java Plug-in 프로퍼티 파일</h3>
+<p>프로퍼티 파일의 이름이,<code>deployment.properties</code> 가 되었습니다. 이 파일은, 다음의 디렉토리에 포함되고 있습니다. </p>
+<blockquote> <code>&lt;User Application Data Folder&gt;\Sun\Java\Deployment</code>  </blockquote>
+<p><code>&lt;User Application Data Folder&gt;</code> 는, 사용자 고유의 어플리케이션 데이터 폴더입니다.  </p>
+<p>예를 들어, Windows XP 시스템의 사용자 <code>testuser</code> 의 경우,<code>&lt;User Application Data Folder&gt;</code> 의 값은 <code>C:\Documents and Settings\testuser\Application Data</code> 가 됩니다.
+</p>
+<p>deployment.properties 파일은, 버젼 1.6. 0 에 의해 사용됩니다. <code>&lt;User Application Data Folder&gt;</code> 의 값은,<code>CSIDL_APPDATA</code> 에서의 Win32 API 함수 호출 <code>SHGetFolderPath()</code> 로부터 취득됩니다. </p>
+<h3><a name="trace"></a> 일의의 Java Plug-in 트레이스 및 로그 파일</h3>
+<p>트레이스 파일 및 로그 파일의 디폴트의 장소는,<code>&lt;User Application Data Folder&gt;\Sun\Java\Deployment\log</code> 입니다.
+</p>
+<p><code>&lt;User Application Data Folder&gt;</code> 의 정의는,<a href="#property">전술</a>했던 대로입니다. </p>
+<p>프로퍼티 <code>javaplugin.outputfiles.path</code> 를 사용해, 트레이스 파일 및 로그 파일의 디폴트의 장소를 오버라이드(override) 할 수 있습니다. 자세한 것은,<a href="../../deployment/deployment-guide/tracing_logging.html">「배치 가이드」</a>의 트레이스 및 로그의 섹션을 참조해 주세요.  </p>
+<h3><a name="control"></a> 일의의 Java 컨트롤 패널</h3>
+<p>신규 또는 패치 릴리스 마다, 일의의 Java 컨트롤 패널이 존재합니다. 1.6. 0 에서는, 컨트롤 패널의 파일명은 <code>javacpl.exe</code> 입니다. </p>
+<p>Java 컨트롤 패널의 최신 인스톨 버젼만이, Windows 의 컨트롤 패널로부터 이용 가능합니다. </p>
+<h3><a name="jre-jdk"></a> JRE/JDK 용의 일의의 레지스트리 키</h3>
+<p>JRE/JDK 의 신규 또는 패치 릴리스 마다, 일의의 레지스트리 키가 존재합니다. 이러한 레지스트리 키는, 다음의 위치에 배치됩니다. </p>
+<blockquote>
+<p><code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment\<i>&lt;version number&gt;<br></i></code><code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Development Kit\<i>&lt;version number&gt;</i></code></p>
+</blockquote>
+<p><i><code>&lt;version number&gt;</code></i> 에는, 메이저, 마이너, 및 팟치파젼 번호가 포함됩니다 (<code>1.6. 0</code> 등). </p>
+<p>Java Plug-in 는, 이러한 키를 사용해, 적절한 버젼의 JRE 를 검출할 수 있습니다.  </p>
+<h3><a name="collision"></a> 브라우저 세션에서의 복수 버젼의 지원</h3>
+<p>복수의 JRE 버젼을 Windows 플랫폼에 인스톨 할 수 있습니다. 복수의 JRE 의 애플릿이 있는 경우, MIME 타입 <code>jpi-version</code> 의 사용은, 다음의 옵션을 유효하게 했을 때에 마셔 Mozilla 브라우저로 기능합니다. </p>
+<ul>
+<li> JRE 6 의<strong>「Mozilla 패밀리」</strong>옵션을 유효하게 하려면 ,<span style="font-weight: bold;">「Java 컨트롤 패널」</span>을 열어,<span style="font-weight: bold;">「상세」&gt; 「브라우저의 디폴트의 Java」&gt; 「Mozilla 패밀리」</span>를 클릭합니다. </li>
+<li>JRE 1.5. 0 이전의<strong>「Mozilla 및 Netscape」</strong>옵션을 유효하게 하려면 ,<span  style="font-weight: bold;">「Java 컨트롤 패널」</span>을 열어,<span style="font-weight: bold;">「상세」&gt; 「&lt;Applet&gt; 태그의 지원」&gt; 「Mozilla 및 Netscape」</span>를 클릭합니다. </li>
+</ul>
+<p>JRE 의 특정의 버젼의 Java 컨트롤 패널을 호출하려면 , 그 버젼의 <code>&lt;JRE_HOME&gt;/bin</code> 디렉토리를 브라우즈 해, javacpl.exe 를 실행합니다.
+</p>
+<table summary="layout" width="100%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+<td><h2><u>주:</u></h2>
+<p>복수의 버젼의 JRE 를, 다른 브라우저 세션으로 실행할 수 있습니다. 다만, 복수의 버젼을 같은 브라우저 세션으로 실행할 수 없습니다. 실행하려고 하면(자), 사용자에게 경고가 표시되어 시행은 실패합니다. </p></td>
+  </tr>
+</table>
+<br>
+<div align="center">
+  <p></p>
+</div>
+</body>
+</html>

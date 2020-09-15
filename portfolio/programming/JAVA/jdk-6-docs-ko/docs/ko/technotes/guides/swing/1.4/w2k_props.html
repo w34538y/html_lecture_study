@@ -1,0 +1,475 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Windows 데스크탑 관련의 프로퍼티의 지원 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Windows 데스크탑 관련의 프로퍼티의 지원</h1>
+
+<p>이 기능은, 다음의 2 개의 분야에 관련합니다. </p>
+
+<ul>
+<li><a href="#more">사용자의 설정을 한층 더 존중한다</a> 
+ <ul>
+<li><a href="#color">배색에 관한 프로퍼티</a> 
+<li><a href="#geometry">외형에 관한 프로퍼티</a> 
+<li><a href="#font">폰트 프로퍼티</a> 
+<li><a href="#effect">시각 효과에 관한 프로퍼티</a> 
+<li><a href="#audio">음성 피드백에 관한 프로퍼티</a> 
+<li><a href="#input">입력에 관한 프로퍼티</a> 
+ </ul>
+<li><a href="#dynamic">동적 변경에 대한 응답</a> 
+</ul>
+
+<h2><a name=more>사용자의 설정을 한층 더 존중한다</a> </h2>
+
+<p>Windows 플랫폼에서는, 사용자는, 데스크탑의 pop-up menu에 있는 「프롭퍼티」옵션 경유로, GUI 를 커스터마이즈 할 수 있습니다. Swing 의 Look &amp; Feel 가 사용자의 시각 및 동작의 설정을 올바르게 구현하고 있는지를 확인하기 위해서, 시스템 레지스트리로부터 UI 프로퍼티의 값을 취득할 필요가 있습니다. 이러한 프로퍼티의 값은,<a href="../../../../api/java/awt/Toolkit.html">java.awt.Toolkit</a>  의 <code>getDesktopProperty()</code> 메소드로 검색 가능합니다.
+
+<p>이 메소드로 액세스 가능한 프로퍼티의 대부분은 Windows 플랫폼에 특유인 프로퍼티이며, 「win.」라고 하는 접두사가 붙어 있습니다. 지원되는 Windows 프로퍼티의 리스트는, 「win.propNames」프로퍼티을 프로그램으로 문의해 취득할 수 있습니다.
+
+<pre>
+     String propnames[] = (String[]) Toolkit.getDefaultToolkit(). getDesktopProperty(&quot;win.propNames&quot;);
+     System.out.println(&quot;Supported windows property names:&quot;);
+         for(int i = 0; i &lt; propnames.length; i++) {
+             System.out.println(propnames[i]);
+         }
+</pre>
+
+<p>모든 플랫폼에서 지원되는 프로퍼티은, 접두사의 「awt.」(으)로 시작됩니다.
+
+<p>프로그램으로 이러한 프로퍼티에 직접 액세스 할 필요는 없고, Windows 의 Look &amp; Feel 가 자동적으로 읽어내져 이러한 프로퍼티이 컴퍼넌트에 적절한 시각 효과와 동작을 제공하도록(듯이) 해석됩니다.
+
+<h3><a name=color>배색에 관한 프로퍼티</a> </h3>
+
+<table summary="color properties" border=1>
+ <tr>
+<th> <p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 3D 객체의 백그라운드 칼라 </td>
+<td> &quot;win. 3d.backgroundColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 3D 객체의 강조 표시 </td>
+<td> &quot;win. 3d.highlightColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 3D 객체의 하이라이트 </td>
+<td> &quot;win. 3d.lightColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 3D 객체의 음영 </td>
+<td> &quot;win. 3d.shadowColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브한 타이틀 바 칼라 1 </td>
+<td> &quot;win.frame.activeCaptionColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브한 타이틀 바 칼라 2 </td>
+<td> &quot;win.frame.activeCaptionGradientColor&quot;(TBI) </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브한 타이틀 바의 폰트 칼라 </td>
+<td> &quot;win.frame.captionTextColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브한 윈도우의 보더 칼라 </td>
+<td> &quot;win.frame.activeBorderColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 어플리케이션의 백그라운드 칼라 </td>
+<td> &quot;win.mdi.backgroundColor&quot; </td>
+<td> java.lang.Color </td>
+ </tr>
+ <tr>
+<td> 데스크탑 칼라 </td>
+<td> &quot;win.desktop.backgroundColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 타이틀 바 칼라 1 </td>
+<td> &quot;win.frame.inactiveCaptionColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 타이틀 바 칼라 2 </td>
+<td> &quot;win.frame.inactiveCaptionGradientColor&quot;(TBI) </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 타이틀 바의 폰트 칼라 </td>
+<td> &quot;win.frame.inactiveCaptionTextColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 윈도우의 보더 칼라 </td>
+<td> &quot;win.frame.inactiveBorderColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 메뉴의 칼라 </td>
+<td> &quot;win.menu.backgroundColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 메뉴의 폰트 칼라 </td>
+<td> &quot;win.menu.textColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 메시지 박스의 폰트 칼라 </td>
+<td> &quot;win.frame.textColor?????&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 선택된 항목의 칼라 </td>
+<td> &quot;win.item.highlightColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 선택된 항목의 폰트 칼라 </td>
+<td> &quot;win.item.highlightTextColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 툴팁의 칼라 </td>
+<td> &quot;win.tooltip.backgroundColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 툴팁의 폰트 칼라 </td>
+<td> &quot;win.tooltip.textColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 윈도우 칼라 </td>
+<td> &quot;win.frame.backgroundColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 윈도우의 폰트 칼라 </td>
+<td> &quot;win.frame.textColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+ <tr>
+<td> 핫 트랙킹의 칼라 </td>
+<td> &quot;win.item.hotTrackedColor&quot; </td>
+<td> java.awt.Color </td>
+ </tr>
+</table>
+
+<h3><a name=geometry>외형에 관한 프로퍼티</a> </h3>
+
+<table summary="geometry properties" border=1>
+ <tr>
+<th> <p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 액티브한 타이틀 바의 사이즈 </td>
+<td> &quot;win.frame.captionHeight&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 액티브한 윈도우 보더의 사이즈 </td>
+<td> &quot;win.frame.sizingBorderWidth&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 캡션 버튼의 사이즈 </td>
+<td> &quot;win.frame.captionButtonHeight&quot;<br> &quot;win.frame.captionButtonWidth&quot;<br> win.frame.captionHeight&quot;  </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 아이콘의 사이즈 </td>
+<td> &quot;win.icon.hspacing&quot;<br> &quot;win.icon.vspacing&quot;??? </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 아이콘의 옆의 간격 </td>
+<td> &quot;win.icon.hspacing&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 아이콘의 세로의 간격 </td>
+<td> &quot;win.icon.vspacing&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 타이틀 바의 사이즈 </td>
+<td> &quot;win.frame.captionButtonHeight&quot;<br> &quot;win.frame.captionButtonWidth&quot;<br> &quot;win.frame.captionHeight&quot;  </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 윈도우의 경계의 사이즈 </td>
+<td> &quot;win.frame.sizingBorderWidth&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 메뉴의 font size </td>
+<td> &quot;win.menu.font&quot;<br> &quot;win.menu.height&quot;  </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 메뉴의 사이즈 </td>
+<td> &quot;win.menu.height&quot;<br> &quot;win.menu.buttonWidth&quot; </td>
+<td> java.awt.Integer </td>
+ </tr>
+ <tr>
+<td> 팔레트 타이틀의 사이즈 </td>
+<td> &quot;win.frame.smallCaptionHeight&quot;<br> &quot;win.frame.smallCaptionButtonHeight&quot;<br> &quot;win.frame.smallCaptionButtonWidth&quot;  </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 스크롤 바의 폭 </td>
+<td> &quot;win.scrollbar.width&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 스크롤 바의 높이 </td>
+<td> &quot;win.scrollbar.height&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 선택 항목의 사이즈 </td>
+<td> &quot;win.menu.height&quot;<br> &quot;win.menu.buttonWidth&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+</table>
+
+<h3><a name=font>폰트 프로퍼티</a> </h3>
+
+<table summary="font properties" border=1>
+ <tr>
+<th> <p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 액티브한 타이틀 바의 폰트 </td>
+<td> &quot;win.frame.captionFont&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 아이콘의 폰트 </td>
+<td> &quot;win.icon.font&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 액티브하지 않은 타이틀 바의 폰트 </td>
+<td> &quot;win.frame.captionFont&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 메뉴의 폰트 </td>
+<td> &quot;win.menu.font&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 메시지 박스의 폰트 </td>
+<td> &quot;win.messagebox.font&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 팔레트 타이틀의 폰트 </td>
+<td> &quot;win.frame.smallCaptionFont&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 선택된 항목의 폰트 </td>
+<td> &quot;win.menu.font&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+ <tr>
+<td> 툴팁의 폰트 </td>
+<td> &quot;win.tooltip.font&quot; </td>
+<td> java.awt.Font </td>
+ </tr>
+</table>
+
+<h4>폰트의 호환성</h4>
+
+<p>현재, Windows 의 Look &amp; Feel 내에서 실행되고 있는 Swing 프로그램은, Java 정의의 시스템 폰트는 아니고, 사용자가 설정한 시스템 폰트로 draw 합니다. 이 때문에, 종래의 동작에 근거하고 있는 프로그램과의 사이에 호환성의 문제가 발생할 가능성이 있으므로 (외형상의 문제나 특정의 폰트Glyph에 의존하는 로컬라이제이션의 설정등이 원인), 필요에 따라서 이 기능을 오프로 하는, 다음의 실행시의 프로퍼티이 준비되어 있습니다.
+
+<pre>
+     java <b>-Dswing.useSystemFontSettings=false</b> MyJavaProgram
+</pre>
+
+<h3><a name=effect>시각 효과에 관한 프로퍼티</a> </h3>
+
+<table summary="visual effect properties" border=1>
+ <tr>
+<th> <p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 아이콘의 타이틀의 즉시 </td>
+<td> &quot;win.icon.titleWrappingOn&quot; </td>
+<td> java.lang.Boolean </td>
+ </tr>
+ <tr>
+<td> 윈도우의 드래그 기능 </td>
+<td> &quot;win.frame.fullWindowDragOn&quot; </td>
+<td> java.lang.Boolean </td>
+ </tr>
+ <tr>
+<td> 키보드 네비게이션의 표시 </td>
+<td> &quot;win.menu.keyboardCuesOn&quot;(TBI) </td>
+<td> java.lang.Boolean </td>
+ </tr>
+ <tr>
+<td> 툴바/도구모음의 핫 트랙킹 </td>
+<td> &quot;win.item.hotTrackingOn&quot; </td>
+<td> java.lang.Boolean </td>
+ </tr>
+ <tr>
+<td> 타이틀 바의 그라데이션 </td>
+<td> &quot;win.frame.captionGradientsOn&quot; </td>
+<td> java.lang.Boolean </td>
+ </tr>
+</table>
+
+<h3><a name=audio>음성 피드백에 관한 프로퍼티</a> </h3>
+
+<table summary="audio-feedback properties" border=1>
+ <tr>
+<th> <p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 디폴트의 사운드 </td>
+<td> &quot;win.sound.default&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드를 닫는다 </td>
+<td> &quot;win.sound.close&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드의 최대화 </td>
+<td> &quot;win.sound.maximize&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드의 최소화 </td>
+<td> &quot;win.sound.minimize&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 메뉴 커멘드의 사운드 </td>
+<td> &quot;win.sound.menuCommand&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 메뉴 pop-up의 사운드 </td>
+<td> &quot;win.sound.menuPopup&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드를 연다 </td>
+<td> &quot;win.sound.open&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드를 낮게 복원 </td>
+<td> &quot;win.sound.restoreDown&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 사운드를 높게 복원 </td>
+<td> &quot;win.sound.restoreUp&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템 asterisk 사운드 </td>
+<td> &quot;win.sound.asterisk&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템 exclamation 사운드 </td>
+<td> &quot;win.sound.exclamation&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템 종료 사운드 </td>
+<td> &quot;win.sound.exit&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템 핸드 사운드 </td>
+<td> &quot;win.sound.hand&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템크엣션사운드 </td>
+<td> &quot;win.sound.question&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+ <tr>
+<td> 시스템 개시 사운드 </td>
+<td> &quot;win.sound.start&quot; </td>
+<td> java.lang.Runnable </td>
+ </tr>
+</table>
+
+<h4>사운드의 동적 변경</h4>
+
+<p>사운드 프로퍼티에 반환되는 객체는, 그 프로퍼티용으로 현재의 오디오 클립을 재생하는 단순한 <code>Runnable</code> 입니다. 즉, 사운드의 프로퍼티치는 현재의 사운드 설정에의 라이브 링크이기 (위해)때문에, 사운드에 관한 프로퍼티에의 동적 변경을 감시할 필요는 없습니다.
+
+<h3><a name=input>입력에 관한 프로퍼티</a> </h3>
+
+<table summary="input properties" border=1>
+ <tr>
+  <th>
+<p align=center><b>사용자의 설정</b> </th>
+<th> <p align=center><b>Java 프로퍼티명</b> </th>
+<th> <p align=center><b>형</b> </th>
+ </tr>
+ <tr>
+<td> 더블 클릭의 간격 </td>
+<td> &quot;awt.multiClickInterval&quot; </td>
+<td> java.lang.Integer </td>
+ </tr>
+ <tr>
+<td> 커서의 점멸 간격 </td>
+<td> &quot;awt.cursorBlinkRate&quot;(TBI) </td>
+<td> java.lang.Integer </td>
+ </tr>
+</table>
+
+<h2><a name=dynamic>동적 변경에 대한 응답</a> </h2>
+
+<p>JDK 1.3 에서는, 데스크탑에 관한 프로퍼티치의 1 개가 변화한다고 통지를 받도록(듯이) 등록해 두는 기능이, AWT 에 의해 추가되었습니다. 이 기능은,<a href="../../../api/java/awt/Toolkit.html">java.awt.Toolkit</a>  의 <code>addPropertyChangeListener()</code> 메소드 경유로 지원됩니다. Swing 의 Look &amp; Feel 에서는, 이 기능을 사용해 시각에 관한 프로퍼티의 동적인 변경 이벤트를 감시해, 컴퍼넌트가 최신의 시각에 관한 프로퍼티치를 가질 수 있도록(듯이), UI 를 언인스톨하거나 재인스톨 하거나 해, GUI 를 갱신합니다. 이 동적인 동작은, Windows 의 Look &amp; Feel 를 실행중의 모든 Swing 프로그램으로 자동적으로 행해집니다.
+
+<p>이 기구는, GUI 의 계층을 <code>Frame.getFrames()</code> 로 시작해 거기로부터 모든 윈도우/컨테이너/컴퍼넌트를 횡단(traverse) 하는 것으로, GUI 컴퍼넌트를 갱신합니다. 횡단(traverse)을 할 때 클라이언트에 표시 불능인 컴퍼넌트가 있는 경우, 이러한 컴퍼넌트는 자동적으로는 갱신되지 않습니다. 이러한 컴퍼넌트의 Look & Feel 가 최신의 것임을 보증하기 위해서, 클라이언트 프로그램으로 컴퍼넌트의 UI 를 갱신할 필요가 있습니다 (컴퍼넌트가 표시 가능한 경우의 정의에 대해서는,<a href="../../../api/java/awt/Component.html">java.awt.Component</a>  의 <code>isDisplayable()</code> 메소드를 참조). 예를 들어 이러한 일은, SwingSet2 의 데모로 발생합니다. 데모 윈도우가 작성되어도, 데모의 탭 첨부 페인으로부터 선택될 때까지, 윈도우가 GUI 의 계층에 추가되지 않기 때문입니다. 따라서, 새롭게 선택한 데모 윈도우가 계층에 추가되기 전에, 최신의 프로퍼티 설정치가 되어 있는 것을 보증하기 위해서, UI 를 갱신합니다.
+
+<pre>
+    fragment from SwingSet2.java:  // Ensure panel's UI is current before making visible
+    JComponent currentDemoPanel = demo.getDemoPanel();
+    <b>SwingUtilities.updateComponentTreeUI(currentDemoPanel);</b>
+    // Replace current demo with newly selected demo
+    demoPanel.removeAll();
+    demoPanel.add(currentDemoPanel, BorderLayout.CENTER);
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="GENERATOR"
+ content="Mozilla/4.02 [en] (X11; U; SunOS 5.5.1 sun4u) [Netscape]">
+<title>Java(TM) Debug Wire Protocol - xrath.com 에서 번역됨</title>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077"
+ alink="#ff0000">
+&nbsp;
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"  alt="Java" border="0" width="52" height="88"></td>
+      <td>
+      <center>
+<h1>Java<sup><font size="-2">TM</font></sup> Debug Wire Protocol</h1>
+      </center>
+      </td>
+<td width="60" valign="top"><a href="index.html">JPDA</a> </td>
+    </tr>
+  </tbody>
+</table>
+<!-- Body text begins here -->
+<p></p>
+<h4><a href="../../../platform/jpda/jdwp/jdwp-protocol.html">프로토콜의 상세</a> </h4>
+<h3>개요</h3>
+<p>
+Java <sup><font size="-2">TM</font></sup> Debug Wire Protocol (JDWP)는, 디버거와 디버거로 디버그 하는 Java 가상 머신 (VM)과의 사이의 통신에 사용되는 프로토콜입니다. 이 이후, 디버그 하는 VM 를, 타겟 VM 라고 부릅니다. 이 이후, 디버그 하는 VM 를, 타겟 VM 라고 부릅니다. JDWP 가 존재하는 것으로써, 동일한 디버거를 다음의 환경에서 동작시킬 수가 있습니다.
+</p>
+<ul>
+<li>동일한 컴퓨터상이 다른 프로세스, 또는
+  </li>
+<li>원격 컴퓨터상 </li>
+</ul>
+<p>
+JDWP 는, 형식과 레이아웃만을 상세하게 정의해, 트랜스폴트는 정의하고 있지 않다고 하는 점으로써, 많은 프로토콜 스펙과는 다릅니다. JDWP 구현은, 다양한 트랜스폴트 기구를 단순한 API 를 개입시켜 받아들이도록(듯이) 설계할 수 있습니다. 특정의 트랜스폴트가, 반드시 상기의 디버거/타겟 VM 의 편성 모든 것을 지원하는 것은 아닙니다.
+</p>
+<p>JDWP 의 설계는, 간단하게 구현할 수 있도록(듯이) 충분히 단순화 되고 있습니다만, 장래의 확장에 대응하는 유연성도 있습니다.
+</p>
+<p>현재로서는, JDWP 는, 트랜스폴트를 받아들이기 위한 기구나, 디렉토리 서비스를 일절 지정하고 있습니다. 이것은 장래 변경될 가능성이 있습니다만, 그 점은 다른 문서로 다루어지게 되겠지요.
+</p>
+<p>JVWP 는, Java Platform Debugger Architecture 내의 1 개의 층을 구성합니다. 이 아키텍쳐(architecture)에는, 보다 고레벨의 Java Debug Interface (JDI)가 포함되어 있습니다. JDWP 는, JDI 로 효율적으로 사용할 수 있도록(듯이) 설계되고 있습니다.  그 기능의 상당수는, 그 목적에 따라 조정되고 있습니다. 많은 디버거 툴에 있어, JDWP 보다 JDI 쪽이 적합합니다. 이것은 특히 Java 프로그램 언어로 쓰여진 디버거 툴에 말할 수 있는 것입니다. Java 플랫폼 디버거 아키텍쳐(architecture)의 상세한 것에 대하여는, 이 릴리스에 관한 <a  href="index.html">Java 플랫폼 디버거 아키텍쳐(architecture)의 문서</a>를 참조해 주세요.  </p>
+<h3>JDWP 의 기동</h3>
+<p> 트랜스폴트의 접속이 확립된 뒤는, 패킷이 송신되기 전에, 접속의 2 살의 옆의 사이에 핸드쉐이크를 합니다.
+</p>
+<p> 핸드쉐이크의 프로세스에는, 다음의 스텝이 있습니다.  </p>
+<ul>
+<li>디버거측으로부터 VM 측에, 「JDWP-Handshake」라고 하는 ASCII 문자의 14 바이트가 송신된다</li>
+<li>VM 측으로부터, 같은 14 바이트가 반송된다(JDWP-Handshake)</li>
+</ul>
+<h3>JDWP 의 패킷</h3>
+<p>
+JDWP 는 패킷 베이스이며, 스테이트 풀이 아닙니다. 기본적인 패킷 타입에는, 커멘드 패킷과 응답 패킷의 2 종류가 있습니다.
+</p>
+<p>커멘드 패킷은, 디버거 또는 타겟 VM 의 어딘가에보다 송신됩니다. 커멘드 패킷은, 타겟 VM 로부터 정보를 요구하기 위해(때문에), 또는 프로그램의 실행을 제어하기 위해서, 디버거에 의해 사용됩니다. 또, 디버거에 타겟 VM 내의 이벤트 (breakpoint나 예외등)를 통지하기 위해서, 타겟 VM 로부터 커멘드 패킷이 송신됩니다.  </p>
+<p>응답 패킷은, 커멘드 패킷에의 응답으로서의 보고 송신되어 언제나, 커멘드의 성공 또는 실패에 관한 정보를 제공합니다. 응답 패킷은, 커멘드로 요구된 데이터 (필드 또는 변수의 값등)를 옮기는 일도 있습니다. 현재로서는, 타겟 VM 로부터 송신되는 이벤트는, 디버거로부터의 응답 패킷을 필요로 하지 않습니다.
+</p>
+<p>JDWP 는 비동기입니다. 이 때문에, 최초의 응답 패킷을 수신하기 전에, 복수의 커멘드 패킷이 송신되는 경우가 있습니다.
+</p>
+<p>커멘드 패킷 및 응답 패킷의 헤더는, 같은 사이즈가 되어 있습니다. 이것은, 트랜스폴트의 구현 및 추상화를 용이하게 하기 (위해)때문에입니다. 각 패킷의 레이아웃은, 다음과 같이 됩니다.
+</p>
+<dl>
+<dt>커멘드 패킷</dt>
+  <dd>
+    <ul>
+<li>헤더
+        <ul>
+<li>length (4 바이트)
+          </li>
+<li>id (4 바이트)
+          </li>
+<li>flags (1 바이트)
+          </li>
+<li>command set (1 바이트)
+          </li>
+<li>command (1 바이트)
+          </li>
+        </ul>
+      </li>
+<li>데이터 (가변 길이)
+      </li>
+    </ul>
+  </dd>
+<dt>응답 패킷</dt>
+  <dd>
+    <ul>
+<li>헤더
+        <ul>
+<li>length (4 바이트)
+          </li>
+<li>id (4 바이트)
+          </li>
+<li>flags (1 바이트)
+          </li>
+<li>error code (2 바이트)
+          </li>
+        </ul>
+      </li>
+<li>데이터 (가변 길이)
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>
+JDWP 경유로 송신되는 모든 필드 및 데이터는, 빅 endian 형식일 필요가 있습니다. 빅 endian의 정의에 대해서는, Java 가상 머신의 스펙을 참조해 주세요. 최초의 3 개의 필드는, 양쪽 모두의 패킷 타입으로 동일합니다.
+</p>
+<h4>커멘드 패킷과 응답 패킷의 필드</h4>
+<h5>공용되는 헤더 필드</h5>
+<dl>
+<dt>length
+  </dt>
+<dd>length 필드는, 패킷 전체의 사이즈 (length 필드를 포함한다)를 바이트 단위로 나타냅니다. 헤더의 사이즈는 11 바이트이므로, 데이터를 포함하지 않는 패킷에서는, 이 필드가 11 으로 설정됩니다.
+  </dd>
+<dt>id
+  </dt>
+<dd>id 필드는, 패킷의 커멘드/응답의 각 페어를 일의에 식별하기 위해서 사용됩니다. 응답 패킷은, 그 응답 대상인 커멘드 패킷과 같은 id 를 보관 유지합니다. 이 때문에, 비동기의 커멘드와 응답을 대응 붙이는 것이 가능하게 됩니다. id 필드는, 1 개의 소스로부터 송신되는 미처리의 커멘드 모든 안으로 일의가 아니면 안됩니다. 디버거로부터 송신되는 미처리의 커멘드에서는, 타겟 VM 로부터 송신되는 미처리의 커멘드와 같은 id 를 사용할 수 있습니다. 이외에는, id 의 할당해에 관한 요구 사항은 없습니다.
+<p>대부분의 구현에서는, 매우 단순한 카운터로 충분할 것입니다. 그러한 카운터에서도 2^32 개의 일의인 미처리 패킷을 식별할 수 있습니다. 그것이, 가장 단순한 구현 수단입니다.
+    </p>
+  </dd>
+<dt>flags
+  </dt>
+<dd>flags 는, 커멘드를 큐에 넣어 처리하는 방법을 변경하기 위해(때문에), 및 타겟 VM 로부터 송신된 커멘드 패킷을 태그 붙이고 하기 위해서 사용됩니다. 현재로서는, 1 flag bit가 정의되고 있습니다. 장래의 버젼의 프로토콜에서는, 플래그가 한층 더 정의될 가능성이 있습니다.
+    <p></p>
+    <dl compact="compact">
+<dt><code>0x80</code> </dt>
+<dd>응답 패킷
+      </dd>
+    </dl>
+    <p>
+응답 비트가 세트 되고 있는 경우는, 그것이 응답 패킷인 것을 나타냅니다.
+    </p>
+  </dd>
+</dl>
+<h5>커멘드 패킷의 헤더 필드</h5>
+<dl>
+<dt>command set
+  </dt>
+<dd>이 필드는, 가치가 있는 방법으로 커멘드를 그룹화 하는 수단으로서 유용합니다. Sun 가 정의한 커멘드 세트는, 지원하고 있는 JDI 의 인터페이스 마다 커멘드를 그룹화 하는 경우에 사용합니다. 예를 들어, JDI VirtualMachine 인터페이스를 지원하는 모든 커멘드는, VirtualMachine 커멘드 세트로서 그룹화 됩니다.
+<p>커멘드 세트 공간은, 다음과 같이 대별 됩니다.
+    </p>
+    <p></p>
+    <dl compact="compact">
+      <dt><code>0 - 63</code> </dt>
+<dd>타겟 VM 에 송신되는 커멘드세트
+      </dd>
+      <dt><code>64 - 127</code> </dt>
+<dd>디버거에 송신되는 커멘드세트
+      </dd>
+      <dt><code>128 - 256</code> </dt>
+<dd>벤더에 의해 정의된 커멘드 및 확장 기능
+      </dd>
+    </dl>
+  </dd>
+<dt>command
+  </dt>
+<dd>이 필드는, 커멘드 세트내의 특정의 커멘드를 식별합니다. 이 필드는, 커멘드 세트 필드와 함께, 커멘드 패킷의 처리 방법을 나타내는데 사용됩니다. 즉, 무엇을 실행해야할 것인가를 수신 측에 전합니다. 개개의 커멘드에 대해서는, 이 문서로 후술 합니다.
+  </dd>
+</dl>
+<h5>응답 패킷의 헤더 필드</h5>
+<dl>
+<dt>error code
+  </dt>
+<dd>이 필드는, 응답하고 있는 커멘드 패킷의 처리가 성공했는지의 여부를 나타내는데 사용됩니다. 값이 제로의 경우는 성공을, 제로 이외의 경우는 에러를 나타냅니다. 반환되는 에러 코드는, 각 커멘드 세트 또는 커멘드에 고유의 경우도 있습니다만, 많은 경우는 JVM TI 에러 코드에 대응하고 있습니다.
+  </dd>
+</dl>
+<h5>데이터</h5>
+<dl>
+데이터 필드는, 각 커멘드 세트 또는 커멘드에 고유합니다. 또, 커멘드 패킷과 응답 패킷의 페어의 사이에서도 다릅니다. 예를 들어, 필드치를 요구하는 커멘드 패킷의 데이터 필드에는, 객체에의 참조와 취득하고 싶은 값의 필드 ID 가 포함됩니다. 그에 대한 응답 패킷의 데이터 필드에는, 요구된 필드의 값이 포함됩니다.
+</dl>
+<h3>커멘드의 상세 정보</h3>
+<p>
+일반적으로, 커멘드 패킷 또는 응답 패킷의 데이터 필드는, 커멘드 또는 응답 데이터를 정의하는 복수 필드의 그룹을 추상화 한 것입니다. 데이터 필드의 각 subfield는, 빅 endian (Java) 형식에서 encode 됩니다. 각 커멘드와 그 응답의 데이터 필드의 구성에 대해서는, 이후에 상술합니다.  </p>
+<p>다양한 JDWP 커멘드 및 응답이 많게 공통의, 일반적인 데이터형이 몇개인가 있습니다. 그것들에 대해, 이후에 설명합니다.
+</p>
+<p>
+<table summary="common data types" border="1">
+  <thead>
+<th scope="col">이름
+  </th>
+<th scope="col">사이즈
+  </th>
+<th scope="col">설명
+  </th>
+  <tbody>
+    <tr>
+<td><code>byte</code> </td>
+<td>1 바이트
+      </td>
+<td>바이트치
+      </td>
+    </tr>
+    <tr>
+<td><code>boolean</code> </td>
+<td>1 바이트
+      </td>
+<td>불리언 값. false 의 경우는 0, true 의 경우는 제로 이외의 값으로 해서 encode 된다 </td>
+    </tr>
+    <tr>
+<td><code>int</code> </td>
+<td>4 바이트
+      </td>
+<td>4 바이트의 정수치. 정수는, 부호 첨부 (부호 없음과 명시되고 있는 경우를 제외하다)
+      </td>
+    </tr>
+    <tr>
+<td><code>long</code> </td>
+<td>8 바이트
+      </td>
+<td>8 바이트의 정수치. 값은, 부호 첨부 (부호 없음과 명시되고 있는 경우를 제외하다)
+      </td>
+    </tr>
+    <tr>
+<td><code>objectID</code> </td>
+<td>타겟 VM 에 고유. 최대 8 바이트 (겉(표)의 뒤의 설명을 참조)
+      </td>
+<td>타겟 VM 내의 객체를 일의에 식별한다. 특정의 객체는, 그 존속 기간중 (또는, objectID 가 명시적으로 폐기될 때까지) 쭉, JDWP 의 커멘드 및 응답 중(안)에서, 다만 1 개의 objectID 에 의해 식별된다. ObjectID 는, 그것이 명시적으로<a  href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_VirtualMachine_Dispose">폐기</a>되지 않는 한, 참조된 객체가 가베지 컬렉트되었는지 어떠했는지에 관계없이, 다른 객체의 식별로 재사용될 것은 없습니다. 0 이라고 하는 objectID 는, null 객체를 나타낸다
+<p>objectID 가 존재해도, 객체의 가베지 컬렉션을 방해할 수 있을 것은 없다. 가베지 컬렉트된 객체를, objectID 를 사용해 액세스 하려고 하면(자), INVALID_OBJECT 에러 코드가 생성된다. 가베지 컬렉션은,<a  href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_ObjectReference_DisableCollection">DisableCollection</a>  커멘드를 사용해 무효로 할 수 있습니다만, 일반적으로 그 필요는 없습니다.
+      </p>
+      </td>
+    </tr>
+    <tr>
+<td><code>tagged-objectID</code>
+      </td>
+<td>objectID 의 사이즈 + 1 바이트
+      </td>
+<td>최초의 바이트는, 객체의 형태를 식별하기 위한 시그니챠바이트. 이 바이트로 설정 가능한 값에 대해서는,<a href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_Tag">JDWP.Tag</a>  를 참조. 사용할 수 있는 것은 객체 태그만으로, 프리미티브(primitive) 태그는 사용할 수 없다. 그 바이트의 후에, objectID 그 자체가 계속된다
+      </td>
+    </tr>
+    <tr>
+<td><code>threadID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>thread로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>threadGroupID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>thread 그룹으로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>stringID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>캐릭터 라인 객체로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다. 주:이것은, 값으로서의 캐릭터 라인과는 완전히 다르다
+      </td>
+    </tr>
+    <tr>
+<td><code>classLoaderID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>클래스 로더 객체로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>classObjectID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>클래스 객체로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>arrayID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>배열로서 인식되고 있는 타겟 VM 내의 객체를 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>referenceTypeID</code>
+      </td>
+<td>objectID 와 같다
+      </td>
+<td>타겟 VM 내의 참조형을 일의에 식별한다. 특정의 1 개의 클래스에 도착해,<code>classObjectID</code> 와 <code>referenceTypeID</code> 가 동일하다라고 상정해서는 안된다. 특정의 참조형은, 그 존속 기간중 쭉, JDWP 의 커멘드 및 응답 중(안)에서, 다만 1 개의 ID 에 의해 식별된다. referenceTypeID 는, 참조하고 있는 클래스가 언로드되었다고 해도, 다른 참조형을 식별하기 위해서 재사용될 것은 없다.
+      </td>
+    </tr>
+    <tr>
+<td><code>classID</code>
+      </td>
+<td>referenceTypeID 와 같다
+      </td>
+<td>클래스형으로서 인식되고 있는 타겟 VM 내의 참조형을 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>interfaceID</code>
+      </td>
+<td>referenceTypeID 와 같다
+      </td>
+<td>인터페이스형으로서 인식되고 있는 타겟 VM 내의 참조형을 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>arrayTypeID</code>
+      </td>
+<td>referenceTypeID 와 같다
+      </td>
+<td>배열형으로서 인식되고 있는 타겟 VM 내의 참조형을 일의에 식별한다
+      </td>
+    </tr>
+    <tr>
+<td><code>methodID</code> </td>
+<td>타겟 VM 에 고유. 최대 8 바이트 (겉(표)의 뒤의 설명을 참조)
+      </td>
+<td>타겟 VM 내가 있는 클래스의 메소드를 일의에 식별한다. methodID 는, 클래스/인터페이스내의 메소드, 또는 그 서브 클래스/서브 인터페이스/구현자의 어느쪽이든을 일의에 식별할 필요가 있다. methodID 는, 그것 단독으로 반드시 일의일 필요는 없다. referenceTypeID 와 조합했을 때에, 1 개의 메소드를 일의에 식별하고 있으면 좋다. referenceTypeID 에서는, 메소드의 선언형 또는 subtype을 식별할 수 있다
+      </td>
+    </tr>
+    <tr>
+<td><code>fieldID</code> </td>
+<td>타겟 VM 에 고유. 최대 8 바이트 (겉(표)의 뒤의 설명을 참조)
+      </td>
+<td>타겟 VM 내가 있는 클래스의 필드를 일의에 식별한다. methodID 는, 클래스/인터페이스내의 메소드, 또는 그 서브 클래스/서브 인터페이스/구현자의 어느쪽이든을 일의에 식별할 필요가 있다. fieldID 는, 그것 단독으로 반드시 일의일 필요는 없다. referenceTypeID 와 조합했을 때에, 1 개의 필드를 일의에 식별하고 있으면 좋다. referenceTypeID 에서는, 필드의 선언형 또는 subtype을 식별할 수 있다
+      </td>
+    </tr>
+    <tr>
+<td><code>frameID</code>
+      </td>
+<td>타겟 VM 에 고유. 최대 8 바이트 (겉(표)의 뒤의 설명을 참조)
+      </td>
+<td>타겟 VM 내의 프레임을 일의에 식별한다. frameID 는, VM 전체 (특정의 thread내 만이 아니다)의 프레임을 일의에 식별할 필요가 있다. frameID 는, thread가 중단되고 있는 동안만 유효하면 좋다
+      </td>
+    </tr>
+    <tr>
+<td><code>location</code> </td>
+<td>타겟 VM 에 고유
+      </td>
+<td>실행 가능 파일의 위치. 위치는, 1 바이트의<a href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_TypeTag">타입 태그</a>  + <code>classID</code> + <code>methodID</code> + 부호 없음의 8 바이트 인덱스 (메소드내의 위치를 식별한다)에 의해 식별됩니다. 인덱스치에는, 다음과 같은 제한이 있다
+      <ul>
+<li>메소드의 개시 위치의 인덱스는, 메소드내의 다른 모든 위치보다 작다 </li>
+<li>메소드의 종료 위치의 인덱스는, 메소드내의 다른 모든 위치보다 크다 </li>
+<li>메소드의 행 번호 테이블이 존재하는 경우, 특정의 행에 속하는 위치는, 테이블내의 그 행의 위치 인덱스와 다음의 행의 위치 인덱스의 사이가 된다
+        </li>
+      </ul>
+메소드내의 인덱스치는, 메소드내의 최초의 실행 가능 포인트로부터 끝까지, 쭉 증가해 나간다. 많은 구현에서는, 메소드내의 각 바이트 코드 명령이 독자적인 인덱스를 가지지만, 그것은 필수는 아니다
+<p>타입 태그는, 위치의 classID 가 클래스와 인터페이스의 어느 쪽을 식별하고 있는지를 나타내기 위해서(때문에) 필요. 거의 모든 위치는 클래스내에 존재하지만, 인터페이스의 정적인 초기화자내에 실행 가능 코드가 존재하는 일도 있다
+      </p>
+      </td>
+    </tr>
+    <tr>
+<td><code>string</code> </td>
+<td>가변
+      </td>
+<td>UTF-8 로 encode 된 캐릭터 라인. 제로로 종료하는 캐릭터 라인은 아니고, 선두에 길이 (4 바이트의 정수)가 놓여진다
+      </td>
+    </tr>
+    <tr>
+<td><code>치</code> </td>
+<td>가변
+      </td>
+<td>타겟 VM 로부터 취득된 값. 최초의 바이트는, 형태를 식별하기 위한 시그니챠바이트. 이 바이트로 설정 가능한 값에 대해서는,<a  href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_Tag">JDWP.Tag</a>  를 참조. 그 바이트의 후에, 값그 자체가 계속된다. 이 값은, objectID ( 「ID 사이즈의 취득」을 참조)인가, 프리미티브(primitive)치 (1 ?  8 바이트)의 어느 쪽인지. 각각의 치 형의 상세한 것에 대하여는, 다음의 겉(표)를 참조 </td>
+    </tr>
+    <tr>
+<td><code>untagged-value</code> </td>
+<td>가변
+      </td>
+<td>전술의 <code>value</code> 로부터 시그니챠바이트를 제외한 것. 이 형식은, 시그니챠 정보를 문맥으로부터 판별할 수 있는 경우에 사용된다
+      </td>
+    </tr>
+    <tr>
+<td><code>arrayregion</code> </td>
+<td>가변
+      </td>
+<td>일부의 배열 조작으로 사용되는 값의 컴팩트한 표현. 최초의 바이트는, 형태를 식별하기 위한 시그니챠바이트. 이 바이트로 설정 가능한 값에 대해서는,<a href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_Tag">JDWP.Tag</a>  를 참조. 다음에 오는 것은, 순서내의 값의 수를 나타내는 4 바이트의 정수. 그 후에, 그러한 값그 자체가 계속된다. 프리미티브(primitive)치는,<code>untagged-value</code> 의 순서로서 encode 된다. 객체치는,<code>value</code> 의 순서로서 encode 된다 </td>
+    </tr>
+  </tbody>
+</table>
+<p></p>
+<p>객체 ID, 참조형 ID, 필드 ID, 메소드 ID, 및 프레임 ID 는, 타겟 VM 의 구현에 의해 사이즈가 다릅니다. 일반적으로, 그 사이즈는, JNI 및 JVMDI 호출 중(안)에서 사용되는 네이티브 식별자의 사이즈에 대응하고 있습니다. 각 형의 최대 사이즈는, 8 바이트입니다. VirtualMachine 커멘드 세트의 IDSizes 커멘드는, 이러한 각 형의 사이즈를 판별하기 위해서 디버거에 의해 사용됩니다.
+</p>
+<p>debuggee 가, 구현되어 있지 않은 커멘드 세트 또는 커멘드나 인식되어 있지 않은 커멘드 세트 또는 커멘드를 사용한 커멘드 패킷을 받았을 경우, 에러 코드 필드가 NOT_IMPLEMENTED 으로 설정된 응답 패킷을 돌려줍니다 (<a href="../../../platform/jpda/jdwp/jdwp-protocol.html#JDWP_Error">Error 정수</a>  를 참조).
+</p>
+<p></p>
+<h2><a href="../../../platform/jpda/jdwp/jdwp-protocol.html">프로토콜의 상세</a> </h2>
+<p>
+<!-- Body text ends here --><!-- ============================================================== -->
+</p>
+<hr size="3" noshade="noshade">
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr valign="top">
+<td><font size="-2">Copyright &copy; 2004 <a  href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font>&nbsp;
+<p><font size="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/jpda/index.html&category=j2se&mailsubject=Java Platform Debugger Architecture">피드백</A> </font></p>
+      </td>
+<td align="right"><img src="../../../images/sunlogo64x30.gif"  alt="Sun" border="0" width="64" height="30"></td>
+    </tr>
+  </tbody>
+</table>
+&nbsp;
+</body>
+</html>

@@ -1,0 +1,383 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE> Java RMI 에 의한 커스텀 소켓 팩토리의 사용  - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: Ann Wollrath - JavaSoft East, 19-Dec-2001 --> <!-- Changed by: Ann Wollrath - SMI Software Development, 15-Jan-2002 --> <!-- Changed by: Susan Snyder - 10/15/05 -->
+
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077"
+ALINK="#FF0000">
+&nbsp;
+<TABLE BORDER=0 WIDTH="100%" SUMMARY="layout">
+<TR>
+<TD WIDTH="60"></TD>
+
+<TD>
+<UL>
+<CENTER>
+<H1>
+Java<sup><font size=-2>TM</font></sup> RMI 에 의한 커스텀 소켓 팩토리의 사용 
+</H1></CENTER>
+</UL>
+</TD>
+
+<TD width=15% ALIGN=center VALIGN=top>
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>이 튜토리얼에서는, Java<sup><font size=-2>TM</font></sup> Remote Method Invocation (Java RMI)에 의해 커스텀 소켓 팩토리를 구현해 사용하는 순서를 설명합니다. 커스텀 소켓 팩토리는, 원격 메소드 호출이 네트워크 레벨로 통신하는 방법을 제어하기 위해서 사용할 수 있습니다. 예를 들어, 이 커스텀 소켓 팩토리를 사용해, 소켓 옵션의 설정, 주소의 바인드의 제어, 인증에 요구되는 것 같은 접속의 확립의 제어, 및 암호화나 압축등의 데이터의 encode의 제어를 실시할 수가 있습니다.
+
+<P>생성자 이나 <code>java.rmi.server.UnicastRemoteObject</code> 또는 <code>java.rmi.activation.Activatable</code> 의 <code>exportObject</code> 메소드등으로 원격 객체가 export 되는 경우, 커스텀 클라이언트 소켓 팩토리 (<code>java.rmi.server.RMIClientSocketFactory</code> 인스턴스) 및 커스텀 서버 소켓 팩토리 (<code>java.rmi.server.RMIServerSocketFactory</code> 인스턴스)를 지정해, 원격 객체의 원격 호출 통신시에 사용되도록(듯이) 하는 것이 가능합니다.
+
+<P>클라이언트의 소켓 팩토리는, 원격 호출을 개시하기 위해서 사용되는 소켓의 작성을 제어해, 접속이 확립되는 방법과 사용하는 소켓의 타입을 제어하는데 사용할 수 있습니다.
+
+서버의 소켓 팩토리는, 원격 호출을 수신하기 위해서 사용하는 서버 소켓의 작성을 제어하기 위해(때문에), 착신 접속의 대기 및 수락 방법에 가세해 착신 접속에 사용하는 소켓의 타입의 제어에도 사용할 수 있습니다.
+
+<p>원격 객체에 대응하는 원격 Stub에는, 원격 객체가 export 될 때 있으면, 클라이언트의 소켓 팩토리가 포함됩니다. 따라서, 클라이언트의 소켓 팩토리는 직렬화가 가능하다라고 하는 것이 필요하고, 그 코드는, Stub 클래스의 코드나 원격 호출로 건네받는 그 외의 직렬화할 수 있는 객체와 같게, 클라이언트가 다운로드할 수가 있습니다.
+
+<P>또, 커스텀 소켓 팩토리로 레지스트리를 export하기 위한 <code>LocateRegistry.createRegistry</code> 메소드와 커스텀의 클라이언트 소켓 팩토리로 레지스트리에 대응하는 Stub를 취득하기 위한 <code>LocateRegistry.getRegistry</code> 메소드도 있습니다.
+
+<P>(게다가 Java RMI 용의 글로벌 소켓 팩토리도 있는 것에 주의해 주세요. 이것은,<code>java.rmi.server.RMISocketFactory</code> 의 <code>setSocketFactory</code> 메소드로 설정할 수 있습니다. 이 글로벌 소켓 팩토리는, 원격 Stub가 커스텀의 클라이언트 소켓 팩토리를 포함하지 않을 때에 소켓을 작성하는 경우, 및 원격 객체가 커스텀의 서버 소켓 팩토리 첨부로 export 되지 않을 때에 서버 소켓을 작성하는 경우에 사용됩니다.
+
+<P>이 튜토리얼은 다음의 3 개의 부분으로 나누어져 있습니다.
+<BLOCKQUOTE>
+<UL>
+<LI>
+<A HREF="#1">커스텀 소켓 팩토리의 구현</A> </LI>
+
+<LI>
+<A HREF="#2">어플리케이션에서의 커스텀 소켓 팩토리의 사용</A> </LI>
+
+<LI>
+<A HREF="#3">어플리케이션의 컴파일과 실행</A> </LI>
+
+</UL> <P>이 튜토리얼로 사용되고 있는 원시 코드는, 다음의 파일 형식으로부터 선택할 수가 있습니다.
+
+<UL>
+<LI><A HREF="../archives/sockets.zip">sockets.zip</A> 
+<LI><A HREF="../archives/sockets.tar">sockets.tar</A> 
+<LI><A HREF="../../../../technotes/guides/rmi/archives/sockets.tar.Z">sockets.tar.Z</A> 
+</UL>
+</BLOCKQUOTE>
+
+많은 사용자는, 상호 인증이나 암호화등의, Java RMI 클라이언트와 서버간의 안전한 통신에 흥미를 가지고 있습니다. 커스텀 소켓 팩토리에는, 이 때문에의 훅이 준비되어 있습니다. 자세한 것은,<A HREF="SSLInfo.html">「Java RMI 에서의 SSL 의 사용」</a>을 참조해 주세요.
+
+<P>
+<HR>
+<H2>
+<A NAME="1"></A> 커스텀 소켓 팩토리의 구현</H2>
+다음의 3 개의 스텝에서, 한 벌의 커스텀 소켓 팩토리 클래스를 구현합니다.
+<OL>
+<LI>
+<A HREF="#11">커스텀 <code>ServerSocket</code> 와 <code>Socket</code> 를 구현한다</A> </LI>   
+
+<LI>
+<A HREF="#12">커스텀 <code>RMIClientSocketFactory</code> 를 구현한다</A> </LI>
+
+<LI>
+<A HREF="#13">커스텀 <code>RMIServerSocketFactory</code> 를 구현한다</A> </LI>
+</OL>
+
+<BLOCKQUOTE>
+<H3>
+<A NAME="11"></A> 스텝 1:<BR>커스텀 <code>ServerSocket</code> 와 <code>Socket</code> 를 구현한다</H3>
+사용하는 소켓의 타입은, 어플리케이션의 스펙에 의해 정해집니다. 서버가 기밀 데이터를 송신 또는 수신하는 경우는, 데이터를 암호화하는 소켓을 선택합니다.
+
+<P>이 예의 커스텀 소켓 팩토리는, 단순한 XOR 암호화 및 암호 해독을 실행하는 소켓을 생성합니다. 이런 종류의 암호화는, 암호 해독의 지식이 있는 사람이면 간단하게 해독됩니다만, 여기에서는 예를 단순하게 하기 위해서 사용합니다.
+
+<p>커스텀 XOR 소켓의 구현에는, 다음의 소스가 포함됩니다. XOR 소켓은, 특수한 입력과 출력의 스트림 구현을 사용해, 소켓에 대해서 읽고 쓰기되는 데이터의 XOR 처리를 실시합니다.
+<ul>
+<li><a href="code/XorInputStream.java"><code>XorInputStream.java</code></a> 
+<li><a href="code/XorOutputStream.java"><code>XorOutputStream.java</code></a> 
+<li><a href="code/XorServerSocket.java"><code>XorServerSocket.java</code></a> 
+<li><a href="code/XorSocket.java"><code>XorSocket.java</code></a> 
+</ul>
+
+<H3>
+<A NAME="12"></A> 스텝 2:<BR>커스텀 <code>RMIClientSocketFactory</code> 를 구현한다</H3>
+
+클라이언트측 소켓 팩토리 <code>XorClientSocketFactory</code> 는,<code>java.rmi.server.RMIClientSocketFactory</code> 인터페이스를 구현합니다. 클라이언트 소켓 팩토리는,<code>createSocket</code> 메소드를 구현해, 적절한 클라이언트 소켓 인스턴스 <code>XorSocket</code> 를 돌려줄 필요가 있습니다.
+
+<p>클라이언트 소켓 팩토리는,<code>java.io.Serializable</code> 인터페이스를 구현해, 인스턴스가 원격 Stub의 일부로서 클라이언트에 직렬화 되도록(듯이) 할 필요가 있습니다. 게다가<code>equals</code> 메소드와 <code>hashCode</code> 메소드를 구현해, Java RMI 구현이, 동등의 클라이언트 소켓 팩토리를 사용하는 원격 Stub의 인스턴스간에 자원을 올바르게 공유할 수 있도록(듯이) 하는 일도 필수입니다.
+
+<pre>
+package examples.rmisocfac;
+
+import java.io. *;
+import java.net. *;
+import java.rmi.server. *;
+
+public class XorClientSocketFactory
+    implements RMIClientSocketFactory, Serializable {
+
+    private byte pattern;
+
+    public XorClientSocketFactory(byte pattern) {
+	this.pattern = pattern;
+    }
+    
+    public Socket createSocket(String host, int port)
+	throws IOException
+    {
+	return new XorSocket(host, port, pattern);
+    }
+    
+    public int hashCode() {
+	return (int) pattern;
+    }
+
+    public boolean equals(Object obj) {
+	return (getClass() == obj.getClass() &&
+		pattern == ((XorClientSocketFactory) obj). pattern);
+    }
+}
+</pre>
+
+<h3>
+<A NAME="13"></A> 스텝 3:<BR>커스텀 <code>RMIServerSocketFactory</code> 를 구현한다</H3>
+
+서버측 소켓 팩토리 <code>XorServerSocketFactory</code> 는,<code>java.rmi.server.RMIServerSocketFactory</code> 인터페이스를 구현합니다. 서버 소켓 팩토리는,<code>createServerSocket</code> 메소드를 구현해, 적절한 서버 소켓 인스턴스 <code>XorServerSocket</code> 를 돌려줄 필요가 있습니다.
+
+<P>서버 소켓 팩토리의 인스턴스는 원격 Stub내에 포함되지 않기 때문에, 서버 소켓 팩토리는 <code>Serializable</code> 인터페이스를 구현할 필요는 없습니다. <code>equals</code> 메소드와 <code>hashcode</code> 메소드를 구현해, Java RMI 구현이, 동등의 소켓 팩토리로 export 된 원격 객체간에 자원을 올바르게 공유할 수 있도록(듯이) 하는 일도, 계속 필수입니다.
+
+<pre>
+package examples.rmisocfac;
+
+import java.io. *;
+import java.net. *;
+import java.rmi.server. *;
+
+public class XorServerSocketFactory
+    implements RMIServerSocketFactory {
+
+    private byte pattern;
+
+    public XorServerSocketFactory(byte pattern) {
+	this.pattern = pattern;
+    }
+    
+    public ServerSocket createServerSocket(int port)
+	throws IOException
+    {
+	return new XorServerSocket(port, pattern);
+    }
+    
+    public int hashCode() {
+	return (int) pattern;
+    }
+
+    public boolean equals(Object obj) {
+	return (getClass() == obj.getClass() &&
+		pattern == ((XorServerSocketFactory) obj). pattern);
+    }
+
+}
+</pre>
+</blockquote>
+<HR>
+<H2>
+<A NAME="2"></A> 어플리케이션에서의 커스텀 소켓 팩토리의 사용</H2>
+
+원격 객체용의 커스텀 소켓 팩토리를 사용하는데 필요한 추가의 스텝은, 2 개(살) 뿐입니다.
+<OL>
+<LI> 
+커스텀의 <code>RMIClientSocketFactory</code> 및 <code>RMIServerSocketFactory</code> 구현을 사용하는 원격 객체를 작성해 export 하는, 서버 어플리케이션을 작성한다. 원격 객체의 Stub에의 참조를 Java RMI 레지스트리에 보존해, 클라이언트가 그것을 검색할 수 있도록(듯이) 한다
+<p>
+<LI>
+원격 객체의 Stub를 검색해 원격 메소드를 호출하는 클라이언트 어플리케이션을 작성한다. 커스텀 소켓 팩토리는, 클라이언트 어플리케이션내에서 참조될 필요는 없다. 클라이언트가 원격 객체의 Stub를 검색하면(자), 클라이언트측 소켓 팩토리가 클라이언트에 다운로드된다
+</OL>
+<BLOCKQUOTE> <H3> 스텝 1: <BR>서버 어플리케이션을 작성한다</H3>
+
+원격 객체와의 통신으로 커스텀 소켓을 사용할 필요가 있는 경우는, 원격 객체를 export 할 경우에 사용하는 커스텀 소켓 팩토리를 지정할 필요가 있습니다. 커스텀 소켓 팩토리를 지정하는 원격 객체가 어플리케이션으로부터 export 되면(자), Java RMI 런타임은, 대응하는 커스텀의 <code>RMIServerSocketFactory</code> 를 사용해, 그 원격 객체에의 착신 호출을 받아들이기 위한 서버 소켓을 작성합니다. 또, 대응하는 커스텀의 <code>RMIClientSocketFactory</code> 를 포함한 Stub도 작성합니다. 이 클라이언트 소켓 팩토리는, 그 Stub를 사용하는 원격 객체에의 원격 호출을 기동할 경우에 접속을 작성하기 위해서 사용됩니다.
+
+
+<p>이 예는,<a href="../hello/hello-world.html">「Java RMI 입문」</a>튜토리얼의 예를 닮아 있습니다만,RMI 구현이 사용하는 디폴트의 소켓은 아니고, 커스텀 소켓 팩토리를 사용합니다.
+
+<p>이 어플리케이션은, 다음의 <code>Hello</code> 원격 인터페이스를 사용합니다.
+
+<pre>
+package examples.rmisocfac;
+
+public interface Hello extends java.rmi.Remote {
+    String sayHello() throws java.rmi.RemoteException;
+}
+</pre>
+
+이 서버 어플리케이션은,<code>Hello</code> 원격 인터페이스를 구현하는 원격 객체를 작성해 export 해, 커스텀 소켓 팩토리를 인수에 있는 <code>java.rmi.server.UnicastRemoteObject.exportObject</code> 메소드를 사용해 소켓 팩토리를 사용합니다. 다음에, 로컬 레지스트리를 작성해, 그 레지스트리내에서, 원격 객체의 Stub에의 참조를 「Hello」라고 하는 이름으로 바인드 합니다.
+
+
+<pre>
+package examples.rmisocfac;
+
+import java.io. *;
+import java.rmi. *;
+import java.rmi.server. *;
+import java.rmi.registry. *;
+
+public class HelloImpl implements Hello {
+  
+    public HelloImpl() {}
+
+    public String sayHello() {
+        return  "Hello World! ";
+    }
+  
+    public static void main(String args[]) {
+
+	if (System.getSecurityManager() == null) {
+	    System.setSecurityManager(new SecurityManager());
+	}
+	
+        byte pattern = (byte) 0xAC;
+	try {
+	    /*
+	     * Create remote object and export it to use
+	     * custom socket factories.
+	     */
+	    HelloImpl obj = new HelloImpl();
+	    RMIClientSocketFactory csf = new XorClientSocketFactory(pattern);
+	    RMIServerSocketFactory ssf = new XorServerSocketFactory(pattern);
+	    Hello stub =
+		(Hello) UnicastRemoteObject.exportObject(obj, 0, csf, ssf);
+	    
+	    /*
+	     * Create a registry and bind stub in registry.
+	     *
+	    LocateRegistry.createRegistry(2002);
+	    Registry registry = LocateRegistry.getRegistry(2002);	
+	    registry.rebind("Hello", stub);
+	    System.out.println("HelloImpl bound in registry");
+	    
+	} catch (Exception e) {
+	    System.out.println("HelloImpl exception: " + e.getMessage());
+	    e.printStackTrace();
+	}
+    }
+} 
+</pre>
+<H3>
+스텝 2: <BR>클라이언트 어플리케이션을 작성한다</H3>
+<p>
+클라이언트 어플리케이션은, 서버 어플리케이션이 사용하는 레지스트리에의 참조를 가져옵니다. 다음에, 원격 객체의 Stub를 검색해, 원격 메소드 <code>sayHello</code> 를 호출합니다.
+
+<pre>
+package examples.rmisocfac;
+
+import java.rmi. *;
+import java.rmi.registry. *;
+
+public class HelloClient {
+
+    public static void main(String args[]) {
+
+	if (System.getSecurityManager() == null) {
+	    System.setSecurityManager(new SecurityManager());
+	}
+
+        try {
+	    Registry registry = LocateRegistry.getRegistry(2002);
+            Hello obj = (Hello) registry.lookup("Hello");
+            String message = obj.sayHello();
+            System.out.println(message);
+
+        } catch (Exception e) {
+	    System.out.println("HelloClient exception: " +
+                               e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+}
+</pre>
+</blockquote>
+<P>
+<HR>
+<H2>
+<A NAME="3"></A> 어플리케이션의 컴파일과 실행</H2>
+
+<P>어플리케이션의 컴파일 및 실행은, 다음의 4 개의 스텝에서 실시합니다.
+<OL>
+	<LI><A HREF="#C1">원격 인터페이스, 클라이언트, 및 서버의 각 클래스를 컴파일 한다</A> 
+
+<LI><A HREF="#C2">구현 클래스상에서 <code>rmic</code> 를 실행한다 (옵션)</A> 
+
+	<LI><A HREF="#C3">서버를 기동한다</A> 
+
+	<LI><A HREF="#C4">클라이언트를 실행한다</A> 
+
+</OL>
+
+<blockquote>
+<P><A NAME="C1"></A> <B><FONT SIZE=+1>스텝 1:</FONT></B> <BR><B><FONT SIZE=+1>원격 인터페이스, 클라이언트, 및 서버의 각 클래스를 컴파일 한다</FONT></B>
+
+<pre>
+javac -d .  XorInputStream.java
+javac -d .  XorOutputStream.java
+javac -d .  XorSocket.java
+javac -d .  XorServerSocket.java
+javac -d .  XorServerSocketFactory.java
+javac -d .  XorClientSocketFactory.java
+javac -d .  Hello.java
+javac -d .  HelloClient.java
+javac -d .  HelloImpl.java 
+</pre>
+
+<P><A NAME="C2"></A> <B><FONT SIZE=+1>스텝 2:</FONT></B> <BR><B><FONT SIZE=+1>구현 클래스상에서 <code>rmic</code> 를 실행한다 (옵션)</FONT></B>
+
+<p><b>주:</b> 원격 객체의 클래스에 대응하는 Stub 클래스를 사전에 생성하기 위한 <code>rmic</code> 는, 원격 객체가 릴리스 5.0 보다 전의 클라이언트를 지원할 필요가 있는 경우에만 실행할 필요가 있습니다. 릴리스 5.0 에서는, 원격 객체의 export시에 그 원격 객체의 클래스에 대응하는 사전 생성의 Stub 클래스를 로드할 수 없으면 원격 객체의 Stub 클래스가 동적으로 생성됩니다.
+<pre>rmic -d .  examples.rmisocfac.HelloImpl</pre>
+
+<P><A NAME="C3"></A> <B><FONT SIZE=+1>스텝 3:</FONT></B> <BR><B><FONT SIZE=+1>서버를 기동한다</FONT></B>
+
+<pre>java -Djava.security.policy=policy examples.rmisocfac.HelloImpl</pre>
+
+<P>서버측의 출력은, 다음과 같이 됩니다.
+
+<pre>
+      HelloImpl bound in registry
+</pre>
+<BR><p><A NAME="C4"></A> <B><FONT SIZE=+1>스텝 4:</FONT></B> <BR><B><FONT SIZE=+1>클라이언트를 실행한다</FONT></B>
+
+<p>다른 윈도우로 클라이언트 어플리케이션을 기동해, 어플리케이션의 클래스가 다음의 클래스 패스내에 있는 것을 확인합니다.
+
+<pre>java -Djava.security.policy=policy examples.rmisocfac.HelloClient</pre>
+
+
+<P>클라이언트측의 출력은 다음과 같이 됩니다.
+
+<pre>
+      Hello World!   </pre>
+
+<p><b><i>주:</i></b> 이 서버 어플리케이션과 클라이언트 어플리케이션은 어느쪽이나, 시큐리티 정책 파일을 사용해, 로컬의 클래스 패스 (커런트 디렉토리) 내의 파일에의 액세스권만을 부여합니다. 서버 어플리케이션은 접속을 받아들이는 권한을 필요로 해, 서버 어플리케이션과 클라이언트 어플리케이션의 양쪽 모두가, 접속을 작성하는 권한을 필요로 합니다. 지정된 코드 베이스 URL (커런트 디렉토리로부터의 상대 위치를 나타내는 「file:」URL)에 액세스권 <code>java.net.SocketPermission</code> 가 부여됩니다. 이 액세스권에서는, 특권을 가지지 않는 포트 (1024 이상의 포트) 상에서, 임의의 호스트로부터의 접속을 받아들이는 것, 및 임의의 호스트에게로의 접속을 실시하는 것이 허가됩니다.
+
+<pre>
+grant codeBase "file:. " {
+
+    permission java.net.SocketPermission "*:1024-", "connect, accept";
+};
+</pre>
+
+<br>
+</blockquote>
+
+<P>레지스트리의 통신을 보호하는 등, 레지스트리에의 통신은, 적절한 커스텀 소켓 팩토리를 <code>LocateRegistry.createRegistry</code> 및 <code>LocateRegistry.getRegstry</code> 호출에 건네주는 것에 의해, 커스터마이즈 합니다.
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A  HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64  HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

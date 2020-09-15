@@ -1,0 +1,195 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Collections Framework 의 개요 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH=60>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>Collections Framework 의 개요</h1>
+</center>
+</TD>
+
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+<h3>처음에</h3>
+
+Java 2 플랫폼에는,<i>Collections Framework</i> 가 추가되었습니다. 컬렉션이란, 객체의 그룹을 나타내는 객체 (고전적인 <a href="../../../api/java/util/Vector.html">Vector</a>  클래스등)입니다. <i></i>Collections Framework 란, 컬렉션을 나타내거나 조작하거나 하는, 통일된 아키텍쳐(architecture)로, 실제의 표현의 상세하게 의존하지 않는 방법으로 컬렉션을 조작할 수가 있습니다.
+
+<p>Collections Framework 의 주된 이점은, 다음과 같습니다.
+
+<ul>
+<li><strong>프로그래밍의 노력의 경감</strong> - 유용한 데이터 구조와 알고리즘이 제공되고 있기 (위해)때문에, 새롭게 기술할 필요가 없다
+
+<li><strong>퍼포먼스의 향상</strong> - 유용한 데이터 구조와 알고리즘의 고성능인 구현이 제공되고 있다. 각 인터페이스의 여러가지 구현은, 서로 교환할 수 있기 (위해)때문에, 구현을 교환하는 것만으로 프로그램을 간단하게 튠 업 할 수 있다
+
+<li><strong>관련성이 없는 API 간의 상호 운용이 가능</strong> - 컬렉션의 수수를 가능하게 하는 공통 언어가 확립되어 있다
+
+<li><strong>API 의 학습에 필요한 노력을 경감</strong> - 특정의 장면에서만 필요한 컬렉션 API 를 얼마든지 배울 필요가 없다
+
+<li><strong>API 의 설계와 구현에 필요한 노력을 경감</strong> - 특정의 장면에서만 필요한 컬렉션 API 를 작성하는 수고를 생략한다
+
+<li><strong>소프트웨어의 재사용을 촉진</strong> - 컬렉션이나 알고리즘을 조작하기 위한 인터페이스를 제공한다
+</ul>
+
+<p>Collections Framework 는, 이하의 요소로 구성됩니다.
+
+<ul>
+<li><strong>컬렉션 인터페이스</strong> - 세트, 리스트, 및 맵 등, 종류 마다 다른 컬렉션을 나타낸다. 이러한 인터페이스가, 시스템의 기초를 구성한다
+
+<li><strong>범용의 구현</strong> - 컬렉션 인터페이스의 주구현
+
+<li><strong>유산 구현</strong> - <tt>Vector</tt> 나 <tt>Hashtable</tt> 등, 이전에 릴리스 된 컬렉션 클래스가 개량되어, 컬렉션 인터페이스를 구현했다
+
+<li><strong>특수 목적의 구현</strong> - 특수한 상황으로 사용하기 위한 구현. 이러한 구현은, 비표준의 성능, 사용 제약, 동작을 표시
+
+<li><strong>병렬 구현</strong> - 고도의 병렬 사용으로 사용하기 위한 구현
+
+<li><strong>래퍼 구현</strong> - 다른 구현에, 동기화등의 기능을 추가한다
+
+<li><strong>간이 구현</strong> - 컬렉션 인터페이스의 고성능인 「미니 구현」
+
+<li><strong>추상 구현</strong> - 커스텀 구현을 용이하게 하는, 컬렉션 인터페이스의 부분 구현
+
+<li><strong>알고리즘</strong> - 리스트의 소트 등, 컬렉션에 대해, 유용한 기능을 실행하는 정적 메소드
+
+<li><strong>인프라스트럭쳐(infrastructure)</strong> - 컬렉션 인터페이스의 근간을 지원하는 인터페이스
+
+<li><strong>배열 유틸리티</strong> - 프리미티브(primitive) 배열 및 참조 객체 배열용의 유틸리티 기능. 엄밀하게 말하면, 이 기능은 Collections Framework 의 일부에서는 없지만, Collections Framework 와 동시기에 Java 플랫폼에 추가되어 같은 인프라스트럭쳐(infrastructure)에 의존하고 있다
+</ul>
+
+<hr>
+<h3>컬렉션 인터페이스</h3>
+
+14 의 컬렉션 인터페이스가 있습니다. <i></i>
+
+무엇보다 기본적인 인터페이스는,<tt>Collection</tt> 입니다. <tt>
+
+<tt>Collection</tt> 를 확장하는 것은, 인터페이스 <tt>Set</tt>,<tt>List</tt>,<tt>SortedSet</tt>,<tt>NavigableSet</tt>,<tt>Queue</tt>,<tt>Deque</tt>,<tt>BlockingQueue</tt>,<tt>BlockingDeque</tt> 입니다.
+
+다른 컬렉션 인터페이스,<tt>Map</tt>,<tt>SortedMap</tt>,<tt>NavigableMap</tt>,<tt>ConcurrentMap</tt>,<tt>ConcurrentNavigableMap</tt> 는, 진정한 의미에서의 컬렉션은 아니고 매핑 표현이기 (위해)때문에,<tt>Collection</tt> 를 확장하지 않습니다. 다만, 이러한 인터페이스에는 collection-view 오퍼레이션이 포함되어 있기 (위해)때문에, 컬렉션으로서 조작하는 것이 가능합니다.
+
+<p>컬렉션 인터페이스의 변경 메소드가 많게는, 「생략 가능」이라고 하는 라벨이 붙어 있습니다. <i></i>구현에 따라서는, 몇개의 오퍼레이션이 실행되지 않는 것이 있습니다.  실행하려고 하면(자), 실행시 예외 (<tt>UnsupportedOperationException</tt>)가 throw 됩니다. 구현의 문서에는, 구현으로 지원되는 옵션의 오퍼레이션을 기술할 필요가 있습니다. 이 스펙을 이해하기 위한 돕고로서 몇개의 용어가 도입되고 있습니다.
+
+<ul>
+<li>변경 조작 (<tt>add</tt>,<tt>remove</tt>, 및 <tt>clear</tt> 등)을 지원하지 않는 컬렉션을 「변경 불가능」이다고 한다. 변경 불가능하지 않는 컬렉션을 「변경 가능」이다고 한다
+
+<li><tt>Collection</tt> 객체내에 어떠한 변경도 보여지지 않는 것을 보증하는 컬렉션은, 「불변」이다고 한다. 불변이 아닌 컬렉션을 「가변」이다고 한다
+
+<li>요소는 변화해도, 사이즈가 정수치인 것이 보증된 리스트는, 「고정 사이즈」이다고 한다. 고정 사이즈가 아닌 리스트는, 「가변 사이즈」이다고 한다</i>
+
+<li>고속 (일반적으로은 일정시간) 인덱스가 붙은 요소의 액세스를 지원하는 리스트는, 「랜덤 억세스」리스트로 불립니다. 고속 인덱스가 붙은 요소의 액세스를 지원하지 않는 리스트는, 「차례차례 액세스」리스트로 불립니다. 랜덤 억세스를 지원하는 것을 통지하기 위한 리스트를 나타내기 위해서(때문에),<tt><a href="../../../api/java/util/RandomAccess.html">RandomAccess</a> </tt> 마커 인터페이스가 제공됩니다. 이것에 의해 범용 알고리즘이 랜덤 억세스 리스트 또는 차례차례 액세스 리스트의 어느 쪽인가에 적용될 때, 그 동작을 변경해 퍼포먼스를 향상할 수가 있습니다.
+
+</ul><p>
+
+구현에 따라서는, 포함하는 요소 (<tt>Maps</tt> 의 경우는 키 및 값)를 한정하는 경우가 있습니다. 요소를 한정하는 조건에는, 다음과 같은 것이 있습니다.
+
+<ul>
+<li>특정의 형태
+<li><tt>null</tt> 이외
+<li>임의에 선택한 있는 술어에 적합
+</ul>
+
+<p>구현의 제한으로 적합하지 않는 요소를 추가하려고 하면(자), 실행시 예외가 발생합니다.  전형적인 실행시 예외에는,<tt>ClassCastException</tt>,<tt>IllegalArgumentException</tt>, 또 <tt>NullPointerException</tt> 가 있습니다. 구현의 제한으로 적합하지 않는 요소를 삭제 또는 테스트하려고 하면(자), 「제한부의 컬렉션」의 어떤 것인가가 그 사용법을 허가하고 있다고 해도, 예외가 발생합니다. <p>
+
+<hr>
+<h3>컬렉션의 구현</h3>
+
+일반적으로, 컬렉션 인터페이스를 구현하는 클래스는, &lt;<em>Implementation-style</em>&gt;&lt;<em>Interface</em>&gt; 라고 하는 형식의 이름을 가집니다. 이하의 겉(표)에, 범용의 구현의 개요를 나타냅니다. <br>&nbsp; <br>&nbsp;
+
+<table border=2 summary="general purpose implementations and interfaces" align=center>
+<thead><th colspan=2 rowspan=2 align=center border=0>&nbsp; </th>
+<th colspan=5><font size=+1>구현</font></th>
+<tr>
+<th>해시 테이블</th><th>사이즈 변경 가능한 배열</th>
+<th>밸런스 트리</th><th>링크 리스트</th>
+<th>Hash Table + Linked List</th>
+</tr>
+
+<tr><th rowspan=4><font size=+1>인터페이스</font></th>
+<th>Set</th><td><a href="../../../api/java/util/HashSet.html"><tt>HashSet</tt></a> </td>
+   <td>&nbsp;  </td>
+<td><a href="../../../api/java/util/TreeSet.html"><tt>TreeSet</tt></a>  </td>
+   <td>&nbsp;  </td>
+<td><a href="../../../api/java/util/LinkedHashSet.html"><tt>LinkedHashSet</tt></a>  </td>
+</tr>
+
+<tr><th>List</th><td>&nbsp; </td>
+<td><a href="../../../api/java/util/ArrayList.html"><tt>ArrayList</tt></a> </td>
+   <td>&nbsp; </td>
+<td><a href="../../../api/java/util/LinkedList.html"><tt>LinkedList</tt></a> </td>
+   <td>&nbsp; </td>
+</tr>
+
+<tr><th>Deque</th><td>&nbsp; </td>
+<td><a href="../../../api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> </td>
+   <td>&nbsp; </td>
+<td><a href="../../../api/java/util/LinkedList.html"><tt>LinkedList</tt></a> </td>
+   <td>&nbsp; </td>
+</tr>
+
+<tr><th>Map</th>
+<td><a href="../../../api/java/util/HashMap.html"><tt>HashMap</tt></a> </td>
+   <td>&nbsp; </td>
+<td><a href="../../../api/java/util/TreeMap.html"><tt>TreeMap</tt></a> </td>
+   <td>&nbsp; </td>
+<td><a href="../../../api/java/util/LinkedHashMap.html"><tt>LinkedHashMap</tt></a>  </td>
+</tr>
+</table>
+
+<p>범용의 구현은, 컬렉션 인터페이스의 생략 가능한 오퍼레이션을 모두 지원하고 있습니다. 또, 포함하는 요소에 제한은 없습니다. 이러한 구현은 비동기입니다만,<tt>Collections</tt> 클래스에는,<a href="../../../api/java/util/Collections.html#synchronizedCollection(java.util.Collection)">「동기 래퍼」라고 </a>불리는 정적 팩토리가 포함됩니다. 동기 래퍼는, 동기를 잡지 않는 많은 컬렉션에 동기를 잡는 기능을 추가하기 위해서 사용됩니다. <em></em>신규의 구현에는 모두, 「fail-fast 반복자」가 포함됩니다.  fail-fast 반복자는, 부정한 병렬 변경을 탐지해, 재빠르게, 크리궸페일 합니다.  불규칙한 동작은 하지 않습니다. <p>
+
+<tt>AbstractCollection</tt>,<tt>AbstractSet</tt>,<tt>AbstractList</tt>,<tt>AbstractSequentialList</tt>, 및 <tt>AbstractMap</tt> 클래스는, 코어 컬렉션 인터페이스의 스켈리턴 구현을 제공해, 구현에 필요한 수고를 최소한으로 억제합니다. 이러한 클래스의 API 문서에는, 각 메소드가 어떻게 구현되고 있을지가 설명되고 있기 (위해)때문에, 구현자는, 특정의 구현의 「기본 오퍼레이션」의 퍼포먼스에 근거해, 어느 메소드를 오버라이드(override) 하면(자) 좋은가를 알 수 있습니다.
+
+<p>
+<hr>
+<h3>설계 목표</h3>
+
+<p>설계상의 주요한 목표는, 실제의 사이즈에 대하고, 또보다 중요성의 높은 「개념의 무게」냄새나도 타당한 작음의 API 를 작성하는 것이었습니다. 현재의 Java 프로그래머에게 있어, 이 신기능이 위화감이 없는 것으로 한다고 하는 일도 매우 중요한 점이었습니다.  이 때문에, 기존의 기능을 옮겨놓는 것이 아니라, 기능을 추가할 필요가 있었습니다. 동시에, 이 새로운 API 는, 상기의 이점 모든 것을 제공할 수 있는 것 같은 강력한 것으로 할 필요가 있었습니다.
+
+<p>코어 인터페이스를 작게 유지하기 위해서(때문에), 인터페이스는 이러한 몇 안 되는 차이를 가변, 수정, 사이즈 변경으로서는 파악하지 않습니다. 코어 인터페이스에서의 어떤 종류의 호출은 「생략 가능」이며, 구현은, 특정의 생략 가능한 오퍼레이션에 관해서는 <tt>UnsupportedOperationException</tt> 를 throw 해, 지원하지 않는 것을 나타낼 수 있도록(듯이) 했습니다. 물론, 컬렉션의 구현자는, 구현이 생략 가능한 오퍼레이션 가운데, 어떤 것을 지원하고 있을까를 문서에 명시할 필요가 있습니다.
+
+<p>각 코어 인터페이스내의 메소드의 수를 소수에 유지하기 위해서(때문에), 메소드가 다음의 어떤 것인가의 경우에만, 인터페이스는 메소드를 포함합니다.
+
+<ol>
+<li>실로 「기초적인 오퍼레이션」이다. 즉, 이 메소드를 이용해 다른 메소드를 정의 가능하다
+
+<li>중요한 구현이 그 메소드를 오버라이드(override) 하는 것을 바랄 뿐(만큼)의, 퍼포먼스상의 강력한 이유가 있다
+</ol>
+
+<p>컬렉션의 타당한 표현이, 모두 상호 운용 가능하다 (일)것은 중요한 요건입니다. 이 표현에는 배열이 포함됩니다. 배열은, 언어를 바꾸지 않고 직접 <tt>Collection</tt> 인터페이스를 구현할 수 없습니다. 이 때문에, 시스템에는, 컬렉션을 배열에 덤프 할 수 있는 메소드, 컬렉션이라고 볼 수 있는 배열, 및 컬렉션이라고 볼 수 있는 맵이 포함되어 있습니다. <p>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+   <br> <br>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:collections-comments@java.sun.com">collections-comments@java.sun.com</a> </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+</body>
+</html>

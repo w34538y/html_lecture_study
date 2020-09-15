@@ -1,0 +1,191 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[선두의 항목]</a>  <a href="drivermanager.html">[전의 항목]</a>  <a href="statement.html">[다음의 항목]</a>  <a href="appendixB.html">[마지막 항목]</a> 
+<hr><br>
+ 
+<a name="998071"> </a> 
+<h2> DataSource</h2>
+<p><a name="1002949"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="997347"> </a> 
+<h3>4.1	 DataSource 의 개요</a> </h3>
+<p><a name="999430"> </a> <code>DataSource</code> 객체는, 데이터 소스를 Java 프로그램 언어로 표현한 것입니다. 데이터 소스란, 한마디로 말하면, 데이터를 포함하기 위한 기구입니다. 데이터 소스에는, 대기업전용의 복잡한 데이타베이스 등, 고도의 것도 있고, 행으로 열을 포함한 파일 등, 단순한 것도 있습니다. 데이터 소스는, 원격 서버-위, 로컬 데스크탑 머신상의 머지않아에 존재해도 괜찮습니다. 어플리케이션은 데이터 소스에 액세스 할 때에 접속을 사용합니다만,<code>DataSource</code> 객체는,<code></code>그 인스턴스가 표현하는 데이터 소스에의 접속을 작성하는 팩토리로 간주할 수가 있습니다. <code>DataSource</code> 인터페이스에는, 데이터 소스와의 접속을 확립하기 위한 메소드가 2 개 준비되어 있습니다.
+</p><p><a name="1000190"> </a> 데이터 소스에의 접속을 확립하는 경우, 할 수 있으면 <code>DriverManager</code> 객체는 아니고,<code>DataSource</code> 객체를 사용하는 것을 추천합니다. <code>DriverManager</code> 클래스와 <code>DataSource</code> 인터페이스의 유사점으로서는, 어느쪽이나, 접속 작성용의 메소드, 접속 작성시의 타임 아웃 제한의 취득/설정 메소드, 및 로그용 스트림의 취득/설정 메소드를 갖추고 있는 점을 들 수 있습니다.
+</p><p><a name="1000714"> 다만, 양자의 유사점보다, 차이점 쪽이 중요합니다. <code>DataSource</code> 객체는 <code>DriverManager</code> 객체와 달리, 표현하고 있는 데이터 소스를 식별 및 기술하는 프로퍼티을 갖추고 있습니다. 또,<code>DataSource</code> 객체는, Java<sup><font size=-2>TM</font></sup> Naming and Directory Interfacetm (JNDI) 네이밍 서비스와 제휴해 동작해,<code>DataSource</code> 객체를 사용하는 어플리케이션과는 별개에 작성, 배치, 및 관리됩니다. 드라이버 벤더는,<code>DataSource</code> 인터페이스의 기본 구현 클래스를, 그 JDBC 2.0 또는 3.0 드라이버 제품의 일부로서 제공합니다. 시스템 관리 책임자가 <code>DataSource</code> 객체를 JNDI 네이밍 서비스에 등록하는 순서와 어플리케이션이 JNDI 네이밍 서비스에 등록된 <code>DataSource</code> 객체를 사용해 데이터 소스에의 접속을 취득하는 순서에 대해서는, 이 장의 후반에 설명합니다.
+</p><p><a name="1000683"> </a> <code>DataSource</code> 객체를 JNDI 네이밍 서비스에 등록하는 방법에는,<code>DriverManager</code> 를 사용하는 방법과 비교해, 주로 2 개의 이점이 있습니다. 제 1 에, 어플리케이션내에 드라이버 정보를 하드 코드 할 필요가 없습니다 (<code>DriverManager</code> 에서는 그렇게 할 필요가 있습니다). 프로그래머는, 목적의 데이터 소스에 대한 논리명을 선택해, 그 논리명을 JNDI 네이밍 서비스에 등록할 수가 있습니다. 어플리케이션은 논리명을 사용해, JNDI 네이밍 서비스는 그 논리명에 관련지을 수 있었던 <code>DataSource</code> 객체를 돌려줍니다. 그 <code>DataSource</code> 객체를 사용하면, 거기에 따라 표현되고 있는 데이터 소스에의 접속을 작성할 수 있습니다.
+</p><p><a name="1000217"> </a>  2 번째의 주된 이점은,<code>DataSource</code> 기구를 사용하면, 개발자는 접속 풀이나 분산 트랜잭션(transaction)등의 기능을 활용한 <code>DataSource</code> 클래스를 구현할 수 있다, 라고 하는 점입니다.  접속 풀을 사용하면, 퍼포먼스가 큰폭으로 향상합니다. 왜냐하면, 접속이 요구될 때마다, 새로운 접속을 물리적으로 작성하는 대신에 기존의 접속을 재사용하기 때문입니다. 분산 트랜잭션(transaction) 기능을 사용하면, 어플리케이션은, 대기업의 부하의 높은 데이타베이스 처리를 실행할 수 있게 됩니다.
+</p><p><a name="1000232"> </a>  어플리케이션으로 접속을 취득할 때,<code>DriverManager</code>,<code>DataSource</code> 의 어느 객체를 사용해도 괜찮습니다가, 아득하게 이점이 많은 <code>DataSource</code> 객체를 사용하는 것을 추천합니다.
+</p><a name="999708"> </a> 
+<h4>4.1. 1	 프로퍼티</h4>
+<p><a name="999444"> </a> <code>DataSource</code> 객체에는, 표현하고 있는 실제의 데이터 소스를 식별 및 기술하기 위한 일련의 프로퍼티이 포함됩니다. 그러한 프로퍼티으로서는, 데이터 베이스 서버-의 장소, 데이타베이스의 이름, 서버와의 통신시에 사용하는 네트워크 프로토콜등의 정보를 들 수 있습니다. <code>DataSource</code> 의 프로퍼티은 JavaBeans 의 설계 패턴에 따라, 그 값은 일반적으로,<code>DataSource</code> 객체의 배치시로 설정됩니다.  
+</p><p><a name="999619"> </a>  JDBC 2.0 API 에는, 각종 벤더의 <code>DataSource</code> 구현간의 통일을 꾀하는 목적으로, 일련의 표준 프로퍼티과 그러한 표준명이 규정되고 있습니다. 다음의 겉(표)에, 각 표준 프로퍼티의 표준명, 데이터형, 및 설명을 나타냅니다. 다만, 이러한 프로퍼티의 모든 것을 <code>DataSource</code> 구현으로 지원해야 하는 것은 아닙니다.  이 표의 표준명은, 구현으로 프로퍼티을 지원할 때에 사용해야 할 이름을 나타내고 있는에 지나지 않습니다.
+</p><p><a name="999604"> </a> 
+ 
+<Table Border="3">
+<caption><p><a name="999468"> </a>  표 4.1	 <strong> &#32; &#32;데이터 소스의 표준 프로퍼티</strong>
+</p></caption>
+<tr><th><br><p><a name="999474"> </a>  프로퍼티명
+</p></th><th><br><p><a name="999476"> </a>  형
+</p></th><th><br><p><a name="999478"> </a>  설명
+</p></th></tr>
+<tr><td><br><p><a name="999480"> </a>  <a ><CB>databaseName<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>databaseName</b></b></a> </p></td><td><br><p><a name="999482"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999484"> </a>  어느 서버상의 데이타베이스의 이름
+</p></td></tr>
+<tr><td><br><p><a name="1001055"> </a>  <a ><CB>dataSourceName<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>dataSourceName</b></b></a> </p></td><td><br><p><a name="1001057"> </a>  String
+</p></td><td><br><p><a name="1001059"> </a>  내부적인 <code>XADataSource</code> 객체 또는 <code>ConnectionPoolDataSource</code> 객체의 논리명.  접속 풀 또는 분산 트랜잭션(transaction)가 구현되고 있는 경우에게만 사용
+</p></td></tr>
+<tr><td><br><p><a name="999486"> </a>  <a ><CB>description<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>description</b></b></a> </p></td><td><br><p><a name="999488"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999490"> </a>  이 데이터 소스의 설명
+</p></td></tr>
+<tr><td><br><p><a name="999492"> </a>  <a ><CB>networkProtocol<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>networkProtocol</b></b></a> </p></td><td><br><p><a name="999494"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999496"> </a>  서버와의 통신시에 사용하는 네트워크 프로토콜
+</p></td></tr>
+<tr><td><br><p><a name="999498"> </a>  <a ><CB>password<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>password</b></b></a> </p></td><td><br><p><a name="999500"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999502"> </a>  사용자의 데이타베이스 패스워드
+</p></td></tr>
+<tr><td><br><p><a name="999504"> </a>  <a ><CB>portNumber<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>portNumber</b></b></a> </p></td><td><br><p><a name="999506"> </a>  <code>int</code>
+</p></td><td><br><p><a name="999508"> </a>  서버가 요구를 대기하고 있는 포트의 번호
+</p></td></tr>
+<tr><td><br><p><a name="999510"> </a>  <a ><CB>roleName<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>roleName</b></b></a> </p></td><td><br><p><a name="999512"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999514"> </a>  초기의 SQL 롤명
+</p></td></tr>
+<tr><td><br><p><a name="999516"> </a>  <a ><CB>serverName<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>serverName</b></b></a> </p></td><td><br><p><a name="999518"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999520"> </a>  데이터 베이스 서버-의 이름
+</p></td></tr>
+<tr><td><br><p><a name="999522"> </a>  <a ><CB>user<Default Para Font> <B>프로퍼티 (<CB>DataSource<Default Para Font> <B>인터페이스)>user</b></b></a> </p></td><td><br><p><a name="999524"> </a>  <code>String</code>
+</p></td><td><br><p><a name="999526"> </a>  사용자의 어카운트명
+</p></td></tr>
+
+</Table>
+
+<Table>
+<tr><td>
+</Table>
+
+<p></p><p><a name="999652"> </a>  물론,<code>DataSource</code> 객체는, 표현하고 있는 데이터 소스가 접속 작성시에 필요로 하는 프로퍼티의 모든 것을 지원하고 있을 필요가 있습니다만, 모든 <code>DataSource</code> 구현이 지원해야 할 프로퍼티은,<code>description</code> 뿐입니다. 이러한 프로퍼티의 표준화에 의해, 예를 들어, 사용 가능한 데이터 출처에 도착해, 설명과 그 외의 사용 가능한 프로퍼티 정보를 일람표시 하는 유틸리티를 기술할 수 있게 됩니다.
+</p><p><a name="999722"> <code>DataSource</code> 객체에서는, 표 <a href="datasource.html#997347">4.1</a>  에 기재되지 않은 프로퍼티도 사용할 수 있습니다. 벤더는 독자적인 프로퍼티을 추가할 수 있습니다만, 그 경우, 새로운 프로퍼티의 각각 벤더 고유의 이름을 할당할 필요가 있습니다.
+</p><p><a name="999627"> </a>  어느 <code>DataSource</code> 객체로 프로퍼티을 지원하는 경우, 그 프로퍼티의 <code>getter</code> 메소드와 <code>setter</code> 메소드를, 그 객체에 준비할 필요가 있습니다. 다음의 코드는,<code>DataSource</code> 객체 ds 로 프로퍼티 <code>serverName</code> 를 지원할 때에 필요한 메소드를 나타낸 것입니다.
+</p><blockquote><pre>
+ds.setServerName("my_database_server");
+String serverName = ds.getServerName();
+
+</pre></blockquote><p><a name="999635"> </a>  프로퍼티의 설정은 일반적으로, 개발자 또는 시스템 관리 책임자가, 데이터 소스의 인스톨중에 GUI 툴을 사용해 실시합니다. 데이터 소스에 접속하는 사용자는, 프로퍼티의 취득/설정을 실시하지 않습니다. 이것을 강제하는 목적으로,<code>DataSource</code> 인터페이스에는, 프로퍼티의 <code>getter</code> 메소드 및 <code>setter</code> 메소드가 포함되어 있지 않습니다.  그러한 메소드는 구현내에게만 포함됩니다. <code>getter</code> 메소드 및 <code>setter</code> 메소드를 구현에 포함해 공개 인터페이스에는 포함하지 않는 것으로,<code>DataSource</code> 객체의 관리 API 와 어플리케이션이 사용하는 API 와의 사이로, 어떤 종류의 분리가 실현됩니다. 관리툴로부터 프로퍼티에 액세스 하려면 , 인트로스페크션을 사용합니다.
+</p><a name="1000020"> </a>  <a name="27896"></a> 
+<h4>4.1. 2	 JNDI 의 사용</h4>
+<p><a name="1000021"> </a>  JNDI 는, 어플리케이션내로부터 네트워크 경유로 원격 서비스를 검색해 액세스하기 위한 통일적인 방법을 제공합니다. 원격 서비스로서는, 메시징 서비스나 어플리케이션 고유의 서비스 등, 다양한 기업 서비스가 생각됩니다만, JDBC 어플리케이션에서는 물론, 주로 데이타베이스 서비스를 사용합니다. <code>DataSource</code> 객체의 작성과 JNDI 네이밍 서비스에의 등록이 완료하면(자), 어플리케이션으로부터 JNDI API 경유로 그 <code>DataSource</code> 객체에 액세스 해, 그 객체가 표현하는 데이터 소스에 접속할 수 있게 됩니다.
+</p><a name="1000023"> </a> 
+<h4>4.1. 3	 DataSource 객체의 작성 및 등록</h4>
+<p><a name="1000024"> </a> <code>DataSource</code> 객체는 일반적으로, 그것을 사용하는 Java 어플리케이션과는 별개에 작성, 배치, 및 관리됩니다. 예를 들어, 다음의 코드에서는,<code>DataSource</code> 객체를 작성해, 그 프로퍼티을 설정해, 그것을 JNDI 네이밍 서비스에 등록하고 있습니다. 덧붙여 데이터 소스에 대한 <code>DataSource</code> 객체를 작성 및 배치하는 것은, 사용자는 아니고, 개발자 또는 시스템 관리 책임자입니다. 클래스 <code>VendorDataSource</code> 는 대부분의 경우, 드라이버 벤더에 의해 제공됩니다 (다음의 섹션에서는, 사용자가 접속을 취득할 때에 기술하는 코드의 예를 나타냅니다). 또,<code>DataSource</code> 객체의 배치는 아마 GUI 툴을 사용해 행해지기 (위해)때문에, 주로 설명 목적으로 가리킨 다음의 코드는, 그러한 툴의 내부에서 실행되게 됩니다.
+</p><blockquote><pre>
+VendorDataSource vds = new VendorDataSource();
+<blockquote><pre>
+vds.setServerName("my_database_server");
+vds.setDatabaseName("my_database");
+vds.setDescription("the data source for inventory and personnel");
+
+Context ctx = new InitialContext();
+</pre></blockquote>ctx.bind("jdbc/AcmeDB", vds);
+
+</pre></blockquote><p><a name="1000032"> </a>  최초의 4 행에서는,<code>javax.sql.DataSource</code> 인터페이스를 구현한 벤더 클래스 <code>VendorDataSource</code> 의 API 를 사용하고 있습니다. 이러한 행에서는,<code>DataSource</code> 객체 vds 를 작성해, 그 프로퍼티 <code>serverName</code>,<code>databaseName</code>,<code>description</code> 에 값을 설정해 있습니다. 5 행 째와 6 행 째로는, JNDI API 를 사용해 vds 를 JNDI 네이밍 서비스에 등록하고 있습니다. 5 행 째로는, 디폴트의 <code>InitialContext</code> 생성자 을 호출해, 초기 JNDI 네이밍 문맥을 참조하는 Java 객체를 작성합니다. 덧붙여 여기에서는 소개하고 있었습니다만, 시스템 프로퍼티에 의해, 사용해야 할 네이밍 서비스 프로바이더가 JNDI 에 통지됩니다. 마지막 행에서는, vds 와 그 vds 가 표현하는 데이터 소스의 논리명을, 관련짓고 있습니다.
+</p><p><a name="1000033"> </a>  JNDI 의 이름 공간은, 1 개의 초기 네이밍 문맥과 그 아래에 배치되는 임의의 개수의 서브 문맥으로부터 구성됩니다. 그 구조는, 많은 파일 시스템으로 보여지는 디렉토리/파일 구조에 유사한 계층 구조이며, 초기 문맥은 파일 시스템의 루트에, 서브 문맥은 서브 디렉토리에, 각각 상당합니다. JNDI 계층 루트는 초기 문맥이며, 여기에서는 변수 ctx 로서 표현되고 있습니다. 초기 문맥아래에는 임의의 개수의 서브 문맥을 정의할 수 있습니다만, 그 1 개(살)이 JDBC 데이터 소스용의 예약어(reserved word)인 JNDI 서브 문맥 <code>jdbc</code> 입니다 (데이터 소스의 논리명은, 서브 문맥 <code>jdbc</code> 내인가,<code>jdbc</code> 부하의 서브 문맥내에 정의합니다). 계층내의 마지막 요소는 등록 대상의 객체입니다.  이 객체는 파일에 상당해, 여기에서는 데이터 소스의 논리명이 됩니다. 상기 코드의 6 행을 실행하면(자),<code>VendorDataSource</code> 객체 vds 를 <code>jdbc/AcmeDB</code> 에 관련지을 수 있습니다. 다음의 섹션에서는, 이것을 사용해 어플리케이션내로부터 데이터 소스에 접속하는 방법을 나타냅니다.
+</p><a name="1000034"> </a> 
+<h4>4.1. 4	 데이터 소스에의 접속</h4>
+<p><a name="1000035"> </a>  1 개(살)전의 섹션에서는,<code>DataSource</code> 객체 vds 의 프로퍼티을 설정해, 그 객체를 논리명 <code>AcmeDB</code> 에 관련지었습니다. 다음의 코드에는, 이 논리명을 사용해 vds 가 표현하고 있는 데이타베이스에 접속하는 어플리케이션 코드가 포함되어 있습니다. 계속되어 이 코드에서는, 취득한 접속을 사용해, 판매 부문과 고객 서비스 부문의 종업원의 이름과 직무를 일람표 가리키고 있습니다.
+</p><blockquote><pre>
+Context ctx = new InitialContext();
+<blockquote><pre>DataSource ds = (DataSource) ctx.lookup("jdbc/AcmeDB");
+Connection con = ds.getConnection("genius", "abracadabra");
+con.setAutoCommit(false);
+PreparedStatement pstmt = con.prepareStatement(
+ &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32; &#32;"SELECT NAME, TITLE FROM PERSONNEL WHERE DEPT = ? ");
+pstmt.setString(1, "SALES");
+ResultSet rs = pstmt.executeQuery();
+
+System.out.println("Sales Department:");
+while (rs.next()) {
+ &#32; &#32; &#32; &#32;String name = rs.getString("NAME");
+ &#32; &#32; &#32; &#32;String title = rs.getString("TITLE");
+ &#32; &#32; &#32; &#32;System.out.println(name + "  &#32; &#32;" + title);
+}
+pstmt.setString(1, "CUST_SERVICE");
+ResultSet rs = pstmt.executeQuery();
+
+System.out.println("Customer Service Department:");
+while (rs.next()) {
+ &#32; &#32; &#32; &#32;String name = rs.getString("NAME");
+ &#32; &#32; &#32; &#32;String title = rs.getString("TITLE");
+ &#32; &#32; &#32; &#32;System.out.println(name + "  &#32; &#32;" + title);
+}
+rs.close();
+pstmt.close();
+</pre></blockquote>con.close();
+
+</pre></blockquote><p><a name="1000039"> </a>  최초의 2 행에서는 JNDI API 를, 3 행 째로는 <code>DataSource</code> API 를, 각각 사용하고 있습니다. 최초의 행으로 초기 네이밍 문맥용의 <code>javax.naming.Context</code> 인스턴스를 작성한 뒤, 2 행 째에 그 인스턴스의 메소드 <code>lookup</code> 를 호출하는 것으로,<code>jdbc/AcmeDB</code> 에 관련지을 수 있었던 <code>DataSource</code> 객체를 취득하고 있습니다.  여기서 1 개(살)전의 코드를 생각해 내 주세요. 그 마지막 행으로,<code>jdbc/AcmeDB</code> 와 vds 가 관련지을 수 있고 있었습니다.  따라서,<code>lookup</code> 메소드로부터 반환되는 객체는, vds 가 표현하고 있던 것과 같은 <code>DataSource</code> 객체를 참조하고 있습니다. 다만, 메소드 <code>lookup</code> 의 반환값은, Java 의 가장 총칭적인 객체인 <code>Object</code> 에의 참조입니다.  따라서, 이 반환값은, 보다 특화한 <code>DataSource</code> 에 캐스트 한 후에,<code>DataSource</code> 변수 ds 에 대입할 필요가 있습니다.
+</p><p><a name="1000040"> </a>  이 시점에서, ds 는, 먼저 vds 가 참조하고 있던 것과 같은 데이터 소스 (서버 my_database_server 상의 데이타베이스 my_database)를 참조하고 있습니다. 따라서, 코드의 3 행 째로는, 사용자명과 패스워드를 지정해 ds 의 메소드 <code>DataSource.getConnection</code> 를 호출하고 있습니다.  이것으로, my_database 에의 접속이 작성됩니다.
+</p><p><a name="1001163"> </a>  나머지의 코드에서는, 단일의 트랜잭션(transaction)내에서, 2 개의 쿼리를 실행해, 그 실행 결과를 출력하고 있습니다. 이 경우의 <code>DataSource</code> 구현은, JDBC 드라이버에 첨부되고 있는 기본 구현입니다. 만약 이 <code>DataSource</code> 클래스가 <code>XADataSource</code> 클래스와 제휴 동작하도록(듯이) 구현되고 있어 상기의 샘플 코드가 분산 트랜잭션(transaction)내에서 실행되었다고 하면(자), 그 코드내에서는 메소드 <code>Connection.commit</code> 를 호출할 수 없습니다. 또, 자동 위탁 모드도 <code>false</code> 로 설정되지 않습니다.  그렇다고 하는 것도, 그렇게 할 필요가 없기 때문입니다. 분산 트랜잭션(transaction)에 참가 가능한 접속을 신규 작성했을 경우, 그 접속의 자동 위탁 모드는 디폴트로 오프가 됩니다. 다음의 섹션에서는,<code>DataSource</code> 구현의 3 개의 상당히류에 대해 설명합니다.
+</p><p><a name="1000044"> <code>DataSource</code> 인터페이스에는, </a>사용자명과 패스워드를 지정하는 버젼의 <code>getConnection</code> 에 가세해 파라미터를 1 개나 지정하지 않는 버젼의 메소드 <code>DataSource.getConnection</code> 도 준비되어 있습니다. 이 버젼은, 데이터 소스에 다른 시큐리티 기구가 갖춰지고 있기 위해서(때문에) 사용자명이나 패스워드가 필요없는 경우나, 액세스 제한이 없는 데이터 소스를 사용하는 경우 등에 도움이 됩니다.
+</p><a name="1000109"> </a> 
+<h4>4.1. 5	 DataSource 의 구현</h4>
+<p><a name="1000418"> <code>DataSource</code> 인터페이스의 구현은, 3 종류의 접속을 제공할 수 있습니다. <code>DataSource</code> 객체는 JNDI 서비스 프로바이더와 제휴 동작하기 위해(때문에),<code>DataSource</code> 객체에 의해 생성된 모든 접속은, 높은 이식성과 보수성이라고 하는 이점을 갖추고 있습니다.  이것에 대해서는, 이 장의 후반에 설명합니다. 보다 특수화 된 인터페이스 <code>ConnectionPoolDataSource</code>,<code>XADataSource</code> 와 제휴 동작하는 <code>DataSource</code> 구현은, 풀내에 포함되는 접속이나, 분산 트랜잭션(transaction)내에서 사용 가능한 접속을 생성합니다. <code>DataSource</code> 인터페이스를 구현하는 클래스의 3 개의 상당히류의 개요를, 다음에 열거합니다.
+</p><ol>
+<a name="1001226"> </a> 
+<li>기본 <code>DataSource</code> 클래스
+<ul>
+<a name="1001228"> </a> 
+<li>제공원:드라이버 벤더<a name="1001229"> </a> 
+<li>이점:높은 이식성과 보수성
+</ul>
+<a name="1001227"> </a> 
+<li>접속 풀을 제공하도록(듯이) 구현된 <code>DataSource</code> 클래스
+<ul>
+<a name="1001534"> </a> 
+<li>제공원:제공원: 어플리케이션 서버 벤더 또는 드라이버 벤더<a name="1001540"> </a> 
+<li>제휴 동작:<code>ConnectionPoolDataSource</code> 클래스 (항상 드라이버 벤더가 제공)<a name="1001240"> </a> 
+<li>이점:높은 이식성과 보수성, 퍼포먼스의 향상
+</ul>
+<a name="1001230"> </a> 
+<li>분산 트랜잭션(transaction)를 제공하도록(듯이) 구현된 <code>DataSource</code> 클래스
+<ul>
+<a name="1001249"> </a> 
+<li>제공원:제공원: EJB 서버 벤더등의 어플리케이션 서버 벤더<a name="1001536"> </a> 
+<li>제휴 동작:<code>XADataSource</code> 클래스 (항상 드라이버 벤더가 제공)<a name="1001250"> </a> 
+<li>이점:높은 이식성과 보수성, 분산 트랜잭션(transaction)를 사용 가능<a name="1001507"> </a> 
+<blockquote>분산 트랜잭션(transaction)를 지원하는 <code>DataSource</code> 구현은, 접속 풀도 지원하도록(듯이) 구현되고 있는 경우가 대부분입니다. </blockquote>
+<a name="1001586"> </a> 
+<blockquote></blockquote>
+<p><a name="1001558"> <code>DataSource</code> 인터페이스를 구현한 클래스의 인스턴스는, 단일의 데이터 소스를 표현합니다. 그 인스턴스에 의해 작성된 접속은 모두, 같은 데이터 소스를 참조합니다. </a> 기본 <code>DataSource</code> 구현을 사용하는 경우, 메소드 <code>DataSource.getConnection</code> 의 호출시에 반환되는 <code>Connection</code> 객체는,<code>DriverManager</code> 기구로부터 반환되는 <code>Connection</code> 객체와 같이, 데이터 소스에의 물리적인 접속입니다. JDBC 2.0 표준 확장 API 의 시방서 (<code>http://java.sun.com/products/jdbc</code> 로부터 입수 가능)의 부록 A 에, 기본 <code>DataSource</code> 클래스의 샘플 구현이 기재되어 있습니다.
+</p><p><a name="1001289"> </a>  접속 풀을 구현한 <code>DataSource</code> 객체도 같이, 그 <code>DataSource</code> 클래스가 표현하는 데이터 소스에의 접속을 생성합니다. 다만, 메소드 <code>DataSource.getConnection</code> 로부터 반환되는 <code>Connection</code> 객체는, 물리적인 접속은 아니고,<code>PooledConnection</code> 객체에의 핸들입니다. 어플리케이션은, 이 <code>Connection</code> 객체를 일반적으로의 객체와 같게 사용할 수 있어 양자의 차이를 의식할 필요는 기본적으로 없습니다. 접속 풀이 어플리케이션 코드에 영향을 줄 것은 없습니다.  다만, 풀 된 접속도 다른 접속과 같게, 항상 명시적으로 닫을 필요가 있습니다. 어플리케이션이 풀 된 접속을 닫으면(자), 그 접속은, 재사용 가능한 접속의 풀내에 되돌려집니다. <code>DataSource.getConnection</code> 를 다음번 호출하면(자), 풀내에 사용 가능한 접속이 존재하고 있었을 경우, 그 어느쪽이든에의 핸들이 돌려주어집니다. 접속 풀을 사용하면(자), 접속이 요구될 때마다 물리적인 접속이 작성되는 것이 없어지기 (위해)때문에, 어플리케이션이 큰폭으로 고속화될 가능성이 있습니다. 접속 풀은 일반적으로, 서브 렛이나 JavaServer<sup><font size=-2>TM</font></sup> 페이지를 지원하는 Web 서버등으로 사용됩니다.
+</p><p><a name="1000427"> </a> 또,<code>DataSource</code> 클래스를 분산 트랜잭션(transaction) 환경과 제휴 동작하도록(듯이) 구현하는 일도 가능합니다. 예를 들어, EJB 서버는 분산 트랜잭션(transaction)를 지원하고 있기 (위해)때문에, EJB 서버를 사용하는 경우는, 분산 트랜잭션(transaction)와 제휴 동작하도록(듯이) 구현된 <code>DataSource</code> 클래스가 필요합니다. 그 경우,<code>DataSource.getConnection</code> 메소드는, 분산 트랜잭션(transaction)로 사용 가능한 <code>Connection</code> 객체를 돌려줍니다. 기본적으로, EJB 서버가 제공하는 <code>DataSource</code> 클래스는, 분산 트랜잭션(transaction) 뿐만이 아니라 접속 풀도 지원합니다. 트랜잭션(transaction) 관리는 접속 풀과 같이 내부적으로 처리되기 (위해)때문에, 분산 트랜잭션(transaction)의 사용법은 간단합니다. </a> 다만, 1 개(살)만 제한이 있습니다. 트랜잭션(transaction)를 분산하는 경우 (트랜잭션(transaction)에 복수의 데이터 소스가 관여하는 경우), 메소드 <code>commit</code> 또는 <code>rollback</code> 를 어플리케이션으로부터 호출하지 못하고, 접속을 자동 위탁 모드로 할 수도 있습니다. 이러한 제한이 설치되고 있는 것은, 트랜잭션(transaction) 매니저가 내부적으로 분산 트랜잭션(transaction)의 개시와 종료를 관리하게 되어 있기 때문입니다. 따라서, 어플리케이션은, 트랜잭션(transaction)의 개시나 종료에 영향을 주는 동작을 실행할 수 없습니다.
+</p></ul>
+</ol>
+<a name="1001178"> </a> 
+<h4>4.1. 6	 로그 및 추적</h4>
+<p><a name="1001179"> <code>DataSource</code> 인터페이스에 포함되는 메소드를 사용하면, 사용자는, 추적 정보 및 에러 로그 정보를 기입하기 위한 문자 스트림을 취득/설정할 수 있습니다. 사용자는, 단일 데이터 소스를 단일 스트림상에서 추적할 수도 있고, 복수의 데이터 소스로부터의 로그 메세지를 동일 스트림에 기입할 수도 있습니다. 다만, 후자의 경우, 사용하는 스트림이 각 데이터 소스용으로 설정되어 있을 필요가 있습니다. DataSource</code> 객체에 고유의 로그 스트림에 기입해지는 로그 메세지는,<code>DriverManager</code> 가 관리하는 로그 스트림에는 기입해지지 않습니다.  JNDI 를 사용하는 이점
+</p><a name="1000417"> </a> 
+<h4>4.1. 7	 JNDI 를 사용하는 이점</h4>
+<p><a name="1000110"> </a> <code>DriverManager</code> 기구를 사용하는 방법에 비해, JNDI 네이밍 서비스에 등록된 <code>DataSource</code> 객체를 사용해 데이터 소스에 접속하는 방법의 이점은, 결코 적지는 않습니다. 제 1 에, 코드의 이식성이 높아집니다. <code>DriverManager</code> 를 사용하는 경우, 드라이버 벤더를 식별하는 JDBC 드라이버 클래스명을, 어플리케이션 코드내에 기술합니다. 이 때문에, 그 벤더의 드라이버 제품에 어플리케이션이 의존하게 되어, 어플리케이션의 이식성이 손상됩니다.
+</p><p><a name="1000117"> </a> 이제(벌써) 1 개의 이점은, 코드를 보수하기 쉬워지는 것입니다. </a> 데이터 소스에 관한 필요 정보가 변경되었을 경우, 변경할 필요가 있는 것은 관련하는 <code>DataSource</code> 프로퍼티 뿐이어서, 그 데이터 소스에 접속하는 어플리케이션을 변경할 필요는 전혀 없습니다. 예를 들어, 어느 데이타베이스를 다른 서버로 이동해, 다른 포트 번호를 사용하도록(듯이) 했을 경우, 변경할 필요가 있는 것은, 대응하는 <code>DataSource</code> 객체의 <code>serverName</code> 프로퍼티과 <code>portNumber</code> 프로퍼티 뿐입니다. 시스템 관리 책임자는, 다음의 코드를 사용하는 것으로, 기존 코드의 모든 것을 사용 가능한 상태에 유지할 수가 있습니다. 다만 실제로는, 시스템 관리 책임자는 아마, 어떠한 GUI 툴을 사용해 프로퍼티을 설정할 것입니다.  따라서, 다음의 코드는, 그러한 툴이 내부적으로 실행해야 할 코드를 나타내고 있습니다.
+</p><blockquote><pre>
+Context ctx = new InitialContext()
+<blockquote><pre>DataSource ds = (DataSource) ctx.lookup("jdbc/AcmeDB");
+ds.setServerName("my_new_database_server");
+</pre></blockquote>ds.setPortNumber("940");
+
+</pre></blockquote><p><a name="1001212"> </a>  어플리케이션 프로그래머가 아무것도 하지 않아도, 이 데이터 소스를 사용하는 모든 어플리케이션이 계속 문제 없게 동작합니다.  </a>  그 밖에도 아직 이점이 있습니다.
+</p><p><a name="1000370"> 사용하는 <code>DataSource</code> 클래스가 접속 풀을 지원하도록(듯이) 구현되고 있었을 경우, 그 <code>DataSource</code> 객체를 사용해 접속을 취득하는 어플리케이션은, 자동적으로 접속 풀의 혜택을 향수할 수 있습니다. 같이 사용하는 <code>DataSource</code> 클래스가 분산 트랜잭션(transaction)를 지원하도록(듯이) 구현되고 있었을 경우, 어플리케이션은 자동적으로 분산 트랜잭션(transaction)를 사용할 수 있습니다.
+</p><p><a name="998114"> </a> 
+
+</p>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[선두의 항목]</a>  <a href="drivermanager.html">[전의 항목]</a>  <a href="statement.html">[다음의 항목]</a>  <a href="appendixB.html">[마지막 항목]</a> 
+<hr><br>
+ 
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 2001, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

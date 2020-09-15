@@ -1,0 +1,86 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>가베지 컬렉션 인간공학 - xrath.com 에서 번역됨</title>
+</head>
+<body>
+<center>
+<h2>가비지 컬렉터의 인간공학</h2>
+</center>
+
+J2SE 5.0 에서는, 이하의 변경이 실시되고 있습니다.
+<ol>
+  <li> 
+<p><b>서버 VM</b> 를 실행하고 있는<a href="server-class.html">서버 클래스 </a>머신에서는, 가비지 컬렉터 (GC)가, 지금까지의 시리얼 수집가 (<code>-XX:+UseSerialGC</code>)로부터 패러렐 수집가 (<code>-XX:+UseParallelGC</code>)로 변경되었습니다. 이 디폴트는,<code>-XX:+UseSerialGC</code> 커멘드행 옵션을 사용해 <code>java</code> 커멘드에 오버라이드(override) 할 수 있습니다.  </p>
+  
+<li>패러렐 가비지 컬렉터 (<code>-XX:+UseParallelGC</code>)를 사용해<b>어느 쪽인가의 VM</b> (클라이언트나 서버)를 실행하는<a href="server-class.html">서버 클래스 </a>머신에서는, 초기 heap 사이즈와 최대 heap 사이즈가 이하와 같이 변경되었습니다.  
+    <p> 
+    <dl> 
+<dt> <b>초기 heap 사이즈:</b> 
+      <dd> 
+<p> 머신의 물리 메모리의 것 1/64 인가, 타당한 최소 사이즈인가의 큰 (분)편. J2SE 5.0 보다 전은, 디폴트의 초기 heap 사이즈는 타당한 최소 사이즈로, 플랫폼 마다 차이가 났다. 이 디폴트는,<code>-Xmx</code> 커멘드행 옵션을 사용해 오버라이드(override)가 가능</p>
+<dt> <b>최대 heap 사이즈:</b> 
+      <dd> 
+<p> 물리 메모리의 것 1/4 인가, 1GB 인가 가 작은 (분)편. J2SE 5.0 보다 전의 디폴트의 최대 heap 사이즈는 64MB. 이 디폴트는,<code>-Xmx</code> 커멘드행 옵션을 사용해 오버라이드(override)가 가능 </p>
+    </dl>
+    <p> 
+    <hr>
+<b>주:</b>heap 사이즈에 대해서 주어진 경계와 분수는, J2SE 5.0 에 대해서 적절합니다. 이것은, 컴퓨터가 보다 고성능이 되는 것에 따라, 향후의 릴리스로 변경될 가능성이 있습니다.  <br>
+    <hr>
+    <br>
+  <li> 
+<p>패러렐 가비지 컬렉터 (<code>UseParallelGC</code>)는, 소량의 heap의 컬렉션에 시간이 너무 걸리면(자), 메모리 부족의 예외를 throw 합니다. heap 사이즈를 크게 하면(자), 이 예외를 회피할 수 있습니다. 파라미터의 <code>-XX:GCTimeLimit=</code><em>time-limit</em> 및 <code>-XX:GCHeapFreeLimit=</code><em>space-limit</em> 를 설정할 수도 있습니다.  time-limit 와 space-limit 는 각각 이하의 내용을 나타냅니다.  </p>
+    <p> 
+    <dl> 
+<dt> <em><b>time-limit</b></em><b>:</b></dt>
+<dd> 가베지 컬렉션에 필요로 하는 시간의 상한을, 합계 시간에 대한 비율로 가리킨다 (디폴트는 98)</dd>
+<dt><em><b>space-limit</b></em><b>:</b> 
+<dd> 가베지 컬렉션간에 해제되는 스페이스량의 하한을, 최대 heap에 대한 비율로 가리킨다 (디폴트는 2) <br> <br> <br> <br>
+    </dl>
+  </li>
+<li><code>-XX:+UseParallelGC</code> 가비지 컬렉터와 함께 디폴트로 사용된다 <code>-XX:+UseAdaptiveSizePolicy</code> 의 구현이, 이하의 3 개의 목표를 고려해 변경되었습니다. </li>
+</ol>
+<ol>
+  <ul>
+<li>바람직한 최대 GC 의 일시정지 목표 
+<li>바람직한 어플리케이션의 throughput 목표 
+<li>최소 점유 스페이스 
+  </ul>
+</ol>
+<blockquote> 
+<p> 구현에서는 이하를 (이 순서로) 체크합니다.  </p>
+</blockquote>
+<ol>
+  <ol>
+<li>GC 의 일시정지 시간이 일시정지 목표보다 긴 경우는, 세대 사이즈를 작게 해 목표를 달성한다 
+<li>일시정지 목표를 달성했을 경우는, 어플리케이션의 throughput 목표를 검토한다. 어플리케이션의 throughput 목표를 달성하지 않는 경우는, 세대 사이즈를 크게 해 목표를 달성한다 
+<li>일시정지 목표와 throughput 목표의 양쪽 모두를 달성했을 경우는, 세대 사이즈를 작게 해 점유 스페이스를 줄인다 
+  </ol>
+</ol>
+<blockquote> 
+<p> <b>플래그</b> </p>
+</blockquote>
+<ol>
+  <dl> 
+<dt><code>-XX:MaxGCPauseMillis=</code><em>nnn</em>  </dt>
+<dd> 가상 머신의 경우, 일시정지 시간으로서 바람직한 것은,<em>nnn</em> 밀리 세컨드 이하입니다. VM 는, GC 에 의해 생긴 일시정지를 <em>nnn</em> 밀리 세컨드보다 짧게 유지할 수 있도록(듯이), Java 의 heap 사이즈 및 다른 GC 에 관련하는 파라미터를 조정합니다. 이것에 의해 VM 의 전체의 throughput가 내릴 가능성이 있어, 경우에 따라서는, VM 가 목적의 일시정지 시간 목표를 달성할 수 없는 경우가 있습니다.  
+<p> 디폴트에서는, 일시정지 시간 목표는 없습니다. 일시정지 시간의 목표가 어느 정도까지 달성할 수 있을까에 대해서는 명확한 제한이 있습니다. GC 의 일시정지 시간은, heap내의 라이브 데이터의 양에 의해 다릅니다. 컬렉션의 대소는, 여러가지 면에서 라이브 데이터의 양에 의존합니다. 이 파라미터는 주의해 취급할 필요가 있습니다. 값이 너무 작으면(자), 시스템이 가베지 컬렉션에 여분의 시간을 사용해 버립니다.  
+    </dd>
+    <p> 
+<dt><code>-XX:GCTimeRatio=</code><em>nnn</em>  
+<dd> 가상 머신의 경우, 바람직한 값은, 수집가로 필요로 하는 어플리케이션의 실행 시간의 1 / (1 + nnn) 이하입니다.  
+<p> 예를 들어,<code>-XX:GCTimeRatio=19</code> 가, GC 의 합계 시간의 5% 로 95% 의 throughput를 목표로 설정했다고 합니다. 즉, 어플리케이션에서는, 수집가의 19 배의 시간이 필요라는 것이 됩니다.  </p>
+<p> 디폴트 값는 99 로, 어플리케이션이 수집가의 적어도 99 배의 시간을 필요로 한다고 하는 것입니다. 즉, 수집가는 많아도 합계 시간의 1% 로 실행되게 됩니다. 서버 어플리케이션의 경우, 이것은 좋은 선택이라고 할 수 있습니다. 값이 너무 비싸면(자), heap 사이즈가 그 최대치에까지 달할 가능성이 있습니다. </p>
+    </dd>
+  </dl>
+</ol>
+<blockquote> 
+<p> <b>추천안</b></p>
+  <blockquote>
+<p>heap가 디폴트의 최대 heap 사이즈보다 큰 것이 밝혀지지 않는 경우는, heap에 최대치를 설정하지 않게 합니다. 어플리케이션에 대해서 충분한 throughput 목표를 설정합니다. </p>
+<p> 이상적인 상황에서는, heap는 선택한 throughput 목표를 지원하는 값 (최대치 미만)에까지 증가합니다. </p>
+<p> heap가 최대치까지 증가했을 경우, throughput는 그 최대치내에서는 달성할 수 없다고 하는 것이 됩니다. 최대 heap는 가능한 한 크게 합니다만, 플랫폼의 물리 메모리보다 커지지 않게 설정해, 한번 더 어플리케이션을 실행합니다. 그런데도 throughput 목표를 달성할 수 없는 경우는, 플랫폼에서 사용 가능한 메모리에 대해서 목표가 너무 높게 됩니다. </p>
+<p> throughput는 달성할 수 있지만, 일시정지가 너무 긴 경우는, 일시정지 시간 목표를 선택합니다. 이 경우, throughput 목표를 달성할 수 없을 가능성이 있기 (위해)때문에, 어플리케이션에 있어 타협점이 되는 값을 선택합니다. </p>
+  </blockquote>
+</blockquote>

@@ -1,0 +1,193 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+<title>JDBC-ODBC 브릿지의 확장 - xrath.com 에서 번역됨</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#000077" alink="#FF0000">
+&nbsp;
+<table WIDTH="100%" >
+<tr>
+<td WIDTH="60"><img SRC="../../../../images/javalogo52x88.gif" ></td>
+
+<td ALIGN=CENTER>
+<h1>
+JDBC<sup><font size=-1>TM</font></sup>-ODBC 브릿지의 확장</h1>
+</td>
+
+<td ALIGN=RIGHT VALIGN=TOP><font size=-1><a href="../../index.html">문서의 목차</a> </font> <br><font size=-1><a href="../index.html">JDBC</a> </font></td>
+</tr>
+</table>
+
+<p>JDBC-ODBC 브릿지를 사용하면(자), Java<sup><font size=-2>TM</font></sup> 프로그램 언어로 작성된 어플리케이션으로, JDBC<sup><font size=-2>TM</font></sup> API 를, 다수의 기존 ODBC 드라이버와 함께 사용할 수 있습니다. 이 브릿지 자체가, JDBC 테크놀러지에 근거하는 드라이버 ( 「JDBC 드라이버」)입니다. <tt>sun.jdbc.odbc.JdbcOdbcDriver</tt> 클래스내에 정의되고 있습니다. 이 브릿지는, JDBC 서브 프로토콜의 <tt>odbc</tt> 를 정의합니다.
+<h2>
+JDBC-ODBC 브릿지의 현상</h2>
+JDBC-ODBC 브릿지는, 잠정적인 솔루션이라고 생각할 필요가 있습니다. Sun Microsystems 와 DataDirect Technologies 는, 브릿지를 한층 더 신뢰성의 높은 견뢰한 것으로 하는 작업을 계속하고 있습니다만, 브릿지를 지원 제품이라고는 생각하고 있지 않습니다. Pure Java 의 JDBC 드라이버가 개발된 시점에서, JDBC-ODBC 브릿지는 필요없게 됩니다.
+<h2>
+브릿지를 사용하는 이유</h2>
+ODBC 를 직접 사용하는 경우와 비교해, JDBC-ODBC 브릿지에는 다음과 같은 이점이 있습니다.
+<ul>
+<li>
+ODBC API 는, C 및 C++ 의 프로그래머를 강하게 의식해 만들어지고 있습니다. JDBC-ODBC 브릿지를 사용하면(자), Java 프로그램 언어 이외의 언어 개념이 없어도, Java 의 지식만으로 프로그래밍 할 수 있게 됩니다. </li>
+
+<li>
+ODBC API 는 매우 복잡해, 고레벨의 기능과 저레벨의 기능이 혼재하고 있습니다. JDBC-ODBC 브릿지를 사용하면(자), JDBC API 를 사용해 프로그램을 작성할 수 있습니다. JDBC API 는, ODBC API 보다 간단해, 습득도 용이합니다. </li>
+
+<li>
+JDBC-ODBC 브릿지를 사용하면(자), 표준화 된 JDBC 인터페이스를 통해 ODBC 를 취급할 수가 있습니다. 이것에 의해, 보다 좋은 솔루션이 등장했을 때에, 프로그램이 기존의 ODBC 에 구속되지 않고 끝납니다. </li>
+</ul>
+
+<h2>
+ODBC 를 사용하는 이유</h2>
+이상적이게는, 사용하고 싶은 것은 Pure Java 입니다. Pure Java 라면, native code도, 플랫폼에 의존하는 기능도 없습니다. 그러나, 당장이라도 개발을 시작하지 않으면 안되어, Java 만으로 만들어진 JDBC 드라이버가 DBMS 로부터 제공되는 것을 기다릴 수 없는 경우도 있습니다. JDBC-ODBC 브릿지와 같이 일부만 네이티브인 드라이버를 사용하면, Pure Java 의 드라이버를 이용할 수 있게 되었을 때에 간단하게 대응할 수 있는 프로그램을 만들 수가 있습니다.
+<h2>
+JDBC-ODBC 브릿지의 신기능</h2>
+
+<ul>
+<li>
+A <tt>jdbc:odbc:</tt>접속에는,<tt>charSet</tt> 프로퍼티이 추가되어, 클라이언트의 디폴트 이외의 문자 encode 방식을 지정할 수 있습니다. 지정 가능한 값에 대해서는, Java Software 의 Web 사이트의 <a href="http://java.sun.com/j2se/1.4.2/docs/guide/intl/">JDK 1.1 국제화의 스펙</a>을 참조해 주세요. </li>
+
+<br> 다음의 코드예로, 모든 문자 데이터의 캐릭터 세트를 「Big5」로 설정하는 방법을 나타냅니다.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Load the JDBC-ODBC bridge driver
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class.forName(sun.jdbc.odbc.JdbcOdbcDriver) ;
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // setup the properties&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; java.util.Properties prop = new java.util.Properties();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prop.put("charSet", "Big5");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prop.put("user", username);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prop.put("password", password);
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Connect to the database
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con = DriverManager.getConnection(url, prop);</pre>
+
+<li>
+이것으로 이 브릿지가, 배치 갱신이나 스크롤 가능한 커서등도 포함한 JDBC 2.0 의 기능을 지원하게 됩니다. </li>
+
+<li>
+JDBC-ODBC 브릿지가, J2EE 호환의 JDBC 드라이버로 필요하게 되는 기능의 대부분을 제공하게 되었습니다. </li>
+
+<li>
+<tt>DataSource</tt> 및 <tt>ConnectionPoolDataSource</tt> 의 샘플 구현이, JDBC-ODBC 브릿지에서 이용 가능하게 되었습니다. </li>
+
+<li>
+<tt>CallableStatement</tt> 의 OUT/INOUT 파라미터의 처리가 개선되었습니다. </li>
+
+<li>
+닫혀지지 않은 <tt>Statement</tt> 객체의 자동 가베지 컬렉션이 구현되었습니다. </li>
+
+<li>
+갱신 가능한 <tt>ResultSet</tt> 객체의 개선된 지원가 구현되었습니다. </li>
+
+<li>
+견뢰함과 신뢰성의 추가 체크 기능이 도입되었습니다. </li>
+</ul>
+
+<h2>
+JDBC-ODBC 브릿지에 추가된 DataSource 구현</h2>
+<tt>javax.sql.DataSource</tt> 및 <tt>javax.sql.ConnectionPoolDataSource</tt> 의 구현이 이용 가능하게 되었습니다. 어느쪽이나 <tt>sun.jdbc.odbc.ee</tt> 패키지내에 포함되어 있습니다. 다음의 코드는,<tt>DataSource</tt> 의 프로퍼티의 설정 방법법을 나타낸 것입니다. 마지막 2 행에서는, JNDI API 를 사용해,<tt>DataSource</tt> 객체 <i>ds</i> 를 jdbc/OdbcDB1 에 바인드 하고 있습니다. 덧붙여<tt>DataSource</tt> 객체의 타겟은, Oracle 데이타베이스에 접속하고 있는 ODBC DSN 의 「dsn1」이라고 가정하고 있습니다.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Establish the DataSource object instance</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sun.jdbc.odbc.ee.DataSource ds = new sun.jdbc.odbc.ee.DataSource();</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Provide user credentials and database name</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds.setUser("scott");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds.setPassword("tiger");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds.setDatabaseName("dsn1");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds.setCharSet("..."); // optional property
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds.setLoginTimeout(100); // optional property</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Establish initial context and bind to the datasource target</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InitialContext ic = new InitialContext();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ic.bind("jdbc/OdbcDB1", ds);</pre>
+<font size=+0>상기의 코드에서는, 생략 가능한 프로퍼티과 필수의 프로퍼티이 혼재하고 있을테니 주의해 주세요. JDBC-ODBC 브릿지의 <tt>DataSource</tt> 구현에는, 포트 번호나 역할명등의 프로퍼티은 구현되고 있지 않습니다.  그렇다고 하는 것도, 그러한 프로퍼티은 ODBC 패러다임(paradigm)에서는 사용할 수 없기 때문입니다. </font>
+<p><font size=+0>상기 샘플로부터의 계속으로서 다음의 코드에서는,<tt>DataSource</tt> 객체를 취득하기 위해서 JNDI 명 jdbc/OdbcDB1 를 참조합니다. 계속되어, 취득한 <tt>DataSource</tt> 객체를 사용해, 추적을 유효하게 해, 2 개의 접속을 작성합니다. </font>
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the initial context of JNDI and lookup the datasource.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InitialContext ic = new InitialContext();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.sql.DataSource ds1 = (javax.sql.DataSource) ic.lookup("jdbc/OdbcDB1");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Set the optional printwriter where the trace log is to be directed.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ds1.setLogWriter(new PrintWriter(new FileOutputStream("/tmp/datasource.log")));</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con1 = ds1.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con2 = ds1.getConnection("system","manager");</pre>
+<tt>javax.sql.ConnectionPoolDataSource</tt> 의 구현은, 기가 되는 JDBC-ODBC 접속 풀을 사용합니다. <tt>ConnectionPoolDataSource</tt> 객체를 사용해 <tt>PooledConnection</tt> 객체를 작성해, 한층 더 <tt>PooledConnection</tt> 객체를 사용해 <tt>Connection</tt> 객체를 작성합니다. 사용자의 시점으로부터는, 이 <tt>Connection</tt> 객체는 다른 접속과 완전히 같게 보입니다.
+<p>다음의 코드에서는,<tt>ConnectionPoolDataSource</tt> 객체 <i>cpds</i> 를 작성해, 그 프로퍼티을 설정해 있습니다. 마지막 2 행에서는, JNDI API 를 사용해 <i>cpds</i> 를 jdbc/OdbcPool 에 바인드 하고 있습니다.  이 이름은, 나중에 <i>cpds</i> 를 취득할 때에, 메소드 <tt>InitialContext.lookup</tt> 로 지정합니다.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Establish ConnectionPoolDataSource instance</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sun.jdbc.odbc.ee.ConnectionPoolDataSource cpds =</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new sun.jdbc.odbc.ee.ConnectionPoolDataSource("jdbc/OdbcPool");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Provide user credentials and database name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setUser("scott");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setPassword("tiger");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setDatabaseName("dsn1");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setCharSet("...") // optional property
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setLoginTimeout(100); // optional property</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setMinPoolSize("10") ;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setInitialPoolSize("15");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setMaxPoolSize("20");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setMaxIdleTime("300");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setTimeoutFromPool("600");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Maintenance interval of the pool.  A maintenance thread will remove
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // unwanted connections and cleanup the pool at the interval specified.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // This cannot be zero.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpds.setMaintenanceInterval("900");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InitialContext ic = new InitialContext();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ic.bind("jdbc/OdbcPool", cpds);</pre>
+모든 경우에 대해,<tt>ConnectionPoolDataSource</tt> 를 풀 된 데이터 소스로서 기능시키고 싶은 경우, 풀을 상기 코드로 가리킨 것처럼 설정하는 것은, 어플리케이션측의 책임입니다. 풀 된 데이터 소스의 디폴트 동작에서는, 최소 풀 사이즈, 초기 풀 사이즈, 및 최대 풀 사이즈는 제로로 설정됩니다. <tt>ConnectionPoolDataSource</tt> 의 JDBC-ODBC 브릿지 구현에는,<tt>Statement</tt> 객체의 풀 기능이나 프로퍼티 <tt>propertyCycle</tt> 는 현시점에서는 포함되어 있지 않습니다.
+<p>다음의 코드는,<tt>ConnectionPoolDataSource</tt> 객체를 단순한 <tt>DataSource</tt> 객체로서 사용하는 방법을 나타낸 것입니다. 구체적으로는, jdbc/OdbcPool 의 JNDI 룩 업을 실시해, 반환된 객체를,<tt>ConnectionPoolDataSource</tt> 객체에 캐스트 하는 대신에 <tt>DataSource</tt> 객체에 캐스트 하고 있습니다.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InitialContext ic = new InitialContext();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.sql.DataSource ds1 = (javax.sql.DataSource) ic.lookup("jdbc/OdbcPool");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // First getConnection will initializes the pool.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con1 = ds1.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con2 = ds1.getConnection("system","manager");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // An application need to close the connection explicitly.  This will allow the pool to recycle the connection.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con1.close();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con2.close();</pre>
+구현을 <tt>ConnectionPoolDataSource</tt> 객체로서 사용하는 방법을 나타냈던 것이, 다음의 코드행입니다. <tt>PooledConnection</tt> 객체를 닫으면(자) 실제의 물리적인 접속이 닫혀지는데 대해,<tt>PooledConnection</tt> 객체에 의해 작성된 접속을 닫아도, 그 접속은 접속 풀에 되돌려지는 것만으로 있는 점에 주의해 주세요.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InitialContext ic = new InitialContext();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.sql.ConnectionPoolDataSource cpds =</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (javax.sql.ConnectionPoolDataSource) ic.lookup("jdbc/OdbcPool");</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PooledConnection pc1 = cpds.getPooledConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con1 = pc1.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PooledConnection pc2 = cpds.getPooledConnection("system","manager");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con2 = pc2.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // An application needs to close the connection explicitly.  This will allow the pool to recycle the connection.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con1.close();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con2.close();</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con3 = pc1.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection con4 = pc2.getConnection();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // This will close the physical connection!
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pc1.close();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pc2.close();</pre>
+접속 풀을 종료 하는 방법은, 2 개 있습니다. 메소드 <tt>shutDown</tt> 에 인수 <tt>false</tt> 를 지정했을 경우, 미사용의 접속만이 닫혀집니다. 인수에 <tt>true</tt> 를 지정했을 경우, 사용중인가 어떤가에 관계없이, 모든 접속이 곧바로 닫혀집니다.
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Hot shutdown
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((sun.jdbc.odbc.ee.ConnectionPoolDataSource) cpds). shutDown(true);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 또는
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Cold shutdown
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((sun.jdbc.odbc.ee.ConnectionPoolDataSource) cpds). shutDown(false);</pre>
+
+<p><br>
+<hr SIZE=3 NOSHADE><img SRC="../../../../images/javalogo52x88.gif"  align=RIGHT> <font size=-2><a href="http://java.sun.com/j2se/1.4.2/docs/relnotes/SMICopyright.html">Copyright &copy;</a> &nbsp; 2002 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font>
+<p><font size=-1>코멘트의 송부처 :&nbsp; <a href="mailto:jdbc-odbc@sun.com">jdbc-odbc@sun.com</a> </font>
+</body>
+</html>

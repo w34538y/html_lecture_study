@@ -1,0 +1,744 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="Author" content="Gordon Hirsch">
+<META NAME="GENERATOR" CONTENT="Mozilla/4.02 [en] (X11; U; SunOS 5.5.1 sun4u) [Netscape]">
+<TITLE>JPDA 의 접속 및 호출해 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+&nbsp;
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR>
+<TD WIDTH="60"><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+<TD>
+<CENTER>
+<H1>접속 및 호출의 상세 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</H1></CENTER>
+</TD>
+</TR>
+</TABLE>
+<!-- Body text begins here -->
+<P>
+<h2>목차</h2>
+<blockquote>
+<a href="#Transports"><b>트랜스폴트</b></a> <br> <a href="#Connectors"><b>연결기</b></a> <br> <a href="#Invocation"><b>Sun VM 의 호출 옵션</b></a> <br> <a href="#Plugin"><b>Plug-in 애플릿의 디버그</b></a> <br> <a href="#JDB"><b>JDB 와의 접속</b></a> <br> <a href="#SPI"><b>서비스 프로바이더 인터페이스</b></a> <br>
+</blockquote>
+<p><hr noshade size=3>
+
+<h3><a NAME="Transports"></a> 트랜스폴트</h3>
+
+<a NAME="Transports"></a> 트랜스폴트 JPDA 트랜스폴트는, 디버거와 디버그중의 가상 머신 (이하, 「타겟 VM」)이 사용하는 통신 방법입니다. 통신은 접속 지향입니다.  한편이 서버로서 동작해, 접속을 대기합니다. 한편이 클라이언트로서 동작해, 서버에 접속합니다. JPDA 에서는, 디버거 어플리케이션 또는 타겟 VM 의 어느 쪽인지를 서버로서 동작시킬 수가 있습니다. 트랜스폴트를 구현하는 것에 의해, 단일의 컴퓨터 또는 다른 컴퓨터, 혹은 그 양쪽 모두로 동작중의 프로세스간에 통신할 수 있게 됩니다. 접속을 확립할 경우에는, 「트랜스폴트 주소」에 의해 접속의 끝이 식별됩니다. 트랜스폴트 주소의 형식은, 트랜스폴트의 타입에 의존합니다.  <p>
+
+<p>JPDA 에서는, 디버거 어플리케이션은 Java Debug Interface (JDI) 인터페이스와<a href="#Connectors">연결기 </a>추상을 사용해 타겟 VM 와의 접속을 확립합니다. 디버거 어플리케이션에 의해 사용되는 연결기는, 트랜스폴트를 캡슐화합니다. 타겟 VM 에서는, 디버거와의 통신에 Java<sup><font size="-2">TM</font></sup> Debug Wire Protocol 를 지원하는 에이전트가 사용됩니다. 이 에이전트 (타겟 VM 에 짜넣는지, 실행시 라이브러리에서 로드 가능)는, 디버거와 통신하기 위해서 트랜스폴트를 캡슐화합니다.
+
+<p>Sun 에서는, TCP/IP 에 근거하는 소켓 트랜스폴트와 공용 메모리 트랜스폴트의 2 개의 트랜스폴트 구현을, 레퍼런스 구현과 함께 출하하고 있습니다. 스펙에서는, 특정의 트랜스폴트의 구현을 필요로 하지 않습니다. 이 구현과 함께 제공되는 트랜스폴트 외에도, 아키텍쳐(architecture)에 포함되는<a href="#SPI">서비스 프로바이더 인터페이스</a>를 사용해, 다른 트랜스폴트를 개발 및 배치할 수가 있습니다. </p>
+
+<h4>
+소켓 트랜스폴트</h4>
+소켓 트랜스폴트 JPDA 레퍼런스 구현에서는, Solaris, Linux, 및 Microsoft Windows 플랫폼용의 소켓 트랜스폴트가 제공됩니다. 소켓 트랜스폴트에서는, 디버거 어플리케이션과 타겟 VM 의 사이에 TCP/IP 접속이 사용됩니다. 소켓 트랜스폴트를 사용하는 경우는, 디버거 어플리케이션과 타겟 VM 는, 같은 컴퓨터상에 존재하고 있어도, 다른 컴퓨터상에 존재하고 있어도 상관하지 않습니다.
+ 
+<p> 소켓 트랜스폴트는,<tt>dt_socket</tt> 라고 하는 일의의 캐릭터 라인으로 식별됩니다. 이 이름은, 타겟 VM 를<a href="#Invocation">호출할 때</a>, 소켓 트랜스폴트를 선택하기 위해서 사용할 수 있습니다. 디버거 어플리케이션에서는, 대응하는 연결기에 의해 소켓 트랜스폴트가 캡슐화됩니다.  
+ 
+<p>클라이언트가 서버에 접속하고 있는 문맥에서는, 소켓 트랜스폴트 주소의 형식은, 「<tt>&lt;name&gt;:&lt;port&gt;</tt>」가 됩니다. <tt>&lt;name&gt;</tt> 는 호스트명입니다. 또,<tt>&lt;port&gt;</tt> 는 접속 또는 대기하고 있는 소켓 포트 번호입니다. 서버가 클라이언트와의 접속을 대기하고 있는 문맥에서는, 주소는 포트 번호만으로 구성됩니다 (호스트명은 명시되지 않는다). </p>
+
+<h4>
+공용 메모리트란스포트</h4>
+Microsoft Windows 플랫폼상의 JPDA 레퍼런스 구현에서는, 소켓 트랜스폴트 이외에, 공용 메모리트란스포트가 제공됩니다. 공용 메모리트란스포트에서는, 디버거 어플리케이션과 타겟 VM 의 사이의 JDWP 패킷데이터 교환에 공용 메모리 영역이 사용됩니다. 공용 메모리트란스포트를 사용하는 경우는, 디버거 어플리케이션과 타겟 VM 는 같은 컴퓨터상에 존재하지 않으면 안됩니다.  
+
+<p> 공용 메모리트란스포트는,<tt>dt_shmem</tt> 라고 하는 일의의 캐릭터 라인으로 식별됩니다. 이 이름은, 타겟 VM 를<a href="#Invocation">호출할 때</a>, 소켓 트랜스폴트를 선택하기 위해서 사용할 수 있습니다. 디버거 어플리케이션에서는, 대응하는 연결기에 의해 공용 메모리트란스포트가 캡슐화됩니다.  
+ 
+<p>공용 메모리의 트랜스폴트 주소는, Microsoft Windows 의 파일 매핑 객체의 이름으로서 사용할 수가 있습니다. 이 이름의 캐릭터 라인에는, backslash를 제외한 임의의 문자를 포함할 수가 있습니다. </p>
+
+<h3>
+<a NAME="Connectors"></a> 연결기</h3>
+연결기는, 디버거 어플리케이션 (JDI 를 대상으로 해 작성된 것)과 타겟 VM 의 사이에 접속을 확립할 경우에 사용되는 JDI 의 추상화입니다. JDI 및 연결기는 다양한 편성으로 구현할 수 있기 (위해)때문에, 각 JDI 로 지원되고 있는 트랜스폴트 및 VM 와 일치시킬 수가 있습니다. 연결기의 인터페이스는 매우 범용 적이므로, JDI 는 다양한 연결기 구현과 함께 사용할 수 있습니다. 연결기는, 이름과 값의 편성으로서 구성됩니다. 특정의 연결기에서는, 이름과 값의 다양한 편성을 받아들일 수가 있습니다.
+<p>구현되는 연결기를 사용자가 선택 및 구성할 수 있도록(듯이), JDI 클라이언트 어플리케이션을 작성할 수도 있습니다만, 특정의 연결기에 관한 정보를 디버거에 짜넣어 두면(자), 사용자가 사용하기 쉬운 구성이 됩니다. JPDA 로 제공되고 있는 <a href="#JDB">JDB</a>  의 구현예에서는, 이 방법이 채용되고 있습니다.
+<p>
+JDI 레퍼런스 구현에서는, 사용 가능한 트랜스폴트의 종류 및 접속 모드 (기동, 대기, 및 접속)에 대응하는 몇개의 연결기가 제공되고 있습니다. 그러한 연결기에 대해, 지금부터 설명합니다. 이러한 연결기의 리스트는, JDI 메소드 VirtualMachineManager.allConnectors()에 의해 돌려주어집니다. 또, 각 접속 연결기, 대기 연결기, 및 기동 연결기는, 대응하는 VirtualMachineManager 메소드 attachingConnectors(), listeningConnectors(), 및 launchingConnectors()에 의해 반환되는 리스트에 포함됩니다.
+<h4>
+<a NAME="sunlaunch"></a> Sun 커멘드행 기동 연결기</h4>
+이 연결기는, Sun VM, 또는 같은 디버그 호출<a href="#Invocation">옵션</a>이 지원되고 있는 그 외의 VM 를 기동할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. VM 의 기동 및 필요한 디버그 옵션의 지정의 자세한 것은, 연결기에 의해 제어됩니다. 이 연결기로 사용되는 배후의 트랜스폴트는, 플랫폼에 의존하고 있습니다. Microsoft Windows 의 경우는, 공용 메모리트란스포트가 사용됩니다. Solarisd 및 Linux 의 경우는, 소켓 트랜스폴트가 사용됩니다.
+<p>이 연결기는, 「com.sun.jdi.CommandLineLaunch」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="Sun command line launching connector arguments" BORDER WIDTH="90%" >
+<caption>Sun 커멘드행 기동 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>home</tt></td>
+
+<td WIDTH="10%">아니오</td>
+
+<td>현재의 <tt>java.home</tt> 의 프로퍼티치</td>
+
+<td>타겟 VM 의 호출에 사용되는 Java 2 Runtime Environment 의 장소</td>
+</tr>
+
+<tr>
+<td><tt>options</tt></td>
+
+<td>아니오</td>
+
+<td>""</td>
+
+<td>VM 를 호출할 때 사용하는 옵션. 표준의 디버그<a href="#Invocation">옵션</a>을 포함한다. </td>
+</tr>
+
+<tr>
+<td><tt>main</tt></td>
+
+<td>네</td>
+
+<td>""</td>
+
+<td>디버그 하는 어플리케이션의 메인 클래스 및 커멘드행의 인수</td>
+</tr>
+
+<tr>
+<td><tt>suspend</tt></td>
+
+<td>아니오</td>
+
+<td>true</td>
+
+<td>메인 클래스가 로드 되기 직전에 타겟 VM 가 중단되는 경우는 true, 그렇지 않은 경우는 false</td>
+</tr>
+
+<tr>
+<td><tt>quote</tt></td>
+
+<td>네</td>
+
+<td>"\""</td>
+
+<td>커멘드행상에서, 공백에서 단락지어진 텍스트를 결합할 경우에 사용하는 문자 &nbsp;</td>
+</tr>
+
+<tr>
+<td><tt>vmexec</tt></td>
+
+<td>네</td>
+
+<td>java</td>
+
+<td>VM 기동용 윈도우의 실행 가능 파일. 디버그시에는, javaw 또는 java_g 로 변경할 수 있다 (그러한 기동용 윈도우가 사용 가능한 경우)</td>
+</tr>
+</table></center>
+
+<h4>
+Raw 커멘드행 기동 연결기</h4>
+이 연결기는, 임의의 VM 를 기동할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. 커멘드행 전체를 지정해 주세요. 커멘드행은 편집하지 말아 주세요. 지정한 커멘드행으로 VM 를 기동할 때의 자세한 것은, 연결기에 의해 제어됩니다. 이 연결기로 사용되는 배후의 트랜스폴트는, 플랫폼에 의존하고 있습니다. Microsoft Windows 의 경우는, 공용 메모리트란스포트가 사용됩니다. Solaris 오퍼레이팅(operating) 환경의 경우는, 소켓 트랜스폴트가 사용됩니다.
+<p>이 연결기는, 「com.sun.jdi.RawCommandLineLaunch」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="raw command line launching connector arguments" BORDER WIDTH="90%" >
+<caption>Raw 커멘드행 기동 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>command</tt></td>
+
+<td WIDTH="10%">네</td>
+
+<td>""</td>
+
+<td>디버그 하는 어플리케이션으로부터 타겟 VM 를 호출할 때 사용하는 커멘드행 전체</td>
+</tr>
+
+<tr>
+<td><tt>address</tt></td>
+
+<td>네</td>
+
+<td>""</td>
+
+<td>새롭게 기동된 타겟 VM 의 접속을 대기하는<a href="#Transports">트랜스폴트 주소</a> . 이 값은, 일반적으로은 raw 커멘드의 인수로서 사용된다. 다만, 접속처의 트랜스폴트 주소를, 타겟 VM 로 독자적으로 식별할 수 있는 경우는 필수는 아니다</td>
+</tr>
+<tr>
+<td><tt>quote</tt></td>
+
+<td>네</td>
+
+<td>"\""</td>
+
+<td>커멘드행상에서, 공백에서 단락지어진 텍스트를 결합할 경우에 사용하는 문자 &nbsp;</td>
+</tr>
+
+</table></center>
+
+<h4>
+소켓 접속 연결기</h4>
+이 연결기는, 현재 동작중의 타겟 VM 에 소켓 트랜스폴트를 개입시켜 접속할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. 이 타겟 VM 는, 다음의 겉(표)로 설명하는 이 연결기의 인수와 대응하는 옵션으로 불려 간 것일 필요가 있습니다. Sun VM 의 경우, 필요한 옵션은<a href="#Invocation">후술 하는 설명</a>대로입니다.
+<p>이 연결기는, 「com.sun.jdi.SocketAttach」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="socket attaching connector arguments" BORDER WIDTH="90%" >
+<caption>소켓 접속 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>hostname</tt></td>
+
+<td WIDTH="10%">아니오</td>
+
+<td>로컬 호스트명</td>
+
+<td>접속처의 호스트 머신명</td>
+</tr>
+
+<tr>
+<td><tt>port</tt></td>
+
+<td>네</td>
+
+<td>""</td>
+
+<td>접속처의 호스트 머신상의 포트 번호</td>
+</tr>
+
+<tr>
+<td><tt>timeout</tt></td>
+
+<td>아니오</td>
+
+<td>""</td>
+
+<td>    
+타겟 VM 에의 접속시에 사용하는 타임 아웃 (밀리 세컨드 단위)
+</td>
+</tr>
+
+
+</table></center>
+
+<h4>
+공용 메모리 접속 연결기</h4>
+이 연결기는, 공용 메모리트란스포트를 개입시켜 현재 실행중의 타겟 VM 에 접속할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. Microsoft Windows 플랫폼상에서만 사용할 수 있습니다. 이 타겟 VM 는, 다음의 겉(표)로 설명하는 이 연결기의 인수와 대응하는 옵션으로 불려 간 것일 필요가 있습니다. Sun VM 의 경우, 필요한 옵션은<a href="#Invocation">후술 하는 설명</a>대로입니다.
+<p>이 연결기는, 「com.sun.jdi.SharedMemoryAttach」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="shared memory attaching connector arguments" BORDER WIDTH="90%" >
+<caption>공용 메모리 접속 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>name</tt></td>
+
+<td WIDTH="10%">네</td>
+
+<td>""</td>
+
+<td>타겟 VM 가 대기중의 공용 메모리의<a href="#Transports">트랜스폴트 주소</a> </td>
+</tr>
+
+<tr>
+<td><tt>timeout</tt></td>
+
+<td>아니오</td>
+
+<td>""</td>
+
+<td>    
+타겟 VM 에 접속할 경우에 사용하는 타임 아웃 (밀리 세컨드 단위)
+</td>
+</tr>
+
+
+
+
+</table></center>
+
+<h4>
+소켓 대기 연결기</h4>
+이 연결기는, 별개에 불려 간 타겟 VM 로부터의 접속을 소켓 트랜스폴트를 개입시켜 받아들일 때, 디버거 어플리케이션으로부터 사용할 수 있습니다. 이 타겟 VM 는, 다음의 겉(표)로 설명하는 이 연결기의 인수와 대응하는 옵션으로 불려 간 것일 필요가 있습니다. Sun VM 의 경우, 필요한 옵션은<a href="#Invocation">후술 하는 설명</a>대로입니다.
+<p>이 연결기에서는, 복수의 타겟 VM 로부터의 접속을 받아들일 수가 있습니다.
+<p>이 연결기는, 「com.sun.jdi.SocketListen」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="socket listening connector arguments" BORDER WIDTH="90%" >
+<caption>소켓 대기 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td><tt>port</tt></td>
+
+<td>아니오</td>
+
+<td>일시적인 포트 번호 (TCP/IP 스택에 의해 할당할 수 있는 포트)</td>
+
+<td>접속을 대기하는 포트 번호</td>
+</tr>
+
+
+<tr>
+<td><tt>localAddress</tt></td>
+
+<td>아니오</td>
+
+<td>호스트가 할당할 수 있는 모든 주소</td>
+
+<td>    
+호스트가 할당할 수 있는 IP 주소
+</td>
+</tr>
+
+<tr>
+<td><tt>timeout</tt></td>
+
+<td>아니오</td>
+
+<td>""</td>
+
+<td>    
+타겟 VM 의 접속을 대기하는 동안에 사용하는 타임 아웃 (밀리 세컨드 단위)
+</td>
+</tr>
+
+
+
+
+
+
+</table></center>
+
+<h4>
+공용 메모리 대기 연결기</h4>
+이 연결기는, 공용 메모리 트랜스폴트를 개입시켜 개별적으로 불려 간 타겟 VM 로부터의 접속을 받아들일 때, 디버거 어플리케이션으로부터 사용할 수 있습니다. Microsoft Windows 플랫폼상에서만 사용할 수 있습니다. 이 타겟 VM 는, 다음의 겉(표)로 설명하는 이 연결기의 인수와 대응하는 옵션으로 불려 간 것일 필요가 있습니다. Sun VM 의 경우, 필요한 옵션은<a href="#Invocation">후술 하는 설명</a>대로입니다.
+<p>이 연결기에서는, 복수의 타겟 VM 로부터의 접속을 받아들일 수가 있습니다.
+<p>이 연결기는, 「com.sun.jdi.SharedMemoryListen」라고 하는 이름으로 일의에 식별됩니다.  <br>&nbsp;
+<center><table summary="shared memory listening connector arguments" BORDER WIDTH="90%" >
+<caption>공용 메모리 대기 연결기의 인수</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>name</tt></td>
+
+<td WIDTH="10%">네</td>
+
+<td>""</td>
+
+<td>타겟 VM 의 접속을 대기하는 공용 메모리의<a href="#Transports">트랜스폴트 주소</a> </td>
+</tr>
+
+
+<tr>
+<td WIDTH="10%"><tt>timeout</tt></td>
+
+<td WIDTH="10%">아니오</td>
+
+<td>""</td>
+
+<td>
+타겟 VM 의 접속을 대기하는 동안에 사용하는 타임 아웃 (밀리 세컨드 단위)
+</td>
+</tr>
+</table></center>
+
+<h4>프로세스 접속 연결기</h4>
+이 연결기는,<a href="#Invocation">후술</a>의 「server=y」디버그 서브 옵션을 개시해 현재도 실행중의 타겟 VM 와 접속할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. 타겟 VM 는 Java SE 6 이후의 것으로 해 주세요. <br> <br> 프로세스 접속 연결기에는, 관련지을 수 있었던 트랜스폴트는 없습니다. 그 대신에, 실제로 접속되면(자), 트랜스폴트가 동적으로 결정됩니다. 그 때문에, 이 연결기의 transport(). name() 메소드는 「local」를 돌려줍니다. <br> <br> 이 연결기는, 「com.sun.jdi.ProcessAttach」라고 하는 이름으로 일의에 식별됩니다. <br> <br>
+<div align="center">프로세스 접속 연결기의 인수<br>
+</div>
+<div align="center"></div>
+<table summary="shared memory listening connector arguments" border="1"
+ width="90%" align="center">
+<thead align="center"><th align="center"><b>&nbsp; &nbsp; 이름</b></th>
+<th align="center"><b>필수</b></th>
+<th width="30%" align="center"><b>디폴트 값</b></th>
+<th width="50%" align="center"><b>설명</b></th>
+<tbody>
+<tr>
+<td width="10%"><tt>pid</tt></td>
+<td width="10%">네</td>
+<td>""</td>
+<td>디버그 하는 프로세스의 프로세스 ID. &nbsp;</td>
+</tr>
+<tr>
+<td width="10%"><tt>timeout</tt></td>
+<td width="10%">아니오</td>
+<td>""</td>
+<td>타겟 VM 에의 접속시에 사용하는 타임 아웃 (밀리 세컨드 단위). &nbsp;</td>
+</tr>
+</tbody>
+</table>
+
+<h4>SA 코어 접속 연결기</h4>
+이 연결기는, 코어 파일을 디버그 할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. &nbsp;Microsoft Windows 플랫폼 및 Linux Itanium 플랫폼에서는 사용할 수 없습니다. 이용 가능한 모든 디버그 조작을 실행할 수 있다고는 할 수 없기 때문에, 코어 파일이 파손할 가능성이 있습니다. <br><br><br> <br> 이 연결기의 attach() 메소드에 의해 반환되는 VirtualMachine 객체는, 읽기 전용입니다. &nbsp;즉, 메소드는 다음과 같이 됩니다. <br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; vm.canBeModified() <br> (은)는 false 를 돌려주어, 이 경우, JDI 클라이언트는 VMCannotBeModifiedException 를 throw 하도록(듯이) 정의되고 있는 JDI 메소드를 호출하지 않습니다. &nbsp;디버거의 가상 머신의 워드 사이즈 (즉 32 비트 또는 64 비트) 및 버젼 (5.0, 5.1 등)은, 코어 파일이 생성된 프로세스의 가상 머신과 같은 필요가 있습니다. <br> 이 연결기에서는, 같은 코어 파일로 복수의 디버그 세션이 가능합니다. <br> <br> 이 연결기는, 「sun.jvm.hotspot.jdi.SACoreAttachingConnector」라고 하는 이름으로 일의에 식별됩니다. <br><br> <br>
+<center>
+<table summary="socket attaching connector arguments" border="1"
+ width="90%">
+<caption>SA 코어 접속 연결기의 인수</caption><thead><th><b>이름</b></th>
+<th><b>필수</b></th>
+<th width="30%"><b>디폴트 값</b></th>
+<th width="50%"><b>설명</b></th>
+<tbody>
+<tr>
+<td width="10%">core<br>
+</td>
+<td width="10%">아니오</td>
+<td>core</td>
+<td>디버그 하는 코어 파일의 경로명</td>
+</tr>
+<tr>
+<td>javaExecutable<br>
+</td>
+<td>네<br>
+</td>
+<td>""<br>
+</td>
+<td>코어 파일을 생성한 Java 실행 파일의 경로명 &nbsp; &nbsp;</td>
+</tr>
+</tbody>
+</table>
+</center>
+<div align="left">
+<h4>SA PID 접속 연결기</h4>
+이 연결기는, 프로세스를 디버그 할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. Microsoft Windows 플랫폼 및 Linux Itanium 플랫폼에서는 사용할 수 없습니다. <br>이용 가능한 모든 디버그 조작을 실행할 수 있다고는 할 수 없기 때문에, 프로세스가 파손할 가능성이 있습니다. <br><br><br> <br> 이 연결기의 attach() 메소드에 의해 반환되는 VirtualMachine 객체는, 읽기 전용입니다. &nbsp;즉, 메소드는 다음과 같이 됩니다. <br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; vm.canBeModified() <br> (은)는 false 를 돌려주어, 이 경우, JDI 클라이언트는 VMCannotBeModifiedException 를 throw 하도록(듯이) 정의되고 있는 JDI 메소드를 호출하지 않습니다. <br>디버그 하는 프로세스가, 디버그 모드로 (즉, -agentlib:jdwp or -Xrunjdwp 를 사용해) 개시되고 있을 필요는 없습니다. 프로세스가 행업 해도 문제 없습니다. 디버거와 디버그 대상의 워드 사이즈 (즉 32 비트 또는 64 비트) 및 버젼 (5.0, 5.1 등)은, 같은 필요가 있습니다. 프로세스는, 이 연결기의 접속시에 중단되어 분리시에 재개됩니다. 1 개의 프로세스에 복수의 SAPIDAttachingConnector 를 동시에 접속할 수 없습니다. <br><br> <br> 이 연결기는, 「sun.jvm.hotspot.jdi.SAPIDAttachingConnector」라고 하는 이름으로 일의에 식별됩니다. <br><br> <br>
+<div align="center">SA PID 접속 연결기의 인수<br>
+</div>
+<div align="center"></div>
+<table summary="shared memory listening connector arguments" border="1"
+ width="90%" align="center">
+<thead align="center"><th align="center"><b>&nbsp; &nbsp; 이름</b></th>
+<th align="center"><b>필수</b></th>
+<th width="30%" align="center"><b>디폴트 값</b></th>
+<th width="50%" align="center"><b>설명</b></th>
+<tbody>
+<tr>
+<td width="10%"><tt>pid</tt></td>
+<td width="10%">네</td>
+<td>""</td>
+<td>디버그 하는 프로세스의 프로세스 ID. &nbsp;</td>
+</tr>
+</tbody>
+</table>
+<br>
+<h4>SA 디버그 서버 접속 연결기</h4>
+이 연결기는, 디버거를 실행중의 머신 이외의 머신으로 프로세스 또는 코어 파일을 디버그 할 경우에, 디버거 어플리케이션으로부터 사용할 수 있습니다. &nbsp;Microsoft Windows 플랫폼 및 Linux Itanium 플랫폼에서는 사용할 수 없습니다. <br>이용 가능한 모든 디버그 조작을 실행할 수 있다고는 할 수 없기 때문에, 원격 프로세스 또는 코어 파일이 파손할 가능성이 있습니다. <br><br><br> <br> 이 연결기의 attach() 메소드에 의해 반환되는 VirtualMachine 객체는, 읽기 전용입니다. &nbsp;즉, 메소드는 다음과 같이 됩니다. <br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; vm.canBeModified() <br> (은)는 false 를 돌려주어, 이 경우, JDI 클라이언트는 VMCannotBeModifiedException 를 throw 하도록(듯이) 정의되고 있는 JDI 메소드를 호출하지 않습니다. <br><br>이 연결기는, RMI 를 사용해 원격 머신을 실행하는 「디버그 서버」라고 통신합니다. <br> 이 연결기에 attach() 메소드를 호출하기 전에, 디버그 서버를 원격 머신으로 기동해,<br>디버그 하는 프로세스 또는 코어 파일을 디버그 서버로 지정할 필요가 있습니다. &nbsp;다음의 조작을 원격 머신으로 실행할 필요가 있습니다. &nbsp;<br>
+<ul>
+<li>클래스 패스의 sa-jdi.jar 로 RMI 레지스트리를 기동한다</li>
+</ul>
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${JAVA_HOME}/bin/rmiregistry \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -J-Xbootclasspath/p:${JAVA_HOME}/lib/sa-jdi.jar</blockquote>
+<ul>
+<li>디버그 하는 프로세스 또는 코어 파일을 지정해, 원격 머신으로 「디버그 서버」를 기동한다</li>
+</ul>
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${JAVA_HOME}/bin/java \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -classpath ${JAVA_HOME}/lib/sa-jdi.jar \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sun.jvm.hotspot.jdi.SADebugServer \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;pid&gt; \<br> &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[uniqueID]<br> &nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp; or<br> &nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${JAVA_HOME}/bin/java \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -classpath ${JAVA_HOME}/lib/sa-jdi.jar \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sun.jvm.hotspot.jdi.SADebugServer \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;pathname to the java executable that produced the core file&gt; \<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;pathname of the corefile to debug&gt; \<br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;[uniqueID]<br>
+</blockquote>
+<br>상기의 2 개의 순서 대신에 <a href=../../tools/share/jsadebugd.html>jsadebugd</a>  커멘드를 사용해, 원격 머신으로 RMI 레지스트리와 디버그 서버를을 기동하는 방법도 있습니다. <br><br><br><br>「uniqueID」는 임의의 캐릭터 라인입니다. &nbsp;같은 머신으로 복수의 디버그 서버를 동시에 실행하는 경우는,<br>각 서버에 다른 「uniqueID」캐릭터 라인을 지정할 필요가 있습니다. <br>위의 예의 JAVA_HOME 에는, 디버그 대상으로 사용되는 버젼과 같은 비트 사이즈 (즉 32 비트 또는 64 비트) 및 같은 버젼 (5.0, 5.1 등)의 Java 인스톨의 경로명이 포함되지 않으면 안됩니다. &nbsp;다만, 디버거의 비트 사이즈와 버젼은 같은 필요는 없습니다. <br> 디버그 하는 프로세스가, 디버그 모드로 (즉, -agentlib:jdwp 또는 -Xrunjdwp 를 사용해) 개시되고 있을 필요는 없습니다. 프로세스가 행업 해도 문제 없습니다. 프로세스는, 디버그 서버의 접속시에 중단됩니다. 프로세스에 접속되고 있는 디버그 서버를 (^C 또는 다른 방법으로) 종료하면(자), 디버그 대상 프로세스는 재개됩니다. 코어 파일에 복수의 디버그 서버를 접속할 수 있습니다만, 프로세스에 접속할 수 있는 디버그 서버는 1 개 뿐입니다. <br>이 연결기에서는, 같은 디버그 서버에 복수의 디버그 세션을 접속할 수 있습니다. <br><br> <br> 이 연결기는, 「sun.jvm.hotspot.jdi.SADebugServerAttachingConnector」라고 하는 이름으로 일의에 식별됩니다. <br><br> <br> &nbsp;<br>
+<div align="center">SA DebugServer 접속 연결기의 인수<br>
+<div align="center"></div>
+</div>
+<div align="center"></div>
+<table summary="shared memory listening connector arguments" border="1"
+ width="90%" align="center">
+<thead><th align="center"><b>이름</b></th>
+<th align="center"><b>필수</b></th>
+<th width="30%" align="center"><b>디폴트 값</b></th>
+<th width="50%" align="center"><b>설명</b></th>
+<tbody>
+<tr>
+<td width="10%"><tt>debugServerName</tt></td>
+<td width="10%">네</td>
+<td>""</td>
+<td>디버그 서버가 실행되고 있는 머신의 IP 주소 또는 이름. 머신에 복수의 디버그 서버가 포함되어 있는 경우, 이 이름은 다음의 형식을 사용할 필요가 있다<br> &nbsp; &nbsp;uniqueID@IPAddress<br> 또는<br> &nbsp; &nbsp;uniqueID@hostname<br> 「uniqueID」는 대응하는 디버그 서버의 기동에 사용되는 캐릭터 라인. <br>
+</td>
+</tr>
+</tbody>
+</table>
+<br> <br>
+</div>
+
+
+
+<h3>
+<a NAME="Invocation"></a> Sun VM 의 호출 옵션</h3>
+여기에서는, 디버그시에 Sun VM 를 호출할 때 필요한 옵션에 대해 설명합니다.
+<p>
+Sun 의 VM 구현에는, 디버그용의 JDWP 에이전트를 로드하는 커멘드행 옵션이 필요합니다. 5.0 이후에서는, JDWP 에이전트의 로드 및 옵션의 지정에 <tt>-agentlib:jdwp</tt> 옵션이 사용됩니다. 5.0 보다 전의 릴리스에서는,<tt>-Xdebug</tt> 및 <tt>-Xrunjdwp</tt> 옵션이 사용됩니다 (5.0 의 구현에서는,<tt>-Xdebug</tt> 및 <tt>-Xrunjdwp</tt> 옵션도 지원됩니다만, 5.0 의 JDWP 에이전트는, VM 에 대해서 이전의 JVMDI 인터페이스는 아니고 JVM TI 인터페이스를 사용하기 위해(때문에), 새롭다 <tt>-agentlib:jdwp</tt> 옵션의 사용을 추천합니다).
+
+<p> 디버거 어플리케이션으로 JDI 의 <a href="#sunlaunch">Sun 커멘드행 기동 연결기</a>를 사용하는 경우,5.0 보다 전의 타겟 VM 와의 접속에 이 연결기가 사용될 가능성이 있기 (위해)때문에,<tt>-Xdebug</tt> 및 <tt>-Xrunjdwp</tt> 옵션이 연결기로 사용됩니다.  <p>
+
+
+<p> 타겟 VM 가 5.0 이후의 경우,<tt>-agentlib:jdwp</tt> 옵션은 다음과 같이 지정합니다.  </p>
+
+
+<dl>
+<dt><tt>-agentlib:jdwp=&lt;<a href="#jdwpoptions">sub-options</a> &gt;</tt></dt>
+<dd>JDWP 의 JPDA 레퍼런스 구현을 로드한다. 이 라이브러리는, 타겟 VM 에 배치되고 있어 타겟 VM 라고 대화할 때는 JVM TI 및 JNI 가 사용된다. 다른 디버거 어플리케이션과 통신할 때는, 트랜스폴트와 JDWP 프로토콜이 사용된다. 각 서브 옵션에 대해서는,<a href="#jdwpoptions">후술 하는 설명</a>을 참조 </dd>
+</dl>
+
+<p> 5.0 보다 전의 릴리스의 경우,<tt>-Xdebug</tt> 및 <tt>-Xrunjdwp</tt> 옵션이 사용됩니다.  </p>
+
+<dl>
+<dt><tt>-Xdebug</tt></dt>
+<dd>디버그를 유효하게 한다          
+    <p></p>
+</dd>
+<dt><tt>-Xrunjdwp:&lt;<a href="#jdwpoptions">서브 옵션</a> &gt;</tt></dt>
+<dd>JDWP 의 JPDA 레퍼런스 구현을 로드한다. 이 라이브러리는, 타겟 VM 에 배치되고 있어 타겟 VM 라고 대화할 때는 JVMDI 및 JNI 가 사용된다. 다른 디버거 어플리케이션과 통신할 때는, 트랜스폴트와 JDWP 프로토콜이 사용된다. 각 서브 옵션에 대해서는,<a href="#jdwpoptions">후술 하는 설명</a>을 참조 </dd>
+</dl>
+
+<h4>
+<a NAME="Xrunjdwp"></a> -agentlib:jdwp 및 -Xrunjdwp 서브 옵션</h4>
+-agentlib:jdwp 및 -Xrunjdwp 옵션은, 서브 옵션을 지정하는 것에 의해 상세하게 설정할 수 있습니다. 서브 옵션은, 다음의 형식에서 지정합니다.
+
+<p><tt>&nbsp;&nbsp;&nbsp; -agentlib:jdwp=&lt;name1&gt;[=&lt;value1&gt;], &lt;name2&gt;[=&lt;value2&gt;]...</tt>
+</p>
+
+<p>또는</p>
+
+<p><tt>&nbsp;&nbsp;&nbsp; -Xrunjdwp:&lt;name1&gt;[=&lt;value1&gt;], &lt;name2&gt;[=&lt;value2&gt;]...</tt>
+</p>
+
+
+<p>사용할 수 있는 옵션에 대해, 다음의 겉(표)로 설명합니다.  <a name="jdwpoptions"></a>  <br>&nbsp;
+<center><table summary="-Xrunjdwp sub-options" BORDER WIDTH="90%" >
+<caption>-Xrunjdwp 의 서브 옵션</caption>
+
+<thead>
+<th><b>이름</b></th>
+
+<th><b>필수</b></th>
+
+<th WIDTH="30%"><b>디폴트 값</b></th>
+
+<th WIDTH="50%"><b>설명</b></th>
+
+
+<tr>
+<td WIDTH="10%"><tt>help</tt></td>
+
+<td WIDTH="10%">아니오</td>
+
+<td>적용 없음</td>
+
+<td>간단한 헬프 메세지를 표시해 VM 를 종료한다</td>
+</tr>
+
+<tr>
+<td><tt>transport</tt></td>
+
+<td>네</td>
+
+<td>없음</td>
+
+<td>디버거 어플리케이션에 접속할 경우에 사용하는 트랜스폴트의 이름. &nbsp;</td>
+</tr>
+
+<tr>
+<td><tt>server</tt></td>
+
+<td>아니오</td>
+
+<td>"n"</td>
+
+<td>「y」의 경우는, 디버거 어플리케이션의 접속을 대기한다. 그렇지 않은 경우는, 지정된<tt>주소</tt>의 디버거 어플리케이션에 접속한다.
+<p>「y」가 지정되고 있을 때 주소가 지정되어 있지 않은 경우는, 디버거 어플리케이션을 대기하는<a href="#Transports">트랜스폴트 주소</a>를 선택해, 표준 출력 스트림에 그 주소를 출력한다</td>
+</tr>
+
+<tr>
+<td><tt>address</tt></td>
+
+<td><tt>server=n</tt> 의 경우는, 필수. <br><tt>server=y</tt> 의 경우는, 옵션</td>
+
+<td>""</td>
+
+<td>접속용의<a href="#Transports">트랜스폴트 주소</a> . server=n 의 경우는, 이 주소의 디버거 어플리케이션에 대해서 접속한다. server=y 의 경우는, 이 주소로 접속을 대기한다</td>
+</tr>
+
+<tr>
+<td><tt>timeout</tt></td>
+
+<td>아니오</td>
+
+<td>""</td>
+
+<td>
+server=y 의 경우는, 디버거로부터의 접속을 대기할 경우에 사용하는 타임 아웃 (밀리 세컨드 단위)을 지정한다. server=n 의 경우는, 디버거에의 접속시에 사용하는 타임 아웃 (밀리 세컨드 단위)을 지정한다. 일부의 트랜스폴트 구현에서는, 타임 아웃 옵션이 무시되는 경우가 있다
+</td>
+</tr>
+
+<tr>
+<td><tt>launch</tt></td>
+
+<td>아니오</td>
+
+<td>없음</td>
+
+<td>JDWP 의 초기화가 완료했을 때에, 이 캐릭터 라인으로 지정된 프로세스를 기동한다. 이 옵션은, 「Just-In-Time 디버그」를 실시할 때,<tt>onthrow</tt> 또는 <tt>onuncaught</tt>, 혹은 그 양쪽 모두의 옵션과 조합해 사용한다. 「Just-In-Time 디버그」에서는, 이 VM 로 특정의 이벤트가 발생했을 때에 디버거 프로세스가 기동한다
+<p>기동되는 프로세스는, 자신의 윈도우에서는 기동되지 않는 것에 주의. 대부분의 경우, 기동되는 프로세스는 작은 어플리케이션으로, 기동 후에 디버거 어플리케이션이 자신의 윈도우로 기동된다
+<p>이 인수로 지정한 캐릭터 라인에는, 공백에서 단락지어진 다음의 캐릭터 라인이 추가된다. 이러한 캐릭터 라인은, 기동된 디버거가 이 VM 와의 접속을 확립하기 위해서 사용된다. 이렇게 해 생성된 캐릭터 라인이 실행된다
+<ul>
+<li>
+<tt>transport</tt> 서브 옵션의 값</li>
+
+<li>
+<tt>address</tt> 서브 옵션의 값. 지정되지 않는 경우는, 생성된 주소</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td><tt>onthrow</tt></td>
+
+<td>아니오</td>
+
+<td>없음</td>
+
+<td>특정의 클래스의 예외가 이 VM 에 throw 될 때까지, JDWP 라이브러리의 초기화를 지연 한다. 예외 클래스명은, 패키지로 수식되어 있지 않으면 안 된다. JDWP 가 초기화되었을 때에 접속이 확립되기 (위해)때문에, 이 예외가 throw 될 때까지 접속은 확립되지 않는다</td>
+</tr>
+
+<tr>
+<td><tt>onuncaught</tt></td>
+
+<td>아니오</td>
+
+<td>"n"</td>
+
+<td>「y」의 경우는, uncaught 예외가 이 VM 에 throw 될 때까지, JDWP 라이브러리의 초기화를 지연 한다. JDWP 가 초기화되었을 때에 접속이 확립되기 (위해)때문에, 이 예외가 throw 될 때까지 접속은 확립되지 않는다. uncaught 예외의 정의에 대해서는, JDI 스펙의 com.sun.jdi.ExceptionEvent 를 참조</td>
+</tr>
+
+<tr>
+<td><tt>suspend</tt></td>
+
+<td>아니오</td>
+
+<td>"y"</td>
+
+<td>「y」의 경우, VMStartEvent 는 중단 정책가 SUSPEND_ALL 가 된다. 「n」의 경우, VMStartEvent 의 중단 정책는 SUSPEND_NONE 가 된다</td>
+</tr>
+
+</table></center>
+
+<h4>
+례</h4>
+
+<dl>
+<dt><tt>-agentlib:jdwp=transport=dt_socket, server=y, address=8000</tt></dt>
+<dd>포트 8000 상에서 소켓 접속을 대기한다. 메인 클래스가 로드 되기 전에 이 VM 를 중단한다 (디폴트에서는 suspend=y). 디버거 어플리케이션이 접속된 후, 디버거 어플리케이션이 JDWP 커멘드를 송신해 VM 를 재개한다</dd>
+<dd><br> </dd> <dt><tt>-agentlib:jdwp=transport=dt_socket, server=y, address=localhost:8000, timeout=5000</tt></dt>
+<dd>루프백 주소상의 포트 8000 에서만 소켓 접속을 대기한다. 디버거가 5 초 이내에 접속하지 않는 경우는 종료한다. 메인 클래스가 로드 되기 전에 이 VM 를 중단한다 (디폴트에서는 suspend=y). 디버거 어플리케이션이 접속된 후, 디버거 어플리케이션이 JDWP 커멘드를 송신해 VM 를 재개한다</dd>
+<dd><br> </dd> <dt><tt>-agentlib:jdwp=transport=dt_shmem, server=y, suspend=n</tt></dt>
+<dd>사용 가능한 공용 메모리트란스포트의 주소를 선택해, 표준 출력에 출력한다. 그 주소로 공용 메모리 접속을 대기한다. 디버거 어플리케이션이 접속되기 전에, VM 는 실행을 개시한다</dd>
+<dd><br>
+</dd>
+<dt><tt>-agentlib:jdwp=transport=dt_socket, address=myhost:8000</tt></dt>
+<dd>실행중의 디버거 어플리케이션에 대해서, 호스트 myhost 의 포트 8000 에 소켓을 개입시켜 접속한다.  메인 클래스가 로드 되기 전에, 이 VM 를 중단한다</dd>
+<dd><br>
+</dd>
+<dt><tt>-agentlib:jdwp=transport=dt_shmem, address=mysharedmemory</tt></dt>
+<dd>실행중의 디버거 어플리케이션에 대해서, 트랜스폴트 주소 「<tt>mysharedmemory</tt>」로 공용 메모리를 개입시켜 접속한다. 메인 클래스가 로드 되기 전에, 이 VM 를 중단한다</dd>
+<dd><br>
+</dd>
+<dt><tt>-agentlib:jdwp=transport=dt_socket, server=y, address=8000, onthrow=java.io.IOException, launch=/usr/local/bin/debugstub</tt></dt>
+<dd>java.io.IOException 의 인스턴스가 이 VM 로 throw 되는 것을 대기한다. 이 VM 를 중단한다 (디폴트에서는 suspend=y). 포트 8000 으로 소켓 접속을 대기한다. "<tt>/usr/local/bin/debugstub dt_socket myhost:8000</tt>」를 실행한다.  이 프로그램에 의해, 다른 윈도우로 디버거 프로세스가 기동되어 이 VM 에 접속되어 디버그가 개시된다</dd>
+<dd><br>
+</dd>
+<dt><tt>-agentlib:jdwp=transport=dt_shmem, server=y, onuncaught=y, launch=d:\bin\debugstub.exe</tt></dt>
+<dd>uncaught 예외가 이 VM 로 throw 되는 것을 대기한다. VM 를 중단한다. 공용 메모리트란스포트의 주소를 선택해, 그 주소로 접속을 대기한다. 「<tt>d:\bin\debugstub.exe dt_shmem &lt;address&gt;</tt>」를 실행한다. <tt>&lt;address&gt;</tt> 는, 선택된 공용 메모리 주소. 이 프로그램에 의해, 다른 윈도우로 디버거 프로세스가 기동되어 이 VM 에 접속되어 디버그가 개시된다</dd>
+<dd><br>
+</dd>
+<dt><tt></tt></dt>
+</dl>
+
+
+<h3>
+<a NAME="Plugin"></a> Plug-in 애플릿의 디버그</h3>
+버젼 1.2. 2 의 Java Plug-in 로부터, Plug-in 환경에서 동작하는 애플릿을 디버그 할 수 있게 되었습니다. <a href="#Invocation">전술</a>한 VM 에 필요한 옵션은, Java Plug-in 컨트롤 패널의 「기본」탭아래에 있는 「Java 실행 환경 옵션」으로 지정할 수 있습니다. 「상세」탭아래에 있는 디버그 옵션은, 종래의 <tt>sun.tools.debug</tt> 디버그 지원용이므로, 사용하지 말아 주세요. 향후의 버젼의 Plug-in 에서는, 이러한 디버그 옵션은, JPDA 를 사용하도록(듯이) 변경될 예정입니다.
+<p>JDI 의 기동<a href="#Connectors">연결기</a>는,Plug-in 애플릿의 디버그에는 사용할 수 없습니다.
+<h3>
+<a NAME="JDB"></a> JDB 와의 접속</h3>
+JPDA 에 부속되어 있는 JDB 의 구현예는, JDI 연결기의 사용법을 나타내는 것이 되어 있습니다. JDB 에는, 「쇼트 컷」옵션이 있습니다. 이 옵션에서는, JDB 에 인식되고 있는 연결기 (레퍼런스 구현에 존재하는 연결기)가 사용되는 것을 전제로 하고 있습니다. 또, 임의의 연결기를 사용해 일반적인 접속을 확립할 수도 있습니다. JDB 는 최선의 디버거 인터페이스의 예가 아닙니다만, 연결기의 간단한 사용예로서 참조할 수 있습니다.
+<p>JDB 에서는, -attach 옵션을 지정하면(자), 레퍼런스 구현의 접속 연결기 (Microsoft Windows 상에서는 공용 메모리, Solaris 및 Linux 플랫폼상에서는 소켓)에 액세스 할 수가 있습니다. -listen 옵션을 지정하면(자), 레퍼런스 구현의 대기 연결기 (Microsoft Windows 상에서는 공용 메모리, Solaris 및 Linux 플랫폼상에서는 소켓)에 액세스 할 수가 있습니다. 커멘드행에 클래스명과 인수를 직접 지정하면(자), Sun 커멘드행 기동 연결기에 액세스 할 수가 있습니다.
+<p>예를 나타냅니다.
+<p><tt>jdb -attach myhost:8000</tt>
+<p>위와 같게 입력하면(자), 소켓 접속 연결기를 사용해 간단하게 타겟 VM 에 접속할 수 있습니다 (Solaris 오퍼레이팅(operating) 환경의 경우).
+<p><tt>jdb Hello 1 2 3</tt>
+<p>위와 같게 입력하면(자), Sun 커멘드행 기동 연결기를 사용해 간단하게 타겟 VM 를 기동할 수 있습니다.
+<p>또, JDB 에는, -connect 옵션도 제공되고 있습니다. 연결기명을 지정해, 한층 더 인수로서 이름과 값의 임의의 편성을 지정하는 것에 의해, 임의의 연결기를 사용할 수도 있습니다. 예를 들어, 상기의 2 개의 커멘드행은, 다음의 커멘드행과 같은 것입니다.
+<p><tt>jdb -connect com.sun.jdi.SocketAttach:hostname=myhost, port=8000</tt> <br><tt>jdb -connect "com.sun.jdi.CommandLineLaunch:main=Hello 1 2 3"</tt>
+<p>이러한 커멘드행은, 최초의 예보다 복잡합니다만, -connect 옵션을 지정하면 임의의 연결기를 사용할 수 있습니다. 이러한 조작으로부터, JDI 디버거에서는, 임의의 연결기를 사용할 수 있는 것을 알 수 있습니다. 또, 자주(잘) 사용되는 연결기를 사용하기 위한 간단한 인터페이스도 제공되고 있습니다.
+<P>
+<hr noshade="noshade" size="3">
+<h3><a name="SPI"></a> 서비스 프로바이더 인터페이스</h3>
+
+<p>
+JPDA 에 포함되어 있는 서비스 프로바이더 인터페이스를 사용하면(자), 연결기나 트랜스폴트의 구현을 개발 및 배치할 수 있습니다. 이러한 서비스 프로바이더 인터페이스에 의해, 디버거나 다른 툴 벤더로 새로운 연결기 구현을 개발해, Sun 가 제공하는 소켓 및 공용 메모리트란스포트를 넘는 다른 트랜스폴트 기구를 제공할 수가 있습니다. JDI 의 서비스 프로바이더 인터페이스는,<a href="../../../jdk/api/jpda/jdi/com/sun/jdi/connect/spi/package-summary.html">com.sun.jdi.connect.spi</a>  패키지로 지정됩니다.  </p>
+
+<p>JDI 의 서비스 프로바이더 인터페이스에 가세해 Sun 의 구현에는 <a href="jdwpTransport.html">Java <sup><font size="-2">TM</font></sup>Debug Wire Protocol Transport Interface</a>  라고 하는 트랜스폴트 라이브러리 인터페이스도 포함되어 있습니다. 트랜스폴트 라이브러리는, 타겟 VM 의 JDWP 에이전트에 의해 로드 되어 디버거와의 접속의 확립, 및 디버거와 VM 간의 JDWP 패킷의 트랜스폴트에 사용됩니다.  </p>
+
+<p>서비스 프로바이더 인터페이스에 관한 자세한 것은, 문서<a href="jpda_spis.html">「Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture - 서비스 프로바이더 인터페이스」</a>를 참조해 주세요.  </p>
+
+
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR VALIGN=TOP>
+<TD><FONT SIZE=-2>Copyright &copy; 2005 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>&nbsp;
+
+<P><FONT SIZE=-1>코멘트의 송부처:<A HREF="http://java.sun.com/j2se/mail/debuggingfeedback.html">Debugging Feedback</A>  &nbsp;</FONT></TD>
+
+<TD ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30></TD>
+</TR>
+</TABLE>
+&nbsp;<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>&nbsp;
+<P>
+</a> </BODY>
+</HTML>

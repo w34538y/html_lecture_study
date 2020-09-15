@@ -1,0 +1,692 @@
+<? xml version="1.0" encoding="UTF-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+
+<title>JDK 의 개발툴 - xrath.com 에서 번역됨</title>
+<style type="text/css">
+/*<![CDATA[*/
+<!--
+.SansSerif        { font-family: Arial, Helvetica, sans-serif; }
+.ContentList      { font-size: 90%; style: margin-left: 3.4em; }
+.Note             { margin-left: 4em; margin-right: 4em; font-size: 90%; }
+h2                { font-family: Arial, Helvetica, sans-serif; }
+h3                { margin-left: 1.4em; margin-bottom: .1em; font-family: Arial, Helvetica, sans-serif; }
+li                { margin-left: 1.7em; }
+-->
+/*]]>*/
+</style>
+</head>
+
+<body bgcolor="white">
+  <table border="0" width="100%" summary="layout">
+    <tr>
+<td><img src="../../images/javalogo52x88.gif" alt="Java" border=       "0" width="52" height="88" /></td>
+
+      <td>
+        <center>
+<h1>JDK 툴과 유틸리티</h1>
+        </center>
+      </td>
+
+<td align="right" valign="top"><a href=       "../../index.html"><font size="-1">문서의 목차</font></a> </td>
+    </tr>
+  </table><br /> <!-- ======================== Body text begins here ===================== -->
+
+  <div style=
+  "background-color: #EEEEEE; margin-left: 1.7em; margin-right: 1.7em;">
+  <br />
+
+<h3>전반</h3>
+
+    <ul class="ContentList">
+<li><a href="#general"><b class="SansSerif">일반적인 정보</b></a>  (파일 구조, 클래스 패스, 클래스의 검색 방법, 변경점)</li>
+    </ul>
+
+<h3>표준적인 JDK 툴과 유틸리티</h3>
+
+    <ul class="ContentList">
+<li><a href="#basic"><b class="SansSerif">기본적인 툴</b></a>  (javac, java, javadoc, apt, appletviewer, jar, jdb, javah, javap, extcheck)</li>
+
+<li><a href="#security"><b class="SansSerif">시큐리티 툴</b></a>  (keytool, jarsigner, policytool, kinit, klist, ktab)
+      </li><li>
+
+</li><li><a href="#intl"><b class="SansSerif">국제화 툴</b></a>  (native2ascii)</li>
+
+<li><a href="#rmi"><b class="SansSerif">Remote Method Invocation (RMI) 툴</b></a>  (rmic, rmiregistry, rmid, serialver)</li>
+
+<li><a href="#idl"><b class="SansSerif">Java IDL 및 RMI-IIOP 툴</b></a>  (tnameserv, idlj, orbd, servertool)</li>
+
+<li><a href="#deployment"><b class="SansSerif">Java 배치 툴</b></a>  (pack200, unpack200)</li>
+
+<li><a href="#plugin"><b class="SansSerif">Java Plug-in 툴</b></a>  (htmlconverter)</li>
+
+<li><a href="#javaws"><b class="SansSerif">Java Web Start 툴</b></a>  (javaws)</li>
+
+<li><a href="#jconsole"><b class="SansSerif">Java 감시 및 관리 콘솔</b></a>  (jconsole) </li>
+<li>
+<a href="#webservices"<b class="SansSerif">Java Web Services 툴</a> 
+</li>
+
+    </ul>
+
+<h3>시험적인 JDK 툴과 유틸리티</h3>
+
+<p class="Note"><b class="SansSerif">주</b> - 이 마디로 설명하는 툴은 지원되지 않고, 본질적으로<b>시험적</b>인 것이므로, 이 점에 유의해 사용해 주세요. 이것들은 장래의 JDK 버젼에서는 이용할 수 없게 되는 경우가 있습니다. </p>
+
+    <ul class="ContentList">
+<li><a href="#monitor"><b class="SansSerif">감시 툴</b></a>  (jps, jstat, jstatd)</li>
+
+<li><a href="#troubleshoot"><b class=       "SansSerif">트러블 슈팅 툴</b></a>  (jinfo, jhat, jmap, jsadebugd, jstack)</li>
+
+<li><a href="#scripting"><b class=       "SansSerif">스크립트 툴</b></a>  (jrunscript)</li>
+    </ul>
+
+<h3>트러블 슈팅 문서</h3>
+
+    <ul class="ContentList">
+<li><a href=       "http://java.sun.com/j2se/1.5/pdf/jdk50_ts_guide.pdf"><b class="SansSerif">J2SE 5.0 Trouble-Shooting and Diagnostic Guide</b></a>  (문제를 분석할 때 사용하는 툴, 옵션, 및 그 외의 항목)</li>
+    </ul><br />
+  </div>
+
+  <p style="font-size: 90%; margin-left: 2em; margin-right: 2em;">
+<b>주</b> - 어느 개발툴에도, Microsoft Windows 판 (Windows), Solaris 판, 및 Linux 판이 준비되어 있습니다. 이러한 버젼의 기능에는, 거의 차이점은 없습니다. 다만, 각각의 OS 독자적인 기능에 대응하기 위해(때문에), 구성과 사용법이 다소 차이가 납니다. 예를 들어, OS 의 종류에 의해 디렉토리의 단락 문자를 지정할 방법이 다릅니다. </p><br /> <!-- =================================================== -->
+  <hr />
+
+<h2><a name="general" id="general"></a> <a name="classpath" id="classpath"></a> 일반 정보</h2>
+
+<p>다음의 문서는, SDK 툴을 최대한으로 활용하기 위해서 필요한 중요한 정보를 제공하고 있습니다. </p>
+
+  <table border="0" summary="SDK Overview Information">
+    <tr>
+<td><b>JDK 파일 구조</b></td>
+
+<td nowrap="nowrap">[<a href=       "solaris/jdkfiles.html">Solaris</a> ] [<a href=       "linux/jdkfiles.html">Linux</a> ] [<a href=       "windows/jdkfiles.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td><b>클래스 패스의 설정</b></td>
+
+<td nowrap="nowrap">[<a href="solaris/classpath.html">Solaris 및 Linux</a> ] [<a href=       "windows/classpath.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td><b>클래스의 검색 방법</b></td>
+
+<td nowrap="nowrap">[<a href="findingclasses.html">Solaris, Linux, 및 Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td><b>Java 2 SDK, v1. 4 에서의 툴의 변경점</b></td>
+
+<td nowrap="nowrap">[<a href="tools-changes.html">Solaris, Linux, 및 Windows</a> ]</td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="basic" id="basic"></a> <a name="javac" id="javac"></a> <a name="java" id="java"></a> <a name="jar" id="jar"></a> 기본적인 툴</h2>이것들은 JDK 의 기본적인 툴입니다. 어플리케이션을 작성 및 구축하기 위해서 사용합니다.
+
+  <table border="0" width="100%" summary=
+  "List of Basic JDK Tools with Links to Reference Pages">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+
+<th align="left" nowrap="nowrap">레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><b>javac</b></td>
+
+<td width="70%" valign="top">Java 프로그램 언어의 컴파일러</td>
+
+<td width="17%" valign="top" nowrap="nowrap">[<a href=       "solaris/javac.html">Solaris 및 Linux</a> ] [<a href=       "windows/javac.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>java</b></td>
+
+<td valign="top">Java 어플리케이션의 기동 툴. 이 릴리스에서는, 개발용으로도 배포 어플리케이션용으로도 같은 기동 툴이 사용된다. <br />배포 어플리케이션용의 낡은 기동 툴인 <b>jre</b> 는 제공되지 않게 되었다</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/java.html">Solaris 및 Linux</a> ] [<a href=       "windows/java.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>javadoc</b></td>
+
+<td valign="top">API 문서 제네레이터. <br />도크 렛 API 및 태그 렛 API 에 대해서는,<a href="../guides/javadoc/index.html">「Javadoc 툴」</a>페이지를 참조해 주세요. </td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/javadoc.html">Solaris 및 Linux</a> ] [<a href=       "windows/javadoc.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>apt</b></td>
+
+<td valign="top">주석 처리 툴. <br />프로그램의 주석 처리에 대해서는,<a href="../guides/apt/index.html">「주석 처리 툴」</a>을 참조해 주세요. </td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "share/apt.html">Solaris, Linux, 및 Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>appletviewer</b></td>
+
+<td valign="top">Web 브라우저를 사용하지 않고 애플릿을 실행하거나 디버그 하거나 한다</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/appletviewer.html">Solaris 및 Linux</a> ] [<a href=       "windows/appletviewer.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>jar</b></td>
+
+<td valign="top">Java Archive (JAR) 파일을 작성합니다. <br />JAR 사용에 대해서는,<a href="../guides/jar/index.html">「Java Archive 파일」</a>페이지를 참조해 주세요. </td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/jar.html">Solaris 및 Linux</a> ] [<a href=       "windows/jar.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>jdb</b></td>
+
+<td valign="top">Java 디버거. <br />디버거의 아키텍쳐(architecture) 스펙에 대해서는,<a href="../guides/jpda/index.html">「JPDA」</a>를 참조해 주세요. </td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/jdb.html">Solaris 및 Linux</a> ] [<a href=       "windows/jdb.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>javah</b></td>
+
+<td valign="top">C 헤더와 Stub의 제네레이터. 네이티브 메소드를 작성하기 위해서 사용한다</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/javah.html">Solaris 및 Linux</a> ] [<a href=       "windows/javah.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>javap</b></td>
+
+<td valign="top">클래스 파일의 디스아센브라</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/javap.html">Solaris 및 Linux</a> ] [<a href=       "windows/javap.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>extcheck</b></td>
+
+<td valign="top">Jar 의 경합 검출 유틸리티</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/extcheck.html">Solaris 및 Linux</a> ] [<a href=       "windows/extcheck.html">Windows</a> ]</td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="security" id="security"></a> <a name="jarsigner" id="jarsigner"></a> 시큐리티 툴</h2>
+		이러한 시큐리티 툴은, 시스템에 시큐리티 정책를 설정하는 경우, 및 원격 사이트에서 설정된 시큐리티 정책의 범위내에서 동작하는 애플릿 및 어플리케이션을 작성하는 경우에 사용합니다.
+
+  <table border="0" width="100%" summary=
+  "List of Security Tools with Links to Reference Pages">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+
+<th align="left" nowrap="nowrap">레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><b>keytool</b></td>
+
+<td width="70%" valign="top">키스토어와 증명서를 관리한다</td>
+
+<td width="17%" valign="top" nowrap="nowrap">[<a href=       "solaris/keytool.html">Solaris 및 Linux</a> ] [<a href=       "windows/keytool.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>jarsigner</b></td>
+
+<td valign="top">JAR 서명을 생성 및 검증한다</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/jarsigner.html">Solaris 및 Linux</a> ] [<a href=       "windows/jarsigner.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>policytool</b></td>
+
+<td valign="top">정책 파일을 관리하기 위한 GUI 툴</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/policytool.html">Solaris 및 Linux</a> ] [<a href=       "windows/policytool.html">Windows</a> ]</td>
+    </tr>
+  </table>
+
+<p><a name="kerberos" id="kerberos"></a> 이러한 시큐리티 툴은, Kerberos 티켓을 취득, 일람표시, 및 관리하는 경우에 사용합니다. </p>
+
+  <table border="0" width="100%" summary=
+  "List of Kerberos Related Security Tools with Links to Reference Pages">
+  <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+
+<th align="left" nowrap="nowrap">레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><b>kinit</b></td>
+
+<td width="70%" valign="top">Kerberos v5 티켓을 취득하기 위한 툴. Solaris  operating system에서도, kinit 툴을 사용하면, 동등의 기능을 이용할 수 있습니다. 예를 들어 Solaris 8 의 경우는,<a href=       "http://docs.sun.com/?q=kinit&amp;p=/doc/806-0624/6j9vek58d&amp;a=view">kinit 의 메뉴얼 페이지</a>를 참조해 주세요. </td>
+
+      <td width="17%" valign="top" nowrap="nowrap">
+[<a href="windows/kinit.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>klist</b></td>
+
+<td valign="top">자격 캐쉬 및 키 탭에서의 엔트리를 일람표시 하는 커멘드행 툴. Solaris  operating system에서도, klist 툴을 사용하면, 동등의 기능을 이용할 수 있습니다. 예를 들어 Solaris 8 의 경우는,<a href=       "http://docs.sun.com/?q=kinit&amp;p=/doc/806-0624/6j9vek58e&amp;a=view">klist 의 메뉴얼 페이지</a>를 참조해 주세요. </td>
+
+      <td valign="top" nowrap="nowrap">
+[<a href="windows/klist.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>ktab</b></td>
+
+<td valign="top">열쇠 테이블에 있어서의 엔트리를 관리하기 위해서 사용자가 사용하는 커멘드행 툴. Solaris  operating system에서도, kadmin 툴을 사용하면, 동등의 기능을 이용할 수 있습니다. 예를 들어 Solaris 8 의 경우는,<a href=       "http://docs.sun.com/?q=kadmin&amp;p=/doc/816-0211/6m6nc66th&amp;a=view">kadmin 의 메뉴얼 페이지</a>를 참조해 주세요. </td>
+
+      <td valign="top" nowrap="nowrap">
+[<a href="windows/ktab.html">Windows</a> ]</td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="intl" id="intl">국제화 툴</a> </h2>이 툴은, 로컬라이즈가 가능한 애플릿 및 어플리케이션을 작성하는 경우에 사용합니다.
+
+  <table border="0" width="100%" summary=
+  "Internationalization Tool with Links to Reference Pages">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+
+<th align="left" nowrap="nowrap">레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><b>native2ascii</b></td>
+
+<td width="70%" valign="top">텍스트를 Unicode Latin-1 로 변환한다</td>
+
+<td width="17%" valign="top" nowrap="nowrap">[<a href=       "solaris/native2ascii.html">Solaris 및 Linux</a> ] [<a href=       "windows/native2ascii.html">Windows</a> ]</td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="rmi" id="rmi"></a> <a name="rmiregistry" id="rmiregistry"></a> Remote Method Invocation (RMI) 툴</h2>
+		이러한 툴은, Web 및 그 외의 네트워크상에서 대화하는 애플릿 및 어플리케이션을 작성하는 경우에 사용합니다.
+
+  <table border="0" width="100%" summary=
+  "List of Remote Method Invocation (RMI) JDK Tools with Links to Reference Pages">
+  <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+
+<th align="left" nowrap="nowrap">레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><b>rmic</b></td>
+
+<td width="70%" valign="top">원격 객체의 Stub와 스켈리턴을 생성한다</td>
+
+<td width="17%" valign="top" nowrap="nowrap">[<a href=       "solaris/rmic.html">Solaris 및 Linux</a> ] [<a href=       "windows/rmic.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>rmiregistry</b></td>
+
+<td valign="top">원격 객체의 레지스트리 서비스</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/rmiregistry.html">Solaris 및 Linux</a> ] [<a href=       "windows/rmiregistry.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>rmid</b></td>
+
+<td valign="top">RMI 기동 시스템 demon</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/rmid.html">Solaris 및 Linux</a> ] [<a href=       "windows/rmid.html">Windows</a> ]</td>
+    </tr>
+
+    <tr>
+<td valign="top"><b>serialver</b></td>
+
+<td valign="top">클래스의 serialVersionUID 를 돌려준다</td>
+
+<td valign="top" nowrap="nowrap">[<a href=       "solaris/serialver.html">Solaris 및 Linux</a> ] [<a href=       "windows/serialver.html">Windows</a> ]</td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="idl" id="idl">Java IDL 및 RMI-IIOP 툴</a> </h2>이러한 툴은, OMG 표준인 IDL 및 CORBA/IIOP 를 사용하는 어플리케이션을 작성할 경우에 사용합니다.
+
+  <table border="0" width="100%" summary=
+  "List of Java IDL and RMI-IIOP Tools">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td width="13%" valign="top"><a href=       "share/tnameserv.html"><b>tnameserv</b></a> </td>
+
+<td width="87%" valign="top">네임 서비스에의 액세스를 제공한다</td>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/idlj.html"><b>idlj</b></a> </td>
+
+<td valign="top">OMG IDL 인터페이스를 매핑 한다 . java 파일을 생성해, Java 프로그램 언어로 쓰여진 어플리케이션으로 CORBA 기능을 사용할 수 있도록(듯이) 한다</td>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/orbd.html"><b>orbd</b></a> </td>
+
+<td valign="top">CORBA 환경에서 서버상의 지속 객체를 투과적으로 검색해 호출할 수 있도록(듯이), 클라이언트를 지원한다. ORBD 는 일시 네임 서비스 <tt>tnameserv</tt> 대신에 사용됩니다. ORBD 에는 일시 네임 서비스와 지속 네임 서비스의 양쪽 모두가 포함됩니다. <b>orbd</b> 툴에는, 서버 매니저, Interoperable Naming Service, 및 bootstrap 네임서버-의 기능이 짜넣어지고 있습니다. <tt>「s ervertool」</tt> 와 함께 사용하면(자), 서버 매니저는 클라이언트가 서버에의 액세스를 요구했을 때에 그 서버를 검색, 등록, 및 기동합니다. </td>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/servertool.html"><b>servertool</b></a> </td>
+
+<td valign="top">서버를 등록, 등록 해제, 기동, 및 종료하기 위한 , 어플리케이션 프로그래머전용의 사용하기 쉬운 인터페이스</td>
+    </tr>
+  </table>
+  <hr />
+  <a name="deployment" id="deployment"></a> 
+
+<h2>Java 배치 툴</h2>Java 어플리케이션 및 애플릿을 Web 에 배치하는 경우에 사용되는 유틸리티입니다.
+
+  <table border="0" width="100%" summary=
+  "List of deployment tools">
+    <tr>
+<th width="13%" align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/pack200.html"><b>pack200</b></a> </td>
+
+<td valign="top">Java <code>gzip</code> 압축 프로그램을 사용해, JAR 파일을 <code>pack200</code> 압축파일로 변환합니다. 압축 후의 팩 파일은 압축율의 높은 JAR 이며, 직접 배치, 대역폭의 절약, 및 다운로드 시간의 단축에 도움이 됩니다. </td>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/unpack200.html"><b>unpack200</b></a> </td>
+
+<td valign="top"><code>pack200</code> 로 압축된 팩 파일을 JAR 파일로 변환합니다. </td>
+    </tr>
+  </table>
+  <hr />
+
+<h2><a name="plugin" id="plugin">Java Plug-in 툴</a> </h2>Java Plug-in 와 조합해 사용하는 유틸리티입니다.
+
+  <table border="0" width="100%" summary=
+  "List of Java Plug-in Tools with Links to Reference Pages">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명과 레퍼런스 페이지로의 링크</th>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "../guides/plugin/developer_guide/html_converter.html"><b>htmlconverter</b></a> </td>
+
+<td width="87%&quot;" valign="top">애플릿을 포함한 HTML 페이지 (파일)를 Java Plug-in 용의 <code>OBJECT</code>/<code>EMBED</code> 태그 형식으로 변환합니다. </td>
+    </tr>
+  </table>
+  <hr />
+  <a name="javaws" id="javaws"></a> 
+
+<h2>Java Web Start 툴</h2>Java Web Start 와 조합해 사용하는 유틸리티입니다.
+
+  <table border="0" width="100%" summary=
+  "List of Java Web Start Tools with Links to Reference Pages">
+    <tr>
+<th width="13%" align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/javaws.html"><b>javaws</b></a> </td>
+
+<td valign="top">Java Web Start 의 기동이나 다양한 옵션의 설정에 사용하는 커멘드행 툴. <br />상세한 것에 대하여는,<a href=       "../guides/javaws/developersguide/contents.html">「Java Web Start」</a>를 참조</td>
+    </tr>
+  </table>
+  <hr />
+
+  <a name="jconsole" id="jconsole"></a> 
+<h2>Java 감시 및 관리 콘솔 </h2>
+
+  <table border="0" width="100%" summary=
+  "List of Java Web Start Tools with Links to Reference Pages">
+    <tr>
+<th width="13%" align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td valign="top"><a href=       "share/jconsole.html"><b>jconsole:</b></a> </td>
+
+<td valign="top">Java 가상 머신을 감시하기 위한 JMX 준거의 그래피컬 툴. 로컬 JVM 와 원격 JVM 의 양쪽 모두를 감시할 수 있습니다. 어플리케이션의 감시와 관리를 실시할 수도 있습니다. <br />상세한 것에 대하여는,<a href="../guides/management/index.html">「Java 플랫폼의 감시와 관리」</a>를 참조해 주세요. </td>
+    </tr>
+  </table>
+
+<hr>
+
+<a name="webservices"></a> 
+<h2>Java Web Services 툴</h2>
+<table border="0" width="100%" summary="List of Web Services Tools">
+<tr>
+<th width="13%" align="left">툴명</th>
+<th align="left">간단한 설명</th>
+</tr>
+<tr>
+<td>
+<a href="./share/schemagen.html"><b>schemagen</b></a> 
+</td>
+<td>
+Java Architecture for XML Binding 용의 schema 제네레이터.
+</td>
+</tr>
+<tr>
+<td>
+<a href="./share/wsgen.html"><b>wsgen</b></a> 
+</td>
+<td>
+JAX-WS 휴대용 아티팩트를 생성하기 위한 툴.
+</td>
+</tr>
+<tr>
+<td>
+<a href="./share/wsimport.html"><b>wsimport</b></a> 
+</td>
+<td>
+JAX-WS 휴대용 아티팩트를 생성하기 위한 툴.
+</td>
+</tr>
+<tr>
+<td>
+<a href="./share/xjc.html"><b>xjc</b></a> 
+</td>
+<td>
+Java Ardchitecture for XML Binding 용의 바인딩 컴파일러.
+</td>
+</tr>
+</table>
+
+
+<hr />
+<h2><a name="monitor">감시 툴</a> </h2>
+<P>
+다음의 툴을 사용해, JVM 의 퍼포먼스 상황을 감시할 수 있습니다. 이 마디로 설명하는 툴은,<b>시험적</b>인 것이기 (위해)때문에 지원되고 있지 않습니다. 이 점에 유의해 사용해 주세요. 이것들은 장래의 JDK 버젼에서는 이용할 수 없게 되는 경우가 있습니다.
+</P>
+<p>
+이러한 툴은, Windows 98 및 Windows Me 를 제외하는 모든 플랫폼에서 지원되고 있습니다.
+
+</p><table BORDER="0" WIDTH="100%" summary="List of Monitoring and Management Tools with Links to Reference Pages">
+<tr>
+<th align=left> 툴명 </th>
+<th align=left> 간단한 설명</th>
+
+</tr>
+<tr>
+<td width=13%" VALIGN="TOP">
+<a href="share/jps.html">
+<b>jps</b></a> </td>
+
+
+<td width=87%" VALIGN="TOP">
+<b>시험적</b>:JVM 프로세스 상태 툴 - 타겟 시스템상에 설치되어 있는 핫 스포트 Java 가상 머신의 일람을 표시합니다.
+</td>
+</tr>
+<tr>
+<td width=13%" VALIGN="TOP">
+<a href="share/jstat.html">
+<b>jstat</b></a> </td>
+
+<td width=87%" VALIGN="TOP">
+<b>시험적</b>:JVM 통계 데이터 감시 툴 - 설치되어 있는 핫 스포트 Java 가상 머신에 접속해, 커멘드행 옵션의 지정에 따라, 퍼포먼스 통계 데이터를 수집 및 기록합니다.  
+</td>
+</tr>
+
+<tr>
+<td width=13%" VALIGN="TOP">
+<a href="share/jstatd.html">
+<b>jstatd</b></a> </td>
+
+<td width=87%" VALIGN="TOP">
+<b>시험적</b>:JVM jstat demon - 설치되어 있는 핫 스포트 Java 가상 머신의 작성과 종료를 감시해, 로컬 시스템상에서 실행하고 있는 Java 가상 머신에, 원격 감시 툴이 접속할 수 있게 하기 위한 인터페이스를 제공하는 RMI 서버 어플리케이션을 기동합니다.
+</td>
+</tr>
+</table>
+
+
+<hr />
+
+
+
+<h2><a name="troubleshoot" id="troubleshoot">트러블 슈팅 툴</a> </h2>다음의 툴은, 특정의 트러블 슈팅 태스크에 사용할 수 있습니다. 이 마디로 설명하는 툴은 지원되지 않고, 본질적으로<b>시험적</b>인 것이므로, 이 점에 유의해 사용해 주세요. 이것들은 장래의 JDK 버젼에서는 이용할 수 없게 되는 경우가 있습니다.
+
+<p>이러한 툴의 일부는,<b>현재 Windows 플랫폼<!-- or on the Linux Itanium platform-->에서는 이용할 수 없습니다</b>. </p>
+
+  <table border="0" width="100%" summary=
+  "List of experimental troubleshooting tools">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jinfo.html"><b>jinfo</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: Java 의 구성 정보 - 지정된 프로세스나 코어 파일 또는 원격 디버그 서버의 구성 정보를 인쇄합니다. </td>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jhat.html"><b>jhat</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: heap 덤프 브라우저 - (예를 들어, jmap -dump 로 생성된) heap 덤프 파일로 Web 서버를 개시해, heap를 브라우즈 할 수 있도록(듯이) 합니다.
+      </td>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jmap.html"><b>jmap</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: Java 용 메모리 맵 - 지정된 프로세스나 코어 파일 또는 원격 디버그 서버의, 공용 객체 메모리 맵 또는 Java heap 메모리의 상세를 인쇄합니다. </td>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jsadebugd.html"><b>jsadebugd</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: Java 용 서비스 능력 에이전트 디버그 demon - Java 프로세스 또는 코어 파일에 접속해, 디버그 서버로서 기능합니다. </td>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jstack.html"><b>jstack</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: Java 용 스택 트레이스 - 지정된 프로세스나 코어 파일 또는 원격 디버그 서버에 대한 thread의 스택 트레이스를 인쇄합니다. </td>
+    </tr>
+  </table>
+
+<p>문제를 분석할 때 사용하는 툴, 옵션, 및 그 외의 항목에 대해 설명하고 있는<a href=  "http://java.sun.com/j2se/1.5/pdf/jdk50_ts_guide.pdf">「Java <sup><font size=   "-2">TM</font></sup> 2 Platform, Standard Edition 5.0 Trouble-Shooting and Diagnostic Guide」</a>를 참조해 주세요. 이 문서에는, 버그 리포트를 제출하기 전에 실시하는 것, 및 리포트용으로 수집하는 데이터에 관한 제안이 포함되어 있습니다. </p>
+
+<hr />
+
+
+
+<h2><a name="scripiting" id="scripting">스크립트 툴</a> </h2>Java 플랫폼과 서로 작용하는 스크립트를 실행하는 경우, 다음의 툴을 사용할 수 있습니다. 이 툴은 지원되지 않고, 본질적으로<b>시험적</b>인 것이므로, 이 점에 유의해 사용해 주세요. 이것들은 장래의 JDK 버젼에서는 이용할 수 없게 되는 경우가 있습니다.
+
+  <table border="0" width="100%" summary="Scripting tools">
+    <tr>
+<th align="left">툴명</th>
+
+<th align="left">간단한 설명</th>
+    </tr>
+
+    <tr>
+<td width="13%&quot;" valign="top"><a href=       "share/jrunscript.html"><b>jrunscript</b></a> </td>
+
+<td width="87%&quot;" valign="top"><b>시험적</b>: Java 용 스크립트 쉘 - 스크립트를 실행합니다. </td>
+    </tr>
+  </table>
+
+  <hr size="3" noshade="noshade" />
+
+  <table border="0" width="100%" summary="layout">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../legal/SMICopyright.html">Copyright</a>  &copy; 2002-2004 <a href="http://www.sun.com">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+      </td>
+
+<td align="right"><img src="../../images/sunlogo64x30.gif" alt=       "Sun" border="0" width="64" height="30" /><br /> <font size="+1"><i> Java Software </i></font></td>
+    </tr>
+  </table>
+  <pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>

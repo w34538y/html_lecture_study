@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>. cab 파일로부터 . jar 파일에 업그레이드 한 서명필 애플릿... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote>
+<h2><span class="bg2"><code>. cab</code> 파일로부터 <code>. jar</code> 파일에 업그레이드 한 서명필 애플릿을 Microsoft VM 로 실행하면(자) 시큐리티 예외가 throw 된다</span></h2>
+<h3><font color="#CC0033"><br> 증상</font></h3>
+<p> <code>. cab</code> 파일로부터 <code>. jar</code> 파일에 서명필 애플릿을 업그레이드 하면(자), 그 애플릿은 Microsoft VM 로 동작하지 않게 됩니다. Sun JRE 에서는 정상적으로 실행됩니다. </p>
+<h3> <font color="#CC0033">원인</font></h3>
+<p> 이 에러는, Microsoft VM 에 서명필 <code>. jar</code> 파일의 지원가 없기 위해(때문에) 일어납니다.  While the Microsoft VM supports unsigned <code>. jar</code> files through the <code>archive</code> attribute of the <code>&lt;APPLET&gt;</code> tag, classes and resources within signed <code>. jar</code> files are treated as untrusted in the Microsoft VM. </p>
+<p> 그 결과, 그 애플릿은 Microsoft VM 에 의해 신뢰되어 있지 않은 것으로서 다루어지게 되어, 애플릿 sandbox 외부에 액세스가 필요한 애플릿에 의한 액션은, 시큐리티 예외가 되는 경우가 있습니다. </p>
+<h3> <font color="#CC0033">해결 방법</font></h3>
+<p> Microsoft VM 에 의해 인식 가능한 애플릿 서명 스킴은,<code>. cab</code> 파일로 사용하는 Authenticode 만입니다. </p>
+<p> 회피하려면 , Sun JVM 의 경우는, 업그레이드 했다 <code>. jar</code> 파일을 <code>archive</code> 속성을 통해서 지정합니다.  Microsoft VM 의 경우는 그대로,<code>. cab</code> 파일을 <code>cabbase</code> 를 통해서 지정합니다. 다음에 예를 나타냅니다. </p>
+  <blockquote>
+    <p><code>&lt;APPLET code=&quot;MyApplet&quot; width=100 height=100&gt;<br> &lt;PARAM name=&quot;cabbase&quot; value=&quot;package1.cab, package2.cab&quot;&gt;<br> &lt;/APPLET&gt;</code></p>
+  </blockquote>
+<p> 이 코드를 다음과 같이 변경합니다. </p>
+  <blockquote> 
+    <p><code>&lt;APPLET code=&quot;MyApplet&quot; archive=&quot;package1.jar, package2.jar&quot;<br> width=100 height=100&gt;<br> &lt;PARAM name=&quot;cabbase&quot; value=&quot;package1.cab, package2.cab&quot;&gt;<br> &lt;/APPLET&gt;</code></p>
+  </blockquote>
+<h3> <font color="#CC0033">상세 정보</font></h3>
+<p>없음 <br> <br>
+  </p>
+</blockquote>
+</body>
+</html>

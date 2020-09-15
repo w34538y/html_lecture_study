@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:객체 직렬화에 있어서의 시큐리티
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="protocol.html">전의 항목</a>  | <a href="exceptions.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="2527"><!-- --></a> 
+<h1>
+객체 직렬화에 있어서의 시큐리티
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="3445"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<U><h1>부록 A<FONT FACE="ARIAL,HELVETICA,TIMES ROMAN" SIZE=-1></FONT> 
+</h1></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="3461"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="3415"><!-- --></a>  <a href="security.html#4138">개요</a> 
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="3436"><!-- --></a>  <a href="security.html#2630">설계 목표</a> 
+</li>
+<li>
+<a name="4149"><!-- --></a>  <a href="security.html#4169">시큐리티의 문제</a> 
+</li>
+<li>
+<a name="4150"><!-- --></a>  <a href="security.html#4214">기밀 데이터의 직렬화의 방지</a> 
+</li>
+<li>
+<a name="4151"><!-- --></a>  <a href="security.html#4229">클래스 특유의 직렬화 메소드의 작성</a> 
+</li>
+<li>
+<a name="4152"><!-- --></a>  <a href="security.html#4271">비공유의 직렬화 복원된 객체의 보호</a> 
+</li>
+<li>
+<a name="4153"><!-- --></a>  <a href="security.html#4324">외부화 가능 객체의 덧쓰기의 방지</a> 
+</li>
+<li>
+<a name="3430"><!-- --></a>  <a href="security.html#4346">바이트 스트림의 암호화</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4138"><i>A. 1	</i> 개요</a> </h2>
+
+<blockquote>
+<a name="3410"><!-- --></a>  객체 직렬화 시스템을 사용하면, 객체 그래프로부터 바이트 스트림을 작성해, (디스크에 보존하는지, 네트워크를 개입시켜) Java<sup>TM</sup> 환경의 밖에 보내, 그것을 사용해, 같은 상태를 가지는 동등한 새로운 객체 세트를 재작성할 수가 있습니다. <p>
+<a name="2667"><!-- --></a>  객체 상태가 이 환경의 밖에서 어떻게 될까는, (정의에 의해) Java<sup>TM</sup> 시스템의 제어외여, 따라, 시스템으로 제공되는 시큐리티의 제어외입니다. 여기서 1 개의 의문이 생깁니다. 일단 객체가 직렬화 되면(자), 결과의 바이트 배열이, 어느 의미 그 직렬화 복원을 실시하는 Java 프로그램의 시큐리티에 악영향을 미쳐 실행 및 변경될 가능성은 없는 것일까요. 여기에서는, 이러한 시큐리티의 문제에 초점을 맞혀 설명합니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="2630"><i>A. 2	</i> 설계 목표</a> </h2>
+
+<blockquote>
+<a name="2945"><!-- --></a>  객체 직렬화의 목표는, 할 수 있는 한 심플하고면서, 기존의 시큐리티의 제약과 일관성이 있는 것입니다.  시스템이 심플하다(정도)만큼, 안전한 가능성은 보다 높아집니다. 이하는, 객체 직렬화로 사용되고 있는 시큐리티 방식의 개요입니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="3046"><!-- --></a>  <code>java.io.Serializable</code> 또는 <code>java.io.Externalizable</code> 인터페이스를 구현하고 있는 객체만이 직렬화 된다. 데이터의 중요성에 응해 특정의 필드의 직렬화를 회피하는 기구가 제공되고 있다
+</li>
+<li>
+<a name="2551"><!-- --></a> 직렬화 패키지를 사용해, 객체의 작성 또는 초기화를 재실행할 수 없다. 바이트 스트림을 직렬화 복원하면(자), 새로운 객체가 작성되지만, 기존의 객체의 내용이 덧쓰기되거나 변경 되거나 할 것은 없다
+</li>
+<li>
+<a name="4166"><!-- --></a>  객체를 직렬화 복원하면(자), 원격 소스로부터 코드의 다운로드가 개시된다.  다만, 다운로드된 코드는, Java<sup>TM</sup> 코드의 일반적으로의 검사 및 시큐리티 기구에 의해 제한된다. 직렬화 복원의 부작용에 의해 로드 되는 클래스는, 그 외의 방법으로 로드 되는 경우와 같이 보호된다
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4169"><i>A. 3	</i> 시큐리티의 문제</a> </h2>
+
+<blockquote>
+<a name="4170"><!-- --></a> 시큐리티를 충분히 확보하지 않고 객체를 직렬화하면(자), 악의가 있는 사용자가, 직렬화 바이트 스트림에 액세스 해 기밀 데이터를 읽어들이거나 부정한 또는 위험한 상태의 객체를 작성하거나 직렬화 복원되고 있는 객체의 private 필드에의 참조를 취득할 가능성이 있습니다. 시큐리티에 관계하는 구현을 실시할 때는, 직렬화할 때 다음의 점을 고려할 필요가 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4171"><!-- --></a> 디폴트에서는, 객체를 직렬화하면(자), 그 객체의 필드가 public 일지 어떨지에 관계없이, 모든 필드의 값이 직렬화 스트림에 기입해진다. 악의가 있는 사용자는, 객체가 직렬화 가능한 경우는, 코드로 객체의 직렬화 및 그 바이트 스트림의 검사를 실시하는 것에 의해, 그 private 필드의 값을 효과적으로 읽어들일 수가 있다. 이 문제를 회피하는 방법에 대해서는<a href="security.html#4214">「A. 4 기밀 데이터의 직렬화의 방지」</a>를 참조
+</li>
+<li>
+<a name="4197"><!-- --></a> 직렬화 복원을 실시하면, 수신한 직렬화 스트림의 데이터를 사용해, 객체의 작성 및 초기화를 한다. 직렬화 복원을 실시하기 전에 스트림이 파손하거나 변경되었을 경우는, 직렬화 복원된 객체는 예기치 않은 상태 또는 부정한 상태가 된다. 이 문제를 회피하는 방법에 대해서는<a href="security.html#4229">「A. 5 클래스 특유의 직렬화 메소드의 작성」</a>을 참조
+</li>
+<li>
+<a name="4202"><!-- --></a> 직렬화 바이트 스트림에 와이어 핸들 참조를 추가하면(자), 직렬화 복원하고 있을 때, 스트림내에서 이전에 발생한 객체에 참조가 추가되는 일이 있다. 이 결과, 개발자는, 직렬화 복원중에 취득한 private 객체에의 참조가, 일의인 보증이 없어진다. 이 문제에 대처하는 방법에 대해서는,<a href="security.html#4271">「A. 6 비공유의 직렬화 복원된 객체의 보호」</a>를 참조
+</li>
+<li>
+<a name="4208"><!-- --></a> Externalizable 인터페이스를 구현하고 있는 객체는, readExternal 메소드가 public 이기 (위해)때문에, 덧쓰기될 가능성이 있다. 호출측은, 임의의 시점에 <code>readExternal</code> 메소드를 호출할 수가 있다.  이 경우, 그 객체가 임의의 스트림에게 건네져 값이 읽히기 (위해)때문에, 타겟 객체가 다시 초기화한다. 이 문제를 회피하는 방법에 대해서는,<a href="security.html#4324">「A. 7 외부화 가능 객체의 덧쓰기의 방지」</a>를 참조
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4214"><i>A. 4	</i> 기밀 데이터의 직렬화의 방지</a> </h2>
+
+<blockquote>
+<a name="4216"><!-- --></a>  기밀성의 높은 데이터를 포함한 필드는, 직렬화 해야 하지는 않습니다. 직렬화하면(자), 직렬화 스트림에 액세스 하는 것으로 그러한 값을 상대방에게 공개하게 됩니다. 필드의 직렬화를 막는 방법을 몇개인가다음에 나타냅니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4220"><!-- --></a> 기밀성의 높은 데이터를 포함한 필드를 private transient 로 한다
+</li>
+<li>
+<a name="4222"><!-- --></a>  해당하는 클래스의 <code>serialPersistentFields</code> 필드를 정의해, 필드 기술자의 리스트로부터 그 필드를 제외한다
+</li>
+<li>
+<a name="4225"><!-- --></a>  클래스 고유의 직렬화 메소드 (<code>writeObject</code> 이나 <code>writeExternal</code>)를 기술한다. 고유 메소드는 필드를 직렬화 스트림에 기입하지 않는다 (즉 <code>ObjectOutputStream.defaultWriteObject</code> 를 호출하지 않는다)
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4229"><i>A. 5	</i> 클래스 특유의 직렬화 메소드의 작성</a> </h2>
+
+<blockquote>
+<a name="4231"><!-- --></a>  직렬화 복원된 객체가, 보증 되는 것이 당연한 불변식세트를 부수는 것 같은 상태가 되지 않게, 클래스가 독자적인 직렬화와 직렬화 복원의 메소드를 정의할 수가 있습니다. 어느 클래스의 데이터 멤버 사이에 유지할 필요가 있는 불변식세트가 있는 경우, 이러한 불변식에 대해 알 수 있는 것은 그 클래스 뿐이므로, 이러한 불변식을 검사하는 직렬화 복원 메소드를 제공할지 어떨지는, 그 클래스의 작성자 나름입니다. <p>
+<a name="4241"><!-- --></a> 시큐리티를 중시한 구현을 실시하려면 , 직렬화 가능 클래스의 <code>readObject</code> 메소드가 실제로 public 생성자 이 아니면 안되어, 그처럼 취급할 필요가 있습니다. 이것은,<code>readObject</code> 메소드가 암묵적인 경우와 명시적인 경우의 어느 쪽에도 들어맞읍니다. <code>readObject</code> 메소드에 제공된 바이트 스트림이, 적절히 구축된 올바른 타입의 객체를 직렬화하는 것에 의해 생성되면(자) 상정하는 것은 위험합니다. 보다 방어성이 뛰어난 프로그래밍을 실시하려면 , 구축중의 객체에 악영향을 미치려고 하는 악의 있는 사용자에 의해 바이트 스트림이 제공되는 것을 상정할 필요가 있습니다. <p>
+<a name="4270"><!-- --></a>  이것은, 시큐리티를 칸치 하지 않는 경우에서도 중요합니다. 디스크 파일이 망가져 직렬화 데이터가 무효가 되는 일도 일어날 수 있습니다. 따라서, 그러한 불변식을 검사하는 것은, 단지 시큐리티이기 때문에 만이 아니고, 유효성을 확보하는 수단이기도 합니다. 그러나, 이것을 실시할 수가 있는 것은, 특정 클래스의 코드안 뿐입니다. 이것은, 어느 불변식을 유지해, 검사할까를 직렬화 패키지로 판단할 방법이 없기 때문입니다. <p>
+<a name="4448"><!-- --></a>  Java<sup>TM</sup> 2 SDK, Standard Edition Version 1.4 에서는, 클래스 정의 메소드 <code>readObjectNoData</code> 의 지원가 추가되었습니다 (<a href="input.html#6053">「3.5 readObjectNoData 메소드」</a>를 참조). 필드를 디폴트 이외의 값에 초기화하는 <code>final</code> 이외의 직렬화 가능 클래스에서는, 서브 클래스 인스턴스가 직렬화 복원될 때 직렬화 스트림이 그 클래스를 직렬화 복원된 객체의 슈퍼 클래스로서 리스트 하지 않는 경우에, 일관한 상태를 보증하기 위해서 <code>readObjectNoData</code> 메소드를 정의할 필요가 있습니다. 이것은, 수취하는 측이, 보내 옆과는 다른 버젼의 직렬화 복원된 인스턴스의 클래스를 사용해, 수취하는 측의 버젼이, 보내 옆의 버젼에 의해 상속되지 않는 클래스를 상속하는 경우에 발생할 가능성이 있습니다. 또, 직렬화 스트림이 개편되었을 경우에도 발생하는 일이 있습니다. 따라서,<code>readObjectNoData</code> 는, 「악의가 있다」또는 부정한 소스 스트림이어도, 직렬화 복원된 객체를 올바르게 초기화하는데 도움이 됩니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4271"><i>A. 6	</i> 비공유의 직렬화 복원된 객체의 보호</a> </h2>
+
+<blockquote>
+<a name="4275"><!-- --></a>  클래스가 private 또는 package private 의 객체 참조 필드를 보관 유지해, 한편 그 클래스가, 그러한 객체 참조는 클래스 (또는 패키지)의 외부에서는 이용할 수 없다고 하는 사실에 의존하는 경우는, 방위를 위해서(때문에), 직렬화 복원 프로세스의 일환으로서 참조 객체를 카피하는지, 또는 <code>ObjectOutputStream.writeUnshared</code> 메소드와 <code>ObjectInputStream.readUnshared</code> 메소드 (Java<sup>TM</sup> 2 SDK, Standard Edition Version 1.4 로 도입)를 사용해 내부 객체에의 일의 참조를 보증할 필요가 있습니다. <p>
+<a name="4469"><!-- --></a>  카피하는 방법에서는, 스트림로부터 직렬화 복원되는 서브 객체를, 「신뢰되지 않는 입력」으로서 취급할 필요가 있습니다. 새롭게 작성한 객체를 초기화해, 직렬화 복원된 서브 객체와 같은 값을 보관 유지시켜,<code>readObject</code> 메소드를 사용해 서브 객체의 대체로 할 필요가 있습니다. 예를 들어, 객체가 private 바이트 배열 필드 b 를 보관 유지하는 경우, 다음에 나타내도록(듯이), 이 필드를 private 대로 하지 않으면 안됩니다. <p>
+<a name="4291"><!-- --></a> 
+<pre>    private void readObject(ObjectInputStream s)
+        throws IOException, ClassNotFoundException
+    {
+        s.defaultReadObject();
+
+        b = (byte[]) b.clone();
+
+        if (&lt;invariants are not satisfied&gt;)
+            throw new java.io.StreamCorruptedException();
+    }
+</pre>
+
+
+<a name="4300"><!-- --></a>  이 문제는, 가변 서브 객체에의 내부 참조 (private)를 포함한 불변 객체의 직렬화를 고려할 때에 특히 중요합니다. 컨테이너 객체의 직렬화 복원시에, 서브 객체를 카피하기 위한 특별한 조치가 아무것도 빼앗기지 않는 경우, 직렬화 스트림에의 기입해 권한을 가지는 악의가 있는 제삼자가, 가변 서브 객체에의 참조를 위조해, 이러한 참조를 사용해 컨테이너 객체의 내부 상태를 변경하는 것으로, 컨테이너 객체의 불변성을 침해하는 경우가 있습니다. 이러한 경우에 대비해, 불변의 컨테이너 클래스가 클래스 고유의 직렬화 복원 메소드를 제공하는 것이 포인트입니다. 직렬화 복원되는 각 가변 컴퍼넌트 객체의 사적인 카피의 작성은, 이 메소드를 사용해 실시합니다. 불변성을 유지하기 위해서, 불변 컴퍼넌트 객체의 카피를 작성할 필요는 없는 것에 유의해 주세요. <p>
+<a name="4312"><!-- --></a>  또,<code>clone</code> 의 호출이, 항상 서브 객체를 자기 방위적으로 카피하는 올바른 방법이라고는 할 수 없는 것에 유의하는 일도 중요합니다. 독립한 카피를 작성하기 위해(때문에) ( 및 카피에의 참조를 「횡령 (from stegword)」하지 않기 때문에)에 <code>clone</code> 메소드를 목표로 할 수 없는 경우, 다른 방법으로 카피를 작성할 필요가 있습니다. 서브 객체의 클래스가 final 가 아닌 경우, 불려 가는 <code>clone</code> 메소드나 헬퍼 메소드가 서브 클래스에 의해 오버라이드(override) 될 가능성이 있기 (위해)때문에, 항상 다른 방법으로 카피를 작성할 필요가 있습니다. <p>
+<a name="4470"><!-- --></a>  Java<sup>TM</sup> 2 SDK, Standard Edition Version 1.4 이후에서는,<code>ObjectOutputStream.writeUnshared</code> 메소드와 <code>ObjectInputStream.readUnshared</code> 메소드를 사용해, 직렬화 복원된 배열 객체에의 일의 참조를 보증할 수도 있습니다. 이 방법에서는, 방위적으로 카피하는 방법의 복잡함, 퍼포먼스 코스트, 및 메모 리오-바 헤드의 문제를 회피할 수 있습니다. <code>readUnshared</code> 메소드와 <code>writeUnshared</code> 메소드의 자세한 것은,<a href="input.html#961">「3.1 ObjectInputStream 클래스」 </a>및<a href="output.html#933">「2.1 ObjectOutputStream 클래스」</a>를 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4324">A. 7<i>	</i> 외부화 가능 객체의 덧쓰기의 방지</a> </h2>
+
+<blockquote>
+<a name="4326"><!-- --></a> <code>Externalizable</code> 인터페이스를 구현하는 객체는, public 의 <code>readExternal</code> 메소드를 제공하지 않으면 안됩니다. 이 메소드는 public 이기 (위해)때문에, 객체에 액세스권이 있는 사용자에 의해 임의로 불려 갑니다. 객체의 내부 상태를 복수의 (부정한) <code>readExternal</code> 의 호출에 의해 덧쓰기되지 않게 하려면 , 구현 시에 체크를 추가해, 적절한 경우에만 내0 보다 작은 값이 설정되도록(듯이) 합니다. <p>
+<a name="4333"><!-- --></a> 
+<pre>    public synchronized void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        if (!  initialized) {
+            initialized = true;
+
+            // read in and set field values ...
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+
+</pre>
+
+
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4346">A. 8<i>	</i> 바이트 스트림의 암호화</a> </h2>
+
+<blockquote>
+<a name="4347"><!-- --></a>  가상 머신의 밖에서 바이트 스트림을 보호하는 다른 방법으로서 직렬화 패키지로 작성한 스트림의 암호화가 있습니다. 바이트 스트림을 암호화하는 것으로써, 직렬화 객체의 private 상태의 복호화와 read를 할 수 없게 되어, 스트림의 내용의 부정한 변경에 대한 보호가 됩니다. <p>
+<a name="4352"><!-- --></a> 암호의 사용 가능한 클래스가 독자적으로 직렬화 및 직렬화 복원의 메소드를 정의할 수 있도록(듯이) 하는 것으로써, 또는 합성 가능한 스트림의 추상화에 따르는 것으로, 객체의 직렬화로 암호를 사용할 수 있습니다.  이 합성 가능한 스트림의 추상화에 의해, 데이터를 암호화하는 다른 필터 스트림에 보내지는 직렬화 스트림의 출력을 허가합니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="protocol.html">전의 항목</a>  | <a href="exceptions.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:47 2005 -->
+ 
+
+
+</body>
+</html>

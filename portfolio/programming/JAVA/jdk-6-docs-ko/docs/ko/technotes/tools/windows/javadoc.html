@@ -1,0 +1,2950 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 1st March 2004), see www.w3.org" />
+
+<title>javadoc - Java API 문서 제네레이터 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<h1>javadoc - Java API 문서 제네레이터</h1>
+
+  <blockquote>
+Java 원시 파일로부터, API 문서의 HTML 페이지를 생성합니다. 이 문서로 소개되고 있는 Javadoc<sup><font size=     "-2">TM</font></sup> 의 예는, Microsoft Windows 의 경우의 것입니다.
+  </blockquote>
+  <hr />
+
+<h2>목차</h2><a href="#referenceguide"><b><font color=   "black">레퍼런스 가이드</font></b></a> 
+
+  <ul>
+<li><b><a href="#synopsis">형식</a> </b></li>
+
+    <li>
+<b><a href="#description">설명</a> </b>
+
+      <ul>
+<li><a href="#processingofsourcefiles">원시 파일의 처리</a> </li>
+
+<li><a href="#doclets">Javadoc 의 도크 렛</a> </li>
+
+<li><a href="#documentation">관련 문서</a> </li>
+
+<li><a href="#terminology">용어</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#sourcefiles">원시 파일</a> </b>
+
+      <ul>
+<li><a href="#javasourcefiles">클래스 원시 코드 파일</a> </li>
+
+<li><a href="#packagecomment">패키지 코멘트 파일</a> </li>
+
+<li><a href="#overviewcomment">개요 코멘트 파일</a> </li>
+
+<li><a href="#unprocessed">그 외의 미처리의 파일</a> </li>
+
+<li><a href="#testfiles">테스트 파일 및 템플릿 파일</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#generatedfiles">생성되는 파일</a> </b>
+
+      <ul>
+<li><a href="#generatedapideclarations">생성되는 API 선언</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#documentationcomments">다큐멘테이션 코멘트</a> </b>
+
+      <ul>
+<li><a href="#comments">원시 코드에의 코멘트의 삽입</a> </li>
+
+<li><a href="#inheritingcomments">메소드 코멘트의 자동 카피</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#javadoctags">javadoc 태그</a> </b> <font size=       "-1">(<code>@tag</code>)</font>
+
+      <ul>
+<li><a href="#wheretags">태그를 사용할 수 있는 장소</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#options">옵션</a> </b> <font size=       "-1">(<code>-option</code>)</font>
+
+      <ul>
+<li><a href="#javadocoptions">Javadoc 옵션</a> </li>
+
+<li><a href="#standard">표준 도크 렛이 제공하는 옵션</a> </li>
+      </ul>
+    </li>
+
+<li><b><a href="#argumentfiles">커멘드행 인수 파일</a> </b></li>
+</ul><a href="#running"><b><font color=   "black">실행</font></b></a> 
+
+  <ul>
+<li><b><a href="#runningjavadoc">Javadoc 의 실행</a> </b></li>
+
+    <li>
+<b><a href="#examples">간단한 예</a> </b>
+
+      <ul>
+<li><a href="#documentingpackages">1 개(살) 이상의 패키지의 문서화</a> </li>
+
+<li><a href="#documentingclasses">1 개(살) 이상의 클래스의 문서화</a> </li>
+
+<li><a href="#documentingboth">패키지와 클래스의 문서화</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#realworldexample">사용예</a> </b>
+
+      <ul>
+<li><a href="#commandlineexample">커멘드행의 예</a> </li>
+
+<li><a href="#makefileexample">Makefile 의 예</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#troubleshooting">트러블 슈팅</a> </b>
+
+      <ul>
+<li><a href="#generaltroubleshooting">일반적인 트러블 슈팅</a> </li>
+
+<li><a href="#errorsandwarnings">에러와 경고</a> </li>
+      </ul>
+    </li>
+
+    <li>
+<b><a href="#environment">환경</a> </b>
+
+      <ul>
+<li><a href="#classpathenvironment">CLASSPATH</a> </li>
+      </ul>
+    </li>
+
+<li><b><a href="#troubleshooting">트러블 슈팅</a> </b></li>
+
+<li><b><a href="#seealso">관련 항목</a> </b></li>
+  </ul>
+  <hr />
+  <!-- ===================== REFERENCE GUIDE ======================= --> <a name="referenceguide" id="referenceguide"></a> 
+
+<h1 align="center">레퍼런스 가이드</h1>
+  <hr />
+  <!-- ==================== SYNOPSIS ======================= --> <a name="synopsis" id="synopsis"></a> 
+
+<h2>형식</h2>
+
+  <blockquote>
+    <code><strong>javadoc</strong>&nbsp;[&nbsp;<a href=     "#options">options</a> &nbsp;]&nbsp;[&nbsp;packagenames&nbsp;]&nbsp;[&nbsp;sourcefilenames&nbsp;]&nbsp;[&nbsp;-subpackages</code>&nbsp;<em>pkg1:pkg2:...</em><code>&nbsp;]&nbsp;[&nbsp;<a href="#argumentfiles">@argfiles</a> &nbsp;]</code>
+
+<p>인수를 지정하는 순서는 임의입니다. Javadoc 툴에서의, 처리 대상의 <code>. java</code> 파일을 결정하는 방법의 상세한 것에 대하여는,<a href=     "#processingofsourcefiles">「원시 파일의 처리」</a>를 참조해 주세요. </p>
+
+    <blockquote>
+      <dl>
+<dt><a href="#options"><code>options</code></a> </dt>
+
+<dd>이 문서로 설명되고 있는 커멘드행 옵션입니다. Javadoc 옵션의 표준적인 사용법에 대해서는,<a href=         "#realworldexample">「사용예」</a>를 참조해 주세요. </dd>
+
+<dt><code>packagenames</code></dt>
+
+<dd>스페이스에서 단락지어진 일련의 패키지명입니다. 예를 들어,<code>java.lang&nbsp;java.lang.reflect&nbsp;java.awt</code> 와 같이 지정합니다. 문서화하는 패키지를 개별적으로 지정할 필요가 있습니다. 와일드 카드는 사용 불가입니다. 재귀적 처리를 위해서(때문에)는, -subpackages 를 사용합니다. Javadoc 툴은,<a href=         "#sourcepath"><code>-sourcepath</code></a>  를 사용해 이러한 패키지명을 검색합니다. <a href=         "#documentingpackages">「1 개(살) 이상의 패키지의 문서화」</a>의 예를 참조해 주세요. </dd>
+
+<dt><code>sourcefilenames</code></dt>
+
+<dd>스페이스에서 단락지어진 일련의 원시 파일명입니다.  각 파일은, 패스로 시작됩니다. asterisk (*)등의 와일드 카드를 포함할 수가 있습니다. Javadoc 툴이 처리하는 것은, 파일명이 「. java」라고 하는 확장자(extension)로 끝나, 그 확장자(extension)를 제외한 이름이 실제로 유효한 클래스명인 모든 파일입니다 (<a href=
+        "http://java.sun.com/docs/books/jls/second_edition/html/lexical.doc.html#40625">「Identifiers」</a>를 참조). 따라서, 하이픈을 포함한 이름 (<code>X-Buffer</code> 등)이나, 그 외의 무효인 문자를 포함한 이름을 붙이는 것에 의해, 그러한 파일을 문서화의 대상으로부터 제외할 수 있습니다. 이것은,<a href="#testfiles">테스트용의 파일이나, 템플릿으로부터 생성된 파일</a>의 경우에 편리합니다. 원시 파일명의 전으로 지정한 패스에 의해, javadoc 가 그 파일을 검색하는 장소가 정해집니다. Javadoc 툴은, 이러한 원시 파일명을 검색할 경우에 <code>-sourcepath</code> 는 사용하지 않습니다. 상대 패스는, 현재의 디렉토리로부터의 상대 패스입니다. <code>Button.java</code> 를 건네주는 것은,<code>. /Button.java</code> 를 건네주는 것과 같습니다. 원시 파일명을 풀 패스로 지정하면(자),<code>/home/src/java/awt/Graphics*.java</code> 와 같이 됩니다. <a href="#documentingclasses">「1 개(살) 이상의 클래스의 문서화」</a>의 예를 참조해 주세요. 또,<a href=         "#documentingboth">「패키지와 클래스의 문서화」</a>의 예의 같게, 패키지명과 원시 파일명을 혼재시킬 수도 있습니다. </dd>
+
+<dt><a href="#subpackages"><code>-subpackages</code> <em>pkg1:pkg2:...</em></a> </dt>
+
+<dd>원시 파일로부터 지정된 패키지 및 그 서브 패키지내에 재귀적으로 문서를 생성합니다. 패키지명 또는 원시 파일명을 지정할 필요는 없습니다. </dd>
+
+<dt><a href=         "#argumentfiles"><code>@argfiles</code></a> </dt>
+
+<dd>Javadoc 옵션, 패키지명, 및 원시 파일명을 임의의 순서로 나란해질 수 있었던 리스트가 포함되는 1 개(살) 이상의 파일입니다. 이 파일 중(안)에서는, 와일드 카드 (*) 및 <code>-J</code> 옵션은 지정할 수 없습니다.  <!--  PERHAPS WE WILL FORMALIZE SOME DAY:          <dd>One or more files that contain any of the previous              arguments in any order.  --></dd>
+      </dl>
+    </blockquote>
+  </blockquote><br /> <!-- =================== DESCRIPTION ======================= --> <a name="description" id="description"></a> 
+
+<h2>설명</h2>
+
+  <blockquote>
+<b>Javadoc</b><sup><font size="-2">TM</font></sup> 툴은, 일련의 Java 원시 파일에 있는 선언 및 다큐멘테이션 코멘트를 해석해, 디폴트에서는 public 클래스, protected 클래스, 상자로 된 클래스 (익명의 내부 클래스는 제외하다), 인터페이스, 생성자 , 메소드, 및 필드에 도착해 설명한 일련의 HTML 페이지를 생성합니다. 또, API (어플리케이션 프로그래밍 인터페이스) 문서의 생성이나, 일련의 원시 파일의 구현 문서의 생성에 사용할 수 있습니다.
+
+<p>Javadoc 툴은,<a href=     "#documentingpackages">패키지 전체</a>,<a href=     "#documentingclasses">개개의 원시 파일</a>, 또는<a href=     "#documentingboth">그 양쪽 모두</a>에 대해서 실행할 수 있습니다. javadoc 툴을 패키지 전체에 대해서 실행하는 경우는, 최상정도 디렉토리로부터 재귀적으로 더듬기 위해서(때문에) <a href=     "#subpackages"><code>-subpackages</code></a>  를 사용하는지, 패키지명의 명시적인 리스트를 건네줍니다. 개개 원시 파일에 대해서 javadoc 를 실행하는 경우는, 일련의 소스 (<code>. java</code>) 파일명을 건네줍니다. 구체적인<a  href="#examples">예</a>는, 이 문서의 마지막에 소개합니다. 다음에, Javadoc 에 의한 원시 파일의 처리에 대해 설명합니다. </p>
+
+    <p>
+    <!-- ====================== PROCESSING ========================= --> <a name="processingofsourcefiles" id=     "processingofsourcefiles"></a> </p>
+
+<h3>원시 파일의 처리</h3>Javadoc 툴은, 말미에 <code>. java</code> 가 붙은 파일 이외에,<a href="#sourcefiles">원시 파일</a>로 설명하는 다른 파일도 처리합니다. 개개의 원시 파일명을 명시적으로 건네주는 것에 의해 Javadoc 툴을 실행하는 경우, 어느 <code>. java</code> 파일을 처리할까를 정확하게 지정할 수 있습니다. 다만, 많은 개발자는 이 방법에서는 작업하지 않습니다. 패키지명을 건네주는 편이 간단하기 때문에입니다. 원시 파일명을 명시적으로 지정하지 않아도, Javadoc 툴은 3 개의 방법으로 실행할 수 있습니다. 이 방법은, (1) 패키지명을 건네주는, (2) <a href=     "#subpackages"><code>-subpackages</code></a>  를 사용하는, (3) 원시 파일명에 와일드 카드를 사용한다 (<code>*. java</code>)라고 하는 방법입니다. 이러한 방법을 사용하는 경우, Javadoc 툴은,<code>. java</code> 파일이 다음의 모든 요건을 채우고 있는 경우에 한해, 이 파일을 처리합니다.
+
+    <ul>
+<li>이름으로부터 <code>. java</code> 의 접미사(suffix)을 없애면(자), 실제로 유효한 클래스명이 되어 있다 (유효한 문자에 대해서는,<a href=       "http://java.sun.com/docs/books/jls/second_edition/html/lexical.doc.html#40625">「Identifiers」</a>를 참조)</li>
+
+<li>소스 트리의 루트로부터 상대적인 디렉토리 패스가, 단락 문자를 닷으로 변환하면(자), 실제로 유효한 패키지명이 되어 있다</li>
+
+<li>패키지문에는 유효한 패키지명이 포함된다 (전항눈으로 지정)</li>
+    </ul>
+
+<p><a name="links" id="links"></a>  <b>링크의 처리</b> - Javadoc 툴은, 처리의 실행중에, 그 실행으로 문서화 되는 패키지, 클래스, 및 멤버의 이름에 대해서, 자동적으로 상호 참조 링크를 추가합니다. 이러한 링크는, 다음과 같은 장소에 추가됩니다. </p>
+
+    <ul>
+<li>선언 (반환값의 형태, 인수의 형태, 필드의 형태)</li>
+
+<li><a href=       "#@see"><code>@see</code></a>  태그로부터 생성된 [관련 항목] 섹션</li>
+
+<li><a href=       "#{@link}"><code>{@link}</code></a>  태그로부터 생성된 인 라인 텍스트</li>
+
+<li><a href=       "#@throws"><code>@throws</code></a>  태그로부터 생성된 예외의 이름</li>
+
+<li>"인터페이스의 멤버에 대한 [<a href="#inheritingcomments">정의</a> ] 링크와 클래스의 멤버에 대한 [<a href=       "#inheritingcomments">오버라이드(override)</a> ] 링크</li>
+
+<li>패키지, 클래스, 및 멤버를 열거하고 있는 개요 테이블</li>
+
+<li>패키지 및 클래스의 상속 트리</li>
+
+<li>색인</li>
+</ul>커멘드행으로 지정하지 않았던 클래스에 대한 기존의 텍스트 (따로 생성한 텍스트)에 대해서 하이퍼 링크를 추가하려면 ,<a href="#link"><code>-link</code></a>  및 <a href=     "#linkoffline"><code>-linkoffline</code></a>  옵션을 이용할 수 있습니다.
+
+<p><a name="otherprocessing" id="otherprocessing"></a>  <b>그 외의 처리에 대한 상세</b> - Javadoc 툴은, 실행할 때마다 1 개(살)의 완전한 문서를 작성합니다. 문서를 추가 생성할 수 없습니다. 즉, Javadoc 툴의 이전의 실행 결과를 수정하거나 그 내용을 직접 집어 넣거나 할 수 없습니다. 다만, 전술과 같이, 이전의 실행 결과에 대해서 링크를 추가할 수 있습니다. </p>
+
+<p>구현상의 이유로부터, Javadoc 툴은, 처리를 실행하기 위해서 java 컴파일러를 필요로 해, java 컴파일러에 의존하고 있습니다. Javadoc 툴은 <code>javac</code> 의 일부를 호출하는 것으로, 선언을 컴파일 해, 멤버의 구현은 무시합니다. Javadoc 툴은, 클래스 계층을 포함한 클래스의 풍부한 내부 표현과 클래스의 「사용」관계를 구축해, 그 정보로부터 HTML 를 생성합니다. 게다가 Javadoc 툴은, 원시 코드의<a href=     "#documentationcomments">다큐멘테이션 코멘트</a>로부터, 사용자의 제공한 문서도 가져옵니다. </p>
+
+<p>Javadoc 툴은, 메소드 본체가 없는 순수한 Stub 파일이다 <code>. java</code> 원시 파일에 대해서도, 실행할 수가 있습니다. 따라서, API 의 작성시에는, 구현을 기술하기 전의 설계의 빠른 단계에서, 다큐멘테이션 코멘트를 기술해 javadoc 툴을 실행할 수 있습니다. </p>
+
+<p>컴파일러에 의존하는 것에 의해, HTML 출력은, 실제의 구현에 정확하게 대응합니다. 실제의 구현은, 명시적인 원시 코드에는 아니고, 암묵의 원시 코드에 의존하는 경우가 있습니다. 예를 들어, Javadoc 툴은,<code>. class</code> 파일내에 존재하지만, 원시 코드내에는 존재하지 않는<a href=     "http://java.sun.com/docs/books/jls/second_edition/html/names.doc.html#36154">디폴트 생성자</a>  (Java 언어 스펙의 섹션 8.6. 7)을 문서화합니다. </p>
+
+<p><a name="allowsincompletecode" id=     "allowsincompletecode"></a> 일반적으로, Javadoc 툴에서는, 원시 파일의 코드가 불완전 또는 에러를 포함하고 있는 경우에서도 문서를 생성할 수 있습니다. 이 때문에, 디버그나 트러블 슈팅을 완료하기 전에 문서를 생성할 수 있습니다. 예를 들어, Java 언어 스펙에 의하면, 추상 메소드를 포함한 클래스는, 그 자체 추상으로서 선언되지 않으면 안됩니다. 이 에러를 검출하면(자), javac 컴파일러는 정지합니다만, Javadoc 툴은 경고를 내지 않고 처리를 속행합니다. Javadoc 툴은 다큐멘테이션 코멘트의 기본적인 체크를 실시합니다. 다큐멘테이션 코멘트를 보다 자세하게 체크할 필요가 있는 경우는,<a href="#doccheck">DocCheck 도크 렛</a>을 사용해 주세요. </p>
+
+<p>Javadoc 툴은, 문서의 내부 구조를 구축할 때, 참조 클래스를 모두 로드합니다. 이 때문에, Javadoc 툴은, bootstrap 클래스, 확장 기능, 또는 사용자 클래스에 관계없이, 모든 참조 클래스를 검색할 수 없으면 안됩니다. 자세한 것은,<a  href="../findingclasses.html">「클래스의 검색 방법」</a>을 참조해 주세요. 일반적으로, 작성하는 클래스는, 확장 기능으로서 로드하는지, Javadoc 툴의 클래스 패스내에 둘 필요가 있습니다. </p>
+
+    <p>
+    <!-- ====================== DOCLETS ========================= --> <a name="doclets" id="doclets"></a> </p>
+
+<h3>Javadoc 의 도크 렛</h3>Javadoc 툴의 출력의 내용과 형식은, 도크 렛을 사용해 커스터마이즈 할 수 있습니다. Javadoc 툴에는, 표준 도크 렛으로 불리는 디폴트의 「편입」도크 렛이 있습니다. 표준 도크 렛은, HTML 형식의 API 문서를 생성합니다. 표준 도크 렛을 수정 또는 서브 클래스화하는 것이나, HTML, XML, MIF, RTF 등의 기호의 출력 형식을 생성하는 독자적인 도크 렛을 기술하는 일도 가능합니다. 도크 렛과 그 사용법에 대해서는, 다음의 항목을 참조해 주세요.
+
+    <ul>
+<li><a href="../../guides/javadoc/index.html">Javadoc 의 도크 렛</a> </li>
+
+<li><a href="#doclet"><code>-doclet</code> 커멘드행 옵션</a> </li>
+</ul><tt>-doclet</tt> 커멘드행 옵션으로 커스텀 도크 렛이 지정되어 있지 않은 경우, Javadoc 툴은, 디폴트의 표준 도크 렛을 사용합니다. javadoc 툴에는, 사용되고 있는 도크 렛에 관계없이 사용할 수 있는 커멘드행 옵션이 있습니다. 표준 도크 렛에서는, 이러한 그 밖에, 몇개의 커멘드행 옵션이 추가됩니다. 어느 쪽의 옵션에 대해서도, 이후에의<a href="#options">「옵션」</a>으로 설명합니다.  <!-- ====================== DOCUMENTATION ========================= --> <a name="documentation" id="documentation"></a> 
+
+<h3>관련 문서 및 도크 렛</h3>
+
+    <ul>
+<li><a href="../../guides/javadoc/index.html">Javadoc 에 베풀어진 기능 강화</a>  - Javadoc 1.4 로 추가된 개량점의 상세</li>
+
+<li><a href=       "http://java.sun.com/j2se/javadoc/faq/index.html">Javadoc FAQ</a>  - 빈번하게 전해지는 질문에 대한 회답, Javadoc 관련의 툴에 대한 정보, 및 버그의 회피 방법</li>
+
+<li><a href=       "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html">How to Write Doc Comments for Javadoc</a>  - 다큐멘테이션 코멘트의 기술 방법에 관한 Sun 의 규약</li>
+
+<li><a href=       "http://java.sun.com/j2se/javadoc/writingapispecs/index.html">Requirements for Writing API Specifications</a>  - Java 2 플랫폼 스펙을 기술할 때에 사용된 표준 요건 이 정보는, 원시 파일의 다큐멘테이션 코멘트 형식에서 API 스펙을 기술하는 경우에도, 그 외의 형식에서 기술하는 경우에도 도움이 됩니다. 검증 가능한 assertion를 채우는 패키지, 클래스, 인터페이스, 필드, 및 메소드에 대한 요건을 정하고 있습니다. </li>
+
+<li><a href=       "http://java.sun.com/docs/books/jls/first_edition/html/18.doc.html">다큐멘테이션 코멘트의 스펙</a>  - 다큐멘테이션 코멘트의 오리지날 스펙에 대해서는, 「Java Language Specification」 (James Gosling, Bill Joy, Guy Steele 공저)의 초판의 제 18 장 「Documentation Comments」를 참조해 주세요. 이 장은, 제 2 판에서는 삭제되었습니다.  <a name="doccheck" id="doccheck"></a> </li>
+
+<li><a href="http://java.sun.com/javadoc/doccheck">DocCheck 도크 렛</a>  - 원시 파일내의 다큐멘테이션 코멘트를 체크해, 검출된 에러나 부정의 리포트를 생성합니다. Sun Doc Check 유틸리티의 일부입니다. </li>
+
+<li><a href="http://java.sun.com/javadoc/mifdoclet">MIF 도크 렛</a>  - MIF, FrameMaker, PDF 의 서식에서 API 문서를 자동 생성합니다. MIF 는 Adobe FrameMaker 의 교환 서식입니다. </li>
+    </ul>
+    <!-- ====================== TERMINOLOGY ========================= --> <a name="terminology" id="terminology"></a> 
+
+<h3>용어</h3><em>「다큐멘테이션 코멘트」</em>,<em>「doc 코멘트」</em>,<em>「주설명」</em>,<em>「태그」</em>,<em>「블록 태그」</em>, 및<em>「인 라인 태그」</em>의 용어에 대해서는,<a href="#documentationcomments">「다큐멘테이션 코멘트」</a>로 설명하는 이하의 그 외의 용어는,Javadoc 툴의 문맥으로 특정의 의미를 가집니다.
+
+    <dl>
+      <dd><a name="generateddocument" id=       "generateddocument"></a> </dd>
+
+<dt><i>생성 문서 (generated document)</i></dt>
+
+      <dd>
+javadoc 툴이 Java 원시 코드내의 다큐멘테이션 코멘트로부터 생성한 문서입니다. 디폴트의 생성 문서는 HTML 형식에서, 표준 도크 렛에 의해 작성됩니다.
+
+        <p><a name="name" id="name"></a> </p>
+      </dd>
+
+<dt><i>name</i></dt>
+
+      <dd>
+Java 언어로 쓰여진 프로그램 요소의 이름, 즉 패키지, 클래스, 인터페이스, 필드, 생성자 , 또는 메소드의 이름입니다. 이름은,<code>java.lang.String.equals(java.lang.Object)</code> 와 같이 완전 수식하는 일도,<code>equals(Object)</code> 와 같이 부분 수식할 수도 있습니다.
+
+        <p><a name="documentedclasses" id=         "documentedclasses"></a> </p>
+      </dd>
+
+<dt><i>문서화 되는 클래스 (documented classes)</i></dt>
+
+      <dd>
+javadoc 툴의 실행에 의해 상세한 문서가 생성되는 클래스 및 인터페이스입니다. 문서화하려면 , 원시 파일이 사용 가능하지 않으면 안되어, 원시 파일명 또는 패키지명을 javadoc 커멘드에게 건네져<a href=         "#public">액세스 수식자</a>  (public, protected, package-private 또는 private)에 의해 필터 처리되지 않게 하지 않으면 안됩니다. 문서화 되는 클래스는, javadoc 툴의 출력에 짜넣어지는 클래스, 즉 「포함 클래스」라고도 불립니다.
+
+        <p><a name="includedclasses" id="includedclasses"></a> </p>
+      </dd>
+
+<dt><i>포함 클래스 (included classes)</i></dt>
+
+      <dd>
+툴의 실행에 의해 상세한 문서가 생성되는 클래스 및 인터페이스입니다. 「문서화 되는 클래스」와 같다.
+
+        <p><a name="excludedclasses" id="excludedclasses"></a> </p>
+      </dd>
+
+<dt><i>제외 클래스 (excluded classes)</i></dt>
+
+      <dd>
+툴의 실행에 의해 상세한 문서가 생성되지 않는 클래스 및 인터페이스입니다.
+
+        <p><a name="referencedclasses" id=         "referencedclasses"></a> </p>
+      </dd>
+
+<dt><i>참조 클래스 (referenced classes)</i></dt>
+
+      <dd>
+문서화 되는 클래스 및 인터페이스의 정의 (구현) 또는 다큐멘테이션 코멘트 중(안)에서 명시적으로 참조되고 있는 클래스 및 인터페이스입니다. 참조의 예로서는, 반환값의 형태, 파라미터의 형태, 캐스트의 형태, 확장된 클래스, 구현된 인터페이스, 임포트 된 클래스, 메소드 본체로 사용되는 클래스, @see,{@link},{@linkplain},{@inheritDoc} 태그등이 있습니다. 이 정의는 <a href=         "http://java.sun.com/j2se/1.3/docs/tooldocs/win32/javadoc.html#referencedclasses">1.3</a>  으로부터 변경되고 있습니다. javadoc 툴을 실행할 때는, Javadoc 의 부트 클래스 패스 및 클래스 패스내에 있는 모든 참조 클래스를 메모리에 로드할 필요가 있습니다. 참조 클래스가 발견되지 않는 경우는, 「클래스가 발견되지 않습니다」라고 하는 경고가 표시됩니다. Javadoc 툴은, 클래스의 존재와 그 멤버의 완전 지정의 이름을 판별하는데 필요한 모든 정보를,. class 파일로부터 꺼낼 수가 있습니다.
+
+        <p><a name="externalreferencedclasses" id=         "externalreferencedclasses"></a> </p>
+      </dd>
+
+<dt><i>외부 참조 클래스 (external referenced classes)</i></dt>
+
+<dd>참조 클래스 가운데, javadoc 툴의 실행중에 문서가 생성되지 않는 클래스입니다. 즉, 이러한 클래스는, 커멘드행으로 Javadoc 툴에게 건네져 있지 않습니다. 생성 문서내에서 이러한 클래스에 링크하고 있는 개소는, 「외부 참조」또는 「외부 링크」라고 불립니다. 예를 들어,<code>java.awt</code> 패키지에 대해서 만여라 Javadoc 툴을 실행했을 경우,<code>Object</code> 등의 <code>java.lang</code> 내의 모든 클래스가 외부 참조 클래스가 됩니다. 외부 참조 클래스에 링크하려면 ,<code>-link</code> 및 <code>-linkoffline</code> 옵션을 사용합니다. 외부 참조 클래스에는, 일반적으로 그 소스 코멘트를 javadoc 툴의 실행으로 이용할 수 없다고 하는 중요한 특징이 있습니다. 이 경우, 그러한 코멘트를<a href=       "#inheritingcomments">상속<a href=       "#inheritingcomments">할 수 없습니다. </dd>
+    </dl>
+  </blockquote><br /> <!-- ====================== SOURCE FILES ========================= --> <a name="sourcefiles" id="sourcefiles"></a> 
+
+<h2>원시 파일</h2>
+
+  <blockquote>
+Javadoc 툴은, 4 종류가 다른 원시 파일로부터 출력 결과를 생성합니다. 그 파일은, 클래스의 Java 언어 원시 파일 (<code>. java</code>), 패키지 코멘트 파일, 개요 코멘트 파일, 및 그 외의 처리되지 않는 파일입니다. 또, 문서화하지 않지만 소스 트리에 존재하는 경우가 있는 테스트 파일이나 템플릿 파일에 대해서도 설명합니다.
+
+    <p><a name="javasourcefiles" id="javasourcefiles"></a> </p>
+
+<h3>클래스 원시 코드 파일</h3>각각의 클래스 또는 인터페이스, 및 그 멤버는, 독자적인 다큐멘테이션 코멘트를 가질 수가 있어 그것을 <code>. java</code> 파일내 로 유지합니다. 다큐멘테이션 코멘트의 자세한 것은,<a href="#documentationcomments">「다큐멘테이션 코멘트」</a>를 참조해 주세요.  <a name="packagecomment" id="packagecomment"></a> 
+
+<h3>패키지 코멘트 파일</h3>각각의 패키지는, 독자적인 다큐멘테이션 코멘트를 가질 수가 있어 그것을 전용의 「소스」파일 로 유지합니다. 그 내용은, Javadoc 툴에 의해 생성되는 개요 페이지에 짜넣어집니다. 이 코멘트에는, 일반적으로, 그 패키지 전체에 들어맞는 문서를 기술합니다.
+
+<p>패키지 코멘트 파일을 작성하는 경우, 코멘트의 포함처로서 다음의 2 개의 파일의 어느쪽이든을 선택할 수 있습니다. </p>
+
+    <ul>
+<li><code>package-info.java</code> - 패키지 선언, 패키지 주석, 패키지 코멘트, 및 Javadoc 태그를 포함할 수 있습니다. 이 파일은 JDK 5.0 으로 도입된 것이어, package.html 보다 추천 되고 있습니다. </li>
+
+<li><code>package.html</code> - 포함할 수 있는 것은 패키지 코멘트와 Javadoc 태그 뿐입니다. 패키지 주석은 포함할 수 없습니다. </li>
+</ul>각 패키지는, 단일의 <code>package.html</code> 파일, 단일의 <code>package-info.java</code> 파일의 어느쪽이든을 가질 수가 있습니다만, 양쪽 모두를 가질 수 없습니다. 이 어느 쪽인가의 파일을 <code>. java</code> 파일과 함께, 소스 트리내의 그 패키지의 디렉토리내에 배치해 주세요.
+
+<p><code><b>package-info.java</b></code> - 이 파일에는, 다음의 구조의 패키지 코멘트를 포함할 수 있습니다. 코멘트는 패키지 선언전에 배치합니다. </p>
+
+<p>File:<code>java/applet/package-info.java</code></p>
+
+    <table border="0" cellpadding="0" cellspacing="0" bgcolor=
+    "#E7E7E7">
+      <tr>
+        <td>
+          <div style="padding: 0.5em;">
+/** * Provides the classes necessary to create an applet and the classes an applet uses * to communicate with its applet context. * &lt;p&gt; * The applet framework involves two entities:* the applet and the applet context.An applet is an embeddable window (see the * {@link java.awt.Panel} class) with a few extra methods that the applet context * can use to initialize, start, and stop the applet. * * @since 1.0 * @see java.awt */ package java.lang.applet;
+          </div>
+          <pre>
+
+</pre>
+        </td>
+      </tr>
+    </table>
+
+<p>코멘트 단락 문자의 것 <code>/**</code> 과 <code>/*</code> 는 기술할 필요가 있습니다만, 중간행의<a href=     "#leadingasterisks">줄머리의 asterisk</a>는 생략 해도 괜찮습니다. <code><b>package.html</b></code> - 이 파일에는, 다음의 구조의 패키지 코멘트를 포함할 수 있습니다. 코멘트는 <code>&lt;body&gt;</code> 요소내에 배치합니다. :</p>
+
+<p>File:<code>java/applet/package.html</code></p>
+
+    <table border="0" cellpadding="0" cellspacing="0" bgcolor=
+    "#E7E7E7">
+      <tr>
+        <td>
+          <div style="padding: .5em;">
+&lt;HTML&gt; &lt;BODY&gt; Provides the classes necessary to create an applet and the classes an applet uses to communicate with its applet context. &lt;p&gt; The applet framework involves two entities:the applet and the applet context.An applet is an embeddable window (see the {@link java.awt.Panel} class) with a few extra methods that the applet context can use to initialize, start, and stop the applet. @since 1.0 @see java.awt &lt;/BODY&gt; &lt;/HTML&gt;
+          </div>
+          <pre>
+
+</pre>
+        </td>
+      </tr>
+    </table>
+
+<p>이것은 단순한 일반적으로의 HTML 파일이며, 패키지 선언을 포함하지 않은 점에 주의해 주세요. 패키지 코멘트 파일의 내용은, 다른 모든 코멘트와 같게 HTML 로 기술되고 있습니다. 그것은, 이 다큐멘테이션 코멘트에는, 코멘트 단락 문자인 <code>/**</code> 과 <code>*/</code>, 및 줄머리의 asterisk를 포함해서는 안 되는, 이라고 하는 것입니다. 코멘트를 쓰는 경우는, 최초의 문장을 패키지의 개요로 해,<code>&lt;body&gt;</code> 와 최초의 문장의 사이에 타이틀이나 그 외의 텍스트를 포함하지 않게 합니다. <a href=     "#packagetags">패키지 태그</a>를 포함할 수 있습니다만, 다른 다큐멘테이션 코멘트와 같이, 모든 블록 태그는, 주설명의 후에 두지 않으면 안됩니다. 패키지 코멘트 파일에 <code>@see</code> 태그를 추가하는 경우는, 완전 지정의 이름을 사용할 필요가 있습니다. 자세한 것은,<a href=     "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#packagecomments"> <code>package.html</code> 의 예</a>를 참조해 주세요. </p>
+
+<p><b>패키지 코멘트 파일의 처리</b> - Javadoc 툴은, 실행시에 패키지 코멘트 파일을 자동적으로 검색해, 이 파일을 찾아내면(자) 다음의 처리를 실시합니다. </p>
+
+    <ul>
+<li>처리할 수 있도록(듯이) 코멘트를 카피한다(<code>package.html</code> 의 경우이면,<code>&lt;body&gt;</code> 와 <code>&lt;/body&gt;</code> HTML 태그의 사이에 있는 내용을 모두 카피한다. <code>&lt;head&gt;</code> 를 포함해 거기에 <code>&lt;title&gt;</code> 나 원시 파일의 저작권 기술등의 정보를 배치할 수도 있지만, 생성 후의 다큐멘테이션에는 그것들은 일절 표시되지 않는다)</li>
+
+<li><a href="#packagetags">패키지 태그</a>가 있으면, 모두 처리한다</li>
+
+<li>생성한 패키지의 개요 페이지의 마지막으로, 처리한 텍스트를 삽입한다 (예: <a href=       "../../../api/java/applet/package-summary.html">패키지의 개요</a>)</li>
+
+<li>패키지의 개요 페이지의 선두에, 패키지 코멘트의 최초의 문장을 카피한다. 게다가 개요 페이지의 패키지 리스트에, 패키지명과 패키지 코멘트의 최초의 문장을 추가한다 (예: <a href=       "../../../api/overview-summary.html">개요의 요약</a>). 문장의 말미는, 클래스나 멤버의 주설명의 최초의 문장의 말미와 같은 규칙에 의해 판단된다</li>
+    </ul><a name="overviewcomment" id="overviewcomment"></a> 
+
+<h3>개요 코멘트 파일</h3>문서화하는 각 어플리케이션 또는 패키지 세트는, 독자적인 개요 다큐멘테이션 코멘트를 가질 수가 있어 그것은 전용의 「소스」파일에 보관 유지됩니다. 그 내용은, Javadoc 툴에 의해 생성되는 개요 페이지에 짜넣어집니다. 이 코멘트에는, 일반적으로, 어플리케이션 또는 패키지 세트 전체에 들어맞는 문서를 기술합니다.
+
+<p>개요 코멘트 파일을 작성하는 경우는, 파일에 임의의 이름을 붙여 임의의 장소에 둘 수가 있습니다. 다만, 일반적으로은, 파일명을 <b><code>overview.html</code></b> 로 해, 소스 트리의 최상정도 레벨에 둡니다. 예를 들어,<code>java.applet</code> 패키지의 원시 파일이 <code>C:\user\src\java\applet</code> 디렉토리에 포함되어 있다고 하면(자),<code>C:\user\src\overview.html</code> 에 개요 코멘트 파일을 작성할 수가 있습니다. </p>
+
+<p>다른 패키지세트에 대해서 javadoc 를 여러 차례 실행하는 경우는, 같은 1 개의 원시 파일세트에 대해서 복수의 개요 코멘트 파일을 작성할 수 있습니다. 예를 들어, 내부 다큐멘테이션용으로 -private 를 지정해 javadoc 를 1 회 실행한 뒤, 공개 다큐멘테이션용으로 그 옵션을 지정하지 않고 재차 실행할 수가 있습니다. 이 경우, 각 개요 코멘트 파일의 1 색채로, 그 다큐멘테이션을 공개용 또는 내부용으로서 기술할 수 있습니다. </p>
+
+<p>개요 코멘트 파일의 내용은, 전술의 패키지 코멘트 파일과 같이, HTML 로 기술된 1 개(살)의 큰 다큐멘테이션 코멘트입니다. 자세한 것은, 전술의 설명을 참조해 주세요. 요점을 반복하면(자), 이 코멘트를 기술하는 경우는, 최초의 문장을 어플리케이션 또는 패키지 세트의 요약으로 해,<code>&lt;body&gt;</code> 와 최초의 문장의 사이에 타이틀 그 외의 텍스트를 포함하지 않게 합니다. <a href="#overviewtags">개요 태그</a>를 포함할 수가 있습니다. 어느 다큐멘테이션 코멘트에 대해서도, 인 라인 태그 (<code>{@link}</code> 등) 이외의 모든 태그는, 주설명의 후에 둘 필요가 있습니다. <code>@see</code> 태그를 추가하는 경우는, 완전 지정의 이름을 사용하지 않으면 안됩니다. </p>
+
+<p>Javadoc 툴의 실행시에,<a href="#overview">-overview</a>  옵션을 사용해 개요 코멘트 파일명을 지정합니다. 이 파일은, 패키지 코멘트 파일과 같이 처리됩니다. </p>
+
+    <ul>
+<li><code>&lt;body&gt;</code> 태그와 <code>&lt;/body&gt;</code> 태그의 사이에 있는 모든 내용을 처리를 위해서(때문에) 카피한다</li>
+
+<li><a href="#overviewtags">개요 태그</a>가 있으면, 모두 처리한다</li>
+
+<li>생성한 개요 페이지의 마지막으로, 처리한 텍스트를 삽입한다 (예: <a href=       "../../../api/overview-summary.html">개요의 요약</a>)</li>
+
+<li>개요 페이지의 선두에, 개요 코멘트의 최초의 문장을 카피한다</li>
+    </ul><a name="unprocessed" id="unprocessed"></a> 
+
+<h3>그 외의 미처리의 파일</h3>소스에는, Javadoc 툴에 의해 생성처의 디렉토리에 카피되는, 그 외의 임의의 파일을 포함할 수가 있습니다. 일반적으로, 이러한 파일에는, 그래픽 파일, 샘플의 Java 소스 (. java) 및 클래스 (. class) 파일, 내용이 일반적으로의 Java 원시 파일의 다큐멘테이션 코멘트의 영향을 받지 않는 독립한 HTML 파일등이 있습니다.
+
+<p>미처리의 파일을 소스에 포함하려면 , 그러한 파일을 <b><code>doc-files</code></b> 라고 하는 디렉토리에 둡니다. 이 디렉토리는, 원시 파일이 있는 임의의 패키지 디렉토리아래에 작성할 수 있습니다. 이러한 서브 디렉토리는, 패키지 마다 1 개(살) 준비할 수 있습니다. 이미지, 샘플 코드, 원시 파일,. class 파일, 애플릿, 및 HTML 파일을 이 디렉토리에 포함할 수 있습니다. 예를 들어, 버튼의 이미지 <code>button.gif</code> 를 <code>java.awt.Button</code> 클래스의 문서에 포함하는 경우는, 그 파일을 <code>/home/user/src/java/awt/doc-files/</code> 디렉토리에 둡니다. <code>doc-files</code> 디렉토리를 <code>/home/user/src/java/doc-files</code> 에 둘 수 없습니다. 이것은,<code>java</code> 는 패키지는 아니고, 그 디렉토리 그 자체에 원시 파일이 들어가 있지 않기 때문입니다. </p>
+
+<p>이러한 미처리의 파일에의 링크는, 모두 명시적으로 기술할 필요가 있습니다. 이것은, Javadoc 툴이 그러한 파일을 보지 않고 , 단지 디렉토리와 그 내용을 생성 먼저 카피할 뿐(만큼)이기 때문입니다. 예를 들어,<code>Button.java</code> 의 다큐멘테이션 코멘트내의 링크는, 다음과 같이 됩니다. </p>
+    <pre>
+    /**
+     * This button looks like this:
+     * &lt;img src="doc-files/Button.gif"&gt;
+     */
+</pre><a name="testfiles" id="testfiles"></a> 
+
+<h3>테스트 파일 및 템플릿 파일</h3>일부의 개발자로부터, 테스트 파일 및 템플릿 파일을 대응하는 원시 파일의 가까이의 소스 트리에 보존하고 싶다고 하는 요망이 있었습니다. 즉, 이러한 원시 파일과 같은 디렉토리 또는 서브 디렉토리에 보존하고 싶다고 하는 것입니다.
+
+<p>개별의 원시 파일명으로 명시적으로 건네주어 Javadoc 툴을 실행하는 경우는, 테스트 파일 및 템플릿 파일을 의도적으로 제외해, 처리되지 않게 할 수가 있습니다. 다만, 패키지명 또는 와일드 카드로 건네주는 경우는, 이하의 룰에 따라, 이러한 테스트 파일 및 템플릿 파일이 처리되지 않게 할 필요가 있습니다. </p>
+
+<p>테스트 파일과 템플릿 파일의 차이는, 테스트 파일은, 정당해 컴파일 가능한 원시 파일인데 대해, 템플릿 파일은, 그렇지 않다고 하는 점입니다. 다만, 템플릿 파일도 「. java」로 끝날 수가 있습니다. </p>
+
+<p><b>테스트 파일</b> - 개발자의 상당수는, 어느 패키지의 컴파일 가능해 실행 가능한 테스트 파일을 그 패키지의 원시 파일과 같은 디렉토리에 배치하고 싶다고 생각하고 있습니다. 그러나 테스트 파일은, 이름 없음 패키지 등, 원시 파일 패키지와는 다른 패키지에 속하게 하고 싶다고 생각하고 있습니다 (그 때문에, 테스트 파일에는 package 스테이트먼트가 없는지, 또는 소스와는 다른 package 스테이트먼트가 있다). 이러한 상황에서는, 커멘드행으로 지정되고 있는 소스의 패키지명을 지정해 그 소스가 문서화 되고 있을 때, 테스트 파일은 경고 또는 에러를 일으킵니다. 그러한 테스트 파일은 서브 디렉토리에 배치할 필요가 있습니다. <code>com.package1</code> 에 추가하는 경우는, 그러한 테스트 파일을, 하이픈이 포함되기 (위해)때문에 패키지명으로서는 무효가 되는 서브 디렉토리에 배치합니다. </p>
+    <pre>
+    com/package1/test-files/
+</pre>이렇게 하면(자), Javadoc 툴에서는 경고없이 test 디렉토리를 스킵 합니다.
+
+<p>테스트 파일에 doc 코멘트가 포함되는 경우, 다음과 같이 와일드 카드를 포함한 테스트 원시 파일명으로 건네주어 테스트 파일의 문서를 생성하도록(듯이), Javadoc 툴을 별개에 실행할 수 있도록(듯이) 설정할 수 있습니다. 예를 들어,<code>com/package1/test-files/*.java</code> 등입니다. </p>
+
+<p><b>원시 파일의 템플릿</b> - 템플릿 파일의 이름은 「. java」로 끝나는 일도 있습니다만, 템플릿 파일은 컴파일 할 수 없습니다. 소스 디렉토리 로 유지하고 싶은 원시 파일의 템플릿이 있는 경우는, 이 파일명에 하이픈 (<code>Buffer-Template.java</code> 등)이나 그 외의 부정한 Java 문자를 사용합니다. 이렇게 하는 것으로, 처리되지 않게 됩니다. 이것은, Javadoc 툴이 처리하는 것은, 「. java」접미사(suffix)을 제외한 이름이 정규의 클래스명인 원시 파일 뿐이기 (위해)때문에입니다 (<a href=     "http://java.sun.com/docs/books/jls/second_edition/html/lexical.doc.html#40625">「Identifiers」</a>참조). </p>
+  </blockquote><br /> <!-- ====================== GENERATED FILES ========================= --> <a name="generatedfiles" id="generatedfiles"></a> 
+
+<h2>생성되는 파일</h2>
+
+  <blockquote>
+디폴트에서는, javadoc 툴은, HTML 형식의 문서를 생성하는 표준 도크 렛을 사용합니다. 이 도크 렛은, 이하의 종류의 파일을 생성합니다. 각각의 HTML 페이지는, 개개의 파일에 상당합니다. 이하의 각 HTML 「페이지」는, 각각 다른 파일에 대응합니다. javadoc 가 생성하는 파일의 이름에는, 클래스나 인터페이스의 이름에 연관된 것과 그렇지 않은 것 (<code>package-summary.html</code> 등)의 2 종류가 있습니다. 후자의 그룹의 파일명에는, 전자의 그룹과 파일명이 경합 하지 않게, 하이픈이 포함되어 있습니다.
+
+<p><b>기본 내용 페이지</b></p>
+
+    <ul>
+<li>문서화하는 클래스 또는 인터페이스 마다 1 개의<b>클래스 페이지 또는 인터페이스 페이지</b> (<i>클래스명</i><code>. html</code>) <a name="package-summary.html"       id="package-summary.html"></a> </li>
+
+<li>문서화하는 패키지 마다 1 개의<b>패키지 페이지</b> (<code>package-summary.html</code>). Javadoc 툴은, 소스 트리의 패키지 디렉토리내에 <code>package.html</code> 또는 <code>package-info.java</code> 라고 하는 파일이 있으면, 그 중의 HTML 텍스트를 이 페이지에 집어 넣습니다.  <a name="overview-summary.html" id=       "overview-summary.html"></a> </li>
+
+<li>패키지 세트 전체에 대해서 1 개의<b>개요 페이지</b> (<code>overview-summary.html</code>). 이것은, 생성 문서의 선두 페이지가 됩니다. Javadoc 툴은,<a href=       "#overview"><code>-overview</code></a>  옵션으로 지정된 파일내의 HTML 텍스트를 이 페이지에 집어 넣습니다. 이 페이지의 파일은, javadoc 에 복수의 패키지명을 건네주었을 경우에만 작성됩니다. 자세한 것은,<a href=       "#htmlframes">「HTML 프레임」</a>을 참조해 주세요. </li>
+    </ul>
+
+<p><b>상호 참조 페이지</b></p>
+
+    <ul>
+      <li style="list-style: none"><a name="overview-tree.html" id=       "overview-tree.html"></a> </li>
+
+<li><b>패키지세트 전체에 대해서 1 개의 클래스 계층 페이지</b> (<code>overview-tree.html</code>). 이 페이지를 표시하려면 , 네비게이션 바의 [개요] 를 클릭하고 나서,[계층 트리] 를 클릭합니다.  <a name="package-tree.html" id=       "package-tree.html"></a> </li>
+
+<li><b>패키지 마다 1 개의 클래스 계층 페이지</b> (<code>package-tree.html</code>). 특정의 패키지, 클래스, 또는 인터페이스의 페이지를 표시하고 나서,[계층 트리] 를 클릭하면(자), 그 패키지의 클래스 계층이 표시됩니다.  <a name=       "use.html"></a> </li>
+
+<li><b>패키지 마다 1 개의 [사용] 페이지</b> (<code>package-use.html</code>)와<b>클래스 및 인터페이스 마다 1 개(살)씩의 [사용] 페이지</b> (<code>class-use/</code><i>클래스명</i><code>. html</code>). 이 페이지에는, 특정의 클래스, 인터페이스, 또는 패키지의 일부를 사용하고 있는 패키지, 클래스, 메소드, 생성자 , 및 필드에 도착해 기술됩니다. 클래스 또는 인터페이스 A 를 예로 하고 생각하면(자), 그 [사용] 페이지에는, A 의 서브 클래스, A 로서 선언된 필드, A 를 돌려주는 메소드, A 형의 파라미터를 가지는 메소드 및 생성자 이 표시됩니다. 이 페이지를 표시하려면 , 우선, 패키지, 클래스, 또는 인터페이스의 페이지로 이동하고 나서, 네비게이션 바의 [사용] 링크를 클릭합니다.  <a name="deprecated-list.html" id=       "deprecated-list.html"></a> </li>
+
+<li><b>비추천 API 페이지</b> (<code>deprecated-list.html</code>). 추천 되지 않는 모든 이름이 일람표 나타납니다. 비추천명은, 일반적으로 개량된 API 가 존재하기 위해서 사용이 추천되어 있지 않은 API 의 이름이며, 일반적으로, 거기에 옮겨지는 이름이 제시되고 있습니다. 비추천 API 는, 장래의 구현에서는 삭제될 가능성이 있습니다.  <a name="constant-values.html" id=       "constant-values.html"></a> </li>
+
+<li><b>정수 필드치 페이지</b> (<code>constant-values.html</code>). static 필드의 치용입니다.  <a name="serialized-form.html" id=       "serialized-form.html"></a> </li>
+
+<li><b>직렬화 된 폼 페이지</b> (<code>serialized-form.html</code>). 직렬화 및 외부화 가능한 클래스입니다. 이러한 각 클래스에는, 직렬화 필드 및 메소드에 관한 설명이 있습니다. 이러한 정보는, API 를 사용하는 개발자는 아니고, 재구현을 실시하는 개발자에게 필요한 정보입니다. 네비게이션 바에 이 페이지로의 링크는 없습니다만, 직렬화 된 클래스로 이동해, 그 클래스의 설명에 있는 [관련 항목] 섹션으로 [직렬화 된 형식] 을 클릭하면(자), 이 정보를 취득할 수 있습니다. 표준 도크 렛은,<a href=       "#serialized-form.html">직렬화 된 형식의 페이지</a>를 자동적으로 생성합니다. 여기에는, Serializable 를 구현하는 public 또는 비 public 의 클래스가 짜넣어지고 있어 게다가<code>readObject</code> 메소드,<code>writeObject</code> 메소드, 직렬화 된 필드, 및 <a href=       "#serial"><code>@serial</code></a>  태그,<a href=       "#serialField"><code>@serialField</code></a>  태그,<a href=       "#serialData"><code>@serialData</code></a>  태그로부터의 다큐멘테이션 코멘트가 짜넣어지고 있습니다. 직렬화가 가능한 public 클래스를 제외하려면 , 그 클래스 또는 그 클래스가 속하는 패키지를 <code>@serial exclude</code> 태그로 지정합니다. 직렬화가 가능한 package private 클래스를 포함하려면 , 그 클래스 또는 그 클래스가 속하는 패키지를 <code>@serial include</code> 태그로 지정합니다. 버젼 1.4 에서는,<code>-private</code> 옵션의 지정없이 javadoc 툴을 실행하는 것으로써, public 클래스 및 private 클래스의 완전하게 직렬화 된 클래스를 생성할 수 있습니다.  <a name="index.html"></a> </li>
+
+<li><b>색인</b> (<code>index-*.html</code>). 모든 클래스명, 인터페이스명, 생성자 명, 필드명, 및 메소드명이, 알파벳순서에 줄지어 있습니다. 색인은, Unicode 를 취급할 수 있도록(듯이) 국제화 되고 있습니다. 1 개의 파일로서 생성하는 일도, 선두 문자 (영어의 경우 A ?  Z) 마다 다른 파일로서 생성할 수도 있습니다. </li>
+    </ul>
+
+<p><b>지원 파일</b></p>
+
+    <ul>
+      <li style="list-style: none"><a name="help-doc.html" id=       "help-doc.html"></a> </li>
+
+<li><b>헬프 페이지</b> (<code>help-doc.html</code>). 네비게이션 바나 전술의 각 페이지에 관한 설명이 기재되어 있습니다. <a href="#helpfile"><code>-helpfile</code></a>  를 사용하면(자), 디폴트의 헬프 파일에 대신하는 독자적인 커스텀 헬프 파일을 제공할 수도 있습니다.  <a name="index.html" id="index.html"></a> </li>
+
+<li>표시용의 HTML 프레임을 작성하는 1 개의 <b>index.html 파일</b>. 이 파일은, 프레임 첨부의 선두 페이지를 표시하는 경우에 로드합니다. 이 파일 자체에는, 텍스트 내용은 포함되어 있지 않습니다.  <a name="frame.html"></a> </li>
+
+<li>복수의<b>프레임 파일</b> (<code>*-frame.html</code>). 패키지, 클래스, 및 인터페이스의 리스트가 포함되어 있습니다. HTML 프레임을 표시할 경우에 사용됩니다.  <a name="package-list"       id="package-list"></a> </li>
+
+<li><b>패키지 리스트</b>파일 (<code>package-list</code>). <code>-link</code> 옵션 및 <code>-linkoffline</code> 옵션으로 사용됩니다. 이것은, HTML 파일은 아니고 텍스트 파일이며, 어느 링크로부터도 액세스 할 수 없습니다.  <a name="stylesheet.css" id=       "stylesheet.css"></a> </li>
+
+<li><b>스타일 시트</b>파일 (<code>stylesheet.css</code>). 생성되는 페이지상의 몇개의 요소에 대해, 색, 폰트 패밀리, font size, 폰트의 스타일, 및 배치를 제어합니다.  <a name="doc-files" id="doc-files"></a> </li>
+
+<li><b>doc-files</b> 디렉토리. 생성처 디렉토리에 카피하는 이미지, 샘플 코드, 원시 코드등의 파일이 모두 포함됩니다. 이러한 파일은, Javadoc 툴에 의해 처리되지 않기 때문에, 파일내에 javadoc 태그가 있어도 무시됩니다. 이 디렉토리는, 소스 트리안에 있는 경우에게만 생성됩니다. </li>
+    </ul>
+
+<p><a name="htmlframes" id="htmlframes"></a>  <b>HTML 프레임</b></p>
+
+<p>Javadoc 툴은, 아래의 그림에 나타내도록(듯이), 2 ?  3 개의 HTML 프레임을 생성합니다. 1 개의 패키지 밖에 없는 경우 (또는 패키지가 없는 경우)는, 패키지의 일람을 생략 하는 것에 의해 최저한 필요한 수의 프레임을 작성합니다. 단일의 패키지에 속하는 원시 파일 (*. java) 또는 단일의 패키지명을 인수로서 javadoc 커멘드에 건네주는 경우는, 좌측의 열에 클래스의 일람을 표시하는 프레임 (C) 1 개(살)만이 작성됩니다. Javadoc 에 복수의 패키지명을 건네주었을 경우는, 개요 페이지 (Detail)에 가세해, 모든 패키지를 일람표시 하는 제 3 의 프레임 (P)이 작성됩니다. 이 개요 페이지의 파일명은,<code>overview-summary.html</code> 입니다. 따라서, 이 파일은, 2 개(살) 이상의 패키지명을 건네주었을 경우에만 작성됩니다. [프레임 없음] 링크를 클릭하는지, overview-summary.html 를 최초로 표시하면(자), 프레임을 생략 할 수 있습니다. </p>
+
+<p>HTML 프레임에 익숙하지 않은 경우는, 특정의 프레임을 인쇄 및 스크롤 하려면 , 그 프레임에 「포커스」가 없으면 안 되는 것에 주의해 주세요. 프레임에 포커스를 주려면 , 그 프레임을 클릭합니다. 이와 같이 하면(자), 많은 브라우저에서는, 커서 키나 페이지 키를 사용해 그 프레임을 스크롤 하거나[인쇄] 메뉴 커멘드를 사용해 그 프레임을 인쇄하거나 할 수 있습니다. </p>
+    <pre>
+              ------------                  ------------
+              |C| Detail |                  |P| Detail |
+              | |        |                  | |        |
+              | |        |                  |-|        |
+              | |        |                  |C|        |
+              | |        |                  | |        |
+              | |        |                  | |        |
+              ------------                  ------------
+             javadoc *. java           javadoc java.lang java.awt
+</pre>HTML 프레임이 필요한가 어떤가에 의해, 다음의 어느 쪽인가의 파일을 개시 페이지로서 로드합니다.
+
+    <ul>
+<li><code>index.html</code> (프레임 있어)</li>
+
+<li><code>overview-summary.html</code> (프레임 없음)</li>
+</ul><a name="filestructure" id="filestructure"></a>  <b>생성되는 파일의 구조</b>
+
+<p>생성되는 클래스 파일 및 인터페이스 파일은, Java 원시 파일 및 클래스 파일과 같은 디렉토리 계층에 편성됩니다. 1 개의 서브 패키지에 대해 1 개의 디렉토리, 라고 하는 구조가 됩니다. </p>
+
+<p>예를 들어,<code>java.applet.Applet</code> 클래스에 대해서 생성되는 문서는,<code>java\applet\Applet.html</code> 에 포함됩니다. 생성처의 디렉토리의 이름이 <code>apidocs</code> 라고 하면(자), java.applet 패키지의 파일 구조는, 그 아래에 구축됩니다. 전술과 같이, 「frame」라고 하는 말을 이름에 포함한 파일은, 모두 좌상 또는 좌하의 프레임에 표시됩니다. 그 이외의 HTML 파일은, 모두 우측의 프레임에 표시됩니다. </p>
+
+    <blockquote>
+주 -  하의 계층도로, 디렉토리는<b>굵은 글씨</b> (<b>bold</b>)로 가리켜 있습니다. asterisk (<code>*</code>)는, javadoc 에의 인수가 패키지명은 아니고 원시 파일명 (*. java)인 경우에 생략 되는 파일 및 디렉토리를 나타내고 있습니다. 또, 인수가 원시 파일명의 경우는,<code>package-list</code> 는 작성됩니다만, 내용은 빈 상태(empty)입니다. doc-files 디렉토리는, 소스 트리내에 존재하는 경우에게만, 생성 먼저 작성됩니다.
+    </blockquote>
+    <pre>
+
+<b>apidocs</b>                             최상정도 디렉토리
+   <a href=
+"#index.html">index.html</a>                        HTML 프레임을 설정하는 초기 페이지
+ * <a href=
+"#overview-summary.html">overview-summary.html</a>             * 전패키지의 리스트. 선두에 요약문이 있다
+   <a href=
+"#overview-tree.html">overview-tree.html</a>                전패키지의 클래스 계층의 리스트
+   <a href=
+"#deprecated-list.html">deprecated-list.html</a>              전패키지의 추천 되지 않는 API 의 리스트
+   <a href=
+"#constant-values.html">constant-values.html</a>              전패키지의 static 필드의 값의 리스트
+   <a href=
+"#serialized-form.html">serialized-form.html</a>              전패키지의 직렬화 된 형식의 리스트
+ * <a href=
+"#*-frame.html">overview-frame.html</a>               전패키지의 리스트. 좌상의 프레임에 표시된다
+   <a href=
+"#*-frame.html">allclasses-frame.html</a>             전패키지의 전클래스의 리스트. 좌하의 프레임에 표시된다
+   <a href=
+"#help-doc.html">help-doc.html</a>                     이러한 페이지의 구성을 나타내는 사용자 헬프를 표시한다
+   <a href=
+"#index-*.html">index-all.html</a>                    -splitindex 옵션없이 작성된 디폴트 색인
+   <b>index-files</b>                      -splitindex 옵션을 지정해 작성된 디렉토리
+       <a href=
+"#index-*.html">index-&lt;number&gt;.html</a>           -splitindex 옵션을 지정해 작성된 색인 파일
+   <a href=
+"#package-list">package-list</a>                      패키지명의 리스트. 외부 참조를 해결하기 위해(때문에)인 만큼 사용된다
+   <a href=
+"#stylesheet.css">stylesheet.css</a>                    폰트, 색, 배치를 정의하는 HTML 스타일 시트
+   <b>java</b>                             패키지 디렉토리
+       <b>applet</b>                       서브 패키지 디렉토리
+            Applet.html             Applet 클래스의 페이지
+            AppletContext.html      AppletContext 인터페이스의 페이지
+            AppletStub.html         AppletStub 인터페이스의 페이지
+            AudioClip.html          AudioClip 인터페이스의 페이지
+          * <a href=
+"#package-summary.html">package-summary.html</a>     이 패키지의 클래스의 리스트. 선두에 요약문이 있다
+          * <a href=
+"#*-frame.html">package-frame.html</a>       이 패키지의 클래스의 리스트. 좌하의 프레임에 표시된다
+          * <a href=
+"#package-tree.html">package-tree.html</a>        이 패키지의 클래스 계층의 리스트
+            <a href=
+"#*-use.html">package-use</a>              이 패키지가 사용되고 있는 장소의 리스트
+            <b><a href=
+"#doc-files">doc-files</a> </b>               이미지나 샘플의 파일이 포함되는 디렉토리
+            <b><a href=
+"#*-use.html">class-use</a> </b>               API 가 사용되고 있는 장소의 페이지를 포함하는 디렉토리
+                Applet.html         Applet 클래스를 사용하는 페이지
+                AppletContext.html  AppletContext 인터페이스를 사용하는 페이지
+                AppletStub.html     AppletStub 인터페이스를 사용하는 페이지
+                AudioClip.html      AudioClip 인터페이스를 사용하는 페이지
+   <b>src-html</b>                         원시 코드 디렉토리
+       <b>java</b>                         패키지 디렉토리
+           <b>applet</b>                   서브 패키지 디렉토리
+                Applet.html         Applet 원시 코드의 페이지
+                AppletContext.html  AppletContext 원시 코드의 페이지
+                AppletStub.html     AppletStub 원시 코드의 페이지
+                AudioClip.html      AudioClip 원시 코드의 페이지
+</pre>
+<!-- ================= GENERATED API DECLARATIONS ==================== --> <a name="generatedapideclarations" id=     "generatedapideclarations"></a> 
+
+<h3>생성되는 API 선언</h3>Javadoc 툴은, 각각의 클래스, 인터페이스, 필드, 생성자 , 및 메소드의 설명의 최초로, 그 API 용의 선언을 생성합니다. 예를 들어,<code>Boolean</code> 클래스의 선언은, 다음과 같이 됩니다.
+
+<p><code>public final class Boolean<br /> extends Object<br /> implements Serializable </code></p>
+
+<p>또,<code>Boolean.valueOf</code> 메소드의 선언은, 다음과 같이 됩니다. </p>
+
+<p><code>public static Boolean valueOf(String s)</code></p>
+
+<p>Javadoc 툴은, 수식자 <code>public</code>,<code>protected</code>,<code>private</code>,<code>abstract</code>,<code>final</code>,<code>static</code>,<code>transient</code>, 및 <code>volatile</code> 를 짜넣을 수가 있습니다만,<code>synchronized</code> 와 <code>native</code> 를 짜넣을 수가 없습니다. 이것들 후자의 2 개의 수식자는, 구현의 상세라고 보여지고 있기 (위해)때문에, API 스펙에는 포함되지 않습니다. </p>
+
+<p>API 에서는, 병행성의 시멘틱스에 대해, 키워드 <code>synchronized</code> 에 의존하는 것이 아니라, 코멘트에 의한 주설명으로서 문서화할 필요가 있습니다. 예를 들어, 「1 개의 <code>Enumeration</code> 를 복수의 thread로부터 병행해 사용할 수 없다」등의 코멘트를 기술합니다. 문서에는, 이러한 시멘틱스를 실현하는 방법을 기술해야 하는 것이 아닙니다. 예를 들어,<code>Hashtable</code> 는 thread에 대해서 안전한 필요가 있습니다만, 「export 되는 모든 메소드를 동기화하면 그것을 실현할 수 있다」와 같이는 지정하는 근거는 없습니다. 버킷 레벨로 내부적으로 동기화할 권리를 남겨 둘 필요가 있습니다. 그러면, 보다 고도의 병행성이 제공됩니다. </p>
+  </blockquote>
+  <!-- ================= DOCUMENTATION COMMENTS ==================== --> <a name="documentationcomments" id="documentationcomments"></a> 
+
+<h2>다큐멘테이션 코멘트</h2>
+
+  <blockquote>
+오리지날의 「다큐멘테이션 코멘트의 스펙」은,<a href="#documentation">「관련 항목」</a>을 참조해 주세요.  <a name="comments" id="comments"></a> 
+
+<h3>원시 코드에의 코멘트의 삽입</h3>원시 코드의 임의의 클래스, 인터페이스, 메소드, 생성자 , 또는 필드의 선언전에, 다큐멘테이션 코멘트 ("doc comments")를 기술할 수가 있습니다. 각<a href="#packagecomment">패키지</a>에 다큐멘테이션 코멘트를 작성할 수 있습니다. 구문은 약간 다릅니다만,<a href="#overviewcomment">개요</a>에도 다큐멘테이션 코멘트를 작성할 수 있습니다. 다큐멘테이션 코멘트는, 비공식에 「Javadoc 코멘트」라고 불리고 있습니다 (이 용어는 상표 관련의 사용법으로 위반). 다큐멘테이션 코멘트는, 코멘트의 시작을 나타내는 캐릭터 라인 <code>/**</code> 이라고 코멘트의 마지막을 나타내는 캐릭터 라인 <code>*/</code> 의 사이에 있는 문자로 구성됩니다. <a href=     "#leadingasterisks">행의 선두의 asterisk</a>는, 각 행에 기술할 수 있습니다. 자세한 것은, 이하로 설명합니다. 코멘트의 텍스트는, 복수행에 걸쳐서 기술할 수 있습니다.
+    <pre>
+/**
+ * This is the typical format of a simple documentation comment
+ * that spans two lines.
+ */
+</pre>다음과 같이 해 1 행에 기술하면(자), 스페이스를 절약할 수 있습니다.
+    <pre>
+/** This comment takes up only one line.  */
+</pre><b>코멘트의 배치</b> - 다큐멘테이션 코멘트는, 클래스, 인터페이스, 생성자 , 메소드, 또는 필드의 선언의 직전에 놓여져 있을 때만 인식됩니다. <a href= "#classexample">클래스의 예</a>,<a href="#methodexample">메소드의 예</a>, 및<a href="#fieldexample">필드의 예</a>를 참조해 주세요. 메소드의 본체에 놓여져 있는 다큐멘테이션 코멘트는 무시됩니다. javadoc 툴에서는, 1 개의 선언문에 대해 1 개의 다큐멘테이션 코멘트만이 인식됩니다.
+
+<p>자주 있는 실수는, 클래스의 코멘트와 클래스의 선언동안에 <code>import</code> 문을 두어 버리는 것입니다. 이러한 기술은 하지 말아 주세요. 이러한 클래스 코멘트는 무시됩니다. </p>
+    <pre>
+   /**
+    * This is the class comment for the class Whatever.
+    */
+
+    import com.sun;   // MISTAKE - Important not to put import statement here
+
+    public class Whatever {
+    }
+</pre><a name="maindescription" id="maindescription"></a>  <a name="tagsection" id="tagsection"></a>  <b>다큐멘테이션 코멘트는 주설명의 후에 태그 섹션이 계속되는</b> - 코멘트의 개시 단락 문자인 <code>/**</code> 의 나중에 태그 섹션까지가 주설명이 됩니다. 태그 섹션은, 선두 문자가 <code>@</code> 인 행으로 정의되는 최초의 블록 태그로부터 시작됩니다 (행의 선두의 asterisk, 공백, 및 행의 선두의 단락 문자 <code>/**</code> 는 제외하다). 주설명을 기술하지 않고, 태그 섹션만의 코멘트를 기술할 수도 있습니다. 주설명은, 태그 섹션 이후에 이을 수 없습니다. 태그의 인수는, 복수행에 걸쳐서 기술할 수 있습니다. 태그의 수에 제한은 없습니다. 몇번이나 기술할 수 있는 태그와 1 회 밖에 기술할 수 없는 태그가 있습니다. 예를 들면, 다음의 <code>@see</code> 로부터 태그 섹션이 시작됩니다.
+    <pre>
+/**
+ * This sentence would hold the main description for this doc comment.
+ * @see java.lang.Object
+ */
+</pre><a name="standaloneandinlinetags" id= "standaloneandinlinetags"></a>  <a name="blockandinlinetags" id= "blockandinlinetags"></a>  <b>블록 태그와 인 라인 태그</b> - <a href="#javadoctags">「태그」</a>는,Javadoc 를 처리할 수 있는, 다큐멘테이션 코멘트내의 특별한 키워드입니다. <code>@tag</code> 와 같이 기술하는<a href="#blocktags">블록 태그</a>  ( 「스탠드얼론 태그라고도 불린다」)와<a href="#inlinetags">인 라인 태그</a>  (<code>{@tag}</code> 와 같이 안괄호로 둘러싸 기술)의 2 종류의 태그가 있습니다. 블록 태그가 올바르게 해석되기 위해서(때문에)는, 행의 선두의 asterisk, 공백, 단락 문자 (<code>/**</code>)를 제외해, 행의 선두에 두지 않으면 안됩니다. 이것은, 텍스트내의 그 이외의 위치에서 <code>@</code> 문자를 사용해도, 태그의 개시로서는 해석되지 않는 것을 의미하고 있습니다. 행의 최초로 <code>@</code> 문자를 사용해도 태그로서 해석되지 않게 하려면 , HTML 엔티티의 「<code>&amp;#064;</code>」를 사용해 주세요. 각각의 블록 태그에는, 대응 붙일 수 있었던 텍스트가 있습니다. 이 텍스트는, 태그의 나중에, 다음의 태그의 전, 또는 다큐멘테이션 코멘트의 끝까지의 사이에 기술된 텍스트 (태그나 코멘트 단락 문자를 제외하다)입니다. 이 관련 텍스트는 복수행에 걸쳐서 기술할 수 있습니다. 인 라인 태그는, 텍스트를 기술할 수 있는 장소이면 어디에라도 둘 수가 있어 올바르게 해석됩니다. 다음의 코드예에는, 블록 태그 <code>@deprecated</code> 와 인 라인 태그 <code>{@link}</code> 가 포함되어 있습니다.
+    <pre>
+/**
+ * @deprecated  As of JDK 1.1, replaced by {@link #setBounds(int, int, int, int)}
+ */
+</pre>
+
+<p><b>코멘트는 HTML 로 기술하는</b> - 텍스트는 HTML 형식에서 기술하지 않으면 안됩니다. 이것은, HTML 의 엔티티를 사용할 필요가 있는 것, 및 HTML 태그를 사용할 수 있는 것을 의미합니다. 기술하는 HTML 의 버젼으로서는, 사용하는 브라우저가 지원하는 임의의 버젼을 사용할 수 있습니다. 표준 도크 렛은, 카스케이딘그스타이르시트 (CSS)와 프레임을 포함해 모든 부분 (다큐멘테이션 코멘트 이외의 부분)에서 HTML 3.2 에 준거한 코드를 생성하도록(듯이) 작성되고 있습니다. 다만, 프레임 세트 대응을 위해, 생성되는 각 파일에는 「HTML 4.0」(이)라고 기술됩니다. </p>
+
+<p>예를 들어, 보다 작은 (<code>&lt;</code>) 및 보다 큰 (<code>&gt;</code>)라고 하는 기호는,<code>&amp;lt;</code> 및 <code>&amp;gt;</code> 로서 기술할 필요가 있습니다. 같이 ampersand(&) (<code>&amp;</code>)는,<code>&amp;amp;</code> 라고 기술할 필요가 있습니다. 다음의 예에서는, 볼드의 HTML 태그 <code>&lt;b&gt;</code> 를 사용하고 있습니다. </p>
+
+<p>다음에, 다큐멘테이션 코멘트를 나타냅니다. </p>
+    <pre>
+/**
+ * This is a &lt;b&gt;doc&lt;/b&gt; comment.
+ * @see java.lang.Object
+ */
+</pre>
+
+<p><a name="leadingasterisks" id="leadingasterisks"></a>  <b>줄머리의 asterisk</b> - Javadoc 는, 다큐멘테이션 코멘트를 해석할 경우에, 각 행의 선두에 있는 asterisk (<code>*</code>)를 모두 파기합니다. 또, 최초의 asterisk (<code>*</code>)보다 전의 공백과 탭도 파기합니다. 버젼 1.4 로부터는, 행의 선두의 asterisk를 생략 해도, 선두의 공백 문자는 삭제되지 않게 되었습니다. 이 때문에, 코드예를 직접 다큐멘테이션 코멘트의 <code>&lt;PRE&gt;</code> 태그내에 페이스트 해도, 인덴트가 보관 유지됩니다. 일반적으로, 브라우저는, 공백 문자를 탭보다 일률적으로 해석합니다. 인덴트는 단락지어 문자 <code>/**</code> 또는 <code>&lt;PRE&gt;</code> 태그보다 왼쪽 가까이가 됩니다. </p>
+
+<p><b>최초의 문</b> - 각 다큐멘테이션 코멘트의 최초의 문장은, 선언되고 있는 엔티티에 관한 간결하고 완전한 요약문일 필요가 있습니다. 이 「최초의 문장」은, 직후에 스페이스, 탭, 또는 개행이 계속되는 최초의 피리어드 (로케일이 영어로 설정되어 있는 경우), 또는 최초의<a href="#blocktags">태그</a>가 있는 위치에서 끝납니다. 최초의 문장은, Javadoc 툴에 의해 HTML 페이지의 최초로 있는 멤버의 개요의 부분에 카피됩니다. </p>
+
+<p><b>복수 필드의 선언</b> - Java 에서는, 1 개의 문장으로 복수의 필드를 선언할 수 있습니다. 다만, 이 문장에는, 1 개의 다큐멘테이션 코멘트 밖에 기술할 수 없습니다. 그 코멘트가, 모든 필드에 대해서 카피됩니다. 따라서, 필드 마다 다큐멘테이션 코멘트를 기술할 필요가 있는 경우는, 각 필드를 다른 문장으로 선언하지 않으면 안됩니다. 예를 들어, 다음의 다큐멘테이션 코멘트는, 1 개의 선언으로서 기술하면(자) 부적절합니다. 이 경우는, 선언을 2 개로 나누는 것을 추천합니다. </p>
+
+    <blockquote>
+      <pre>
+/**
+ * The horizontal and vertical distances of point (x, y)
+ */
+public int x, y;      // Avoid this
+</pre>
+</blockquote>상기의 코드로부터는, 다음과 같은 문서가 생성됩니다.
+
+    <blockquote>
+      <pre>
+public int <b>x</b>
+</pre>
+
+      <dl>
+<dd>The horizontal and vertical distances of point (x, y)</dd>
+      </dl>
+      <pre>
+public int <b>y</b>
+</pre>
+
+      <dl>
+<dd>The horizontal and vertical distances of point (x, y)</dd>
+      </dl>
+</blockquote><b>표제 태그는 가능한 한 사용하지 않는</b> - 멤버에 대해서 다큐멘테이션 코멘트를 기술할 경우에는, &lt;H1&gt; 나 &lt;H2&gt; 등의 HTML 표제 태그는, 가능한 한 사용하지 말아 주세요. Javadoc 툴은, 완전하게 구조화 된 문서를 작성하므로, 이러한 구조화 태그가 사용되고 있으면(자), 생성 문서의 형식이 악영향을 받는 일이 있습니다. 다만, 클래스나 패키지의 코멘트에서는, 이러한 표제 태그를 사용해 독자적인 구조를 조립해 괜찮습니다.
+
+    <p><a name="inheritingcomments" id=     "inheritingcomments"></a> </p>
+
+<h3>메소드 코멘트의 자동 카피</h3>Javadoc 툴에는, 다음의 2 개의 경우에, 클래스 및 인터페이스의 메소드 코멘트를 카피 또는 「상속」하는 기능이 있습니다. 생성자 , 필드, 및 상자의 클래스는, 다큐멘테이션 코멘트를 상속하지 않습니다.
+
+    <ul>
+      <li>
+<b>자동적으로 코멘트를 상속해, 발견되지 않는 텍스트를 묻는</b> - <a href="#maindescription">주설명</a>, 또는 <code>@return</code> 태그,<code>@param</code> 태그,<code>@throws</code> <!-- or @see? --> 태그가, 메소드 코멘트로 발견되지 않는 경우, Javadoc 툴은, 오버라이드(override) 한 메소드 또는 구현하고 있는 경우는 그 메소드로부터, 대응하는 주설명 또는 태그 코멘트를, 다음의 알고리즘에 따라 카피합니다.
+
+<p>엄밀하게는, 특정의 파라미터의 <code>@param</code> 태그가 발견되지 않는 경우, 그 파라미터의 코멘트가, 상위의 상속 계층의 메소드로부터 카피됩니다. 특정의 예외의 <code>@throws</code> 태그가 발견되지 않는 경우, 그 예외가 선언되고 있는 경우에 한해, 그 <code>@throws</code> 태그가 카피됩니다. </p>
+
+<p>이 동작은 버젼 1.3 이전의 동작과는 대조적입니다. 지금까지의 버젼에서는, 주설명 또는 태그가 존재하면, 코멘트는 일절 상속되지 않았습니다. </p>
+      </li>
+
+<li><b>{@inheritDoc} 태그를 가지는 코멘트를 명시적으로 상속하는</b> - 인 라인 태그 <a href=       "#{@inheritDoc}"><code>{@inheritDoc}</code></a>  를, 메소드의 주설명, 또는 <code>@return</code>,<code>@param</code>,<code>@throws</code> 태그 코멘트에 삽입합니다. 상속한 대응하는 주설명 또는 태그 코멘트는, 그 개소에 카피됩니다. </li>
+    </ul>
+
+<p>다큐멘테이션 코멘트를 실제로 카피에 이용하려면 , 상속한 메소드의 원시 파일이 <a href="#sourcepath">-sourcepath</a>  로 지정한 패스인 만큼 놓여져 있는 것이 필요하게 됩니다. 커멘드행으로, 클래스도 패키지도 건네줄 필요는 없습니다. 이 점은, 클래스가<a href="#documentedclasses">문서화 되는 클래스</a>가 아니면 안되었던 1.3.x 이전의 릴리스와 다릅니다. </p>
+
+<p><b>클래스 및 인터페이스로부터의 상속</b> - 클래스 및 인터페이스로부터 상속하는 다음의 3 개의 경우에, 코멘트의 상속을 합니다. </p>
+
+    <ul>
+<li>클래스의 메소드가 슈퍼 클래스의 메소드를 오버라이드(override) 하고 있다</li>
+
+<li>인터페이스의 메소드가 슈퍼 인터페이스의 메소드를 오버라이드(override) 하고 있다</li>
+
+<li>클래스의 메소드가 인터페이스의 메소드를 구현하고 있다</li>
+    </ul>
+
+<p>최초의 2 개의 케이스 (메소드가 오버라이드(override) 하고 있는 경우)에서는, Javadoc 툴은, 그 코멘트가 상속되고 있는지 어떤지에 관계없이, 오버라이드(override) 하고 있는 메소드의 문서내에 「오버라이드(override)」라고 하는 부표제를 생성해, 오버라이드(override) 되고 있는 메소드에의 링크를 기입합니다. </p>
+
+<p>3 번째의 케이스 (특정의 클래스의 메소드가 인터페이스의 메소드를 구현하고 있는 경우)에서는, javadoc 툴은, 오버라이드(override) 하고 있는 메소드의 문서내에 「정의」라고 하는 부표제를 생성해, 구현되고 있는 메소드에의 링크를 기입합니다. 이것은, 코멘트가 상속되고 있는지 어떤지와 관계되지 않습니다. </p>
+
+<p><a name="algorithmforinheriting" id=     "algorithmforinheriting"></a>  <b>메소드의 설명이 상속되는 알고리즘</b> - 있는 메소드에 다큐멘테이션 코멘트가 기술되어 있지 않은 경우, 또는 {@inheritDoc} 태그가 있는 경우, Javadoc 툴은, 다음과 같은 알고리즘을 사용해 적절한 코멘트를 검색합니다. 이 알고리즘은, 가장 적절한 다큐멘테이션 코멘트를 검색할 수 있도록(듯이) 설계되고 있어 슈퍼 클래스보다 인터페이스가 우선되게 되어 있습니다. </p>
+
+    <ol>
+<li>직접 구현되고 있는 (또는, 확장되고 있다) 인터페이스를, 메소드의 선언으로 implements (또는 extends) 키워드의 후에 등장하는 순서로, 1 개(살)씩 조사한다. 이 메소드에 대해 최초로 발견된 다큐멘테이션 코멘트를 채용한다</li>
+
+<li>순서 1 으로 다큐멘테이션 코멘트가 발견되지 않았던 경우는, 직접 구현되고 있는 (또는, 확장되고 있다) 인터페이스의 각각 대해, 이 알고리즘 전체를 재귀적으로 적용한다 (그 때의 순서는, 순서 1 으로 인터페이스를 조사했을 때의 순서와 같다)</li>
+
+<li>순서 2 로 다큐멘테이션 코멘트가 발견되지 않았던 경우로, 이 클래스가 Object 이외의 클래스인 (인터페이스가 아니다) 경우는, 다음과 같이 처리한다</li>
+
+      <li style="list-style: none">
+        <ol type="a">
+<li>슈퍼 클래스에 이 메소드에 대한 다큐멘테이션 코멘트가 기술되고 있으면, 그 코멘트를 채용한다</li>
+
+<li>순서 3a 로 다큐멘테이션 코멘트가 발견되지 않았던 경우는, 슈퍼 클래스에 대해서, 이 알고리즘 전체를 적용한다</li>
+        </ol>
+      </li>
+    </ol>
+  </blockquote><br /> <!-- ====================== TAGS ========================= --> <a name="javadoctags" id="javadoctags"></a> 
+
+<h2>javadoc 태그</h2>
+
+  <blockquote>
+Javadoc 툴은, Java 의 다큐멘테이션 코멘트내에 파묻힌 특별한 태그를 해석합니다. 이러한 다큐멘테이션 태그를 사용하면(자), 서식이 갖추어진 완전한 API 문서를 원시 코드로부터 자동적으로 생성할 수 있습니다. 태그는, 단가 기호 (<code>@</code>)로 시작되어, 대문자와 소문자가 구별됩니다. 이러한 태그는, 정해졌던 대로의 대문자와 소문자를 사용해 기술할 필요가 있습니다. 태그는, 행의 선두 (선행하는 공백과 생략 가능한 asterisk는 제외하다)에 두지 않으면 안됩니다. 관례로서 같은 이름의 태그는 1 개소에 정리해 기술하도록(듯이) 합니다. 예를 들어,<code>@see</code> 태그가 다수 있는 경우는, 모든 것을 1 개소에 정리해 기술합니다.  <a name="standalonetags" id=     "standalonetags"></a>  &nbsp;<a name="blocktags" id=     "blocktags"></a> 
+
+<p><a name="inlinetags" id="inlinetags"></a> 태그에는 2 개의 타입이 있습니다. </p>
+
+    <ul>
+<li><b>블록 태그</b> - 주설명에 계속되는<a href=       "#tagsection">태그 섹션</a>내에게만 기술 가능. 블록 태그는,<code>@tag</code> 의 형식을 취합니다. </li>
+
+<li><b>인 라인 태그</b> - <a href="#maindescription">주설명</a>내, 또는 블록 태그의 코멘트내에 기술 가능. 인 라인 태그는,<code>{@tag}</code> 와 같이 안괄호로 둘러쌉니다. </li>
+</ul>향후의 릴리스로 도입되는 태그에 대해서는,<a href=     "http://java.sun.com/j2se/javadoc/proposed-tags.html">「Proposed Javadoc Tags」</a>를 참조해 주세요.
+
+<p>현시점에서 유효한 태그는, 다음과 같습니다. </p>
+
+    <blockquote>
+      <table border="0" width="40%">
+        <tr>
+<td><b>태그</b></td>
+
+<td align="center"><b>도입된 JDK/SDK 의 버젼</b></td>
+        </tr>
+
+        <tr>
+<td><a href="#@author"><code>@author</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href="#{@code}"><code>{@code}</code></a> </td>
+
+          <td align="center">1.5</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+
+          <td align="center">1.3</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#@deprecated"><code>@deprecated</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#@exception"><code>@exception</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#{@inheritDoc}"><code>{@inheritDoc}</code></a> </td>
+
+          <td align="center">1.4</td>
+        </tr>
+
+        <tr>
+<td><a href="#{@link}"><code>{@link}</code></a> </td>
+
+          <td align="center">1.2</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+
+          <td align="center">1.4</td>
+        </tr>
+
+        <tr>
+          <td><a href=           "#{@literal}"><code>{@literal}</code></a> </td>
+
+          <td align="center">1.5</td>
+        </tr>
+
+        <tr>
+<td><a href="#@param"><code>@param</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href="#@return"><code>@return</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+
+        <tr>
+<td><a href="#@serial"><code>@serial</code></a> </td>
+
+          <td align="center">1.2</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#@serialData"><code>@serialData</code></a> </td>
+
+          <td align="center">1.2</td>
+        </tr>
+
+        <tr>
+<td><a href=           "#@serialField"><code>@serialField</code></a> </td>
+
+          <td align="center">1.2</td>
+        </tr>
+
+        <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+
+          <td align="center">1.1</td>
+        </tr>
+
+        <tr>
+<td><a href="#@throws"><code>@throws</code></a> </td>
+
+          <td align="center">1.2</td>
+        </tr>
+
+        <tr>
+<td><a href="#{@value}"><code>{@value}</code></a> </td>
+
+          <td align="center">1.4</td>
+        </tr>
+
+        <tr>
+<td><a href="#@version"><code>@version</code></a> </td>
+
+          <td align="center">1.0</td>
+        </tr>
+      </table>
+
+<p>커스텀 태그에 대해서는,<a href="#tag">-tag</a>  옵션을 참조해 주세요. </p>
+    </blockquote>
+
+    <dl>
+      <dd><a name="author"></a> </dd>
+
+<dt><b><code>@author</code></b>&nbsp; <var>name-text</var></dt>
+
+      <dd>
+-author 옵션이 사용되고 있는 경우, 생성 문서에 「저자」의 항목을 추가해, 지정된 <var>name-text</var> 를 기입합니다. 1 개의 다큐멘테이션 코멘트에 복수의 <code>@author</code> 태그를 포함할 수가 있습니다. 1 개의 <code>@author</code> 태그에 1 개의 이름을 지정하는 일도, 1 개의 태그에 복수의 이름을 지정할 수도 있습니다. 전자의 경우는, Javadoc 툴에 의해, 이름과 이름의 사이에 콤마 (<code>,</code>)와 스페이스가 삽입됩니다. 후자의 경우는, 텍스트 전체가, 해석되는 일 없이, 생성 문서에 그대로 카피됩니다. 따라서, 콤마는 아니고, 각 언어에 대응한 이름 단락 문자를 사용할 필요가 있을 때는, 1 개의 태그에 복수의 이름을 지정해 주세요.
+
+<p>상세한 것에 대하여는,<a href="#wheretags">「태그를 사용할 수 있는 장소」 </a>및 <a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@author">@author 태그의 문서</a>를 참조해 주세요. </p>
+
+        <p><a name="deprecated"></a> </p>
+      </dd>
+
+<dt><b><code>@deprecated</code></b>&nbsp; <var>deprecated-text</var></dt>
+
+      <dd>
+        <blockquote>
+주:JDK 5.0 으로부터,<a href=           "../../guides/javadoc/deprecation/deprecation.html">@Deprecated 주석</a>을 사용해 특정의 프로그램 요소를 비추천으로 할 수 있게 되었습니다.
+</blockquote>이 API 는 계속 동작합니다만, 이 API 를 사용해야 하는 것이 아닌 것을 나타내는 코멘트를 추가합니다. Javadoc 툴은,<var>deprecated-text</var> 를<a href="#maindescription">주설명</a>전으로 이동해 이탤릭으로 해, 그 전에 볼드의 경고 「추천 되지 않습니다.」(을)를 추가합니다. 이 태그는, 모든 다큐멘테이션 코멘트, 즉 개요, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 및 필드에서 유효합니다.
+
+<p><var>deprecated-text</var> 의 최초의 문장에서는, 적어도, 그 API 가 추천 되지 않게 되었던 시기와 대체 사용해야 할 API 를 독자에게 제시할 필요가 있습니다. Javadoc 툴은, 이 최초의 문장만을, 개요 섹션과 색인에 카피합니다. 그 후의 문장에서는, 그 API 가 추천 되지 않는 이유를 설명할 수도 있습니다. 또, 대신의 API 를 지시하는 <code>{@link}</code> 태그 (Javadoc 1.2 이후의 경우)를 포함할 필요가 있습니다. 다음과 같이 기술합니다. </p>
+
+<p>상세한 것에 대하여는,<a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@deprecated">@deprecated 태그의 문서</a>를 참조해 주세요. </p>
+
+        <ul type="disc">
+<li>Javadoc 1.2 이후에서는,<code>{@link}</code> 태그를 사용합니다. 이것에 의해, 필요한 장소에 인 라인으로 링크를 작성할 수 있습니다. 예를 나타냅니다.
+            <pre>
+/**
+ * @deprecated  As of JDK 1.1, replaced by {@link #setBounds(int, int, int, int)}
+ */
+</pre>
+          </li>
+
+<li>Javadoc 1.1 에서는, 각 <code>@deprecated</code> 태그에 대해서 <code>@see</code> 태그 (인 라인에는 할 수 없다)를 기술하는 것이 표준의 형식입니다. </li>
+        </ul>
+
+<p>추천 되지 않는 태그에 대한 자세한 것은,<a href=         "../../guides/javadoc/deprecation/index.html">@deprecated 태그</a>의 문서를 참조해 주세요. </p>
+
+        <p><a name="code"></a> </p>
+      </dd>
+
+<dt><b><code>{@code</code></b>&nbsp; <var>text</var><b><code>}</code></b></dt>
+
+      <dd>
+<code>&lt;code&gt;{@literal}&lt;/code&gt;</code> 와 동등합니다.
+
+<p>텍스트를 HTML 마크 업 또는 상자가 된 javadoc 태그로서 해석하지 않고 ,<var>text</var> 를 <code>code</code> 폰트로 표시합니다. 이것에 의해 doc 코멘트에서는, 파라미터의 종류 (<code>&lt;Object&gt;</code>), 부등호 (<code>3 &lt; 4</code>), 또는 화살표 (<code>&lt;-</code>)등으로, HTML 엔티티 (<code>&amp;lt;</code> 및 <code>&amp;gt;</code>)는 아니고, 일반적으로의 산괄호 (<code>&lt;</code> 및 <code>&gt;</code>)를 사용할 수 있습니다. 예를 들어 doc 코멘트의 텍스트</p>
+        <pre>
+     <code>{@code A&lt;B&gt;C}</code>
+</pre>(은)는, 생성된 HTML 페이지로, 다음과 같이 그대로 표시됩니다.
+        <pre>
+     <code>A&lt;B&gt;C</code>
+</pre>주목해야 할 점으로서<code>&lt;B&gt;</code> 는 굵은 글씨이다고 해석됩니다만, 코드 폰트가 됩니다.
+
+<p>코드 폰트없이 같은 기능을 실현하려면 ,<a href=         "#literal"><code>{@literal}</code></a>  를 사용합니다. </p>
+
+        <p><a name="docRoot"></a> </p>
+      </dd>
+
+<dt><b><code>{@docRoot}</code></b></dt>
+
+      <dd>
+생성되는 페이지로부터 본, 생성 문서의 (생성처의) 루트 디렉토리에의 상대 패스를 나타냅니다. 이 태그는, 저작권의 페이지나 회사의 로고 등, 생성되는 모든 페이지로부터 참조하는 파일을 짜넣을 때 편리합니다. 일반적으로은, 각 페이지의 하부로부터 저작권의 페이지에 링크합니다.
+
+<p>이 <code>{@docRoot}</code> 태그는, 커멘드행으로부터도, 다큐멘테이션 코멘트 중(안)에서도 사용할 수 있습니다. 이 태그는, @return, @param, @deprecated 등의 임의의 태그의 텍스트 부분을 포함한, 모든 다큐멘테이션 코멘트, 즉 개요, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 및 필드에서 유효합니다. </p>
+
+        <ol>
+<li>커멘드행에서는, 헤더, 풋터, 또는 보텀 노트는 다음과 같이 정의합니다.
+            <pre>
+   javadoc -bottom '&lt;a href="{@docRoot}/copyright.html"&gt;Copyright&lt;/a&gt;'
+</pre>주 - <code>{@docRoot}</code> 를 이와 같이 이용하는 경우, 일부의 Makefile 프로그램에서는, 안괄호 { } 문자를 이스케이프 할 필요가 있습니다. 예를 들어, Inprise MAKE 버젼 5.2 를 Windows 상에서 실행하는 경우는, 「{{@docRoot}}」와 같이, 안괄호를 쌍꺼풀 수술을 할 필요가 있습니다. 게다가<code>-bottom</code> 등의 옵션에 대한 인수를, 단일 인용부호는 아니고, 이중 인용부호로 둘러쌀 필요가 있습니다. <code>href</code> 인수의 값을 둘러싸는 인용부호는 생략 합니다.
+          </li>
+
+<li>다큐멘테이션 코멘트 중(안)에서는, 다음과 같이 사용합니다.
+            <pre>
+   /**
+    * See the &lt;a href="{@docRoot}/copyright.html"&gt;Copyright&lt;/a&gt;.
+    */
+</pre>
+          </li>
+</ol>이 태그가 필요한 이유는, 생성 문서가, 서브 패키지와 같은 깊이를 가지는 계층 구조의 디렉토리에 포함되기 때문입니다. 다음에 예를 나타냅니다.
+        <pre>
+  &lt;a href="{@docRoot}/copyright.html"&gt;
+</pre>다음과 같이 해결됩니다.
+        <pre>
+  &lt;a href="../../copyright.html"&gt;      java/lang/Object.java 의 경우
+</pre>및
+        <pre>
+  &lt;a href="../../../copyright.html"&gt;   java/lang/ref/Reference.java 의 경우
+</pre>
+
+        <p><a name="exception"></a> </p>
+      </dd>
+
+<dt><b><code>@exception</code></b>&nbsp; <var>class-name</var>&nbsp; <var>description</var></dt>
+
+      <dd>
+<code>@exception</code> 태그는,<a href=         "#@throws"><code>@throws</code></a>  태그와 동의입니다.
+
+        <p><a name="inheritDoc"></a> </p>
+      </dd>
+
+<dt><b><code>{@inheritDoc}</code></b>&nbsp;</dt>
+
+      <dd>
+<a href=         "#inheritingcomments">무엇보다 가까운 </a>상속 가능한 클래스 또는 구현 가능한 인터페이스로부터, 이 태그의 현재의 다큐멘테이션 코멘트에, 문서를 상속 (카피)합니다. 이 기능에 의해, 보다 범용적인 코멘트를 상속 트리의 상위에 기술해, 카피한 텍스트를 사용해 기술할 수가 있습니다.
+
+<p>이 태그는, 다큐멘테이션 코멘트의 다음의 위치에서만 유효합니다. </p>
+
+        <ul type="disc">
+<li>메소드의<a href="#maindescription">주설명 </a>블록내. 이 경우, 주설명은, 상위 계층의 클래스 또는 인터페이스로부터 카피된다</li>
+
+<li>메소드의 @return, @param, @throws 태그의 텍스트 인수내. 이 경우, 태그 텍스트는, 상위 계층의 대응하는 태그로부터 카피된다</li>
+        </ul>
+
+<p>상속 계층에서 코멘트를 찾아내는 방법에 관한 정확한 설명에 대해,<a href="#inheritingcomments">「메소드 코멘트의 자동 카피」</a>를 참조해 주세요. 이 태그가 발견되지 않는 경우, 코멘트는, 이 마디로 설명하는 룰에 응해, 자동적으로 상속될지 어떨지가 정해집니다. </p>
+
+        <p><a name="link"></a> </p>
+      </dd>
+
+<dt><b><code>{@link</code></b>&nbsp;&#xA0; <var>package.class</var><code>#</code><var>member</var>&nbsp;&#xA0; <var>label</var><b><code>}</code></b>&nbsp;</dt>
+
+      <dd>
+표시 텍스트 <i>label</i> 와의 인 라인 링크를 삽입합니다. <i>label</i> 는, 참조 클래스의 지정된 패키지, 클래스, 또는 멤버의<a href="#name">이름</a>의 다큐멘테이션을 지시합니다. 이 태그는, @return, @param, @deprecated 등의 임의의 태그의 텍스트 부분을 포함한, 모든 다큐멘테이션 코멘트, 즉 개요, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 및 필드에서 유효합니다.
+
+<p>이 태그는,<a href=         "#@see"><code>@see</code></a>  태그와 자주(잘) 닮았습니다. 어느 쪽의 태그도,<a href=         "#package.class"><var>package.class</var><code>#</code><var>member</var></a>  및 <var>label</var> 의 참조의 방법이 같아, 유효한 구문도 완전히 같습니다. 큰 차이는,<code>{@link}</code> 는, 링크를 [관련 항목] 섹션에 두는 것이 아니라, 인 라인 링크를 생성한다고 하는 것입니다. 또, 인 라인 텍스트외의 부분과 구별하기 위해서,<code>{@link}</code> 태그의 최초와 마지막에 안괄호를 기술합니다. 라벨 중(안)에서 「}」을 사용할 필요가 있는 경우는, HTML 엔티티의 「&amp;#125;」를 사용합니다. </p>
+
+<p>1 개의 문장 중(안)에서 사용할 수 있는 <code>{@link}</code> 태그의 수에 제한은 없습니다. 이 태그는, 다큐멘테이션 코멘트의<a href="#maindescription">주설명 </a>부분, 또는 @deprecated, @return, @param 등의 임의의 태그의 텍스트 부분에서 사용할 수 있습니다. </p>
+
+<p>예를 들어, 다음의 코멘트에서는 <code>getComponentAt(int, int)</code> 메소드를 참조하고 있습니다. </p>
+        <pre>
+{@link #getComponentAt(int, int) getComponentAt} 메소드를 사용합니다.
+</pre>표준 도크 렛에서는, 상기의 코멘트로부터 다음의 HTML 가 생성됩니다 (이 코멘트가 같은 패키지의 다른 클래스를 참조하고 있는 경우).
+        <pre>
+&lt;a href="Component.html#getComponentAt(int, int)"&gt;getComponentAt&lt;/a&gt; 메소드를 사용합니다.
+</pre>이 HTML 는, Web 페이지상에서는 다음과 같이 표시됩니다.
+        <pre>
+<u>getComponentAt</u> 메소드를 사용합니다.
+</pre><code>{@link}</code> 를, 문서화의 대상으로 하지 않은 클래스에까지 확장하려면 ,<a href= "#link"><code>-link</code></a>  옵션을 사용합니다.
+
+        <p>상세한 것에 대하여는,<a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#{@link}">{@link} 태그의 문서</a>를 참조해 주세요. </p>
+
+        <p><a name="linkplain"></a> </p>
+      </dd>
+
+<dt><b><code>{@linkplain</code></b>&nbsp; <var>package.class</var><code>#</code><var>member</var>&nbsp; <var>label</var><b><code>}</code></b></dt>
+
+      <dd>
+링크의 라벨이 코드 폰트는 아니고 plaintext로 표시되는 점 이외는 <code>{@link}</code> 와 같습니다. 라벨이 plaintext로 기술되고 있으면(자) 편리합니다. 다음의 예를 참조해 주세요. 례:
+        <pre>
+     {@linkplain add() the overridden method} 를 참조해 주세요.
+</pre>이것은 이하와 같이 표시됩니다.
+
+        <blockquote>
+<u>the overridden method</u> 를 참조해 주세요.
+        </blockquote><a name="literal"></a> 
+      </dd>
+
+<dt><b><code>{@literal</code></b>&nbsp; <var>text</var><b><code>}</code></b></dt>
+
+      <dd>
+텍스트를 HTML 마크 업 또는 상자가 된 javadoc 태그로서 해석하지 않고 ,<var>text</var> 를 표시합니다. 이것에 의해 doc 코멘트에서는, 파라미터의 종류 (<code>&lt;Object&gt;</code>), 부등호 (<code>3 &lt; 4</code>), 또는 화살표 (<code>&lt;-</code>)등으로, HTML 엔티티 (<code>&amp;lt;</code> 및 <code>&amp;gt;</code>)는 아니고, 일반적으로의 산괄호 (<code>&lt;</code> 및 <code>&gt;</code>)를 사용할 수 있습니다. 예를 들어 doc 코멘트의 텍스트
+        <pre>
+     <code>{@literal A&lt;B&gt;C}</code>
+</pre>(은)는, 생성된 HTML 페이지는 브라우저로 다음과 같이 그대로 표시됩니다.
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>A&lt;B&gt;C <!-- DO NOT PUT THIS IN CODE FONT, AS @literal does not do that --></p>주목해야 할 점으로서<code>&lt;B&gt;</code> 는 굵은 글씨이다고 해석되지 않습니다 (코드 폰트가 되지 않는다).
+
+<p>코드 폰트로 같은 기능을 실현하려면 ,<a href=         "#code"><code>{@code}</code></a>  를 사용합니다. </p>
+
+        <p><a name="param"></a> </p>
+      </dd>
+
+<dt><b><code>@param</code></b>&nbsp; <var>parameter-name</var> <var>description</var></dt>
+
+      <dd>
+지정한 <var>parameter-name</var> 와 지정한 <var>description</var> 를 사용해 파라미터를 「Parameters」섹션에 추가합니다. doc 코멘트를 기술할 때는,<var>description</var> 를 복수행에 이을 수가 있습니다. 이 태그는, 메소드, 생성자 , 또는 클래스의 doc 코멘트내에서만 유효합니다.
+
+<p><var>parameter-name</var> 는, 메소드 또는 생성자 에서의 파라미터의 이름인가, 클래스, 메소드 또는 생성자 의 타입 파라미터의 이름이 됩니다. 산괄호로 파라미터명을 둘러싸면(자), 형태 파라미터를 사용하는 것을 지정합니다. </p>
+
+<p>클래스의 형태 파라미터의 예:</p>
+        <pre>
+     /**
+      * @param &lt;E&gt; Type of element stored in a list
+      */
+     public interface List&lt;E&gt; extends Collection&lt;E&gt; {
+     }
+</pre>
+
+<p>메소드의 형태 파라미터의 예:</p>
+        <pre>
+     /**
+      * @param string  the string to be converted
+      * @param type    the type to convert the string to
+      * @param &lt;T&gt;     the type of the element
+      * @param &lt;V&gt;     the value of the element
+      */
+     &lt;T, V extends T&gt; V convert(String string, Class&lt;T&gt; type) {
+     }
+</pre>상세한 것에 대하여는,<a href= "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@param">@param 태그의 문서</a>를 참조해 주세요.
+
+        <p><a name="return"></a> </p>
+      </dd>
+
+<dt><b><code>@return</code></b>&nbsp; <var>description</var></dt>
+
+      <dd>
+[반환값] 섹션을 추가해,<var>description</var> 의 텍스트를 기입합니다. 이 텍스트에서는, 반환값의 형태와 취할 수 있는 값의 범위에 대해 기술할 필요가 있습니다. 이 태그는, 메소드의 다큐멘테이션 코멘트에서만 유효합니다.
+
+<p>상세한 것에 대하여는,<a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@return">@return 태그의 문서</a>를 참조해 주세요. </p>
+
+        <p><a name="see"></a> </p>
+      </dd>
+
+<dt><b><code>@see</code></b>&nbsp;&#xA0; <var>reference</var></dt>
+
+      <dd>
+[관련 항목] 표제를 추가해,<var>reference</var> 를 가리키는 링크인가, 또는 텍스트 엔트리를 기입합니다. 1 개의 다큐멘테이션 코멘트에는, 임의의 수의 <code>@see</code> 태그를 지정할 수 있습니다. 모든 <code> @see</code> 태그의 내용은, 같은의 표제아래에 그룹화 됩니다. <code>@see</code> 태그에는, 다음의 3 종류의 형식이 있습니다. 무엇보다 자주(잘) 사용되는 것은, 3 번째의 형식입니다. 이 태그는, 모든 다큐멘테이션 코멘트, 즉 개요, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 및 필드에서 유효합니다. 패키지, 클래스, 또는 멤버에 대한 인 라인 링크를 문중에 삽입하는 방법은,<a href="#{@link}"><code>{@link}</code></a>  를 참조해 주세요.
+
+        <dl>
+<dt><b><code>@see</code></b> <code>"</code><var>string</var>"</dt>
+
+          <dd>
+<var>string</var> 의 텍스트 엔트리를 추가합니다. 링크는 생성되지 않습니다. <var>string</var> 는, 서적 또는 URL 에서는 액세스 할 수 없는 정보의 참조처입니다. Javadoc 툴은, 최초의 문자가 이중 인용부호 (<code>"</code>) 화도인지를 조사해, 이 형식을 다른 2 개의 형식과 구별합니다. 예를 나타냅니다.
+            <pre>
+     @see "The Java Programming Language"
+</pre>이것은 다음과 같은 텍스트를 생성합니다.
+
+            <blockquote>
+              <dl>
+<dt><b>관련 항목:</b></dt>
+
+<dd>The Java Programming Language</dd>
+              </dl>
+            </blockquote>
+          </dd>
+
+<dt><b><code>@see</code></b> <code>&lt;a href="</code><var>URL</var>#<var>value</var><code>"&gt;</code><var>label</var><code>&lt;/a&gt;</code></dt>
+
+          <dd>
+<var>URL</var>#<var>value</var> 로 정의되었던 대로 링크를 추가합니다. <var>URL</var>#<var>value</var> 는, 상대 URL 또는 절대 URL 입니다. Javadoc 툴은, 최초의 문자가 「보다 작다」기호 (<code>&lt;</code>) 화도인지를 조사해, 이 형식을 다른 2 개의 형식과 구별합니다. 예를 나타냅니다.
+            <pre>
+     @see &lt;a href="spec.html#section"&gt;Java Spec&lt;/a&gt;
+</pre>이것은 다음과 같은 링크를 생성합니다.
+
+            <blockquote>
+              <dl>
+<dt><b>관련 항목:</b></dt>
+
+<dd><u>Java Spec</u></dd>
+              </dl>
+            </blockquote><a name="package.class" id=             "package.class"></a> 
+          </dd>
+
+<dt><b><code>@see</code></b>&nbsp; <var>package.class</var><code>#</code><var>member</var>&nbsp; <var>label</var></dt>
+
+          <dd>
+지정된<a href=             "#name">이름</a>을 가지는,<a href=             "#referencedclasses">참조되고 있는</a>  Java 언어의 멤버에 대한 문서를 가리키는 링크를, 표시 텍스트 <var>label</var> 와 함께 추가합니다. <var>label</var> 는 생략 가능합니다. <var>label</var> 를 생략 하면(자), 링크처의 멤버의 이름이 적절히 단축되어 표시됩니다. <a href="#shortened">「이름이 표시되는 방법」</a>을 참조해 주세요. <a href=             "#noqualifier">-noqualifier</a>  를 사용하면(자), 표시 텍스트로부터 패키지명이 전체적으로 삭제됩니다. 라벨은, 자동 생성되는 표시 텍스트와는 다른 표시 텍스트를 지정하는 경우에 사용합니다.
+
+<p>버젼 1.2 만일 수 있는은, 라벨은 아니고, 이름이 &lt;code&gt; HTML 태그내에 자동적으로 표시됩니다. 1.2. 2 로부터는, 라벨을 사용하는지, 하지 않는 것처럼 관계없이, &lt;code&gt; 는 항상 표시 텍스트를 둘러싸는 형태로, 포함됩니다. </p>
+
+            <p><a name="packageclassmember" id=             "packageclassmember"><!-- --></a> </p>
+
+            <ul type="disc">
+              <li>
+<b><var>package.class</var><code>#</code><var>member</var></b> 에는,<a href="#referencedclasses">참조되고 있는 </a>임의의 유효한 프로그램 요소의<a href="#name">이름</a>을 지정합니다. 즉, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 또는 필드의 이름입니다. 다만, 멤버명-의 전의 닷은, 샤프 기호 (<code>#</code>)로 옮겨놓습니다. <var>class</var> 는, 임의의 톱 레벨 또는 상자로 된 클래스 또는 인터페이스를 나타냅니다. <var>member</var> 는, 임의의 생성자 , 메소드 또는 필드 (상자로 된 클래스 또는 인터페이스는 아니다)를 나타냅니다. 지정한 이름이, 문서화 되고 있는 클래스에 포함되어 있는 경우, Javadoc 툴은, 그 이름에의 링크를 자동적으로 작성합니다. <a href=               "#externalreferencedclasses">외부 참조 클래스</a>에의 링크를 작성하려면 ,<a href=               "#link"><code>-link</code></a>  옵션을 사용합니다. 참조 클래스에 속하지 않은 이름의 문서를 참조하려면 , 다른 2 개의 형식의 <code>@see</code> 태그를 사용합니다. 이 인수에 대해서는, 이후에의<a  href="#specifyingname">「이름의 지정」</a>으로 자세하게 설명합니다. </li>
+
+<li><b><var>label</var></b> 는, 생략 가능한 텍스트로, 링크의 라벨로 해서 표시됩니다. <var>label</var> 에는 공백을 포함할 수가 있습니다. <var>label</var> 를 생략 하면(자),<i>package.class.member</i> 가, 현재의 클래스 및 패키지에 응해 적절히 단축되어 표시됩니다. <a href="#shortened">「이름이 표시되는 방법」</a>을 참조해 주세요. </li>
+
+<li>공백 문자는,<var>package.class</var><code>#</code><var>member</var> 와 <var>label</var> 의 사이의 단락 문자입니다. 괄호의 안쪽의 공백 문자는 라벨의 선두와는 해석되지 않기 때문에, 메소드의 파라미터간에 공백 몬지를 들어갈 수 있어도 괜찮습니다. </li>
+            </ul>
+
+<p><b>예</b> - 이 예에서는,<code>Character</code> 클래스에 있는 <code>@see</code> 태그가,<code>String</code> 클래스의 <code>equals</code> 메소드를 참조하고 있습니다. 태그에는, 이름 <code>String#equals(Object)</code> 와 라벨 <code>equals</code> 의 양쪽 모두의 인수가 포함되어 있습니다. </p>
+
+            <blockquote>
+              <pre>
+ /**
+  * @see String#equals(Object) equals
+  */
+</pre>
+</blockquote>표준 도크 렛은, 다음과 같은 HTML 를 생성합니다.
+
+            <blockquote>
+              <pre>
+&lt;dl&gt;
+&lt;dt&gt;&lt;b&gt;관련 항목 :&lt;/b&gt;
+&lt;dd&gt;&lt;a href="../../java/lang/String#equals(java.lang.Object)"&gt;&lt;code&gt;equals&lt;code&gt;&lt;/a&gt;
+&lt;/dl&gt;
+</pre>
+</blockquote>이것은, 브라우저에서는 다음과 같이 표시되어 라벨이 링크 텍스트가 됩니다.
+
+            <blockquote>
+              <dl>
+<dt><b>관련 항목:</b></dt>
+
+<dd><u>equals</u></dd>
+              </dl>
+            </blockquote><a name="specifyingname" id=             "specifyingname"></a> 
+
+<p><b>이름의 지정</b> - 이 태그로 지정하는 <var>package.class</var><code>#</code><var>member</var> 라는 이름은,<code>java.lang.String#toUpperCase()</code> 와 같이 완전 지정하는 일도,<code>String#toUpperCase()</code> 나 <code>#toUpperCase()</code> 와 같이 부분적으로 지정할 수도 있습니다. 이름이 완전 지정되어 있지 않은 경우, Javadoc 툴은, Java 컴파일러의 일반적으로의 검색 순서로 그 이름을 검색합니다. 자세한 것은, 이후에의<a href="#seesearchorder">「@see 의 검색 순서」</a>를 참조해 주세요. 이름에는, 메소드의 복수의 인수의 사이 등, 괄호의 안쪽이면 공백을 포함할 수가 있습니다. </p>
+
+<p>「부분적으로 지정」한 짧은 이름을 지정하는 것의 이점은, 입력하는 문자수가 줄어드는 것이나, 원시 코드가 읽기 쉬워지는 것입니다. 다음의 겉(표)에, 다양한 형식의 이름을 나타냅니다. 이 표 중(안)에서,<var>Class</var> 에는 클래스 또는 인터페이스를,<var>Type</var> 에는 클래스, 인터페이스, 배열, 또는 기본 데이터형을, 그리고 <var>method</var> 에는 메소드 또는 생성자 을 지정할 수 있습니다. </p>
+
+            <p><a name="typicalformsfor_see"></a> </p>
+
+            <table border="1" cellspacing="0" cellpadding="5"
+            summary="Typical forms for the @see tag">
+              <tr bgcolor="#CCCCCC">
+<td colspan="3"><b><code>@see</code> <i>package.class#member</i> 의 일반적인 형식</b></td>
+              </tr>
+
+              <tr>
+<td valign="top"><b>현재의 클래스의 멤버를 참조하는    </b><br /> <code>@see</code>&nbsp;   <code>#</code><var>field</var><br /> <code>@see</code>&nbsp;   <code>#</code><var>method(Type, Type,...)</var><br /><code>@see</code>&nbsp;   <code>#</code><var>method(Type argname, Type argname,...)</var><br /><code>@see</code>&nbsp; <code>#</code><var>constructor(Type, Type,...)</var><br /><code>@see</code>&nbsp; <code>#</code><var>constructor(Type argname, Type argname,...)</var><br /><br /> <b>현재의, 또는 임포트 된 패키지의 다른 클래스를 참조하는</b><br /> <code>@see</code>&nbsp; <var>Class</var><code>#</code><var>field</var><br />
+
+<code>@see</code>&nbsp; <var>Class</var><code>#</code><var>method(Type, Type,...)</var><br /><code>@see</code>&nbsp;   <var>Class</var><code>#</code><var>method(Type argname, Type argname,...)</var><br /><code>@see</code>&nbsp; <var>Class</var><code>#</code><var>constructor(Type, Type,...)</var><br /><code>@see</code>&nbsp; <var>Class</var><code>#</code><var>constructor(Type argname, Type argname,...)</var><br /><code>@see</code>&nbsp; <var>Class.NestedClass</var><br />
+<code>@see</code>&nbsp; <var>Class</var><br /> <br />
+<b>다른 패키지의 요소를 참조하는</b> (완전 수식)<br /><code>@see</code>&nbsp; <var>package.Class</var><code>#</code><var>field</var><br /><code>@see</code>&nbsp; <var>package.Class</var><code>#</code><var>method(Type, Type,...)</var><br /><code>@see</code>&nbsp;   <var>package.Class</var><code>#</code><var>method(Type argname, Type argname,...)</var><br /><code>@see</code>&nbsp; <var>package.Class</var><code>#</code><var>constructor(Type, Type,...)</var><br /><code>@see</code>&nbsp; <var>package.Class</var><code>#</code><var>constructor(Type argname, Type argname,...)</var><br /><code>@see</code>&nbsp; <var>package.Class.NestedClass</var><br /> <code>@see</code>&nbsp; <var>package.Class</var><br /> <code>@see</code>&nbsp; <var>package</var></td>
+              </tr>
+            </table>
+
+<p>위의 겉(표)에 대한 추가 사항을 다음에 나타냅니다. </p>
+
+            <ul type="circle">
+<li>최초의 종류의 형식 (패키지와 클래스를 생략)의 경우, Javadoc 툴은, 현재의 클래스의 계층만을 검색합니다. 즉, 현재의 클래스나 인터페이스, 그 슈퍼 클래스나 슈퍼 인터페이스, 또는 현재의 클래스나 인터페이스를 둘러싸고 있는 클래스나 인터페이스로부터 멤버를 검색합니다 (이후에의<a href=               "#seesearchorder">검색 순서 1 ?  3</a> ). 현재의 패키지외의 부분이나, 다른 패키지는 검색하지 않습니다 (검색 순서 4 ?  5). </li>
+
+<li>메소드 또는 생성자 을 지정할 경우에 괄호를 붙이지 않고 이름만 (<code>getValue</code> 등)을 사용했을 경우, 같은 이름의 필드가 존재하지 않으면, Javadoc 툴은 그 메소드에 대해서 올바르게 링크를 작성합니다. 다만, 괄호와 인수를 추가하도록(듯이) 유발 (prompt)하는 경고 메세지를 출력합니다. 이 메소드가 overload 되고 있는 경우, Javadoc 툴은, 검색으로 최초로 발견된 메소드에 링크합니다. 결과는 미리 특정할 수 없습니다. </li>
+
+<li>상자로 된 클래스는, 상기의 어느 형식의 경우도, 단지 「<var>inner</var>」는 아니고, 「<var>outer</var><code>. </code><var>inner</var>」로서 지정하지 않으면 안됩니다. </li>
+
+<li>벌써 말했던 대로, 클래스와 멤버를 단락짓기 위해서(때문에), 닷 (<code>. </code>)(은)는 아니고 샤프 기호 (<code>#</code>)를 사용하는 것에 주의해 주세요. 이와 같이 지정하면(자), Javadoc 툴은, 애매함을 해결할 수 있습니다. 닷은, 클래스, 상자로 된 클래스, 패키지, 및 서브 패키지를 단락짓기 위해서(때문에)도 사용됩니다. 다만, Javadoc 툴에서는 일반적으로 허용 범위가 넓고, 애매함이 없으면, 닷에서도 올바르게 해석됩니다. 그 경우에서도 경고는 표시됩니다. </li>
+            </ul>
+
+<p><a name="seesearchorder" id="seesearchorder"></a>  <b>@see 의 검색 순서</b> - Javadoc 툴은, 원시 파일 (. java), 패키지 파일 (package.html 또는 package-info.java), 또는 개요 파일 (overview.html)안에 등장하는 <code>@see</code> 태그를 처리합니다. 후자의 2 개의 파일에서는, 완전 지정의 이름을 <code>@see</code> 태그로 지정하지 않으면 안됩니다. 원시 파일에서는, 완전 지정의 이름, 또는 부분 지정의 이름을 지정할 수 있습니다. </p>
+
+<p>Javadoc 툴은,<code>. java</code> 파일내에서 완전 지정이 아닌 이름이 기술된 <code>@see</code> 태그를 찾아내면(자), Java 컴파일러와 같은 순서로 지정된 이름을 검색합니다. 다만, Javadoc 툴은, 특정의 이름 공간의 애매함을 검출하지 않습니다. 이것은, 원시 코드에 이러한 에러가 존재하고 있지 않는 것을 전제로 하고 있기 (위해)때문에입니다. 이 검색 순서는, Java 언어 스펙 제 2 판의 제 6 장 「Names」로 정식으로 정의되고 있습니다. Javadoc 툴은, 관련하는 클래스와 패키지, 및 임포트 된 클래스와 패키지의 모두로부터 이름을 검색합니다. 구체적으로는, 다음의 순서로 검색합니다. </p>
+
+            <ol>
+<li>현재의 클래스 또는 인터페이스</li>
+
+<li>외측을 둘러싸고 있는 클래스와 인터페이스 (가장 가까운 것으로부터 검색)</li>
+
+<li>슈퍼 클래스와 슈퍼 인터페이스 (가장 가까운 것으로부터 검색)</li>
+
+<li>현재의 패키지</li>
+
+<li>임포트 되고 있는 패키지, 클래스, 및 인터페이스 (import 문의 순서에 따라 검색)</li>
+            </ol>
+
+<p>Javadoc 툴은, 각 클래스에 도착해 순서 1 ?  3 을 재귀적으로 적용하면서, 일치하는 이름이 발견될 때까지 검색을 계속합니다. 즉, 우선 현재의 클래스를 검색해, 다음에 그 클래스를 둘러싸고 있는 클래스 E 를 검색해, 그 다음에 E 의 슈퍼 클래스를 검색해, 한층 더 그 다음에 E 를 둘러싸고 있는 클래스를 검색합니다. <!-- The order of steps 2 and 3 above don't matter. A compiler error occurs if a member is both in an enclosing class and a superclass, according to Atul. -->순서 4 로 5 에서는, 1 개의 패키지내의 클래스 또는 인터페이스를 검색하는 순서는 정해져 있지 않습니다. 그 순서는, 개개의 컴파일러에 따라서 다릅니다. 순서 5 에서는, Javadoc 툴은, java.lang 를 검색합니다. 이 패키지는, 모든 프로그램에 자동적으로 임포트 되기 때문입니다. </p>
+
+<p>Javadoc 툴은, 반드시 서브 클래스를 검색한다고는 할 수 없습니다. 또, javadoc 의 실행중에 다른 패키지의 문서가 생성되는 경우에서도, 다른 패키지를 검색하지 않습니다. 예를 들어,<code>@see</code> 태그가 <code>java.awt.event.KeyEvent</code> 클래스내에 있어,<code>java.awt</code> 패키지에 있는 이름을 참조하고 있는 경우, Javadoc 는, 그 클래스가 임포트 하지 않는 한 그 패키지를 검색하지 않습니다. </p>
+
+<p><a name="shortened" id="shortened"></a>  <b>이름이 표시되는 방법</b> - <var>label</var> 를 생략 하면(자),<i>package.class.member</i> 가 표시됩니다. 일반적으로, package.class.member 는, 현재의 클래스 및 패키지에 응해 적절히 단축됩니다. 「단축된다」란, 필요 최소한의 이름만이 표시된다고 하는 것입니다. 예를 들어,<code>String.toUpperCase()</code> 메소드에, 같은 클래스의 멤버에게로의 참조와 다른 클래스의 멤버에게로의 참조가 포함되어 있는 경우, 클래스명이 표시되는 것은 후자의 케이스 뿐입니다 (다음의 겉(표)를 참조). </p>
+
+<p>패키지명을 광역적으로 삭제하려면 ,<a href="#noqualifier">-noqualifier</a>  를 사용합니다. </p>
+
+            <table border="1" cellspacing="0" cellpadding="5"
+            summary="How a name is displayed">
+              <tr bgcolor="#CCCCCC">
+<th>참조의 종류</th>
+
+<th><b><code>String.toUpperCase()</code> 에서의 예</b></th>
+
+<th><b>표시되는 이름</b></th>
+              </tr>
+
+              <tr valign="top">
+<td><code>@see</code> 태그가 같은 클래스, 같은 패키지의 멤버를 참조하고 있다</td>
+
+<td><code>@see String#toLowerCase() </code><br /></td>
+
+<td><code>toLowerCase()</code><br />  <font size="-1">(패키지 및 클래스명은 생략)</font></td>
+              </tr>
+
+              <tr valign="top">
+<td><code>@see</code> 태그가 다른 클래스, 같은 패키지의 멤버를 참조하고 있다</td>
+
+<td><code>@see Character#toLowerCase(char)</code><br /></td>
+
+<td><code>Character.toLowerCase(char)</code><br /> <font size="-1">(패키지명은 생략 해, 클래스명을 포함한다)</font></td>
+              </tr>
+
+              <tr valign="top">
+<td><code>@see</code> 태그가 다른 클래스, 다른 패키지의 멤버를 참조하고 있다</td>
+
+<td><code>@see java.io.File#exists()</code><br /></td>
+
+<td><code>java.io.File.exists()</code><br /> <font size="-1">(패키지명과 클래스명을 포함한다)</font></td>
+              </tr>
+            </table>
+
+<p><a name="seeexamples" id="seeexamples"><!-- --></a>  <b>@see 의 예</b><br /> 우측의 코멘트는,<code>@see</code> 태그가 다른 패키지 (<code>java.applet.Applet</code> 등)의 클래스내에 있는 경우에, 이름이 어떻게 표시되는지를 나타내고 있습니다. </p>
+            <pre>
+                                           관련 항목:
+@see java.lang.String                   //  <u>String</u>                          <!-- [1] -->
+@see java.lang.String The String class  //  <u>The String class</u>                <!-- [2] -->
+@see String                             //  <u>String</u>                          <!-- [3] -->
+@see String#equals(Object)              //  <u>String.equals(Object)</u>           <!-- [4] -->
+@see String#equals                      //  <u>String.equals(java.lang.Object)</u> <!-- [5] -->
+@see java.lang.Object#wait(long)        //  <u>java.lang.Object.wait(long)</u>     <!-- [6] -->
+@see Character#MAX_RADIX                //  <u>Character.MAX_RADIX</u>             <!-- [7] -->
+@see &lt;a href="spec.html"&gt;Java Spec&lt;/a&gt;  //  <u>Java Spec</u>           <!-- [8] -->
+@see "The Java Programming Language"    //  "The Java Programming Language"        <!-- [9] -->
+</pre><!-- [1] Because <code>String</code> is in a package other than <code>java.applet</code>, it is is displayed <p>  [2] This example includes the label "The String class".  <p>  [3] Because <code>String</code> is <p>  [4] Because the parentheses following <code>equals</code> are missing, the Javadoc tool first looks for a field named <code>equals</code> in the <code>String</code> class before looking for a method by that name.   Because the argument was not specified, and because it is in a different package, Because the parentheses are missing, this prints a warning.  <p> --><code>@see</code> 를, 문서화의 대상으로 하지 않은 클래스에까지 확장하려면 ,<a href=             "#link"><code>-link</code></a>  옵션을 사용합니다.
+
+<p>상세한 것에 대하여는,<a href=             "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@see">@see 태그의 문서</a>를 참조해 주세요. </p>
+          </dd>
+        </dl><a name="serial"></a> 
+      </dd>
+
+<dt><b><code>@serial</code></b>&nbsp; <var>field-description</var> <code>| include | exclude</code></dt>
+
+      <dd>
+디폴트의 직렬화 가능 필드의 다큐멘테이션 코멘트로 사용합니다.
+
+<p><var>field-description</var> (생략 가능)에서는, 필드의 의미를 설명해, 취할 수 있는 값의 리스트를 나타낼 필요가 있습니다. 필요에 따라서, 복수의 행에 건너 설명을 기술할 수 있습니다. 표준 도크 렛은, 이 정보를,<a href=         "#serialized-form.html">직렬화 된 형식의 페이지</a>에 추가합니다. </p>
+
+<p>클래스를 직렬화한 뒤 잠시 후로부터 직렬화 가능 필드를 클래스에 추가했을 경우,<a href="#maindescription">주설명</a>에, 추가한 버젼을 식별하는 문장을 추가할 필요가 있습니다. </p>
+
+<p><code>include</code> 및 <code>exclude</code> 인수는, 직렬화 된 형식의 페이지에 클래스 또는 패키지를 포함하는지 제외하는지를 나타냅니다. 이러한 인수에는, 다음과 같은 효과가 있습니다. </p>
+
+        <ul type="disc">
+<li><code>Serializable</code> 를 구현하고 있는 public 또는 protected 클래스는, 일반적으로은 그 페이지에 포함할 수 있습니다. 다만, 그 클래스 또는 그 클래스가 속하는 패키지가 <code>@serial exclude</code> 로 지정되고 있으면(자), 그 페이지로부터 제외됩니다. </li>
+
+<li><code>Serializable</code> 를 구현하고 있는 private 또는 package private 클래스는, 일반적으로은 그 페이지로부터 제외됩니다. 다만, 그 클래스 또는 그 클래스가 속하는 패키지가 <code>@serial include</code> 로 지정되고 있으면(자), 그 페이지에 포함할 수 있습니다. </li>
+        </ul>
+
+<p>예:<code>javax.swing</code> 패키지는,<code>@serial exclude</code> 로 지정되고 있습니다 (<code>package.html</code> 또는 <code>package-info.java</code> 내). public 클래스 <code>java.security.BasicPermission</code> 는,<code>@serial exclude</code> 로 지정되고 있습니다. package private 클래스 <code>java.util.PropertyPermissionCollection</code> 는,<code>@serial include</code> 로 지정되고 있습니다. </p>
+
+<p>클래스 레벨로 지정된 @serial 태그는, 패키지 레벨로 지정된 @serial 태그를 오버라이드(override) 합니다. </p>
+
+<p>이러한 태그의 사용법에 대한 상세와 사용예는, 「Java 객체 직렬화 스펙」의 제 1.6 절<a href=         "../../../platform/serialization/spec/serial-arch.html">「클래스의 직렬화 가능한 필드 및 데이터의 문서화」</a>를 참조해 주세요. 또,<a href=         "http://java.sun.com/products/jdk/serialization/faq/#javadoc_warn_missing">「직렬화의 FAQ」</a>도 참조해 주세요. 이 FAQ 에는, 「-private 스윗치를 지정하지 않고 javadoc 를 실행하고 있는데 private 필드의 @serial 태그가 발견되지 않는다고 하는 javadoc 의 경고가 표시된다」등이 일반적인 질문에의 회답이 기재되어 있습니다. 직렬화 형식 스펙에 클래스를 포함하는 경우에는,<a href=         "http://java.sun.com/j2se/javadoc/writingapispecs/serialized-criteria.html">「Sun 의 스펙」</a>도 참조해 주세요. </p>
+
+        <p><a name="serialField"></a> </p>
+      </dd>
+
+<dt><b><code>@serialField</code></b>&nbsp;&#xA0; <var>field-name</var>&nbsp;&#xA0; <var>field-type</var>&nbsp;&#xA0; <var>field-description</var></dt>
+
+      <dd>
+<code>Serializable</code> 클래스의 <code>serialPersistentFields</code> 멤버의 <code>ObjectStreamField</code> 컴퍼넌트를 문서화합니다. 각 <code>ObjectStreamField</code> 컴퍼넌트에 대해서 <code>@serialField</code> 태그를 1 개 사용할 필요가 있습니다.
+
+        <p><a name="serialData"></a> </p>
+      </dd>
+
+<dt><b><code>@serialData</code></b>&nbsp; <var>data-description</var></dt>
+
+      <dd>
+<var>data-description</var> 는, 직렬화 된 형식에서의 데이터의 형태와 순서를 설명하는 텍스트입니다. 이 데이터에는, 특히,<code>writeObject</code> 메소드에 의해 기입해지는 생략 가능한 데이터, 및 <code>Externalizable.writeExternal</code> 메소드에 의해 기입해지는 모든 데이터 (base class를 포함한다)가 포함됩니다.
+
+<p><code>@serialData</code> 태그는,<code>writeObject</code>,<code>readObject</code>,<code>writeExternal</code>,<code>readExternal</code>,<code>writeReplace</code>, 및 <code>readResolve</code> 메소드의 다큐멘테이션 코멘트로 사용할 수 있습니다. </p>
+
+        <p><a name="since"></a> </p>
+      </dd>
+
+<dt><b><code>@since</code></b>&nbsp; <var>since-text</var></dt>
+
+      <dd>
+생성 문서에 [도입된 버젼] 표제를 추가해, 지정된 <var>since-text</var> 를 기입합니다. 이 텍스트에는, 특별한 내부 구조는 없습니다. 이 태그는, 모든 다큐멘테이션 코멘트, 즉 개요, 패키지, 클래스, 인터페이스, 생성자 , 메소드, 및 필드에서 유효합니다. 이 태그는, 특정의 변경 또는 기능이,<var>since-text</var> 에 나타난 소프트웨어 릴리스 이후, 존재하고 있는 것을 의미합니다. 예를 나타냅니다.
+        <pre>
+    @since 1.5
+</pre>Java 플랫폼의 원시 코드의 경우, 이 태그는, Java 플랫폼 API 스펙의 버젼을 나타냅니다. 그 변경이나 기능이 레퍼런스 구현에 추가되었던 시기를 나타낸다고는 할 수 없습니다. 복수의 @since 태그를 사용할 수 있어 복수의 <a href="#@author">@author</a>  태그와 같이 다루어집니다. 프로그램 요소가 복수의 API 로 사용되는 경우, 복수의 태그를 사용할 수 있습니다.
+
+        <p><a name="throws"></a> </p>
+      </dd>
+
+<dt><b><code>@throws</code></b>&nbsp;  <var>class-name</var>&nbsp;  <var>description</var>&nbsp;</dt>
+
+      <dd>
+<code>@throws</code> 태그와 <code>@exception</code> 태그는 동의입니다. 생성 문서에 [예외] 부표제를 추가해,<var>class-name</var> 와 <var>description</var> 텍스트를 기입합니다. <var>class-name</var> 는, 그 메소드로부터 throw 될 가능성이 있는 예외의 이름입니다. 이 태그는, 메소드, 생성자 의 doc 코멘트내에서만 유효합니다. 이 클래스가 완전 지정의 이름으로 기술되어 있지 않은 경우, Javadoc 툴은,<a href="#seesearchorder">검색 순서</a>에 따라 클래스를 찾습니다. 같은 또는 다른 예외의 doc 코멘트로, 복수의 <code>@throws</code> 태그를 사용할 수 있습니다.
+
+<p>모든 체크가 끝난 예외가 문서화 되도록(듯이) 하기 위해서,<code>@throws</code> 태그가 throws 절내의 예외용으로 존재하지 않는 경우는, @throws 태그가 있는 문서인것 같이, Javadoc 툴에 의해 예외가 HTML 출력에 설명없이 자동적으로 추가됩니다. </p>
+
+<p>오버라이드(override) 되는 메소드내에서 예외가 명시적으로 선언되고 있는 경우만,<code>@throws</code> 다큐멘테이션을 그 메소드로부터 서브 클래스에 카피됩니다. 인터페이스 메소드로부터 구현 메소드에 카피되는 경우도 같습니다. @throws 에 다큐멘테이션을 상속시키려면 ,<a href=         "#{@inheritDoc}">{@inheritDoc}</a>  를 사용할 수 있습니다. </p>
+
+<p>상세한 것에 대하여는,<a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@exception">@throws 태그의 문서</a>를 참조해 주세요. </p>
+
+        <p><a name="value"></a> </p>
+      </dd>
+
+<dt><b><code>{@value</code></b>&nbsp; <var>package.class#field</var><b><code>}</code></b></dt>
+
+      <dd>
+<code>{@value}</code> 가 정적 필드의 doc 코멘트로 인수없이 사용되고 있는 경우, 그 정수의 값이 표시됩니다.
+        <pre>
+    /**
+     * The value of this constant is {@value}.
+     */
+    public static final String SCRIPT_START = "&lt;script&gt;"
+</pre>임의의 doc 코멘트내에서 인수 <var>package.class#field</var> 로 사용되고 있는 경우는, 지정한 정수의 값이 표시됩니다.
+        <pre>
+    /**
+     * Evaluates the script starting with {@value #SCRIPT_START}.
+     */
+    public String evalScript(String script) {
+    }
+</pre>인수 <var>package.class#field</var> 는,<a href="#package.class">@see 인수</a>와 동일한 형식이 됩니다. 다만, 멤버가 정적 필드에 없으면 안 되는 점이 다릅니다.
+
+<p>이러한 정수에서의 값은,<a href="../../../api/constant-values.html">정수 필드치 </a>페이지에도 표시됩니다. </p>
+
+        <p><a name="version"></a> </p>
+      </dd>
+
+<dt><b><code>@version</code></b>&nbsp; <var>version-text</var></dt>
+
+      <dd>
+-version 옵션이 사용되고 있는 경우, 생성 문서에 [버젼] 부표제를 추가해, 지정된 <var>version-text</var> 를 기입합니다. 이 태그는, 이 코드가 포함되는 소프트웨어의 현재의 버젼 번호를 보관 유지하도록(듯이) 의도되고 있습니다. 이것에 대해,<a href="#@since">@since</a>  는, 이 코드가 도입된 버젼 번호를 보관 유지합니다. <var>version-text</var> 에는, 특별한 내부 구조는 없습니다. 버젼 태그를 사용할 수 있는 장소를 조사하려면 ,<a href="#wheretags">「태그를 사용할 수 있는 장소」</a>를 참조해 주세요.
+
+<p>1 개의 다큐멘테이션 코멘트에 복수의 <code>@version</code> 태그를 포함할 수가 있습니다. 필요에 따라서,<code>@version</code> 태그 마다 1 개의 버젼 번호를 지정하는 일도, 태그 마다 복수의 버젼 번호를 지정할 수도 있습니다. 전자의 경우는, Javadoc 툴에 의해, 이름과 이름의 사이에 콤마 (<code>,</code>)와 스페이스가 삽입됩니다. 후자의 경우는, 텍스트 전체가, 해석되는 일 없이, 생성 문서에 그대로 카피됩니다. 따라서, 콤마는 아니고, 각 언어에 대응한 이름 단락 문자를 사용할 필요가 있을 때는, 1 개의 태그에 복수의 이름을 지정해 주세요. </p>
+
+<p>상세한 것에 대하여는,<a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#@version">@version 태그의 문서</a>를 참조해 주세요. </p>
+      </dd>
+    </dl><br /> <!-- ==================== WHERE TAGS CAN BE USED ===================== --> <a name="wheretags" id="wheretags"></a> 
+
+<h3>태그를 사용할 수 있는 장소</h3>여기에서는, 태그를 사용할 수 있는 장소에 도착해 설명합니다. <code>@see</code>,<code>@since</code>,<code>@deprecated</code>,<code>{@link}</code>,<code>{@linkplain}</code> 및 <code>{@docroot}</code> 의 태그는, 모든 doc 코멘트로 사용할 수 있습니다.
+
+    <blockquote>
+      <br /> <a name="overviewtags" id="overviewtags"></a> 
+
+<h3>개요의 다큐멘테이션 태그</h3>개요 태그는, 개요 페이지의 다큐멘테이션 코멘트로 사용할 수 있는 태그입니다. 이 다큐멘테이션 코멘트는, 일반적으로 <code>overview.html</code> 라는 이름의 원시 파일내에 있습니다. 다른 다큐멘테이션 코멘트의 경우와 같게, 이러한 태그는,<a href=       "#maindescription">주설명</a>의 나중에 사용할 필요가 있습니다.
+
+<p><b>주</b> - 버젼 1.2 에서는, 개요 문서내의 <code>{@link}</code> 태그에 버그가 있습니다. 텍스트는 올바르게 표시됩니다만, 링크가 설정되지 않습니다. 현재로서는,<code>{@docRoot}</code> 태그는, 개요 문서내에서는 동작하지 않습니다. </p>
+
+      <table border="1" cellspacing="0" cellpadding="3" summary=
+      "layout">
+        <tr bgcolor="#CCCCCC">
+<th><b>개요 태그</b></th>
+        </tr>
+        <!-- Nested tables are used here only because the spacing between javadoc tags      is wider and looks better -->
+
+        <tr>
+          <td>
+            <table border="0" summary="layout">
+              <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@author"><code>@author</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@version"><code>@version</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@link}"><code>{@link}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table><br /> <a name="packagetags" id="packagetags"></a> 
+
+<h3>패키지 다큐멘테이션 태그</h3>패키지 태그는, 패키지의 다큐멘테이션 코멘트로 사용할 수 있는 태그입니다. 이 다큐멘테이션 코멘트는,<code>package.html</code> 또는 <code>package-info.java</code> 라는 이름의 원시 파일내에 있습니다. 여기서 사용할 수 있는 <code>@serial</code> 태그는,<code>include</code> 또는 <code>exclude</code> 인수를 지정한 것 뿐입니다.
+
+      <table border="1" cellspacing="0" cellpadding="3" summary=
+      "layout">
+        <tr bgcolor="#CCCCCC">
+<th><b>패키지 태그</b></th>
+        </tr>
+
+        <tr>
+          <td>
+            <table border="0" summary="layout">
+              <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@serial"><code>@serial</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@author"><code>@author</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@version"><code>@version</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@link}"><code>{@link}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table><br /> <a name="classtags" id="classtags"></a> 
+
+<h3>클래스 및 인터페이스 다큐멘테이션 태그</h3>다음에, 클래스 또는 인터페이스의 다큐멘테이션 코멘트로 사용할 수 있는 태그를 나타냅니다. 여기서 사용할 수 있는 <code>@serial</code> 태그는,<code>include</code> 또는 <code>exclude</code> 인수를 지정한 것 뿐입니다.
+
+      <table border="1" cellspacing="0" cellpadding="3" summary=
+      "layout">
+        <tr bgcolor="#CCCCCC">
+<th><b>클래스 및 인터페이스 태그</b></th>
+        </tr>
+
+        <tr>
+          <td>
+            <table border="0" summary="layout">
+              <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@deprecated"><code>@deprecated</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@serial"><code>@serial</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@author"><code>@author</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@version"><code>@version</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@link}"><code>{@link}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+              </tr>
+              <!-- <TR><TD><a href="#{@inheritDoc}"><code>{@inheritDoc}</code></a>  </TD></TR> -->
+
+              <tr>
+<td><a href=                 "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table><a name="classexample" id="classexample"></a> 
+
+<h4>다음에 클래스 코멘트의 예를 나타냅니다. </h4>
+      <pre>
+/**
+ * A class representing a window on the screen.
+ * For example:
+ * &lt;pre&gt;
+ *    Window win = new Window(parent);
+ *    win.show();
+ * &lt;/pre&gt;
+ *
+ * @author  Sami Shaio
+ * @version 1.13, 08/07/06
+ * @see     java.awt.BaseWindow
+ * @see     java.awt.Button
+ */
+class Window extends BaseWindow {
+   ...
+}
+</pre><br /> <a name="fieldtags" id="fieldtags"></a> 
+
+<h3>필드 다큐멘테이션 태그</h3>다음에, 필드의 다큐멘테이션 코멘트로 사용할 수 있는 태그를 나타냅니다.
+
+      <table border="1" cellspacing="0" cellpadding="3" summary=
+      "layout">
+        <tr bgcolor="#CCCCCC">
+<th><b>필드 태그</b></th>
+        </tr>
+
+        <tr>
+          <td>
+            <table border="0" summary="layout">
+              <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@deprecated"><code>@deprecated</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@serial"><code>@serial</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@serialField"><code>@serialField</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@link}"><code>{@link}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@value}"><code>{@value}</code></a> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table><a name="fieldexample" id="fieldexample"></a> 
+
+<h4>다음에 필드 코멘트의 예를 나타냅니다. </h4>
+      <pre>
+    /**
+     * The X-coordinate of the component.
+     *
+     * @see #getLocation()
+     */
+    int x = 1263732;
+</pre><br /> <a name="methodtags" id="methodtags"></a> 
+
+<h3>생성자  및 메소드 다큐멘테이션 태그</h3>다음에, 생성자  또는 메소드의 다큐멘테이션 코멘트내에서 표시할 수 있는 태그를 나타냅니다. 다만,<code>@return</code> 는 생성자 에서는 표시하지 못하고,<code>{@inheritDoc}</code> 는 표시에<a href=       "#{@inheritDoc}">제한</a>이 있습니다. <code>@serialData</code> 태그는<a href="#@serialData">특정의 직렬화 메소드</a>의 doc 코멘트에서만 사용할 수 있습니다.
+
+      <table border="1" cellspacing="0" cellpadding="3" summary=
+      "layout">
+        <tr bgcolor="#CCCCCC">
+<th><b>메소드 및 생성자  태그</b></th>
+        </tr>
+
+        <tr>
+          <td>
+            <table border="0" summary="layout">
+              <tr>
+<td><a href="#@see"><code>@see</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@since"><code>@since</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@deprecated"><code>@deprecated</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@param"><code>@param</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@return"><code>@return</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href="#@throws"><code>@throws</code></a>  <a href=                 "#@exception"><code>(@exception)</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#@serialData"><code>@serialData</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@link}"><code>{@link}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@linkplain}"><code>{@linkplain}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@inheritDoc}"><code>{@inheritDoc}</code></a> </td>
+              </tr>
+
+              <tr>
+<td><a href=                 "#{@docRoot}"><code>{@docRoot}</code></a> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table><a name="methodexample" id="methodexample"></a> 
+
+<h4>다음에 메소드의 다큐멘테이션 코멘트의 예를 나타냅니다. </h4>
+      <pre>
+    /**
+     * Returns the character at the specified index.  An index
+     * ranges from &lt;code&gt;0&lt;/code&gt; to &lt;code&gt;length() - 1&lt;/code&gt;.
+     *
+     * @param     index  the index of the desired character.
+     * @return    the desired character.
+     * @exception StringIndexOutOfRangeException
+     *              if the index is not in the range &lt;code&gt;0&lt;/code&gt;
+     *              to &lt;code&gt;length() -1&lt;/code&gt;.
+     * @see       java.lang.Character#charValue()
+     */
+    public char charAt(int index) {
+       ...
+    }
+</pre>
+    </blockquote>
+  </blockquote><br /> <!-- ============== COMMAND-LINE OPTIONS ======================= -->
+
+<h2><a name="options" id="options">옵션</a> </h2>
+
+  <blockquote>
+javadoc 툴은,<a href="#doclets">도크 렛</a>을 사용해 출력을 결정합니다. Javadoc 툴은, -doclet 옵션으로 커스텀 도크 렛이 지정되고 있는 경우 이외는, 디폴트의 표준 도크 렛을 사용합니다. Javadoc 툴에는, 임의의 도크 렛과 함께 사용할 수 있는 커멘드행 옵션이 있습니다. 이러한 옵션에 대해서는, 이후에의<a href=     "#javadocflags">「Javadoc 옵션」</a>으로 설명합니다. 표준 도크 렛에서는, 이 밖에, 몇개의 추가의 커멘드행 옵션이 제공됩니다. 이러한 옵션에 대해서는, 그 후의<a href=     "#standard">「표준 도크 렛이 제공하는 옵션」</a>으로 설명합니다. 어느 옵션명도, 대문자와 소문자가 구별되지 않습니다. 다만, 옵션의 인수에서는, 대문자와 소문자가 구별됩니다.
+
+<p>옵션을 다음에 나타냅니다. </p>
+
+    <blockquote>
+      <table width="80%" summary="Javadoc command line options">
+        <tr valign="top">
+<td>-<a href="#1.1"><i>1.1</i></a> <br /> -<a href="#author">author</a> <br /> -<a href="#bootclasspath"><i>bootclasspath</i></a> <br /> -<a href="#bottom">bottom</a> <br /> -<a href="#breakiterator"><i>breakiterator</i></a> <br /> -<a href="#charset">charset</a> <br /> -<a href="#classpath"><i>classpath</i></a> <br /> -<a href="#d">d</a> <br /> -<a href="#docencoding">docencoding</a> <br /> -<a href="#docfilessubdirs">docfilessubdirs</a> <br /> -<a href="#doclet"><i>doclet</i></a> <br /> -<a href="#docletpath"><i>docletpath</i></a> <br /> -<a href="#doctitle">doctitle</a> <br /> -<a href="#encoding"><i>encoding</i></a> <br /> -<a href="#exclude"><i>exclude</i></a> <br /> -<a href=           "#excludedocfilessubdir">excludedocfilessubdir</a> <br /> -<a href="#extdirs"><i>extdirs</i></a> <br /> -<a href="#footer">footer</a> <br /> -<a href="#group">group</a> <br /></td>
+
+<td>-<a href="#header">header</a> <br /> -<a href="#help"><i>help</i></a> <br /> -<a href="#helpfile">helpfile</a> <br /> -<a href="#J"><i>J</i></a> <br /> -<a href="#keywords">keywords</a> <br /> -<a href="#link">link</a> <br /> -<a href="#linkoffline">linkoffline</a> <br /> -<a href="#linksource">linksource</a> <br /> -<a href="#locale"><i>locale</i></a> <br /> -<a href="#nocomment">nocomment</a> <br /> -<a href="#nodeprecated">nodeprecated</a> <br /> -<a href="#nodeprecatedlist">nodeprecatedlist</a> <br /> -<a href="#nohelp">nohelp</a> <br /> -<a href="#noindex">noindex</a> <br /> -<a href="#nonavbar">nonavbar</a> <br /> -<a href="#noqualifier">noqualifier</a> <br /> -<a href="#nosince">nosince</a> <br /> -<a href="#notimestamp">notimestamp</a> <br /> -<a href="#notree">notree</a> <br /> -<a href="#overview"><i>overview</i></a> <br /> -<a href="#package"><i>package</i></a> <br /></td>
+
+<td>-<a href="#private"><i>private</i></a> <br /> -<a href="#protected"><i>protected</i></a> <br /> -<a href="#public"><i>public</i></a> <br /> -<a href="#quiet"><i>quiet</i></a> <br /> -<a href="#serialwarn">serialwarn</a> <br /> -<a href="#source"><i>source</i></a> <br /> -<a href="#sourcepath"><i>sourcepath</i></a> <br /> -<a href="#splitindex">splitindex</a> <br /> -<a href="#stylesheetfile">stylesheetfile</a> <br /> -<a href="#subpackages"><i>subpackages</i></a> <br /> -<a href="#tag">tag</a> <br /> -<a href="#taglet">taglet</a> <br /> -<a href="#tagletpath">tagletpath</a> <br /> -<a href="#title">title</a> <br /> -<a href="#use">use</a> <br /> -<a href="#verbose"><i>verbose</i></a> <br /> -<a href="#version">version</a> <br /> -<a href="#windowtitle">windowtitle</a> <br /></td>
+        </tr>
+      </table>
+</blockquote><i>이탤릭</i> 으로 나타난 옵션은, Javadoc 의 기본 옵션이며, Javadoc 툴의 프론트엔드에 의해 제공되어 모든 도크 렛으로 사용할 수 있습니다. 표준 도크 렛 자체는, 이탤릭이 아닌 옵션을 제공합니다.  <!-- ============== JAVADOC OPTIONS ======================= --> <a name="javadocflags" id="javadocflags"><!-- --></a> 
+
+    <p><a name="javadocoptions" id="javadocoptions"></a> </p>
+
+<h3>Javadoc 옵션</h3>
+
+    <dl>
+      <dd><a name="overview" id="overview"><!-- --></a> </dd>
+
+<dt><b>-overview</b> &#xA0;&nbsp;<i>path\filename</i></dt>
+
+      <dd>
+Javadoc 에 대해서,<i>path/filename</i> 로 지정된 「소스」파일로부터 개요 문서용의 텍스트를 취득해, 그 텍스트를 개요 페이지 (<code>overview-summary.html</code>)에 배치하도록(듯이) 지정합니다. <i>path/filename</i> 는,<code>-sourcepath</code> 에의 상대 패스입니다.
+
+<p><i>filename</i> 와 <i>path</i> 에는, 각각 임의의 이름과 장소를 지정할 수 있습니다만, 일반적으로은,<code>overview.html</code> 라는 이름을 붙여, 소스 트리내의 최상정도의 패키지 디렉토리가 있는 디렉토리에 배치합니다. 이 장소에 배치하면(자),<code>-sourcepath</code> 에 의해 이 파일이 지시해지므로, 패키지를 문서화할 때에 <i>path</i> 가 불필요하게 됩니다. 예를 들어,<code>java.lang</code> 패키지의 소스 트리가 <code>C:\src\classes\java\lang\</code> 의 경우, 개요 파일은 <code>C:\src\classes\overview.html</code> 에 배치할 수 있습니다. <a href=         "#realworldexample">「사용예」</a>를 참조해 주세요. </p>
+
+<p><i>path/filename</i> 로 지정하는 파일에 대해서는,<a href=         "#overviewcomment">「개요 코멘트 파일」</a>을 참조해 주세요. </p>
+
+<p>개요 페이지가 작성되는 것은, Javadoc 에 복수의 패키지명을 건네주었을 경우만입니다. 자세한 것은,<a href="#htmlframes">「HTML 프레임」</a>을 참조해 주세요. </p>
+
+<p>개요 페이지의 타이틀은,<a href=         "#doctitle"><code>-doctitle</code></a>  에 의해 설정됩니다. </p>
+
+        <p><a name="public" id="public"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-public</b></dt>
+
+      <dd>
+public 클래스 및 멤버만을 표시합니다.
+
+        <p><a name="protected" id="protected"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-protected</b></dt>
+
+      <dd>
+protected 및 public 의 클래스와 멤버만을 표시합니다. 이것은 디폴트의 설정입니다.
+
+        <p><a name="package" id="package"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-package</b></dt>
+
+      <dd>
+package, protected, 및 public 의 클래스와 멤버만을 표시합니다.
+
+        <p><a name="private" id="private"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-private</b></dt>
+
+      <dd>
+모든 클래스와 멤버를 표시합니다.
+
+        <p><a name="help" id="help"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-help</b></dt>
+
+      <dd>
+on-line help를 표시합니다. Javadoc 와 도크 렛의 커멘드행 옵션이 일람표 나타납니다.
+
+        <p><a name="doclet" id="doclet"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-doclet</b>&nbsp; <var>class</var></dt>
+
+      <dd>
+문서의 생성에 사용하는 도크 렛을 기동하기 위한 클래스 파일을 지정합니다. 완전 지정의 이름을 지정해 주세요. 이 도크 렛에 의해, 출력의 내용과 형식이 정의됩니다. <b><code>-doclet</code></b> 옵션이 사용되지 않은 경우, Javadoc 는, 표준 도크 렛을 사용해 디폴트의 HTML 형식을 생성합니다. 이 클래스에는,<code>start(Root)</code> 메소드가 포함되지 않으면 안됩니다. 이 기동 클래스에의 패스는,<code>-docletpath</code> 옵션에 의해 정의됩니다.
+
+<p>예를 들어, MIF 도크 렛을 호출하려면 , 다음과 같이 지정합니다. </p>
+        <pre>
+    -doclet com.sun.tools.doclets.mif.MIFDoclet
+</pre>
+
+<p>특정의 도크 렛을 실행한 완전한 예에 대해서는,<a href=         "http://java.sun.com/j2se/javadoc/mifdoclet/docs/mifdoclet.html#runningmifdoclet">「Running the MIF Doclet」</a>를 참조해 주세요. </p>
+
+        <p><a name="docletpath" id="docletpath"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-docletpath</b>&nbsp; <var>classpathlist</var></dt>
+
+      <dd>
+<code>-doclet</code> 옵션으로 지정되고 있는 도크 렛 개시 클래스 파일, 및 거기에 의존하는 jar 파일에의 패스를 지정합니다. 개시 클래스 파일이 jar 파일내에 있는 경우, 이하의 예의 같게 jar 파일의 패스가 지정됩니다. 절대 패스 또는 현재의 디렉토리로부터의 상대 패스를 지정할 수 있습니다. <var>classpathlist</var> 에는, 복수의 패스 또는 JAR 파일을 포함할 수가 있습니다. 그 경우, 각 패스 또는 JAR 파일을, Solaris 의 경우에는 구두점 (:), Windows 의 경우에는 세미콜론 (;)으로 단락짓습니다. 목적의 도크 렛 개시 클래스가 벌써 검색 패스내에 있는 경우는, 이 옵션은 불필요합니다.
+
+<p>jar 파일에의 패스의 예에는, 도크 렛 개시 클래스 파일이 포함되어 있습니다. jar 파일명이 포함되어 있는 점에 주목해 주세요. </p>
+        <pre>
+   -docletpath C:\user\mifdoclet\lib\mifdoclet.jar
+</pre>도크 렛 개시 클래스 파일의 패스의 예. 클래스 파일명이 생략 되고 있는 점에 주목해 주세요.
+        <pre>
+   -docletpath C:\user\mifdoclet\classes\com\sun\tools\doclets\mif\
+</pre>특정의 도크 렛을 실행한 완전한 예에 대해서는,<a href= "http://java.sun.com/j2se/javadoc/mifdoclet/docs/mifdoclet.html#runningmifdoclet">「Running the MIF Doclet」</a>를 참조해 주세요.
+
+        <p><a name="1.1"><!-- --></a> </p>
+      </dd>
+
+      <dt><b>-1. 1</b></dt>
+
+      <dd>
+이 기능은, Javadoc 1.4 에서는 삭제되었습니다. 대체 기능은 없습니다. 이 옵션은, Javadoc 1.1 에 의해 생성되는 것과 같은 외관과 기능을 가지는 문서를 작성하기 위한의 것이었습니다. 상자의 클래스는 지원되고 있지 않습니다. 이 옵션이 필요한 경우는, Javadoc 1.2 또는 1.3 을 사용해 주세요.
+
+        <p><a name="source" id="source"></a> </p>
+      </dd>
+
+<dt><b>-source</b> <i>release</i></dt>
+
+      <dd>
+받아들이는 원시 코드의 버젼을 지정합니다. <i>release</i> 에는 다음의 값을 지정할 수 있습니다.
+
+        <table style="margin-top: .6em;">
+          <tr>
+            <td valign="top" width="30"><b>1.5</b></td>
+
+<td>Javadoc 는, JDK 1.5 로 도입된 총칭 및 다른 언어 기능을 포함한 코드를 받아들입니다. <b>-source</b> 플래그를 지정하지 않으면 컴파일러는 디폴트로서 1.5 의 동작을 합니다. </td>
+          </tr>
+
+          <tr>
+            <td valign="top"><b>1.4</b></td>
+
+<td>Javadoc 는, JDK 1.4 로 도입된, assertion를 포함한 코드를 받아들입니다. </td>
+          </tr>
+
+          <tr>
+            <td valign="top"><b>1.3</b></td>
+
+<td>Javadoc 는, JDK 1.3 이후에 도입된 assertion, 총칭, 또는 다른 언어 기능을 지원하지 않습니다. </td>
+          </tr>
+        </table>
+
+<p>javac 로 코드를 컴파일 할 경우에 사용한 값에 대응하는 <i>release</i> 의 값을 사용합니다. </p>
+
+        <p><a name="sourcepath" id="sourcepath"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-sourcepath</b>&nbsp; <var>sourcepathlist</var></dt>
+
+      <dd>
+<code>javadoc</code> 커멘드에 패키지명 또는 <code>-subpackages</code> 를 건네줄 때, 원시 파일 (<code>. java</code>)를 검색하기 위한 패스를 지정합니다. <i>sourcepathlist</i> 에는, 세미콜론 (<code>;</code>)으로 단락지어 복수의 패스를 포함할 수가 있습니다. Javadoc 툴은, 지정된 패스 이하의 모든 서브 디렉토리를 검색합니다. 이 옵션을 사용해, 문서화 되는 원시 파일의 위치 뿐만이 아니라, 그 자체는 문서화 되지 않지만 문서화 되는 원시 파일로부터 상속된 코멘트를 가지는 원시 파일의 위치도 확인할 수 있습니다.
+
+<p><code>-sourcepath</code> 옵션은, javadoc 커멘드에 패키지명을 건네줄 때만 사용할 수 있습니다. <code>javadoc</code> 커멘드에게 건네진다 <code>. java</code> 파일은, 이 패스로부터는 검색되지 않습니다. <code>. java</code> 파일을 검색하려면 , 그 파일이 있는 디렉토리에 cd 에 의해 이동하는지, 또는 각 파일의 선두에 패스를 포함합니다 (<a href=         "#documentingclasses">「1 개(살) 이상의 클래스의 문서화」</a>를 참조). <code>-sourcepath</code> 가 생략 되었을 경우, Javadoc 는, 클래스 패스를 사용해 원시 파일을 검색합니다 (<a href=         "#classpath">-classpath</a>  를 참조). 따라서, 디폴트의 -sourcepath 는, 클래스 패스의 값입니다. -classpath 도 생략 해 패키지명을 Javadoc 에 건네주면(자), Javadoc 는 현재의 디렉토리 및 그 서브 디렉토리로부터 원시 파일을 검색합니다. </p>
+
+<p><var>sourcepathlist</var> 에는, 문서화하는 패키지명의 소스 트리의 루트 디렉토리를 설정합니다. 예를 들어,<code>com.mypackage</code> 라는 이름의 패키지를 문서화하는 경우에, 그 원시 파일이 다음의 장소에 있다고 합니다. </p>
+        <pre>
+C:\user\src\com\mypackage\*.java
+</pre>이 경우, 다음과 같이 해 <code>sourcepath</code> 를 <code>C:\user\src</code>, 즉 <code>com\mypackage</code> 를 포함한 디렉토리로 지정해, 그리고 패키지명 <code>com.mypackage</code> 를 지정합니다.
+        <pre>
+  C:&gt; <b>javadoc -sourcepath C:\user\src com.mypackage</b>
+</pre>이 방법은, 소스 패스의 값과 패키지명을 연결해, 닷을 (엔기호) 「\」에 바꾸면(자), 패키지의 풀 패스 (<code>C:\user\src\com\mypackage</code>)가 되는 것을 이해하면(자) 간단합니다. <code>C:\user\src\com\mypackage</code>.
+
+<p>2 개의 소스 패스를 설정하려면 , 다음과 같이 합니다. </p>
+        <pre>
+  C:&gt; <b>javadoc -sourcepath C:\user1\src;C:\user2\src com.mypackage</b>
+</pre>
+
+        <p><a name="classpath" id="classpath"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-classpath</b>&nbsp; <var>classpathlist</var></dt>
+
+      <dd>
+Javadoc 가<a href=         "#referencedclasses">참조 클래스</a>  (<code>. class</code> 파일)을 검색하는 패스를 지정합니다. 참조 클래스란, 문서화 되는 클래스와 그러한 클래스에 의해 참조되는 모든 클래스입니다. <i>classpathlist</i> 에는, 세미콜론 (<code>;</code>)으로 단락지어 복수의 패스를 포함할 수가 있습니다. Javadoc 툴은, 지정된 패스 이하의 모든 서브 디렉토리를 검색합니다. <var>classpathlist</var> 를 지정할 때는,<a href=         "classpath.html">클래스 패스</a>의 문서에 있는 지시에 따라 주세요.
+
+<p><code>-sourcepath</code> 가 생략 되고 있는 경우, Javadoc 툴은,<code>-classpath</code> 를 사용해, 클래스 파일 뿐만이 아니라 원시 파일도 검색합니다 (하위 호환성이기 때문에). 따라서, 원시 파일과 클래스 파일을 다른 패스로부터 검색할 필요가 있는 경우는,<code>-sourcepath</code> 와 <code>-classpath</code> 의 양쪽 모두를 사용합니다. </p>
+
+<p>예를 들어,<code>com.mypackage</code> 를 문서화하는 경우에, 그 원시 파일이 디렉토리 <code>C:\user\src\com\mypackage</code> 에 있어, 이 패키지가 <code>C:\user\lib</code> 에 있는 라이브러리에 의존하고 있을 때는, 다음과 같이 지정합니다. </p>
+        <pre>
+  C:&gt; <b>javadoc -classpath \user\lib -sourcepath \user\src com.mypackage</b>
+</pre>다른 툴과 같게,<code>-classpath</code> 가 지정되어 있지 않은 경우는, CLASSPATH 환경 변수가 설정되어 있으면, Javadoc 툴은 이 환경 변수를 사용합니다. 어느쪽이나 설정되어 있지 않은 경우, Javadoc 툴은 현재의 디렉토리에서 클래스를 검색합니다.
+
+<p>확장 기능 클래스 및 bootstrap 클래스에 관련한, Javadoc 툴이 <code>-classpath</code> 를 사용해 사용자 클래스를 검색하는 방법에 대한 자세한 것은,<a href=         "../findingclasses.html">「클래스의 검색 방법」</a>을 참조해 주세요. </p>
+
+	<!-- ********** 11.15 classpath addition  -->
+
+<p>편의상,<code>*</code> 의 베이스명을 포함한 클래스 패스 요소는, 디렉토리내의 확장자(extension) <code>. jar</code> 또는 <code>. JAR</code> 를 가지는 모든 파일의 리스트를 지정하는 것과 같은 것으로 간주해집니다 (Java 프로그램은 이 2 개의 호출을 구별할 수 없다). <br /><br />예를 들어, 디렉토리 <code>foo</code> 에 <code>a.jar</code> 와 <code>b.JAR</code> 가 포함되어 있는 경우, 클래스 패스 요소 <code>foo/*</code> 는 <code>A.jar:b.JAR</code> 에 전개됩니다. 다만, JAR 파일의 차례는 지정되지 않습니다. 이 리스트에는, 은폐 파일도 포함해 지정된 디렉토리내의 모든 JAR 파일이 포함됩니다. <code>*</code> 만일 수 있는으로부터 완성되는 클래스 패스 엔트리는, 커런트 디렉토리내의 모든 JAR 파일의 리스트에 전개됩니다. <code>CLASSPATH</code> 환경 변수도, 정의시에는과 같이  전개됩니다. 클래스 패스의 와일드 카드 전개는 반드시, Java 가상 머신의 기동전에 실행됩니다. 따라서,<tt>System.getenv("CLASSPATH")</tt> 호출과 같이 환경에 문의를 실시하지 않는 이상 Java 프로그램이 전개되어 있지 않은 와일드 카드를 인식할 것은 없습니다.
+
+<!-- ************ end classpath ************* -->
+
+
+        </p><p><a name="subpackages" id="subpackages"></a> </p>
+      </dd>
+
+      <dt>
+<b>-subpackages</b>&nbsp;&nbsp;<i>package1</i><b>:</b><i>package2</i><b>:</b>...</dt>
+
+      <dd>
+원시 파일로부터 지정된 패키지 및 그 서브 패키지내에 재귀적으로 문서를 생성합니다. 이 옵션은, 원시 코드에 새로운 서브 패키지를 추가할 때에 편리합니다. 새로운 서브 패키지는 자동적으로 짜넣어집니다. 각 패키지는 최상정도 패키지 (<code>java</code>) 또는 완전 지정의 서브 패키지명 (<code>javax.swing</code>)이 됩니다. 원시 파일을 포함할 필요는 없습니다.  Arguments are separated by colons (on all operating systmes). 와일드 카드는 불필요합니다 (사용 불가). 패키지의 검색 장소를 지정하려면 ,<a href="#sourcepath"><code>-sourcepath</code></a>  를 사용합니다. 이 옵션은,<a href="#processingofsourcefiles">「원시 파일의 처리」</a>로 설명했던 대로, 소스 트리에 있지만 패키지에는 속하지 않은 원시 파일을 처리하지 않기 때문에 도움이 됩니다.
+
+<p>예를 나타냅니다. </p>
+        <pre>
+  C:&gt; <b>javadoc -d docs -sourcepath C:\user\src -subpackages java:javax.swing</b>
+</pre> 이 커멘드는, 「java」 및 「javax.swing」라고 하는 이름의 패키지와 이러한 서브 패키지 전부의 문서를 생성합니다.
+
+<p><a href="#exclude"><code>-exclude</code></a>  와 함께 <code>-subpackages</code> 를 사용하면(자), 특정의 패키지를 제외할 수 있습니다. </p>
+
+        <p><a name="exclude" id="exclude"></a> </p>
+      </dd>
+
+      <dt>
+<b>-exclude</b>&nbsp;&nbsp;<i>packagename1</i><b>:</b><i>packagename2</i><b>:</b>...</dt>
+
+      <dd>
+지정된 패키지와 그 서브 패키지를 <a href=         "#subpackages"><code>-subpackages</code></a>  에 의해 작성된 리스트로부터 무조건 제외합니다. 과거의 <a href="#subpackages">-subpackages</a>  옵션의 지정에 의해 짜넣어진 패키지, 또는 장래 짜넣어지는 패키지도 제외의 대상이 됩니다. 예를 나타냅니다.
+        <pre>
+  C:&gt; <b>javadoc -sourcepath C:\user\src -subpackages java -exclude java.net:java.lang</b>
+</pre> 이 중,<code>java.io</code>,<code>java.util</code>,<code>java.math</code> 는 짜넣어집니다만,<code>java.net</code> 와 <code>java.lang</code> 이하의 패키지는 제외됩니다. 다만,<code>java.lang</code> 의 서브 패키지인 <code>java.lang.ref</code> 는 제외됩니다.
+
+        <p><a name="bootclasspath" id="bootclasspath"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-bootclasspath</b>&nbsp; <var>classpathlist</var></dt>
+
+      <dd>
+부트 클래스가 존재하는 패스를 지정합니다. 부트 클래스란, 일반적으로, Java 플랫폼의 코어 클래스입니다. 부트 클래스 패스는, Javadoc 툴이 원시 파일과 클래스 파일을 찾을 때 사용하는 검색 패스의 일부입니다. 자세한 것은,<a href=         "../findingclasses.html#srcfiles">「javac 와 javadoc 가 클래스를 검색하는 방법」</a>을 참조해 주세요. <var>classpathlist</var> 내의 복수의 클래스 패스 리스트는, 세미콜론 (;)으로 단락짓습니다.
+
+        <p><a name="extdirs" id="extdirs"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-extdirs</b>&nbsp; <var>dirlist</var></dt>
+
+      <dd>
+확장 기능 클래스가 존재하는 디렉토리를 지정합니다. 확장 기능 클래스란, Java 확장 기능 기구를 사용하는 모든 클래스입니다. extdirs 는, Javadoc 툴이 원시 파일과 클래스 파일을 찾을 때 사용하는 검색 패스의 일부입니다. 자세한 것은, 전술의 <code>-classpath</code> 를 참조해 주세요. <var>dirlist</var> 내의 복수의 디렉토리는, 세미콜론 (;)으로 단락짓습니다.
+
+        <p><a name="verbose" id="verbose"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-verbose</b></dt>
+
+      <dd>
+javadoc 의 실행중에 상세한 메세지를 표시합니다. verbose 옵션을 지정하지 않으면 원시 파일의 로드시, 문서의 생성시 (원시 파일 마다 1 개의 메세지), 및 소트시에 메세지가 표시됩니다. verbose 옵션을 지정하면(자), 각 Java 원시 파일의 해석에 필요로 한 시간 (밀리 세컨드 단위) 등, 추가의 메세지가 표시됩니다.
+
+        <p><a name="quiet" id="quiet"></a> </p>
+      </dd>
+
+<dt><b>-quiet</b></dt>
+
+      <dd>
+에러 메세지 또는 경고 메세지 이외의 메세지를 억제해, 경고와 에러만이 표시되도록(듯이) 해, 이것들을 특정하기 쉽게 합니다. 버젼 캐릭터 라인도 억제합니다.
+
+        <p><a name="breakiterator" id="breakiterator"></a> </p>
+      </dd>
+
+<dt><b>-breakiterator</b>&nbsp;</dt>
+
+      <dd>
+영어 언어라고 하는 로케일 고유의 알고리즘은 아니고,<a href=         "../../../api/java/text/BreakIterator.html"><code>java.text.BreakIterator</code></a>  의 국제화 된 문장 경계를 사용해, 영문의 최초의 문장의 마지막을 판단합니다 (다른 모든 로케일은 벌써 <code>BreakIterator</code> 를 사용). <em>「최초의 문장」</em>이란, 패키지, 클래스, 또는 멤버의 주설명에서의 최초의 문장입니다. 이 문장은, 패키지, 클래스, 또는 멤버의 요약에 카피되어 알파벳순서의 인덱스에 카피됩니다.
+
+<p>JDK 1.2 이후, BreakIterator 클래스는, 영어를 제외한 모든 언어의 문장의 마지막을 판단하기 위해서(때문에), 벌써 사용되고 있습니다. 따라서, 1.2 이후에서는,<code>-breakiterator</code> 옵션은 영문 이외에는 효과가 없습니다. 영문에는, 다음과 같은 독자적인 디폴트의 알고리즘이 있습니다. </p>
+
+        <ul type="disc">
+<li>영문의 디폴트의 문장 단락 알고리즘 - 공백 또는 HTML 블록 태그 (<code>&lt;P&gt;</code> 등)가 계속되는 피리어드로 정지한다</li>
+
+<li>breakiterator 문 단락 알고리즘 - 일반적으로, 다음의 말이 대문자로 시작되는 경우, 공백 문자가 계속되는 피리어드, 물음표, 또는 감탄부로 정지한다. 이 알고리즘에서는, 대부분의 생략 표기가 처리된다 ( 「The serial no.  is valid」는 처리되지만 「Mr.  Smith」는 처리되지 않는다). HTML 태그나, 숫자 또는 기호로 시작되는 문장에서는 정지하지 않는다. HTML 태그에 파묻히고 있는 경우에서도, 「../filename」의 마지막 피리어드로 정지한다</li>
+        </ul>
+
+        <blockquote>
+주:1. 5.0 으로부터는, 1.4.x 에 설치되고 있던 breakiterator 경고 메세지를 삭제해, 디폴트의 문장 단락 알고리즘을 변경하고 있습니다. 즉, \-breakiterator 옵션은, 1.5. 0 에서는 디폴트는 아니게 되어, 또 디폴트로 할 생각도 없습니다. 이것은, 「다음의 메이저 릴리스」(1.5. 0)으로 디폴트를 변경한다고 하는, 이전의 목적과는 거꾸로 되고 있습니다. 즉, 원시 코드를 변경하지 않고, 1.4.x 에서의 breakiterator 경고를 제거하고 있지 않는 경우에서도, 1.5. 0 으로부터는 아무것도 할 필요가 없고, 경고는 소멸하고 있습니다. 이 반대 귀가의 이유는, breakiterator 를 디폴트로 하는 메리트보다, 디폴트로 하기 위해서(때문에) 필요한, 호환성이 없는 소스의 변경이 부담이 컸기 (위해)때문에입니다. 이 건으로 여러분에게 여분의 수고를 걸쳐 , 혼란을 부른 것을 사과하겠습니다.
+        </blockquote><a name="locale" id="locale"><!-- --></a> 
+      </dd>
+
+<dt><b>-locale</b>&nbsp; <i>language_country_variant</i></dt>
+
+      <dd>
+        <blockquote>
+<b>중요</b> - <code>-locale</code> 옵션은,<a href=           "#standard">표준 도크 렛이 제공하는 모든 옵션</a>, 또는 그 외의 임의의 도크 렛의 제공하는 모든 옵션보다 전 (좌측)으로 지정할 필요가 있습니다. 그렇게 하지 않으면 네비게이션 바가 영어로 표시됩니다. 이 커멘드행 옵션만은, 지정하는 순서에 의존합니다.
+</blockquote>Javadoc 가 문서를 생성할 경우에 사용하는 로케일을 지정합니다. 인수에는, java.util.Locale 의 문서로 설명되고 있는 로케일의 이름을 지정합니다. 예를 들어,<code>en_US</code> (영어, 미국),<code>en_US_WIN</code> (Windows 로 사용되는 영어)등을 지정합니다.
+
+<p>로케일을 지정하면(자), 지정한 로케일의 resource file가 Javadoc 에 의해 선택되어, 메세지 (네비게이션 바, 리스트와 겉(표)의 찾아내, 헬프 파일의 목차, stylesheet.css 의 코멘트등의 캐릭터 라인)를 위해서(때문에) 사용됩니다. 또, 알파벳순서에 소트 되는 리스트의 소트순서, 및 최초의 문장의 말미를 판별하기 위한 문의 단락 문자도, 지정한 로케일에 의해 정해집니다. 다만, 이 옵션은, 문서화 되는 클래스의 원시 파일내에서 지정되고 있는 다큐멘테이션 코멘트의 텍스트의 로케일을 결정하는 것이 아닙니다. </p>
+
+        <p><a name="encoding" id="encoding"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-encoding</b>&nbsp; <i>name</i></dt>
+
+      <dd>
+원시 파일의 인코딩의 이름 (<code>EUCJIS/SJIS</code> 등)을 지정합니다. 이 옵션이 지정되어 있지 않은 경우는, 플랫폼의 디폴트 컨버터가 사용됩니다.
+
+<p><a href="#docencoding">-docencoding</a>  및 <a href="#charset">-charset</a>  도 참조해 주세요. </p>
+
+        <p><a name="J" id="J"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-J</b><i>flag</i></dt>
+
+      <dd>
+javadoc 를 실행하는 실행시 시스템 <a href=         "java.html#options">java</a>  에,<i>flag</i> 를 직접 건네줍니다. <code> J</code> 와 <i>flag</i> 의 사이에 공백을 들어갈 수 있어 되지 않습니다. 예를 들어, 생성 문서를 처리하기 위해서 시스템으로 32M 바이트의 메모리를 확보해 둘 필요가 있는 경우는, Java 의 <a href="java.html#xms"><code>-Xmx</code></a>  옵션을 다음과 같이 호출합니다. <code>-Xms</code> 는, 생략 가능합니다. 이것은, 초기 메모리의 사이즈를 설정할 뿐(만큼)의 옵션으로, 필요한 메모리의 최소 사이즈를 알 수 있고 있는 경우에 편리합니다.
+        <pre>
+   C:&gt; <b>javadoc -J-Xmx32m -J-Xms32m</b> <b>com.mypackage</b>
+</pre>사용하고 있는 javadoc 의 버젼을 확인하려면 , 다음과 같이 java 의 「<code>-version</code>」옵션을 호출합니다.
+        <pre>
+   C:&gt; <b>javadoc -J-version</b>
+   java version "1.2"
+   Classic VM (build JDK-1. 2-V, green threads, sunwjit)
+</pre>출력 스트림에는<a href="#versionnumbers">표준 도크 렛</a>의 버젼 번호가 포함됩니다.
+      </dd>
+    </dl>
+    <!-- ============== STANDARD OPTIONS ======================= --> <a name="standard" id="standard"><!-- --></a> 
+
+<h3>표준 도크 렛이 제공하는 옵션</h3>
+
+    <dl>
+      <dd><a name="d" id="d"><!-- --></a> </dd>
+
+<dt><b>-d</b>&nbsp; <var>directory</var></dt>
+
+      <dd>
+생성된 HTML 파일을 보존하는 생성처 디렉토리를 지정합니다( 「d」는 「생성처 (destination)」의 의미). 이 옵션을 생략 하면(자), 생성된 파일은 현재의 디렉토리에 보존됩니다. 값 <var>directory</var> 에는, 절대 디렉토리, 또는 현재의 작업 디렉토리로부터의 상대 디렉토리를 지정할 수 있습니다. 버젼 1.4 에서는, javadoc 를 실행하면(자) 생성처 디렉토리가 자동적으로 작성됩니다.
+
+<p>예를 들어, 다음의 커멘드는,<code>com.mypackage</code> 패키지의 문서를 생성해, 결과를 <code>C:\user\doc\</code> 디렉토리에 보존합니다. </p>
+        <pre>
+  C:&gt; <b>javadoc -d \user\doc com.mypackage</b>
+</pre>
+
+        <p><a name="use" id="use"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-use</b></dt>
+
+      <dd>
+문서화 되는 클래스 및 패키지 마다 1 개의 [사용] 페이지를 짜넣습니다. 이 페이지에는, 그 특정의 클래스 또는 패키지의 API 를 사용하고 있는 패키지, 클래스, 메소드, 생성자 , 및 필드가 기술됩니다. 예를 들어, 클래스 C 를 예를 들면(자), 클래스 C 를 사용하고 있는 것으로서는, C 의 서브 클래스, C 로서 선언되고 있는 필드, C 를 돌려주는 메소드, 및, 형태 C 의 파라미터를 가지는 메소드와 생성자 이 있습니다.
+
+<p>예를 들어, String 의 [사용] 페이지에 무엇이 표시될까를 봅시다. <code>java.awt.Font</code> 클래스의 <code>getName()</code> 메소드는,<code>String</code> 형을 돌려줍니다. 따라서,<code>getName()</code> 는 <code>String</code> 를 사용하고 있으므로,<code>String</code> 의 [사용] 페이지에는 이 메소드가 있습니다. </p>
+
+<p>다만, 문서화 되는 것은 API 의 사용 뿐이어, 구현은 문서화 되지 않습니다. 어느 메소드가, 그 구현 중(안)에서 <code>String</code> 를 사용하고 있어도, 인수로서 캐릭터 라인을 취하거나 캐릭터 라인을 돌려주거나 하지 않는 경우는,<code>String</code> 의 「사용」이란 보이지 않습니다. </p>
+
+<p>생성된 [사용] 페이지에 액세스 하려면 , 목적의 클래스 또는 패키지로 이동해, 네비게이션 바의 [사용] 링크를 클릭합니다.  <a name="version" id="version"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-version</b></dt>
+
+      <dd>
+생성 문서에, @version 의 텍스트를 짜넣습니다. 이 텍스트는, 디폴트에서는 생략 됩니다. 사용하고 있는 Javadoc 툴의 버젼을 확인하려면 ,<code><a href=         "#J">-J-version</a> </code> 옵션을 사용합니다.
+
+        <p><a name="author" id="author"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-author</b></dt>
+
+      <dd>
+생성 문서에, @author 의 텍스트를 짜넣습니다.
+
+        <p><a name="splitindex" id="splitindex"></a> </p>
+      </dd>
+
+<dt><b>-splitindex</b></dt>
+
+      <dd>
+색인 파일을 알파벳 마다 복수의 파일에 분할해, 문자 마다 1 개의 파일과 알파벳 이외의 문자로 시작되는 색인 엔트리용으로 1 개의 파일을 작성합니다.
+
+        <p><a name="windowtitle" id="windowtitle"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-windowtitle</b>&nbsp; <i>title</i></dt>
+
+      <dd>
+HTML 의 &lt;title&gt; 태그에 배치하는 타이틀을 지정합니다. 지정한 타이틀은, 윈도우의 타이틀이나, 이 페이지에 대해서 작성된 브라우저의 북마크 (마음에 드는 것)에 표시됩니다. 이 타이틀에는 HTML 태그를 포함하지 말아 주세요. 타이틀에 HTML 태그가 포함되어 있으면(자), 브라우저가 태그를 올바르게 해석할 수 없습니다. <i>title</i> 중(안)에서 인용부호를 사용하는 경우는, 인용부호를 이스케이프 할 필요가 있습니다. -windowtitle 가 생략 되고 있는 경우, Javadoc 툴은, 이 옵션 대신에 -doctitle 의 값을 사용합니다.
+        <pre>
+  C:&gt; <b>javadoc -windowtitle "Java 2 Platform" com.mypackage</b>
+</pre><a name="doctitle" id="doctitle"><!-- --></a> 
+      </dd>
+
+<dt><b>-doctitle</b>&nbsp; <i>title</i></dt>
+
+      <dd>
+개요 파일의 최상부의 근처에 배치하는 타이틀을 지정합니다. 타이틀은 centering가 되어, 레벨 1 의 표제로서 상부 네비게이션 바의 바로 아래에 놓여집니다. <i>title</i> 에는, HTML 태그와 공백을 포함할 수가 있습니다만, 이것들을 포함하는 경우는, 전체를 인용부호로 둘러싸지 않으면 안됩니다. <i>title</i> 중(안)에서 인용부호를 사용하는 경우는, 인용부호를 이스케이프 할 필요가 있습니다.
+        <pre>
+  C:&gt; <b>javadoc -doctitle "Java&lt;sup&gt;&lt;font size=\"-2\"&gt;TM&lt;/font&gt;&lt;/sup&gt;" com.mypackage</b>
+</pre><a name="title" id="title"><!-- --></a> 
+      </dd>
+
+<dt><b>-title</b>&nbsp; <i>title</i></dt>
+
+      <dd>
+<b>이 옵션은, 현재는 존재하지 않습니다. </b>Javadoc 1.2 의 베타판에만 존재했습니다. 이 옵션은,<a href="#doctitle"><code>-doctitle</code></a>  라는 이름으로 변경되었습니다. 이름을 변경한 이유는, 이 옵션이, 윈도우의 타이틀은 아니고 문서의 타이틀을 정의하는 것을 명확하게 하기 (위해)때문에입니다.
+
+        <p><a name="header" id="header"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-header</b>&nbsp; <i>header</i></dt>
+
+      <dd>
+각 출력 파일의 상단에 배치하는 헤더 텍스트를 지정합니다. 헤더는, 상부 네비게이션 바의 우측으로 배치됩니다. <i>header</i> 에는, HTML 태그와 공백을 포함할 수가 있습니다만, 이것들을 포함하는 경우는, 전체를 인용부호로 둘러싸지 않으면 안됩니다. <i>header</i> 중(안)에서 인용부호를 사용하는 경우는, 인용부호를 이스케이프 할 필요가 있습니다.
+        <pre>
+  C:&gt; <b>javadoc -header "&lt;b&gt;Java 2 Platform &lt;/b&gt;&lt;br&gt;v1. 4" com.mypackage</b>
+</pre>
+
+        <p><a name="footer" id="footer"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-footer</b>&nbsp; <i>footer</i></dt>
+
+      <dd>
+각 출력 파일의 하단에 배치하는 풋터 텍스트를 지정합니다. 풋터는, 하부 네비게이션 바의 우측으로 배치됩니다. <i>footer</i> 에는, HTML 태그와 공백을 포함할 수가 있습니다만, 이것들을 포함하는 경우는, 전체를 인용부호로 둘러싸지 않으면 안됩니다. <i>footer</i> 중(안)에서 인용부호를 사용하는 경우는, 인용부호를 이스케이프 할 필요가 있습니다.
+
+        <p><a name="bottom" id="bottom"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-bottom</b>&nbsp; <i>text</i></dt>
+
+      <dd>
+각 출력 파일의 최하부에 배치하는 텍스트를 지정합니다. 이 텍스트는, 하부 네비게이션 바보다 아래의, 페이지의 최하부에 배치됩니다. <i>text</i> 에는, HTML 태그와 공백을 포함할 수가 있습니다만, 이것들을 포함하는 경우는, 전체를 인용부호로 둘러싸지 않으면 안됩니다. <i>text</i> 중(안)에서 인용부호를 사용하는 경우는, 인용부호를 이스케이프 할 필요가 있습니다.
+
+        <p><a name="link" id="link"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-link</b>&nbsp; <i>extdocURL</i><br /></dt>
+
+      <dd>
+javadoc 에 의해 생성된 기존의<a  href="#externalreferencedclasses">외부 참조 클래스</a>의 다큐멘테이션에의 링크를 작성합니다. 인수를 1 개 취합니다.
+
+        <p><a name="extdocURL" id="extdocURL"></a> </p>
+
+        <ul type="disc">
+          <li>
+<b><i>extdocURL</i></b> 는, 링크처로서 지정하는, javadoc 에 의해 생성된 외부 문서를 포함한 디렉토리의 절대 URL 또는 상대 URL 입니다. 나중에<a href="#linkabsoluteexample">예</a>를 나타내겠습니다. 이 디렉토리내에<a href="#linkpackagelist">패키지 리스트 </a>파일이 존재하고 있지 않으면 안됩니다. 존재하지 않는 경우는,<a href="#linkoffline"><code>-linkoffline</code></a>  를 사용합니다. Javadoc 툴은,<code>패키지 리스트</code>파일로부터 패키지명을 읽어내, 이러한 패키지를 그 URL 에 링크합니다. Javadoc 툴을 실행하면(자), 작성되는 <code>&lt;A HREF&gt;</code> 링크내에 <i>extdocURL</i> 의 값이 그대로 카피됩니다. 따라서,<i>extdocURL</i> 는 파일에의 URL 는 아니고 「디렉토리에의 URL」가 아니면 안됩니다.
+
+<p><i>extdocURL</i> 에의 절대 링크를 사용하면(자), 사용자의 문서를 임의의 Web 사이트상의 문서에 링크할 수 있습니다. 상대 위치에 링크하는 것만으로 좋은 경우는 상대 링크를 사용할 수 있습니다. 상대 링크를 사용하는 경우,<code>-d</code> 를 사용해, 생성처 디렉토리로부터 링크되는 패키지가 있는 디렉토리의 상대 패스를 지정할 필요가 있습니다. </p>
+
+<p>일반적으로, 절대 링크를 지정하는 경우는,<code>http:</code> 링크를 사용합니다. Web 서버를 가지지 않는 파일 시스템에 링크하는 경우는,<code>file:</code> 링크를 사용할 수 있습니다. 다만, 이 방법은, 모든 사용자가 생성된 같은 파일 시스템을 공유하는 문서에 액세스 할 필요가 있는 경우 이외는 사용하지 말아 주세요. </p>
+
+<p>모든 경우, 모든  operating system로, 절대 URL 와 상대 URL, 「http:」베이스와 「file:」베이스에 관계없이, slash를 단락지어 문자로서 사용합니다 (<a href=             "http://www.ietf.org/rfc/rfc1738.txt">URL Memo</a>  로 지정). </p>
+
+            <dl>
+<dt>http: 베이스의 절대 링크:</dt>
+
+<dd><code>-link http://&lt;host&gt;/&lt;directory&gt;/&lt;directory&gt;/.../&lt;name&gt;</code></dd>
+
+<dt>file: 베이스의 절대 링크:</dt>
+
+<dd><code>-link file://&lt;host&gt;/&lt;directory&gt;/&lt;directory&gt;/.../&lt;name&gt;</code></dd>
+
+<dt>상대 링크:</dt>
+
+<dd><code>-link &lt;directory&gt;/&lt;directory&gt;/.../&lt;name&gt;</code></dd>
+            </dl>
+          </li>
+        </ul>
+
+<p>javadoc 의 실행시에<a href="#multiplelinks">복수의</a>  <code>-link</code> 옵션을 지정해, 복수의 문서에의 링크를 작성할 수도 있습니다. </p><b>-linkoffline 또는 -link 의 선택</b><br /><code>-link</code> 를 사용하는 경우:
+
+        <ul type="disc">
+<li>외부 API 문서에의 상대 패스를 사용하는 경우</li>
+
+<li>외부 API 문서에의 절대 URL 를 사용하는 경우 (프로그램이 그 URL 에 접속해, 읽기를 실시하는 것이 쉘에 의해 허가되고 있는 경우)</li>
+</ul>다음과 같은 경우는,<code><a href=         "#linkoffline">-linkoffline</a> </code> 옵션을 사용합니다.
+
+        <ul>
+<li type="disc">외부 API 문서에의 절대 URL 를 사용하는 경우 (프로그램이 그 URL 에 접속해, 읽기를 실시하는 것이 쉘에 의해 허가되어 있지 않은 경우) 이러한 상황은, 링크처의 문서가 방화벽(fire wall)의 저쪽 편에 있는 경우에 발생합니다. </li>
+        </ul>
+
+<p><a name="linkabsoluteexample" id=         "linkabsoluteexample"></a>  <b>외부 문서에의 절대 링크의 사용예</b> - <a href=         "http://java.sun.com/j2se/1.5.0/docs/api"><code>http://java.sun.com/j2se/1. 5.0/docs/api</code></a>  내의 <code>java.lang</code>,<code>java.io</code>, 그 외의 Java 2 플랫폼 패키지에 링크하고 싶은 경우가 있습니다. 다음의 커멘드는,<code>com.mypackage</code> 패키지의 문서와 Java 2 플랫폼 패키지에의 링크를 생성합니다. 생성된 문서에는, 예를 들어 클래스 트리내의 <code>Object</code> 클래스에의 링크가 포함되어 있습니다. (<code>-sourcepath</code> 나 <code>-d</code> 등의 다른 옵션은 표시되지 않습니다. )</p>
+        <pre>
+  C:&gt; <b>javadoc -link http://java.sun.com/j2se/1. 5.0/docs/api com.mypackage</b>
+</pre><a name="linkrelativeexample" id="linkrelativeexample"></a>  <b>외부 문서에의 상대 링크의 사용예</b> - 2 개의 패키지가 있어, 그 문서가 Javadoc 툴을 여러 차례 실행한 결과 생성된 것이다고 합니다. 게다가 이러한 문서가 상대 패스로 분할되고 있다고 합니다. 이 예의 경우, 2 개의 패키지는, API 인 <code>com.apipackage</code> 와 SPI (서비스 프로바이더 인터페이스)인 <code>com.spipackage</code> 입니다. 문서의 포함처는 <code>docs/api/com/apipackage</code> 패키지와 <code>docs/spi/com/spipackage</code> 패키지입니다. API 패키지의 문서가 벌써 생성되고 있어, 현재의 디렉토리가 <code>docs</code> 인 경우, 다음의 커멘드를 실행하는 것에 의해, 이 API 문서에의 링크를 가지는 SPI 패키지를 문서화합니다.
+        <pre>
+  C:&gt; <b>javadoc -d . /spi -link ../api com.spipackage</b>
+</pre>
+
+<p><code>-link</code> 인수는, 생성처 디렉토리 (<code>docs/spi</code>)의 상대 패스입니다. </p>
+
+<p><b>상세</b> - <code>-link</code> 옵션을 사용하면(자), 「코드로부터는 참조되고 있어도, Javadoc 의 이번 실행에서는 문서화 되지 않는다」라고 하는 클래스에 링크할 수 있게 됩니다. 링크로부터 유효한 페이지로 이동할 수 있도록(듯이) 하려면 , 그러한 HTML 페이지가 있는 장소를 조사해 그 자리소를 <i>extdocURL</i> 로 지정할 필요가 있습니다. 이 옵션을 사용하면(자), 예를 들어, 서드 파티의 문서로부터,<code>http://java.sun.com</code> 에 있는 <code>java. *</code> 의 문서에 링크할 수가 있습니다. </p>
+
+<p>이번 실행으로 Javadoc 에 의해 생성되는 문서내의 API 만을 대상으로 링크를 작성하는 경우는,<code>-link</code> 옵션을 생략 합니다. <code>-link</code> 옵션이 지정되어 있지 않은 경우, Javadoc 툴은, 외부 참조된 문서에의 링크를 작성하지 않습니다. 이것은, 그 문서가 존재할지 어떨지, 및 존재하는 경우는 그 자리소를 판별할 수 없기 때문입니다. </p>
+
+<p>이 옵션에서는, 생성 문서내의<a href="#links">복수의 장소</a>에 링크를 작성할 수 있습니다. </p>
+
+<p>또, 이 옵션을 사용하면(자), 복수의 패키지군의 사이에<a href=         "#cross-links">크로스 링크</a>를 작성할 수도 있습니다. 즉, 어느 일식의 패키지에 대해서 javadoc 를 실행한 뒤, 다른 일식의 패키지에 대해서 javadoc 를 실행해, 이것들 2 개의 패키지군의 사이에 크로스 링크를 작성할 수 있습니다. </p>
+
+<p><a name="howaclassmustbereferenced" id=         "howaclassmustbereferenced"></a>  <b>클래스의 참조 방법</b> - 외부 참조 클래스에의 링크를, 텍스트 라벨 만이 아니고 실제로 표시하려면 , 다음의 방법으로 클래스를 참조할 필요가 있습니다. 메소드의 본체로 클래스를 참조하는 것 만으로는 충분하지는 않습니다. <code>import</code> 문 또는 선언으로 참조할 필요가 있습니다. 다음에, 클래스 <code>java.io.File</code> 를 참조하는 방법의 예를 나타냅니다. </p>
+
+        <ul type="disc">
+<li>모든 종류의 <code>import</code> 문의 경우:와일드 카드에 의한 임포트, 이름에 의한 명시적인 임포트, 또는 <code>java.lang. *</code> 에 대한 자동적인 임포트. 예를 들어, 다음과 같이 하면 충분합니다. <br /><code>import java.io. *;</code><br />1.3.x 및 1.2.x 에서는, 이름에 의한 명시적인 임포트 뿐입니다. 와일드 카드에 의한 임포트문도, 자동 임포트 <code>java.lang. *</code> 도 사용할 수 없습니다. </li>
+
+<li>선언의 경우:<br /><code>void foo(File f) {}</code><br />이 참조를 사용해, 메소드, 생성자 , 필드, 클래스, 또는 인터페이스의 리턴 타입 또는 파라미터 타입에 두는지,<code>implements</code>,<code>extends</code> 또는 <code>throws</code> 문에 둡니다. </li>
+        </ul>
+
+<p>이 결과,<code>-link</code> 옵션을 사용해도, 이 제한을 위해서(때문에) 잘못해 표시되지 않는 많은 링크가 다수 발생할 가능성이 있습니다. 텍스트는 하이퍼 텍스트(hyper text) 링크를 붙일 수 있는 하지않고서 표시됩니다. 이러한 링크가 표시하는 경고로부터, 이 링크를 인식할 수 있습니다. 클래스를 올바르게 참조해, 거기에 따라 링크를 추가하기 위한 좀 더도 안전한 방법은 위에서 설명했던 대로, 해당의 클래스를 임포트 하는 것입니다. </p>
+
+<p><!-- An <code>@see</code> or <code>{@link}</code> reference with <code>-link</code> is now enough to load the referenced class and enable a link to it.   You can remove any import statements you had added as workarounds, which we had suggested you comment as follows:  <pre>
+   <code>import java.lang.SecurityManager; // workaround to force @see/@link hyperlink</code>
+</pre> <p> --> <a name="linkpackagelist" id="linkpackagelist"></a>  <b>패키지 리스트</b> - <code>-link</code> 옵션은,<code>package-list</code> 라는 이름의 파일을 요구합니다. 이 파일은, Javadoc 툴에 의해 생성되어<code>-link</code> 에 의해 지정한 URL 에 존재합니다. <code>package-list</code> 파일은, 그 자리소에 있는 문서화 된 패키지의 이름의 리스트가 들어간 단순한 텍스트 파일입니다. 전의<a href="#linkabsoluteexample">예</a>에서는,Javadoc 툴은 지정된 URL 에 있는 <code>package-list</code> 라는 이름의 파일을 찾아, 패키지명을 읽어들여, 그 URL 에 있는 그러한 패키지에의 링크를 작성했습니다. </p>
+
+<p>예를 들어, Java 플랫폼 v5. 0 API 의 패키지 리스트는 <code><a href=         "http://java.sun.com/j2se/1.5.0/docs/api/package-list">http://java.sun.com/j2se/1. 5.0/docs/api/package-list</a> </code> 에 있어, 다음과 같은 내용으로 시작되어 있습니다. </p>
+        <pre>
+  java.applet
+  java.awt
+  java.awt.color
+  java.awt.datatransfer
+  java.awt.dnd
+  java.awt.event
+  java.awt.font
+  그 외 ...
+</pre>
+
+<p><code>-link</code> 옵션을 지정하지 않고 javadoc 를 실행했을 경우,<a href="#externalreferencedclasses">외부 참조 클래스</a>에 속하는 이름을 찾아내면(자),javadoc 는 그 이름을 링크를 가지지 않는 형태로 출력합니다. 한편,<code>-link</code> 옵션을 지정했을 경우는, 지정한 <i>extdocURL</i> 에 있는 <code>package-list</code> 파일로부터 해당하는 패키지명이 검색됩니다. 패키지명이 발견되면(자),<i>extdocURL</i> 가 이름의 전에 부가됩니다. </p>
+
+<p>모든 링크가 올바르게 기능하기 위해서는, 외부 참조의 모든 문서가, 지정한 URL 에 존재하고 있지 않으면 안됩니다. Javadoc 툴은, 지정된 package-list 가 존재할지 어떨지를 조사하는 것만으로, 지정된 URL 에 목적의 페이지가 존재할지 어떨지는 체크하지 않습니다. </p>
+
+<p><a name="multiplelinks" id="multiplelinks"></a>  <b>복수의 링크</b> - 복수의 <code>-link</code> 옵션을 지정하면(자), 생성된 임의의 수의 외부 문서에 대해서 링크를 설정할 수 있습니다. Javadoc 1.2 에는, 복수의 <code>-link</code> 옵션을 지정할 수 없다고 하는 버그가 있습니다. 이것은 1.2. 2 로 수정되었습니다. </p>
+
+<p>링크하는 외부 문서 마다, 다음과 같이 다른 링크 옵션을 지정합니다. </p>
+
+<p>&nbsp;&nbsp; <code>C:&gt; <b>javadoc -link</b></code> <i>extdocURL1</i> <code><b>-link</b></code> <i>extdocURL2</i> <code>...<b>-link</b></code> <i>extdocURLn</i> <code><b>com.mypackage</b></code></p>
+
+<p><i>extdocURL1</i>,<i>extdocURL2</i>,... <i>extdocURLn</i> 는, 각각 외부 문서의 루트를 가리켜, 각 루트에는 <code>package-list</code> 라는 이름의 파일이 들어가 있습니다. </p>
+
+<p><a name="cross-links" id="cross-links"></a>  <b>크로스 링크</b> - 아직 생성되어 있지 않은 2 개(살) 이상의 문서를 크로스 링크하는 경우는, 「bootstrap」가 필요하게 됩니다. 즉, 어느 문서에 대해서도 <code>package-list</code> 가 존재하고 있지 않는 경우는, 최초의 문서에 대해서 javadoc 툴을 실행하는 시점에서, 2 번째의 문서의 <code>package-list</code> 가 아직 존재하고 있습니다. 따라서, 외부 링크를 작성하려면 , 2 번째의 문서를 생성한 후에, 최초의 문서를 다시 생성할 필요가 있습니다. </p>
+
+<p>이 경우, 최초의 문서 생성의 목적은, 그 문서의 <code>package-list</code> 를 작성하는 것입니다. 패키지명을 모두 파악하고 있는 경우는, package-list 를 수동으로 작성할 수도 있습니다. 다음에, 2 번째의 문서와 그 외부 링크를 생성합니다. 필요한 외부의 <code>package-list</code> 파일이 존재하지 않는 경우, Javadoc 툴은 경고를 표시합니다. </p>
+
+        <p><a name="linkoffline" id="linkoffline"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-linkoffline</b>&nbsp; <i>extdocURL</i>&nbsp; <i>packagelistLoc</i><br /></dt>
+
+      <dd>
+이 옵션은,<code>-link</code> 옵션을 바꾼 것입니다. 어느쪽이나, javadoc 에 의해 생성된<a href="#externalreferencedclasses">외부 참조 클래스</a>의 문서에의 링크를 작성합니다. Javadoc 툴 자체가 오프 라인이 되어 있을 때 (Web 접속을 사용해 문서에 액세스 할 수 없을 때), Web 상의 문서에 링크하려면 ,<code>-linkoffline</code> 옵션을 사용합니다.
+
+<p>엄밀하게는, 외부 문서의 <code>package-list</code> 파일에 액세스 할 수 없을 때, 또는 이 파일이 <i>extdocURL</i> 로 지정된 장소와는 다른 장소 (일반적으로,<i>packageListLoc</i> 로 지정 가능한 로컬인 장소)에 존재할 때,<code>-linkoffline</code> 를 사용합니다. 따라서,<i>extdocURL</i> 에 WWW 상에서 밖에 액세스 할 수 없는 경우는,<code>-linkoffline</code> 를 지정하는 것으로써, 문서의 생성시에 javadoc 툴이 Web 에 접속할 수 없으면 안 된다고 하는 제약이 없어집니다. </p>
+
+<p>게다가<a href="#update">문서를 갱신</a>하기 위한 「해킹」으로서의 사용도 가능합니다. 패키지세트 전체에 대해서 javadoc 를 실행한 뒤, 변경한 일부의 패키지인 만큼 대해 javadoc 를 실행합니다. 이렇게 해, 갱신된 파일을, 오리지날의 파일 세트에 삽입할 수 있도록(듯이) 합니다. 예를 나중에 가리키겠습니다. </p>
+
+<p><code>-linkoffline</code> 옵션은 인수를 2 개 취합니다. 최초의 인수는 <code>&lt;a href&gt;</code> 링크에 짜넣어지는 캐릭터 라인을 지정하는 인수, 2 번째의 인수는 <code>package-list</code> 의 검색 장소를 지정하는 인수입니다. </p>
+
+        <ul type="disc">
+<li><b><i>extdocURL</i></b> 는, 링크처로서 지정하는, javadoc 에 의해 생성된 외부 문서를 포함한 디렉토리의 절대 URL 또는 상대 URL 입니다. 상대 링크를 사용하는 경우,<code>-d</code> 를 사용해, 생성처 디렉토리로부터 링크되는 패키지의 루트의 상대 패스를 지정할 필요가 있습니다. 자세한 것은,<code>-link</code> 옵션의 <a href="#extdocURL"><i>extdocURL</i></a>  를 참조해 주세요. </li>
+
+<li><b><i>packagelistLoc</i></b> 에는, 외부 문서의 <code>package-list</code> 파일이 들어가 있는 디렉토리의 패스 또는 URL 를 지정합니다. 이것은, URL (http: 또는 file:)와 파일 패스의 어디라도 괜찮습니다.  또, 절대 패스와 상대 패스의 어디라도 지정할 수 있습니다. 상대 패스의 경우는, javadoc 가 실행되는 커런트 디렉토리로부터의 상대 패스로 해서 지정합니다. <code>package-list</code> 라고 하는 파일명은 포함하지 말아 주세요. </li>
+        </ul>
+
+<p>javadoc 의 1 회의 실행으로, 복수의 <code>-linkoffline</code> 옵션을 지정할 수 있습니다. 1.2. 2 보다 전은, 복수의 옵션을 지정할 수 없었습니다. </p>
+
+<p><a name="linkofflineabsoluteexample" id=         "linkofflineabsoluteexample"></a>  <b>외부 문서에의 절대 링크의 사용예</b> - <code>http://java.sun.com/j2se/1. 5.0/docs/api</code> 내의 <code>java.lang</code>,<code>java.io</code>, 그 외의 Java 2 플랫폼 패키지에 링크하고 싶지만, 쉘로부터 Web 에 액세스 할 수 없는 경우가 있습니다. 이 경우는, 브라우저로 <a href="http://java.sun.com/j2se/1.5.0/docs/api/package-list"><code>http://java.sun.com/j2se/1. 5.0/docs/api/package-list</code></a>  에 있는 <code>package-list</code> 파일을 열어, 로컬 디렉토리에 보존합니다. 게다가 2 번째의 인수 <i>packagelistLoc</i> 에 이 로컬 카피의 장소를 지정합니다. 이 예에서는, 패키지 리스트 파일은 커런트 디렉토리 "<code>. </code>" 에 보존되고 있습니다. 다음의 커멘드는, Java 2 플랫폼 API 에의 링크를 포함한,<code>com.mypackage</code> 패키지의 문서를 생성합니다. 생성된 문서에는, 예를 들어 클래스 트리내의 <code>Object</code> 클래스에의 링크가 포함되어 있습니다. (<code>-sourcepath</code> 등의 다른 필요한 옵션은 표시되지 않습니다. )</p>
+        <pre>
+C:&gt; <b>javadoc -linkoffline http://java.sun.com/j2se/1. 5.0/docs/api .  com.mypackage</b>
+</pre>
+
+<p><b>외부 문서에의 상대 링크의 사용예</b> - 일반적으로,<code>-linkoffline</code> 에 상대 패스를 지정할 것은 없습니다. <code>-link</code> 로 같은 것이 생기기 때문입니다. <code>-linkoffline</code> 를 사용할 때,<code>package-list</code> 에는 일반적으로 로컬의 파일을 지정합니다. 상대 링크를 사용할 때도, 링크처의 파일에는 일반적으로 로컬의 파일을 지정합니다. 따라서,<code>-linkoffline</code> 의 2 개의 인수에 다른 패스를 지정할 필요는 없습니다. 2 개의 인수가 동일한 경우는,<code>-link</code> 를 사용할 수 있습니다. <a href="#linkrelativeexample"><code>-link</code> 의 상대 링크의 예</a>를 참조해 주세요. </p>
+
+<p><b><code>package-list</code> 파일을 수동으로 작성</b> - <code>package-list</code> 파일이 아직 존재하지 않아도, 문서의 링크처의 패키지명을 알 수 있고 있는 경우는, 이 파일을 스스로 작성해,<i>packagelistLoc</i> 으로 그 패스를 지정할 수가 있습니다. <code>com.apipackage</code> 가 최초로 생성되어<code>com.spipackage</code> 의 패키지 리스트가 존재하지 않는다고 하기 전출의 예를 참조해 주세요. 이 방법은, 패키지명은 알고 있지만, 아직 공개되어 있지 않은, 새로운 외부 문서에 링크하는 문서를 생성할 필요가 있는 경우에 편리합니다. 또,<code>package-list</code> 파일이 생성되지 않는 Javadoc 1.0 이나 1.1 등으로 생성된 패키지전용으로 <code>package-list</code> 파일을 작성할 경우에도, 이 방법을 이용합니다. 같이 2 개의 회사가 미공개의 <code>package-list</code> 파일을 공유할 수도 있기 (위해)때문에, 크로스 링크를 설정한 문서를 동시에 릴리스 하는 일도 가능합니다. </p>
+
+<p><a name="multiplelinkoffline" id=         "multiplelinkoffline"></a>  <b>복수의 문서에의 링크</b> - <code>-linkoffline</code> 는, 참조처의 생성 문서 마다 1 개(살)씩 지정합니다. 다음의 예에서는, 알기 쉽게 하기 위해서 옵션 마다 행을 나누고 있습니다. </p>
+
+<p><code>C:&gt; <b>javadoc -linkoffline</b></code> <i>extdocURL1</i> <i>packagelistLoc1</i> <code>\<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>-linkoffline</b></code> <i>extdocURL2</i> <i>packagelistLoc2</i> <code>\<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</code></p>
+
+<p><a name="update" id="update"></a>  <b>문서의 갱신</b> - 전술의 <code>-linkoffline</code> 옵션의 또 하나의 용도는, 프로젝트에 대량의 패키지가 포함되어 있어, 벌써 트리 전체에 대해서 javadoc 의 실행이 완료하고 있는 경우에, 다음의 실행에서는, 소량의 변경을 재빠르게 더한 뒤, 소스 트리의 매우 일부에 대해서 만여라 javadoc 를 재실행하는 경우에 편리합니다. 이것은, 다큐멘테이션 코멘트에 대해서만 변경을 더해 선언은 변경하지 않는 경우에게만 올바르게 처리되므로, 해킹과 같은 것입니다. 원시 코드의 선언을 추가, 삭제, 또는 변경했을 경우는, 색인, 패키지 트리, 상속되는 멤버의 리스트,[사용] 페이지등의 장소에서, 링크가 망가지는 일이 있습니다. </p>
+
+<p>우선, 이번 실행으로 사용하는 새로운 생성처 디렉토리 (<code>update</code>)를 작성합니다. 원의 생성처 디렉토리의 이름이 <code>html</code> 라고 합니다. 무엇보다 단순한 예에서는,<code>html</code> 디렉토리의 부모 디렉토리에 이동 (cd)합니다. <code>-linkoffline</code> 의 최초의 인수에 커런트 디렉토리 ". " (을)를 지정해, 2 번째의 인수에 <code>html</code> 에의 상대 패스를 지정합니다. 여기서,<code>package-list</code> 가 검색됩니다. 갱신 대조의 패키지의 패키지명만을 지정해 주세요. </p>
+        <pre>
+  C:&gt; <b>javadoc -d update -linkoffline .  html com.mypackage</b>
+</pre>Javadoc 툴의 실행이 완료하면(자), 생성된 클래스 페이지를 <code>update\com\package</code> (개요, 색인은 아니다)에 카피해,<code>html\com\package</code> 내의 원의 파일을 덧쓰기합니다.
+
+        <p><a name="linksource" id="linksource"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-linksource</b>&nbsp;</dt>
+
+      <dd>
+각 원시 파일 (행 번호 첨부)의 HTML 버젼을 작성해, 표준 HTML 문서로부터 원시 파일에의 링크를 추가합니다. 링크는, 원시 파일내에 선언되고 있는 클래스, 인터페이스, 생성자 , 메소드, 필드에 대해서 작성됩니다. 디폴트 생성자 , 생성된 클래스에 대해서는 작성되지 않습니다.
+
+<p>이 옵션은,<code>-public</code>,<code>-package</code>,<code>-protected</code>,<code>-private</code> 의 각 옵션과는 관계없이, 비공개의 클래스, 필드, 비공개의 메소드의 본체를 시작으로 하는 짜넣어진 원시 파일내의 모든 비공개 구현의 상세를 공개합니다. <a href="#private"><code>-private</code></a>  옵션을 지정하지 않는 한, 비공개의 클래스나 인터페이스의 일부에는, 링크를 개입시켜 액세스 할 수 없는 것이 있습니다. </p>
+
+<p>각 링크는, 그 선언내의 식별자명 위에 작성됩니다. 예를 들어,<code>Button</code> 클래스의 소스코드헤의 링크는, 「Button」라고 하는 말 위에 작성됩니다. </p>
+        <pre>
+    public class <u>Button</u>
+    extends Component
+    implements Accessible
+</pre>Button 클래스의 <code>getLabel()</code> 메소드의 원시 코드에의 링크는, 「getLabel」라고 하는 말 위에 작성됩니다.
+        <pre>
+    public String <u>getLabel</u>()
+</pre>
+
+        <p><a name="group" id="group"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-group</b>&nbsp; <var>groupheading</var>&nbsp; <var>packagepattern</var><code>:</code><var>packagepattern</var><code>:</code>...</dt>
+
+      <dd>
+개요 페이지의 복수의 패키지를, 지정한 그룹으로 나누어, 그룹 마다 겉(표)를 작성합니다. 각 그룹은, 각각 다른 <code>-group</code> 옵션으로 지정합니다. 이러한 그룹은, 커멘드행으로 지정한 순서로 페이지에 표시됩니다. 각 그룹내에서는, 패키지가 알파벳순서에 늘어놓을 수 있습니다. 지정한 <code>-group</code> 옵션 마다,<var>packagepattern</var> 식의 리스트와 일치하는 패키지가, 표제 <var>groupheading</var> 를 가지는 1 개의 표에 정리해 표시됩니다.
+
+        <ul type="disc">
+<li><b><var>groupheading</var></b> 에는, 임의의 텍스트를 지정할 수 있어 공백을 포함할 수가 있습니다. 지정한 텍스트는, 그룹의 표견 방편이 됩니다. </li>
+
+<li><b><var>packagepattern</var></b> 에는, 임의의 패키지명, 또는 임의의 패키지명의 선두 부분과 거기에 계속되는 1 개의 asterisk (<code>*</code>)를 지정할 수 있습니다. asterisk는, 「임의의 문자에 일치한다」라고 하는 의미의 와일드 카드입니다. 와일드 카드로서 지정할 수 있는 것은, asterisk 뿐입니다. 1 개의 그룹에는, 구두점 (<code>:</code>)으로 단락지어 복수의 패턴을 포함할 수가 있습니다. </li>
+        </ul>
+
+        <blockquote>
+<b>주:패턴이나 패턴 리스트내에서 asterisk를 사용하는 경우는,<code>"java.lang*:java.util"</code> 와 같이, 패턴 리스트를 인용부호로 둘러쌀 필요가 있습니다. </b>
+        </blockquote>
+
+<p><code>-group</code> 옵션이 지정되어 있지 않은 경우는, 모든 패키지가, 「패키지」라고 하는 표제의 1 개의 그룹에 넣어집니다. 문서화 되는 패키지안에, 지정한 그룹의 어느 그룹에도 들어가지 않는 패키지가 있는 경우, 이러한 패키지는 「그 외의 패키지」라고 하는 표제를 가지는 독립한 그룹에 넣어집니다. </p>
+
+<p>예를 들어, 다음과 같이 옵션을 지정하면(자), 문서화 되는 5 개의 패키지는, 코어 패키지, 확장 기능 패키지, 및 그 외의 패키지로 나눌 수 있습니다. 「java.lang*」에서는, 마지막 닷을 지정하고 있지 않는 것에 주목해 주세요. 「java.lang. *」(와)과 같이 닷을 넣으면(자), java.lang 패키지는 제외되게 됩니다. </p>
+        <pre>
+  C:&gt; <b>javadoc -group "Core Packages" "java.lang*:java.util"
+            -group "Extension Packages" "javax. *"
+            java.lang java.lang.reflect java.util javax.servlet java.new</b>
+</pre>이 결과, 다음과 같은 그룹화를 합니다.
+
+        <blockquote>
+          <dl>
+<dt><b>코어 패키지</b></dt>
+
+<dd><code>java.lang</code></dd>
+
+<dd><code>java.lang.reflect</code></dd>
+
+<dd><code>java.util</code></dd>
+
+<dt><b>확장 기능 패키지</b></dt>
+
+<dd><code>javax.servlet</code></dd>
+
+<dt><b>그 외의 패키지</b></dt>
+
+<dd><code>java.new</code></dd>
+          </dl>
+        </blockquote>
+
+        <p><a name="nodeprecated" id="nodeprecated"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-nodeprecated</b></dt>
+
+      <dd>
+추천 되지 않는 API 를 문서에 생성하지 않게 합니다. 이 옵션을 지정하면(자), -nodeprecatedlist 옵션을 지정했을 경우와 같은 효과가 있는 것에 가세해, 문서외의 부분 전체에서도, 추천 되지 않는 API 가 생성되지 않습니다. 이 옵션은, 코드를 기술하고 있을 때, 추천 되지 않는 코드에 의해 기분을 가라앉혀진 구 없는 경우에 편리합니다.
+
+        <p><a name="nodeprecatedlist" id="nodeprecatedlist"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-nodeprecatedlist</b></dt>
+
+      <dd>
+추천 되지 않는 API 의 리스트를 포함한 파일 (deprecated-list.html), 및 네비게이션 바의 그 페이지로의 링크가 생성되지 않게 합니다. 다만, 문서외의 부분에서는, 추천 되지 않는 API 가 생성됩니다. 이 옵션은, 추천 되지 않는 API 가 원시 코드에 포함되지 않고, 네비게이션 바를 깨끗이보여 주고 싶은 경우에 편리합니다.
+
+        <p><a name="nosince" id="nosince"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-nosince</b></dt>
+
+      <dd>
+생성 문서로부터,<a href="#@since">@since</a>  태그에 대응하는 「도입된 버젼」섹션을 생략 합니다.
+
+        <p><a name="notree" id="notree"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-notree</b></dt>
+
+      <dd>
+생성되는 문서로부터 클래스 및 인터페이스의 계층 페이지를 생략 합니다. 이러한 페이지에는, 네비게이션 바의 「트리」버튼으로부터 액세스 할 수 있습니다. 디폴트에서는, 계층이 생성됩니다.
+
+        <p><a name="noindex" id="noindex"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-noindex</b></dt>
+
+      <dd>
+생성 문서로부터, 색인을 생략 합니다. 디폴트에서는, 색인이 생성됩니다.
+
+        <p><a name="nohelp" id="nohelp"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-nohelp</b></dt>
+
+      <dd>
+출력의 각 페이지의 최상부와 최하부에 있는 네비게이션 바로부터 [헬프] 링크를 생략 합니다.
+
+        <p><a name="nonavbar" id="nonavbar"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-nonavbar</b></dt>
+
+      <dd>
+생성되는 페이지의 최상부와 최하부에 표시되는 네비게이션 바, 헤더, 및 풋터를 생성하지 않게 합니다. 이 옵션은, bottom 옵션에는 영향을 주지 않습니다. <code>-nonavbar</code> 옵션은, 인쇄하기 위해(때문에)인 만큼 파일을 PostScript 또는 PDF 로 변환하는 경우 등, 내용만이 중요해, 네비게이션의 필요가 없는 경우에 편리합니다.
+
+        <p><a name="helpfile" id="helpfile"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-helpfile</b>&nbsp; <i>path\filename</i></dt>
+
+      <dd>
+상부와 하부의 네비게이션 바의 [헬프] 링크의 링크처가 되는 대체 헬프 파일 <i>path\filename</i> 의 패스를 지정합니다. 이 옵션이 지정되어 있지 않은 경우, Javadoc 툴은, 하드 코드 되고 있는 헬프 파일 <code>help-doc.html</code> 를 자동적으로 작성합니다. 이 옵션을 사용하면(자), 그 디폴트의 동작을 오버라이드(override) 할 수 있습니다. <i>filename</i> 에는 어떤 파일명이라도 지정할 수 있어<code>help-doc.html</code> 에는 한정되지 않습니다. Javadoc 툴은, 이 옵션에서의 지정에 따라, 네비게이션 바에 있는 링크에 조정을 더합니다. 예를 나타냅니다.
+        <pre>
+  C:&gt; <b>javadoc -helpfile C:\user\myhelp.html java.awt</b>
+</pre><a name="stylesheetfile" id="stylesheetfile"><!-- --></a> 
+      </dd>
+
+<dt><b>-stylesheetfile</b>&nbsp;&#xA0; <i>path\filename</i></dt>
+
+      <dd>
+대체 HTML 스타일 시트 파일의 패스를 지정합니다. 이 옵션이 지정되어 있지 않은 경우, Javadoc 툴은, 하드 코드 되고 있는 스타일 시트 파일 <code>stylesheet.css</code> 를 자동적으로 작성합니다. 이 옵션을 사용하면(자), 그 디폴트의 동작을 오버라이드(override) 할 수 있습니다. <i>filename</i> 에는 어떤 파일명이라도 지정할 수 있어<code>stylesheet.css</code> 에는 한정되지 않습니다. 예를 나타냅니다.
+        <pre>
+  C:&gt; <b>javadoc -stylesheetfile C:\user\mystylesheet.css com.mypackage</b>
+</pre><a name="serialwarn" id="serialwarn"><!-- --></a> 
+      </dd>
+
+<dt><b>-serialwarn</b></dt>
+
+      <dd>
+@serial 태그가 없는 경우는, 컴파일시에 경고를 생성합니다. 디폴트에서는, Javadoc 1.2. 2 이후의 버젼에서는, 직렬화의 경고는 생성되지 않습니다 1.2. 2 보다 전의 초기 버젼에서는, 경고가 생성됩니다. 이 옵션을 사용하면(자), 직렬화의 경고가 표시되므로, 디폴트의 직렬화 가능 필드와 <code>writeExternal</code> 메소드를 적절히 문서화하는데 도움이 됩니다.
+
+        <p><a name="charset" id="charset"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-charset</b>&nbsp; <i>name</i></dt>
+
+      <dd>
+이 문서용의 HTML 캐릭터 세트를 지정합니다. 이 이름은,<a href=         "http://www.iana.org/assignments/character-sets">IANA Registry</a>  로 주어진, 추천 되는 MIME 명이 아니면 안됩니다. 예를 나타냅니다.
+        <pre>
+  C:&gt; <b>javadoc -charset "iso-8859-1" mypackage</b>
+</pre>생성되는 모든 페이지의 선두에, 다음의 행이 삽입됩니다.  <!-- NOTE: THE NEXT LINE USES "&#061;" TO PREVENT NIGHTLY CGI SCRIPT FROM FINDING charset ISO-8859-1 -->
+        <pre>
+   &lt;META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"&gt;
+</pre>이 META 태그에 대해서는,<a href= "http://www.w3.org/TR/REC-html40/charset.html#h-5.2.2">HTML 의 표준</a>  (4197265 및 4137321)을 참조해 주세요.
+
+<p><a href="#encoding">-encoding</a>  및 <a href=         "#docencoding">-docencoding</a>  도 참조해 주세요. </p>
+
+        <p><a name="docencoding" id="docencoding"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-docencoding</b>&nbsp; <i>name</i></dt>
+
+      <dd>
+생성되는 HTML 파일의 인코딩을 지정합니다. 이 이름은,<a href=         "http://www.iana.org/assignments/character-sets">IANA Registry</a>  로 주어진, 추천 되는 MIME 명이 아니면 안됩니다. 이 옵션을 생략 하면서 <a href=         "#encoding">-encoding</a>  를 사용했을 경우, 생성되는 HTML 파일의 encode는, -encoding 에 의해 결정할 수 있습니다. 례:
+        <pre>
+  % <b>javadoc -docencoding "ISO-8859-1" mypackage</b>
+</pre><a href="#encoding">-encoding</a>  및 <a href="#charset">-charset</a>  도 참조해 주세요.
+
+        <p><a name="keywords" id="keywords"><!-- --></a> </p>
+      </dd>
+
+<dt><b>-keywords</b></dt>
+
+      <dd>
+HTML 메타키워드타그를, 클래스 마다 생성되는 파일에 추가합니다. 이러한 태그는, 메타타그를 검색하는 써치엔진이 페이지를 찾아내는 경우에 도움이 됩니다. 인터넷 전체를 검색하는 많은 써치엔진은, 페이지가 메타타그를 오용 하고 있기 (위해)때문에, 메타타그를 조사하지 않습니다. 한편, 검색을 자신의 Web 사이트로 한정하고 있는 기업에서는, 써치엔진이 메타타그를 조사하는 것에 의해 메리트를 얻을 수 있습니다.
+
+<p>메타타그에는, 클래스의 완전 수식명과 필드 및 메소드의 수식되어 있지 않은 이름이 포함됩니다. 생성자 은, 클래스명과 같기 때문에 포함되지 않습니다. 예를 들어, 클래스 String 는 다음의 키워드로 개시합니다. </p>
+        <pre>
+     &lt;META NAME="keywords" CONTENT="java.lang.String class"&gt;
+     &lt;META NAME="keywords" CONTENT="CASE_INSENSITIVE_ORDER"&gt;
+     &lt;META NAME="keywords" CONTENT="length()"&gt;
+     &lt;META NAME="keywords" CONTENT="charAt()"&gt;
+</pre>
+
+        <p><a name="tag" id="tag"></a> </p>
+      </dd>
+
+      <dt>
+<b>-tag</b>&nbsp;&nbsp;<i>tagname</i><b><code>:Xaoptcmf:"</code></b><i>taghead</i><b><code>"</code></b></dt>
+
+      <dd>
+Javadoc 툴이 다큐멘테이션 코멘트내의 인수를 1 개 취하는 단순한 커스텀<a href="#blocktags">블록 </a>태그 <code>@</code><i>tagname</i> 를 해석할 수 있도록(듯이) 합니다. 이것에 의해, Javadoc 툴은 태그명의 「<a href=         "#spellcheckingtagnames">스펠링</a>」을 실시할 수가 있으므로, 원시 코드내의 모든 커스텀 태그에 <code>-tag</code> 옵션을 짜넣는 것을 추천합니다. 이번 실행으로 출력되지 않는 태그는,<code>X</code> 를 붙여<a href=         "#spellcheckingtagnames">무효</a>로 합니다.
+
+<p>구두점 (<code><b>:</b></code>)은 항상 단락지어 문자가 됩니다. <var>tagname</var> 로 구두점을 사용하려면 ,<a href="#colon">「태그명에서의 구두점의 사용」</a>을 참조해 주세요. </p>
+
+<p><code>-tag</code> 옵션은, 태그의 표제 「taghead」를 굵은 글씨로 출력합니다. 그 다음의 행에는, 이 옵션의 인수로 지정한 텍스트가 계속됩니다. 이하의<a href=         "#tagexamples">예</a>를 참조해 주세요. 블록 태그와 같이, 이 인수의 텍스트에는 인 라인 태그를 포함할 수가 있습니다. 이 인 라인 태그도 해석됩니다. 출력은, 인수를 1 개 취하는 표준의 태그 (<code>@return</code>,<code>@author</code> 등)의 출력과 자주(잘) 닮았습니다. <em>taghead</em> 를 생략 하면(자),<em>tagname</em> 가 표제로서 표시됩니다. </p>
+
+<p><b>태그의 배치</b> - 인수의 <b><code>Xaoptcmf</code></b> 부분은, 원시 코드내의 태그를 배치할 수 있는 위치와<code>X</code> 를 사용해 이 태그를 무효로 할 수 있을지 어떨지를 특정합니다. 태그의 배치 위치를 제한하지 않는 경우는 <b><code>a</code></b> 를 지정합니다. 그 이외의 문자의 편성도 가능합니다. </p>
+
+        <div style="margin-left: 2em">
+<b><code>X</code></b> (<a href=           "#spellcheckingtagnames">태그의 무효화</a>)<br /> <b><code>a</code></b> (모든 위치)<br /> <b><code>o</code></b> (개요)<br /> <b><code>p</code></b> (패키지)<br /> <b><code>t</code></b> (형태 즉 클래스 및 인터페이스)<br /> <b><code>c</code></b> (생성자 )<br /> <b><code>m</code></b> (메소드)<br /> <b><code>f</code></b> (필드)
+        </div>
+
+<p><a name="tagexamples" id="tagexamples"></a>  <b>싱글 태그의 예</b> - 원시 코드내의 임의의 위치에서 사용으로 기분태그의 태그 옵션의 예를 나타냅니다. </p>
+        <pre>
+    -tag todo:a:"To Do:"
+</pre>@todo 를 생성자 , 메소드, 필드만으로 사용하는 경우는, 이하의 옵션을 사용합니다.
+        <pre>
+    -tag todo:cmf:"To Do:"
+</pre>위의 예의 마지막 구두점 (<code>:</code>)은, 파라미터 단락자입니다만, 표제 텍스트의 일부가 되어 있습니다 (이하의 예를 참조). 다음의 예의 같게,<code>@todo</code> 태그를 포함한 원시 코드에서는, 몇개의 태그 옵션을 사용합니다.
+        <pre>
+     @todo The documentation for this method needs work.
+</pre>이 행은, 다음과 같은 출력을 생성합니다.
+
+        <blockquote>
+          <dl>
+<dt><b>To Do:</b></dt>
+
+<dd>The documentation for this method needs work. </dd>
+          </dl>
+</blockquote><a name="colon" id="colon"></a>  <b>태그명에 구두점을 사용하는</b> - 구두점 (:)을 backslash로 이스케이프 하면(자), 구두점을 태그명에 사용할 수가 있습니다. 이 다큐멘테이션 코멘트 중(안)에서는, 다음과 같이 사용합니다.
+        <pre>
+    /**
+     * @ejb:bean
+     */
+</pre>그리고 이 태그 옵션을 사용하면(자), <!-- Windows needs one backslash while Solaris/Linux needs two -->
+        <pre>
+    -tag ejb\:bean:a:"EJB Bean:"
+</pre><a name="spellcheckingtagnames" id= "spellcheckingtagnames"></a>  <b>태그명의 스펠링 (태그의 무효화)</b> - 원시 코드내에 배치한 일부의 커스텀 태그의 출력을 억제하고 싶은 경우가 있습니다. 이 경우도, 원시 코드내에 모든 태그를 배치해, 출력을 억제하지 않는 태그를 유효하게 해, 출력을 억제하는 태그를 무효로 합니다. 태그를 무효로 하려면 ,<code>X</code> 를 지정합니다. 지정하지 않으면 그 태그는 유효하게 됩니다. 이것에 의해, Javadoc 툴은, 검출한 태그가 입력 미스등에 의한 미지의 태그일지 어떨지를 특정할 수 있습니다. 미지의 태그를 검출했을 경우, Javadoc 툴은 경고를 출력합니다.
+
+<p>벌써 배치되고 있는 값에 <code>X</code> 를 추가할 수 있습니다. 이렇게 해 두면,<code>X</code> 를 삭제하는 것만으로 태그를 유효하게 할 수가 있습니다. 예를 들어, @todo 태그의 출력을 억제하고 싶은 경우, 다음과 같이 지정합니다. </p>
+        <pre>
+    -tag todo:Xcmf:"To Do:"
+</pre>한층 더 단순한 지정 방법도 있습니다.
+        <pre>
+    -tag todo:X
+</pre>
+
+<p>구문 <code>-tag todo:X</code> 는,<code>@todo</code> 가 taglet 로 정의되고 있는 경우도 유효합니다. </p>
+
+<p><b>태그의 순서</b> - <code>-tag</code> ( 및 <a href=         "#taglet"><code>-taglet</code></a> ) 옵션의 순서에 의해, 그 출력 순서가 결정됩니다. 커스텀 태그와 표준 태그를 조합해 사용할 수도 있습니다. 표준 태그의 태그 옵션은, 순서를 결정하기 (위해)때문에만의 플레이스홀더입니다. 이것들은 표준 태그명만을 사용합니다. (표준 태그의 부표제는 변경할 수 없습니다. ) 이것에 대해서는, 이하의 예로 설명합니다. </p>
+
+<p><code>-tag</code> 가 없는 경우,<code>-taglet</code> 의 위치에 의해 그 순서가 결정됩니다. 태그가 양쪽 모두 존재하는 경우, 커멘드행의 마지막에 있는 편이 그 순서를 결정합니다. 이것은, 태그나 태그 렛이 커멘드행으로 지정된 차례로 처리되기 (위해)때문에입니다. 예를 들어,<code>-taglet</code> 와 <code>-tag</code> 의 양쪽 모두가 todo 라는 이름을 가지고 있는 경우, 커멘드행의 마지막에 있는 편이 순서를 결정합니다. </p>
+
+<p><b>태그의 완전 세트의 예</b> - 이 예에서는, 출력의 「Parameters」와「Throws」의 사이에 「To Do」를 삽입합니다. X 를 사용해, @example 가, 원시 코드내의 이번 실행에서는 출력되지 않는 태그인 것을 지정합니다. <a href="#argumentfiles">@argfile</a>  를 사용하는 경우는, 다음과 같이, 인수 파일내의 다른 행에 태그를 배치할 수 있습니다. 행의 계속을 나타내는 문자는 불필요합니다. </p>
+        <pre>
+   -tag param
+   -tag return
+   -tag todo:a:"To Do:"
+   -tag throws
+   -tag see
+   -tag example:X
+</pre>
+
+<p>javadoc 가 다큐멘테이션 코멘트를 해석할 때에 검출된 태그 가운데, 표준 태그에서도 <code>-tag</code> 나 <code>-taglet</code> 로 건네받는 태그도 아닌 것은, 미지의 태그가 보여집니다. 이 경우, 경고가 throw 됩니다. </p>
+
+<p>표준 태그는, 최초, 디폴트의 순서로 리스트내에 내부적으로 포함됩니다. <code>-tag</code> 옵션을 사용하면(자), 이 리스트에 추가되는 태그, 즉 표준 태그의 위치가 디폴트의 위치로부터 이동합니다. 즉, 표준 태그에 <code>-tag</code> 옵션을 붙이지 않으면, 이것들은 디폴트의 위치에 배치된 채로 있습니다. </p>
+
+<p><b>경합의 회피</b> - 고유의 이름 공간을 세세하게 나누려면 , 패키지에 사용되고 있는 <code>com.mycompany.todo</code> 라는 이름과 같이, 닷 (. )(을)를 단락 기호로 하는 이름을 사용합니다. Sun 는, 향후도 이름에 닷을 포함하지 않는 표준 태그를 작성합니다. 사용자가 작성한 태그는, Sun 가 제공하는 같은 이름의 태그의 동작을 오버라이드(override) 합니다. 즉, 사용자가 <code>@todo</code> 라는 이름의 태그 또는 태그 렛을 작성한 경우, Sun 가 나중에 같은 이름의 표준 태그를 작성해도, 그 태그 또는 태그 렛은 원의 동작을 보관 유지합니다. </p>
+
+<p><b>주석 vs.  Javadoc 태그</b> - 일반적으로, 추가할 필요가 있는 마크 업이, 다큐멘테이션에 영향을 주거나 다큐멘테이션을 생성하거나하기 위한의 것인 경우, 그 마크 업은 javadoc 태그에 해야 합니다. 그 이외의 경우는 주석에 해야 합니다. <a href=         "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html#annotations">「Comparing Annotations and Javadoc Tags」</a>를 참조해 주세요. </p>
+
+<p><a href="#taglet">-taglet</a>  옵션을 사용해, 보다 복잡한 블록 태그나 커스텀 인 라인 태그를 작성할 수가 있습니다. </p>
+
+        <p><a name="taglet" id="taglet"></a> </p>
+      </dd>
+
+<dt><b>-taglet</b>&nbsp;&nbsp;<i>class</i></dt>
+
+      <dd>
+그 태그의 문서의 생성에 사용하는 도크 렛을 기동하기 위한 클래스 파일을 지정합니다. 클래스의 완전 지정명을 지정해 주세요. 이 태그 렛은, 커스텀 태그의 텍스트 인수의 수도 정의합니다. 태그 렛은, 이러한 인수를 받아들여 처리해, 출력을 생성합니다. 외부 문서와 샘플 태그 렛에 대해서는, 이하를 참조해 주세요.
+
+        <ul type="disc">
+<li><a href=           "../../guides/javadoc/taglet/overview.html">「태그 렛의 개요」</a> </li>
+        </ul>
+
+<p>태그 렛은, 블록 태그 또는 인 라인 태그로 편리합니다. 태그 렛은 임의의 수의 인수를 취할 수가 있습니다. 또, 텍스트를 굵은 글씨로 하는, 조목별로 나누어 쓴 글을 작성하는, 텍스트를 파일에 써내는, 그 외의 프로세스를 개시하는 등의 커스텀 동작을 구현할 수 있습니다. </p>
+
+<p>태그 렛으로 지정할 수 있는 것은, 태그의 배치 장소와 배치 형식만입니다. 그 외의 모든 결정은, 도크 렛에 의해 행해집니다. 태그 렛을 사용해도, 포함 클래스의 리스트로부터 클래스명을 삭제하는 등의 처리는 실행할 수 없습니다. 다만, 태그의 텍스트를 파일에 출력하거나 다른 프로세스를 트리거하는 등의 부작용은 얻을 수 있습니다. </p>
+
+<p>태그 렛의 패스를 지정하려면 ,<a href=         "#tagletpath"><code>-tagletpath</code></a>  옵션을 사용합니다. 이하는, 생성되는 페이지의 「Parameter」와「Throws」의 사이에 「To Do」태그 렛을 삽입하는 예입니다. </p>
+        <pre>
+    -taglet com.sun.tools.doclets.ToDoTaglet
+    -tagletpath /home/taglets
+    -tag return
+    -tag param
+    -tag todo
+    -tag throws
+    -tag see
+</pre>
+
+<p><code>-tag</code> 옵션 대신에 <code>-taglet</code> 옵션을 사용할 수도 있습니다만, 읽기 쉬움을 고려한다면,<code>-tag</code> 옵션을 사용하는 편이 좋을 것입니다. </p>
+
+        <p><a name="tagletpath" id="tagletpath"></a> </p>
+      </dd>
+
+<dt><b>-tagletpath</b>&nbsp;&nbsp;<i>tagletpathlist</i></dt>
+
+      <dd>
+<a href=         "#taglet">taglet</a>  클래스 파일 (. class)의 검색 패스를 지정합니다. <i>tagletpathlist</i> 에는, 구두점 (<code>:</code>)으로 단락지어 복수의 패스를 포함할 수가 있습니다. Javadoc 툴은, 지정된 패스 이하의 모든 서브 디렉토리를 검색합니다.
+
+        <p><a name="docfilessubdirs" id="docfilessubdirs"></a> </p>
+      </dd>
+
+<dt><b>-docfilessubdirs</b>&nbsp;</dt>
+
+      <dd>
+<code>doc-files</code> 디렉토리의 깊은 카피를 유효하게 합니다. 즉, 카피 먼저는, 서브 디렉토리와 모든 컨텐츠가 카피됩니다. 예를 들어,<code>doc-files/example/images</code> 디렉토리와 그 중의 파일이 카피됩니다. 여기에서도,<a href=         "#excludedocfilessubdir">서브 디렉토리를 제외</a>하는 지정이 가능합니다.
+
+        <p><a name="excludedocfilessubdir" id=         "excludedocfilessubdir"></a> </p>
+      </dd>
+
+      <dt>
+<b>-excludedocfilessubdir</b>&nbsp;&nbsp;<i>name1</i><b>:</b><i>name2</i>...</dt>
+
+      <dd>
+주어진(given) 이름의 <code>doc-files</code> 서브 디렉토리를 제외합니다. 이것에 의해, SCCS 와 그 외의 원시 코드 제어 서브 디렉토리의 카피를 막습니다.
+
+        <p><a name="noqualifier" id="noqualifier"></a> </p>
+      </dd>
+
+<dt><b>-noqualifier</b>&nbsp;&nbsp;<code>all</code>&nbsp; | &nbsp;<i>packagename1</i><b>:</b><i>packagename2</i><b>:</b>...</dt>
+
+      <dd>
+출력되는 클래스명의 선두의 패키지명 (패키지 수식자)을 생략 합니다. <code>-noqualifier</code> 의 인수로서 <code>all</code> 를 지정했을 경우, 모든 패키지 수식자가 모두 생략 됩니다. 삭제하는 복수의 패키지명을 구두점으로 단락지어, 와일드 카드와 함께 지정할 수도 있습니다. <a href="#links">클래스 또는 인터페이스명이 표시되는 </a>위치로부터 패키지명이 삭제됩니다.
+
+<p>다음의 예에서는, 모든 패키지 수식자를 생략 합니다. </p>
+        <pre>
+    -noqualifier all
+</pre>다음의 예에서는, 패키지 수식자 java.lang 및 java.io 를 생략 합니다.
+        <pre>
+    -noqualifier java.lang:java.io
+</pre>다음의 예에서는, java 로 시작되는 패키지 수식자와 com.sun 라고 하는 서브 패키지 (javax 는 아니다)를 생략 합니다.
+        <pre>
+    -noqualifier java. *:com.sun. *
+</pre>패키지 수식자가 상기의 동작에 따라 표시되는 경우, 이름은 적절히 짧게 여겨집니다. 자세한 것은<a href="#shortened">「이름의 표시 방법」</a>을 참조해 주세요. 이 규칙은,<code>-noqualifier</code> 를 사용했는지 어떠했는지에 관계없이 유효합니다.
+
+        <p><a name="notimestamp" id="notimestamp"></a> </p>
+      </dd>
+
+<dt><b>-notimestamp</b>&nbsp;</dt>
+
+      <dd>
+타임 스탬프가 억제됩니다. 각 페이지 선두 근처에 있는, 생성된 HTML 내의 HTML 코멘트로 타임 스탬프가 숨겨집니다. Javadoc 를 2 개의 소스 베이스로 실행해, 그것들에 대해서 diff 를 실행할 경우에 이 옵션을 사용하면(자), 타임 스탬프에 의해 diff 가 발생하지 않게 되므로 편리합니다 (이 옵션을 사용하지 않으면 각 페이지로 diff 가 됩니다). 타임 스탬프에는 Javadoc 의 버젼 번호가 포함되어 있어 다음과 같이 됩니다.
+        <pre>
+     &lt;! -- Generated by javadoc (build 1.5. 0-internal) on Tue Jun 22 09:57:24 PDT 2004 --&gt;
+</pre>
+
+        <p><a name="nocomment" id="nocomment"></a> </p>
+      </dd>
+
+<dt><b>-nocomment</b>&nbsp;</dt>
+
+<dd><a href=       "#maindescription">주설명 </a>및 모든 태그를 포함한 코멘트 본문 전체를 억제해, 선언만을 생성합니다. 이 옵션에 의해, 원래는 다른 목적이기 때문에였던 원시 파일을 재사용해, 새로운 프로젝트의 빠른 단계에서 스켈리턴 HTML 문서를 작성할 수 있게 되었습니다. </dd>
+    </dl>
+  </blockquote><br /> <!-- ============== COMMAND LINE ARGUMENT FILE ======================= --> <a name="argumentfiles" id="argumentfiles"></a> 
+
+<h2>커멘드행 인수 파일</h2>
+
+  <blockquote>
+<code>javadoc</code> 의 커멘드행을 짧게 하거나 간결하게 하거나 하기 위해서,<code>javadoc</code> 커멘드에 대한 인수 (<code>-J</code> 옵션을 제외하다)가 들어간 1 개(살) 이상의 파일을 지정할 수가 있습니다. 이것을 이용하면, 어느  operating system상에서도, 임의의 길이의 javadoc 커멘드를 작성할 수 있습니다.
+
+<p>인수 파일에는, javadoc 의 옵션과 원시 파일명을 자유롭게 조합해 기술할 수 있습니다. 파일내의 각 인수는, 스페이스 또는 개행으로 단락짓습니다. 파일명에 공백이 포함되어 있는 경우는, 그 파일명 전체를 이중 인용부호로 둘러싸, 엔기호를 쌍꺼풀 수술을 합니다 (<code>"My&nbsp;Files\\Stuff.java"</code>). </p>
+<p>인수 파일내의 파일명은, 현재의 디렉토리로부터 본 상대 패스가 됩니다. 인수 파일의 위치로부터 본 상대 패스가 아닙니다. 인수 파일내의 파일명 리스트에서는, 와일드 카드 (*)는 사용할 수 없습니다. 예를 들어,<code>*. java</code> 와는 지정할 수 없습니다. 인수 파일내의 인수로 <tt>@</tt> 문자를 사용해, 복수의 파일을 재귀적으로 해석하는 것은 지원되고 있지 않습니다. 또,<code>-J</code> 옵션도 지원되고 있지 않습니다. 이 옵션은 기동 툴에게 건네집니다만, 기동 툴에서는 인수 파일을 지원하고 있지 않기 때문입니다. </p>
+
+<p>javadoc 를 실행할 경우에, 각 인수 파일의 패스와 파일명의 선두에 <tt>@</tt> 문자를 붙여 건네줍니다. javadoc 는,<tt>@</tt> 문자로 시작되는 인수를 찾아내면(자), 그 파일의 내용을 전개해 인수 리스트에 삽입합니다. </p>
+
+<h3>인수 파일을 1 개 지정하는 예</h3><code>argfile</code> 라는 이름의 인수 파일에 모든 Javadoc 인수를 포함해, 다음과 같이 사용할 수가 있습니다.
+    <pre>
+  C:&gt; <b>javadoc @argfile</b>
+</pre>이 인수 파일에는, 다음의 예로 나타나고 있는 2 개의 파일의 내용을 양쪽 모두 들어갈 수 있을 수가 있습니다.
+
+<h3>인수 파일을 2 개 지정하는 예</h3>Javadoc 옵션용으로 1 개(살), 원시 파일명용으로 1 개(살)과 같이, 2 개의 인수 파일을 작성해, 다음과 같이 해 사용할 수가 있습니다. 덧붙여 이후에의 리스트에서는, 행의 계속 문자를 사용하고 있습니다.
+
+<p>이하의 내용을 포함한 <code>options</code> 라는 이름의 파일을 작성합니다. </p>
+    <pre>
+     -d docs-filelist
+     -use
+     -splitindex
+     -windowtitle 'Java 2 Platform v1. 3 API Specification'
+     -doctitle 'Java&lt;sup&gt;&lt;font size="-2"&gt;TM&lt;/font&gt;&lt;/sup&gt; 2 Platform 5.0 API Specification'
+     -header '&lt;b&gt;Java 2 Platform &lt;/b&gt;&lt;br&gt;&lt;font size="-1"&gt;5. 0&lt;/font&gt;'
+     -bottom 'Copyright 1993-2000 Sun Microsystems, Inc.  All Rights Reserved. '
+     -group "Core Packages" "java. *"
+     -overview \java\pubs\ws\1. 5\src\share\classes\overview-core.html
+     -sourcepath \java\pubs\ws\1. 5\src\share\classes
+</pre>
+
+<p>이하의 내용을 포함한 <code>packages</code> 라는 이름의 파일을 작성합니다. </p>
+    <pre>
+     com.mypackage1
+     com.mypackage2
+     com.mypackage3
+</pre>그 후, 다음의 커멘드를 사용해 javadoc 를 실행합니다.
+    <pre>
+  C:&gt; <b>javadoc @options @packages</b>
+</pre>
+
+<h3>패스 첨부의 인수 파일의 예</h3>인수 파일에는, 패스를 지정할 수 있습니다. 다만, 그 파일내로 지정된 파일명은, 현재의 작업 디렉토리로부터 본 상대 패스가 됩니다. 즉, 아래의 예의 경우는,<code>path1</code> 나 <code>path2</code> 로부터 본 상대 패스가 아닙니다.
+    <pre>
+  C:&gt; <b>javadoc @path1\options @path2\packages</b>
+</pre>
+
+<h3>옵션의 인수의 예</h3>
+
+<p>다음에, Javadoc 옵션에 대한 인수만을 인수 파일에 포함하는 예를 나타냅니다. 여기에서는,<code>-bottom</code> 를 예에 채택합니다. 그 옵션에는, 꽤 긴 인수를 지정하는 것이 있기 때문입니다. 우선, 이 옵션의 텍스트 인수가 되는 다음과 같은 내용을 포함한,<code>bottom</code> 라는 이름의 파일을 작성합니다. </p>
+    <pre>
+'&lt;font size="-1"&gt;&lt;a href="http://java.sun.com/cgi-bin/bugreport.cgi"&gt;Submit a
+bug or feature&lt;/a&gt;&lt;br&gt;&lt;br&gt;Java is a trademark or registered trademark of
+Sun Microsystems, Inc.  in the US and other countries. &lt;br&gt;Copyright 1993-2000 Sun
+Microsystems, Inc.  901 San Antonio Road, &lt;br&gt;Palo Alto, California, 94303, U.S.A.
+All Rights Reserved. &lt;/font&gt;'
+</pre>그 후, 다음과 같이 해 Javadoc 툴을 실행합니다.
+    <pre>
+  C:&gt; <b>javadoc -bottom @bottom @packages</b>
+</pre>또, 인수 파일의 선두에 <code>-bottom</code> 옵션을 짜넣어 두면, 다음과 같이 해 실행할 수 있습니다.
+    <pre>
+  C:&gt; <b>javadoc @bottom @packages</b>
+</pre>
+  </blockquote>
+  <hr />
+  <!-- ===================== RUNNING ======================= --> <a name="running" id="running"></a> 
+
+<h1 align="center">실행</h1>
+  <hr />
+  <br /> <!-- ===================== RUNNING JAVADOC ========================= --> <a name="runningjavadoc" id="runningjavadoc"></a> 
+
+<h2>Javadoc 의 실행</h2>
+
+  <blockquote>
+<a name="versionnumbers" id="versionnumbers"></a>  <b>버젼 번호</b> - javadoc 의 버젼 번호를 판별하려면 ,<a href="#J"><b>javadoc -J-version</b></a>  를 사용합니다. 출력 스트림에는 표준 도크 렛의 버젼 번호가 포함됩니다. <code>-quiet</code> 로 무효로 할 수 있습니다.
+
+<p><b>공개 프로그램 인터페이스</b> - Java 언어로 기술된 프로그램으로부터 Javadoc 툴을 기동할 때 사용합니다. 이 인터페이스는 <code>com.sun.tools.javadoc.Main</code> 에 있습니다 (javadoc 는 재입가능). 자세한 것은,<a href=     "../../guides/javadoc/standard-doclet.html#runningprogrammatically">「표준 도크 렛」</a>을 참조해 주세요. </p>
+
+<p><b>도크 렛의 실행</b> - 아래와 같은 설명은, 표준 HTML 도크 렛을 호출하기 위한 것입니다. 커스텀 도크 렛을 호출하려면 ,<a href="#doclet">-doclet</a>  및 <a href=     "#docletpath">-docletpath</a>  옵션을 사용합니다. 특정의 도크 렛을 실행한 완전한 예에 대해서는,<a href=     "http://java.sun.com/j2se/javadoc/mifdoclet/docs/mifdoclet.html#runningmifdoclet">「Running the MIF Doclet」</a>를 참조해 주세요. </p>
+  </blockquote><br /> <!-- ===================== SIMPLE EXAMPLES ========================= --> <a name="examples" id="examples"></a> 
+
+<h2>간단한 예</h2>
+
+  <blockquote>
+javadoc 는, 패키지 전체에 대해서 실행하는 일도, 개개의 원시 파일에 대해서 실행할 수도 있습니다. 각 패키지명은, 각각의 패키지명에 대응하는 디렉토리명을 가집니다. 다음의 예에서는, 원시 파일은 <code>C:\home\src\java\awt\*.java</code> 에 있습니다. 생성처 디렉토리는 <code>C:\home\html</code> 입니다.  <a name=     "documentingpackages" id="documentingpackages"></a> 
+
+<h3>1 개(살) 이상의 패키지의 문서화</h3>패키지를 문서화하려면 , 그 패키지의 원시 파일 (<code>*. java</code>)가, 패키지와 같은 이름을 가지는 디렉토리내에 존재하고 있지 않으면 안됩니다. 패키지명이 복수의 식별자로 구성되어 있는 (<code>java.awt.color</code> 와 같이, 각 식별자는 닷으로 단락지어지고 있다) 경우는, 후속의 각 식별자가 하위의 서브 디렉토리에 대응하고 있지 않으면 안됩니다 (<code>java/awt/color</code> 등). 1 개의 패키지를 위한 복수의 원시 파일을, 다른 장소에 있는 2 개의 디렉토리 트리로 나누어 포함하는 일도 가능합니다 (<code>src1/java/awt/color</code> 와 <code>src2/java/awt/color</code> 등). 다만, 그 경우는,<code>-sourcepath</code> 에 의해, 그 양쪽 모두의 장소를 지정하지 않으면 안됩니다.
+
+<p>javadoc 를 실행하려면 ,<code>cd</code> 커멘드를 사용해 디렉토리를 변경하는지, 또는 <code>-sourcepath</code> 옵션을 사용합니다. 이하의 예에서는, 양쪽 모두의 방법에 대해 설명합니다. </p>
+
+    <ul>
+      <li>
+<b>케이스 1 &#x2013; 1 개(살) 이상의 패키지로부터의 기동을 재귀적으로 실행</b> - 이 예에서는 javadoc 가 임의의 디렉토리로부터 실행할 수 있도록(듯이), -sourcepath 를 사용해, 재귀적 처리를 위해서(때문에) -subpackages (1.4 의 신옵션)를 사용합니다. 이것은,<code>java</code> 의 서브 패키지 (<code>java.net</code> 및 <code>java.lang</code> 를 루트로 하는 패키지를 제외하다)를 처리합니다. 다만,<code>java.lang</code> 의 서브 패키지인 <code>java.lang.ref</code> 는 제외됩니다.
+        <pre>
+  % <b>javadoc <a href="#d">-d</a>  \home\html <a href=
+"#sourcepath">-sourcepath</a>  \home\src <a href=
+"#subpackages">-subpackages</a>  java <a href=
+"#exclude">-exclude</a>  java.net:java.lang</b>
+</pre>
+
+<p>그 외의 패키지 트리를 순회하려면 ,<code>java:javax:org.xml.sax</code> 와 같이,<code>-subpackages</code> 인수에 그 이름을 추가합니다. </p>
+      </li>
+
+      <li>
+<b>케이스 2 - 루트 소스 디렉토리로 옮기고 나서 명시적인 패키지에 대해서 실행</b> - 완전 지정의 패키지명의 부모 디렉토리로 옮깁니다. 다음에, 문서화하는 1 개(살) 이상의 패키지명을 지정해 javadoc 를 실행합니다.
+        <pre>
+  C:&gt; <b>cd C:\home\src\</b>
+  C:&gt; <b>javadoc -d C:\home\html java.awt java.awt.event</b>
+</pre>
+      </li>
+
+      <li>
+<b>케이스 3 - 임의의 디렉토리로부터 실행. 원시 파일은 1 개의 디렉토리 트리내에 있는</b> - 이 케이스에서는, 현재의 디렉토리가 어디서 있어도 괜찮습니다. 최상정도 패키지의 부모 디렉토리를 <code>-sourcepath</code> 로 지정해, 문서화하는 1 개(살) 이상의 패키지명을 지정해 javadoc 를 실행합니다.
+        <pre>
+  C:&gt; <b>javadoc -d C:\home\html -sourcepath C:\home\src java.awt java.awt.event</b>
+</pre>
+      </li>
+
+      <li>
+<b>케이스 4 - 임의의 디렉토리로부터 실행. 원시 파일은 복수의 디렉토리 트리내에 있는</b> - 이것은 케이스 3 과 닮아 있습니다만, 패키지가 복수의 디렉토리 트리에 존재합니다. 각각의 트리의 루트에의 패스를 <code>-sourcepath</code> 로 지정해 (구두점으로 단락짓는다), 문서화하는 1 개(살) 이상의 패키지명을 지정해 javadoc 를 실행합니다. 1 개의 패키지의 모든 원시 파일이, 1 개의 루트 디렉토리아래에 존재해야 하는, 이라고 할 것은 없습니다. 소스 패스로 해서 지정된 장소의 어디선가 발견되면 충분합니다.
+        <pre>
+  C:&gt; <b>javadoc -d C:\home\html -sourcepath C:\home\src1;C:\home\src2 java.awt java.awt.event</b>
+</pre>
+      </li>
+</ul>Result:상기의 어느 케이스에서도, 패키지 <code>java.awt</code> 와 <code>java.awt.event</code> 의 public 및 protected 의 클래스와 인터페이스에 대해, HTML 형식의 문서가 생성되어 지정된 생성처 디렉토리 (<code>\home\html</code>)에 HTML 파일이 보존됩니다. 2 개(살) 이상의 패키지가 생성되고 있으므로, 문서는, 패키지의 리스트, 클래스의 리스트, 및 메인의 클래스 페이지라고 하는 3 개의 프레임을 가지게 됩니다.  <a name="documentingclasses" id=     "documentingclasses"></a> 
+
+<h3>1 개(살) 이상의 클래스의 문서화</h3>또, 1 개(살) 이상의 원시 파일 (<code>. java</code>)를 건네주어, Javadoc 툴을 실행할 수도 있습니다. javadoc 는, 다음의 2 개의 어느 쪽인가의 방법으로 실행할 수 있습니다. 1 개(살)은,<code>cd</code> 커멘드로 디렉토리를 변경하는 방법, 이제(벌써) 1 개(살)은 <code>. java</code> 파일에의 패스를 완전 지정하는 방법입니다. 상대 패스는, 현재의 디렉토리를 기점으로 합니다. 원시 파일명을 건네줄 때는,<code>-sourcepath</code> 옵션은 무시됩니다. asterisk (*)와 같은 커멘드행 와일드 카드를 사용하면(자), 클래스의 그룹을 지정할 수 있습니다.
+
+    <ul>
+      <li>
+<b>케이스 1 - 소스 디렉토리로 옮긴다</b> - <code>. java</code> 파일이 있는 디렉토리로 옮깁니다. 다음에, 문서화하는 1 개(살) 이상의 원시 파일의 이름을 지정해 javadoc 를 실행합니다.
+        <pre>
+  C:&gt; <b>cd C:\home\src\java\awt</b>
+  C:&gt; <b>javadoc -d C:\home\html Button.java Canvas.java Graphics*.java</b>
+</pre>이 예에서는, 클래스 <code>Button</code> 와 <code>Canvas</code>, 및 이름이 <code>Graphics</code> 로 시작되는 클래스에 도착해, HTML 형식의 문서가 생성됩니다. 패키지명은 아니고 원시 파일이 javadoc 에 인수로서 건네받고 있으므로, 문서는, 클래스의 리스트와 메인 페이지라고 하는 2 개의 프레임을 가지게 됩니다.
+      </li>
+
+      <li>
+<b>케이스 2 - 패키지의 루트 디렉토리로 옮기는</b> - 이것은, 같은 루트내에 있는 복수의 서브 패키지의 개개의 원시 파일을 문서화하는 경우에 편리합니다. 패키지의 루트 디렉토리로 옮겨, 각 원시 파일을, 루트로부터의 패스와 함께 지정합니다.
+        <pre>
+  C:&gt; <b>cd C:\home\src</b>
+  C:&gt; <b>javadoc -d \home\html java\awt\Button.java java\applet\Applet.java</b>
+</pre>이 예에서는,<code>Button</code> 클래스 및 <code>Applet</code> 클래스에 도착해, HTML 형식의 문서가 생성됩니다.
+      </li>
+
+      <li>
+<b>케이스 3 - 임의의 디렉토리로부터</b> - 이 케이스에서는, 현재의 디렉토리가 어디서 있어도 괜찮습니다. 문서화한다 <code>. java</code> 파일에의 절대 패스 (또는, 현재의 디렉토리로부터의 상대 패스)를 지정해 javadoc 를 실행합니다.
+        <pre>
+  C:&gt; <b>javadoc -d C:\home\html C:\home\src\java\awt\Button.java C:\home\src\java\awt\Graphics*.java</b>
+</pre>이 예에서는, 클래스 <code>Button</code> 와 이름이 <code>Graphics</code> 로 시작되는 클래스에 도착해, HTML 형식의 문서가 생성됩니다.
+      </li>
+    </ul><a name="documentingboth" id="documentingboth"></a> 
+
+<h3>패키지와 클래스의 문서화</h3>패키지 전체와 개개의 클래스를 동시에 지정해 문서화할 수도 있습니다. 다음에 전술의 2 개의 예를 조합한 예를 나타냅니다. <code>sourcepath</code> 는, 패키지에의 패스에 대해서는 사용할 수 있습니다만, 개개의 클래스의 패스에 대해서는 사용할 수 없습니다.
+    <pre>
+  C:&gt; <b>javadoc -d C:\home\html -sourcepath C:\home\src java.awt C:\home\src\java\applet\Applet.java</b>
+</pre>이 예에서는, 패키지 <code>java.awt</code> 와 클래스 <code>Applet</code> 에 대해, HTML 형식의 문서가 생성됩니다. Javadoc 툴은,<code>Applet</code> 의 패키지명을,<code>Applet.java</code> 원시 파일내의 패키지 선언 (그 선언이 있는 경우)으로부터 판별합니다.
+  </blockquote><br /> <!-- ================= REAL-WORLD EXAMPLE ========================= --> <a name="realworldexample" id="realworldexample"></a> 
+
+<h2>사용예</h2>
+
+  <blockquote>
+Javadoc 툴에는 많은 편리한 옵션이 있어, 그 중에는 다른 옵션보다 빈번하게 사용되는 것이 있습니다. 여기서 소개하는 것은, Java 플랫폼 API 에 대해서 Javadoc 툴을 실행할 경우에 사용하는 실제의 커멘드입니다. Java 2 Platform, Standard Edition, v1. 2 에 존재하는, 약 1500 개의 public 및 protected 클래스에 도착해 문서를 생성하기 위해서, 180M 바이트의 메모리를 사용했습니다.
+
+<p>같은 예를 2 회 게재합니다. 최초의 예는 커멘드행으로부터 실행해서 , 2 번째의 예는 Makefile 로부터 실행하는 것입니다. 옵션의 인수에 절대 패스를 사용하고 있기 (위해)때문에, 임의의 디렉토리로부터 이 <code>javadoc</code> 커멘드를 실행할 수 있습니다.  <a name="commandlineexample" id="commandlineexample"></a> </p>
+
+<h3>커멘드행의 례</h3>차의 커멘드행의 예는 900 문자를 넘고 있기 (위해)때문에, DOS 등의 쉘에는 너무 큽니다. 이 제한을 회피하려면 ,<a href="#argumentfiles">커멘드행 인수 파일</a>을 사용합니다. 또는, 셸 스크립트를 기술합니다.
+    <pre>
+C:&gt; javadoc -sourcepath \java\jdk\src\share\classes            ^
+    -overview \java\jdk\src\share\classes\overview.html      ^
+    -d \java\jdk\build\api                                   ^
+    -use                                                     ^
+    -splitIndex                                              ^
+    -windowtitle 'Java 2 Platform 5.0 API Specification'    ^
+    -doctitle 'Java&lt;sup&gt;&lt;font size="-2"&gt;TM&lt;/font&gt;&lt;/sup&gt; 2 Platform 5.0 API Specification' ^
+    -header '&lt;b&gt;Java 2 Platform &lt;/b&gt;&lt;br&gt;&lt;font size="-1"&gt;5. 0&lt;/font&gt;' ^
+    -bottom '&lt;font size="-1"&gt;&lt;a href="http://java.sun.com/cgi-bin/bugreport.cgi"&gt;Submit
+a bug or feature&lt;/a&gt;&lt;br&gt;&lt;br&gt;Java is a trademark or registered trademark of Sun Microsystems,
+Inc.  in the US and other countries. &lt;br&gt;Copyright 1993-1999 Sun Microsystems, Inc.
+901 San Antonio Road, &lt;br&gt;Palo Alto, California, 94303, U.S.A.  All Rights Reserved. &lt;/font&gt;' ^
+    -group "Core Packages" "java. *:com.sun.java. *:org.omg. *" ^
+    -group "Extension Packages" "javax. *"                    ^
+    -J-Xmx180m                                               ^
+    @packages
+</pre>상기의 커멘드로,<code>packages</code> 는, 처리 대상의 패키지명 (<code>java.applet java.lang</code> 등)이 들어가 있는 파일의 이름입니다. 각 옵션의, 단일 인용부호로 둘러싸인 인수의 안쪽에는, 개행 문자를 삽입할 수 없습니다. 예를 들어, 이 예를 카피＆페이스트 하는 경우는,<code>-bottom</code> 옵션으로부터 개행 문자를 삭제해 주세요. 게다가 이후에의 「주」도 참조해 주세요.  <a name="makefileexample" id="makefileexample"></a> 
+
+<h3>Makefile 의 예</h3>여기에서는, GNU Makefile 의 예를 나타냅니다. Windows 의 Makefile 의 예에 대해서는,<a href="http://java.sun.com/products/jdk/javadoc/faq.html#makefiles">Windows 의 Makefile 의 작성 방법</a>을 참조해 주세요.
+    <pre>
+javadoc -<a href=
+"#sourcepath">sourcepath</a>  $(SRCDIR)              ^   /* Sets path for source files     */
+        -<a href=
+"#overview">overview</a>  $(SRCDIR) \overview.html  ^   /* Sets file for overview text    */
+        -<a href=
+"#d">d</a>  \java\jdk\build\api             ^   /* Sets destination directory     */
+        -<a href=
+"#use">use</a>                                ^   /* Adds "Use" files               */
+        -<a href=
+"#splitindex">splitIndex</a>                         ^   /* Splits index A-Z               */
+        -<a href=
+"#windowtitle">windowtitle</a>  $(WINDOWTITLE)        ^   /* Adds a window title            */
+        -<a href=
+"#doctitle">doctitle</a>  $(DOCTITLE)              ^   /* Adds a doc title               */
+        -<a href=
+"#header">header</a>  $(HEADER)                  ^   /* Adds running header text       */
+        -<a href=
+"#bottom">bottom</a>  $(BOTTOM)                  ^   /* Adds text at bottom            */
+        -<a href=
+"#group">group</a>  $(GROUPCORE)                ^   /* 1st subhead on overview page   */
+        -<a href=
+"#group">group</a>  $(GROUPEXT)                 ^   /* 2nd subhead on overview page   */
+        -<a href=
+"#J">J</a> -Xmx180m                         ^   /* Sets memory to 180MB           */
+        java.lang java.lang.reflect        ^   /* Sets packages to document      */
+        java.util java.io java.net         ^
+        java.applet
+
+WINDOWTITLE = 'Java 2 Platform v1. 2 API Specification'
+DOCTITLE = 'Java&lt;sup&gt;&lt;font size="-2"&gt;TM&lt;/font&gt;&lt;/sup&gt; 2 Platform v1. 2 API Specification'
+HEADER = '&lt;b&gt;Java 2 Platform &lt;/b&gt;&lt;br&gt;&lt;font size="-1"&gt;v1. 2&lt;/font&gt;'
+BOTTOM = '&lt;font size="-1"&gt;&lt;a href="http://java.sun.com/cgi-bin/bugreport.cgi"&gt;Submit
+    a bug or feature&lt;/a&gt;&lt;br&gt;&lt;br&gt;Java is a trademark or registered trademark
+    of Sun Microsystems, Inc.  in the US and other countries. &lt;br&gt;Copyright 1993-1999
+    Sun Microsystems, Inc.  901 San Antonio Road, &lt;br&gt;Palo Alto, California, 94303, U.S.A.
+    All Rights Reserved. &lt;/font&gt;'
+GROUPCORE = '"Core Packages" "java. *:com.sun.java. *:org.omg. *"'
+GROUPEXT  = '"Extension Packages" "javax. *"'
+SRCDIR = '/java/jdk/1. 2/src/share/classes'
+</pre>
+
+<p>Makefile 의 인수는, 단일 인용부호로 둘러쌉니다. </p>
+
+<p><b>주</b></p>
+
+    <ul>
+<li><code>-windowtitle</code> 옵션을 생략 하면(자), Javadoc 툴에 의해, 문서 타이틀이 윈도우 타이틀에 카피됩니다. <code>-windowtitle</code> 의 텍스트는, 기본적으로 <code>-doctitle</code> 와 같습니다. 다만, HTML 태그는 사용하지 않습니다. HTML 태그는, 윈도우 타이틀에 그대로의 텍스트로서 표시되어 버립니다. </li>
+
+<li>이 예의 같게 <code>-footer</code> 옵션을 생략 하면(자), Javadoc 툴에 의해, 헤더 텍스트가 풋터에 카피됩니다. </li>
+
+<li>이 예에서는 필요 없습니다만,-<a href=       "#classpath"><code>classpath</code></a>  및 -<a href=       "#link"><code>link</code></a>  도 중요한 옵션입니다. </li>
+    </ul>
+  </blockquote><br /> <!-- ==================== TROUBLESHOOTING =========================== --> <a name="troubleshooting" id="troubleshooting"></a> 
+
+<h2>트러블 슈팅</h2>
+
+  <blockquote>
+    <a name="generaltroubleshooting" id=     "generaltroubleshooting"></a> 
+
+<h3>일반적인 트러블 슈팅</h3>
+
+    <ul>
+<li><b>Javadoc FAQ</b> - 일반적인 버그 및 트러블 슈팅의 힌트는,<a href=       "http://java.sun.com/j2se/javadoc/faq/index.html#B">「Javadoc FAQ」</a>  로 참조할 수 있습니다. </li>
+
+<li><b>버그 및 제한 사항</b> - 버그의 일부는,<a href=       "http://java.sun.com/j2se/1.5.0/fixedbugs/index.html">「Important Bug Fixes and Changes」</a>  에서도 참조할 수 있습니다. </li>
+
+<li><b>버젼 번호</b> - <a href=       "#versionnumbers">「버젼 번호」</a>를 참조해 주세요. </li>
+
+<li><b>유효한 클래스만을 문서화</b> - 패키지를 문서화할 때, Javadoc 는, 유효한 클래스명으로 구성되어 있는 파일만을 읽어들입니다. 예를 들어, 파일명에 하이픈 「-」을 포함하는 것으로, javadoc 에 의한 파일의 해석을 막을 수가 있습니다. </li>
+    </ul><a name="errorsandwarnings" id="errorsandwarnings"></a> 
+
+<h3>에러와 경고</h3>에러 및 경고 메세지에는, 파일명과 선언행 (다큐멘테이션 코멘트내의 특정의 행은 아니다)의 행 번호가 포함됩니다.
+
+    <ul>
+<li><code>"error:cannot read:Class1.java"</code> Javadoc 툴은 커런트 디렉토리에 Class1.java 클래스를 로드하려 하고 있습니다. 절대 패스 또는 상대 패스와 함께 표시되는 클래스명은, 이 예의 경우 <code>. /Class1.java</code> 와 같습니다. </li>
+    </ul>
+  </blockquote><br /> <!-- ==================== ENVIRONMENT =========================== --> <a name="environment" id="environment"></a> 
+
+<h2>환경</h2>
+
+  <blockquote>
+    <dl>
+      <dd><a name="classpathenvironment" id=       "classpathenvironment"></a> </dd>
+
+<dt><code><b>CLASSPATH</b></code></dt>
+
+<dd>Javadoc 가 사용자 클래스의 파일을 찾을 때 사용하는 패스를 지정하는 환경 변수입니다. 이 환경 변수는,<code>-classpath</code> 옵션에 의해 오버라이드(override) 됩니다. 복수의 디렉토리는 세미콜론으로 단락짓습니다. 예를 들어, 다음과 같습니다. </dd>
+
+<dd>. ;C:\classes;C:\home\java\classes</dd>
+    </dl>
+  </blockquote><br /> <!-- ==================== SEE ALSO =========================== --> <a name="seealso" id="seealso"></a> 
+
+<h2>관련 항목</h2>
+
+  <blockquote>
+    <ul>
+<li><a href="javac.html">javac</a> </li>
+
+<li><a href="java.html">java</a> </li>
+
+<li><a href="jdb.html">jdb</a> </li>
+
+<li><a href="javah.html">javah</a> </li>
+
+<li><a href="javap.html">javap</a> </li>
+
+<li><a href=       "http://java.sun.com/j2se/javadoc/index.jsp">Javadoc 의 홈 페이지</a> </li>
+
+<li><a href=       "http://java.sun.com/j2se/javadoc/writingdoccomments/index.html">How to Write Doc Comments for Javadoc</a> </li>
+
+<li><a href="classpath.html">클래스 패스의 설정</a> </li>
+
+<li><a href="../findingclasses.html#srcfiles">javac 와 javadoc 가 클래스를 검색하는 방법</a>  (tools.jar)</li>
+    </ul>
+  </blockquote>
+  <hr size="3" noshade="noshade" />
+
+<p><font size="-1"><font size="-1">Javadoc<sup><font size=   "-2">TM</font></sup> 는, Sun Microsystems, Inc 의 상표입니다 (<code>javadoc</code> 커멘드 자체에는 상표 심볼은 불요). </font></font></p>
+
+  <table border="0" width="100%" summary="layout">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2002-2006 <a href="http://www.sun.com">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+<font size="-1"><a HREF="http://developers.sun.com/contact/feedback.jsp ?referer=http://java.sun.com/javase/6/docs/toodocs/windows/javadoc.html &category=j2se &mailsubject=Javadoc">피드백</a> </font>
+
+      </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"       alt="Sun" border="0" width="64" height="30" /><br /> <font size="+1"><i> Java Software </i></font></td>
+    </tr>
+  </table><!-- Allows the contents to jump the last item --> <font size="-1"><br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /></font>
+</body>
+</html>

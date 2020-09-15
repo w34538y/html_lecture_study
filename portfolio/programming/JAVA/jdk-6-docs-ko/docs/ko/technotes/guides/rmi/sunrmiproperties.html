@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML EXPERIMENTAL 970324//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>sun.rmi 프로퍼티 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#ffffff"><center><h1><b><code>sun.rmi</code> 프로퍼티</b></h1></center>
+<p><br>
+</p><hr>
+<p>
+경고:여기서 설명하는 프로퍼티은, 지원 대상외이며, 수시 변경될 가능성이 있습니다. 또, Sun Microsystems 가 제공하는 Java<SUP><FONT SIZE="-2">TM</FONT></SUP> Remote Method Invocation (Java RMI)의 특정의 구현 밖에 존재하지 않습니다. 이러한 프로퍼티은 Java RMI public API 의 일부에서는 없습니다. Java RMI public API 에 포함되는 프로퍼티의 일람은,<a href="javarmiproperties.html">「<code>java.rmi</code> 프로퍼티」</a>의 페이지를 참조해 주세요.
+
+</p><p>
+</p><hr>
+<p>
+<b>주</b>:명언되지 않는 이상 이러한 프로퍼티의 출력은 모두 <code>System.err</code> 에 송신됩니다.  
+</p>
+<p>이름의 말미에 「<code>. logLevel</code>」가 붙는 각 프로퍼티을 보관 유지할 수 있는 값에는, 「<code>SILENT</code>」, 「<code>BRIEF</code>」, 및 「<code>VERBOSE</code>」가 있습니다. 이러한 값은, 대문자와 소문자가 구별되지 않고, 또 최초의 <i>n</i> 문자에 생략 할 수 있습니다. <i>n</i> 는 1 이상의 값입니다. 값이 지정되지 않는 경우, 이러한 프로퍼티은 디폴트 값인 「<code>SILENT</code>」를 보관 유지합니다. 「<code>BRIEF</code>」치로 설정하면(자), 대응하는<a href="logging.html"><code>Logger</code></a> 가 레벨 <code>Level.FINE</code> 로 설정되어 「<code>VERBOSE</code>」치로 설정하면(자), 대응하는 <code>Logger</code> 가 레벨 <code>Level.FINER</code> 로 설정됩니다. 로그 기록용의 이러한 <code>sun.rmi. *</code> 시스템 프로퍼티을 사용하는 것보다도, 로그 구성 파일을 사용하는 것을 추천합니다.
+</p><p>
+로그 메세지는,<code>System.err</code> 에 송신됩니다. 예를 들어, 출력을 "transport" 로그에 송신하면(자) 프로퍼티으로 지정되었을 경우,<code>java.rmi.server.LogStream.log("transport")</code> 에 의해 반환되는 <code>LogStream</code> 에 로그 메세지가 송신되는 것을 의미합니다. 송신지가 그 밖에 설정되어 있지 않은 한,<code>LogStream</code> 는 메세지를 <code>System.err</code> 에 송신합니다.
+</p><p>
+</p><hr>
+<h2><code>rmid</code> 로 설정 가능한 프로퍼티</h2>
+<blockquote>
+<dl><dt><b><code>sun.rmi.activation.execPolicy</code></b> (1.3 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은, 기동 그룹용으로 가상 머신을 기동하기 위해서 <code>ActivationGroupDesc</code> 내의 정보를 사용할 수 있을지 어떨지를 판단할 때,<code>rmid</code> 가 사용하는 정책를 결정합니다. 이 프로퍼티으로 지정할 수 있는 값은,<code>default</code>,<code>none</code>, 또는 <code>ActivationGroupDesc</code> 정보를 검증하기 위해서 불려 가는 <code>checkExecCommand</code> 메소드를 구현하는 클래스의, 완전 수식명입니다. 자세한 것은,<code>rmid</code> 의 툴 문서 [<a href="../../tools/solaris/rmid.html">Solaris 및 Linux</a>  용,<a href="../../tools/windows/rmid.html">Windows</a>  용] 을 참조해 주세요.
+	</dd>
+	<p>
+</p><dt><b><code>sun.rmi.activation.execTimeout</code></b> (1.2 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은, 생성된 기동 그룹이 기동할 때까지의 기동 시스템의 대기 시간을 (밀리 세컨드로) 나타냅니다. 이 프로퍼티을 설정하는 것으로써, 기동 그룹이 기동할 때까지 <code>rmid</code> 가 대기하는 최대 시간을 짧게 하거나 길게 하거나 할 수 있습니다. 디폴트 값는 30000 밀리 세컨드 (30 초)입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.activation.groupThrottle</code></b> (5.0 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은,<code>rmid</code> 에 의해 「생성되었지만 액티브하지 않다」상태가 허가되는 기동 그룹 VM 의 최대수를 나타냅니다. 보다 많은 VM 를 기동할 필요가 있는 경우, VM 는, 생성중의 1 개가 성공하는지, 타임 아웃이 될 때까지 대기합니다. 이 프로퍼티은, 액티브한 VM 의 최대수를 제한하지 않습니다. 이것은,  operating system의 제한으로까지 달하지 않게, 활동의 급격한 증가를 회피하는 것을 목적으로 하고 있습니다. 이 프로퍼티의 값을 낮게 설정하면(자) <code>rmid</code> 의 기동 시간이 길어져, 높게 설정하면(자) 기동 시간이 짧아집니다. 다만, 설정치가 너무 높으면(자), system resource가 부족하기 위해서,<code>rmid</code> 가 크래쉬 할 가능성이 있습니다. 디폴트 값는 3 입니다.  이전의 릴리스로 이 프로퍼티에 붙일 수 있었던 이름의 <code>sun.rmi.rmid.maxstartgroup</code> 는, 현재 지원되지 않습니다.  </dd>
+	<p>
+</p><dt><b><code>sun.rmi.activation.groupTimeout</code></b> (5.0 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은,<code>rmid</code> 가 기동 그룹의 프로세스를 파괴한 후, 새로운 기동 그룹을 생성하기 전에 대기하는 시간 (밀리 세컨드)을 나타냅니다. 디폴트 값는 60000 밀리 세컨드 (60 초)입니다.  </dd>
+	<p>
+</p><dt><b><code>sun.rmi.activation.snapshotInterval</code></b> (1.2 이후)</dt>
+	<dd>
+	이 프로퍼티은, 기동 시스템이, 그 상태의 snapshot를 디스크상의 <code>rmid</code> 로그 파일에 직렬화할 때까지의 대기 시간중의 갱신 회수를 제어합니다. 「갱신」이란, 마지막 snapshot 작성시 이후의, 기동 시스템 상태 (<code>Activatable</code> 객체의 등록등)의 지속적인 변화를 가리킵니다. <code>rmid</code> 의 재기동을 보다 신속히 실시하는 경우 (로그의 snapshot 작성 빈도를 올리는 것으로), 또는 <code>rmid</code> 의 동작 효율을 향상시키는 (로그의 snapshot 작성 빈도를 내리는 것으로) 경우에, 이 프로퍼티치를 변경합니다. 이 프로퍼티의 값은, 정의 정수입니다. 디폴트 값는 200 입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.log.debug</code></b> (1.2 이후)</dt>
+	<dd>
+	이 값이 <code>true</code> 의 경우,<code>rmid</code> 의 로깅 동작은 <code>System.err</code> 에 송신됩니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.server.activation.debugExec</code></b> (1.2 이후)</dt>
+	<dd>
+	이 값이 <code>true</code> 의 경우, 기동 시스템은, 기동 그룹의 생성에 사용되는 커멘드행에 디버그 정보를 출력합니다. 디폴트 값는 <code>false</code> 입니다. 이 때문에, 디버그 정보는 출력되지 않습니다. </dd>
+	<p>
+</p></dl>
+</blockquote>
+
+<h2>원격 객체를 export 하는 VM 의 설정에 유용한 프로퍼티 </h2>
+
+
+<blockquote>
+<dl><dt><b><code>sun.rmi.dgc.ackTimeout</code></b> (1.4 이후)</dt>
+    <dd>
+이 프로퍼티의 값은, 원격 참조가 완전하게 수취되어 처리되었다고 하는 확인 통지를 클라이언트로부터 받기까지, 서버측 Java RMI 런타임이, 원격 메소드의 호출의 결과로서 현재의 가상 서버로부터 반환된 원격 객체 (또는 원격 객체에의 참조)에의 강한 참조를 실시하는 시간 (밀리 세컨드 단위)을 나타냅니다. 이 타임 아웃은, 실패 상태 (클라이언트가 확인 통지를 송신할 수 없는 상태)에게만 적용됩니다. 이 값을 너무 작게 설정하면(자) , 원격 객체에의 기존의 참조가 원격 메소드의 호출의 결과로서 송신중의 참조 뿐인 경우, 원격 객체의 가베지 컬렉트가 빨리 행해져 버린다고 하는 리스크가 높아지는 경우가 있습니다. 최대치는 <code>Long.MAX_VALUE</code> 입니다. 디폴트 값는 300000 밀리 세컨드 (5 분 )입니다.
+	<p>
+</p></dd>
+<dt><b><code>sun.rmi.dgc.checkInterval</code></b> (1.1 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은, Java RMI 런타임이 기한 마감의 DGC 리스를 체크하는 간격을 (밀리 세컨드로) 나타냅니다. 디폴트 값는,<a href="javarmiproperties.html#leaseValue"><code><b>java.rmi.dgc.leaseValue</b></code></a>  프로퍼티의 값의 반입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.dgc.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, DGC 리스의 허가, 갱신, 종료 기한으로 관련한, 착신 호출과 송신 호출의 로깅을 제어합니다. 출력의 송신지는,"dgc" 로그입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.dgc.server.gcInterval</code></b> (1.2 이후)</dt>
+	<dd> 
+	액세스 불가능한 원격 객체를 적절한 타이밍에 확실히 안 export 또는 가베지 컬렉트할 필요가 있는 경우, 이 프로퍼티의 값은, Java RMI 런타임이 허가하는 로컬 힙의 가베지 컬렉트의 최대 간격을 (밀리 세컨드로) 나타냅니다. 디폴트 값는 3600000 밀리 세컨드 (1 시간)입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.loader.logLevel</code></b> (1.2 이후)</dt>
+	<dd> 
+	인수 또는 반환값의 비정렬화의 결과로서, Java RMI 런타임이 클래스의 로드를 시도하는 경우에는 언제라도, 이 프로퍼티은, 각 클래스명 및 코드 베이스의 로깅을 제어합니다. 이 프로퍼티은, 출력을 "loader" 로그에 송신합니다. </dd>
+	<p>
+<a name="et"></a> 
+</p><dt><b><code>sun.rmi.server.exceptionTrace</code></b> (1.2 이후)</dt>
+	<dd> 
+	이 프로퍼티은, 발송 된 착신 원격 호출에 의해 throw 되는 예외 및 에러로부터의, 서버측 스택 트레이스 출력을 제어합니다. 이 값이 <code>true</code> 의 경우, 예외 스택 트레이스가 출력됩니다. 디폴트 (<code>false</code>)에서는, 예외 및 에러 스택 트레이스는 출력되지 않습니다. </dd>
+	<p>
+<a name="suppressStackTraces"></a> 
+</p><dt><b><code>sun.rmi.server.suppressStackTraces</code></b> (1.4 이후)</dt>
+    <dd>
+이 값을 <code>true</code> 로 설정하면(자), 서버측 Java RMI 런타임 구현은, 원격 호출의 결과로서 현재의 가상 머신으로부터 throw 되는 모든 예외의 스택 트레이스를 클리어 합니다. 이 프로퍼티은, 특정의 Java RMI 서버 어플리케이션으로, 퍼포먼스나 기밀성의 이유에 의해, 착신 원격 호출의 결과로서 (J2SE 1.4 에서의 예외의 디폴트의 직렬화 형식의 일부로서) 정렬화 되는 예외가 서버측 스택 트레이스에 포함되지 않게 할 필요가 있는 경우에 도움이 됩니다.
+	<p>
+</p></dd><dt><b><code>sun.rmi.transport.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, 트랜스폴트층 전체의 상세한 로깅을 제어합니다. 출력의 송신지는,"transport" 로그입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.tcp.localHostNameTimeOut</code></b> (1.1. 7 이후)</dt>
+	<dd> 
+	이 프로퍼티의 값은, Java RMI 런타임이 로컬 호스트의 완전 지정 도메인명을 취득하기 위한 대기 시간을 (밀리 세컨드로) 나타냅니다. 디폴트 값는 10000 밀리 세컨드 (10 초)입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.tcp.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, TCP 고유의 트란스포트사브레이야의 상세한 로깅을 제공합니다. 출력의 송신지는,"tcp" 로그입니다. </dd>
+	<p>
+<a name="readTimeout"></a> 
+</p><dt><b><code>sun.rmi.transport.tcp.readTimeout</code></b> (1.2. 2 이후)</dt>
+	<dd> 
+	이 프로퍼티의 값은, Java RMI 런타임이 사용하는, 착신 TCP 접속의 아이들타임 아웃 시간을 (밀리 세컨드로) 나타냅니다. 값은,<code>java.net.Socket.setSoTimeout</code> 에게 건네집니다. 클라이언트가, 본래의 동작과 달리, 미사용의 접속을 삭제하지 않는 경우에게만 사용됩니다 (<a href="#connectionTimeout"><i><code>sun.rmi.transport.connectionTimeout</code></i></a>  를 참조). 디폴트 값는 2*3600*1000 밀리 세컨드 (2 시간)입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.tcp.maxConnectionThreads</code></b> (6 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은, 착신 접속의 처리에 사용하는 thread의 풀의 최대 사이즈를 제어합니다. 이것에 의해, 동시에 실행할 수 있는 착신 원격 메소드 호출의 수의 상한이 정해집니다. 이 프로퍼티의 값을 작게 하면(자), 부하의 높은 환경에서 Java RMI 서버 어플리케이션의 throughput가 향상할 가능성이 있습니다만, 값이 너무 작으면(자) (어플리케이션의 원격 호출 패턴의 성질에 응해) 데드락이나 결핍 상태가 발생할 가능성이 있습니다. 디폴트 값는, 최대치 (<code>Integer.MAX_VALUE</code>)로, 실질적으로 제한은 없습니다.
+	<p>
+</p><dt><b><code>sun.rmi.transport.tcp.threadKeepAliveTime</code></b> (6 이후)</dt>
+	<dd>
+	이 프로퍼티의 값은, 착신 접속을 처리하기 위해서 사용되는 thread의 풀내에 있는 thread가 종료전에 IDLE 상태인 채인 시간을 제어합니다. 디폴트 값는 60000 밀리 세컨드 (1 분 )입니다.
+</dl>
+</blockquote>
+
+<h2>원격 메소드 호출을 실행하는 VM 의 설정에 유용한 프로퍼티</h2>
+<blockquote>
+<dl><dt><b><code>sun.rmi.client.logCalls</code></b> (1.4 이후)</dt>
+	<dd> 
+	프로퍼티의 값이 <code>true</code> 의 경우,<code>sun.rmi.client.call</code> 로거는 레벨 <code>Level.FINER</code> 로 설정됩니다. 원격 호출은, 레벨 <code>Level.FINER</code> 로 로그 기록되어 원격 호출로부터 throw 된 예외는 레벨 <code>Level.FINE</code> 로 로그 기록됩니다.  </dd>
+	<p>
+</p><dt><b><code>sun.rmi.dgc.cleanInterval</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티의 값은, 실패한 DGC "clean" 호출을 재차 실행할 때까지의 Java RMI 런타임의 대기 시간의 최대치를 (밀리 세컨드로) 나타냅니다. 디폴트 값는 180000 밀리 세컨드 (3 분 )입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.dgc.client.gcInterval</code></b> (1.2 이후)</dt>
+	<dd>
+	액세스 불가능한 원격 참조에 대한 DGC clean 호출을 적절한 타이밍에 확실히 송신할 필요가 있는 경우, 이 프로퍼티의 값은, Java RMI 런타임이 허가하는 로컬 힙의 가베지 컬렉트의 최대 간격을 (밀리 세컨드로) 나타냅니다. 디폴트 값는 3600000 밀리 세컨드 (1 시간)입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.loader.logLevel</code></b> (1.2 이후)</dt>
+	<dd> 
+	인수 또는 반환값의 비정렬화의 결과로서, Java RMI 런타임이 클래스의 로드를 시도하는 경우에는 언제라도, 이 프로퍼티은, 각 클래스명 및 코드 베이스의 로깅을 제어합니다. 이 프로퍼티은, 출력을 "loader" 로그에 송신합니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.server.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, 송신 호출해에 관련하는 로깅 (접속의 재사용 정보를 포함한다)을 제어합니다. 출력의 송신지는,"transport" 로그입니다. </dd>
+	<p>
+<a name="connectionTimeout"></a> 
+</p><dt><b><code>sun.rmi.transport.connectionTimeout</code></b> (1.1. 6 이후)</dt>
+	<dd> 
+	이 프로퍼티의 값은, Java RMI 런타임이 소켓 접속의 개방을 허가하기 (닫는다) 전에, 소켓 접속이 「미사용」상태가 되는 기간을 (밀리 세컨드로) 나타냅니다. 디폴트 값는 15000 밀리 세컨드 (15 초)입니다. <a href="#readTimeout"><i><code>sun.rmi.transport.tcp.readTimeout</code></i></a>  도 참조해 주세요. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, 트랜스폴트층 전체의 상세한 로깅을 제어합니다. 출력의 송신지는,"transport" 로그입니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.proxy.connectTimeout</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티의 값은, 접속의 시도 (<code>createSocket</code>)가 완료할 때까지, HTTP 를 사용해 서버에의 접속을 시도하기 전의, Java RMI 런타임의 대기 시간의 최대치를 (밀리 세컨드로) 나타냅니다. 이 프로퍼티이 사용되는 것은,<code>http.proxyHost</code> 프로퍼티이 설정되어 한편 <code>java.rmi.server.disableHttp</code> 의 값이 <code>false</code> 의 경우 뿐입니다. 디폴트 값는 15000 밀리 세컨드 (15 초)입니다. </dd>
+	<p>
+<a name="eagerHttpFallback"></a> 
+</p><dt><b><code>sun.rmi.transport.proxy.eagerHttpFallback</code></b> (1.4. 1 이후)</dt>
+	<dd> 
+	이 값이 true 이며,<a href="javarmiproperties.html#disableHttp"><code><b>java.rmi.server.disableHttp</b></code></a>  시스템 프로퍼티이 설정되어 있지 않으면 디폴트의 global <code>RMISocketFactory</code> 은, 최초의 (직접) 접속 시행으로부터 <code>java.net.SocketException</code> 가 throw 되었을 때에, HTTP 터널링에 폴 백합니다. 이것은, 최초의 접속 시행이 <code>java.net.UnknownHostException</code> 또는 <code>java.net.NoRouteToHostException</code> 를 throw 했을 때 마셔 HTTP 터널링에 폴 백하는 디폴트의 동작과는 대조적입니다.
+	<p>
+	이 설정은, 승인되지 않는 포트에의 접속 시행을 무시하는 대신에 거부하는 방화벽(fire wall)를 취급할 때, 유용한 경우가 있습니다. 그 때는, 클라이언트의 디폴트의 global <code>RMISocketFactory</code> 내가 <code>java.net.ConnectionException</code> 가 됩니다. 이 시스템 프로퍼티이 유효하게되어 있지 않으면<code>UnknownHostException</code> 도 <code>NoRouteToHostException</code> 도 아니기 때문에, 이러한 <code>ConnectionException</code> 가 HTTP 폴 백의 트리거가 될 것은 없습니다. 다만, 이 시스템 프로퍼티이 유효하게 되고 있는 경우는,<code>ConnectionException</code> 가 <code>SocketException</code> 의 서브 클래스이기 (위해)때문에,<code>ConnectionException</code> 가 HTTP 폴 백을 일으킵니다. </p>
+	<p>
+</p></dd><dt><b><code>sun.rmi.transport.proxy.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, 디폴트의 <code>RMISocketFactory</code> 클래스가 사용되는 경우에, 이벤트 (<code>createSocket</code> 및 <code>createServerSocket</code>)의 로깅을 제어합니다. 이것은, HTTP 를 개입시켜 Java RMI 를 사용하는 어플리케이션으로 유용한 로깅타이프입니다. 이 프로퍼티에서는, 커스텀 소켓 팩토리내의 이벤트는 로그에 기록되지 않습니다. "proxy" 로그에 송신되는 메세지도 있으면,"transport" 로그에 송신되는 메세지도 있습니다. </dd>
+	<p>
+</p><dt><b><code>sun.rmi.transport.tcp.handshakeTimeout</code></b> (1.4 이후)</dt>
+    <dd>
+이 프로퍼티의 값은, 클라이언트측 Java RMI 런타임이, 새로운 JRMP 접속의 확립시에 최초의 핸드 쉐이크 데이터 (프로토콜의 확인)를 읽어낼 때, 소켓의 읽기 타임 아웃으로서 사용하는 시간 (밀리 세컨드 단위)을 나타냅니다. 이 프로퍼티은, 원격 호스트의 포트로 대기하는 엔티티가 실제로는 Java RMI 서버는 아니기 때문에, 또는 그 서버가 어떠한 이유로써 올바르게 기능하고 있지 않기 위해(때문에), 원격 서버-가 받아들인 TCP 접속을 실제로는 사용할 수 없으면 결정할 때까지 Java RMI 런타임이 기다리는 시간을 설정하기 위해서 사용됩니다. 최대치는 <code>Integer.MAX_VALUE</code> 로, 제로의 값은 타임 아웃의 제한이 없는 것을 나타냅니다. 디폴트 값는 60000 (1 분 )입니다.
+    <p>
+</p><dt><b><code>sun.rmi.transport.tcp.responseTimeout</code></b> (1.4 이후)</dt>
+    <dd>
+이 프로퍼티의 값은, 클라이언트측 Java RMI 런타임이, 원격 메소드 호출의 응답 데이터를 읽어낼 때, JRMP 접속의 확립시에 소켓의 읽기 타임 아웃으로서 사용하는 시간 (밀리 세컨드 단위)을 나타냅니다. 그 때문에, 이 프로퍼티을 사용해, 원격 호출의 결과를 대기할 때의 타임 아웃을 설정할 수가 있습니다. 이 타임 아웃의 기한이 지나면(자), 관련하는 호출이 실패해,<code>java.rmi.RemoteException</code> 가 throw 됩니다. 다만 이 프로퍼티에 의해, 성공한 발신 원격 호출로 허가되는 시간의 상한이 실질적으로 설정되기 (위해)때문에, 이 프로퍼티을 설정할 때는 기한을 고려할 필요가 있습니다. 최대치는 <code>Integer.MAX_VALUE</code> 로, 제로의 값은 타임 아웃의 제한이 없는 것을 나타냅니다. 디폴트 값는 0 (타임 아웃 없음)입니다.
+    <p>
+</p></dd><dt><b><code>sun.rmi.transport.tcp.logLevel</code></b> (1.1 이후)</dt>
+	<dd> 
+	이 프로퍼티은, TCP 고유의 트란스포트사브레이야의 상세한 로깅을 제공합니다. 출력의 송신지는,"tcp" 로그입니다. </dd>
+</dl>
+</blockquote>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

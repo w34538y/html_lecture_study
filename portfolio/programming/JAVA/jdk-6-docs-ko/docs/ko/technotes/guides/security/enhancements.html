@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java&trade; 6 시큐리티의 확장 기능  - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>Java&trade; 6 시큐리티의 확장 기능</h1>
+
+</center>
+
+</TD>
+
+</TR>
+</TABLE>
+
+<p>Java 플랫폼은, 버젼 6 으로 다음의 시큐리티 기능의 지원를 추가했습니다. </p>  
+
+<ul>
+
+<li><b>JSR 105, XML 디지털 서명 API 및 구현</b> <br><br> 자세한 것은,<a href="xmldsig/overview.html">「XML 디지털 서명 API 스펙」 </a>및<a href="xmldsig/XMLDigitalSignature.html">「XML 디지털 서명 API 의 개요 및 튜토리얼」</a>을 참조해 주세요. </li>
+
+<!--  (also see http://ccc.sfbay/4635230) --> <br>
+
+<li><b>JSR 268, 스마트 카드 I/O API</b> <br><br> Sun 의 Java SE 6 구현은, 이용 가능한 경우,<a href="http://jcp.org/en/jsr/detail?id=268">JSR 268</a>  에 의해 정의된<a href="../../../jre/api/security/smartcardio/spec/">스마트 카드 I/O API</a> , 및 플랫폼의 네이티브 PC/SC 스마트 카드 스택을 사용하는 <a href="SunProviders.html#SunPCSCProvider">SunPCSC</a>  라는 이름의 프로바이더를 번들 하고 있습니다. API 도 SunPCSC 프로바이더도 Java SE 6 플랫폼의 스펙의 일부에서는 없고, 이것에 준거하는 것 외의 Java SE 구현에는 존재하지 않는 경우가 있습니다.   </li>
+
+<br>
+
+<li><b>SunPKCS11 의 타원 곡선 암호 (ECC)</b> <br><br> SunPKCS11 프로바이더는, 기반이 되는 PKCS#11 토큰이 지원하는 경우는 ECC 알고리즘을 공개합니다. 이것에는, ECDSA 서명 및 검증, ECDH 열쇠 협정, 및 EC 열쇠 페어의 생성이 포함되어 있습니다. 지원되는 기구의 자세한 것은,<a href="p11guide.html#ALG">「PKCS#11 레퍼런스 가이드」</a>의 지원되는 알고리즘의 항을 참조해 주세요.
+
+</li><br>
+
+<li><b>SunJSSE 의 타원 곡선 암호군</b> <br><br> SunJSSE 는, 적합하는 암호화 프로바이더를 사용할 수 있는 경우 (예를 들어, 적절한 PKCS#11 라이브러리를 가지는 SunPKCS11), RFC 4492 로 정의되고 있는 ECC 암호군을 지원합니다. 자세한 것은,<a href="SunProviders.html#SupportedCipherSuites">지원되는 암호군</a>의 리스트와 그러한<a href="SunProviders.html#requirements">요건</a>을 참조해 주세요.
+
+</li><br>
+
+<li><b>SunPKCS11 를 사용한 네트워크세큐리티 서비스 (NSS)에의 액세스</b> <br><br> SunPKCS11 프로바이더는, NSS 시큐리티 라이브러리에의 액세스를 가능하게 하는 새로운 구성 지시를 지원합니다. 이것에 의해, Java 어플리케이션은 NSS 데이타베이스 파일에 포함된 열쇠를 읽어내, ECC 알고리즘을 사용해, NSS Softtoken 를 FIPS 140 준거의 암호화 프로바이더로서 사용할 수 있습니다. 자세한 것은, 「PKCS#11 레퍼런스 가이드」의<a href="p11guide.html#NSS">「NSS」</a>의 항을 참조해 주세요.
+</li><br>
+
+<li><b>SunJSSE 의 FIPS 140 준거</b> <br><br> SunJSSE 프로바이더는, 시험적인 FIPS 140 준거 모드를 지원합니다. 이것을 유효하게 해 SunPKCS11 프로바이더 및 적절한 FIPS 140 인정 PKCS#11 토큰과 조합해 사용하면(자), SunJSSE 는 FIPS 140 에 준거합니다. 자세한 것은,<a href="jsse/JSSERefGuide.html">「JSSE 레퍼런스 가이드」</a>를 참조해 주세요.
+
+<!--  [nb: the 'details' still need to be written down. If we create the Sun provider document as discussed, it needs to go there and not in the JSSE ref guide] -->
+</li>
+<br>
+
+<li><b>플러그 인 가능 제한의 JSSE 로부터의 삭제</b> <br><br> 이전의 릴리스에 대해, JSSE 시스템에서는, 표준 이외의 암호군을 구현하는 서드 파티의 JSSE 프로바이더는 수출규제의 문제이기 때문에 허가되지 않았습니다.
+</li> <br>
+
+<li><b>SunJSSE SSLSocket 에 의한 소켓의 읽기 타임 아웃의 완전 지원</b> <br><br> 이전의 릴리스에서는,<code>setSoTimeout()</code> 의 호출은 예측 불가능한 결과를 가져오는 경우가 있었습니다. 이 문서는 수정되었습니다.
+</li> <br>
+
+<li><b>SunJCE 블록 암호에의 Cipher Text Stealing (CTS) 모드의 추가</b> <br><br>
+
+CTS 는, Bruce Schneier 의 서적 「Applied Cryptography-Second Edition」John Wiley & Sons 발행, 1996 년 (195 ?  196 페이지)로 설명되고 있어 일부의 Kerberos 구현으로 사용되고 있습니다.
+</li>
+<br>
+
+<li><b>새로운 <code>PBKDF2WithHmacSHA1 Secretkeyfactory</code> 알고리즘의 SunJCE 에의 추가</b> <br><br>
+
+<a href="http://www.rsasecurity.com/rsalabs/pkcs">PKCS5 v2. 0</a>  에 있는 패스워드 베이스 키 파생 기능을 사용해 비밀열쇠를 구축합니다.
+</li>
+<br>
+
+<li><b>2048 RSA 키 사이즈 제한의 local_policy.jar 로부터의 삭제</b> <br><br> 구현은, 이전에는 제한이 없는 암호화 정책 파일을 인스톨 하지 않는 경우, 2048 비트를 넘는 RSA 열쇠의 취득이 제한되고 있었습니다.
+</li>
+<br>
+
+<li><b>새로운 증명서 발행국 (CA) 증명서의 추가</b> <br><br> 다수의 CA 증명서가, 디폴트의 시스템 <code>lib/security/cacerts</code> 파일에 추가되었습니다. CA 증명서의 리스트에 대해서는,<a href="../../tools/solaris/keytool.html#cacerts">keytool 의 문서</a>를 참조해 주세요.
+</li>
+<br>
+
+<li><b><code>jarsigner</code> 툴에의 2 개의 새로운 옵션의 추가</b> <br><br> 옵션 <code>-digestalg</code> 및 <code>-sigalg</code> 가 jarsigner 툴에 추가되어 사용자는 jar 파일에 서명할 경우에 디폴트의 서명 및 다이제스트 알고리즘을 오버라이드(override) 할 수 있게 되었습니다. </li>
+<br>
+
+<li><b><code>keytool</code> 툴의 새로운 옵션</b> <br><br> 옵션 <code>-genseckey</code> 및 <code>-importkeystore</code> 가 keytool 툴에 추가되어 사용자는 키스토어내에서의 SecretKey 의 생성 및 1 개의 키스토어로부터 다른 키스토어에의 엔트리의 카피를 실시할 수가 있게 되었습니다. 옵션 <code>-genkey</code>,<code>-import</code>, 및 <code>-export</code> 의 이름은,<code>-genkeypair</code>,<code>-importcert</code>, 및 <code>-exportcert</code> 로 변경되었습니다. </li>
+<br>
+
+<li><b>사용자가 입력한 패스워드의 화면에의 표시의 중지</b> <br><br> <code>keytool</code>/<code>jarsigner</code> 등의 시큐리티 툴 및 JAAS 로그인 인증 모듈에서는, 사용자가 입력한 패스워드가 화면에 표시되지 않게 새로운 <code>java.io.Console</code> 클래스를 사용합니다.
+</li>
+
+<!-- **** JGSS goes here. -->
+
+<!--  <br> <li>JGSS has added new funcionality in version 6.  for details, see <a href="jgss/jgss-jdk6.html">the JGSS Feature Enhancements List</a> .  </li> -->
+
+<!--  *** keep this for now. It is a brief bulleted list of items that are detailed on the JGSS Feature Enhancements List. It  probably should be added back in, or moved somewhere else.  **************************** -->
+
+
+<br>
+<li><b>Java GSS/Kerberos 에서의 AES 암호화 타입의 지원</b> <br><br> Java GSS/Kerberos 에서의 AES 암호화 타입 (AES128 및 AES256)을 지원합니다. 이것에 의해, Solaris 10 이나 MIT Kerberos 등의 다른 Kerberos 구현과 Java SE Kerberos 구현의 상호 운용성이 개선되고 있습니다. 자세한 것은,<a href="jgss/jgss-features.html ">「Java GSS 시큐리티 기능」</a>을 참조해 주세요. <br><br></li>
+
+<li><b>Java GSS/Kerberos 에서의 RC4-HMAC 암호화 타입의 지원</b> <br><br> Java GSS/Kerberos 에서의 RC4-HMAC 암호화 타입을 지원합니다. 이것에 의해, Windows, Solaris 10 이나 MIT Kerberos 등의 다른 Kerberos 구현과 Java SE Kerberos 구현의 상호 운용성이 개선되고 있습니다. Windows Active Directory 는, RC4-HMAC 를 디폴트의 Kerberos 암호화 타입으로서 지원하고 있습니다. 자세한 것은,<a href="jgss/jgss-features.html ">「Java GSS 시큐리티 기능」</a>을 참조해 주세요. <br><br></li>
+
+<li><b>Java GSS 에서의 SPNEGO 의 지원</b> <br><br> Java GSS 에서의 SPNEGO 기구의 지원가 이용 가능하게 되었습니다. 의사 시큐리티 기구인 Simple and Protected GSS-API Negotiation (SPNEGO) 기구를 사용하면(자), GSS-API 피어는, 사용하는 공통의 시큐리티 기구와 안전하게 협상을 실시할 수가 있습니다. <br><br>
+
+HTTP 에서의 SPNEGO 인증 방식도 지원합니다. 자세한 것은,<a href="jgss/jgss-features.html ">「Java GSS 시큐리티 기능」</a>을 참조해 주세요.  <br><br></li>
+
+<li><b>신규의 사전 인증 기구의 지원</b> <br><br> Java GSS/Kerberos 는, 최신의 Kerberos 스펙에 나타나고 있도록(듯이), 신규의 사전 인증 기구를 지원합니다. 자세한 것은,<a href="jgss/jgss-features.html ">「Java GSS 시큐리티 기능」</a>을 참조해 주세요. <br><br></li>
+
+<li><b>네이티브 플랫폼 GSS 통합</b> <br><br> 이 기능을 사용하면(자), Java GSS 어플리케이션은, 플랫폼에서 사용 가능한 네이티브 GSS 구현의 기능을 이용할 수 있습니다. 자세한 것은,<a href="jgss/jgss-features.html ">「Java GSS 시큐리티 기능」</a>을 참조해 주세요. <br><br></li>
+
+
+<li><b>Microsoft Windows 의 네이티브 PKI 및 암호화 서비스에의 액세스</b> <br> <br> Microsoft CryptoAPI (CAPI)를 사용해 다양한 RSA 암호화 기능을 제공하는 <a href="SunProviders.html#SunMSCAPI">SunMSCAPI</a>  JCE 프로바이더가 추가되었습니다. 이것은, Java 어플리케이션과 CAPI 에 의해 이용 가능한 디폴트의 RSA 서비스 프로바이더에 의해 제공되는 서비스와의 사이의, 브릿지로서 기능합니다. X. 509 증명서 및 RSA 열쇠 페어에의 액세스를 제공해, RSA 암호화 및 복호화를 실행해 RSA 서명의 작성 및 검증을 실시합니다. 암호화 난수 제네레이터도 지원합니다.  <br><br>
+</li>
+
+<li><b>PKI 증명서 패스 검증의 구현의 확장 기능</b> <br><br> 부분화된 간접적인 CRL 의 지원가 추가되어 퍼포먼스와 PKIX 에의 준거 (RFC 3280)가 향상했습니다.
+
+</li><br>
+
+<li><b>LDAP 를 사용하는 JAAS 베이스의 인증</b> <br><br> LDAP 디렉토리 서비스에 포함된 자격을 사용해 사용자가 인증을 실행할 수 있도록(듯이) 하는, JAAS 로그인 모듈이 추가되었습니다. LDAP 를 사용한 인증을 지원할 필요가 있는 기존의 JAAS 대응의 어플리케이션에, 드롭 인식의 대처 방법을 제공합니다. 자세한 것은,<a href="../../../jre/api/security/jaas/spec/com/sun/security/auth/module/LdapLoginModule.html">「LDAPLoginModule」</a>를 참조해 주세요. </li>
+
+<br>
+
+<li><b>디폴트의 SSLContext</b> <br><br> static 메소드 <code>getDefault()</code> 및 <code>setDefault()</code> 가 <a href="../../../api/javax/net/ssl/SSLContext.html">SSLContext</a>  에 추가되었습니다. <code>getDefault()</code> 는, 디폴트의 SSLContext 를 돌려줍니다. 이것은, 예를 들어 시스템 프로퍼티을 사용해, 구현 고유의 형식에서 초기화됩니다. <code>setDefault()</code> 에 의해, 어플리케이션은, 초기화된 SSLContext 객체에 디폴트 문맥을 프로그램에 의해 설정할 수 있습니다.
+
+
+</li><br>
+
+<li><b>SSLParameters</b> <br><br> 새로운 <a href="../../../api/javax/net/ssl/SSLParameters.html">SSLParameters</a>  클래스는, SSL 단 점의 구성 파라미터를 캡슐화합니다. 특히, 암호군, 프로토콜의 버젼, 및 서버의 경우는 클라이언트 인증 요건을 캡슐화합니다. 이것들은,<code>SSLSocket.setSSLParameters()</code> 또는 <code>SSLEngine.setSSLParameters()</code> 의 단일의 호출에 의해 적용할 수 있습니다.
+
+</li><br>
+
+
+</ul>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2006
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <FONT SIZE="-1">
+
+코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다.
+
+   </FONT>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+
+   
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>
+
+
+
+
+

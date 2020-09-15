@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 5 - 2D 그래픽스의 인쇄와 스트림 전달
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing2d.fm.html">전의 항목</a>  | <a href="printing2d.fm2.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998764"><i></i> PrinterJob 를 사용한 그래픽스의 인쇄 또는 스트림 전달</a> </h2>
+
+<blockquote>
+<a name="998946"><!-- --></a>  새로운 API injava.awt.print 는, 다음의 새로운 PrinterJob 메소드로부터 구성됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="998765"><!-- --></a>  2D 그래픽스의 draw에 대응한 인쇄 서비스를 검색하는 static 메소드. 인쇄 서비스는, 메소드에 응해, PrintService 또는 StreamPrintServiceFactory 객체의 배열로서 반환된다.
+</li>
+<li>
+<a name="998767"><!-- --></a>  PrinterJob 의 PrintService 를 설정 및 취득하는 메소드.
+</li>
+<li>
+<a name="998768"><!-- --></a>  pageDialog 메소드. PrintRequestAttributeSet 파라미터를 지정한다
+</li>
+<li>
+<a name="998769"><!-- --></a>  printDialog 메소드. PrintRequestAttributeSet 파라미터를 지정한다
+</li>
+<li>
+<a name="998770"><!-- --></a>  print 메소드. PrintRequestAttributeSet 파라미터를 지정한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="999381"><!-- --></a>  새로운 printDialog 및 pageDialog 메소드에는 속성 세트를 지정할 수 있기 (위해)때문에, 사용자는 다이얼로그로부터 속성의 초기설정을 변경할 수 있습니다.  <p>
+<a name="999701"><!-- --></a>  어플리케이션으로부터 PrinterJob 를 사용하면, 2D 그래픽스를 프린터 또는 출력 스트림에 인쇄할 수 있습니다. lookupPrintServices 메소드는, PrintService 객체의 배열을 돌려줍니다. 각 객체는, 2D 그래픽스를 인쇄할 수 있는 프린터를 표현합니다. lookupStreamPrintServices 메소드는, StreamPrintServiceFactory 객체의 배열을 돌려줍니다. 각 객체는, StreamPrintService 를 돌려줄 수가 있습니다. 어플리케이션으로부터 StreamPrintService 를 사용하면(자), 인쇄 데이터가 출력 스트림에 송신됩니다. StreamPrintService 에서는, 문서를 인쇄하는 것 외에, 2D 그래픽스를 다른 서식으로 변환할 수가 있습니다. 여기에서는, PrinterJob 를 사용해, 2D 그래픽스를 프린터 또는 출력 스트림에 송신하는 방법에 대해 설명합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="999379"><!-- --></a>  <i></i> 2D 그래픽스의 인쇄</a> 
+</h3>
+
+<blockquote>
+<a name="999375"><!-- --></a>  새로운 pageDialog, printDialog, 및 pring 메소드를 사용하면, 어플리케이션으로부터 인쇄 설정을 초기화해 다이얼로그에 건네줄 수가 있습니다. 사용자는, 인쇄의 설정치를 갱신하고 나서, 인쇄 요구를 송신할 수가 있습니다. 코드예를 듭니다. <p>
+<a name="998972"><!-- --></a> 
+<blockquote><pre>// Step 1: Set up initial print settings.
+PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+// Step 2: Obtain a print job.
+PrinterJob pj = PrinterJob.getPrinterJob();
+// Step 3: Find print services.
+PrintService []services = PrinterJob.lookupPrintServices();
+if (services.length &gt; 0) {
+	System.out.println(&#34;selected printer: &#34; + services[0]);
+	try {
+	pj.setPrintService(service[0]); 
+	// Step 2: Pass the settings to a page dialog and print dialog.
+	pj.pageDialog(aset);
+	if (pj.printDialog(aset)) {
+		// Step 4: Update the settings made by the user in the dialogs.
+		// Step 5: Pass the final settings into the print request.
+		pj.print(aset);
+	}
+	} catch (PrinterException(pe)) {
+		System.err.println(pe):
+	}
+} 
+
+</pre></blockquote>
+
+
+<a name="998794"><!-- --></a>  어플리케이션 전체에 대해서는,<a href="appendix_2DPrinterJob.fm.html#997825">「예: Print2DPrinterJob.java」</a>를 참조해 주세요. <p>
+<a name="1000101"><!-- --></a>  위의 코드 예의 「Step 4」는, 특정의 코드행에 대응하고 있습니다.실제로는, 다이얼로그내에서 인쇄 설정을 갱신해, 갱신한 값이 「PrintRequestAttributeSet, aset」에 보존됩니다. <p>
+<a name="999291"><!-- --></a>  여기서, Java 2D 로 Java 인쇄 서비스를 사용할 경우에, 인쇄 부수등의 속성을 양쪽 모두의 API 에 정의했을 경우를 상정합니다. 이러한 속성을 PrintRequestAttributeSet 에 정의했을 경우는, PrinterJob 로 지정한 같은 속성이 우선됩니다. 사용자가 인쇄 다이얼로그내에서 인쇄 부수를 갱신했을 경우는, PrinterJob 가 자동적으로 갱신 및 반영됩니다. 이 때, 기존의 동작의 재확인을 사용자에게 요구합니다. <p>
+<a name="1000092"><!-- --></a>  또, PageFormat 의 스펙도, Java 인쇄 서비스의 Media, MediaPrintableArea, 및 OrientationRequested 속성과 중복 하고 있습니다. 어플리케이션으로부터 Printable 인터페이스와 print(PrintRequestAttributeSet) 메소드를 사용하면(자), 속성 세트에 포함되는 매체, 인쇄 방향, 및 이미징 가능 영역의 속성이, 새로운 PageFormat 에 추가됩니다.  PageFormat 는, Printable 객체의 인쇄 메소드에게 건네집니다. 어플리케이션으로 Pageable 인터페이스를 사용했을 경우는, PageFormat 는 변경되지 않습니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="999400"><!-- --></a>  <i></i> 2D 그래픽스의 스트림 전달
+</h3>
+
+<blockquote>
+<a name="999404"><!-- --></a>  어플리케이션에서는, PrinterJob 및 StreamPrintService 를 사용해, 인쇄 데이터를 출력 스트림에 송신할 수도 있습니다. 다음의 예는 전의 마디의 예와 닮아 있습니다만, PrintService 대신에 StreamPrintService 가 사용되고 있습니다. <p>
+<a name="999431"><!-- --></a> 
+<p>
+<a name="999416"><!-- --></a> 
+<blockquote><pre>PrinterJob job = PrinterJob.getPrinterJob();
+String psMimeType = "application/postscript";
+FileOutputStream outstream; 
+StreamPrintService psPrinter; 
+StreamPrintServiceFactory []spsFactories =
+	PrinterJob.lookupStreamPrintServices(psMimeType);
+if (factories.length &gt; 0) { 
+	try { 
+		outstream = new File("out.ps"); 
+		psPrinter = factories[0]. getPrintService(fos); 
+		// psPrinter can now be set as the service on a PrinterJob 
+	} catch (FileNotFoundException e) { } 
+} 
+job.setPrintService(service[0]); // if app wants to specify this printer.
+PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+aset.add(new Copies(2));
+job.print(aset);
+} 
+</pre></blockquote>
+
+
+<a name="999616"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing2d.fm.html">전의 항목</a>  | <a href="printing2d.fm2.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

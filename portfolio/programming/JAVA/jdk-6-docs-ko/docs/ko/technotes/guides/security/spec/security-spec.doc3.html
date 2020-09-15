@@ -1,0 +1,793 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 시큐리티 아키텍쳐(architecture):  - 
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href=security-specTOC.fm.html>목차</a>  | <a href="security-spec.doc2.html">전의 항목</a>  | <a href="security-spec.doc4.html">다음의 항목</a>  <!-- | <a href="security-spec.doc.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java 시큐리티 아키텍쳐(architecture)</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="19802"><i> 3 </i>액세스권과 시큐리티 정책</a> </h2>
+
+
+<br>
+<h3>
+<a name="17001"><!-- --></a>  <i>	3.1	 </i>Permission 클래스 
+</h3>
+
+<blockquote>
+<a name="19229"><!-- --></a> Permission 클래스는, system resource에의 액세스권을 나타냅니다. java.security.Permission 클래스는 abstract 클래스에서, 이 클래스로부터, 특정의 액세스권을 나타내는 서브 클래스가 만들어집니다.  <p>
+<a name="28891"><!-- --></a> 액세스권의 예로서는, 다음의 코드를 사용하면(자) /tmp 디렉토리의 「abc」라고 하는 파일의 읽기 권한을 얻을 수 있습니다. <p>
+</blockquote><blockquote><pre>    perm = new java.io.FilePermission("/tmp/abc", "read");
+</pre></blockquote><blockquote>
+<a name="23134"><!-- --></a> 새로운 액세스권은, Permission 클래스, 또는 그 서브 클래스의 1 개 (java.security.BasicPermission 등)로부터 서브 클래스화 됩니다. 서브 클래스화 된, BasicPermission 이외의 액세스권은 일반적으로, 그 자체의 패키지에 속합니다. 따라서, FilePermission 는 java.io 패키지에 있습니다. <p>
+<a name="17186"><!-- --></a> 모든 신규 Permission 클래스에 구현할 필요가 있는 중요한 abstract 메소드가,<code>implies</code> 메소드입니다. 기본적으로, 「a implies b」는, 액세스권 「a」가 주어지고 있는 사람은, 당연히 액세스권 「b」가 주어진다고 하는 것을 의미합니다. 이 점은, 액세스 제어의 결정 시에 중요합니다. <p>
+<a name="19232"><!-- --></a> abstract 클래스 java.security.Permission 에는, java.security.PermissionCollection 라는 이름의 abstract 클래스와 java.security.Permissions 라고 하는 final 클래스가 관련합니다. <p>
+<a name="28899"><!-- --></a> java.security.PermissionCollection 클래스는, 파일의 액세스권 등 1 개의 카테고리의 Permission 객체의 컬렉션 (복제 가능한 세트)을 나타내, 간단하게 그룹화 할 수 있게 되어 있습니다. 파일의 액세스권등과 같이, 액세스권을 PermissionCollection 객체에 임의의 순서로 추가할 수 있는 경우는,<code>implies</code> 메소드가 불려 갔을 때에, PermissionCollection 객체가 확실히 올바른 시멘틱스에 따르는 것이 중요합니다. <p>
+<a name="18949"><!-- --></a> java.security.Permissions 클래스는, Permission 객체의 컬렉션을 나타냅니다. 즉, 이종의 액세스권의 슈퍼 컬렉션입니다. <p>
+<a name="19896"><!-- --></a> 어플리케이션에는, 시스템이 지원하고 있는 액세스권의 신규의 카테고리를 자유롭게 추가할 수 있습니다. 어플리케이션에 특정의 액세스권을 추가하는 방법에 대해서는, 나중에 설명하겠습니다. <p>
+<a name="19897"><!-- --></a> 이후에서는, 모든 편입 액세스권 클래스의 구문과 시멘틱스에 대해 설명합니다. <p>
+</blockquote>
+<br> <a name="19902"><!-- --></a> 
+<h4><i>	3.1. 1	java.security.Permission</i></h4>
+
+<blockquote>
+<a name="19924"><!-- --></a> 이 abstract 클래스는, 모든 액세스권의 상위 클래스입니다. 모든 액세스권에 필요한 필수 기능을 정의합니다.   <p>
+<a name="19953"><!-- --></a> 액세스권의 각 인스턴스는, 일반적으로, 생성자 에 1 개 이상의 캐릭터 라인 파라미터를 건네주는 것에 의해 생성됩니다. 2 개의 파라미터를 사용하는 일반적인 케이스에서는, 일반적으로, 1 번째의 파라미터는 「타겟의 이름」 (액세스권의 목적의 파일명등)로, 2 번째의 파라미터는 동작 (파일에 대한 「읽기」동작 등)입니다. 일반적으로, 복수의 동작세트를 콤마로 단락지은 캐릭터 라인의 편성으로 지정할 수 있습니다. <p>
+</blockquote>
+<br> <a name="19905"><!-- --></a> 
+<h4><i>	3.1. 2	java.security.PermissionCollection</i></h4>
+
+<blockquote>
+<a name="19925"><!-- --></a> 이 클래스는, 동일종의 액세스권의 컬렉션을 가집니다. 즉, 이 클래스의 각 인스턴스는, 같은 타입의 액세스권만을 가집니다. <p>
+</blockquote>
+<br> <a name="19911"><!-- --></a> 
+<h4><i>	3.1. 3	java.security.Permissions</i></h4>
+
+<blockquote>
+<a name="19926"><!-- --></a> 이 클래스는, 이종의 액세스권의 컬렉션을 위해서(때문에) 설계되고 있습니다. 기본적으로, 이 클래스는 java.security.PermissionCollection 객체의 컬렉션입니다. <p>
+</blockquote>
+<br> <a name="22515"><!-- --></a> 
+<h4><i>	3.1. 4	java.security.UnresolvedPermission</i></h4>
+
+<blockquote>
+<a name="22517"><!-- --></a> 전술한 것처럼, 시큐리티 정책의 내부 상태는 일반적으로, 각 코드 소스에 관련하는 액세스권 객체에 의해 나타내집니다. 그러나, Java 테크놀러지의 동적인 성질을 고려하면(자), 정책가 초기화된 시점에서, 특정의 액세스권 클래스를 구현한 실제의 코드가 아직 로드 되지 않고, Java 어플리케이션 환경에 정의되어 있지 않을 가능성이 있습니다. 예를 들어, 참조된 액세스권 클래스는, 나중에 로드 되는 JAR 파일내에 있을 가능성이 있습니다. <p>
+<a name="29080"><!-- --></a> UnresolvedPermission 클래스는, 이러한 「미해결」의 액세스권을 보관 유지하기 위해서 사용됩니다. 같이 java.security.UnresolvedPermissionCollection 클래스에는 UnresolvedPermission 액세스권 클래스의 컬렉션이 보존됩니다. <p>
+<a name="24363"><!-- --></a> 액세스 제어 시에, 이전에는 미해결이었지만, 현재 그 클래스가 로드 되고 있는 액세스권의 타입이 체크되어 미해결의 액세스권이 「해결」되어, 적절한 액세스 제어가 결정됩니다. 즉, 가능하면, UnresolvedPermission 내의 정보에 근거해 적절한 쿠라스타이프의 신규 객체의 인스턴스가 생성됩니다. 이 신규 객체가 UnresolvedPermission 에 옮겨져, UnresolvedPermission 는 삭제됩니다. <p>
+<a name="22542"><!-- --></a> 이 시점에서도 해결되지 않는 액세스권은, 시큐리티 정책로 인증되지 않는 무효인 액세스권으로 간주해집니다. <p>
+</blockquote>
+<br> <a name="19913"><!-- --></a> 
+<h4><i>	3.1. 5	java.io.FilePermission</i></h4>
+
+<blockquote>
+<a name="19994"><!-- --></a> 이 클래스의 타겟은, 다음과 같이 지정됩니다. 여기서, 디렉토리와 파일의 이름은 캐릭터 라인으로, 공백 문자를 포함할 수 없습니다. <p>
+</blockquote><blockquote><pre>file
+directory (directory/ 와 같다)
+directory/file
+directory/* (이 디렉토리내의 모든 파일)
+* (현재의 디렉토리내의 모든 파일)
+directory/- (이 디렉토리하의 파일 시스템내의 모든 파일)
+- (현재의 디렉토리하의 파일 시스템내의 모든 파일)
+"&lt;&lt;ALL FILES&gt;&gt;" (파일 시스템내의 모든 파일)
+</pre></blockquote><blockquote>
+<a name="19990"><!-- --></a> &#34;&lt;&lt;ALL FILES&gt;&gt;&#34; 는 특별한 캐릭터 라인으로, 시스템내의 모든 파일을 나타냅니다. UNIX 시스템에서는, root 디렉토리아래의 모든 파일입니다. MS-DOS 시스템에서는, 모든 드라이브의 모든 파일입니다. <p>
+<a name="23161"><!-- --></a> 동작은,<b>read</b>,<b>write</b>,<b>delete</b>, 및 <b>execute</b> 입니다. 파일의 액세스권을 작성하는 유효한 코드예를 다음에 나타냅니다. <p>
+</blockquote><blockquote><pre>import java.io.FilePermission;
+
+FilePermission p = new FilePermission("myfile", "read, write");
+FilePermission p = new FilePermission("/home/gong/", "read");
+FilePermission p = new FilePermission("/tmp/mytmp", "read, delete");
+FilePermission p = new FilePermission("/bin/*", "execute");
+FilePermission p = new FilePermission("*", "read");
+FilePermission p = new FilePermission("/-", "read, execute");
+FilePermission p = new FilePermission("-", "read, execute");
+FilePermission p = new FilePermission("&lt;&lt;ALL FILES&gt;&gt;", "read");
+</pre></blockquote><blockquote>
+<a name="19988"><!-- --></a> 이 클래스의 <code>implies</code> 메소드는, 파일 시스템을 정확하게 해석합니다. 예를 들어, FilePermission("/-", "read, execute")는, FilePermission("/home/gong/public_html/index.html", "read")를 나타내, FilePermission("bin/*", "execute")는 FilePermission("bin/emacs19. 31", "execute")를 나타냅니다. <p>
+<a name="24371"><!-- --></a> Note:많은 경우, 이러한 캐릭터 라인의 형식은 플랫폼에 의해 다릅니다. 예를 들어, Windows 시스템의 C 드라이브상의 temp 디렉토리의 foo 라고 하는 파일에의 읽어내 액세스를 나타내려면 , 다음의 표현을 사용합니다. <p>
+</blockquote><blockquote><pre>FilePermission p = new FilePermission("c:\\temp\\foo", "read");
+</pre></blockquote><blockquote>
+<a name="25819"><!-- --></a> 캐릭터 라인은 토크나이자 (java.io.StreamTokenizer)에 의해 처리됩니다만, 그곳에서는 「\」을 사용한 이스케이프 캐릭터 라인 (개행을 나타내는 「\n」등)이 용서되므로, 단일의 「\」기호를 나타내기 위해서(때문에)는 2 개(살)이 연속한 「\」기호를 사용할 필요가 있습니다. 토크나이자가 FilePermission 의 타겟 캐릭터 라인의 처리를 끝내 2 개(살)이 연속한 「\」기호를 단일의 「\」기호로 변환하면(자), 결과는 다음의 실제의 패스가 됩니다<p>
+</blockquote><blockquote><pre>"c:\temp\foo"
+</pre></blockquote><blockquote>
+<a name="24395"><!-- --></a> 전플랫폼 공통의 파일 기술 언어를 할 수 있을 때까지는, 캐릭터 라인은 플랫폼 마다 다른 형식에서 지정할 필요가 있습니다. 또, 「*」이나 「-」과 같은 메타신볼을 사용해 특정의 파일명을 나타낼 수 없습니다. 이것은, 직면해 허용 할 수 있는 정도의 작은 제한 사항이라고 생각합니다. UNIX 시스템에서는 「/-」이라고 &lt;&lt;ALL FILES&gt;&gt; 는, 어느쪽이나 파일 시스템 전체를 가리킵니다(이용 가능한 파일 시스템이면, 복수의 파일 시스템을 가리킬 수도 있다)가, 다른  operating system (MS Windows 나 MacOS 등)에서는 이 2 개(살)은, 다른 타겟을 가리킬 가능성이 있습니다. <p>
+<a name="24336"><!-- --></a> 다음과 같이, 타겟이 디렉토리에서만 동작이 「read」의 경우는, 그 디렉토리내의 파일을 일람표시 하기 위한(해)만의 액세스권이 주어져 파일의 읽기는 허가되지 않습니다. <p>
+</blockquote><blockquote><pre>FilePermission p = new FilePermission("/home/gong/", "read");
+</pre></blockquote><blockquote>
+<a name="24338"><!-- --></a> 파일의 읽기를 허가하려면 , 다음과 같이 명시적인 파일명을 지정하는지, 「*」또는 「-」을 지정합니다. <p>
+</blockquote><blockquote><pre>FilePermission p = new FilePermission("/home/gong/myfile", "read");
+FilePermission p = new FilePermission("/home/gong/*", "read");
+FilePermission p = new FilePermission("/home/gong/-", "read");
+</pre></blockquote><blockquote>
+<a name="27675"><!-- --></a> 코드는 반드시, 그 코드와 같은 (URL 의) 위치, 및 그 서브 디렉토리의 위치로부터의 파일의 읽기 권한을 자동적으로 가져옵니다. 그 때문의 명시적인 액세스권은 필요 없습니다. <p>
+</blockquote>
+<br> <a name="19915"><!-- --></a> 
+<h4><i>	3.1. 6	java.net.SocketPermission</i></h4>
+
+<blockquote>
+<a name="19989"><!-- --></a> 이 클래스는, 소켓을 통한 네트워크에의 액세스권을 나타냅니다. 이 클래스의 타겟은 「hostname:port_range」의 형식에서 지정합니다. hostname 는 다음의 형식에서 지정합니다. <p>
+</blockquote><blockquote><pre>hostname (단일 호스트)
+IP address (단일 호스트)
+localhost (로컬 머신)
+"" ("localhost" 와 동등)
+hostname.domain (도메인내의 단일 호스트)
+hostname.subdomain.domain
+*. domain (도메인내의 모든 호스트)
+*. subdomain.domain
+* (모든 호스트)
+</pre></blockquote><blockquote>
+<a name="26297"><!-- --></a> 즉, 호스트는, DNS 명, 수치의 IP 주소, 「localhost」 (로컬 머신의 경우),&#34;&#34; ( 「localhost」를 지정하는 것과 같다)의 어떤 것인가로 표현됩니다. <p>
+<a name="26313"><!-- --></a> DNS 명에 의한 호스트 지정에는, 와일드 카드 「*」을 1 회 사용할 수 있습니다. 이것을 사용하는 경우는, 「*. sun.com」와 같이 제일왼쪽의 위치에 사용합니다. <p>
+<a name="26312"><!-- --></a> port_range 는 다음의 형식에서 지정합니다. <p>
+</blockquote><blockquote><pre>N (a single port)
+N- (N 이상의 모든 포트)
+-N (N 이하의 모든 포트)
+N1-N2 (N1 와 N2 를 포함한 이전의 모든 포트)
+</pre></blockquote><blockquote>
+<a name="20027"><!-- --></a> 위의 형식에서, N, N1, N2 는, 0 에서 65535 (2^16-1)의 범위내의 부가 아닌 정수입니다. <p>
+<a name="20036"><!-- --></a> 소켓에서의 동작은,<b>accept</b>,<b>connect</b>,<b>listen</b>, 및 <b>resolve</b> 입니다 (resolve 는 기본적으로 DNS 의 조합). 「resolve」동작은, 「accept」, 「connect」, 및 「listen」에 의해 암시됩니다. 즉, 호스트로부터의 입력 접속의 listen 나 accept, 또는 호스트에게로의 출력 접속의 개시가 가능한 사용자는, 그 원격 호스트의 이름을 조합할 수 있게 될 것이라고 하는 것입니다. <p>
+<a name="20042"><!-- --></a> 다음에, 소켓 액세스권의 예를 나타냅니다. <p>
+</blockquote><blockquote><pre>import java.net.SocketPermission;
+
+SocketPermission p = new SocketPermission("java.sun.com","accept");
+p = new SocketPermission("204.160. 241.99","accept");
+p = new SocketPermission("*. com","connect");
+p = new SocketPermission("*. sun.com:80","accept");
+p = new SocketPermission("*. sun.com:-1023","accept");
+p = new SocketPermission("*. sun.com:1024-","connect");
+p = new SocketPermission("java.sun.com:8000-9000",
+         "connect, accept");
+p = new SocketPermission("localhost:1024-",
+          "accept, connect, listen");
+</pre></blockquote><blockquote>
+<a name="20092"><!-- --></a> SocketPermission("java.sun.com:80, 8080","accept")와 SocketPermission("java.sun.com, javasun.sun.com","accept")는, 유효한 소켓 액세스권이 아닙니다. <p>
+<a name="21604"><!-- --></a> <b>listen</b> 동작은 로컬 호스트의 포트인 만큼 적용되어<b>accept</b> 동작은 로컬 호스트와 원격 호스트의 양쪽 모두의 포트에 적용됩니다. 양쪽 모두의 동작이 필요합니다. <p>
+</blockquote>
+<br> <a name="20057"><!-- --></a> 
+<h4><i>	3.1. 7	java.security.BasicPermission</i></h4>
+
+<blockquote>
+<a name="23199"><!-- --></a> BasicPermission 클래스는 Permission 클래스를 상속합니다. BasicPermission 와 같은 명명 규약에 따르려고 하는 액세스권 클래스의 base class로서 사용할 수 있습니다. <p>
+<a name="23200"><!-- --></a> BasicPermission 의 이름은, 지정된 액세스권의 이름입니다 (예를 들어 「exitVM」, 「setFactory」, 「queuePrintJob」). 명명 규약은, 계층적인 프로퍼티 명명 규약에 따릅니다. 이름의 말미의 「.」의 나머지의 asterisk, 또는 단독의 asterisk는, 와일드 카드 매칭을 지정합니다. 예를 나타냅니다. 「&#34;java. *&#34;」(이)나 「&#34;*&#34;」은 유효합니다만, 「&#34;*java&#34;」나 「&#34;a*b&#34;」는 무효입니다. <p>
+<a name="23201"><!-- --></a> 동작의 캐릭터 라인 (Permission 로부터 상속된다)은 사용되지 않습니다. 따라서, 「이름 첨부」의 액세스권 (이름을 가지지만 동작 리스트가 없는 액세스권. 이름 첨부 액세스권은, 어느 경우와 없는 경우가 있다)의 base class로서 일반적으로 BasicPermission 가 사용됩니다. 필요에 따라서, 서브 클래스는 BasicPermission  우에에 겹쳐 동작을 구현할 수 있습니다. <p>
+<a name="27099"><!-- --></a> BasicPermission 서브 클래스에는, java.lang.RuntimePermission, java.security.SecurityPermission, java.util.PropertyPermission, java.net.NetPermission 등이 있습니다. <p>
+</blockquote>
+<br> <a name="20107"><!-- --></a> 
+<h4><i>	3.1. 8	java.util.PropertyPermission</i></h4>
+
+<blockquote>
+<a name="20118"><!-- --></a> 이 클래스의 타겟은, 기본적으로는, 다양한 프로퍼티 파일세트로서의 Java 프로퍼티의 이름입니다. 예를 들어, 「java.home」, 「os.name」프로퍼티등이 있습니다. 타겟은, 「*」(임의의 프로퍼티), 「a. *」( 「a.」접두사를 가지는 이름의 임의의 프로퍼티), 「a.b. *」등의 형식에서 지정할 수 있습니다. 와일드 카드는, 우단에 1 회만 사용할 수 있습니다. <p>
+<a name="24233"><!-- --></a> 이 클래스는, BasicPermission  우에에 겹쳐 동작을 구현하는 BasicPermission 서브 클래스의 1 개입니다. 동작은, read 와 write 입니다. 각각의 의미는, 다음과 같이 정의됩니다. 「read」액세스권은, java.lang.System 내의 <code>getProperty</code> 메소드를 호출해 프로퍼티치를 취득하는 것을 허가합니다. 「write」액세스권은,<code>setProperty</code> 메소드를 호출해 프로퍼티치를 설정하는 것을 허가합니다.  <p>
+</blockquote>
+<br> <a name="20113"><!-- --></a> 
+<h4><i>	3.1. 9	java.lang.RuntimePermission</i></h4>
+
+<blockquote>
+<a name="20122"><!-- --></a> RuntimePermission 의 타겟은 임의의 캐릭터 라인으로 표현할 수 있어 이 타겟으로 관련하는 동작은 없습니다. 예를 들어, RuntimePermission("exitVM")는 Java 가상 머신을 종료하는 권한을 나타냅니다. <p>
+<a name="20310"><!-- --></a> 다음의 타겟명을 사용할 수 있습니다. <p>
+</blockquote><blockquote><pre>createClassLoader
+getClassLoader
+setContextClassLoader
+setSecurityManager
+createSecurityManager
+exitVM
+setFactory
+setIO
+modifyThread
+stopThread
+modifyThreadGroup
+getProtectionDomain
+readFileDescriptor
+writeFileDescriptor
+loadLibrary. {library name}
+accessClassInPackage. {package name}
+defineClassInPackage. {package name}
+accessDeclaredMembers. {class name}
+queuePrintJob
+</pre></blockquote>
+<br> <a name="20327"><!-- --></a> 
+<h4><i>	3.1. 10	java.awt.AWTPermission</i></h4>
+
+<blockquote>
+<a name="20351"><!-- --></a> 이 클래스는, RuntimePermission 로 같은 생각에 근거하고 있어 액세스권에는 동작이 없습니다. 이 클래스의 타겟으로는, 다음과 같은 것이 있습니다. <p>
+</blockquote><blockquote><pre>accessClipboard
+accessEventQueue
+listenToAllAWTEvents
+showWindowWithoutWarningBanner
+</pre></blockquote>
+<br> <a name="20353"><!-- --></a> 
+<h4><i>	3.1. 11	java.net.NetPermission</i></h4>
+
+<blockquote>
+<a name="20120"><!-- --></a> 이 클래스에는 다음의 타겟이 있어, 동작은 없습니다. <p>
+</blockquote><blockquote><pre>requestPasswordAuthentication
+setDefaultAuthenticator
+specifyStreamHandler
+</pre></blockquote>
+<br> <a name="26158"><!-- --></a> 
+<h4><i>	3.1. 12	java.lang.reflect.ReflectPermission</i></h4>
+
+<blockquote>
+<a name="26161"><!-- --></a> 리플렉트오페레이션을 위한 액세스권 클래스입니다. ReflectPermission 는, 이름 첨부의 액세스권 (RuntimePermission 와 같이)으로, 동작은 없습니다. 현재 정의되고 있는 이름은, 다음의 1 개 뿐입니다.  <p>
+</blockquote><blockquote><pre>suppressAccessChecks
+</pre></blockquote><blockquote>
+<a name="26186"><!-- --></a> 이것은, 리플렉트 된 객체가 사용되는 위치에서 실행되는, Java 프로그램 언어의 표준의 액세스 체크 (public, default(package) 액세스, protected, private 멤버에 대한 체크)를 무효로 합니다. <p>
+</blockquote>
+<br> <a name="26159"><!-- --></a> 
+<h4><i>	3.1. 13	java.io.SerializablePermission</i></h4>
+
+<blockquote>
+<a name="26194"><!-- --></a> 이 클래스에는 다음의 타겟이 있어, 동작은 없습니다. <p>
+</blockquote><blockquote><pre>enableSubclassImplementation
+enableSubstitution
+</pre></blockquote>
+<br> <a name="26196"><!-- --></a> 
+<h4><i>	3.1. 14	java.security.SecurityPermission</i></h4>
+
+<blockquote>
+<a name="26201"><!-- --></a> SecurityPermissions 는, 시큐리티 관련의 객체 (Security, Policy, Provider, Signer, Identity 객체등)에의 액세스를 관리합니다. 이 클래스에는 다음의 타겟이 있어, 동작은 없습니다. <p>
+</blockquote><blockquote><pre>getPolicy
+setPolicy
+getProperty. {key}
+setProperty. {key}
+insertProvider. {provider name}
+removeProvider. {provider name}
+setSystemScope
+setIdentityPublicKey
+setIdentityInfo
+printIdentity
+addIdentityCertificate
+removeIdentityCertificate
+clearProviderProperties. {provider name}
+putProviderProperty. {provider name}
+removeProviderProperty. {provider name}
+getSignerPrivateKey
+setSignerKeyPair
+</pre></blockquote>
+<br> <a name="26221"><!-- --></a> 
+<h4><i>	3.1. 15	java.security.AllPermission</i></h4>
+
+<blockquote>
+<a name="22641"><!-- --></a> 이 액세스권에서는, 모든 액세스가 허가됩니다. 모든 (즉 다수의) 액세스의 허가가 필요한 작업을 하는 시스템 관리 책임자의 일을 간단하게 하기 위해서 준비되어 있습니다. 시큐리티 정책에 모든 액세스권을 반복해 정의하는 것은 효율적이 아닙니다. AllPermission 는, 장래 정의되는 새로운 액세스권도 허가합니다. <p>
+<a name="22644"><!-- --></a> 이 액세스권을 주는 경우는, 충분한 주의가 필요합니다. <p>
+</blockquote>
+<br>
+
+<a name="AuthPermission"><!-- --></a> 
+<h4><i> 3.1. 16    javax.security.auth.AuthPermsision</i></h4>
+<blockquote>
+<a name="AuthPermission description"><!-- --></a> AuthPermission 에서는, 인증 액세스권과 인증에 관련하는 객체 (Subject, SubjectDomainCombiner, LoginContext, 및 Configuration)를 취급합니다. 이 클래스에는 다음의 타겟이 있어, 동작은 없습니다.
+<p>
+<pre>
+doAs
+doAsPrivileged
+getSubject
+getSubjectFromDomainCombiner
+setReadOnly
+modifyPrincipals
+modifyPublicCredentials
+modifyPrivateCredentials
+refreshCredential
+destroyCredential
+createLoginContext. {name}
+getLoginConfiguration
+setLoginConfiguration
+refreshLoginConfiguration
+</pre>
+</blockquote>
+<br>
+
+<a name="22640"><!-- --></a> 
+<h4><i>	3.10. 17	액세스권의 의미</i></h4>
+
+<blockquote>
+<a name="22636"><!-- --></a> 전술한 것처럼, 액세스권은 서로 비교되는 일이 있습니다. 이러한 비교를 간단하게 실시할 수 있도록(듯이), 각 액세스권 클래스에서 <code>implies</code> 메소드를 정의해, 특정의 액세스권 클래스와 다른 액세스권 클래스와의 관계를 나타낼 필요가 있습니다. 예를 들어, java.io.FilePermission("/tmp/*", "read")에는 java.io.FilePermission("/tmp/a.txt", "read")가 포함됩니다만, java.net.NetPermission 에는 어느 것도 포함되지 않습니다. <p>
+<a name="22639"><!-- --></a> 언뜻 본 것 만으로는 모르는, 암묵의 포함 관계도 있습니다. 예를 들어, 어느 애플릿에 파일 시스템 전체에의 기입해 액세스권을 준다고 합니다. 이것에 의해, 이 애플릿에는, JVM 실행시 환경을 포함한 시스템의 바이노리필드의 개서가 허가된다고 생각됩니다. 이것은 결과적으로, 그 애플릿에 모든 액세스권을 주는 것을 의미합니다. <p>
+<a name="22642"><!-- --></a> 다른 예로서 어느 애플릿에 클래스 로더를 생성하는 실행시 액세스권을 주는 경우, 클래스 로더는 위기인 오퍼레이션을 실행할 수 있으므로, 결과적으로, 이 애플릿에 한층 더 많은 액세스권을 주게 됩니다. <p>
+<a name="22643"><!-- --></a> 「위험」을 수반하는 액세스권에는 이외에, 시스템 프로퍼티의 설정을 허가하는 것, 패키지의 정의나 native code 라이브러리의 로딩을 위한 실행시 액세스권 (Java 의 시큐리티 구조는 native code 레벨에서의 악의가 있는 동작을 막도록(듯이) 설계되어 있지 않기 때문에), 및 AllPermission 가 있습니다. <p>
+<a name="29284"><!-- --></a> 액세스권의 상세한 것에 대하여는,<code>http://java.sun.com/j2se/sdk/1. 2/docs/guide/security/permissions.html</code> 를 참조해 주세요. 액세스권을 필요로 하는 Java 2 SDK 편입의 메소드, 및 특정의 액세스권의 할당에 수반하는 위험성에 대해, 일람으로 설명되고 있습니다. <p>
+</blockquote>
+<br> <a name="20211"><!-- --></a> 
+<h4><i>	3.1. 18	새로운 타입의 액세스권을 작성하는 방법</i></h4>
+
+<blockquote>
+<a name="20183"><!-- --></a> 신기능의 추가 또는 java.lang.RuntimePermission 등의 클래스에의 추가의 타겟 키워드의 도입에 의해, Java 2 SDK 에 짜넣어지고 있는 액세스권을 확장하는 것은, Sun Microsystems 인 만큼 용서되고 있습니다. 이것은 일관성을 유지하기 위해서 필요한 일입니다. <p>
+<a name="21125"><!-- --></a> 새롭게 액세스권을 작성하려면 , 다음의 예의 같은 방법을 추천합니다. ABC 사의 어플리케이션 개발자가 「TV 를 본다」유익의 새로운 커스텀의 액세스권을 작성한다고 합니다. <p>
+<a name="21131"><!-- --></a> 최초로, abstract 클래스 java.security.Permission (또는 그 서브 클래스의 하나)를 상속하는 새로운 클래스 com.abc.Permission, 및 com.abc.Permission 를 상속하는 새로운 클래스 com.abc.TVPermission 를 작성합니다. 다른 클래스의 <code>implies</code> 메소드가 올바르게 구현되도록 주의해 주세요. 다만, com.abc.TVPermission 는 중간의 com.abc.Permission 이 없어도, 직접 java.security.Permission 를 상속할 수 있습니다. <p>
+</blockquote><blockquote><pre>public class com.abc.Permission extends java.security.Permission
+
+public class com.abc.TVPermission extends com.abc.Permission
+</pre></blockquote><blockquote>
+<a name="20190"><!-- --></a> 다음의 그림에서는, 서브 클래스의 관계를 나타냅니다.  <p>
+<a name="22238"><!-- --></a> 
+<p><center><img alt="Permission (으)로부터 서브 클래스 com.abc.Permission,com.abc.TVPermission 에의 논리 플로우를 나타낸 플로차트(flow chart)" src="security-spec.doc.anc8.gif"></center><p>
+<a name="20195"><!-- --></a> 
+<p>
+<a name="20219"><!-- --></a> 다음에, 어플리케이션 패키지에 그러한 신규 클래스를 인클루드 합니다.  <p>
+<a name="29053"><!-- --></a> 특정의 코드에 이 새로운 타입의 액세스권을 허가하는 경우, 각 사용자는 정책 파일에 엔트리를 추가합니다. (정책 파일의 구문의 상세한 것에 대하여는 후술). 다음에, 5 채널을 보는 (watch) 권한을 http://java.sun.com/ 의 코드에 부여하는 정책 파일의 예를 나타냅니다. <p>
+</blockquote><blockquote><pre>grant codeBase&#160; "http://java.sun.com/" {
+    permission com.abc.TVPermission "channel-5", "watch";
+    }
+</pre></blockquote><blockquote>
+<a name="20199"><!-- --></a> 어플리케이션의 자원 관리 코드로, 액세스권을 주어야할 것인가 어떤가의 체크를 실시할 때는, com.abc.TVPermission 를 파라미터로서 AccessController 의 <code>checkPermission</code> 메소드를 호출합니다. <p>
+</blockquote><blockquote><pre>   com.abc.TVPermission tvperm = new
+        com.abc.TVPermission("channel-5", "watch");
+   AccessController.checkPermission(tvperm);
+</pre></blockquote><blockquote>
+<a name="25739"><!-- --></a> 새로운 액세스권을 추가할 때는, 새로운 (액세스권) 클래스를 작성합니다. 	시큐리티 매니저에게 새로운 메소드를 추가하는 것은 아니기 때문에 주의해 주세요. 이전에는, 새로운 타입의 액세스를 체크하기 위해서는 SecurityManager 클래스에 새로운 메소드를 추가할 필요가 있었습니다. <p>
+<a name="23227"><!-- --></a> 「channel-1:13」이나 「channel-*」 등, 보다 난해한 TVPermissions 를 허가하려면 , 이러한 유사명의 시멘틱스의 취급을 알고 있는 TVPermissionCollection 객체를 구현할 필요가 있을지도 모릅니다. <p>
+<a name="24463"><!-- --></a> 새로운 코드가 액세스 제어의 편입 알고리즘을 실행하기 위해서는, AccessController 클래스의 <code>checkPermission</code> 메소드를 호출해 액세스권 체크를 기동합니다. ClassLoader 이나 SecurityManager 가 있을지 어떨지에 대해서는, 반드시 조사할 필요는 없습니다. 다만, 인스톨 되고 있는 시큐리티 매니저 클래스에 그 알고리즘을 맡기는 경우는,<code>SecurityManager.checkPermission</code> 메소드를 호출합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="25999"><!-- --></a>  <i>	3.2	 </i> java.security.CodeSource
+</h3>
+
+<blockquote>
+<a name="27604"><!-- --></a> 이 클래스는, HTML 의 코드 베이스의 개념을 확장해, 코드의 위치 (URL) 뿐만이 아니라 그 위치로부터의 서명 첨부 코드의 확인에 사용하는 공개키를 가지는 증명서가 들어갑니다. 다만, 이것은 HTML 파일의 CodeBase 태그와 같지 않기 때문에 주의해 주세요. 각 증명서는 java.security.cert.Certificate 로서 나타내져 각 URL 는 java.net.URL 로서 나타내집니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="20128"><!-- --></a>  <i>	3.3	 </i> java.security.Policy
+</h3>
+
+<blockquote>
+<a name="23559"><!-- --></a> 어느 소스로부터의 코드에 어느 액세스권을 사용할 수 있는지를 지정하는 Java 어플리케이션 환경의 system security 정책는, Policy 객체로 나타내집니다. 정확하게는, Policy 클래스의 abstract 메소드를 구현한 Policy 서브 클래스에 의해 표현됩니다.  <p>
+<a name="23620"><!-- --></a> 파일의 읽고 쓰기 등, 애플릿 (또는 SecurityManager 아래에서 실행중의 어플리케이션)이 시큐리티의 대상인 동작을 실시하기 위해서(때문에)는, 그 애플릿 (또는 어플리케이션)은 그 동작을 위한 액세스권이 주어지고 있는 것이 필요합니다. 유일한 예외로서 코드는 반드시, 같은 CodeSouce, 및 그 CodeSouce 의 서브 디렉토리로부터의 파일의 읽기권을 자동적으로 가집니다. 이 경우는, 명시적인 액세스권은 필요 없습니다. <p>
+<a name="23520"><!-- --></a> Policy 객체의 인스턴스는, 복수 존재할 수 있습니다만, 「유효한」인스턴스는 항상 1 개(살) 뿐입니다. 현재 인스톨 되고 있는 Policy 객체는 <code>getPolicy</code> 메소드의 호출에 의해 취득할 수 있어(Policy 의 리셋권을 가지는 코드에 의한다) <code>setPolicy</code> 메소드의 호출에 의해 변경할 수 있습니다. <p>
+<a name="23433"><!-- --></a> Policy 객체에 이용되는 정책 정보의 소스의 위치는, Policy 의 구현에 따라서 다릅니다. 예를 들어, 정책의 설정은, 단순한 ASCII 파일, Policy 클래스의 직렬화 바이노리필드, 데이타베이스의 어떤 것인가의 형태로 보존할 수 있습니다. Policy 의 레퍼런스 구현의 1 개에서는, 정보를 정적인 정책 설정 파일로부터 가져옵니다.  <p>
+</blockquote>
+<br> <a name="20131"><!-- --></a> 
+<h4><i>	3.3. 1	Policy 의 파일 형식</i></h4>
+
+<blockquote>
+<a name="23601"><!-- --></a> Policy 의 레퍼런스 구현에서는, 정책는 1 개 또는 복수의 정책 설정 파일내로 지정할 수 있습니다. 설정 파일은, 특정의 코드 소스로부터의 코드에 허가되는 액세스권을 나타냅니다. 각 설정 파일은, UTF-8 방식에서 encode 할 필요가 있습니다. <p>
+<a name="24120"><!-- --></a> 정책 설정 파일에는, 반드시 엔트리의 리스트가 포함됩니다. 1 개(살)의 「keystore」엔트리와 0 이상의 「grant」엔트리를 갖게할 수가 있습니다. <p>
+<a name="23697"><!-- --></a> 키스토어는, 비공개키와 그 열쇠에 관련하는 디지털 증명서 (대응하는 공개키를 인증하는 X. 509 증명서 체인등)의 데이타베이스입니다. 키스토어의 작성과 관리에는, keytool 유틸리티를 사용합니다. 정책 설정 파일로 지정되고 있는 키스토어는, 그 파일의 grant 엔트리로 지정되고 있는 서명자의 공개키를 조합하기 위해서 사용됩니다. 서명자의 별명을 지정하고 있는 grant 엔트리가 있는 경우, 또는 법칙의 별명을 지정하고 있는 grant 엔트리가 있는 경우는, 정책 설정 파일에는 반드시 keystore 엔트리를 둡니다 (다음을 참조). <p>
+<a name="23698"><!-- --></a> 현재, 정책 파일로 지정할 수 있는 키스토어엔트리는 1 개만으로, 2 번째 이후의 키스토어엔트리는 무시됩니다. 키스토어엔트리는, 정책 파일의 부여 엔트리의 밖이면, 어디로 지정해도 괜찮습니다. keystore 엔트리의 구문은 다음과 같습니다. <p>
+</blockquote><blockquote><pre>keystore "some_keystore_url", "keystore_type";
+</pre></blockquote><blockquote>
+<a name="23919"><!-- --></a> 여기서, 「some_keystore_url」에는 키스토어의 URL 위치를 지정해, 「keystore_type」에는 키스토어의 타입을 지정합니다. keystore_type 의 지정은 임의로 실시합니다. 지정하지 않는 경우, 키스토어의 타입은, 시큐리티 프로퍼티 파일의 「keystore.type」프로퍼티으로 지정된 것으로 간주해집니다. <p>
+<a name="27653"><!-- --></a> URL 는, 정책 파일과의 상대 위치입니다. 예를 들어, 시큐리티 프로퍼티 파일 중(안)에서 정책 파일이 다음과 같이 지정되고 있다고 합니다. <p>
+</blockquote><blockquote><pre>policy.url. 1=http://foo.bar.com/blah/some.policy
+</pre></blockquote><blockquote>
+<a name="23922"><!-- --></a> 정책 파일에 다음과 같은 엔트리가 있는 경우는,<p>
+</blockquote><blockquote><pre>keystore ". keystore";
+</pre></blockquote><blockquote>
+<a name="23924"><!-- --></a> 키스토어는 다음의 위치에서 로드 됩니다. <p>
+</blockquote><blockquote><pre>http://foo.bar.com/blah/.keystore
+</pre></blockquote><blockquote>
+<a name="23689"><!-- --></a> URL 는 절대 위치에서도 지정할 수 있습니다. <p>
+<a name="27656"><!-- --></a> 키스토어의 타입이 정의하는 것은, 키스토어 정보의 기억 영역과 데이터 형식, 및 키스토어내의 비공개키와 키스토어 자체의 무결성을 보호하기 위해서 사용되는 알고리즘입니다. Sun Microsystems 가 지원하는 디폴트의 타입은, Sun Microsystems 에 소유권이 있는 키스토어타이프명 「JKS」입니다.  <p>
+<a name="24132"><!-- --></a> 정책 파일의 각 grant 엔트리는, 본질적으로는 1 개의 CodeSource 와 그 액세스권으로부터 완성됩니다. 실제로는, CodeSource 는 1 개의 URL 와 증명서세트로부터 완성됩니다만, 정책 파일의 엔트리의 내용은 URL 와 서명자명의 리스트입니다. 시스템은, 지정된 서명자의 증명서를 결정하기 위해서(때문에) 키스토어를 조사한 후에, 대응하는 CodeSource 를 생성합니다. <p>
+<a name="20263"><!-- --></a> 정책 파일의 각 grant 엔트리는, 다음의 형식의 어떤 것인가입니다. 여기서 선두의 「grant」는 예약어(reserved word)로, 새로운 엔트리의 개시를 나타내, 괄호안에는 옵션 항목이 나타납니다. 각 엔트리내의 선두의 「permission」도 예약어(reserved word)로, 그 엔트리내에서 새로운 액세스권의 기술이 개시되는 것을 나타냅니다. 각 grant 엔트리는, 지정한 코드 소스와 법칙에 1 조의 액세스권을 줍니다. <p>
+</blockquote><blockquote>
+<pre>
+grant [SignedBy "signer_names"] [, CodeBase "URL"]
+      [, Principal [principal_class_name] "principal_name"]
+      [, Principal [principal_class_name] "principal_name"] ... {
+    permission permission_class_name [ "target_name" ] 
+               [, "action"] [, SignedBy "signer_names"];
+    permission ...
+};
+</pre></blockquote><blockquote>
+<a name="21173"><!-- --></a> 콤마의 직전 또는 직후에는, 공백 몬지를 들어갈 수 있어도 괜찮습니다. 액세스권 클래스의 이름은, Java 의 완전 수식형의 클래스명 (java.io.FilePermission 등)이 아니면 안되어, 생략 (FilePermission 등)은 할 수 없습니다. <p>
+<a name="20259"><!-- --></a> 동작의 필드는, 생략 가능한 옵션필드로, 클래스가 동작을 필요로 하지 않는 경우에는 생략 할 수 있습니다. 이 필드를 지정하는 경우는, 반드시 타겟 필드의 직후에 둡니다.   <p>
+<a name="29148"><!-- --></a> 코드 베이스 URL 의 정확한 의미는, 마지막 문자에 의존합니다. 말미가 「/」의 코드 베이스는, 지정된 디렉토리내의 모든 클래스 파일 (JAR 파일이 아니다)에 일치합니다. 말미가 「/*」의 코드 베이스는, 그 디렉토리내에 있는 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두)에 일치합니다. 말미에 「/-」이 붙은 코드 베이스는, 디렉토리의 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두), 및 재귀적으로 그 디렉토리의 서브 디렉토리에 있는 모든 파일을 나타냅니다. <p>
+<a name="29146"><!-- --></a> CodeBase 필드 (URL)는, 생략 가능한 옵션필드로, 생략 했을 경우는 「임의의 코드 베이스」가 지정됩니다. <p>
+<a name="20250"><!-- --></a> 최초의 서명자명 필드는, 서명자가 관련지을 수 있고 있는 1 조의 공개키 (키스토어의 증명서내에 있다)에, 다른 기구를 통해서 매핑 된 캐릭터 라인의 별명입니다. 이러한 열쇠는, 어느 서명 첨부의 클래스가 정말로 이러한 서명자에 의해 서명되었는지의 여부를 확인하기 위해서 사용됩니다. <p>
+<a name="20298"><!-- --></a> 이 서명자 필드는, 복수의 서명자의 이름을 콤마 단락의 캐릭터 라인으로 지정할 수 있습니다. 예를 들어, 「Adam, Eve, Charles」는, Adam 와 Eve 와 Charles 에 의해 서명되는 것을 의미합니다 ( 각 자의 관계는 OR 는 아니고 AND). <p>
+<a name="20299"><!-- --></a> 이 필드는 생략 가능한 옵션필드로, 생략 했을 경우는 「임의의 서명자」, 즉 「코드가 서명 첨부인가 어떤가는 불문」의 지정이 됩니다. <p>
+<a name="22285"><!-- --></a> Permission 엔트리내에 있는 2 번째의 서명자 필드는, 키스토어엔트리의 별명을 나타냅니다. 이 키스토어엔트리에는, 그 액세스권 클래스를 구현하고 있는 바이트 코드에의 서명에 사용되는 비공개키에 대응하는 공개키가 포함됩니다. 이 액세스권 엔트리가 유효한 것은 (즉 이 엔트리에 근거해 액세스 제어권이 주어지는 것은), 바이트 코드의 구현이 별명에 의해 올바르게 서명되고 있는 것이 확인되었을 경우만입니다. <p>
+<a name="principal description"><!-- --></a> 법칙의 값은 class_name 와 principal_name 의 페어를 지정합니다. 이 페어는, 실행중의 thread의 법칙 세트내에 있을 필요가 있습니다. 법칙 세트는, Subject 에 의해 실행하는 코드에 관련지을 수 있습니다. 법칙 필드는 생략 가능합니다. 생략 했을 경우는, 「임의의 법칙」이라고 하는 의미가 됩니다.
+
+<p><a name=keystoreAliasReplace><b>키스토어의 별명의 치환 </b></a> 
+<p> principal class_name/principal_name 의 페어가 단일 인용부호로 둘러싸인 캐릭터 라인으로서 지정되는 경우는, 키스토어의 별명으로서 다루어집니다. 키스토어는 별명을 경유해 X509 증명서를 조사해, 문의합니다. 키스토어가 있는 경우는, principal_class 는 자동적으로 <code>javax.security.auth.x500.X500Principal</code> 로서 다루어져 principal_name 는 증명서로 이름이 식별된 주제로서 자동적으로 다루어집니다. X509 증명서의 매핑이 발견되지 않는 경우는, grant 엔트리는 모두 무시됩니다.
+<p>
+<a name="21134"><!-- --></a> CodeBase 필드, SignedBy 필드, 및 Principal 필드의 순서는 임의입니다. <p>
+<a name="21178"><!-- --></a> Policy 파일 형식의, 비공식의 BNF 문법의 예를 다음에 나타냅니다. 여기서 소문자로 시작되는 말은 터미널어입니다. <p>
+</blockquote><blockquote><pre>PolicyFile -&gt; PolicyEntry | PolicyEntry; PolicyFile
+PolicyEntry -&gt; grant {PermissionEntry}; |
+           grant SignerEntry {PermissionEntry} |
+           grant CodebaseEntry {PermissionEntry} |
+           grant PrincipalEntry {PermissionEntry} |
+           grant SignerEntry, CodebaseEntry {PermissionEntry} |
+           grant CodebaseEntry, SignerEntry {PermissionEntry} |
+           grant SignerEntry, PrincipalEntry {PermissionEntry} |
+           grant PrincipalEntry, SignerEntry {PermissionEntry} |
+           grant CodebaseEntry, PrincipalEntry {PermissionEntry} |
+           grant PrincipalEntry, CodebaseEntry {PermissionEntry} |
+           grant SignerEntry, CodebaseEntry, PrincipalEntry {PermissionEntry} |
+           grant CodebaseEntry, SignerEntry, PrincipalEntry {PermissionEntry} |
+           grant SignerEntry, PrincipalEntry, CodebaseEntry {PermissionEntry} |
+           grant CodebaseEntry, PrincipalEntry, SignerEntry {PermissionEntry} |
+           grant PrincipalEntry, CodebaseEntry, SignerEntry {PermissionEntry} |
+           grant PrincipalEntry, SignerEntry, CodebaseEntry {PermissionEntry} |
+           keystore "url"
+SignerEntry -&gt; signedby (a comma-separated list of strings)
+CodebaseEntry -&gt; codebase (a string representation of a URL)
+PrincipalEntry -&gt; OnePrincipal | OnePrincipal, PrincipalEntry
+OnePrincipal -&gt; principal [ principal_class_name ] "principal_name" (a principal)
+PermissionEntry -&gt; OnePermission | OnePermission PermissionEntry
+OnePermission -&gt; permission permission_class_name
+                 [ "target_name" ] [, "action_list"]
+                 [, SignerEntry];
+
+</pre></blockquote><blockquote>
+<a name="25673"><!-- --></a> 여기서, 몇개인가예를 나타냅니다. 다음의 정책에서는, Roland 에 의해 서명된 코드에 액세스권 a.b.Foo 를 줍니다. <p>
+</blockquote><blockquote><pre>grant signedBy "Roland" {
+    permission a.b.Foo;
+};
+</pre></blockquote><blockquote>
+<a name="21211"><!-- --></a> 다음의 예에서는, 모든 코드 (서명자나 코드 베이스에 관련되지 않고)에 FilePermission 를 줍니다. <p>
+</blockquote><blockquote><pre>grant {
+   permission java.io.FilePermission ". tmp", "read";
+};
+</pre></blockquote><blockquote>
+<a name="21218"><!-- --></a> 다음의 예에서는, Li 와 Roland 의 양자에 의해 서명된 코드에, 2 개의 액세스권을 줍니다. <p>
+</blockquote><blockquote><pre>grant signedBy "Roland, Li" {
+  permission java.io.FilePermission "/tmp/*", "read";
+  permission java.util.PropertyPermission "user. *";
+};
+</pre></blockquote><blockquote>
+<a name="21226"><!-- --></a> 다음의 예에서는, Li 에 의해 서명되고 http://java.sun.com 로부터 로드 된 코드에, 2 개의 액세스권을 줍니다. <p>
+</blockquote><blockquote><pre>grant codeBase "http://java.sun.com/*", signedBy "Li" {
+    permission java.io.FilePermission "/tmp/*", "read";
+    permission java.io.SocketPermission "*", "connect";
+};
+</pre></blockquote><blockquote>
+<a name="22293"><!-- --></a> 다음의 예에서는, com.abc.TVPermission 를 구현한 바이트 코드가 확실히 Li 에 의해 서명되고 있는 경우에만, Li 와 Roland 의 양자에 의해 서명된 코드에 2 개의 액세스권을 줍니다. <p>
+</blockquote><blockquote><pre>grant signedBy "Roland, Li" {
+  permission java.io.FilePermission "/tmp/*", "read";
+  permission com.abc.TVPermission "channel-5", "watch", 
+     signedBy "Li";
+};
+</pre></blockquote><blockquote>
+<a name="22296"><!-- --></a> 2 번째의 서명자 필드를 사용하는 목적은, 인스톨 된 Java Runtime 에 그 액세스권 클래스가 존재하지 않는 경우에, 부정행위를 막는 것입니다. 예를 들어, com.abc.TVPermission 클래스의 카피는, 원격의 JAR 어카이브(archive)의 일부로서 다운로드할 수 있습니다만, 사용자 정책에 그것을 참조하는 엔트리가 포함되는 일이 있습니다. 어카이브(archive)는 단명이므로, com.abc.TVPermission 클래스가 다른 Web 사이트로부터 다시 다운로드될 가능성이 있습니다. 이 때의 사용자 정책내의 액세스권 엔트리의 존재는, 클래스의 바이트 코드의 최초의 카피에 대한 사용자의 신뢰를 반영하는 것이기 (위해)때문에, 2 번째의 카피가 인증이 끝난 상태인 것은 중요합니다. <p>
+<a name="22304"><!-- --></a> 인증을 확실한 것으로 하기 위해서(때문에), 바이트 코드의 최초의 카피 (의 해시치)를 보존해 2 번째의 카피와 비교하는 방법은 아니고, 디지털 서명을 사용하는 이유는, 액세스권 클래스의 작자가 합법적으로 클래스 파일을 갱신해 새로운 설계나 구현을 반영하는 것이 있기 때문입니다. <p>
+<a name="25676"><!-- --></a> 주:파일 패스의 캐릭터 라인은, 플랫폼 마다 다른 형식에서 지정할 필요가 있습니다. 이것은, 장래, 전플랫폼에 공통되는 파일 기술 언어를 할 수 있을 때까지는 필요합니다. 상기의 각 예는, Solaris 시스템용의 캐릭터 라인으로 기술되고 있습니다. Windows 시스템에서는, 캐릭터 라인중에서 직접 파일 패스를 지정하는 경우는, 「\」기호는 다음과 같이 2 개(살)의 「\」기호로 나타냅니다. <p>
+</blockquote><blockquote><pre>grant signedBy "Roland" {
+  permission java.io.FilePermission "C:\\users\\Cathy\\*", "read";
+};
+</pre></blockquote><blockquote>
+<a name="25679"><!-- --></a> 캐릭터 라인은 토크나이자 (java.io.StreamTokenizer)에 의해 처리됩니다만, 그곳에서는 「\」을 사용한 이스케이프 캐릭터 라인 (개행을 나타내는 「\n」등)의 사용이 용서되므로, 단일의 「\」기호를 나타내기 위해서(때문에)는 2 개(살)이 연속한 「\」기호를 사용할 필요가 있습니다. 토크나이자가 FilePermission 의 타겟 캐릭터 라인의 처리를 끝내 2 개(살)이 연속한 「\」기호를 단일의 「\」기호로 변환하면(자), 결과는 다음의 실제의 패스가 됩니다<p>
+</blockquote><blockquote><pre>"C:\users\Cathy\*"
+</pre></blockquote>
+
+<a name="principal grant example"><!-- --></a> 
+<blockquote>
+마지막으로, 법칙 베이스의 grant 엔트리의 예를 나타냅니다.  <p>
+<pre>
+grant principal javax.security.auth.x500.X500Principal "cn=Alice" {
+  permission java.io.FilePermission "/home/Alice", "read, write";
+};
+</pre>
+이것에 의해, X500Principal 의 액세스권 「cn=Alice」로서 실행하는 코드는 「/home/Alice」를 읽어내는 일도 기입하는 일도 가능하게 됩니다.
+
+<p>다음의 예는, codesource 정보와 principal 정보를 가지는 grant 문을 나타내고 있습니다.
+<pre>
+  grant codebase "http://www.games.com",
+        signedBy "Duke",
+        principal javax.security.auth.x500.X500Principal "cn=Alice" {
+    permission java.io.FilePermission "/tmp/games", "read, write";
+  };
+</pre>
+이것에 의해, 「Duke」에 의해 서명되어 「www.games.com」로부터 다운로드된 코드가 「cn=Alice」에 의해 실행되면(자), 「/tmp/games」디렉토리에의 읽어내 권이라고 써내 권이 주어집니다.
+
+<p>다음의 예는, 키스토어의 별명을 옮겨놓는 grant 문을 나타내고 있습니다.
+<pre>
+  keystore "http://foo.bar.com/blah/.keystore";
+
+  grant principal "alice" {
+    permission java.io.FilePermission "/tmp/games", "read, write";
+  };
+</pre>
+「alice」는 다음의 액세스권으로 옮겨집니다.
+<blockquote>
+javax.security.auth.x500.X500Principal "cn=Alice"
+</blockquote>
+다만, 키스토어의 별명 <i>alice</i> 에 관련지을 수 있었던 X. 509 증명서가 주제의 식별명 「cn=Alice」를 가지고 있는 것이 전제가 됩니다. 이것에 의해, X500Principal 의 액세스권 「cn=Alice」에 의해 실행되는 코드에, /tmp/games 디렉토리에의 읽어내 권이라고 써내 권이 주어집니다.
+
+</blockquote>
+
+<br> <a name="25970"><!-- --></a> 
+<h4><i>	3.3. 2	정책 파일내의 프로퍼티의 전개</i></h4>
+
+<blockquote>
+<a name="25971"><!-- --></a> 정책 파일과 시큐리티 프로퍼티 파일에서는, 프로퍼티의 전개가 가능합니다.   <p>
+<a name="24003"><!-- --></a> 프로퍼티의 전개는, 쉘내의 변수의 전개와 닮아 있습니다. 정책 파일 또는 시큐리티 프로퍼티 파일에 다음과 같은 캐릭터 라인이 있는 경우,<p>
+<a name="23943"><!-- --></a>  "${some.property}"<p>
+<a name="23944"><!-- --></a> 이 캐릭터 라인은 지정된 시스템 프로퍼티의 값까지 전개됩니다. 다음에 예를 나타냅니다. <p>
+</blockquote><blockquote><pre>permission java.io.FilePermission "${user.home}", "read";
+</pre></blockquote><blockquote>
+<a name="23948"><!-- --></a> 이 경우,"${user.home}" 는, 시스템 프로퍼티 「user.home」의 값에 전개됩니다. user.home 의 값이 &#34;/home/cathy&#34; 인 경우, 위의 기술은 아래의 기술과 같게 됩니다. <p>
+</blockquote><blockquote><pre>permission java.io.FilePermission "/home/cathy", "read";
+</pre></blockquote><blockquote>
+<a name="24022"><!-- --></a> 플랫폼에 의해 다른 정책 파일을 사용하기 쉽게 하기 위해서, 특수 표기 「${/}」을 사용할 수 있습니다. 이것은 「${file.separator}」에의 쇼트 컷으로, 다음과 같이 해 액세스권을 정의할 수 있습니다.  <p>
+</blockquote><blockquote><pre>permission java.io.FilePermission "${user.home}${/}*", "read";
+</pre></blockquote><blockquote>
+<a name="23952"><!-- --></a> Solaris 시스템으로, user.home 가 /home/cathy 이면, 이것은 다음과 같이 변환됩니다. <p>
+</blockquote><blockquote><pre>permission java.io.FilePermission "/home/cathy/*", "read";
+</pre></blockquote><blockquote>
+<a name="23955"><!-- --></a> Windows 시스템으로, user.home 가 C:\users\cathy 이면, 다음과 같이 변환됩니다. <p>
+</blockquote><blockquote><pre>permission java.io.FilePermission "C:\users\cathy\*", "read";
+</pre></blockquote><blockquote>
+<a name="23958"><!-- --></a> 특수한 케이스로서 코드 베이스의 프로퍼티을 이하와 같이 기술하면(자),<p>
+</blockquote><blockquote><pre>grant codeBase "file:/${java.home}/lib/ext/"
+</pre></blockquote><blockquote>
+<a name="23962"><!-- --></a> file.separator 문자는 자동적으로 모두 / 로 옮겨집니다. 코드 베이스가 URL 이기 (위해)때문에,/ 에 옮겨놓는 것이 바람직하다고 말할 수 있습니다. 따라서, Windows 시스템으로 java.home 이 C:\j2sdk1. 2 로 설정되어 있어도, 다음과 같이 변환됩니다. <p>
+</blockquote><blockquote><pre>grant codeBase "file:/C:/j2sdk1. 2/lib/ext/"
+</pre></blockquote><blockquote>
+<a name="23965"><!-- --></a> 따라서, 코드 베이스 캐릭터 라인에서는 ${/} 을 사용할 필요는 없습니다. 또, 사용해야 하는 것이 아닙니다. <p>
+<a name="23967"><!-- --></a> 프로퍼티의 전개는, 정책 파일로 이중 인용부호의 사용이 허가되는 위치에서는 어디에서라도 발생합니다. 이것에는, 서명자, 코드 베이스, 타겟명, 동작의 각 필드가 있습니다. <p>
+<a name="25580"><!-- --></a> 프로퍼티의 전개가 허가될지 어떨지는, 시큐리티 프로퍼티 파일의 「policy.expandProperties」프로퍼티의 값에 의해 정해집니다. 이 프로퍼티의 값이 true (디폴트)의 경우는, 전개가 허가됩니다. <p>
+<a name="25584"><!-- --></a> 주:상자의 프로퍼티은 사용할 수 없습니다. 다음에 예를 나타냅니다.  <p>
+</blockquote><blockquote><pre>"${user. ${foo}}"
+</pre></blockquote><blockquote>
+<a name="25601"><!-- --></a> 이 예에서는, 「foo」프로퍼티이 「home」로 설정되어 있는 경우여도, 에러가 됩니다. 그 이유는, 프로퍼티의 구문 분석에서는 상자의 프로퍼티을 인식할 수 없기 때문입니다. 프로퍼티 구문 분석 프로그램은, 최초의 「${」을 찾아내면(자), 다음에 최초의 「}」을 찾아, 그 결과 (이 경우는 「${user. $foo}」)을 프로퍼티이라고 해석하려고 시도합니다. 그러나, 그러한 프로퍼티이 없는 경우는 에러가 됩니다. <p>
+<a name="25616"><!-- --></a> 주 -부여 엔트리, 액세스권 엔트리, 또는 키스토어엔트리로 전개할 수 없는 프로퍼티이 있는 경우, 그 엔트리는 무시됩니다. 예를 들어, 다음과 같이 시스템 프로퍼티 foo 가 정의되어 있지 않은 경우,<p>
+</blockquote><blockquote><pre>grant codeBase "${foo}" {
+  permission ...;
+  permission ...;
+};
+</pre></blockquote><blockquote>
+<a name="25624"><!-- --></a> 이 부여 엔트리내의 액세스권은 모두 무시됩니다. 또, 다음과 같은 경우,<p>
+</blockquote><blockquote><pre>grant {
+  permission Foo "${foo}";
+  permission Bar;
+};
+</pre></blockquote><blockquote>
+<a name="25629"><!-- --></a> 「permission Foo...」엔트리만이 무시됩니다. 또, 다음과 같이 지정되고 있는 경우,<p>
+</blockquote><blockquote><pre>keystore "${foo}";
+</pre></blockquote><blockquote>
+<a name="25632"><!-- --></a> 키스토어엔트리는 무시됩니다. <p>
+<a name="25478"><!-- --></a> 주 -Windows 시스템에서는, 캐릭터 라인중에서 직접 파일 패스를 지정하는 경우는, 「\」기호는 다음과 같이 2 개(살)의 「\」기호로 나타냅니다. <p>
+</blockquote><blockquote><pre>"C:\\users\\cathy\\foo.bat"
+</pre></blockquote><blockquote>
+<a name="25480"><!-- --></a> 캐릭터 라인은 토크나이자 (java.io.StreamTokenizer)에 의해 처리됩니다만, 그곳에서는 「\」을 사용한 이스케이프 캐릭터 라인 (개행을 나타내는 「\n」등)의 사용이 용서되므로, 단일의 「\」기호를 나타내기 위해서(때문에)는 2 개(살)이 연속한 「\」기호를 사용할 필요가 있습니다. 토크나이자가 캐릭터 라인의 처리를 끝내 2 개(살)이 연속한 「\」기호를 단일의 「\」기호로 변환하면(자), 결과는 다음의 실제의 패스가 됩니다.  <p>
+</blockquote><blockquote><pre>"C:\users\cathy\foo.bat"
+</pre></blockquote><blockquote>
+<a name="25529"><!-- --></a> 캐릭터 라인중의 프로퍼티의 전개는, 토크나이자가 그 캐릭터 라인의 처리를 완료한 뒤에 행해집니다. 예를 들어, 다음과 같은 캐릭터 라인이 있다고 합니다. <p>
+</blockquote><blockquote><pre>"${user.home}\\foo.bat"
+</pre></blockquote><blockquote>
+<a name="25503"><!-- --></a> 위와 같은 캐릭터 라인의 경우, 우선 토크나이자가 캐릭터 라인을 처리해, 2 개(살)의 「\」기호를 1 개의 「\」기호에 옮겨놓으면(자) 다음과 같이 됩니다. <p>
+</blockquote><blockquote><pre>"${user.home}\foo.bat"
+</pre></blockquote><blockquote>
+<a name="25541"><!-- --></a> 다음에, user.home 의 값이 C:\users\cathy 이면,${user.home} 프로퍼티이 전개되어 다음과 같이 됩니다. <p>
+</blockquote><blockquote><pre>"C:\users\cathy\foo.bat"
+</pre></blockquote><blockquote>
+<a name="25511"><!-- --></a> 물론, 플랫폼에 의존하지 않기 위해(때문에), 명시적으로 slash를 사용하는 것이 아니라,${/} 프로퍼티을 사용해 다음과 같이 지정하는 (분)편이 바람직하다고 말할 수 있습니다. <p>
+</blockquote><blockquote><pre>"${user.home}${/}foo.bat"
+</pre></blockquote>
+<br> <a name="20264"><!-- --></a> 
+
+<h4><i>	3.3. 3	  </i>정책 파일에 있어서의 일반적인 전개</h4>
+
+<blockquote>
+<a name="20265"><!-- --></a>  정책 파일에서는 일반화된 형식의 전개도 지원되고 있습니다. 예를 들어, 액세스권명이 다음의 형식의 캐릭터 라인을 포함하고 있다고 합니다.
+<blockquote>
+${{protocol:protocol_data}}
+</blockquote>
+이러한 캐릭터 라인이 액세스권명에 포함되는 경우,<i>protocol</i> 의 값에 의해 실행되는 전개의 타입이 정해져,<i>protocol_data</i> 는 전개를 실행하기 위해서 사용됩니다. <i>protocol_data</i> 는 비울 수도 있습니다. 빈 상태(empty)의 경우는, 상기의 캐릭터 라인은 다음과 같은 단순한 형식이 됩니다.
+<blockquote>
+${{protocol}}
+</blockquote>
+<p>
+디폴트의 정책 파일의 구현에서는, 다음의 2 개의 프로토콜이 지원됩니다.
+<ol>
+<li>${{self}}
+	<blockquote>
+	<p> 프로토콜 <b>self</b> 는,${{self}} 캐릭터 라인 전체를 1 개 이상의 법칙 클래스와 법칙명의 페어에 옮겨놓는 것을 나타냅니다. 실제로 실행되는 치환은, permission 를 포함한 grant 구에 의해 정해집니다.
+
+	<p> grant 구에 법칙의 정보가 포함되지 않은 경우는, permission 는 무시됩니다. 법칙 베이스의 grant 구의 문맥에서는, 타겟명에 ${{self}} 를 포함한 permission 만이 유효합니다. 예를 들어, 다음의 grant 구내의 BarPermission 는 항상 무시됩니다.
+
+	<pre>
+	    grant codebase "www.foo.com", signedby "duke" {
+                permission BarPermission "... ${{self}} ...";
+            };
+        </pre>
+
+	grant 구에 법칙 정보가 포함되어 있는 경우는,${{self}} 가 그 법칙 정보로 옮겨집니다. 예를 들어, 다음의 grant 구의 BarPermission 내의 ${{self}} 는,<b>javax.security.auth.x500.X500Principal "cn=Duke"</b> 로 옮겨집니다.
+
+	<pre>
+	    grant principal javax.security.auth.x500.X500Principal "cn=Duke" {
+                permission BarPermission "... ${{self}} ...";
+            };
+	</pre>
+
+	grant 구내에 콤마로 단락지어진 법칙의 리스트가 있는 경우,${{self}} 는, 그 콤마로 단락지어진 법칙의 리스트로 옮겨집니다. grant 클래스내의 법칙 클래스와 법칙명이 어느쪽이나 와일드 카드가 되어 있는 경우,${{self}} 는, 현재의 <code>AccessControlContext</code> 내의 <code>Subject</code> 에 관련지을 수 있던 모든 법칙으로 옮겨집니다.
+
+	<p> 다음의 예는,<b>self</b> 와 <a href=#keystoreAliasReplace>키스토어의 별명의 치환</a>의 양쪽 모두를 포함한 시나리오를 나타내고 있습니다.
+	<pre>
+            keystore "http://foo.bar.com/blah/.keystore";
+
+            grant principal "duke" {
+                permission BarPermission "... ${{self}} ...";
+            };
+	</pre>
+
+	위의 예에서는, 처음에 "duke" 가 다음과 같이 전개됩니다.
+	<blockquote>
+	<b>javax.security.auth.x500.X500Principal "cn=Duke"</b>
+	</blockquote>
+	키스토어의 별명에 관련지을 수 있었던 X. 509 증명서 duke 가 「cn=Duke」라고 하는 주제 식별명을 가지고 있는 것으로 합니다. 다음에,${{self}} 가, grant 구내에서 전개된 그 같은 법칙 정보로 옮겨집니다.
+	<blockquote>
+	<b>javax.security.auth.x500.X500Principal "cn=Duke"</b>.
+	</blockquote>
+
+	</blockquote>
+
+<li>${{alias:<i>alias_name</i>}}
+	<blockquote>
+	<p> 프로토콜 <b>alias</b> 는, java.security.KeyStore 별명의 치환을 나타냅니다. <a href=#20131>KeyStore entry</a>  로 지정된 <code>KeyStore</code> 가 사용됩니다. <i>alias_name</i> 는 <code>KeyStore</code> 의 별명을 나타냅니다. ${{alias:<i>alias_name</i>}} 는 <b>javax.security.auth.x500.X500Principal "DN"</b> 로 옮겨놓을 수 있습니다. 여기서,<i>DN</i> 는 <i>alias_name</i> 에 속하는 증명서의 주제 식별명입니다. 예를 나타냅니다.
+
+	<pre>
+            keystore "http://foo.bar.com/blah/.keystore";
+
+            grant codebase "www.foo.com" {
+                permission BarPermission "... ${{alias:duke}} ...";
+            };
+	</pre>
+
+	위의 예의 별명 <i>duke</i> 에 관련지을 수 있고 있는 X. 509 증명서는, 키스토어 <i>foo.bar.com/blah/.keystore</i> 로부터 취득됩니다. duke 의 증명서가 주제 식별명으로서 "o=dukeOrg, cn=duke" 를 지정해,${{alias:duke}} 가 <b>javax.security.auth.x500.X500Principal "o=dukeOrg, cn=duke"</b> 로 옮겨놓을 수 있는 것으로 합니다.
+
+	<p> 다음의 에러 조건에 해당하는 경우, 액세스권 엔트리는 무시됩니다.
+	<ul>
+	<li> 키스토어엔트리가 지정되어 있지 않다
+	<li> <i>alias_name</i> 가 지정되어 있지 않다
+	<li> <i>alias_name</i> 의 증명서를 취득할 수 없다
+	<li> 취득되는 증명서가 X. 509 증명서는 아니다
+	</ul>
+	</blockquote>
+</ol>
+</blockquote>
+
+<h4><i>	3.3. 4 액세스권의 할당</i></h4>
+
+<blockquote>
+<a name="20233"><!-- --></a> 법칙이 특정의 코드 소스로부터 클래스를 실행할 때, 시큐리티 기구는 정책 객체를 조사해 어느 액세스권을 주어야할 것인가를 결정합니다. 이 결정은, VM 에 인스톨 된 Policy 객체의 <code>getPermissions</code> 메소드 또는 <code>implies</code> 메소드를 호출하는 것으로 행해집니다. <p>
+<a name="20161"><!-- --></a> 와일드 카드 「*」의 사용이 인정되고 있는 등의 이유에 의해, ProtectionDomain 내의 코드 소스가 정책내의 복수의 엔트리의 코드 소스에 일치하는 일이 있습니다. <p>
+<a name="20162"><!-- --></a> 정책내의 적절한 액세스권 세트를 찾기 위해서(때문에), 다음의 알고리즘이 사용됩니다. <p>
+</blockquote><blockquote><pre>1.  코드가 서명 첨부의 경우는, 공개키를 매칭 한다
+2.  어느 열쇠가 정책내에서 인식되지 않는 경우는, 그 열쇠를 무시한다
+   모든 열쇠가 무시되었을 경우는, 그 코드를 서명 없다고 봐 취급한다
+3.  열쇠가 매치 했을 경우, 또는 서명자가 지정되어 있지 않은 경우는,{
+       그러한 열쇠의 정책내의 모든 URL 의 매칭을 시도한다
+   }
+4.  열쇠가 매치 했을 경우 (또는 서명자가 지정되어 있지 않은 경우),
+   또는 URL 가 매치 했을 경우 (또는 코드 베이스가 지정되어 있지 않은 경우)는,{
+       정책내의 모든 법칙과
+       현재 실행중의 thread에 관련지을 수 있고 있는 법칙과의 매치을 모두 시도한다
+5.  열쇠, URL, 또는 법칙의 어떤 것인가가 매치 하지 않는 경우는, 편입의 디폴트 액세스권
+       (오리지날의 sandbox 액세스권)(을)를 사용한다
+</pre></blockquote><blockquote>
+<a name="29102"><!-- --></a> 정책 엔트리의 코드 베이스 URL 의 정확한 의미는, 마지막 문자에 의존합니다. 말미가 「/」의 코드 베이스는, 지정된 디렉토리내의 모든 클래스 파일 (JAR 파일이 아니다)에 일치합니다. 말미가 「/*」의 코드 베이스는, 그 디렉토리내에 있는 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두)에 일치합니다. 말미에 「/-」이 붙은 코드 베이스는, 디렉토리의 모든 파일 (클래스 파일과 JAR 파일의 양쪽 모두), 및 재귀적으로 그 디렉토리의 서브 디렉토리에 있는 모든 파일을 나타냅니다. <p>
+<a name="29117"><!-- --></a> 예를 들어, 정책내에 「http://java.sun.com/」가 있는 경우는, 그 Web 사이트상의 모든 코드 베이스는 이 정책 엔트리에 매치 합니다. 매치 하는 코드 베이스에는, 「http://java.sun.com/j2se/sdk/」 및 「http://java.sun.com/people/gong/appl.jar」가 있습니다. <p>
+<a name="20772"><!-- --></a> 복수의 엔트리가 매치 하는 경우는, 그러한 엔트리내의 모든 액세스권이 주어집니다. 즉, 액세스권은 추가 할당하고 할 수 있습니다. 예를 들어, 열쇠 A 로 서명된 코드에 액세스권 X 가 주어져 열쇠 B 로 서명된 코드에는 액세스권 Y 가 주어지고 있어 특정의 코드 베이스가 지정되어 있지 않은 경우, A 와 B 의 양쪽 모두로 서명된 코드에는 액세스권 X 와 Y 의 양쪽 모두가 주어집니다. 같이 코드 베이스가 「http://java.sun.com/-」의 코드에 액세스권 X 가 주어져 「http://java.sun.com/people/*」의 코드에 액세스권 Y 가 주어지고 있어 특정의 서명자가 지정되어 있지 않은 경우는, 「http://java.sun.com/people/applet.jar」로부터의 애플릿에는 X 와 Y 의 양쪽 모두의 액세스권이 주어집니다. <p>
+<a name="20770"><!-- --></a> 여기서의 URL 의 매칭은, 순수하게 구문상의 매칭입니다. 예를 들어, 어느 정책에 URL 「ftp://ftp.sun.com」를 지정하는 엔트리가 있다고 합니다. 이러한 엔트리는, Java 코드를 직접 ftp 로부터 다운로드해 실행할 수 있는 경우에만 유용합니다. <p>
+<a name="23755"><!-- --></a> 로컬 파일 시스템의 URL 를 지정하는 경우, 파일의 URL 를 사용할 수 있습니다. 예를 들어 Solaris 시스템의 /home/cathy/temp 디렉토리내의 파일을 지정하려면 , 다음과 같이 합니다. <p>
+</blockquote><blockquote><pre>"file:/home/cathy/temp/*"
+</pre></blockquote><blockquote>
+<a name="23757"><!-- --></a> Windows 시스템의 C 드라이브에 있는 temp 디렉토리내의 파일을 지정하려면 , 다음과 같이 합니다. <p>
+</blockquote><blockquote><pre>"file:/c:/temp/*"
+</pre></blockquote><blockquote>
+<a name="23759"><!-- --></a> Note:코드 베이스의 URL 에는, 플랫폼에 관계없이, 반드시 「/」( 「\」기호는 아니고)을 사용해 주세요. <p>
+<a name="23753"><!-- --></a> 다음과 같은, 절대 패스를 사용할 수도 있습니다. <p>
+</blockquote><blockquote><pre>"/home/gong/bin/MyWonderfulJava"
+</pre></blockquote>
+<br> <a name="23883"><!-- --></a> 
+<h4><i>	3.3. 5	  디폴트의 시스템 정책 파일과 사용자 정책 파일</i></h4>
+
+<blockquote>
+<a name="27128"><!-- --></a> Policy 의 레퍼런스 구현에서는, 정책는 1 개 또는 복수의 정책 설정 파일내로 지정할 수 있습니다. 설정 파일은, 특정의 코드 소스로부터의 코드에 허가되는 액세스권을 지정합니다. <p>
+<a name="27131"><!-- --></a> 정책 파일은, 단순한 텍스트 문자 편집기, 또는 후술 하는 PolicyTool 유틸리티를 사용해 작성할 수 있습니다. <p>
+<a name="27133"><!-- --></a> 디폴트에서는, 시스템 전체의 정책 파일이 1 개 있어, 사용자 정책 파일이 1 개 있습니다. <p>
+<a name="27135"><!-- --></a> 디폴트에서는, 시스템 정책 파일은 다음의 위치에 있습니다.  <p>
+</blockquote><blockquote><pre>{java.home}/lib/security/java.policy  (Solaris)
+{java.home}\lib\security\java.policy  (Windows)
+</pre></blockquote><blockquote>
+<a name="27138"><!-- --></a> 여기서 <em>java.home</em> 는 Java 2 SDK 가 인스톨 되고 있는 디렉토리를 나타내는 시스템 프로퍼티입니다. <p>
+<a name="27140"><!-- --></a> 디폴트에서는, 사용자 정책 파일은 다음의 위치에 있습니다.  <p>
+</blockquote><blockquote><pre>{user.home}/. java.policy  (Solaris)
+{user.home}\. java.policy  (Windows)
+</pre></blockquote><blockquote>
+<a name="27143"><!-- --></a> 여기서 <em>user.home</em> 는, 사용자의 홈 디렉토리를 나타내는 시스템 프로퍼티입니다. <p>
+<a name="27144"><!-- --></a> Policy 의 초기화시는, 최초로 시스템 정책이 로드 되어 다음에 사용자 정책가 추가됩니다. 어느 쪽의 정책도 존재하지 않는 경우는, 편입 정책가 사용됩니다. 편입 정책는, 오리지날의 샌드 박스 (sandbox) 정책와 같은 것입니다. <p>
+<a name="27148"><!-- --></a> 정책 파일의 위치는, 시큐리티 프로퍼티 파일내로 지정됩니다. 이 파일은 다음의 위치에 있습니다. <p>
+</blockquote><blockquote><pre>{java.home}/lib/security/java.security  (Solaris)
+{java.home}\lib/security\java.security  (Windows)
+</pre></blockquote><blockquote>
+<a name="27152"><!-- --></a> 정책 파일의 위치는, 다음의 형식의 이름의 프로퍼티치로서 지정됩니다. <p>
+</blockquote><blockquote><pre>policy.url. <em>n
+</em></pre></blockquote><blockquote>
+<a name="27155"><!-- --></a> 여기서,<em>n</em> 는 수치입니다. 다음에 나타내는 형식의 행으로, 각각의 프로퍼티의 값을 지정합니다. <p>
+</blockquote><blockquote><pre>policy.url.n=<em>URL
+</em></pre></blockquote><blockquote>
+<a name="28997"><!-- --></a> 여기서,<em>URL</em> 는 URL 를 지정합니다. 예를 들어, 디폴트의 시스템 및 사용자 정책 파일은, 시큐리티 프로퍼티 파일에 다음과 같이 지정되고 있습니다. <p>
+</blockquote><blockquote><pre>policy.url. 1=file:${java.home}/lib/security/java.policy
+policy.url. 2=file:${user.home}/. java.policy
+</pre></blockquote><blockquote>
+<a name="27159"><!-- --></a> 「http://」의 형태의 것도 포함해, 실제로는 복수의 URL 를 지정할 수 있어 지정한 정책 파일의 모든 것이 로드 됩니다. 또, 위에 나타낸 정책 파일의 지정 가운데, 2 번째의 정책 파일의 지정을 comment out 하든가, 혹은 수정하면, 디폴트 사용자 정책 파일의 read를 무효로 할 수 있습니다. <p>
+<a name="27163"><!-- --></a> 알고리즘은 policy.url. 1 으로부터 처리를 개시해, 번호가 연속해 증가하고 있는 동안, URL 가 발견되지 않게 될 때까지 처리를 계속합니다. 따라서, policy.url. 1 으로 policy.url. 3 이 있는 경우, policy.url. 3 은 읽히지 않습니다. <p>
+<a name="27166"><!-- --></a> 어플리케이션의 실행을 호출할 때, 추가의 또는 다른 정책 파일을 지정할 수도 있습니다. 이 경우는, -Djava.security.policy 커멘드행 인수를 사용해 <em>java.security.policy</em> 프로퍼티의 값을 설정합니다. 예를 들어, 다음과 같이 지정합니다. <p>
+</blockquote><blockquote><pre>java -Djava.security.manager -Djava.security.policy=<em>pURL</em> SomeApp
+</pre></blockquote><blockquote>
+<a name="27170"><!-- --></a> 여기서 <em>pURL</em> 는, 정책 파일의 위치를 나타내는 URL 입니다. 지정된 정책 파일은, 시큐리티 프로퍼티 파일로 지정된 모든 정책 파일에 추가되어 로드 됩니다. 인수 「-Djava.security.manager」에 의해, 디폴트의 시큐리티 매니저가 확실히 인스톨 되므로, 「애플릿 및 어플리케이션의 시큐리티 관리」의 설명에 있도록(듯이), 어플리케이션은 정책 체크를 받습니다. 어플리케이션 <em>SomeApp</em> 가 시큐리티 매니저를 인스톨 하는 경우는, -Djava.security.manager 인수를 지정할 필요는 없습니다. <p>
+<a name="29013"><!-- --></a> 다음과 같이, 「==」이 붙은 형태를 사용하면(자), 여기서 지정된 정책 파일만이 로드 되어 다른 정책 파일은 무시됩니다. <p>
+</blockquote><blockquote><pre>java -Djava.security.manager -Djava.security.policy==<em>pURL</em> SomeApp
+</pre></blockquote><blockquote>
+<a name="27430"><!-- --></a> 애플릿 viewer에 정책 파일을 건네주는 경우도, 다음과 같이 「-Djava.security.policy」인수를 사용합니다. <p>
+</blockquote><blockquote><pre>appletviewer -J-Djava.security.policy=pURL  myApplet
+</pre></blockquote><blockquote>
+<a name="27509"><!-- --></a> 주:시큐리티 프로퍼티 파일로 「policy.allowSystemProperty」프로퍼티에 false 가 설정되어 있는 경우는, 「-Djava.security.policy」의 정책 파일의 값은 (java 커멘드와 appletviewer 커멘드의 어느 쪽의 경우도) 무시됩니다. policy.allowSystemProperty 프로퍼티의 디폴트 값는 true 입니다. <p>
+</blockquote>
+<br> <a name="27428"><!-- --></a> 
+<h4><i>	3.3. 6 Policy 의 평가의 커스터마이즈</i></h4>
+
+<blockquote>
+<a name="20394"><!-- --></a> Policy 클래스의 현재의 설계는, 모든 경우에 적용할 수 있는 포괄적인 것이 아닙니다. 그 점에 대해서는 고찰을 거듭할 수 있어 많은 경우에 적절한 메소드의 호출을 확실히 할 수 있도록(듯이) 부분적인 개량이 진행되고 있습니다. 지금까지의 사이, 디폴트의 정책 클래스를 다른 정책 클래스에 바꿔 놓을 수가 있습니다. 다만, 옮겨놓는 정책 클래스가 abstract Policy 클래스의 서브 클래스이며,<code>getPermissions</code> 메소드 ( 및 필요에 따라서 다른 메소드)를 구현하고 있는 것이 조건입니다. <p>
+<a name="23576"><!-- --></a> Policy 의 레퍼런스 구현은, 「policy.provider」시큐리티 프로퍼티 (시큐리티 프로퍼티 파일내)의 값을, 목적의 Poliocy 구현 클래스의 완전 수식형의 이름으로 다시 설정하는 것으로 변경할 수 있습니다. 시큐리티 프로퍼티 파일은, 다음의 이름의 파일입니다. <p>
+</blockquote><blockquote><pre>{java.home}/lib/security/java.security (Solaris)
+{java.home}\lib\security\java.security (Windows)
+</pre></blockquote><blockquote>
+<a name="24098"><!-- --></a> {java.home} 는, 실행 환경이 인스톨 된 디렉토리 (Java 2 SDK 내의 <tt>jre</tt> 디렉토리, 또는 Java 2 Runtime Environment 의 최상정도 디렉토리)를 참조합니다. <p>
+<a name="21107"><!-- --></a> 프로퍼티은, 정책 클래스의 이름을 가리킵니다. 디폴트는 다음과 같습니다. <p>
+</blockquote><blockquote><pre>policy.provider=sun.security.provider.PolicyFile
+</pre></blockquote><blockquote>
+<a name="21109"><!-- --></a> 커스터마이즈 하려면 , 이 프로퍼티의 값이 다른 클래스를 가리키도록(듯이), 다음과 같이 변경합니다. <p>
+</blockquote><blockquote><pre>policy.provider=com.mycom.MyPolicy
+</pre></blockquote><blockquote>
+<a name="21112"><!-- --></a> MyPolicy 클래스는, java.security.Policy 의 서브 클래스가 아니면 안됩니다. 이러한, 정책 클래스의 오버라이드(override)는 어디까지나 일시적인 해결책이며, 보다 포괄적인 정책 API 가 설계되면 불필요하게 됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="28292"><!-- --></a>  <i>	3.4	 </i>java.security.GeneralSecurityException
+</h3>
+
+<blockquote>
+<a name="28293"><!-- --></a> 이것은, 새로운 예외 클래스에서, java.lang.Exception 의 서브 클래스입니다. 이것은, 시큐리티 및 시큐리티 패키지 관련의 예외를 2 종류로 하는 것을 의도해 추가되었습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="28294"><!-- --></a> java.lang.SecurityException 및 그 서브 클래스는, 실행시 예외 (미검사, 미선언)이며, Java 프로그램의 실행을 중지시킨다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="28295"><!-- --></a> 이러한 예외는, 어떤 종류의 시큐리티 위반이 검출되었을 경우에만 throw 됩니다. 예를 들어, 어느 코드가 액세스권의 없는 파일에 액세스 하려고 하는 경우에, 이런 종류의 예외가 throw 됩니다. 어플리케이션 개발자는, 임의로 그러한 예외를 캐치 할 수 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="28296"><!-- --></a> java.lang.Exception (선언 또는 캐치가 필요)의 서브 클래스인 java.security.GeneralSecurityException 는, 다른 모든 상황으로 시큐리티 패키지내로부터 throw 된다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="28297"><!-- --></a> 이러한 예외는 시큐리티에 관련한 것입니다만, 필요 불가결이라고 하는 것은 아닙니다. 예를 들어, 무효인 열쇠를 건네주는 것은 시큐리티 위반은 아니라고 생각됩니다만, 그 열쇠는 개발자에 의해 캐치 및 처리될 필요가 있습니다. <p>
+<a name="28298"><!-- --></a> RuntimeException 의 서브 클래스인 java.security 패키지내에, 현시점에서 2 개의 예외가 있습니다. 하위 호환성에 의해, 현시점에서는 이러한 예외는 변경할 수 없습니다. 장래 이 문제를 재검토합니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href=security-specTOC.fm.html>목차</a>  | <a href="security-spec.doc2.html">전의 항목</a>  | <a href="security-spec.doc4.html">다음의 항목</a>  <!-- | <a href="security-spec.doc.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2002 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+
+</body>
+</html>

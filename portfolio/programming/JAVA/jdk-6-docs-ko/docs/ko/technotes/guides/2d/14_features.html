@@ -1,0 +1,497 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<title>Java 2D 의 신기능 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH=60>
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>Java<font size=4><sup>TM</sup></font> 2 SDK, v1. 4 에서의<br>Java 2D<font size=4><sup>TM</sup></font> 의 신기능 </h1>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size=-1><a href="index.html">2 D&nbsp;목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+<!-- Body text begins here -->
+<blockquote>
+<p>
+<center>
+<table summary="layout" border=0 width=80% rowheight=10>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#PA">새로운 파이프라인 아키텍쳐(architecture)</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#VI">오프 스크린 이미지의 하드웨어 고속화</a> </td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#IO">플러그 인 가능한 이미지 입출력 시스템</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#UP">새로운 Java Print Service API</a> </td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#IT">추가의 이미지 형식의 지원</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#BA">Public BIDI 알고리즘</a> 
+</td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#FH">TrueType 힌트용 폰트 래스터라이저의 지원</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#LF">힌트 정보를 포함한 Lucida 폰트</a> </td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#OT">OpenType 폰트 테이블의 지원</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#AN">수치 형상의 지원</a> </td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#CL">복잡한 텍스트 레이아웃의 지원 개선</a> </td>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#PD">Porter-Duff 의 완전한 지원</a> </td>
+</tr>
+<tr>
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#TA">폰트의 변환 속성을 체크하는 기능</a> </td> 
+<td valign=top><img src="../../../images/bullet.gif" alt="bullet"></td>
+<td valign=top><a href="#FE">FontRenderContext 의 동일성 메소드</a> </td> 
+</tr>
+</table>
+</center>
+
+<HR SIZE=3 NOSHADE>
+
+<p>
+<a name="PA"><b>새로운 파이프라인 아키텍쳐(architecture)</b></a> 
+<p>
+이 변경에 관련하는 버그 추적 리포트:<a href="http://developer.java.sun.com/developer/bugParade/bugs/4228939.html">4228939</a>  및 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4268962.html"> 4268962</a> 
+<p>
+Java 2 SDK 버젼 1.2 및 1.3 에서는,<tt>Graphics</tt> 객체에 대한 일반 조작에 의해,<tt>Graphics</tt> 객체의 캐쉬된 draw 데이터가 무효가 되는 것이 빈번하게 있었습니다. 이 때문에,<tt>Graphics</tt> 객체의 draw 정보가 연속해 재작성되어<tt>create()</tt>,<tt>setColor()</tt>, 및 <tt>translate()</tt> 등, 단순해 일반적으로은 문제의 발생하지 않는 조작이어도, draw 처리가 중단되었습니다. Swing 계층의 draw는 이러한 일반 조작에 크게 의존하고 있기 (위해)때문에, draw 데이터의 무효화 및 재작성에 의해, 많은 Swing 어플리케이션에서는 저퍼포먼스에서의 재draw 밖에 할 수 없었습니다.  
+<p>
+새로운 파이프라인 아키텍쳐(architecture)에서는, 다음의 구현 변경에 의해, 퍼포먼스의 오버헤드가 저감 되었습니다.  
+<ul>
+<li>복수의 draw 파이프라인에서의 데이터 공유 방법을 개선했다 
+<li>draw 속성의 변경에 반응해 실행되는 코드, 및 작성되는 가베지의 양을 저감 했다 
+<li>다양한 그래픽스 루틴의 선택 방법을 개선했다 (픽셀의 형식 및 위치를 카피하는 루틴 등)
+</ul>
+
+다음의 호출을 Swing 어플리케이션내에서 빈번하게 사용하는 경우, 상기의 변경의 효과가 특히 현저하게 나타납니다.
+<ul>
+<li><tt>getGraphics</tt>,<tt>Graphics.create()</tt>, 및 <tt>Graphics.dispose()</tt> 
+<li><tt>Graphics.setColor()</tt>,<tt>Graphics.translate</tt>
+<li><tt>Graphics.copyArea</tt> (특히 카피원과 카피처의 영역이 오버랩 하고 있는 경우) 
+</ul>
+
+코드 공유의 향상에 의해, 실행시의 사이즈도 개선됩니다.
+<p>
+파이프라인 아키텍쳐(architecture)에 관한 그 외의 변경에 의해, 다음의 퍼포먼스가 큰폭으로 개선되었습니다.
+<ul>
+<li><tt>draw(Shape)</tt> 및 <tt>fill(Shape)</tt> (특히 <tt>Shape</tt> 가 <tt>GeneralPath</tt> 의 경우) 
+<li>확대 축소된 <tt>drawImage</tt>
+<li>이미지에의 간섭이나 이미지의 변경을 실시하는 일 없이,<tt>createImage()</tt> 를 여러 차례 사용해 작성된 오프 스크린 이미지로부터의 이동
+<li><tt>createImage()</tt> 를 사용해 더블 버퍼링용의 이미지 버퍼를 작성하는 어플리케이션을, 네트워크 경유로 원격의 X11 에 표시하는 조작
+<li>불투명하지 않은 텍스트의 draw 
+<li>RGBx 픽셀 기억 방식을 사용하는 디스플레이 카드를 탑재한 시스템 (SGI Visual 320 워크스테이션 등) 
+<li>에일리어징 제거가 오프로 설정된,-32768 ?  32767 의 범위외의 렌더링 좌표
+</ul>
+이 기능의 상세한 것에 대하여는, 화이트 페이퍼<a href="http://java.sun.com/products/java-media/2D/perf_graphics.html">「High Performance Graphics」</a>를 참조해 주세요.
+
+<p> <b><a name="VI">오프 스크린 이미지의 하드웨어 고속화</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4330166.html">4330166</a> 
+<p>
+SDK 1.4 는, 오프 스크린 이미지용의 하드웨어 고속화를 제공하기 위해(때문에), 이러한 이미지의 draw 및 카피의 퍼포먼스가 향상합니다. 하드웨어 고속화 처리된 이미지의 문제점은, Win32 등의 플랫폼에 따라서는, 상황에 의해 내용이 돌연 없어지는 경우가 있어, 게다가 어플리케이션으로부터 그것을 제어할 수 없는 것입니다. 새로운 <tt><a href="../../../api/java/awt/image/VolatileImage.html">VolatileImage</a> </tt> 클래스를 사용하면(자), 하드웨어 고속화 처리된 오프 스크린 이미지를 작성해, 그 이미지의 내용을 관리할 수 있습니다.
+<p>
+신규 API 에는, 이하의 것이 포함됩니다.
+ <ul>
+<li><tt>java.awt.image.VolatileImage</tt>:<br>이 클래스에서 나타내는 이미지는, 내용이 돌연 없어질 가능성은 존재합니다만, 퍼포먼스는 향상합니다. 예를 들어 Win32 에서는, 이 이미지는 VRAM 에 포함할 수 있어 하드웨어에 의한 고속화를 이용할 수 있습니다. 이 클래스에 포함되는 메소드를 호출해, 이미지의 내용을 복원할 필요가 있을지 어떨지를 확인할 수 있습니다.  
+<li> Component 의 <tt><a href="../../../api/java/awt/Component.html#createVolatileImage(int,%20int)">createVolatileImage(w, h)</a> </tt><br> 이 메소드에 의해 작성되는 <tt>VolatileImage</tt> 는,<tt>Component</tt> 와 호환성이 있습니다.
+<li>
+<tt><a href="../../../api/java/awt/GraphicsConfiguration.html#createCompatibleVolatileImage(int,%20int)"> createCompatibleVolatileImage(int width, int height)</a> </tt><br> 이 메소드에 의해 작성되는 <tt>VolatileImage</tt> 는,<tt>GraphicsConfiguration</tt> 와 호환성이 있습니다.
+<li>
+<tt><a href="../../../api/java/awt/GraphicsDevice.html#getAvailableAcceleratedMemory()"> GraphicsDevice.getAvailableAcceleratedMemory</a> </tt><br> 이 메소드는, 고속화된 메모리의 이용 가능한 바이트수를 돌려줍니다. <tt><a href="../../../api/java/awt/image/VolatileImage.html#flush()">VolatileImage.flush</a> </tt> 메소드를 사용하면(자), 오프 스크린 이미지로 사용되고 있는 메모리를 해제할 수 있습니다.
+</ul>
+<p><tt>VolatileImage</tt> API 의 사용 방법의 자세한 것은, 「The <tt>VolatileImage</tt> API User Guide」 ( <a href="ftp://ftp.java.sun.com/docs/j2se1.4/VolatileImage.pdf">PDF</a> )을 참조해 주세요.
+<p>
+
+<p><a name ="IO"></a> <b>플러그 인 가능한 이미지 입출력 시스템</b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4101949.html">4101949</a> 
+<p>
+Java<sup><font size="-1">TM</font></sup> Image I/O API 는, 다양한 형식 및 프로토콜의 이미지의 읽기 및 기입을 지원하는, 플러그 인 및 확장이 가능한 시스템입니다. 이 API 는, 플러그 인에 의해 기능을 실현하고 있습니다. 플러그 인의 대부분은 서드 파티에 의해 작성되고 있습니다. 주로 구버젼의 Java SDK 와의 호환성을 유지하기 위해서, 최소 세트의 플러그 인을 제공하는 경우에는, 적합 구현만이 필요합니다. 이 API 를 사용하는 어플리케이션에서는, 이미지의 포함 형식 또는 그것을 지원하는 플러그 인의 정보가 없어도, 이미지의 읽기 및 기입을 실행할 수 있습니다.
+<p>
+기본적으로, 모든 이미지 입출력 조작은, 1 개(살) 이상의 이미지, 각 이미지에 관련지을 수 있었던 1 개(살) 이상의 프리뷰 (썸네일) 이미지, 및 픽셀 데이터 이외의 모든 데이터인 메타데이타를 포함한, 스트림의 읽어내 또는 기입으로 구성됩니다.  
+<p>
+Java Image I/O API 를 사용하면(자), 어플리케이션으로 다음의 조작이 가능하게 됩니다.  
+<ul>
+<li>인스톨 끝난 플러그 인을 자동 검출한다 
+<li>형식명, 파일 확장자(extension), 파일 내용, 또는 MIME 형식에 근거해 플러그 인을 선택한다 
+<li>복수의 이미지가 포함된 파일내에서, 개별의 이미지에 액세스 한다 
+<li>읽기 및 기입해 처리의 진척 상황을 감시한다 
+<li>로드안의 이미지를 연속적으로 갱신한다 
+<li>이미지내의 특정 영역에 대해서 읽기 및 기입을 실행한다 
+<li>이미지의 선택한 밴드만을 읽어낸다 
+<li>해상도에 의존하지 않는 이미지의 출력 사이즈를 선택한다 
+<li>상세한 이미지 및 스트림메타데이타를 취득한다 
+<li>일반적으로의 인터페이스를 사용해, 미지의 형식을 조작한다 
+<li>랜덤 억세스 및 스트리밍 데이터 소스의 양쪽 모두를 사용해, 효율적으로 작업을 실시한다 
+<li>이미지를 다른 형식으로 변환한다 
+</ul>
+<p>
+Java Image I/O API 의 상세한 것에 대하여는,<a href="../imageio/index.html">「Java Image I/O」</a>를 참조해 주세요.
+<p>
+
+<b><a name="UP">새로운 Java<sup><font size="-1">TM</font></sup> 인쇄 서비스</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트:<br> <a href="http://developer.java.sun.com/developer/bugParade/bugs/4285177.html"> 4285177</a>  및 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4360752.html"> 4360752</a> 
+<p>
+이 API 는 <a href="http://java.sun.com/aboutJava/communityprocess/final-draft/jsr006/index.html"> JSR006</a>  로 작성된 Unified Printing API 입니다. 이 API 를 사용하는 것으로, 다음의 다양한 인쇄 서비스 기능을 클라이언트 어플리케이션으로부터 이용할 수 있습니다.
+<ul>
+<li>프린터의 브라우즈 및 선택
+<li>프린터의 각종 기능의 검출
+<li>인쇄 작업에 적절한 프린터의 선택
+<li>인쇄 작업의 스펙
+</ul>
+모든 기능은 이 API 를 개입시켜 사용하기 위해(때문에), 이 API 를 우선적으로 이용할 수 있는 것은 서버 어플리케이션입니다.  
+<p>
+인쇄 서비스에 문서를 spool 하는 기능을, 서버 어플리케이션으로부터 이용할 수 있습니다. 이전에는, 인쇄 작업을 생성하기 위해서 Java 어플리케이션으로부터 사용할 수 있던 것은, 그래픽스 호출만이었습니다.  
+   <p>
+상세한 것에 대하여는<a href="../jps/index.html">「Java 인쇄 서비스」</a>를 참조해 주세요.
+<p>
+<b><a name="IT">float 및 double 이미지 형식의 지원</a>  </b> 
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4364491.html">4364491</a> 
+<p>
+SDK 1.4 보다 전에서는, Java 2D API 에는, float 또는 double 샘플 형식용의 <tt>DataBuffer</tt> 서브 클래스가 존재하지 않았습니다. Java Image I/O API 는, float 및 double 이미지 형식의 읽기 및 기입에 이러한 클래스를 필요로 합니다.
+<p>
+float 및 double 이미지 형식을 지원하기 위해(때문에), SDK 1.4 에  DataBufferFloat 및 DataBufferDouble 라고 하는 2 개의 클래스가 추가되었습니다. <tt>DataBufferFloat</tt> 클래스는, 픽셀의 float 배열을 랩 합니다. <tt>DataBufferDouble</tt> 클래스는, 픽셀의 double 배열을 랩 합니다.
+<p>
+기존의 <tt><a href="../../../api/java/awt/image/ComponentColorModel.html"> ComponentColorModel</a> </tt> 및 <tt><a href="../../../api/java/awt/image/ComponentSampleModel.html"> ComponentSampleModel</a> </tt> 클래스 구현도 갱신되어 서명 첨부의 short, float, 및 double 형 데이터가 지원되었습니다. 이러한 클래스에서는, 새롭게 지원된 데이터형에 대응하는, 정규화된 컴퍼넌트치의 범위가 정의되고 있습니다.
+<ul>
+<li>기존의 데이터형의 경우는, 0.0 ?  1.0 의 범위를 유지  
+<li>short 형 데이터의 경우, 값은 -1. 0 ?  1.0 의 범위에 슬캘링 된다  
+<li>float 형 데이터의 경우, 범위는 float 원시형의 전범위  
+<li>double 형 데이터의 경우, 값을 float 에 캐스트 해 ColorSpace 클래스와 통신할 필요가 있기 (위해)때문에, float 원시형과 같은 범위
+</ul>
+<tt>ComponentColorModel</tt> 클래스가 픽셀 데이터를 클램프 할 것은 없습니다. 어플리케이션은, 적절한 범위에 슬캘링 하는 것이 상정되고 있습니다. <tt><a href="../../../api/java/awt/color/ColorSpace.html">ColorSpace</a> </tt> 클래스에, 정규화된 최소치 및 최대치를 컴퍼넌트 마다 결정하기 위한 메소드가 추가되었습니다. 알파 성분치는, 정규화된 0.0 ?  1.0 의 범위내에 없으면 안됩니다.
+<p>
+다음에, 추가된 전 API 의 리스트를 나타냅니다.
+<p>
+<tt><a href="../../../api/java/awt/image/ColorModel.html"> java.awt.image.ColorModel</a> </tt> 에, 기존의 메소드에 대응하는 3 개의 메소드가 새롭게 추가되었습니다.
+<ul>
+<li>
+<tt>getDataElement(float[] normComponents, int normOffset)</tt>
+<li>
+<tt>getDataElements(float[] normComponents, int normOffset, Object obj)</tt>
+<li>
+<tt>getNormalizedComponents(Object pixel, float[] normComponents, int normOffset)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/image/ComponentColorModel.html"> java.awt.image.ComponentColorModel</a> </tt> 에, 신규 데이터형에 근거하는 생성자 , 및 기존의 <tt>ColorModel</tt> 메소드를 오버라이드(override) 하는 메소드가 새롭게 추가되었습니다.
+<ul>
+<li>
+<tt>ComponentColorModel(ColorSpace colorSpace, boolean hasAlpha, boolean isAlphaPremultiplied, int transparency, int transferType)</tt>
+<li>
+<tt>getRed(Object inData)</tt>
+<li>
+<tt>getGreen(Object inData)</tt>
+<li>
+<tt>getBlue(Object inData)</tt>
+<li>
+<tt>getAlpha(Object inData)</tt>
+<li>
+<tt>getDataElements(int rgb, Object pixel)</tt>
+<li>
+<tt>coerceData(WritableRaster raster, boolean isAlphaPremultiplied)</tt>
+ <li>
+<tt>createCompatibleWritableRaster(int w, int h)</tt>
+<li>
+<tt>createCompatibleSampleModel(int w, int h)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/image/SampleModel.html"> java.awt.image.SampleModel</a> </tt> 에, 신규 데이터형의 받아들여에 사용하는 2 개의 메소드가 새롭게 추가되었습니다.
+<ul>
+<li>
+<tt>getDataElements(int x, int y, int w, int h, Object obj, DataBuffer data)</tt>
+<li>
+<tt>setDataElements(int x, int y, int w, int h, Object obj, DataBuffer data)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/image/ComponentSampleModel.html"> java.awt.image.ComponentSampleModel</a> </tt> 에, 신규 데이터형의 받아들여에 사용하는 2 개의 메소드가 새롭게 추가되었습니다.
+<ul>
+<li>
+<tt>createDataBuffer()</tt>
+<li>
+<tt>getDataElements(int x, int y, Object obj, DataBuffer data)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/image/BandedSampleModel.html"> java.awt.image.BandedSampleModel</a> </tt> 에서는, 신규 데이터형에 대응하기 위해(때문에), 3 개의 메소드가 편집되었습니다.
+<ul>
+<li>
+<tt>createDataBuffer()</tt>
+<li>
+<tt>getDataElements(int x, int y, Object obj, DataBuffer data)</tt>
+<li>
+<tt>setDataElements(int x, int y, Object obj, DataBuffer data)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/color/ColorSpace.html"> java.awt.color.ColorSpace</a> </tt> 에, 컴퍼넌트 마다 정규화된 최소치 및 최대치를 결정하기 위한 2 개의 메소드가 새롭게 추가되었습니다.  
+<ul>
+<li>
+<tt>getMinValue(int component)</tt>
+<li>
+<tt>getMaxValue(int component)</tt>
+</ul>
+<tt><a href="../../../api/java/awt/color/ColorSpace.html"> java.awt.color.ICC_ColorSpace</a> </tt> 에, 2 개의 신규 <tt>ColorSpace</tt> 메소드를 오버라이드(override) 하는 메소드가 새롭게 추가되었습니다.
+<p>
+<b><a name="BA">Public BIDI 알고리즘</a> </b>
+<p>  
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4285083.html">4285083</a> 
+<p>
+Unicode 쌍방향 알고리즘은, Unicode 문자 프로퍼티을 사용해 텍스트를 분석해, 텍스트의 방향을 판별합니다. 이 알고리즘은, 헤브라이어나 아라비아어등의 쌍방향 텍스트를 올바를 방향으로 표시하기 위해서 필요합니다.
+<p>
+현행의 구현은 모두 Java 언어로 기술되고 있습니다만, SDK 1.4 에서는 네이티브의 폰트 코드로부터 효율적인 액세스가 가능하게 되기 (위해)때문에, 헤브라이어나 아라비아어를 보다 효율적으로 draw 할 수 있게 됩니다. SDK 1.4 에서는, Java Native Interface 를 사용해 native code에 액세스 할 수 있습니다.
+<p>
+새로운 public <tt><a href="../../../api/java/text/Bidi.html">BIDI</a> </tt> 클래스는, Unicode 3.0 BIDI 알고리즘을 구현해, 텍스트의 쌍방향 늘어놓고 바꾸어에 관한 정보에의 액세스를 제공합니다. 이 때문에, 혼재하고 있는 쌍방향 텍스트가 올바르게 표시됩니다.
+<p>샘플의 <a href="samples/BidiSample.java">BidiSample</a>  에는,<tt>BIDI</tt> 루틴의 몇개인가가 나타나고 있습니다.
+<p>
+
+<p><b><a name="FH">TrueType 힌트용 폰트 래스터라이저의 지원</a> </b>
+<p>
+이 릴리스보다 전은, Java 2D 가 사용하는 T2K 폰트 래스터라이저는, TrueType 폰트용의 폰트 힌트 기능을 지원하고 있었었습니다. 이 때문에, TrueType 폰트의 표시는, 항상 일관한 아름다운 것으로는 없었습니다. 이 릴리스에서는, TrueType 폰트내에 포함된 힌트를 사용하도록(듯이) T2K 가 수정되고 있습니다.  
+<p>
+T2K 래스터라이저에 이 기능을 추가하는 것으로써, 네이티브 래스터라이저에의 의존도가 큰폭으로 저하했습니다. 네이티브 래스터라이저에의 의존도 저하에는, 다음과 같은 메리트가 있습니다.  
+<ul>
+<li>TrueType 폰트의 힌트 기능이, 네이티브의 래스터라이저는 아니고 크로스 플랫폼의 T2K 래스터라이저로 실행되기 (위해)때문에, 이식성이 향상한다 
+<li>온스크린 과 오프 스크린의 양쪽 모두로, draw에 같은 래스터라이저가 사용되기 (위해)때문에, TrueType 폰트의 메트릭스 표시의 일관성이 향상한다 
+</ul>
+
+<p><b><a name  ="LF">힌트 정보를 포함한 Lucida 폰트</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4285089.html">4285089</a> 
+<p>
+SDK 1.4 에서는, Java 2 SDK 내의 Lucida 폰트에 힌트 정보가 포함되게 되었습니다. 이 때문에, Java 2 SDK 로 기존의 폰트의 대용으로서 또는 다른 폰트를 이용할 수 없는 경우에 사용되는 폰트의 품질이 향상했습니다. Lucida 폰트에 힌트 정보를 추가하는 것으로써, 새로운 크로스 플랫폼 래스터라이저가, SDK 의 Lucida 폰트내의 힌트를 사용하는 일도 가능하게 되었습니다. 이 때문에, Lucida 폰트가 보다 일관해 아름답게 표시되게 됩니다.
+
+<p><b><a name="OT">OpenType 폰트 테이블의 지원</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4285161.html">4285161</a> 
+<p>
+SDK 1.4 에, 일반적인 OpenType 폰트 지원를 제공하는 아키텍쳐(architecture)가 새롭게 포함되게 되었습니다. 이 새로운 아키텍쳐(architecture)는, 타이어, 인도어파, 아라비아어, 헤브라이어등의 필기체 활자에 대응한, 국제적인 문자 지원를 제공합니다. 또, 로마자 언어의 확장 입력 지원도 제공합니다.
+
+<p>
+<b><a name="AN">수치 형상의 지원</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4210199.html">4210199</a> 
+  <p>
+현재로서는, 아라비아어의 텍스트로 둘러싸인 수치를 Java 2D 로 draw 하면(자), 수치가 대부분의 서구 제국에서 일반적으로 사용되고 있는 아라비아 숫자 (로마 숫자)의 형상이 됩니다. 그러나, 힌디어 로케일에서는, 힌디어의 형상으로 표시되는 것이 기대됩니다.
+  <p>
+신규 속성 <tt><a href="../../../api/java/awt/font/TextAttribute.html#NUMERIC_SHAPING">TextAttribute.NUMERIC_SHAPING</a> </tt>, 및 신규 클래스 <tt><a href="../../../api/java/awt/font/NumericShaper.html">NumericShaper</a> </tt> 를 사용하면(자), ASCII 숫자를 다른 Unicode 10 진수의 형상으로 변경할 수 있습니다.  
+  <p>
+예를 들어,<tt>TextLayout</tt> 인스턴스로, 숫자를 유럽 언어로부터 아라비아어로 변환하는 경우, 다음의 조작을 실행합니다.
+  <ol>
+<li>ARABIC 숫자의 형상을 가지는 <tt>NumericShaper</tt> 를 작성한다
+<blockquote><pre>
+      Numeric Shaper nS 
+  	 = NumericShaper.getContextualShaper(NumericShaper.ARABIC)
+</pre></blockquote>
+<li>키치 <tt>TextAttribute.NUMERIC_SHAPING</tt> 를 사용해,<tt>NumericShaper</tt> 을 <tt>Map</tt> 속성에 추가한다
+<blockquote><pre>
+      Map map = new HashMap();
+      map.put(TextAttribute.NUMERIC_SHAPING, nS);
+</pre></blockquote>
+<li><tt>Map</tt> 속성을 사용해 <tt>TextLayout</tt> 를 작성한다
+<blockquote>
+<pre>
+      FontRenderContext frc = ...;
+      TextLayout layout = new TextLayout(text, map, frc);
+</pre>
+</blockquote>
+<li>텍스트를 draw 한다
+<blockquote>
+<pre>
+      layout.draw(g2d, x, y);
+</pre>
+</blockquote>
+  </ol> 
+  <p>
+<tt>NumericShaper</tt> 클래스에는, 종류가 다른 Unicode 10 진수를 나타내는 정수가 19 개 있습니다. 이 때문에, 데이 배너 개리 문자나 타이어 문자를 포함한 19 가 다른 형상에 숫자를 변환할 수 있습니다.
+<p>
+
+
+<b><a name="CL">GlyphVector 에서의 복잡한 레이아웃의 지원 개선</a> </b>
+<p>
+이 릴리스보다 전에는, 클라이언트는, Glyph로부터 문자에의 매핑 정보에 <tt><a href="../../../api/java/awt/font/GlyphVector.html">GlyphVector</a> </tt> 로부터 액세스 할 수 없었습니다. 이 정보는, 클라이언트가 <tt>GlyphVector</tt> 내의 Glyph가 어느 문자에 대응하는지를 확인하기 위해서 사용합니다. 이 릴리스에서는,<tt>GlyphVector</tt> 및 <tt>GlyphVector</tt> 내의 각 Glyph의 정확한 경계를 취득하는 신규 메소드도 정의되고 있습니다.
+<p>
+주:클라이언트는 <tt>GlyphVector</tt> 및 Glyph로부터 문자에의 매핑 정보를 사용해 선택 및 맞아 판정을 구현할 수 있습니다만, 대부분의 클라이언트에서는, TextLayout 및 Swing 의 JTextArea 나 JTextField 를 사용하는 (분)편이 편리하고 유용합니다.  
+<p>     
+SDK 1.4 에서는, 다음의 <tt>GlyphVector</tt> 메소드가 새롭게 추가되었습니다.   
+    <ul>
+<li><tt><a href="../../../api/java/awt/font/GlyphVector.html#getGlyphCharIndex(int)"> getGlyphCharIndex(int glyphIndex)</a> </tt><br> 지정된 Glyph의 문자 인덱스를 돌려준다(문자 인덱스는, Glyph에 의해 나타내지는 최초의 논리 문자의 인덱스) </li>
+<li><tt><a href="../../../api/java/awt/font/GlyphVector.html#getGlyphCharIndices(int,%20int,%20int%5B%5D)"> getGlyphCharIndices(int beginGlyphIndex, int numEntries, int[] codeReturn)</a> </tt> <br> 지정된 Glyph의 문자 인덱스를 돌려준다
+<li><tt><a href="../../../api/java/awt/font/GlyphVector.html#getGlyphOutline(int,%20float,%20float)">getGlyphOutline(int glyphIndex, float x, float y)</a> </tt> <br> 내부가, 이 <code>GlyphVector</code> 내의 x, y 에 대한 오프셋(offset)로 지정된 Glyph의 시각 표현에 대응하는 <code>Shape</code> 를 돌려준다.
+<li><tt><a href="../../../api/java/awt/font/GlyphVector.html#getPixelBounds(java.awt.font.FontRenderContext,%20float,%20float)"> getPixelBounds(FontRenderContext renderFRC, float x, float y)</a> </tt><br> 그래픽스내의 지정된 위치에, 지정된 <code>FontRenderContext</code> 를 사용해 draw 할 때의, 이 <code>GlyphVector</code> 의 픽셀 경계를 돌려준다
+<li><tt><a href="../../../api/java/awt/font/GlyphVector.html#getGlyphPixelBounds(int,%20java.awt.font.FontRenderContext,%20float,%20float)"> getGlyphPixelBounds(int index, FontRenderContext renderFRC, float x, float y)</a> </tt><br> 이 <code>GlyphVector</code> 가, 지정된 <code>FontRenderContext</code> 를 사용해 지정된 위치에서 <code>Graphics</code> 에 draw 될 때, 인덱스에서의 Glyph의 픽셀 경계를 돌려준다
+      </ul>
+다음의 신규 <tt><a href="../../../api/java/awt/font/GlyphMetrics.html">GlyphMetrics</a> </tt> 메소드는, 변환 끝난 폰트에 대해서 조작을 실시합니다.
+      <ul>
+<li><tt><a href="../../../api/java/awt/font/GlyphMetrics.html#getAdvanceX()"> getAdvanceX()</a> </tt><br> Glyph의 유효폭의 x 성분을 돌려준다
+<li><tt><a href="../../../api/java/awt/font/GlyphMetrics.html#getAdvanceX()"> getAdvanceY</a> </tt><br> Glyph의 유효폭의 y 성분을 돌려준다
+      </ul>
+
+<b><a name="PD">Porter-Duff 의 완전한 지원</a> </b>
+<p> 
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4380232.html">4380232</a> 
+<p>
+<tt><a href="../../../api/java/awt/AlphaComposite.html">AlphaComposite</a> </tt> 클래스는, Porter 및 Duff 에 의해 확립된 모드 또는 규칙에 따라, 알파 브렌드 기능을 제공합니다. SDK 버젼 1.3 의 <tt>AlphaComposite</tt> API 로 정의 및 구현되고 있는 규칙은, Porter 와 Duff 가 발견한 12 의 규칙 가운데 8 개에 지나지 않습니다.
+  <ul>
+	<li>Clear
+	<li>A (Src)
+	<li>A over B (SrcOver)
+	<li>B over A (DstOver)
+	<li>A in B (SrcIn)
+	<li>B in A (DstIn)
+	<li>A held out by B (SrcOut)
+	<li>B held out by A (DstOut)
+  </ul>
+  <p>	
+SDK 1.4 에서는,<tt>AlphaComposite</tt> 는 나머지의 4 개의 Porter-Duff 규칙을 구현합니다.    
+  <ul>
+	<li>B (Dst)
+	<li>A atop B (SrcAtop)
+	<li>B atop A (DstAtop)
+	<li>A xor B (Xor)
+  </ul>
+ <p> 
+
+
+<b><a name="TA">폰트의 변환 속성을 체크하는 기능</a> </b> 
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4314043.html">4314043</a> 
+<p>
+SDK 1.2 이후,<tt><a href="../../../api/java/awt/Font.html">Font</a> </tt> 객체가 보관 유지하는 변환 속성에는,<tt><a href="../../../api/java/awt/Font.html#getTransform()">Font.getTransform</a>  </tt> 메소드를 사용해 액세스 할 수 있습니다. 변환 속성을 설정하는 것으로써,<tt>Font</tt> 의 회전, 변형등의 기하학적 변환을 실행할 수 있습니다. 다만, 대부분의 어플리케이션에서는, 변환은 아니고 Size 속성을 사용해 문자의 사이즈나 형상을 제어합니다. 이 경우, 변환은 단순한 항등변환이 됩니다.   
+<p>
+현재, 변환이 항등변환인가 어떤가를 판별하는 유일한 방법은,<tt>getTransform</tt> 를 호출해, 반환되는 <tt>AffineTransform</tt> 를 조사하는 것입니다. 그러나,<tt>getTransform</tt> 를 호출하려면 ,<tt>Font</tt> 객체가 <tt>AffineTransform</tt> 의 클론을 작성하는 것이 요구됩니다. 이것은, 변환이 가변이기 (위해)때문에입니다.
+<p>
+SDK 1.4 로 새롭게 추가된, 다음의 2 개의 메소드를 이용하면(자),<tt>AffineTransform</tt> 를 새롭게 작성하지 않아도,<tt>Font</tt> 객체의 변환이 항등변환인가 어떤가를 체크할 수 있습니다.
+
+  <ul>
+<li><a href="../../../api/java/awt/Font.html#isTransformed()"><tt> java.awt.Font.isTransformed</tt></a> :<br>이 <tt>Font</tt> 객체가 비항등 <tt>AffineTransform</tt> 속성을 보관 유지하는 경우, true 를 돌려줍니다. </li>
+<li><tt><a href="../../../api/java/awt/font/TransformAttribute.html#isIdentity()"> java.awt.font.TransformAttribute.isIdentity</a> </tt>:<br>랩 된 변환이 항등변환인 경우,<code>true</code> 를 돌려줍니다. </li>
+  </ul>
+
+
+<b><a name="FE">FontRenderContext 의 동일성 메소드</a> </b>
+<p>
+이 변경에 관련하는 버그 추적 리포트: <a href="http://developer.java.sun.com/developer/bugParade/bugs/4328579.html">4328579</a> 
+<p>
+<tt><a href="../../../api/java/awt/font/FontRenderContext.html">FontRenderContext</a>  </tt> 객체는, 그래픽스 문맥 상태를 캡슐화해,<tt>GlyphVector</tt> 및 <tt>TextLayout</tt> 에 의해 사용됩니다. <tt>FontRenderContext</tt> 에 새롭게 추가된 다음의 3 개의 메소드를 이용하면(자),<tt>GlyphVector</tt> 내의 <tt>FontRenderContext</tt> 를,<tt>GlyphVector</tt> 의 draw처 그래픽스 문맥내의 <tt>FontRenderContext</tt> 와 비교할 수 있습니다.
+<ul>
+ <li>
+<tt><a href="../../../api/java/awt/font/FontRenderContext.html#equals(java.awt.font.FontRenderContext)">equals(FontRenderContext)</a> </tt>
+<li>
+<tt><a href="../../../api/java/awt/font/FontRenderContext.html#equals(java.lang.Object)">equals(Object)</a> </tt>
+ <li>
+<tt><a href="../../../api/java/awt/font/FontRenderContext.html#hashCode()">hashCode()</a> </tt>
+</ul>
+이러한 동일성 메소드를 이용하면(자), 일치 검사를 실행하기 위해서 클라이언트가 <tt>AffineTransform</tt> 을 작성할 필요가 없기 때문에, 퍼포먼스상의 이점도 있습니다.
+
+
+
+<br>
+<P>
+<FONT SIZE="-1"><B>* 이 Web 사이트에서 사용되고 있는 용어 「Java 가상 머신」또는 「JVM」는, Java 플랫폼용의 가상 머신을 나타냅니다. </B></FONT>
+<P>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH=100%>
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2001
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <FONT SIZE="-1">
+
+코멘트의 송부처:
+
+   </FONT>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+</blockquote></BODY>
+
+</HTML>
+

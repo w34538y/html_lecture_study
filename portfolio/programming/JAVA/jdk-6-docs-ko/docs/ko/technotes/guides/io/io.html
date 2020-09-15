@@ -1,0 +1,194 @@
+<html>
+<title>문자 스트림 (JDK(TM) 1.1 으로부터 도입) - xrath.com 에서 번역됨</title>
+
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<body bgcolor="#FFFFFF">
+<h1>문자 스트림 (JDK<sup><font size=-2>TM</font></sup> 1.1 으로부터 도입)</h1>
+
+버젼 1.1 의 Java<sup><font size=-2>TM</font></sup> Development Kit 로부터,<a href="../../api/java/io/package-summary.html"><tt>java.io</tt></a>  패키지로 「문자 스트림」이 지원되게 되었습니다.
+
+<p> 1.1 보다 전의 JDK 의 표준 입출력 기능에서는,<a href="../../../api/java/io/InputStream.html"><tt>InputStream</tt></a>  및 <a href="../../../api/java/io/OutputStream.html"><tt>OutputStream</tt></a>  클래스와 이러한 서브 클래스를 사용하는 바이트 스트림만이 지원되고 있었습니다. 문자 스트림은 바이트 스트림과 닮아 있습니다만, 문자 스트림에는, 8 비트 단위의 바이트는 아니고 16 비트의 Unicode 문자가 포함됩니다. 문자 스트림은,<a href="../../../api/java/io/Reader.html"><tt>Reader</tt></a>  와 <a href="../../../api/java/io/Writer.html"><tt>Writer</tt></a>  클래스, 및 이러한 서브 클래스에 의해 구현됩니다. <tt>Reader</tt> 및 <tt>Writer</tt> 에서는,<tt>InputStream</tt> 및 <tt>OutputStream</tt> 와 기본적으로 같은 조작이 지원됩니다.  다만, 바이트 스트림의 메소드가 바이트 또는 바이트 배열을 조작하는데 대해, 문자 스트림의 메소드는, 문자, 문자 배열, 또는 캐릭터 라인을 조작하는 점이 다릅니다.
+
+<p> 바이트 스트림로 이용할 수 있는 기능의 대부분은, 문자 스트림에서도 이용할 수 있습니다. 문자 스트림 클래스와 바이트 스트림의 이름에도 같은 것을 말할 수 있습니다.  문자 스트림 클래스의 접두사에는, 일반적으로은 대응하는 바이트 스트림 클래스의 이름과 같은 것이 사용되고 있습니다. 예를 들어,<a href="../../../api/java/io/PushbackReader.html"><tt>PushbackReader</tt></a>  클래스에서는,<a href="../../../api/java/io/PushbackInputStream.html"><tt>PushbackInputStream</tt></a>  클래스로부터 바이트 스트림에 제공되는 기능은, 문자 스트림에도 제공됩니다.
+
+
+<h3>문자 스트림을 사용하는 이유</h3>
+
+문자 스트림을 사용하는 주된 이점은, 특정의 문자 인코딩에 의존하지 않는 프로그램을 간단하게 작성할 수 있기 (위해)때문에,<a href="../intl/index.html">국제화</a>가 간단하게 되는 것입니다.
+
+<p> Java 에서는, 캐릭터 라인이 Unicode 로 포함됩니다.  Unicode 는 국제 표준의 문자 인코딩으로, 각국의 대부분의 기술 용언어를 나타낼 수가 있습니다. 다만, 사용자가 읽을 수 있는 표준적인 파일에서는, Unicode 또는 ASCII 에 관련하지 않는 인코딩이 사용되고 있는 일이 있습니다.  인코딩에는, 다양한 방법이 있습니다. 문자 스트림 기능에서는, 바이트 스트림 및 문자 스트림의 변환을 실시하는 2 개의 클래스가 제공됩니다. 이 때문에, 인코딩 처리의 복잡함이 해소되고 있습니다. <a href="../../../api/java/io/InputStreamReader.html"><tt>InputStreamReader</tt></a>  클래스에서는, 바이트 입력 스트림로부터 바이트를 읽어들여, 인코딩에 응해 문자로 변환하는 문자 입력 스트림이 구현됩니다. 같이<a href="../../../api/java/io/OutputStreamWriter.html"><tt>OutputStreamWriter</tt></a>  클래스에서는, 인코딩에 응해 문자를 바이트로 변환해, 바이트 출력 스트림에 기입하는 문자 출력 스트림이 구현됩니다.
+
+<p> 문자 스트림의 2 번째의 이점은, 바이트 스트림보다 효율적인 일입니다. Java 독자적인 바이트 스트림의 대부분의 구현에서는, read 및 기입해 조작이 한 번에 1 바이트 단위로 행해집니다. 이것에 대해, 문자 스트림 클래스에서는, read 및 기입해 조작이 한 번에 1 버퍼 단위로 행해집니다. 문자 스트림 클래스에서는, 이 이점과 보다 효율적인 락 방식에 의해, 인코딩 변환에 의해 추가된 오버헤드가 많은 경우 상쇄됩니다.
+
+
+<h3>API 의 개요</h3>
+
+문자 스트림 클래스는,<tt>java.io</tt> 패키지의 기존의 바이트 스트림 클래스에 대응하도록(듯이) 설계되고 있습니다. 벌써 설명한 것처럼, 각 문자 스트림 클래스명은,<tt>Reader</tt> 또는 <tt>Writer</tt> 로 끝납니다.  또, 대응하는 바이트 스트림 클래스가 존재하는 경우는, 일반적으로, 그 바이트 스트림 클래스명과 같은 접두사가 됩니다. 다음의 겉(표)는, 새로운 클래스명의 일람입니다.  왼쪽의 열의 인덴트는, 서브 클래스의 관계를 나타내고 있습니다.
+
+<p>
+<center>
+<table summary="api overview" border=0 cellpadding=0 cellspacing=0>
+<tr><th valign=top><i>문자 스트림 클래스</i></th>
+<th valign=top><i>설명</i></th>
+<th valign=top><i>대응하는 바이트 클래스</i></th></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td valign=top><a href="../../../api/java/io/Reader.html"><tt>Reader</tt></a> </td>
+<td valign=top>문자 입력 스트림의 추상 클래스</td>
+<td valign=top><a href="../../../api/java/io/InputStream.html"><tt>InputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/BufferedReader.html"><tt>BufferedReader</tt></a> </td>
+<td valign=top>입력을 버퍼에 포함해, 행을 구문 분석 한다</td>
+<td valign=top><a href="../../../api/java/io/BufferedInputStream.html"><tt>BufferedInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/LineNumberReader.html"><tt>LineNumberReader</tt></a> &nbsp;&nbsp;&nbsp;&nbsp</td>
+<td valign=top>행 번호를 추적한다</td>
+<td valign=top><a href="../../../api/java/io/LineNumberInputStream.html"><tt>LineNumberInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/CharArrayReader.html"><tt>CharArrayReader</tt></a> </td>
+<td valign=top>문자 배열로부터 읽어들인다</td>
+<td valign=top><a href="../../../api/java/io/ByteArrayInputStream.html">ByteArrayInputStream</a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/InputStreamReader.html"><tt>InputStreamReader</tt></a> </td>
+<td valign=top>바이트 스트림을 문자 스트림로 변환한다</td>
+<td valign=top><i>(없음)</i></td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/FileReader.html"><tt>FileReader</tt></a> </td>
+<td valign=top>파일의 바이트를 문자 스트림로 변환하는 &nbsp;&nbsp;&nbsp;</td>
+<td valign=top><a href="../../../api/java/io/FileInputStream.html"><tt>FileInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/FilterReader.html"><tt>FilterReader</tt></a> </td>
+<td valign=top>필터를 걸칠 수 있었던 문자 입력의 추상 클래스</td>
+<td valign=top><a href="../../../api/java/io/FilterInputStream.html"><tt>FilterInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/PushbackReader.html"><tt>PushbackReader</tt></a> </td>
+<td valign=top>문자를 push back(되밀치는) 한다</td>
+<td valign=top><a href="../../../api/java/io/PushbackInputStream.html"><tt>PushbackInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/PipedReader.html"><tt>PipedReader</tt></a> </td>
+<td valign=top><tt>PipedWriter</tt> 로부터 읽어들인다</td>
+<td valign=top><a href="../../../api/java/io/PipedInputStream.html"><tt>PipedInputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/StringReader.html"><tt>StringReader</tt></a> </td>
+<td valign=top><tt>String</tt> 로부터 읽어들인다</td>
+<td valign=top><a href="../../../api/java/io/StringBufferInputStream.html"><tt>StringBufferInputStream</tt></a> </td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td valign=top><a href="../../../api/java/io/Writer.html"><tt>Writer</tt></a> </td>
+<td valign=top>문자 출력 스트림의 추상 클래스</td>
+<td valign=top><a href="../../../api/java/io/OutputStream.html"><tt>OutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/BufferedWriter.html"><tt>BufferedWriter</tt></a> </td>
+<td valign=top>출력을 버퍼에 포함해, 플랫폼의 행 단락 문자를 사용한다</td>
+<td valign=top><a href="../../../api/java/io/BufferedOutputStream.html"><tt>BufferedOutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/CharArrayWriter.html"><tt>CharArrayWriter</tt></a> </td>
+<td valign=top>문자 배열에 기입한다</td>
+<td valign=top><a href="../../../api/java/io/ByteArrayOutputStream.html"><tt>ByteArrayOutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/FilterWriter.html"><tt>FilterWriter</tt></a> </td>
+<td valign=top>필터를 걸칠 수 있었던 문자 출력의 추상 클래스</td>
+<td valign=top><a href="../../../api/java/io/FilterOutputStream.html"><tt>FilterOutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/OutputStreamWriter.html"><tt>OutputStreamWriter</tt></a> </td>
+<td valign=top>문자 스트림을 바이트 스트림로 변환한다</td>
+<td valign=top><i>(없음)</i></td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/FileWriter.html"><tt>FileWriter</tt></a> </td>
+<td valign=top>문자 스트림을 바이트 파일로 변환한다</td>
+<td valign=top><a href="../../../api/java/io/FileOutputStream.html"><tt>FileOutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/PrintWriter.html"><tt>PrintWriter</tt></a> </td>
+<td valign=top>값 및 객체를 <tt>Writer</tt> 에 출력한다</td>
+<td valign=top><a href="../../../api/java/io/PrintStream.html"><tt>PrintStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/PipedWriter.html"><tt>PipedWriter</tt></a> </td>
+<td valign=top><tt>PipedReader</tt> 에 기입한다</td>
+<td valign=top><a href="../../../api/java/io/PipedOutputStream.html"><tt>PipedOutputStream</tt></a> </td></tr>
+<tr><td valign=top>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../api/java/io/StringWriter.html"><tt>StringWriter</tt></a> </td>
+<td valign=top><tt>String</tt> 에 기입한다</td>
+<td valign=top><i>(없음)</i></td></tr>
+</table>
+</center>
+<p>
+
+<h3>관련하는 변경</h3>
+
+<h4>PrintStream</h4>
+
+<a href="../../../api/java/io/PrintStream.html"><tt>PrintStream</tt></a>  클래스는, 플랫폼의 디폴트의 문자 인코딩 및 플랫폼의 디폴트의 줄 끝 기호를 사용하도록(듯이) 변경되었습니다. 이 때문에, 각 <tt>PrintStream</tt> 에는,<a href="../../../api/java/io/OutputStreamWriter.html"><tt>OutputStreamWriter</tt></a>  가 짜넣어졌습니다.  이 라이터를 개입시켜 모든 문자가 건네받아 출력용의 바이트가 생성됩니다. <tt>println</tt> 메소드에서는, 플랫폼의 디폴트의 줄 끝 기호가 사용됩니다.  이 줄 끝 기호는, 시스템의 <tt>line.separator</tt> 프로퍼티에 의해 정의됩니다만, 1 개의 개행 문자 (<tt>「\n」</tt>)일 필요는 없습니다. 기존의 <tt>write</tt> 메소드에 의해 출력된 바이트 및 바이트 배열은, 라이터 경유에서는 건네받지 않습니다.
+
+<p> <tt>PrintStream</tt> 클래스를 변경한 것에 의해, ASCII 이외의 로컬 인코딩이 사용되고 있는 플랫폼에서 Java 프로그램을 기술하고 있는 경우,<a href="../../../api/java/lang/System.html#out"><tt>System.out</tt></a>  및 <a href="../../../api/java/lang/System.html#err"><tt>System.err</tt></a>  가 사용하기 쉽게 되었습니다.  즉,<tt>PrintStream</tt> 는, 주로 디버그와 기존의 코드와의 호환성을 위해서(때문에) 제공되고 있습니다. 텍스트 출력을 생성하는 코드에서는, 새로운  <a href="../../api/java/io/PrintWriter.html"><tt>PrintWriter</tt></a>  클래스를 사용할 필요가 있습니다.
+
+
+새로운  <a href="../../../api/java/io/PrintWriter.html"><tt>PrintWriter</tt></a>  클래스에서는, 문자 인코딩을 지정하는 일도, 디폴트의 인코딩을 받아들일 수도 있습니다. <tt>PrintWriter</tt> 클래스에서는,<tt>OutputStream</tt> 객체를 받는 생성자 이 제공되어 디폴트의 인코딩을 사용하는 중간 <tt>OutputStreamWriter</tt> 객체가 작성됩니다.
+
+
+<h4>그 외의 클래스</h4>
+
+<p> 다음의 생성자  및 메소드에서는, 바이트와 문자가 적절히 변환되지 않기 때문에, 사용하지 않는 것을 추천합니다.
+
+<p>
+<table summary="layout" width=100% border=0 cellpadding=0 cellspacing=0>
+<tr><td width=25% align=right valign=top><tt>String</tt>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/io/DataInputStream.html#readLine()"><tt>DataInputStream.readLine()</tt></a> 
+<tr><td width=25% align=right valign=top><tt>InputStream</tt>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/lang/Runtime.html#getLocalizedInputStream(java.io.InputStream)"><tt>Runtime.getLocalizedInputStream(InputStream)</tt></a> 
+<tr><td width=25% align=right valign=top><tt>OutputStream</tt>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/lang/Runtime.html#getLocalizedOutputStream(java.io.OutputStream)"><tt>Runtime.getLocalizedOutputStream(OutputStream)</tt></a> 
+<tr><td width=25% align=right valign=top>&nbsp;</td>
+<td width=75% align=left valign=top><a href="../../../api/java/io/StreamTokenizer.html#StreamTokenizer(java.io.InputStream)"><tt>StreamTokenizer(InputStream)</tt></a> 
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/lang/String.html#String(byte%5B%5D,%20int,%20int,%20int)"><tt>String(byte ascii[], int hibyte, int offset, int count)</tt></a> 
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/lang/String.html#String(byte%5B%5D,%20int)"><tt>String(byte ascii[], int hibyte)</tt></a> 
+<tr><td width=25% align=right valign=top><tt>void</tt>&nbsp;&nbsp;
+<td width=75% align=left valign=top><a href="../../../api/java/lang/String.html#getBytes(int,%20int,%20byte%5B%5D,%20int)"><tt>String.getBytes(int srcBegin, int srcEnd, byte dst[], int dstBegin)</tt></a> 
+</table>
+
+<p> 다음의 생성자  및 메소드가 추가되었습니다.
+
+<p>
+<table summary="layout" width=100% border=0 cellpadding=0 cellspacing=0>
+<tr><td width=25% align=right valign=top>&nbsp;</td>
+<td width=75% align=left valign=top><a href="../../../api/java/io/StreamTokenizer.html#StreamTokenizer(java.io.Reader)"><tt>StreamTokenizer(Reader)</tt></a> </td></tr>
+<tr><td width=25% align=right valign=top><tt>byte[]</tt>&nbsp;&nbsp;</td>
+<td width=75% align=left valign=top><a href="../../../api/java/lang/String.html#getBytes()"><tt>String.getBytes()</tt></a> </td></tr>
+<tr><td width=25% align=right><tt>void</tt>&nbsp;&nbsp;</td>
+<td width=75% align=left><a href="../../../api/java/lang/Throwable.html#printStackTrace(java.io.PrintWriter)"><tt>Throwable.printStackTrace(PrintWriter)</tt></a> </td></tr>
+</table>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<P>
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1997.1999
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+</BODY>
+
+</HTML>
+
+
+
+

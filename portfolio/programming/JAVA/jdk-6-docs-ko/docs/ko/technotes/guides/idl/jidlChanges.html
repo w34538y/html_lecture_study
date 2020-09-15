@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>J2SE 1.4.x 로 5.0 의 사이에서의 CORBA 기능의 변경점 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: carson 7/2002 -->
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077"
+ALINK="#FF0000">
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH=30>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0  WIDTH=52 HEIGHT=88>
+</TD>
+
+
+<TD ALIGN=CENTER>
+<H1>J2SE 1.4.x 로 5.0 의 사이에서의 CORBA 기능의 변경점</H1>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<a href="../../../index.html"><FONT SIZE="-1">Java SE 문서의 목차</FONT></a>  
+</TD>
+</TR>
+
+</TABLE>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  -->
+<p>
+
+
+
+
+
+Java<sup><font size=-2>TM</font></sup> 2 Platform Standard Edition (J2SE)의 이번 릴리스에서는, CORBA, Java IDL, 및 Java RMI-IIOP 테크놀러지에 대해서 다음과 같은 확장 기능을 했습니다.   
+
+<p>
+<ul>
+
+<li>확장 기능 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4674929.html">4674929</a> . Java SE ORB 용의 편리한 추가 기능으로, J2SE 1.4 의 로깅 API 를 베이스로 한 로깅후레임워크를 제공합니다. 에러가 발생해 OMG 마이너 코드가 생성되면(자), 이 마이너 코드가 에러 로그용으로 Java 에러 코드에 변환됩니다. 또, ORB 에는, OMG 스펙으로 규정되고 있는 표준의 마이너 코드도 짜넣어지고 있습니다.
+<p>
+
+<li>확장 기능 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4607440.html">4607440</a> . 대규모 배치에 있어서의 Java SE 의 디폴트 ORB 의 퍼포먼스가 개선되어 스케이라비리티도 개선되었습니다.
+<p>
+
+<li>확장 기능 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4629589.html">4629589</a> . 객체 참조 템플릿 (ORT)이 ORB 에 추가되었습니다. 객체 참조 템플릿은, 포타브르인타세프타의 기능을 확장한 것으로, 휴대용 서버 기동 시스템, load sharing, resilience, 동적 브릿지 기능, 그 외의 고도의 기능을 지원합니다.  
+<p>
+<li>확장 기능 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4674944.html">4674944</a> . 와이어상의 상호 운용성이 추가되었습니다. 이것에는, CORBA 2.3. 1 이후의 상호 운용성의 문제에 대해서 OMG 로부터 발표된 해결이나 업데이트 가운데, J2EE 어플리케이션 서버의 와이어상에서의 상호 운용성에 영향이 있는 것을 식별하고 거두어 들이는 것, 그리고 그러한 해결을 Java SE ORB 에 거두어 들이는 것이 포함되어 있습니다.   
+<p>
+<li>J2SE 5.0 ORB 는,<code>org.omg.CORBA.SystemException</code> 응답을 정렬화할 때, 다음과 같이 정의되고 있는 <code>ExceptionDetailMessage</code> (즉,<code>ServiceContext with ServiceId 14</code>)를 추가합니다.
+<P>
+<pre>
+    /**
+     * CORBA formal/02-06-01: 13.7. 1:
+     * ExceptionDetailMessage identifies a CDR encapsulation of a wstring,
+     * encoded using GIOP 1.2 with a TCS-W of UTF-16.   This service context
+     * may be sent on Reply messages with a reply_status of SYSTEM_EXCEPTION
+     * or USER_EXCEPTION.  The usage of this service context is defined
+     * by language mappings.  
+     *
+     * IDL/Java: ptc/02-01-22: 1.15. 2: 
+     * When a System Exception is marshaled, its GIOP Reply message shall
+     * include an associated ExceptionDetailMessage service context.  The
+     * callee's stack trace is often very valuable debugging information but
+     * may contain sensitive or unwanted information.  The wstring within the
+     * service context will therefore contain additional information relating
+     * to the exception, for example the result of calling either
+     * printStackTrace(PrintWriter) or getMessage() on the exception.  When
+     * unmarshaling a System Exception on the client side, the wstring from
+     * any ExceptionDetailMessage service context shall become the Java error
+     * message in the unmarshaled exception object.
+     */
+</pre>
+
+<P>J2SE 5.0 ORB 는,<code>org.omg.CORBA.SystemException</code> 응답을 비정렬화할 때,<code>SystemException</code> 생성자 의 <code>message</code> 인수로서 <code>ExceptionDetailMessage</code> 의 내용을 지정해 <code>SystemException</code> 를 구축합니다. </P>
+
+<P><strong>주:</strong> 메세지의 내용은 변경이 되는 일이 있습니다. J2SE 5.0 에서는, 메세지에 서버측의 스택 트레이스가 들어가 있습니다. 다음의 코드예는, 서버측에서 생성된 예외에 대한 클라이언트측의 스택 트레이스입니다 (주: 자세한 것은 상황에 따라 변화한다). 예외의 메세지에 있는 서버측의 스택 트레이스에 주목해 주세요. </P>
+
+<pre>
+org.omg.CORBA.FREE_MEM: ----------BEGIN server-side stack trace----------
+org.omg.CORBA.FREE_MEM: idlIConnect  vmcid: 0x0  minor code: 0  completed: No
+	at corba.exceptiondetailsc.idlIServantConnect.raise_system_exception(idlIServantConnect.java:23)
+	at corba.exceptiondetailsc. _idlIImplBase. _invoke(_idlIImplBase.java:42)
+	at com.sun.corba.ee.impl.protocol.CorbaServerRequestDispatcherImpl.dispatchToServant(CorbaServerRequestDispatcherImpl.java:647)
+	at com.sun.corba.ee.impl.protocol.CorbaServerRequestDispatcherImpl.dispatch(CorbaServerRequestDispatcherImpl.java:190)
+	at com.sun.corba.ee.impl.protocol.CorbaMessageMediatorImpl.handleRequestRequest(CorbaMessageMediatorImpl.java:1653)
+	at com.sun.corba.ee.impl.protocol.CorbaMessageMediatorImpl.handleRequest(CorbaMessageMediatorImpl.java:1513)
+	at com.sun.corba.ee.impl.protocol.CorbaMessageMediatorImpl.handleInput(CorbaMessageMediatorImpl.java:895)
+	at com.sun.corba.ee.impl.protocol.giopmsgheaders.RequestMessage_1_2.callback(RequestMessage_1_2.java:172)
+	at com.sun.corba.ee.impl.protocol.CorbaMessageMediatorImpl.handleRequest(CorbaMessageMediatorImpl.java:668)
+	at com.sun.corba.ee.impl.transport.SocketOrChannelConnectionImpl.dispatch(SocketOrChannelConnectionImpl.java:375)
+	at com.sun.corba.ee.impl.transport.SocketOrChannelConnectionImpl.read(SocketOrChannelConnectionImpl.java:284)
+	at com.sun.corba.ee.impl.transport.ReaderThreadImpl.doWork(ReaderThreadImpl.java:73)
+	at com.sun.corba.ee.impl.orbutil.threadpool.ThreadPoolImpl$WorkerThread.run(ThreadPoolImpl.java:382)
+----------END server-side stack trace----------  vmcid: 0x0  minor code: 0  completed: No
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:274)
+	at com.sun.corba.ee.impl.protocol.giopmsgheaders.MessageBase.getSystemException(MessageBase.java:791)
+	at com.sun.corba.ee.impl.protocol.giopmsgheaders.ReplyMessage_1_2.getSystemException(ReplyMessage_1_2.java:97)
+	at com.sun.corba.ee.impl.protocol.CorbaMessageMediatorImpl.getSystemExceptionReply(CorbaMessageMediatorImpl.java:546)
+	at com.sun.corba.ee.impl.protocol.CorbaClientRequestDispatcherImpl.processResponse(CorbaClientRequestDispatcherImpl.java:407)
+	at com.sun.corba.ee.impl.protocol.CorbaClientRequestDispatcherImpl.marshalingComplete(CorbaClientRequestDispatcherImpl.java:303)
+	at com.sun.corba.ee.impl.protocol.CorbaClientDelegateImpl.invoke(CorbaClientDelegateImpl.java:132)
+	at org.omg.CORBA.portable.ObjectImpl. _invoke(ObjectImpl.java:457)
+	at corba.exceptiondetailsc. _idlIStub.raise_system_exception(_idlIStub.java:20)
+	at corba.exceptiondetailsc.Client.main(Client.java:87)
+
+------------------------------------------------------------------------------
+
+</pre>
+</li>
+</UL>
+
+<P> <a href="index.html">Java IDL</a>  와 <a  href="../rmi-iiop/index.html">Java RMI-IIOP</a>  가 CORBA 스펙에 어떻게 준거하고 있을까에 대해서는,<A href="compliance.html">「J2SE 5.0 에서의 CORBA 지원의 공식 스펙」</a>을 참조해 주세요.
+
+
+
+<p>
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+
+ 
+</TD>
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64  HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+
+</TR>
+</TABLE>
+
+
+</body>
+</html>

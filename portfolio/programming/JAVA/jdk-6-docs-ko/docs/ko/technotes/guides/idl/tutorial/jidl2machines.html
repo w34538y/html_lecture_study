@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java IDL:Hello World 의 예를 2 개의 머신상에서 실행한다 - xrath.com 에서 번역됨</TITLE>
+  <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!-- last updated debbiec 4/2001-->
+
+
+<H1 ALIGN=CENTER>Java IDL:2 개의 머신상에서의 Hello World 의 예</H1>
+
+
+<P>2 개의 머신상에서 Hello World 튜토리얼을 실행 가능하게 하려면 ,<a href="../jidlExample.html">튜토리얼</a>의 순서에 따라 주세요. 이 튜토리얼에는, 다음과 같은 변경점이 있습니다. 이 튜토리얼은, Java (tm) 2 Platform, Standard Edition (J2Se(tm)), 버젼 1.4 용으로 기술되고 있습니다. 이 예에서는, 클라이언트, Stub 및 스켈리턴은 클라이언트 머신에 배치되고 있어 서버 및 네임서버-는 서버 머신에 배치되고 있습니다. 이 시나리오는, 필요하게 맞추어 변경하거나 어플리케이션을 2 개의 머신간에 분산하는 1 개의 방법의 설명으로서 참조하거나 할 수가 있습니다.
+
+<OL>
+<LI>클라이언트 머신상에서 <TT>Hello.idl</TT> 파일을 작성 (방법에 대해서는 튜토리얼을 참조) 및 컴파일 합니다.
+<pre>   
+   idlj -fall Hello.idl
+</pre>
+
+<LI>클라이언트 머신상에서 <tt>HelloClient.java</tt> 를 작성합니다. <TT>HelloApp</TT> 디렉토리에 있는 Stub와 스켈리턴도 포함해<TT>. java</TT> 파일을 컴파일 합니다.
+<pre>
+   javac *. java HelloApp/*.java
+</pre>
+<P>
+<LI>서버 머신상에서  <tt>HelloServer.java</tt> 를 작성합니다. <TT>. java</TT> 파일을 컴파일 합니다.
+<pre>
+   javac *. java
+</pre>
+<P>
+<LI>서버 머신상에서 Java Object Request Broker Daemon (<tt>orbd</tt>)를 기동합니다. orbd 에는, 네임 서비스도 포함되어 있습니다. Unix 에서는, 다음과 같이 합니다.
+   
+<pre>
+   orbd -ORBInitialPort 1050 -ORBInitialHost <em>servermachinename</em>&
+</pre>
+<P>Windows 에서는, 다음과 같이 합니다.
+<pre>
+   start orbd -ORBInitialPort 1050 -ORBInitialHost <em>servermachinename</em>
+</pre>
+   
+<P><tt>-ORBInitialPort</tt> 및 <tt>-ORBInitialHost</tt> 는, 양쪽 모두 <tt>orbd</tt> 커멘드행으로 필수의 인수입니다. Solaris 에서는, 1024 보다 낮은 번호의 포트로 프로세스를 기동하려면  루트가 될 필요가 있기 (위해)때문에, 이 예는 포트 <TT>1050</TT> 으로 네임서버-를 기동하고 있습니다. 다른 <em>nameserverport</em> 를 사용하는 경우는, 이 예전체로 1050 을 현재의 포트 번호에 옮겨놓아 주세요.  
+<P><tt>orbd</tt> 를 사용하는 경우, 서버를 기동하는 머신상에서 ORBD 를 실행할 필요가 있습니다. 서버를 기동하는 머신과는 다른 머신상에서 네임 서비스를 실행하고 싶은 경우는, 네임 서비스로서 <tt>tnameserv</tt> 를 사용할 수가 있습니다.
+<P>
+<LI>서버 머신상에서 Hello 서버를 기동하려면 , 다음과 같이 합니다.
+<pre>
+   java HelloServer -ORBInitialPort 1050
+</pre>
+<P>다른 <em>nameserverport</em> 를 사용하는 경우는, 1050 을 현재의 포트 번호에 옮겨놓아 주세요. Hello 서버는 동일한 호스트상 (이 예에서는 네임서버-)에서 실행되기 (위해)때문에, 인수 <tt>-ORBInitialHost</tt> 를 지정할 필요는 없습니다. 네임서버-가 다른 머신상에서 실행되고 있는 경우는, 인수 <tt>-ORBInitialHost nameserverhost</tt> 를 사용해 해당하는 머신을 지정할 필요가 있습니다.
+<P>
+<LI>클라이언트 머신상에서 Hello 어플리케이션 클라이언트를 실행합니다. DOS prompt 또는 쉘로, 다음과 같이 입력합니다. <P>
+<pre>
+   java HelloClient -ORBInitialHost <em>nameserverhost</em> -ORBInitialPort 1050
+</pre>
+
+<P><em>nameserverhost</em> 는, IDL 네임서버-가 가동하고 있는 호스트입니다. 이 경우는, 서버 머신입니다.  
+ 
+
+<P>다른 <em>nameserverport</em> 를 사용하는 경우는, 1050 을 현재의 포트 번호에 옮겨놓아 주세요.
+<P>
+<LI>완료하면(자),<tt>orbd</tt> 를 종료합니다. 네임서버-를 명시적으로 정지할 때까지는, 호출 대기 상태가 계속됩니다.
+</OL>
+
+
+
+<P><HR>
+<font size=-1 color=blue>Copyright Sun Microsystems 2001</font>
+<P>
+</BODY>
+</HTML>

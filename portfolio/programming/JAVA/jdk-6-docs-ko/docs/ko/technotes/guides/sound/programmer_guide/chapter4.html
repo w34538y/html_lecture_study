@@ -1,0 +1,136 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 4 장:오디오의 재생</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p>
+<p><a name="113597"> </a> 재생은, 「프레젠테이션」또는 「렌더링」이라고 불리는 경우가 있습니다. <em></em><em></em>이것들은, 사운드 이외의 종류의 미디어에도 사용되는 일반적인 용어입니다. 기본적인 기능은, 연속하는 데이터를 최종적으로 사용자가 지각할 수 있는 장소에 전달하는 것입니다. 사운드와 같이, 데이터가 시간 베이스의 경우는, 올바른 속도로 전달되지 않으면 안됩니다. 사운드 재생이 중단되면(자) 큰 클릭 노이즈나 안타까운 일그러짐이 생기는 것이 많기 때문에, 사운드에서는 데이터 플로우의 속도를 유지하는 것이, 비디오의 경우보다 중요합니다. Java<font size="-1"><sup>TM</sup></font> Sound API 는, 매우 긴 사운드의 경우에도, 응용 프로그램이 사운드를 원활히 재생하기 위해서 도움이 되도록(듯이) 설계되고 있습니다.
+</p><p><a name="113599"> </a> 전장에서는, 오디오 시스템 또는 믹서로부터 라인을 취득하는 방법에 대해 설명했습니다. 이 장에서는, 라인을 개입시켜 사운드를 재생하는 방법에 대해 설명합니다.  
+</p>
+<p><a name="113601"> </a> 사운드의 재생에 사용할 수 있는 라인에는,<code>Clip</code> 와 <code>SourceDataLine</code> 의 2 종류가 있습니다. 이 2 개의 인터페이스에 대해서는, 제 2 장<a href="chapter2.html">「Sampled 패키지의 개요」</a>의<a href="chapter2.html#112445">「Line 인터페이스의 계층」</a>에 간단한 설명이 있습니다. 2 개(살)의 주된 차이점은,<code>Clip</code> 에서는 재생전에 한 번에 모든 사운드 데이터를 지정하는데 대해,<code>SourceDataLine</code> 에서는 재생중에 데이터를 버퍼에 계속적으로 기입하는 것입니다. 많은 경우,<code>Clip</code> 와 <code>SourceDataLine</code> 의 어느쪽이나 사용할 수 있습니다만, 특정의 상황으로 어느 쪽의 라인이 적합한지를 판단하려면 , 다음의 조건을 참고로 해 주세요.  </p>
+<ul>
+  <a name="113603"> </a>  
+<li>메모리에의 프리로드가 가능한, 리얼타임이 아닌 사운드 데이터를 사용하는 경우는,<code>Clip</code> 를 사용합니다.  <a name="115889"> </a>  
+<p>예를 들어, 짧은 사운드 파일은 클립에 읽어들입니다. 사운드를 2 회 이상 재생하는 경우, 특히, 루프 (사운드의 일부 또는 전체를 반복하는 것) 해 재생하는 경우는,<code> SourceDataLine</code> 보다 <code>Clip</code> 가 편리합니다. 사운드의 임의의 위치로부터 재생을 개시할 필요가 있는 경우는,<code>Clip</code> 인터페이스를 사용하면(자) 간단합니다. 게다가<code>Clip</code> 로부터의 재생은, 일반적으로, 버퍼를 사용하는 <code>SourceDataLine</code> 로부터의 재생보다 대기 시간이 짧아집니다. 즉, 사운드는 클립에 미리 로드 되고 있으므로, 버퍼가 가득 될 때까지 기다리는 일 없이 즉시 재생을 개시할 수 있습니다.  <a name="113605"> </a>  
+    <p> 
+<li>한 번에 메모리에 들어가 싫은 있고 긴 사운드 파일이나, 재생전에 데이터를 알 수 없는 사운드등의 스트리밍 데이터에는,<code>SourceDataLine</code> 를 사용합니다.  <a name="115858"> </a>  
+<p>후자의 예로서 사운드 입력의 모니터링, 즉 사운드를 수중에 넣으면서 재생하는 경우를 생각합니다. 입력 오디오를 출력 포트에 직접 돌려 보낼 수 있는 믹서가 없는 경우는, 수중에 넣은 데이터를 응용 프로그램으로 처리하고 나서 오디오 출력 믹서에 보낼 필요가 있습니다. 이 경우는,<code>Clip</code> 보다 <code>SourceDataLine</code> 가 적합합니다. 미리 알 수 없는 사운드의 예로서 사용자의 입력에 응답해 사운드 데이터를 대화 형식에서 합성 또는 조작하는 경우가 있습니다. 예를 들어, 사용자가 마우스를 작동시키는데 따라 사운드가 다른 사운드에 「morphing」하는 것으로써 청각적인 피드백을 주는 게임을 생각합니다. 사운드 변형의 동적인 성질에 의해, 응용 프로그램은 재생이 개시하기 전에 모든 사운드 데이터를 제공하는 것이 아니라, 재생중에 사운드 데이터를 계속적으로 갱신할 필요가 있습니다.  
+  
+</ul>
+<a name="113609"> </a> 
+<p>
+<h3> 클립의 사용</h3>
+<p><a name="117625"> </a> <code>Clip</code> 는, 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>의<a href="chapter3.html#113154">「목적의 종류의 라인의 취득」</a>으로 설명한 방법으로 가져옵니다. 최초의 인수를 <code>Clip.class</code> 로서 <code>DataLine.Info</code> 객체를 구축해,<code>AudioSystem</code> 또는 <code>Mixer</code> 의 <code>getLine</code> 메소드에 인수로서 이 <code>DataLine.Info</code> 를 건네줍니다.  </p>
+<a name="113613"> </a> 
+<h4> 재생용의 클립의 셋업</h4>
+<p><a name="113615"> </a> 라인을 취득하는 것은, 단지 그 라인을 참조하기 위한 방법을 얻는 것이어,<code>getLine</code> 가 그 라인을 취득자를 위해서(때문에) 실제로 예약하는 것은 아닙니다. 믹서로 이용할 수 있는, 목적의 종류의 라인수는 한정되어 있으므로,<code>getLine</code> 를 호출해 클립을 취득한 뒤, 재생을 시작하기 전에, 다른 응용 프로그램이 나타나, 클립을 횡령할 가능성이 있습니다. 실제로 클립을 사용하려면 , 다음의 <code>Clip</code> 메소드의 어느쪽이든을 호출하는 것으로, 자신의 프로그램이 배타적으로 사용하기 위해서 그 클립을 예약할 필요가 있습니다.
+<blockquote><pre>   void open(AudioInputStream stream) 
+   void open(AudioFormat format, byte[] data, int offset,
+   int bufferSize)
+</pre></blockquote>
+상기의 2 번째의 <code>open</code> 메소드에는 <code>bufferSize</code> 인수가 있습니다만,<code>SourceDataLine</code> 과는 달리,<code>Clip</code> 에는 새로운 데이터를 버퍼에 기입하는 메소드가 없습니다. 여기에서는,<code>bufferSize</code> 인수는, 클립에 로드하는 바이트 배열의 바이트수를 지정하기 위한의 것입니다. <code>SourceDataLine</code> 의 버퍼와 같은, 한층 더 계속해 데이터를 로드할 수 있는 버퍼가 아닙니다.  
+<p></p><p><a name="113623"> </a> 클립을 오픈하면(자),<code>Clip</code> 의 <code>setFramePosition</code> 또는 <code>setMicroSecondPosition</code> 메소드를 사용해, 데이터내의 어느 위치로부터 재생을 개시하는지를 지정할 수 있습니다. 지정하지 않는 경우는, 선두로부터 재생이 개시합니다. <code>setLoopPoints</code> 메소드를 사용해, 재생이 순환하도록(듯이) 설정할 수도 있습니다.
+</p><a name="113626"> </a> 
+<h4> 재생의 개시와 정지</h4>
+<p><a name="113628"> </a> 재생의 준비를 할 수 있으면(자),<code>start</code> 메소드를 호출합니다. 클립을 정지 또는 일시정지하려면 <code>stop</code> 메소드를 호출해, 재생을 재개하려면  다시 <code>start</code> 를 호출합니다. 클립은 재생을 정지한 미디어 위치를 기억하고 있으므로, 일시정지와 재개의 명시적인 메소드는 필요 없습니다. 정지한 위치로부터의 재개를 실시하지 않는 경우는, 벌써 설명한 프레임 또는 마이크로 세컨드의 위치 결정 메소드를 사용해, 클립을 선두 또는 희망하는 위치까지 「되감는다」일이 생깁니다.
+</p><p><a name="113630"> </a> <code>Clip</code> 의 볼륨 레벨과 활동 상태가 액티브한가 액티브하지 않을까는,<code>DataLine</code> 의 <code>getLevel</code> 메소드,<code>isActive</code> 메소드를 각각 호출하는 것으로 감시할 수 있습니다. 액티브한 <code>Clip</code> 란, 현재 사운드를 재생하고 있는 클립입니다.
+</p><a name="113634"> </a> 
+<h3> SourceDataLine 의 사용</h3>
+<p><a name="116360"> </a> <code>SourceDataLine</code> 를 취득하는 것은,<code>Clip</code> 를 취득하는 것에 닮았습니다. 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>의<a href="chapter3.html#113154">「목적의 종류의 라인의 취득」</a>을 참조해 주세요.  </p>
+<a name="116365"> </a> 
+<h4> 재생용 SourceDataLine 의 셋업</h4>
+<p><a name="116366"> </a> <code>SourceDataLine</code> 를 오픈하는 목적은,<code>Clip</code> 의 경우와 같게, 라인을 예약하기 (위해)때문에입니다. 다만,<code>DataLine</code> 로부터 상속한 다른 메소드를 사용합니다.
+<blockquote><pre>    void open(AudioFormat format) 
+</pre></blockquote>
+<code>Clip</code> 의 경우와는 달라,<code>SourceDataLine</code> 를 오픈할 때는, 그 라인에 사운드 데이터를 관련짓지 않습니다. 그 대신해, 재생하는 오디오 데이터의 형식을 지정합니다. 디폴트의 버퍼장이 시스템에 의해 선택됩니다.
+<p></p><p><a name="113646"> </a> 또, 다음의 변수를 사용해 특정의 버퍼장을 바이트 단위로 지정할 수도 있습니다.
+</p><p><a name="113648"> </a> 
+<pre>    <code>void open(AudioFormat format, int bufferSize) </code>
+</pre>
+유사 메소드와의 무결성을 유지하기 위해서,<code>buffersize</code> 인수는 바이트수로 나타냅니다만, 프레임의 정수치에 대응하고 있지 않으면 안됩니다.
+<p></p><p><a name="113652"> </a> 버퍼 사이즈를 결정하는 방법에 대해 생각합니다. 버퍼 사이즈는 프로그램의 조건에 의해 다릅니다.
+</p><p><a name="113654"> </a> 우선, 버퍼 사이즈는 작은 것이 대기 시간이 적게 됩니다. 새로운 데이터를 보냈을 때에, 보다 빨리 재생됩니다. 고도에 대화적인 프로그램 등, 응용 프로그램에 따라서는, 이러한 응답의 속도가 중시됩니다. 예를 들어, 게임에서는 재생의 개시는 시각적인 이벤트와 정확하게 동기 할 필요가 있습니다. 이러한 프로그램에서는, 대기 시간을 0.1 초 미만으로 하는 것이 요구됩니다. 다른 예로서 회의 어플리케이션에서는 재생과 혼잡의 양쪽 모두로 지연을 막을 필요가 있습니다. 다만, 많은 응용 프로그램에서는, 사운드가 언제 재생을 개시할까는 그다지 문제가 되지 않기 때문에, 사용자가 곤혹할 정도의 늦게 없는 한, 1 초 정도의 지연이 있어도 상관하지 않습니다. 이것은, 1 초 분의 버퍼를 사용해 큰 오디오 파일을 스트리밍 하는 응용 프로그램에도 들어맞읍니다. 사운드 그 자체는 장시간 중단되지 않고 재생되어 고도에 대화적인 조작을 수반하지 않기 때문에, 재생의 개시에 몇초간 걸려도 사용자는 신경쓰지 않을 것입니다.
+</p><p><a name="113656"> </a> 반면, 버퍼 사이즈가 작은 경우는, 버퍼에 충분한 속도로 데이터를 기입하지 못하고, 기입해에 실패할 가능성이 커집니다. 기입해에 실패하면(자) 데이터에 불연속부가 발생합니다. 불연속부는, 클릭 노이즈나 부수음을 일으킵니다. 또, 버퍼 사이즈가 작은 경우는, 버퍼를 항상 채워 두기 위해서(때문에) 프로그램의 동작이 격렬해져, CPU 를 집중적으로 사용하게 됩니다. 이 때문에, 다른 프로그램은 물론, 그 프로그램외의 thread의 실행도 늦어집니다.
+</p>
+<p><a name="113658"> </a> 따라서, 최적인 버퍼 사이즈란, 대기 시간이 응용 프로그램으로 허용 할 수 있는 정도로 짧고, 한편, 버퍼의 언더 플로우(underflow)의 위험이 적고, CPU 자원의 불필요한 소비를 피할 수 있는 것 같은 사이즈입니다. 회의 어플리케이션과 같은 프로그램에서는, 소리의 재현성의 낮음보다 지연이 문제시되므로, 버퍼 사이즈는 작은 것이 적합합니다. 음악의 스트리밍에서는, 초기의 지연은 허용 됩니다만 부수음은 허용 되지 않습니다. 이 때문에, 음악의 스트리밍에서는 1 초 정도의 큰 버퍼 사이즈가 바람직합니다. 다만, 샘플링 레이트가 높은 경우는,<code>DataLine</code> API 의 버퍼 사이즈의 계량 단위인 바이트수로 환산하면(자), 버퍼 사이즈는 커집니다.  </p>
+<p><a name="113660"> </a> 상기의 open 메소드를 사용하는 대신에,<code>Line</code> 의 <code>open()</code> 메소드를 사용해, 인수를 지정하지 않고 <code>SourceDataLine</code> 를 오픈할 수도 있습니다. 이 경우, 라인은 디폴트의 오디오 형식과 버퍼 사이즈로 오픈됩니다. 다만, 이 오디오 형식과 버퍼 사이즈는 나중에 변경할 수 없습니다. 라인의 디폴트의 오디오 형식과 버퍼 사이즈는, 라인이 오픈되어 있지 않아도,<code>DataLine</code> 의 <code>getFormat</code> 메소드와 <code>getBufferSize</code> 메소드를 호출해 알 수 있습니다.
+</p><a name="113663"> </a> 
+<h4> 재생의 개시와 정지</h4>
+<p><a name="113665"> </a> <code>SourceDataLine</code> 를 오픈하면(자), 사운드의 재생을 개시할 수 있습니다. 재생을 실시하려면 ,<code>DataLine</code> 의 start 메소드를 호출하고 나서, 라인의 재생 버퍼에 데이터를 반복해 기입합니다.
+</p><p><a name="113667"> </a> start 메소드에 의해, 라인은 버퍼에 데이터가 들어가는 대로, 즉시 재생을 개시할 수 있게 됩니다. 버퍼에는, 다음의 메소드를 사용해 데이터를 기입합니다.
+</p><blockquote><pre>    int write(byte[] b, int offset, int length) 
+</pre></blockquote>
+배열에 대한 오프셋(offset)는 배열의 길이와 같게, 바이트 단위로 나타내집니다.
+<p></p>
+<p><a name="113673"> </a> 라인은, 믹서에의 데이터 송신을 가능한 한조기에 개시합니다. 믹서 자체가 타겟으로 데이터를 보낼 때,<code>SourceDataLine</code> 가 <code>START</code> 이벤트를 생성합니다. (Java Sound API 의 일반적인 구현에서는, 소스 라인이 믹서에 데이터송원과 믹서가 타겟으로 데이터송원과의 사이의 지연은 샘플 1 개의 길이보다 훨씬 짧기 때문에, 무시할 수 있다). 이 <code>START</code> 이벤트는, 이 후의 「<a href="chapter4.html#113711">라인의 상태의 감시</a>」로 설명하도록(듯이), 그 라인의 청취자 객체에 보내집니다. 이 시점에서 이 라인은 액티브 상태로 간주해지므로,<code>DataLine</code> 의 <code>isActive</code> 메소드는 <code>true</code> 를 돌려줍니다. 이것들은 모두, 버퍼에 재생 데이터가 들어가 처음 행해지는 동작이며, start 메소드가 불려 간 직후에 행해진다고는 할 수 없습니다. 새로운 <code>SourceDataLine</code> 에 대해서 <code>start</code> 메소드를 호출해도 버퍼에 데이터를 기입하지 않으면, 그 라인은 액티브하게 안되어,<code>START</code> 이벤트도 보내지지 않습니다. 다만, 이 경우,<code>DataLine</code> 의 <code>isRunning</code> 메소드는 <code>true</code> 를 돌려줍니다.  </p>
+<p><a name="113675"> </a> 여기서, 버퍼에 기입하는 데이터의 양과 2 번째의 배치 데이터를 보내는 시기를 결정하는 방법을 생각합니다. 다행히, 2 번째의 기입의 호출 시기를 기록해 최초의 버퍼의 마지막과 동기 시킬 필요는 없어졌습니다. 그 대신에,<code>write</code> 메소드의 블록을 이용할 수가 있게 되었습니다.
+</p><ul><a name="113676"> </a> 
+<li><code>write</code> 메소드는 데이터가 버퍼에 기입해지자마자 돌아옵니다. 버퍼내의 모든 데이터의 재생이 끝날 때까지 기다리지 않습니다. 재생이 끝나는 것을 기다리면(자), 다음의 버퍼를 기입하기까지, 오디오가 중단되어 버립니다.  <a name="113677"> </a> 
+<li>버퍼를 보관 유지할 수 있는 양보다 많은 데이터를 기입하려고 해도 지장 없습니다. 이 경우, 요구된 모든 데이터가, 실제로 그 버퍼에 놓여질 때까지,<code>write</code> 메소드는 블록 되어 돌아오지 않습니다. 즉, 1 버퍼 분의 데이터가 한 번에 기입해져 재생됩니다만, 나머지의 모든 데이터가 버퍼에 들어간 시점에서 메소드는 돌아옵니다. 메소드가 블록 되지 않아도, 이 호출에 의한 마지막 버퍼 분의 데이터를 기입할 수 있게 되면(자) 돌아옵니다. 한층 더 이것은, 마지막 버퍼 분의 데이터의 재생이 완료하기 전에, 아마 프로그램에 제어가 돌아오는 것을 의미하고 있습니다.  <a name="113678"> </a> 
+<li>여러가지 면에서, 버퍼를 보관 유지할 수 있는 양보다 많은 데이터를 기입할 수 있는 것은 좋은 일입니다만, 다음에 생기는 기입이 블록 되지 않게 하는 경우는, 기입하는 바이트수를 <code>DataLine</code> 의 <code>available</code> 메소드가 돌려주는 값으로 제한할 수가 있습니다.
+<p><a name="113680"> </a> 
+</ul>
+다음에, 스트림로부터 읽어들인 데이터의 체크를 반복하는 예를 나타냅니다. 여기에서는, 체크를 한 번에 1 개(살)씩 <code>SourceDataLine</code> 에 기입해 재생합니다.
+<p></p>
+<blockquote><pre>
+// read chunks from a stream and write them to a source data 
+line 
+line.start();
+while (total &lt; totalToRead &amp;&amp; ! stopped)}
+    numBytesRead = stream.read(myData, 0, numBytesToRead);
+    if (numBytesRead == -1) break;
+    total += numBytesRead; 
+    line.write(myData, 0, numBytesRead);
+
+}
+</pre></blockquote>
+<code>write</code> 메소드가 블록 되지 않게 하려면 , 우선 <code>available</code> 메소드를 루프내에서 호출해, 블록 되지 않고 기입할 수 있는 바이트수를 조사해<code>numBytesToRead</code> 변수를 그 수치에 제한하고 나서, 스트림로부터의 read를 실시합니다. 이 예에서는,<code>write</code> 메소드가 루프 중(안)에서 불려 가고 있어 루프의 마지막 반복시에, 마지막 버퍼가 기입해질 때까지 루프는 종료하지 않기 때문에, 블록은 문제가 되지 않습니다. 블로킹 기법을 사용할까 사용하지 않는 것처럼 관계없이, 긴 사운드의 재생중에 프로그램이 다운 당해 있는 것처럼 보이는 것을 막기 위해서(때문에), 독립한 thread의 재생 루프를 어플리케이션외의 부분으로부터 호출하는 방법이 있습니다. 루프가 반복할 것에, 사용자가 재생의 정지를 요구했는지의 여부를 조사할 수가 있습니다. 정지가 요구되면(자), 위의 코드에서는 <code>stopped</code> 불 변수를 <code>true</code> 로 설정할 필요가 있습니다.
+<p></p><p><a name="113696"> </a> <code>write</code> 는 모든 데이터의 재생이 종료하기 전에 돌아오므로, 재생이 실제로 끝났던 시기를 알 방법이 필요합니다. 1 개의 방법은, 마지막 1 버퍼 분의 데이터를 기입한 뒤에 <code>DataLine</code> 의 <code>drain</code> 메소드를 호출하는 것입니다. 이 메소드는, 모든 데이터의 재생이 끝날 때까지 블록 됩니다. 프로그램에 제어가 돌아온 시점에서, 필요에 따라서 라인을 해제할 수 있습니다. 그 때에 오디오 샘플의 재생이 도중에 중지될 걱정은 없습니다.
+</p>
+<blockquote><pre>
+line.write(b, offset, numBytesToWrite); 
+//this is the final invocation of write
+line.drain();
+line.stop();
+line.close();
+line = null;
+</pre></blockquote>
+물론, 의도적으로 재생을 도중에 정지시킬 수도 있습니다. 예를 들어, 응용 프로그램에 사용자용의 [정지] 버튼이 있는 경우가 있습니다. 버퍼의 도중에 있어도 재생을 즉시 정지하려면 <code>DataLine</code> 의 <code>stop</code> 메소드를 호출합니다. 미재생의 데이터는 그대로 버퍼에 남으므로, 계속되어 <code>start</code> 를 호출하면(자), 정지한 위치로부터 재생이 재개됩니다. 재생을 재개하지 않는 경우는,<code>flush</code> 를 호출해, 버퍼내에 남아 있는 데이터를 파기합니다.
+<p></p><p><a name="113708"> </a> 데이터의 흐름이 정지하면(자),<code>SourceDataLine</code> 는 항상 <code>STOP</code> 이벤트를 생성합니다. 이것은, 데이터의 흐름이 drain, stop, flush 의 몇개의 메소드에 의해 정지했을 경우에도, 응용 프로그램이 다음의 데이터를 기입하기 위해서(때문에) <code>write</code> 를 호출하기 전에 재생 버퍼의 마지막에 도달했기 때문에 데이터의 흐름이 정지했을 경우에도 들어맞읍니다. <code>STOP</code> 이벤트가 생성되어도, 반드시 <code>stop</code> 메소드가 불려 갔다고는 할 수 없지 않고, 계속되어 <code>isRunning</code> 를 호출해도 <code>false</code> 가 반환된다고는 할 수 없습니다. 다만,<code>isActive</code> 메소드는 <code>false</code> 를 돌려주는<code>start</code> 메소드가 벌써 불려 가고 있는 경우는,<code>STOP</code> 이벤트가 생성되어도 <code>isRunning</code> 메소드는<code>true</code> 를 돌려주어,<code>stop</code> 메소드가 불려 간 뒤에 <code>false</code> 를 돌려주게 됩니다. 중요한 (일)것은,<code>START</code> 이벤트와 <code>STOP</code> 이벤트는,<code>isRunning</code> 는 아니고 <code>isActive</code> 에 대응하고 있다고 하는 것입니다.
+</p><a name="113711"> </a> 
+<h3> 라인의 상태의 감시</h3>
+<p><a name="113713"> </a> 사운드의 재생을 개시하면(자), 그것이 언제 종료할까를 아는 수단이 필요하게 됩니다. 1 개의 방법으로서 마지막 버퍼의 데이터를 기입하고 나서 <code>drain</code> 메소드를 호출하는 방법을 벌써 설명했습니다만, 이것은,<code>SourceDataLine</code> 밖에 사용할 수 없습니다. <code><code>SourceDataLine</code> 와 <code>Clip</code> 의 양쪽 모두에 사용할 수 있는 이제(벌써) 1 개의 방법은, 라인이 상태를 변경했을 때에 그 라인으로부터 통지를 받도록(듯이) 등록하는 것입니다. 이러한 통지는 <code>LineEvent</code> 객체의 형태로 생성되어<code>OPEN</code>,<code>CLOSE</code>,<code>START</code>,<code>STOP</code> 의 4 종류가 있습니다.  </p>
+<p><a name="113715"> </a> <code>LineListener</code> 인터페이스를 구현하는 프로그램의 어느 객체도, 이 통지를 받도록(듯이) 등록할 수가 있습니다. <code>LineListener</code> 인터페이스의 구현에 필요한 것은,<code>LineEvent</code> 객체를 인수에 취하는 update 메소드 뿐입니다. 이 객체를 그 라인의 청취자의 1 개로서 등록하려면 , 다음의 <code>Line</code> 메소드를 호출합니다.
+</p><p><a name="113717"> </a> 
+<blockquote>
+<code>public void addLineListener(LineListener listener) </code>
+</blockquote>
+<p>
+라인의 오픈시, 클로즈시, 개시시, 및 정지시에, 반드시 모든 청취자에게 <code>update</code> 메세지가 송신됩니다. 객체는, 자신이 받는 <code>LineEvent</code> 를 문의할 수가 있습니다. 우선 <code>LineEvent.getLine</code> 를 호출해, 정지한 라인이 해당 라인인 것을 확인합니다. 이 케이스에서는 사운드가 종료했는지의 여부를 알고 싶기 때문에,<code>LineEvent</code> 의 종류가 <code>STOP</code> 화도인지를 조사합니다. STOP 의 경우는, 끝까지 도달했는지, 그렇지 않으면 다른 이유 (사용자가 [정지] 버튼을 클릭했다는 등)로써 정지되었는지를 조사하기 위해서(때문에),<code>LineEvent</code> 객체에 보존되고 있는 사운드의 정확한 현재 위치를 조사해 사운드의 길이 (알고 있는 경우)와 비교합니다. 다만, 정지의 이유는 프로그램외의 부분에서 조사할 수도 있습니다.  
+<p></p>
+<p><a name="113721"> </a> 같은 라인에 대해, 라인이 오픈, 클로즈, 또는 개시되었던 시기를 알 필요가 있을 때도, 같은 기구를 사용합니다. <code>LineEvents</code> 는,<code>Clips</code> 와 <code>SourceDataLines</code> 이외의 종류의 라인에 의해도 생성됩니다. 그러나,<code>Port</code> 의 경우는, 이벤트에 의해 라인의 오픈 또는 클로즈 상태를 알 수 없습니다. 예를 들어,<code>Port</code> 는 작성된 당초부터 오픈되고 있으므로, 프로그램은 <code>open</code> 메소드를 호출하지 않고,<code>Port</code> 가 <code>OPEN </code> 이벤트를 생성할 것은 없습니다( 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>의<a href="chapter3.html#113216">「입출력 포트의 선택」</a>을 참조).  </p>
+<a name="113725"> </a> 
+<h3> 복수 라인의 재생의 동기 </h3>
+<p><a name="113727"> </a> 오디오의 복수 트럭을 동시에 재생하는 경우는, 정확하게 같은 시각에 모든 트럭의 개시와 정지를 실시하는 것이 바람직합니다. 일부의 믹서에는 <code>synchronize</code> 메소드에 의해 이 기능이 갖춰져, 데이터 라인의 그룹에 대한 <code>open</code>,<code>close</code>,<code>start</code>,<code>stop</code> 등의 조작을 단일의 커멘드로 실시할 수가 있으므로, 각 라인을 개별적으로 제어할 필요는 없습니다. 게다가 라인에 대한 조작의 정밀도를 조절할 수가 있습니다.
+</p><p><a name="113729"> </a> 특정의 믹서가, 지정된 그룹 데이터 라인에 대해서 이 기능을 사용할 수 있을지 어떨지를 조사하려면 ,<code>Mixer</code> 인터페이스의 <code>isSynchronizationSupported</code> 메소드를 호출합니다.
+</p><p><a name="113731"> </a> 
+<blockquote><pre>
+boolean isSynchronizationSupported(Line[] lines, 
+  boolean  maintainSync)
+</pre></blockquote>
+최초의 파라미터는 특정의 데이터 라인의 그룹을 지정해, 2 번째의 파라미터는 동기를 유지해야 할 정밀도를 나타냅니다. 2 번째의 파라미터가 <code>true</code> 의 경우, 쿼리는, 그 믹서가 지정된 라인을 제어할 경우에 샘플 대로의 정밀도를 항상 유지하는 기능이 있을지 어떨지를 문의합니다. 그 기능이 없는 경우에는, 정확한 동기는 개시와 정지의 조작시에게만 필요해, 재생 전체를 통해서는 필요 없습니다.
+<p></p><a name="113736"> </a> 
+<h3> 출력 오디오의 처리</h3>
+<p><a name="113738"> </a> 소스 데이터 라인에는, 게인, 빵, 리바브, 및 샘플링 레이트의 컨트롤과 같은 신호 제어 컨트롤을 갖추고 있는 것이 있습니다. 동일한 기능, 특히 게인 컨트롤이 출력 포트에도 갖춰지고 있는 일이 있습니다. 라인이 그러한 컨트롤을 갖추고 있는지 어떤지를 조사하는 방법, 및 그러한 사용 방법의 자세한 것은, 제 6 장<a href="chapter6.html">「컨트롤을 사용한 오디오 처리」</a>를 참조해 주세요.  
+</p>
+<p>&nbsp;</p></body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>시스템 전체의 리포지터리(repository) - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center"> 시스템 전체의 리포지터리(repository) (Windows 마셔)</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<p>이번 릴리스보다 전은, 새로운 JRE 를 인스톨 하면(자), 낡은 릴리스의 JAR 및 네이티브 라이브러리를 새로운 릴리스로부터 표시할 수 없었습니다. 따라서, 그러한 라이브러리에 의존하는 어플리케이션 및 애플릿은 동작하지 않기 때문에, 개발자는 라이브러리를 새로운 JRE 에 대해서 재배치할 필요가 있었습니다. 새로운<strong>시스템 전체의 리포지터리(repository)</strong>는, 이 문제에 대한 해결책이 됩니다. 시스템 전체의 리포지터리(repository)는, VM 가 JAR 라이브러리 또는 네이티브 라이브러리를 검색할 수 있는, JRE 의 장소에 의존하지 않는 글로벌인 (시스템 전체의) 장소를 제공합니다. 이것은 Microsoft VM 의 리포지터리(repository)와 같은 기능을 제공합니다 (<a href="http://support.microsoft.com/default.aspx?scid=kb;EN-US;177168">「How Does the Virtual Machine Search for Java Classes?」</a>(을)를 참조해 주세요).  </p>
+<p align="left"><span class="bg_yellow"><strong>주:</strong> 이 릴리스에서는, 시스템 전체의 리포지터리(repository)는 Java Plug-in 및 Win32 만으로 지원됩니다. </span></p>
+<p>새로운 시스템 전체의 리포지터리(repository)의 장소에 도착해, 다음의 겉(표)에 나타냅니다. </p>
+<blockquote>
+  <table border="1" cellpadding="3" cellspacing="0" bordercolor="#000000">
+    <tr bgcolor="#CCCCCC"> 
+      <td width="173"> 
+<div align="center"><strong><font size="+1">라이브러리의 형태</font></strong></div></td>
+      <td width="579"> 
+<div align="center"><strong><font size="+1">시스템 전체의 장소</font></strong></div></td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>DLL</td>
+<td>시스템 패스 환경 변수내의 임의의 디렉토리 </td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>신뢰되어 있지 않은 JAR</td>
+<td><code>&lt;Windows 디렉토리 &gt;\Sun\Java\Deployment\Lib\Untrusted</code></td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>신뢰되고 있는 JAR</td>
+<td><code>&lt;Windows 디렉토리 &gt;\Sun\Java\Deployment\Lib\Trusted</code></td>
+    </tr>
+  </table>
+  
+</blockquote>
+<p><code>&lt;Windows 디렉토리 &gt;</code> 는,<code>%SystemRoot%</code> 라고도 불리는, Windows 가 인스톨 되고 있는 드라이브에 있는 Windows OS 의 디렉토리입니다. </p>
+<p>예를 들어, Windows XP 에서는, Windows 는 일반적으로 C 드라이브에 인스톨 되므로, 라이브러리의 장소는 다음과 같이 됩니다. </p>
+<blockquote>
+  <table border="1" cellpadding="3" cellspacing="0" bordercolor="#000000">
+    <tr bgcolor="#CCCCCC"> 
+<td width="173"> <div align="center"><strong><font size="+1">라이브러리의 형태</font></strong></div></td>
+<td width="496"> <div align="center"><strong><font size="+1">시스템 전체의 장소</font></strong></div></td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>DLL</td>
+<td>시스템 패스 변수내에 있는 임의의 디렉토리, 예를 들어 <code>C:\WINDOWS\repository</code> 가 시스템 패스 변수로 설정되어 있는 경우는,<code>C:\WINDOWS\repository</code> </td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>신뢰되어 있지 않은 JAR</td>
+<td><code>C:\WINDOWS\Sun\Java\Deployment\Lib\Untrusted</code></td>
+    </tr>
+    <tr align="left" valign="top"> 
+<td>신뢰되고 있는 JAR</td>
+<td><code>C:\WINDOWS\Sun\Java\Deployment\Lib\Trusted</code></td>
+    </tr>
+  </table>
+  
+</blockquote>
+<p><u><span class="bg_yellow">다음의 점에 주의해 주세요. </span></u></p>
+<ol>
+<li>시스템 전체로 신뢰되고 있는 리포지터리(repository)의 JAR 내의 클래스는 확장 클래스 로더에 의해 로드 됩니다만, 시스템 전체로 신뢰되어 있지 않은 리포지터리(repository)의 JAR 는 애플릿 클래스 로더에 의해 로드 됩니다. 따라서 전자는 <code>AllPermission</code> 의 액세스권이 주어져 후자에게는 디폴트 애플릿의 액세스권 밖에 주어지지 않습니다. </li>
+<li> 리포지터리(repository)는, 버젼 또는 이름 공간을 제어하지 않습니다. 개발자가 배치시에 버젼 및 이름 공간의 경합을 피할 필요가 있습니다.  
+  </li>
+<li>시스템 전체로 신뢰된 리포지터리(repository)의 구현은, 시스템 프로퍼티 <code>java.ext.dirs</code> 에 근거하고 있습니다. 사용자가 Java 컨트롤 패널로부터 독자적인 <code>java.ext.dirs</code> 시스템 프로퍼티을 선택하는 경우, Java Plug-in 는 시스템 전체로 신뢰된 리포지터리(repository)의 JAR 를 로드하지 않습니다. <br>
+  </li>
+</ol>
+<hr>
+</body>
+</html>

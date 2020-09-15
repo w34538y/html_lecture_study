@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+	<TITLE>Cookie 관리 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<h1>Cookie 관리</h1>
+<H2>처음에</H2>
+<P>HTTP 상태 관리 기구에서는, HTTP 요구 및 응답을 사용해 스테이트 풀인 세션을 확립하기 위한 방법을 지정하고 있습니다. 스펙에 대해서는, 「RFC 2965: HTTP State Management Mechanism」(<a href="http://www.ietf.org/rfc/rfc2965.txt?number=2965">http://www.ietf.org/rfc/rfc2965.txt? number=2965</a> )를 참조해 주세요. </P>
+<h2>Tiger 이전의 지원</h2>
+<P>Tiger 이전, Cookie 관리를 어플리케이션에 추가하는 것은 가능했습니다. 다만, API 의 지원는 약간 불충분해, Cookie 관리로 연결되는 점은 전혀 없었습니다. 각 어플리케이션에서는, java.net.URLConnection 클래스로부터 다음의 2 개의 메소드를 사용해, 각 HTTP 요구/응답의 Cookie 를 개별적으로 처리할 필요가 있었습니다.
+<P><code>setRequestProperty()<br> getHeaderFields()</code></P>
+<P>1 번째의 메소드는, HTTP 요구의 송신전에 호출할 필요가 있습니다. 이것은, HTTP 헤더의 현재의 URL 에 적절한 Cookie 를 설정하기 (위해)때문에입니다. 2 번째의 메소드는, HTTP 서버에 의해 송신된 응답 헤더로부터 Cookie 를 취득하기 위해서 사용합니다.
+<P>이 방법으로 Cookie 지원를 추가하는 것은 가능합니다만, 코드가 단편화 되게 됩니다. 이것은 에러가 발생하기 쉽고, 보수가 큰 일입니다. </P>
+<h2>Tiger 의 신기능</h2>
+<P>abstract 클래스를 사용한 새로운 콜백 기구를 도입했습니다. 이것은, HTTP 상태 관리 정책의 구현을 HTTP 프로토콜 핸들러에 접속하는 것을 목적으로 한 것입니다. 어플리케이션이나 Web 컨테이너에서는, 새로운 API 의 구상 서브 클래스를 준비하면 Cookie 관리의 도입이 가능합니다. </P>
+<P>이 새로운 abstract 클래스는 java.net.CookieHandler 로 불려 이것에는, JVM 의 현재의 CookieHandler 의 등록이나 취득을 실시하는 기구에 가세해, 특정 URI 에 대응하는 Cookie 의 취득이나 기록을 행하기 위한 메소드가 준비되어 있습니다.
+<P>CookieHandler 에는, getDefault() 및 setDefault()의 2 개의 static 메소드가 포함되어 있습니다. 이것은, VM 에 대해 디폴트의 CookieHandler 의 취득이나 등록을 행하기 위한의 것입니다. 게다가 Cookie 리스트를 돌려주기 위한 2 개의 인스턴스 메소드, get()와 put()는, URL 를 베이스로 해, 각각 응답 헤더로부터 Cookie 리스트를 보존합니다. </P>
+<P>Cookie 는, Map&lt;String, List&lt;String&gt;&gt; 로서 나타내집니다. 즉, Cookie 의 헤더 필드명으로부터, String 에 의해 나타내지는 일련의 리스트까지의 Map 입니다. 지금까지 정의된 「Set-Cookie2」와「Cookie」의 2 개 상태 관리 헤더가 준비되어 있습니다. 전자는 응답 헤더로 Cookie 를 돌려주는 경우에 사용해, 후자는 HTTP 요구 헤더로 Cookie 의 설정을 실시하는 경우에 사용합니다. </P>
+<P>RFC2965 로부터의 예를 다음에 나타냅니다. </p>
+<P>1.   User Agent -&gt; Server</P>
+<P>        POST /acme/login HTTP/1. 1<br> [form data]</P>
+<P>2.   Server -&gt; User Agent</P>
+<P>        HTTP/1. 1 200 OK<br> Set-Cookie2:Customer="WILE_E_COYOTE"; Version="1"; Path="/acme"</P>
+<P>3.   User Agent -&gt; Server</P>
+<P>        POST /acme/pickitem HTTP/1. 1<br> Cookie:$Version="1"; Customer="WILE_E_COYOTE"; $Path="/acme"<br> [form data]</P>
+<h2>간단한 예</h2>
+<P>다음에, CookieHandler 구현의 간단한 예를 나타냅니다. 기본적으로 2 개의 메소드가 준비되어 있습니다. 이러한 메소드에서는, 주어진(given) 요구 URI 와 요구 헤더 (Cookie 헤더를 제외하다)를 구현해, Cookie 캐쉬로부터 관련하는 Cookie 를 모두 취득해, 요구 URI 와 요구 헤더가 주어진 Cookie 캐쉬에 대해서 적절한 Cookie 를 기록합니다. </P>
+<pre>
+class MyCookieHandler extends CookieHandler {
+	public Map&lt;String, List&lt;String&gt;&gt;
+		get(URI uri, Map&lt;String, List&lt;String&gt;&gt; requestHeaders)
+		throws IOException {
+		// the cookies will be included in request
+		Map&lt;String, List&lt;String&gt;&gt; map = new HashMap&lt;String, List&lt;String&gt;&gt;();
+		List&lt;String&gt; l = retrieveCookies(uri, rqstHdrs);
+		map.put(&quot;Cookie&quot;, l);
+		return Collections.unmodifiableMap(map);
+	}
+
+	public void
+		put(URI uri, Map responseHeaders)
+		throws IOException {
+	    // check response has cookies[1]
+		List l = (List) responseHeaders.get(&quot;Set-Cookie2&quot;);
+	    if (l ! = null) {
+			// save the cookies in a cookie cache
+		 storeCookies(uri, l);
+	    }
+	}
+}
+</pre>
+<P><code>retrieveCookies()</code> 와 <code>storeCookies()</code> 의 각 메소드는, 이 예에서는 생략 되고 있는 연구 최종 단계의 Cookie 관리 기능과 대화하기 위한 「magic」기능입니다. </P>
+<P>이 기능이 VM 에 등록되면(자), HTTP 트랜잭션(transaction)를 발행하는 시점에서 유효하게 됩니다. </P>
+<pre>
+public static void main(String args[]) throws Exception {
+	......
+	CookieHandler.setDefault(new MyCookieHandler());
+	HttpURLConnection http = (HttpURLConnection) url.openConnection();
+
+	int respCode = http.getResponseCode();
+	http.disconnect();
+	......
+}
+</pre>
+<P>J2SE 에는, Cookie 매니저의 디폴트의 구현이 존재하지 않습니다. 그러나, 이 점은 장래 변경될 가능성이 있습니다. Java Plug-in 와 Java WebStart 에서는, 각각의 환경에 있어 디폴트의 CookieHandler 를 제공합니다.
+</BODY>
+</HTML>

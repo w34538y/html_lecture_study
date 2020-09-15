@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 1 - 입문
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="jpsOverview.fm3.html">전의 항목</a>  | <a href="attributes.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998377"><i></i> 어플리케이션으로부터 Java 인쇄 서비스를 사용하는 방법</a> </h2>
+
+<blockquote>
+<a name="998411"><!-- --></a>  표준적인 어플리케이션으로부터 Java 인쇄 서비스 API 를 사용할 때는, 이하의 순서로 인쇄 요구를 처리합니다. <p>
+<ol><li>적절한 DocFlavor 를 가져옵니다. DocFlavor 는, 인쇄 데이터의 서식을 정의하는 클래스입니다.
+<li>AttributeSet 를 작성합니다. AttributeSet 에는, 목적의 인쇄 서비스 기능을 정의한 일련의 속성 세트가 캡슐화됩니다. 예를 들어, 스테이풀 멈춤 및 양면 인쇄로 5 부 인쇄하는 기능등이 캡슐화됩니다.
+<li>DocFlavor 와 속성 세트로 지정된 인쇄 요구를 처리할 수 있는 인쇄 서비스를 검색합니다.
+<li>인쇄 서비스로부터 인쇄 작업을 작성합니다.
+<li>인쇄 작업의 인쇄 메소드를 호출합니다.
+</ol>
+어플리케이션은, 인쇄하는 대상 및 방법으로 응해 순서를 실행합니다. 인쇄 데이터는, 프린터 또는 출력 스트림에 송신할 수 있습니다. 인쇄 데이터의 서식은, 텍스트 또는 이미지 이외에, 2D 그래픽스를 캡슐화한 Java 객체에서도 괜찮습니다. 인쇄 데이터가 2D 그래픽스의 경우는, 인쇄 작업은 DocPrintJob 또는 PrinterJob 를 사용해 표현할 수 있습니다. 인쇄 데이터가 문서의 경우는, DocPrintJob 를 사용할 필요가 있습니다. <p>
+<a name="998678"><!-- --></a>  인쇄 메소드와 인쇄 데이터 서식의 편성에 의해, 다음의 6 개의 인쇄 방법을 선택할 수 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="998412"><!-- --></a>  DocPrintJob 및 PrintService 의 구현을 사용해, 문서를 프린터에 인쇄한다
+</li>
+<li>
+<a name="998413"><!-- --></a>  DocPrintJob 및 StreamPrintService 를 사용해, 문서를 출력 스트림에 스트림 전달한다
+</li>
+<li>
+<a name="998476"><!-- --></a>  DocPrintJob 및 PrintService 의 구현을 사용해, 2D 그래픽스를 프린터에 인쇄한다
+</li>
+<li>
+<a name="999368"><!-- --></a>  DocPrintJob 및 StreamPrintService 를 사용해, 2D 그래픽스를 출력 스트림에 스트림 전달한다
+</li>
+<li>
+<a name="999363"><!-- --></a>  java.awt.print.PrinterJob 를 사용해, 2D 그래픽스를 PrintService 에 인쇄한다 
+</li>
+<li>
+<a name="998503"><!-- --></a>  java.awt.print.PrinterJob 를 사용해, 2D 그래픽스를 StreamPrintService 에 스트림 전달한다 
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="999220"><!-- --></a>  「속성」의 장과 「문서의 종류의 지정」에서는, 이러한 인쇄 방법을 사용하기 위해서, 속성 세트를 작성해 문서의 종류를 지정하는 방법을 설명합니다. <a href="printing.fm.html#996958">「문서의 인쇄와 스트림 전달」</a>에서는,DocPrintJob 를 사용해 문서를 인쇄 및 스트림 전달하는 방법을 설명합니다. <a href="printing2d.fm.html#"></a> <a href="printing2d.fm.html#">「2D 그래픽스의 인쇄와 스트림 전달」</a>에서는,DocPrintJob 및 PrinterJob 를 사용해 2D 그래픽스를 인쇄 및 스트림 전달하는 방법을 설명합니다.  <p>
+</blockquote>
+<br>
+<h3>
+<a name="998638"><!-- --></a>  <i></i>기본적인 예
+</h3>
+
+<blockquote>
+<a name="998637"><!-- --></a>  Java 인쇄 서비스 API 를 사용하는 어플리케이션에서는, 대부분의 경우, 문서를 프린터에 직접 송신합니다. 이하의 코드예로 그방법을 나타냅니다. <p>
+<a name="998651"><!-- --></a> 
+<blockquote><pre>// Input the file
+FileInputStream textStream; 
+try { 
+	textstream = new FileInputStream("file.TXT"); 
+} catch (FileNotFoundException ffne) { 
+} 
+if (textstream == null) { 
+	return; 
+} 
+// Set the document type
+DocFlavor myFormat = DocFlavor.INPUT_STREAM.TEXT_PLAIN_ASCII;
+// Create a Doc
+Doc myDoc = new SimpleDoc(texttream, myFormat, null); 
+// Build a set of attributes
+PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet(); 
+aset.add(new Copies(5)); 
+aset.add(MediaSize.ISO_A4);
+aset.add(Sides.DUPLEX); 
+// discover the printers that can print the format according to the
+// instructions in the attribute set
+PrintService[] services =
+	PrintServiceLookup.lookupPrintServices(myFormat, aset);
+// Create a print job from one of the print services
+if (services.length &gt; 0) { 
+	DocPrintJob job = services[0]. createPrintJob(); 
+	try { 
+		job.print(myDoc, aset); 
+	} catch (PrintException pe) {} 
+} 
+</pre></blockquote>
+<a name="998943"><!-- --></a>  이 예에서는, 6 종류의 인쇄 방법의 1 개만을 나타내고 있습니다만, 다른 인쇄 방법도 이와 같이 기능합니다. 이 가이드의 나머지의 부분에서는, 각 인쇄 처리 및 모든 인쇄 방법에 대해 상세하게 설명합니다. <p>
+<a name="997030"><!-- --></a> 
+<p>
+<a name="996814"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="jpsOverview.fm3.html">전의 항목</a>  | <a href="attributes.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

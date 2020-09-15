@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>
+<meta name="generator" content="HTML Tidy for Windows (vers 1st March 2004), see www.w3.org
+">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>
+FAQ (JConsole 와 remote administration) - xrath.com 에서 번역됨</title>
+  <link rel="stylesheet" href="doc.css" type="text/css"></head><body>
+<h1><a name="FAQ" id ="FAQ"><center>
+
+FAQ<br>JConsole 와 remote administration
+</center></a> </h1>
+
+<hr>
+<h2>JConsole 와 JMX remote administration</h2>
+<ol>
+<li><a href="#win1"><b>Windows</b> 상에서 JConsole 를 실행하고 있습니다. 「접속」다이얼로그의 「Local」탭에 Java 프로세스가 표시되지 않습니다. 왜입니까. </a> 
+  </li>
+<li><a href="#win2"><b>Windows</b> 의 경우, 사용자명에 「_」 (밑줄)이 포함되면(자) JDK 5 의 jconsole 및 jps 커멘드가 동작하지 않습니다. JConsole 는 Java 프로세스를 찾아낼 수가 없습니다. </a> 
+  </li>
+<li><a href="#win3">Windows 시스템의 패스워드 파일을 시큐리티 보호하기에는  어떻게 하면 좋습니까. </a> 
+  </li>
+<li><a href="#config1">동일 머신상에서 원격 또는 로컬에 실행되고 있는 어플리케이션에 「Remote」탭을 사용해 접속하려고 하면(자), JConsole 는 접속에 실패합니다. 다만, 동일 머신상에서 「Local」탭을 사용하는 경우는, 접속에 성공합니다. </a> 
+  </li> 
+<li><a href="#linux2"><b>Linux</b> 상에서 가동하고 있는 JVM 에, JConsole 를 사용해 접속을 시도하고 있습니다만 성공하지 않습니다. Windows 및 Solaris 상에서 가동하는 JVM 에의 접속은 성공합니다. </a> 
+  </li>
+<li><a href="#ssl1">어플리케이션에서는, SSL 를 사용한 remote administration가 유효하게 설정되어 있습니다. 어플리케이션에 접속하려면 , JConsole 를 어떻게 설정하면 좋습니까. </a> 
+<li><a href="#rmi1">JConsole 를 사용해 방화벽(fire wall) 넘어로 어플리케이션을 감시할 수 있습니까. </a> 
+</ol>
+
+<h2>SNMP 베이스의 관리</h2>
+<ol>
+<li><a href="#snmp1">Java 가상 머신의 SNMP 관리용의 표준 MIB 는 어디에 있습니까. 사용할 필요가 있는 SNMP 프로토콜의 버젼을 가르쳐 주세요. </a> </li>
+<li><a href="#snmp2">JVM MIB 트리내에서 모든 객체를 표시할 수 없습니다. 예를 들어, jvmMemoryHeapUsed OID 가 표시되지 않습니다. 이것은 기존의 문제입니까. </a> </li>
+</ol>
+
+<hr>
+
+<h2>JConsole 와 JMX remote administration</h2>
+<ol>
+<li><a name="win1"><b>Windows 상에서 JConsole 를 실행하고 있습니다. 「접속」다이얼로그의 「Local」탭에 Java 프로세스가 표시되지 않습니다. 왜입니까. </b></a> 
+
+<p>
+이 문제는, 대체로의 경우, 디폴트의 Windows 일시 디렉토리가 FAT 파일 시스템상에 존재하기 위해서 발생합니다. TMP 파일 시스템이 NTFS 로, JConsole 에 프로세스가 표시되지 않는 경우는,<a href="#win2">「FAQ #2」</a>의 설명에 따라 사용자명을 확인해 주세요.
+
+<p>
+시큐리티상의 이유로부터, 디폴트의 Windows 일시 디렉토리가 파일 및 디렉토리에의 액세스권 설정을 지원하는 파일 시스템 (NTFS 파일 시스템 등) 상에 존재하는 경우에게만, 로컬의 감시 및 관리가 지원됩니다. 충분한 액세스 제어가 제공되지 않는 FAT 파일 시스템에서는, 로컬의 감시 및 관리는 지원되지 않습니다.
+<p>
+다음의 방법으로, 이 문제를 회피할 수 있는 경우가 있습니다. <br>로컬 또는 remote administration를 유효하게 해 어플리케이션을 실행하기 전에, TMP 환경 변수를, NTFS 파일 시스템상의 디렉토리, 또는 파일과 디렉토리에의 액세스권 설정을 지원하는 임의의 파일 시스템을 참조하도록(듯이) 설정합니다. 이 파일 시스템은, 머신의 로컬 파일 시스템일 필요가 있습니다. 이 옵션을 대상의 어플리케이션에 대해서 설정할지 어떨지는, 어플리케이션에 따라서 다릅니다. 이 변수를 커멘드 prompt 또는 배치 스크립트내에서 설정하는 경우는, 다음과 같이 입력하는 것으로.
+<p>
+set TMP=<i>path</i>
+<p>
+환경 변수는, 「시스템의 프로퍼티」의 환경 변수의 리스트에 추가하는 것으로, 글로벌로 설정할 수 있습니다.  환경 변수의 리스트는, 「컨트롤 패널」의 「시스템」을 열어, 「상세 설정」탭을 선택해 「환경 변수」버튼을 클릭한다고 표시됩니다. 이 인터페이스에서는, 현재의 사용자가 실행하는 전프로세스에 대해서 변수를 설정하는지, 시스템의 실행하는 전프로세스에 대한 시스템 변수로서 글로벌로 설정하는지를 선택할 수 있습니다.
+<p></li>
+
+<li><a name="win2"><b>Windows 의 경우, 사용자명에 「_」 (밑줄)이 포함되면(자) JDK 5 의 jconsole 및 jps 커멘드가 동작하지 않습니다. JConsole 는 Java 프로세스를 찾아낼 수가 없습니다. </b></a> 
+<p>
+이것은, 사용자명에 「_」 (밑줄)이 포함되는 경우, Windows 상에서 jconsole 와 jps 커멘드가 동작하지 않는다고 하는 JDK 5 의 기존의 문제입니다. 버그 <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6301562">6301562</a>  는, 장래의 릴리스로 수정될 예정입니다.
+
+
+<p>
+
+</li>
+
+<li><a name="win3"><b>Windows 시스템의 패스워드 파일을 시큐리티 보호하기에는  어떻게 하면 좋습니까. </b></a> 
+
+<p>
+자세한 것은,<a href="security-windows.html">「Microsoft Windows 시스템상에서 패스워드 파일을 보호하는 방법」</a>을 참조해 주세요.
+<p></li>
+
+<li><a name="config1"><b>동일 머신상에서 원격 또는 로컬에 실행되고 있는 어플리케이션에 「Remote」탭을 사용해 접속하려고 하면(자), JConsole 는 접속에 실패합니다. 다만, 동일 머신상에서 「Local」탭을 사용하는 경우는, 접속에 성공합니다. </b></a> 
+
+<p>
+대체로의 경우, 이것은 구성상의 문제입니다. 최초로, 어플리케이션이, remote administration가 유효한 상태로 기동한 것을 확인해 주세요(자세한 것은,<a href="agent.html">「JMX 를 사용하는 감시와 관리」</a>를 참조). 다음에, remote administration를 유효하게 하기 위해서 관리 프로퍼티으로 SSL 가 유효하게 설정되어 있는 것, 및 그 구성이 올바른 것을 확인합니다.
+<p>
+remote administration가 유효한 경우, SSL 는 디폴트로 유효하게 됩니다. <tt>com.sun.management.jmxremote.ssl</tt> 프로퍼티을 <tt>false</tt> 로 설정하는 것으로, SSL 를 무효로 할 수 있습니다. 어플리케이션의 설정에 SSL 프로퍼티이 사용되어 있지 않지만, remote administration로 SSL 가 유효하게 설정되어 있는 경우, JConsole 는 어플리케이션에의 접속에 실패합니다. remote administration에서의 SSL 의 사용 방법에 대해서는, 「JMX 를 사용하는 감시와 관리」의<a href="agent.html#gdemv">「SSL 의 사용」</a>시에를 참조해 주세요.
+<p>
+<b>Linux</b> 상에서 어플리케이션을 실행하는 경우에만 접속 장해가 발생하는 경우는,<a href="#linux1">「FAQ #5」</a>를 참조해 주세요.
+<p>
+</li>
+
+<li><a name="linux1"><b>Linux 상에서 가동하고 있는 JVM 에, JConsole 를 사용해 접속을 시도하고 있습니다만 성공하지 않습니다. Windows 및 Solaris 상에서 가동하는 JVM 에의 접속은 성공합니다. </b></a> 
+
+<p>
+대체로의 경우, 이것은, Linux 머신의 구성, 또는 어플리케이션 실행용으로 지정된 관리 프로퍼티의 문제입니다. SSL 의 사용법에 대해서는,<a href="#config1">「FAQ #4」</a>도 참조해 주세요.
+<p>
+다음의 점을 확인해 주세요.
+<ul>
+<li>
+호스트명이 호스트 주소에 올바르게 해결되는 것을 확인합니다.
+<p>
+<tt>hostname -i</tt> 커멘드를 실행합니다. 127.0. 0.1 이 출력되는 경우, JConsole 는 Linux 머신상에서 가동하는 JVM 에 접속 되어 있지 않습니다. 이 문제를 해결하려면 , 호스트명이 호스트 주소에 해결되도록(듯이) /etc/hosts 를 편집합니다.
+</li>
+
+<li>Linux 머신의 구성을 확인해, 어플리케이션에 접속하기 위해서 JConsole 를 실행하는 호스트로부터의 패킷을 받아들일지 어떨지를 조사합니다.
+<p>
+패킷 필터링은, Linux 커넬에 짜넣어지고 있습니다. <tt>/sbin/iptables --list</tt> 를 실행해, remote administration용으로 작성된 JMX 에이전트에의 접속이 외부 클라이언트에 허가되고 있는지 어떤지를 확인합니다. 다음의 커멘드를 실행해, JConsole 등의 외부 클라이언트에 접속을 허가하는 규칙을 추가합니다.
+<p>
+<tt>/usr/sbin/iptables -I INPUT -s <i>jconsole-host</i> -p tcp --destination-port <i>jmxremote-port</i> -j ACCEPT</tt>
+<p>
+여기서,<i>jconsole-host</i> 는 JConsole 가 가동하는 호스트명 또는 호스트 주소입니다. <i>jmxremote-port</i> 는,<tt>com.sun.management.jmxremote.port</tt> 에 대해서 설정되는 remote administration용의 포트 번호입니다.
+</li>
+</ul>
+<p></li>
+
+<li><a name="ssl1"><b>어플리케이션에서는, SSL 를 사용한 remote administration가 유효하게 설정되어 있습니다. 어플리케이션에 접속하려면 , JConsole 를 어떻게 설정하면 좋습니까. </b></a> 
+<p>
+
+어플리케이션으로 SSL 를 사용한 remote administration를 유효하게 했을 경우, JMX 에이전트 (MBean 서버)의 가동하는 시스템상에서 디지털 증명서가 설정되어 SSL 가 올바르게 구성되어 있습니다.  
+<p>
+다음에 나타내도록(듯이),<a href="../security/jsse/JSSERefGuide.html#CreateKeystore">「JSSE 가이드」</a>의 기술에 따라 키스토어를 작성해, 어플리케이션 (<tt>Server</tt>)을 기동이 끝난 상태이다고 합니다.   
+<blockquote><pre>
+% java -Djavax.net.ssl.keyStore=keystore \<br>  -Djavax.net.ssl.keyStorePassword=password Server<br>
+</pre></blockquote>
+
+<p>
+이 어플리케이션에 접속하려면 , 다음과 같이 jconsole 를 실행할 필요가 있습니다.
+<blockquote><pre>
+% jconsole -J-Djavax.net.ssl.trustStore=truststore \<br>  -J-Djavax.net.ssl.trustStorePassword=trustword<br>
+</pre></blockquote>
+
+이 구성에 의해 인증되는 것은, 서버 뿐입니다. 클라이언트 인증을 설정하는 경우는, JConsole 의 열쇠에 대해서 같은 키스토어를 준비해, 어플리케이션에 대해서 적절한 트러스트 스토어를 제공할 필요가 있습니다.
+<p>
+</li>
+
+<li><a name="rmi1"><b>JConsole 를 사용해 방화벽(fire wall) 넘어로 어플리케이션을 감시할 수 있습니까. </b></a> 
+<p>
+<tt>com.sun.management.jmxremote.port</tt> 관리 프로퍼티에 의해 RMI 레지스트리가 접속 가능한 포트가 지정됩니다만,<tt>RMIServer</tt> 및 <tt>RMIConnection</tt> 원격 객체가 export 되는 포트는, RMI 스택에 의해 선택됩니다. 특정의 포트에 대해서 원격 객체 (<tt>RMIServer</tt> 및 <tt>RMIConnection</tt>)를 export 하려면 , 프로그램을 작성해, 독자적인 RMI 연결기 서버를 작성할 필요가 있습니다. 자세한 것은, 「Java SE 감시 및 관리 가이드」의<a href="agent.html#gdfvv">「JMX 원격 API 를 사용한 아웃 오브 박스의 관리의 모방」</a>을 참조해 주세요. 다음의 방법으로,<tt>JMXServiceURL</tt> 를 지정할 필요가 있습니다.  
+
+<blockquote><tt>JMXServiceURL url = new JMXServiceURL("service:jmx:rmi://localhost:"+ <i>port1</i> + "/jndi/rmi://localhost:"+ <i>port2</i> + "/jmxrmi");</tt>
+</blockquote>
+
+이 커멘드에서는,<i>port1</i> 는 <tt>RMIServer</tt> 및 <tt>RMIConnection</tt> 원격 객체가 export 되는 포트 번호,<i>port2</i> 는 RMI 레지스트리의 포트 번호입니다.
+<p>
+</li>
+</ol>
+
+<hr>
+<h2>SNMP 베이스의 관리</h2>
+
+<ol>
+<li><a name="snmp1"><b>Java 가상 머신의 SNMP 관리용의 표준 MIB 는 어디에 있습니까. 사용할 필요가 있는 SNMP 프로토콜의 버젼을 가르쳐 주세요. </b></a>  
+
+<p>
+Java 가상 머신용의 표준 MIB 는, 다음의 장소에 있습니다. <a href="http://java.sun.com/j2se/1.5.0/docs/guide/management/JVM-MANAGEMENT-MIB.mib">http://java.sun.com/j2se/1. 5.0/docs/guide/management/JVM-MANAGEMENT-MIB.mib</a> JVM MIB 에서 공개되는 일부의 객체는, 64 비트입니다. 이러한 객체를 표시하려면 , SNMP v2 프로토콜을 사용할 필요가 있습니다. SNMP v1 프로토콜을 사용해 JVM MIB 를 참조하는 경우, 64 비트 객체는 생략 됩니다.
+</li>
+
+<li><a name="snmp2"><b>JVM MIB 트리내에서 모든 객체를 표시할 수 없습니다. 예를 들어, jvmMemoryHeapUsed OID 가 표시되지 않습니다. 이것은 기존의 문제입니까. </b></a> 
+<p>
+JVM MIB 에 포함되는 64 비트 객체에서는, SNMP v2 프로토콜을 사용할 필요가 있습니다. SNMP v1 를 사용해 JVM MIB 를 참조하는 경우, 64 비트 객체는 모두 생략 됩니다.
+</li>
+
+</ol>
+</body></html>

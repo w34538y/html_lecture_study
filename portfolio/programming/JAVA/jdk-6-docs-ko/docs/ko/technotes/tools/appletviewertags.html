@@ -1,0 +1,307 @@
+<? xml version="1.0" encoding="UTF-8"? ><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>애플릿 viewer의 태그 - xrath.com 에서 번역됨</title>
+<style type="text/css">
+  p.small  {font-size: 80%;}
+  p.Java_Software  {font-size: 120%;}
+</style>
+</head>
+
+<body> 
+
+<table width="100%">
+<tr>
+<td>
+<img src="../../images/javalogo52x88.gif" alt="Java" width="52" height="88"/>
+</td>
+
+<td align="center">
+
+<h1>애플릿 viewer의 태그</h1>
+
+</td>
+
+<td align="right" valign="top">
+<p class="small">
+<a href="../../index.html">문서의 목차</a> 
+</p>
+</td>
+</tr>
+</table>
+
+
+<!--  Body text begins here  -->
+<p>
+애플릿 viewer를 사용하면(자), 브라우저를 사용하지 않고 Java 의 애플릿을 실행할 수가 있습니다. 애플릿 viewer는, 애플릿의 기동에 직접 관련하지 않는 HTML 를 모두 무시합니다. 다만, 광범위한 애플릿 기동 구문은 인식합니다. 애플릿 viewer를 인식할 수 있는 HTML 코드는 다음과 같습니다. 이외의 HTML 코드는 무시됩니다.
+</p>
+<p>
+<strong>object</strong>
+</p>
+<blockquote>
+<p>
+<code>object</code> 태그는 HTML 4.0 의 태그로, HTML 페이지에 애플릿과 멀티미디어 객체를 묻기 위해서(때문에) 사용합니다. 또, Internet Explorer (IE) 4. x 의 HTML 3.2 용의 확장 기능이기도 해, Sun 가 제공하는 최신의 Java Plug-in 를 사용해 IE 상에서 Java 애플릿을 실행할 수가 있습니다.
+</p>
+<pre>
+&lt;object
+  width="<em>pixelWidth</em>"
+  height="<em>pixelHeight</em>"
+&gt;
+  &lt;param name="code" value="<em>yourClass.class</em>"&gt;
+  &lt;param name="object" value="<em>serializedObjectOrJavaBean</em>"&gt;
+  &lt;param name="codebase" value="<em>classFileDirectory</em>"&gt;
+   ...
+  <em>alternate-text</em>
+&lt;/object&gt;
+</pre>
+<p>
+<strong>주 -</strong>
+</p>
+<ul>
+<li><p>
+애플릿 viewer는 「classid」를 무시합니다. classid 는 Java Plug-in 를 가리켜, 다음의 값이다고 보입니다.
+</p>
+<p>
+<code>    classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"</code>
+</p>
+</li>
+<li>
+<p>
+또 애플릿 viewer는 「codebase」속성을 무시합니다.  이 속성은, 일반적으로은 객체 태그의 일부에 포함되어 다음과 같은 값으로 네트워크 <strong>cab</strong> 파일내의 Java Plug-in 를 가리키는 것으로 간주해집니다.
+</p>
+<p>
+<code>   codebase="http://java.sun.com/products/plugin/1. 1/jinstall-11-win32.cab#Version=1, 1,0,0"</code>
+</p>
+</li>
+<li>
+<p>
+<code>codebase</code> 파라미터 태그는, 생략 가능해, 애플릿 클래스의 위치를 지정하는 상대 URL 입니다.
+</p>
+</li>
+<li>
+<p>
+<code>code</code> 와 <code>object</code> 의 양쪽 모두는 아니고, 어느 쪽인지 다른 한쪽만을 지정합니다.
+</p>
+</li>
+<li>
+<p>
+<code>type</code> 파라미터 태그는 애플릿 viewer에서는 사용됩니다만, 브라우저가 플러그 인을 적절히 로드하기 위해서(때문에) 필요합니다.
+</p>
+<p>
+애플릿의 경우는, 다음과 같은 값을 지정합니다.
+</p>
+<p>
+<code>&lt;param name="type" value="application/x-java-applet;version=1. 1"&gt;</code>
+</p>
+<p>
+또는
+</p>
+<p>
+<code>&lt;param name="type" value="application/x-java-applet"&gt;</code>
+</p>
+<p>
+직렬화 된 객체 또는 JavaBean 의 경우는,<code>type</code> 파라미터의 값은 다음과 같이 지정합니다.
+</p>
+<p>
+<code>&nbsp;&nbsp; &lt;param name="type" value="application/x-java-bean;version=1. 1"&gt;</code>
+</p>
+<p>
+또는
+</p>
+<p>
+<code>&nbsp;&nbsp;&lt;param name="type" value="application/x-java-bean"&gt;</code>
+</p>
+</li>
+<li>
+<p>
+그 외의 파라미터 태그는, 애플릿에게 건네지는 인수의 값입니다.
+</p>
+</li>
+<li>
+<p>
+그 애플릿을 다운로드하는 브라우저에 관계없이, Sun 가 제공하는 최신의 Java Plug-in 를 애플릿을 사용할 수 있도록, IE4.x 가 인식하는 <code>object</code> 태그와 Netscape 4. x 가 인식하는 <code>embed</code> 태그를 결합할 수가 있습니다.
+</p>
+<p>
+상세한 것에 대하여는,<a href="http://java.sun.com/products/plugin/1.3/docs/tags.html">「Java Plug-in HTML Specification」</a>  를 참조해 주세요.
+</p>
+</li>
+<li>
+<p>
+애플릿 viewer는, 파라미터 태그 <code>java_code</code>,<code>java_codebase</code>,<code>java_object</code>,<code>java_type</code> 를 인식하지 않습니다. 이러한 태그는, 애플릿이, 이름으로서 code, codebase, object, type 를 가지는 파라미터를 정의하고 있는 경우에만 필요합니다. 다만 그 경우에, 플러그 인은, 애플릿이 사용하는 파라미터 태그에 우선해 <code>java_</code> 로 시작되는 파라미터 태그를 인식해 사용합니다. 애플릿이 이러한 4 개의 이름의 어떤 것인지를 요구하는 경우에는, 그 애플릿은 애플릿 viewer에서는 실행할 수 없습니다.
+</p>
+</li>
+</ul>
+</blockquote>
+<p>
+<strong>embed</strong>
+</p>
+<blockquote>
+<p>
+<code>embed</code> 태그는 Netscape 의 HTML 3.2 용의 확장 기능으로, 이것을 사용하면(자) HTML 페이지에 애플릿이나 멀티미디어 객체를 묻을 수가 있습니다. Netscape 4. x 브라우저 (HTML 3.2 를 지원하고 있다)에서는, Sun 가 제공하는 최신의 Java Plug-in 를 사용해 Java 애플릿을 실행할 수가 있습니다.
+</p>
+<pre>
+&lt;embed
+  code="<em>yourClass.class</em>"
+  object="<em>serializedObjectOrJavaBean</em>"
+  codebase="<em>classFileDirectory</em>"
+  width="<em>pixelWidth</em>"
+  height="<em>pixelHeight</em>"
+&gt;
+   ...
+&lt;/embed&gt;
+</pre>
+
+<p>
+<strong>주 -</strong>
+</p>
+<ul>
+<li>
+<p>
+그 애플릿을 다운로드하는 브라우저에 관계없이, Sun 가 제공하는 최신의 Java Plug-in 를 애플릿을 사용할 수 있도록,<code>object</code> 태그와 <code>embed</code> 태그를 결합할 수가 있습니다.
+</p>
+<p>
+상세한 것에 대하여는,<a href="http://java.sun.com/products/plugin/1.3/docs/tags.html">「Java Plug-in HTML Specification」</a>  를 참조해 주세요.
+</p>
+</li>
+<li>
+<p>
+<code>object</code> 태그와는 달라,<code>embed</code> 태그로 지정되는 값은 모두, 파라미터 (개시 태그와 종료 태그의 사이에 <code>param</code> 태그 첨부로 지정된다)는 아니고, 속성 (태그의 일부)입니다.
+</p>
+</li>
+<li><p>
+애플릿의 파라미터에 인수치를 주려면 ,<code>&lt;embed&gt;</code> 태그에 속성을 추가합니다.
+</p></li>
+<li>
+<p>
+애플릿 viewer는 src 속성을 무시합니다.  이 속성은, 일반적으로은 <code>&lt;embed&gt;</code> 태그의 일부입니다.
+</p></li>
+<li>
+<p>
+<code>code</code> 와 <code>object</code> 의 양쪽 모두는 아니고, 어느 쪽인지 다른 한쪽만을 지정합니다.
+</p></li>
+<li>
+<p>
+<code>codebase</code> 속성은 생략 가능해, 애플릿 클래스의 위치를 지정하는 상대 URL 입니다.
+</p>
+</li>
+<li>
+<p>
+<code>type</code> 속성은 애플릿 viewer에서는 사용됩니다만, 브라우저가 플러그 인을 적절히 로드하기 위해서(때문에) 필요합니다.
+</p>
+<p>
+애플릿의 경우는, 다음과 같은 값을 지정합니다.
+</p>
+<blockquote>
+<p><code>&lt;type="application/x-java-applet;version=1. 1"&gt;...</code>
+    </p>
+<p>또는</p>
+<p><code>&lt;type="application/x-java-applet"&gt;...</code>
+    </p>
+</blockquote>
+<p>직렬화 된 객체 또는 JavaBean 의 경우는,<code>type</code> 파라미터의 값은 다음과 같이 지정합니다.
+</p>
+<blockquote>
+<p><code>&lt;type="application/x-java-bean;version=1. 1"&gt;...</code></p>
+<p>또는</p>
+<p><code>&lt;type="application/x-java-bean"&gt;...</code>
+    </p>
+</blockquote>
+</li>
+<li>
+<p>
+pluginspage 속성은 애플릿 viewer에서는 사용됩니다만, 브라우저가 플러그 인을 적절히 로드하기 위해서(때문에) 필요합니다. 다음과 같은 값으로, 네트워크 <strong>cab</strong> 파일내의 Java Plug-in 를 가리킵니다.
+</p>
+<blockquote>
+<p>
+<code>       pluginspage="http://java.sun.com/products/plugin/1. 1/jinstall-11-win32.cab#Version=1, 1,0,0"</code>
+    </p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>
+<strong>applet</strong>
+</p>
+<blockquote>
+<p>
+<code>applet</code> 태그는, HTML 페이지에 애플릿을 묻기 위한 HTML 3.2 독자적인 태그입니다. <code>applet</code> 태그를 사용해 로드 된 애플릿은, 최신 버젼의 Java 플랫폼을 사용하지 않은 브라우저로 실행되는 일도 있습니다. 애플릿을 최신 버젼으로 확실히 실행시키려면 ,<code>object</code> 태그를 사용해 Java Plug-in 를 브라우저에 로드합니다. 그러자(면), 플러그 인이 애플릿을 실행합니다. </p>
+<pre>
+&lt;applet
+  code="<em>yourClass.class</em>"
+  object="<em>serializedObjectOrJavaBean</em>"
+  codebase="<em>classFileDirectory</em>"
+  width="<em>pixelWidth</em>"
+  height="<em>pixelHeight</em>"
+&gt;
+  &lt;param name="<em>...</em>" value="<em>...</em>"&gt;
+   ...
+  <em>alternate-text</em>
+&lt;/applet&gt;
+</pre>
+<p>
+<strong>주 -</strong>
+</p>
+<ul>
+<li>
+<p>
+<code>code</code> 와 <code>object</code> 의 양쪽 모두는 아니고, 어느 쪽인지 다른 한쪽만을 지정합니다.
+</p>
+</li>
+<li>
+<p>
+<code>codebase</code> 속성은 생략 가능해, 애플릿 클래스의 위치를 지정하는 상대 URL 입니다.
+</p>
+</li>
+<li>
+<p>
+param 태그는, 애플릿의 파라미터의 인수치를 지정합니다.
+</p>
+</li>
+</ul>
+</blockquote>
+<p>
+<strong>app</strong>
+</p>
+<blockquote>
+<p>
+<code>app</code> 태그는,<code>applet</code> 태그의 생략형이었지만, 현재는 지원되고 있지 않습니다. 애플릿 viewer는 이 태그를, 현재 지원되고 있는 등가인 태그로 변환해 출력합니다.
+</p>
+<pre>
+&lt;app
+  class="<em>classFileName</em>" (<em>without</em> a . class suffix)
+  src="<em>classFileDirectory</em>"
+  width="<em>pixelWidth</em>"
+  height="<em>pixelHeight</em>"
+&gt;
+&lt;param name="..." value="..."&gt;
+ ...
+&lt;/app&gt;
+</pre>
+</blockquote>
+<p>
+애플릿 viewer로 지원되고 있는 태그와 그 결합 방법에 대해서는,<a href="http://java.sun.com/products/plugin/1.3/docs/tags.html">「Java Plug-in HTML Specification」</a>를 참조해 주세요.
+</p>
+<hr/>
+<table width="100%">
+<tr valign="top">
+<td align="left">
+<p class="small">
+<a href="../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 <a href="http://www.sun.com">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+</td>
+<td align="right">
+<img src="../../images/sunlogo64x30.gif" alt="Sun" width="64" height="30"/>
+
+  <p class="Java_Software">
+<em>Java Software </em>
+  </p>
+</td>
+</tr>
+</table>
+<p/>&nbsp;&nbsp;&nbsp;<p/>&nbsp;&nbsp;&nbsp;<p/>&nbsp;&nbsp;&nbsp;<p/>&nbsp;&nbsp;&nbsp;
+
+</body>
+</html>

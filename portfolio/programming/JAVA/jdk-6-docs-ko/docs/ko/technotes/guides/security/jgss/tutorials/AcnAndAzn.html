@@ -1,0 +1,552 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>「JAAS 승인」 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="AcnOnly.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="LoginSample.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>「JAAS 승인」</H1>
+</center>
+
+<br> <br>
+
+<p>이 튜토리얼에서는,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼로 개발한 프로그램 및 정책 파일을 확장해,JAAS 승인 컴퍼넌트의 기능을 나타냅니다. JAAS 승인 컴퍼넌트는, 인증된 호출측이, 그 후의 시큐리티 관련의 조작에 필요한 액세스 제어권 (액세스권)을 보관 유지하는 것을 보증합니다. 승인된 컴퍼넌트에서는, 사용자 인증이 완료하고 있는 것이 최초로 요구됩니다. 이 때문에,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼을 먼저 읽어 주세요.
+
+<p>이 튜토리얼은, 다음의 섹션으로 구성됩니다.
+
+<ul>
+
+<li><a href="#WhatIsAzn">JAAS 승인이란</a>  <p>
+
+<li><a href="#InvokingAzn">JAAS 승인의 실행 순서</a>  <p>
+
+<ul>
+<li><a href="#UserPFStmts">법칙의 정책 파일문의 작성 방법</a>  <p>
+
+<li><a href="#AssocSubject">주제의 액세스 제어 문맥에의 관련짓고</a> 
+</ul>
+
+<p>
+
+<li><a href="#AznCode">승인 튜토리얼 코드</a>  <p>
+
+<li><a href="#AznLCF">로그인 구성 파일</a>  <p>
+
+<li><a href="#AznPF">정책 파일</a>  <p>
+
+<li><a href="#RunAzn">승인 튜토리얼 코드의 실행</a>  
+
+</ul>
+
+<p>튜토리얼의 코드를 최초로 실행해 보는 경우,<a href="#RunAzn">「승인 튜토리얼 코드의 실행」</a>을 먼저 읽고 나서, 다른 섹션에 돌아와, 학습을 계속해 주세요.
+
+
+<a name="WhatIsAzn">
+<H2>JAAS 승인이란 </H2></a> 
+
+<blockquote>
+
+<p>JAAS 승인은, 시큐리티<a href = "../../PolicyFiles.html">정책</a>를 사용해 실행 코드에 부여하는 액세스권을 지정하는, 기존의 Java 시큐리티 아키텍쳐(architecture)를 확장합니다. 이것은, Java 2 플랫폼에서 도입된, 「코드 중심」의 아키텍쳐(architecture)입니다. 즉, 코드의 특성에 근거해 액세스권이 부여됩니다. 이 특성에는, 코드가 생성된 장소, 디지털 서명 되고 있는지 어떤지, 서명되고 있는 경우는 누구에 의해 서명되고 있는지, 등이 있습니다. 구체적인 예로서는,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼로 사용되는 <code>jaasacn.policy</code> 파일이 있습니다. 이 파일에는, 이하가 포함됩니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /JaasAcn.jar" {
+   permission javax.security.auth.AuthPermission 
+                    "createLoginContext.JaasSample";
+};</pre>
+</blockquote>
+
+<p>이것에 의해, 현행 디렉토리의 <code>JaasAcn.jar</code> 파일내의 코드에, 지정된 액세스권이 부여됩니다. 서명자는 지정되어 있지 않기 때문에, 코드가 서명되고 있을지 어떨지는 문제가 되지 않습니다.
+
+<p>JAAS 승인은, 기존의 코드 중심의 액세스 제어를 「사용자 중심」의 액세스 제어로 보강합니다. 어느 코드가 실행되고 있을까 만이 아니고, 어느 「사용자」가 실행하고 있을까에 근거해, 액세스 제어를 실행할 수 있게 되어 있습니다.  
+
+<p>어플리케이션이 JAAS 인증을 사용해 사용자 또는 그 외의 엔티티 (서비스등)를 인증하면(자), 결과적으로<a href="../../../../../api/javax/security/auth/Subject.html">주제</a>가 생성됩니다. 주제는, 인증된 사용자를 나타냅니다. 주제는, 그 사용자의 식별 정보를 나타내는<a href="../../../../../api/java/security/Principal.html">법칙</a>세트로 구성됩니다. 게다가 자신을 그 외의 주제로부터 구별하는 이름의 법칙 ("Susan Smith")이나 사회 보장 번호의 법칙 ("987-65-4321")등을 가질 수가 있습니다.
+
+<p>정책내에서 특정의 법칙에 액세스권을 부여할 수가 있습니다. 사용자의 인증 후, 어플리케이션은 주제와 현재의 액세스 제어 문맥을 관련지을 수가 있습니다. 그 후, 시큐리티 체크의 대상이 되는 조작 (로컬 파일 액세스등)마다, Java 런타임에 의해, 정책내에서 특정의 법칙인 만큼 필요한 액세스권이 부여되고 있는지 어떤지의 자동 확인을 합니다. 그리고, 액세스 제어 문맥에 관련지을 수 있었던 주제로 지정의 법칙이 포함되어 있는 경우에 한정해, 그 조작이 허가됩니다.
+
+</blockquote>
+
+
+<a name="InvokingAzn">
+<H2>JAAS 승인의 실행 순서</H2></a> 
+
+<blockquote>
+
+<p>JAAS 승인을 실행하기 전에, 다음과 같이 합니다.
+
+<ul>
+
+<li>사용자를 인증합니다 (<a href="AcnOnly.html">「JAAS 인증」</a>을 참조).  <p>
+
+<li>시큐리티 정책내에<a href="#UserPFStmts">법칙 베이스의 엔트리</a>를 구성합니다.  <p>
+
+<li>인증의 결과 생성된 주제와 현재의 액세스 제어 문맥을<a href="#AssocSubject">관련짓습니다</a> .  
+
+</ul>
+
+
+<a name="UserPFStmts">
+<H3>법칙의 정책 파일문의 작성 방법</H3></a> 
+
+<blockquote>
+
+<p><a href = "../../PolicyFiles.html">정책 파일</a>의 <code>grant</code> 문에, 1 개(살) 이상의 Principal 필드를 옵션으로 포함할 수가 있게 되었습니다. Principal 필드는, 지정된 법칙으로 나타내지는 (지정된 코드를 실행한다) 사용자 또는 그 외의 엔티티가, 특정의 액세스권을 보관 유지하는 것을 나타냅니다.
+
+<p>이 때문에,<code>grant</code> 문의 기본적인 서식은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+grant &lt;<i>signer(s) field</i>&gt;, &lt;<i>codeBase URL</i>&gt; 
+  &lt;<i>Principal field(s)</i>&gt; {
+    permission <i>perm_class_name</i> "<i>target_name</i>", "<i>action</i>";
+    ....
+    permission <i>perm_class_name</i> "<i>target_name</i>", "<i>action</i>";
+  };
+</pre>
+</blockquote>
+
+signer, codeBase, Principal 의 각 필드는 옵션이며, 각 필드의 순서는 중요하지는 않습니다.
+
+<p>Principal 필드는, 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+Principal <i>Principal_class</i> "<i>principal_name</i>"
+</pre>
+</blockquote>
+
+<p>즉,"Principal" 라고 하는 말 (대문자, 소문자는 구별되지 않는다)에 계속되어, 완전 수식의 Principal 클래스명 및 법칙명을 지정합니다.
+
+<p>Principal 클래스는,<a href="../../../../../api/java/security/Principal.html">java.security.Principal</a>  인터페이스를 구현하는 클래스입니다. 모든 Principal 객체는,<code>getName</code> 메소드의 호출에 의해 취득할 수 있는 관련명을 가지고 있습니다. 이름에 사용되는 서식은, Principal 구현에 따라서 다릅니다.
+
+<p>이 튜토리얼로 사용하는 Kerberos 인증 기구에 의해 작성되는 주제내에 배치되는 법칙의 형태는,<code>javax.security.auth.kerberos.KerberosPrincipal</code> 입니다. 이것이,<code>grant</code> 문의 Principal 지시부의 <code><i>Principal_class</i></code> 로 사용됩니다. <code>KerberosPrincipal</code> 의 사용자명은, 「name@realm」의 형식에서 지정합니다. 이 때문에, 사용자명이 「mjones」로, 영역이 「KRBNT-OPS.ABC.COM」의 경우,<code>grant</code> 문의 <code><i>principal_name</i></code> 는,"mjones@KRBNT-OPS.ABC.COM" 가 됩니다.
+
+<p>단일의 <code>grant</code> 문내에 복수의 Principal 필드를 포함하는 일도 가능합니다. 복수의 Principal 필드를 지정하는 경우, 현행의 액세스 제어 문맥에 관련지을 수 있었던 주제에 이러한 법칙 모든 것이 포함되는 경우에게만,<code>grant</code> 문의 액세스권이 부여됩니다.
+
+<p>복수의 법칙에 같은 액세스권세트를 부여하려면 , 복수의 <code>grant</code> 문을 작성해, 각 문에 액세스권의 리스트와 몇개의 법칙을 지시하는 단일의 Principal 필드를 포함합니다.
+
+<p>이 튜토리얼의 정책 파일에서는, Principal 필드에 1 개의 <code>grant</code> 문이 포함됩니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /SampleAction.jar",
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "your_user_name@your_realm"  {
+
+   permission java.util.PropertyPermission "java.home", "read";
+   permission java.util.PropertyPermission "user.home", "read";
+   permission java.io.FilePermission "foo.txt", "read";
+};
+</pre>
+</blockquote>
+
+여기서,"<code>your_user_name@your_realm</code>" 에는, 사용하는 Kerberos 사용자명, 「@」, 및 영역을 지정합니다.
+
+<p>이것은, 지정한 액세스권을,<code>SampleAction.jar</code> 내의 코드를 실행하는 지정된 법칙에 부여하는 것을 나타냅니다.
+
+</blockquote>
+
+
+<a name="AssocSubject">
+<H3>주제의 액세스 제어 문맥에의 관련짓고</H3></a> 
+
+<blockquote>
+
+<p>주제를 작성해, 액세스 제어 문맥에 관련지으려면 , 다음과 같이 합니다.
+
+<ul>
+
+<li>최초로 사용자를 인증할 필요가 있습니다 (<a href="AcnOnly.html">「JAAS 인증」</a>을 참조).  <p>
+
+<li>Subject 클래스의 static 메소드 <code>doAs</code> 를 호출해, 인증된 Subject 및 <a href="../../../../../api/java/security/PrivilegedAction.html"> java.security.PrivilegedAction</a>  또는 <a href="../../../../../api/java/security/PrivilegedExceptionAction.html"> java.security.PrivilegedExceptionAction</a>  에 건네줍니다. PrivilegedAction 와 PrivilegedExceptionAction 의 차이에 대해서는,<a href="../../doprivileged.html">「특권 블록 API」</a>를 참조해 주세요. <code>doAs</code> 메소드는, 제공된 주제를 현재의 액세스 제어 문맥에 관련지어 액션으로부터 <code>run</code> 메소드를 호출합니다. <code>run</code> 메소드 구현에는, 지정된 주제로서 실행되는 모든 코드가 포함되어 있습니다. 이 때문에, 액션은 지정된 주제로서 실행됩니다.
+
+<p><code>doAs</code> 대신에, Subject 클래스의 static 메소드 <code>doAsPrivileged</code> 를 호출할 수가 있습니다. <code>doAsPrivileged</code> 는,<code>doAs</code> 에게 건네지는 파라미터 외에 3 번째의 파라미터 AccessControlContext 를 필요로 합니다. <code>doAs</code> 는, 제공된 주제를 현재의 액세스 제어 문맥에 관련짓습니다. 이것에 대해서,<code>doAsPrivileged</code> 는, 주제가 제공된 액세스 제어 문맥에 관련짓습니다. 이러한 메소드의 차이점에 대해서는, 「JAAS 레퍼런스 가이드」의<a href="../../jaas/JAASRefGuide.html#doAsComp">「doAs 대 doAsPrivileged」</a>를 참조해 주세요.
+
+</ul>
+
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="AznCode">
+<H2>승인 튜토리얼 코드</H2></a> 
+
+<blockquote>
+
+<p>이 튜토리얼의 코드는, 2 개의 파일로 구성됩니다.
+
+<ul>
+
+<li><a href = "JaasAzn.java">JaasAzn.java</a>  는,<code>Subject.doAsPrivileged</code> 의 호출에 필요한 코드가 추가되고 있는 점을 제외하면,<a href="AcnOnly.html">「JAAS 인증」</a>  의 <code>JaasAcn.java</code> 와 같습니다.  <p>
+
+<li><a href = "SampleAction.java">SampleAction.java</a>  에는, SampleAction 클래스가 포함됩니다. 이 클래스는, PrivilegedAction 를 구현해, 법칙 베이스의 인증 체크로 실행하는 모든 코드를 포함한 <code>run</code> 메소드를 보관 유지합니다.
+
+</ul>
+
+<H3>JaasAzn.java</H3>
+
+<blockquote>
+
+<p><a href = "JaasAzn.java">JaasAzn.java</a>  는, 인증 종료후의 <code>main</code> 메소드의 마지막에 3 개의 문장이 추가되고 있는 점을 제외해, 전의 튜토리얼로 사용한 <code>JaasAcn.java</code> 코드와 완전히 같습니다. 추가된 3 개의 문장에 의해, (1) 인증된 사용자를 나타내는 주제의, 현행의 액세스 제어 문맥에의 관련지어(2) SampleAction 의 <code>run</code> 메소드내의 코드의 실행을 합니다. 현행의 정책내에서 인증 끝난 사용자에게 필요한 액세스권이 부여되고 있는 것을 법칙으로부터 판단할 수 있는 경우, 주제를 액세스 제어 문맥에 관련짓는 것으로, SampleAction 의 <code>run</code> 메소드내의 시큐리티 관련 조작 ( 및 직접 또는 간접적으로 불려 가는 모든 코드)을 실행할 수 있게 됩니다.
+
+<p><a href = "SampleAzn.java">JaasAzn.java</a>  는,<code>JaasAcn.java</code> 와 같게 LoginContext <code>lc</code> 를 인스턴스화해,<code>login</code> 메소드를 호출해 인증을 실행합니다. 인증에 성공했을 경우는, LoginContext 의 <code>getSubject</code> 메소드를 호출하는 것으로, 인증된 주제 (사용자를 나타내는 법칙을 포함한다)를 가져옵니다.
+
+<blockquote>
+<pre>
+Subject mySubject = lc.getSubject();
+</pre>
+</blockquote>
+
+<p>그 후,<code>main</code> 에 의해 <code>Subject.doAsPrivileged</code> 가 불려 가 인증된 주제인 <code>mySubject</code>, PrivilegedAction (SampleAction),<code>null</code> AccessControlContext 에게 건네집니다. 이하의 설명을 참조해 주세요.
+
+<p>SampleAction 클래스는, 다음의 방법으로 인스턴스화 됩니다.
+
+<blockquote>
+<pre>
+PrivilegedAction action = new SampleAction();
+</pre>
+</blockquote>
+
+<p><code>Subject.doAsPrivileged</code> 의 호출은, 다음의 방법으로 행해집니다.
+
+<blockquote>
+<pre>
+Subject.doAsPrivileged(mySubject, action, null);
+</pre>
+</blockquote>
+
+<p>다음에,<code>doAsPrivileged</code> 메소드는, PrivilegedAction <code>action</code> (SampleAction)의 <code>run</code> 메소드를 호출해, 주제 <code>mySubject</code> 대신에 실행되는 나머지의 코드의 실행을 개시합니다.
+
+<p>AccessControlContext 의 3 번째의 인수로서 <code>doAsPrivileged</code> 에 <code>null</code> 를 건네주는 것으로,<code>mySubject</code> 가 새로운 빈 상태(empty)의 AccessControlContext 에 관련지을 수 있는 것을 나타냅니다. 그 결과, SampleAction 의 실행시의 시큐리티 체크에서는,<code>mySubject</code> 로서 실행되는 SampleAction 코드 자체 (또는 이 코드에 의해 불려 가는 그 외의 코드)의 액세스권만이 필요하게 됩니다. <code>doAsPrivileged</code> 의 호출측 ( 및 <code>doAsPrivileged</code> 가 불려 간 시점에서 실행 스택상에 존재하고 있던 호출측)은, 액션이 실행되고 있는 동안, 액세스권을 필요로 하지 않습니다.
+
+
+
+</blockquote>
+
+
+<a name="SACode">
+<H3>SampleAction.java</H3></a> 
+
+<blockquote>
+
+<p><a href = "SampleAction.java">SampleAction.java</a>  에는, SampleAction 클래스가 포함됩니다. 이 클래스는 <code>java.security.PrivilegedAction</code> 클래스를 구현해, 주제 <code>mySubject</code> 로서 실행하는 모든 코드를 포함한 <code>run</code> 메소드를 가지고 있습니다. 이 튜토리얼에서는, 3 개의 조작을 실행합니다. 어느 조작의 경우도, 미리 필수 액세스권으로서 코드를 부여해 둘 필요가 있습니다. 이하의 조작을 실행합니다.
+
+<ul>
+
+<li><code>java.home</code> 시스템 프로퍼티의 값을 읽어내, 출력한다 <p>
+
+<li><code>user.home</code> 시스템 프로퍼티의 값을 읽어내, 출력한다 <p>
+
+<li>현행의 디렉토리에 <code>foo.txt</code> 라는 이름의 파일이 존재할지 어떨지를 확인한다
+
+</ul>
+
+<p>다음에, 코드를 나타냅니다.
+
+<blockquote>
+<pre>
+import java.io.File;
+import java.security.PrivilegedAction;
+
+public class <b>SampleAction</b> implements PrivilegedAction {
+
+  public Object <b>run</b>() {
+
+    System.out.println("\nYour java.home property value is: "
+                + System.getProperty("java.home"));
+
+    System.out.println("\nYour user.home property value is: "
+                + System.getProperty("user.home"));
+
+    File f = new File("foo.txt");
+    System.out.print("\nfoo.txt does ");
+    if (! f.exists())
+        System.out.print("not ");
+    System.out.println("exist in the current working directory. ");
+    return null;
+  }
+}
+</pre>
+</blockquote>
+
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="AznLCF">
+<H2>로그인 구성 파일</H2></a> 
+
+<blockquote>
+
+<p>이 튜토리얼로 사용하는 로그인 구성 파일을,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼로 사용하는 것과 완전히 같게 할 수 있습니다. 이 때문에, 1 개의 엔트리만을 포함한 <a href = "jaas.conf">jaas.conf</a>  를 사용할 수 있습니다.
+
+<blockquote>
+<pre>
+<b>JaasSample {
+  com.sun.security.auth.module.Krb5LoginModule required;
+};</b>
+</pre>
+</blockquote>
+
+<p>이 엔트리의 이름은 "JaasSample" 입니다. 튜토리얼 어플리케이션 <code>JaasAcn</code> 및 <code>JaasAzn</code> 가 이 엔트리를 참조할 때, 이 이름을 사용합니다. 이 엔트리는, 사용자 인증에 사용하는 로그인 모듈이 <code>com.sun.security.auth.module</code> 패키지내의 Krb5LoginModule 인 것, 및 인증이 성공했다고 보여지기 위해서(때문에)는 이 Krb5LoginModule 가 「성공한다」필요가 있는 것을 나타냅니다. Krb5LoginModule 가 성공하는 것은, 사용자가 입력한 이름 및 패스워드를 사용해, Kerberos KDC 에의 로그인에 성공했을 경우만입니다.
+
+
+</blockquote>
+
+
+
+<a name="AznPF">
+<H2>정책 파일</H2></a> 
+
+<blockquote>
+
+<p>이 승인 튜토리얼에는, 2 개의 클래스,<code>JaasAzn</code> 및 <code>SampleAction</code> 가 포함됩니다. 각 클래스의 코드에는 시큐리티 관련 조작이 포함되기 (위해)때문에, 조작을 실행하려면 , 정책 파일내에 관련하는 액세스권을 지정할 필요가 있습니다.
+
+
+<H3>JaasAzn 에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p><code>JaasAzn</code> 클래스의 main 메소드는, 액세스권의 필요한 다음의 2 개의 조작을 실행합니다. It
+
+<ul>
+
+<li>LoginContext 의 작성 <p>
+
+<li>Subject 클래스의 <code>doAsPrivileged</code> static 메소드의 호출
+
+</ul>
+
+<p>LoginContext 의 작성 방법은, 인증 튜토리얼의 경우와 완전히 같습니다. 이 때문에, 타겟의 "<code>createLoginContext.JaasSample</code>" 와 같은 <code>javax.security.auth.AuthPermission</code> 액세스권이 필요합니다.
+
+<p>Subject 클래스의 <code>doAsPrivileged</code> 메소드를 호출하려면 , 타겟의 「<code>doAsPrivileged</code>」를 보관 유지하는 <code>javax.security.auth.AuthPermission</code> 가 필요합니다.
+
+<p><code>JaasAzn</code> 클래스가,<code>JaasAzn.jar</code> 라는 이름의 JAR 파일에 배치되고 있는 경우를 생각합시다. 정책 파일내의 다음의 <code>grant</code> 문을 사용해, 이러한 액세스권을 <code>JaasAzn</code> 코드에 부여할 수 있습니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /JaasAzn.jar" {
+   permission javax.security.auth.AuthPermission 
+                    "createLoginContext.JaasSample";
+   permission javax.security.auth.AuthPermission "doAsPrivileged";
+};
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<a name="SampleActionPerms"></a> 
+<H3>SampleAction 에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p><p><code>SampleAction</code> 코드는, 액세스권의 필요한 다음의 3 개의 조작을 실행합니다. It
+
+<ul>
+
+<li>"java.home" 시스템 프로퍼티의 값의 읽기 <p>
+
+<li>"user.home" 시스템 프로퍼티의 값의 읽기 <p>
+
+<li>현행의 디렉토리에 <code>foo.txt</code> 라는 이름의 파일이 존재할지 어떨지의 확인
+
+</ul>
+
+<p>이러한 조작에는, 다음의 액세스권이 필요합니다.
+
+<blockquote>
+<pre>
+permission java.util.PropertyPermission "java.home", "read";
+permission java.util.PropertyPermission "user.home", "read";
+permission java.io.FilePermission "foo.txt", "read";
+</pre>
+</blockquote>
+
+<p>이러한 액세스권을 <code>SampleAction.class</code> 내의 코드에 부여할 필요가 있습니다. 이 파일은,<code>SampleAction.jar</code> 라는 이름의 JAR 파일내에 배치됩니다. 다만, 이 <code>grant</code> 문의 경우, 액세스권을 「코드」 만이 아니고, 코드를 실행하는 특정의 사용자에게도 부여하는 것으로써, 특정의 사용자에게로의 액세스를 제한하는 방법을 나타냅니다.  
+
+<p>이 때문에,<a href="#UserPFStmts">「법칙 베이스의 정책 파일문의 작성 방법」</a>으로 설명한 것처럼,<code>grant</code> 문은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /SampleAction.jar",
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "your_user_name@your_realm"  {
+
+   permission java.util.PropertyPermission "java.home", "read";
+   permission java.util.PropertyPermission "user.home", "read";
+   permission java.io.FilePermission "foo.txt", "read";
+};
+</pre>
+</blockquote>
+
+"<code>your_user_name@your_realm</code>" 에는, 사용하는 Kerberos 사용자명, 「@」, 및 영역을 지정합니다. 예를 들어, 사용자명이 「mjones」, 영역이 「KRBNT-OPERATIONS.ABC.COM」의 경우,"mjones@KRBNT-OPERATIONS.ABC.COM" (인용부호도 붙인다)를 지정합니다 
+
+
+
+<H3>완전한 정책 파일 </H3>
+
+<blockquote>
+
+<p>완전한 정책 파일은,<a href = "jaasazn.policy">jaasazn.policy</a>  입니다.
+</blockquote>
+
+
+</blockquote>
+
+
+</blockquote>
+
+
+
+<a name="RunAzn">
+<H2>승인 튜토리얼 코드의 실행</H2></a> 
+
+<blockquote>
+
+<p>JAAS 승인 튜토리얼 코드를 실행하려면 , 다음의 조작을 실시할 필요가 있습니다.  
+
+<ol>
+
+<li>다음의 파일을 1 개의 디렉토리내에 포함합니다.  <p>
+
+<ul>
+<li><a href = "JaasAzn.java">JaasAzn.java</a>  원시 파일
+<li><a href = "SampleAction.java">SampleAction.java</a>  원시 파일
+<li><a href = "jaas.conf">jaas.conf</a>  로그인 구성 파일
+<li><a href = "jaasazn.policy">jaasazn.policy</a>  정책 파일
+</ul>
+
+<p>
+
+<li><code>jaasazn.policy</code> 내의 "your_user_name@your_realm" 를, 실제의 사용자명 및 영역에서 옮겨놓습니다.  <p>
+
+<li><code>SampleAction.java</code> 및 <code>JaasAzn.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac SampleAction.java JaasAzn.java
+</pre>
+</blockquote>
+
+<li><code>JaasAzn.class</code> 를 포함한 <code>JaasAzn.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf JaasAzn.jar JaasAzn.class
+</pre>
+</blockquote>
+
+<li><code>SampleAction.class</code> 를 포함한 <code>SampleAction.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf SampleAction.jar SampleAction.class
+</pre>
+</blockquote>
+
+
+<li>이하를 지정해,<code>JaasAzn</code> 어플리케이션을 실행합니다.  <p>
+
+<ol>
+
+<li>적절한 <code>-classpath</code> 절 (<code>JaasAzn.jar</code> 및 <code>SampleAction.jar</code> JAR 파일내의 클래스를 검색하기 위해(때문에)) <p>
+
+<li><code>-Djava.security.manager</code>. 시큐리티 매니저의 인스톨을 지정합니다.  <p>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역)<p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC)<p>
+
+<li><code>-Djava.security.policy=jaasazn.policy</code> (정책 파일 <code>jaasazn.policy</code> 를 사용) <p>
+
+<li><code>-Djava.security.auth.login.config=jaas.conf</code> (로그인 구성 파일 <code>jaas.conf</code> 를 사용)
+
+</ol>
+
+<p>다음에, Microsoft Windows 및 Unix 시스템의 양쪽 모두로 사용 가능한 모든 커멘드를 나타냅니다. classpath 항목의 단락으로서 UNIX 시스템에서는 구두점을 사용하는데 대해, Windows 시스템에서는 세미콜론을 사용하는 점만이 다릅니다. <b><code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역과<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 와 옮겨놓아 주세요.
+
+<p>다음에 Windows 시스템의 전커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath JaasAzn.jar;SampleAction.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=jaasazn.policy 
+ -Djava.security.auth.login.config=jaas.conf JaasAzn
+</pre>
+</blockquote>
+
+<p>다음에 UNIX 시스템의 전커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath JaasAzn.jar:SampleAction.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=jaasazn.policy 
+ -Djava.security.auth.login.config=jaas.conf JaasAzn
+</pre>
+</blockquote>
+
+<p>커멘드 전체를 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. 커멘드가 너무 긴 경우는,. bat 파일 (Windows) 또는 . sh 파일 (UNIX)에 기술합니다.  이 파일을 실행하는 것으로, 커멘드를 실행할 수 있습니다.
+
+<p>Kerberos 사용자명과 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된, 기반이 되는 Kerberos 인증 기구에 의해, Kerberos 에의 로그인을 합니다. 로그인이 성공하면(자) 「Authentication succeeded!」라고 하는 메세지가, 실패하면(자) 「Authentication Failed.」라고 하는 메세지가 표시됩니다.  
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+<p>인증이 완료하면(자), 프로그램 (<code>SampleAction</code> 내) 외 부분이 사용자에 대신해 실행됩니다. 이 때문에, 사용자는 적절한 액세스권을 미리 보관 유지하고 있을 필요가 있습니다. 정책 파일 <code>jaasazn.policy</code> 에 의해, 필요한 액세스권이 부여됩니다. 이 때문에,<code>java.home</code> 및 <code>user.home</code> 시스템 프로퍼티의 값, 및 <code>foo.txt</code> 라는 이름의 파일이 현재의 디렉토리에 존재할지 어떨지를 나타내는 문장이 표시됩니다.
+
+</blockquote>
+
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="AcnOnly.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="LoginSample.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</ol></body>
+
+</html>
+

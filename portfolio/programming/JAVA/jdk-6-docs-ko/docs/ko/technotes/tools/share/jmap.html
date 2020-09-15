@@ -1,0 +1,183 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+<link rel="stylesheet" href="../../css/tools.css"  type="text/css" />
+<title>jmap - 메모리 맵 - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+<h1>jmap - 메모리 맵</h1>
+
+  <ul>
+<li><a href="#synopsis">형식</a> </li>
+
+<li><a href="#parameters">파라미터</a> </li>
+
+<li><a href="#description">설명</a> </li>
+
+<li><a href="#options">옵션</a> </li>
+
+<li><a href="#seealso">관련 항목</a> </li>
+  </ul>
+
+<h2><a name="synopsis"/>형식</h2>
+
+  <blockquote>
+    <pre>
+<b>jmap</b> [ option ] pid
+<b>jmap</b> [ option ] executable core
+<b>jmap</b> [ option ] [server-id@]remote-hostname-or-IP
+</pre>
+  </blockquote>
+
+<h2><a name="parameters"/>파라미터</h2>
+
+
+  <blockquote>
+    <dl>
+<dt><a href="#options">option</a> </dt>
+
+<dd>각 옵션은 서로 배타적입니다. 옵션을 사용하는 경우, 커멘드명의 직후에 기술합니다. </dd>
+
+<dt><b>pid</b></dt>
+
+<dd>인쇄하는 메모리 맵의 프로세스 ID. 프로세스는 Java 프로세스일 필요가 있습니다. 머신상에서 실행하고 있는 Java 프로세스의 일람을 가져오려면 ,<a href="jps.html">jps</a>  를 사용합니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><span style="font-weight: bold;">executable</span></dt>
+
+<dd>코어덤프의 작성원의 Java 실행 가능 파일입니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><span style="font-weight: bold;">core</span></dt>
+
+<dd>인쇄하는 메모리 맵의 코어 파일. </dd>
+
+      <dd><br /></dd>
+
+<dt><span style=       "font-weight: bold;">remote-hostname-or-IP<br /></span></dt>
+
+<dd>원격 디버그 서버 (<a href=       "jsadebugd.html">jsadebugd</a>  를 참조)의 호스트명 또는 IP 주소입니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><span style=       "font-weight: bold;">server-id<br /></span></dt>
+
+<dd>복수의 디버그 서버가 동일한 원격 호스트로 실행하고 있는 경우의, 옵션 고유의 ID 입니다. <br /></dd>
+    </dl>
+  </blockquote>
+
+<h2><a name="description"/>설명</h2>
+
+  <blockquote>
+  <p>
+<b>jmap</b> 는, 지정된 프로세스나 코어 파일 또는 원격 디버그 서버의, 공용 객체 메모리 맵 또는 heap 메모리의 상세를 인쇄합니다. 지정된 프로세스가 64 비트 VM 상에서 실행되고 있는 경우,<i>-J-d64</i> 옵션을 지정해야 하는 경우가 있습니다. 다음에 예를 나타냅니다.
+    </p>
+  <blockquote>
+<pre>jmap -J-d64 -heap pid</pre></blockquote>
+<b>주 - 이 유틸리티는 지원 대상외이며, 장래의 JDK 의 버젼에서는 이용할 수 없게 될 가능성이 있습니다. </b><br />Windows 플랫폼상에서 사용 가능한 유일한 jmap 형식은, 다음과 같습니다.
+<blockquote>jmap -dump:&lt;<i>dump-options</i>&gt; pid</blockquote>
+및
+<blockquote>jmap -histo[:live] pid</blockquote>
+   </b>
+    <p></p>
+  </blockquote>
+
+<h2><a name="options">옵션</a> </h2>
+
+  <blockquote>
+    <dl>
+<dt>&lt;<span style="font-weight: bold;">옵션 없음</span>&gt;<br /></dt>
+
+<dd>옵션을 사용하지 않는 경우,<span style=       "font-weight: bold;">jmap</span> 는 공용 객체 매핑을 인쇄합니다. 타겟 VM 에 로드 된 공용 객체 마다, 개시 주소, 매핑의 사이즈, 및 공용 객체 파일의 풀 패스가 인쇄됩니다. 이것은, Solaris <b>pmap</b> 유틸리티 와 유사합니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><b>-dump:[live,]format=b, file=&lt;filename&gt;</b></dt>
+
+<dd>Java heap를 hprof 바이너리 형식에서 filename 에 덤프 합니다. <i>live</i> 서브 옵션은 생략 가능합니다. 이것이 지정되었을 경우, heap내에서 생존중의 객체만이 덤프 됩니다. heap 덤프를 참조하려면 , 생성된 파일을 <a href="jhat.html">jhat</a>  (Java Heap Analysis Tool)를 사용해 읽어냅니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><b>-finalizerinfo</b></dt>
+
+<dd>finalize를 기다리고 있는 객체에 관한 정보를 출력합니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><b>-heap</b></dt>
+
+<dd>heap 서머리를 인쇄합니다. 사용되는 GC 알고리즘, heap 구성, 및 세대마다의 heap 사용율이 인쇄됩니다. </dd>
+
+      <dd><br /></dd>
+
+<dt><b>-histo[:live]</b></dt>
+
+<dd>heap의 막대그래프를 인쇄합니다. Java 클래스 마다, 객체의 수, 바이트 단위에서의 메모리 사이즈, 및 완전 수식 클래스명이 인쇄됩니다. VM 내부 클래스명은, 「*」의 접두사를 붙여 인쇄됩니다. <i>live</i> 서브 옵션이 지정되었을 경우, 생존중의 객체만이 카운트 됩니다.
+      </dd>
+
+      <dd><br /></dd>
+
+<dt><b>-permstat</b></dt>
+
+<dd>Permanent 세대의 Java heap의, 클래스 로더 관련의 통계 데이터를 인쇄합니다. 클래스 로더 마다, 그 이름, 상태, 주소, 친클래스 로더, 및 클래스 로더가 로드한 클래스의 수와 사이즈가 인쇄됩니다. 게다가 intern 된 캐릭터 라인의 수와 사이즈도 출력됩니다.
+      </dd>
+      <dd><br /></dd>
+
+<dt><b>F</b></dt>
+
+<dd>강제 (Force). pid 가 응답하지 않는 경우에, jmap -dump 또는 jmap -histo 옵션과 함께 사용합니다. 이 모드에서는,<i>live</i> 서브 옵션은 지원되지 않습니다.
+      </dd>
+      <dd><br /></dd>
+
+<dt><b>-h</b></dt>
+
+<dd>헬프 메세지를 인쇄합니다. <br /></dd>
+
+      <dd><br /></dd>
+
+<dt><b>-help</b></dt>
+
+<dd>헬프 메세지를 인쇄합니다. <br /></dd>
+      <dd><br /></dd>
+
+<dt><b>-J&lt;flag&gt;</b></dt>
+
+<dd>jmap 가 실행되고 있는 Java 가상 머신에 &lt;flag&gt; 를 건네줍니다. </dd>
+      <dd><br /></dd>
+
+    </dl>
+  </blockquote>
+
+<h2><a name="seealso">관련 항목</a> </h2>
+
+    <ul>
+<li>pmap (1)</li>
+<li><a href="jhat.html">jhat</a> </li>
+<li><a href="jps.html">jps</a> </li>
+<li><a href="jsadebugd.html">jsadebugd</a> </li>
+    </ul>
+  <hr/>
+
+  <table border="0" width="100%" summary="layout">
+    <tbody>
+      <tr valign="top">
+        <td>
+<p><a href=           "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2006 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </p>
+        </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"         alt="Sun" width="64" height="30" /><br /> <i> Java Software </i></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

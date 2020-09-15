@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:8 - Stub 인터페이스와 스켈리턴 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs24.html">전의 항목</a>  | <a href="rmi-stubs26.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">8.4 <code>ServerRef</code> 인터페이스</a> </h2>
+
+<blockquote>
+<a name="6690"><!-- --></a> <code>ServerRef</code> 인터페이스는, 원격 객체의 구현에 대한 서버측의 핸들을 나타냅니다. <p>
+</blockquote><blockquote><pre>package java.rmi.server;
+
+public interface ServerRef extends RemoteRef {
+	RemoteStub exportObject(java.rmi.Remote obj, Object data)
+		throws java.rmi.RemoteException;
+	String getClientHost() throws ServerNotActiveException;
+}
+
+
+</pre></blockquote><blockquote>
+<a name="6142"><!-- --></a> <code>exportObject</code> 메소드는, 주어진 <code>Remote</code> 객체의 구현 <em>obj</em> 에 대한 클라이언트 Stub 객체를 찾든가 혹은 작성합니다. 파라미터 <em>data</em> 에는, 객체를 export 하는데 필요한 정보 (예를 들어 포트 번호)가 포함됩니다. <p>
+<a name="6147"><!-- --></a> <code>getClientHost</code> 메소드는, 현재의 클라이언트의 호스트명을 돌려줍니다. 현재, 원격 메소드 호출을 조작중의 thread로부터 불려 갔을 경우에는, 호출을 실행중의 클라이언트의 호스트명이 돌려주어집니다. 원격 메소드에의 호출이 현재 실행중이 아니면,<code>ServerNotActiveException</code> 가 불려 갑니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs24.html">전의 항목</a>  | <a href="rmi-stubs26.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

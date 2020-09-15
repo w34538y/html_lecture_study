@@ -1,0 +1,896 @@
+<? xml version="1.0" encoding="utf-8"? >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+
+<title>jarsigner - JAR 서명 및 검증 툴 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<h1>jarsigner - JAR 서명 및 검증 툴</h1>
+
+  <blockquote>
+Java ARchive (JAR) 파일의 서명을 생성해, 서명 첨부 JAR 파일의 서명을 검증합니다.
+  </blockquote>
+
+<h2>형식</h2>
+
+  <blockquote>
+    <pre>
+<strong>jarsigner</strong> [ <a href=
+"#Options">options</a>  ] jar-file alias
+<strong>jarsigner</strong> -verify [ <a href=
+"#Options">options</a>  ] jar-file 
+</pre>
+  </blockquote>
+
+<h2>설명</h2>
+
+  <blockquote>
+<b>jarsigner</b> 툴은, 다음의 2 개의 목적으로 사용합니다.
+
+    <ol>
+<li>Java ARchive (JAR) 파일에 서명을 붙인다</li>
+
+<li>서명 첨부 JAR 파일의 서명과 무결성을 검증한다</li>
+    </ol>
+
+<p>JAR 기능을 사용하면(자), 클래스 파일, 이미지, 사운드, 및 그 외의 디지털 데이타를 단일의 파일에 패키지화할 수 있으므로, 파일을 신속하고 용이하게 배포할 수 있습니다. 개발자는,<a href=     "jar.html"><b>jar</b></a>  라는 이름의 툴을 사용해 JAR 파일을 작성할 수 있습니다. 기술적인 관점으로부터 말하면, 모든 ZIP 파일도 JAR 파일로 간주할 수가 있습니다.  다만,<b>jar</b> 에 의해 작성된 JAR 파일, 또는 <b>jarsigner</b> 에 의해 처리된 JAR 파일에는, META-INF/MANIFEST.MF 파일이 포함되어 있습니다. </p>
+
+<p>「디지털 서명」은, 하등의 데이터 ( 「서명」의 대상이 되는 데이터)와 엔티티 (사람, 회사등)의 비공개키와에 근거해 계산되는 비트열입니다. 자필의 서명 같이, 디지털 서명에는 많은 이점이 있습니다. </p>
+
+    <ul>
+<li>서명의 생성에 사용된 비공개키와 대가 되는 공개키를 사용해 계산을 실시하는 것으로, 디지털 서명이 진짜인가 어떤가를 검증할 수 있다</li>
+
+<li>비공개키가 타인에게 알려지지 않는 이상 디지털 서명의 위조는 불가능하다</li>
+
+<li>디지털 서명은, 그 서명이 붙은 데이터만을 대상으로 하는 것이며, 다른 데이터의 서명으로서 기능할 것은 없다</li>
+
+<li>서명 첨부의 데이터는 변경할 수 없다.  데이터가 변경되었을 경우는, 그 서명에 의해 데이터가 진짜가 아닌 것이 검증된다</li>
+    </ul>
+
+<p>파일에 대해서 엔티티의 서명을 생성하려면 , 우선, 엔티티는, 그 엔티티에 관련하는 공개키와 비공개키의 페어를 가질 필요가 있습니다. 또, 공개키를 인증하는 1 개(살) 또는 복수의 증명서도 필요합니다. 「증명서」란, 어느 엔티티가 발행한 디지털 서명 첨부의 문서로, 별도인 엔티티의 공개키가 특정의 값인 것을 증명하고 있습니다. </p>
+
+<p><b>jarsigner</b> 는, 「키스토어」에 포함되는 열쇠와 증명서 정보를 사용해, JAR 파일의 디지털 서명을 생성합니다. 키스토어는, 비공개키와 비공개키에 관련지을 수 있었던 X. 509 증명서 체인을 거둘 수 있었던 데이타베이스입니다. 키스토어의 작성과 관리에는,<a href="keytool.html"><b>keytool</b></a>  유틸리티를 사용합니다. </p>
+
+<p><b>jarsigner</b> 는, 엔티티의 비공개키를 사용해 서명을 생성합니다. 서명 첨부 JAR 파일에는, 파일의 서명에 사용하는 비공개키에 대응하는 공개키를 보존하는 키스토어로부터 취한 증명서의 카피도 포함되어 있습니다.  <b>jarsigner</b> 는, 서명 첨부 JAR 파일의 디지털 서명을, 파일내 (의 서명 블록 파일)에 포함되어 있는 증명서를 사용해 검증할 수가 있습니다. </p>
+
+<p>5.0 이후에서는,<b>jarsigner</b> 는 타임 스탬프를 포함한 서명을 생성하므로, 시스템이나 데프로이야 (Java Plug-in 를 포함한다)는 JAR 파일이 서명 증명서의 유효기간중에 서명되었는지의 여부를 체크할 수 있습니다. 게다가 5.0 으로 추가된 API 를 사용해, 어플리케이션은 타임 스탬프 정보를 취득할 수 있습니다. </p>
+
+<p>현시점에서는,<b>jarsigner</b> 로 서명할 수 있는 것은, JDK 의 <a href="jar.html"><b>jar</b></a>  툴로 작성된 JAR 파일, 또는 ZIP 파일 뿐입니다. JAR 파일은 ZIP 파일과 같습니다만, JAR 파일에는 META-INF/MANIFEST.MF 파일이 포함되어 있는 점이 다릅니다. META-INF/MANIFEST.MF 파일은,<b>jarsigner</b> 가 ZIP 파일에 서명을 붙일 때 자동적으로 작성됩니다. </p>
+
+<p>디폴트에서는,<b>jarsigner</b> 는 JAR (또는 ZIP) 파일에 「서명」을 붙입니다. 서명 첨부 JAR 파일을 「검증」하는 경우는,<code>-verify</code> 옵션을 지정합니다. </p>
+
+<h3>JDK 1.1 과의 호환성</h3>
+
+    <blockquote>
+<p><b>keytool</b> 툴과 <b>jarsigner</b> 툴은, JDK 1.1 으로 제공되고 있던 <b>javakey</b> 툴을 완전하게 옮겨놓는 것입니다. 이러한 새로운 툴은 <b>javakey</b> 보다 많은 기능을 갖추고 있어 키스토어와 비공개키를 패스워드로 보호하는 기능이나, 서명의 생성에 가세해 서명을 검증하는 기능을 가지고 있습니다. </p>
+
+<p>새로운 키스토어아키테크챠는,<b>javakey</b> 가 작성해 관리하고 있던 아이덴티티 데이타베이스에 대신하는 것입니다. 키스토어 형식과 JDK 1.1 의 <b>javakey</b> 가 사용하고 있던 데이타베이스 형식과의 사이에는 하위 호환성은 없습니다. 다만, 다음과 같은 일은 가능합니다. </p>
+
+      <ul>
+<li><b>keytool</b> 의 <code>-identitydb</code> 커멘드를 사용하면(자), 아이덴티티 데이타베이스의 정보를 키스토어에 임포트 할 수 있습니다. </li>
+
+<li><b>jarsigner</b> 는, 이전에 <b>javakey</b> 를 사용해 서명된 JAR 파일에 서명을 붙일 수가 있습니다. </li>
+
+<li><b>jarsigner</b> 는,<b>javakey</b>를 사용해 서명된 JAR 파일을 검증할 수 있습니다. 따라서,<b>jarsigner</b> 는, Java 2 SDK 의 키스토어는 아니고 JDK 1.1 의 아이덴티티 데이타베이스로부터의 서명자 별명을 인식해, 이것들을 대상으로 처리를 실시할 수가 있습니다. </li>
+</ul>다음의 겉(표)는, JDK 1.1.x 로 서명된 JAR 파일이, Java 2 플랫폼에서 어떻게 다루어지는지를 나타내고 있습니다.
+
+      <table border="1" summary=
+      "How JAR Files Signed in JDK 1.1.X are Treated in the Java 2 Platform">
+      <tr>
+          <th>
+<p>JAR 파일의 타입</p>
+          </th>
+
+          <th>
+<p>1.1 데이타베이스내의 아이덴티티</p>
+          </th>
+
+          <th>
+<p>1.1 데이타베이스로부터 Java 2 Platform 키스토어에 임포트 되는 신뢰할 수 있는 아이덴티티 (4)</p>
+          </th>
+
+          <th>
+<p>정책 파일이 아이덴티티/별명에 특권을 준다</p>
+          </th>
+
+          <th>
+<p>주어지는 특권</p>
+          </th>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명이 없는 JAR</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 없다</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권 (3)</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 없다</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권 (1,3)</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권과 정책 파일내에서 주어지는 특권</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 있다</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>모든 코드에게 줄 수 있는 디폴트의 특권과 정책 파일내에서 주어지는 특권 (2)</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 있다</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 특권</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 있다</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>모든 특권 (1)</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<p>서명 첨부 JAR</p>
+          </td>
+
+          <td>
+<p>어느/신뢰할 수 있다</p>
+          </td>
+
+          <td>
+<p>없음</p>
+          </td>
+
+          <td>
+<p>있어</p>
+          </td>
+
+          <td>
+<p>모든 특권 (1)</p>
+          </td>
+        </tr>
+      </table>
+
+<p>주 -</p>
+
+      <ol>
+<li>정책 파일내에 아이덴티티/별명에 대한 언급이 있는 경우, 그것을 키스토어에 임포트 해, 정책 파일의 설정이 주어진 특권에 반영되도록(듯이) 할 필요가 있습니다. </li>
+
+<li>정책 파일/키스토어의 편성은, 아이덴티티 데이타베이스내의 신뢰할 수 있는 아이덴티티보다 우선됩니다. </li>
+
+<li>Java 2 플랫폼에서는, 신뢰할 수 없는 아이덴티티는 무시됩니다. </li>
+
+<li>Java 2 SDK 키스토어에 임포트 할 수 있는 것은, 신뢰할 수 있는 아이덴티티만입니다. </li>
+      </ol>
+    </blockquote>
+
+<h3>키스토어의 별명</h3>
+
+    <blockquote>
+<p>키스토어의 모든 엔트리는, 일의의 「별명」을 개입시켜 액세스 됩니다. </p>
+
+<p><b>jarsigner</b> 를 사용해 JAR 파일에 서명을 붙일 때는, 서명의 생성에 필요한 비공개키를 포함한 키스토어엔트리의 별명을 지정할 필요가 있습니다. 예를 들어, 다음의 예는, working 디렉토리의 mystore 라는 이름의 키스토어에 포함되는 별명 duke 에 관련지을 수 있었던 비공개키를 사용해, MyJARFile.jar 라는 이름의 JAR 파일에 서명을 붙입니다. 출력 파일은 지정되어 있지 않기 때문에, MyJARFile.jar 는 서명 첨부의 JAR 파일에 의해 덧쓰기됩니다. </p>
+      <pre>
+    jarsigner -keystore /working/mystore -storepass myspass
+      -keypass dukekeypasswd MyJARFile.jar duke 
+</pre>
+
+<p>키스토어는 패스워드로 보호되고 있으므로, 스토어의 패스워드 (위의 예에서는 mypass)를 지정할 필요가 있습니다. 커멘드행으로 스토어의 패스워드를 지정하지 않다고 패스워드의 입력이 요구됩니다. 같이 비공개키도 키스토어내에서 패스워드에 의해 보호되고 있기 (위해)때문에, 비공개키의 패스워드 (위의 예에서는 dukekeypasswd)를 지정할 필요가 있습니다.  커멘드행으로 비공개키의 패스워드를 지정하고 있지 않는, 또, 지정한 파스워트가 보존되고 있는 패스워드와 다른 경우에는, 비공개키의 패스워드의 입력이 요구됩니다. </p>
+    </blockquote>
+
+<h3>키스토어의 장소</h3>
+
+    <blockquote>
+<b>jarsigner</b> 에는, 사용하는 키스토어의 URL 를 지정한다 <code>-keystore</code> 옵션이 있습니다. 키스토어는, 디폴트에서는 사용자의 홈 디렉토리의 <code>. keystore</code> 라는 이름의 파일에 포함됩니다. 사용자의 홈 디렉토리는,<code>user.home</code> 시스템 프로퍼티에 의해 정해집니다. Solaris 시스템의 경우,<code>user.home</code> 가 디폴트로 사용자의 홈 디렉토리가 되어 있습니다.
+
+<p><code>-keystore</code> 옵션으로부터의 입력 스트림은,<code>KeyStore.load</code> 메소드에게 건네집니다. URL 로서 <code>NONE</code> 가 지정되고 있는 경우는, null 의 스트림이 <code>KeyStore.load</code> 메소드에게 건네집니다. <code>NONE</code> 는,<code>KeyStore</code> 가 파일 베이스는 아니고, 예를 들어, 하드웨어 토큰 디바이스에 놓여져 있는 경우로 지정합니다. </p>
+    </blockquote>
+
+<h3><a name="KeystoreImplementation" id=     "KeystoreImplementation">키스토어의 구현</a> </h3>
+
+    <blockquote>
+<code>java.security</code> 패키지로 제공되는 <code>KeyStore</code> 클래스에는, 키스토어내의 정보에 대한 액세스라고 변경을 행하기 위한 명확하게 정의된 인터페이스가 준비되어 있습니다. 키스토어의 고정 구현으로서는, 각각이 특정의 「타입」의 키스토어를 대상으로 하는 복수가 다른 구현이 존재 가능합니다.
+
+<p>현재, 키스토어의 구현을 사용하는 것으로서<b>keytool</b> 와 <b>jarsigner</b> 의 2 개의 커멘드행 툴과<b>Policy Tool</b> 라는 이름의 1 개의 GUI 베이스의 툴이 있습니다. <code>KeyStore</code> 는 public 로서 사용 가능해서, Java 2 SDK 사용자는 <code>KeyStore</code> 를 사용한 것 외의 시큐리티 어플리케이션도 작성할 수 있습니다. </p>
+
+<p>키스토어에는, Sun 가 제공하는 편입의 디폴트의 구현이 있습니다. 이것은, JKS 라는 이름의 독자적인 키스토어타이프 (형식)를 이용해서 , 키스토어를 파일로서 구현하고 있습니다. 이 구현에서는, 개개의 비공개키는 개별의 패스워드에 의해 보호되어 키스토어 전체의 무결성도 (비공개키와는 다른) 패스워드에 의해 보호됩니다. </p>
+
+<p>키스토어의 구현은, 프로바이더 베이스입니다. 구체적으로는,<code>KeyStore</code> 가 제공하는 어플리케이션 인터페이스는, Service Provider Interface (SPI)라고 하는 형태로 구현되고 있습니다. 즉, 대응하는 <code>KeystoreSpi</code> 추상 클래스 (이것도 <code>java.security</code> 패키지에 포함되어 있다)가 있어, 이 클래스가 Service Provider Interface 의 메소드를 정의하고 있습니다. 이러한 메소드는, 「프로바이더」가 구현하지 않으면 안됩니다. 여기서, 「프로바이더」란, Java Security API 에 의해 액세스 가능한 서비스의 부분집합에 대해, 그 고정 구현을 제공하는 패키지 또는 패키지의 집합입니다. 따라서, 키스토어의 구현을 제공하려면 ,<a href=       "../../guides/security/crypto/HowToImplAProvider.html">「Java 암호화 아키텍쳐(architecture)용 프로바이더의 구현 방법」</a>으로 설명하고 있도록(듯이), 클라이언트가 「프로바이더」를 구현해,KeystoreSpi 서브 클래스의 구현을 제공할 필요가 있습니다. </p>
+
+<p>어플리케이션에서는,<code>KeyStore</code> 클래스가 제공하는 getInstance 팩토리 메소드를 사용하는 것으로, 다양한 프로바이더로부터 다른 「타입」의 키스토어의 구현을 선택할 수 있습니다. 키스토어의 타입은, 키스토어 정보의 포함 형식과 데이터 형식을 정의함과 함께, 키스토어내의 비공개키와 키스토어 자체의 무결성을 보호하기 위해서 사용되는 알고리즘을 정의합니다. 다른 타입의 키스토어의 구현에는, 호환성은 없습니다. </p>
+
+<p><b>keytool</b> 는, 임의의 파일 베이스의 키스토어 구현으로 동작합니다. <b>keytool</b> 는, 커멘드행으로부터 건네받은 키스토어의 장소를 파일명으로서 취급해, 이것을 FileInputStream 로 변환해, FileInputStream 로부터 키스토어의 정보를 로드합니다. 한편,<b>jarsigner</b> 툴과 <b>policytool</b> 툴은, URL 로 지정 가능한 임의의 장소로부터 키스토어를 읽어들일 수가 있습니다. </p>
+
+<p><b>jarsigner</b> 와 <b>keytool</b> 의 경우,<i>-storetype</i> 옵션을 사용해 커멘드행으로 키스토어의 타입을 지정할 수 있습니다. <b>Policy Tool</b> 의 경우는,[Edit] 메뉴의 [Change Keystore] 커멘드를 사용해 키스토어의 타입을 지정할 수 있습니다. </p>
+
+<p>키스토어의 타입을 명시적으로 지정하지 않는 경우,<b>keytool</b>,<b>jarsigner</b>, 및 <b>policytool</b> 의 각 툴은, 시큐리티 프로퍼티 파일내에서 지정된 <code>keystore.type</code> 프로퍼티의 값에 근거해 키스토어의 구현을 선택합니다. 시큐리티 프로퍼티 파일은,<tt>java.security</tt> 라는 이름으로 SDK 시큐리티 프로퍼티 디렉토리 <code><i>java.home</i>/lib/security</code> 에 놓여져 있습니다. <i>java.home</i> 는, 실행 환경의 디렉토리 (SDK 의 <tt>jre</tt> 디렉토리 또는 Java 2 Runtime Environment 의 최상정도의 디렉토리)입니다. </p>
+
+<p>각 툴은,<code>keystore.type</code> 의 값을 취득해, 이 값으로 지정된 타입의 키스토어를 구현하고 있는 프로바이더가 발견될 때까지, 현재 인스톨 떠날 수 있어 모든 프로바이더를 조사합니다. 목적의 프로바이더가 발견되면(자), 그 프로바이더로부터의 키스토어의 구현을 사용합니다. </p>
+
+<p><code>KeyStore</code> 클래스에서는 <code>getDefaultType</code> 라는 이름의 static 메소드가 정의되고 있어 어플리케이션과 애플릿은 이 메소드를 사용하는 것으로 <code>keystore.type</code> 프로퍼티의 값을 취득할 수 있습니다. 다음의 코드는, 디폴트의 키스토어타이프 (<code>keystore.type</code> 프로퍼티으로 지정된 타입)의 인스턴스를 생성합니다. </p>
+      <pre>
+    KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+</pre>
+
+<p>디폴트의 키스토어타이프는 JKS (Sun 가 제공하는 독자적인 타입의 키스토어의 구현)입니다. 이것은, 시큐리티 프로퍼티 파일내의 다음의 행에 의해 지정되고 있습니다. </p>
+      <pre>
+    keystore.type=jks
+</pre>
+
+<p>주:키스토어의 타입의 지정에서는, 대문자와 소문자는 구별되지 않습니다. 예를 들어, JKS 와 jks 는 같은 것으로서 다루어집니다. </p>
+
+<p>각 툴로 디폴트 이외의 키스토어의 구현을 사용하려면 , 위의 행을 변경해 다른 키스토어의 타입을 지정합니다. 예를 들어, pkcs12 로 불리는 타입의 키스토어의 구현을 제공하고 있는 프로바이더 패키지를 사용하려면 , 위의 행을 다음과 같이 변경합니다. </p>
+      <pre>
+    keystore.type=pkcs12
+</pre>
+
+<p>PKCS#11 프로바이더 패키지를 사용하는 경우, 그 상세한 것에 대하여는, 「Java PKCS#11 Reference Guide」에 있는<a href=       "../../guides/security/p11guide.html#keytooljarsigner">「KeyTool and JarSigner」</a>절을 참조해 주세요. </p>
+    </blockquote>
+
+<h3><a name="DefaultAlgs" id="DefaultAlgs">지원되는 알고리즘</a> </h3>
+
+    <blockquote>
+      <p>By default, <b>jarsigner</b> signs a JAR file using either</p>
+
+      <ul>
+<li>SHA-1 다이제스트 알고리즘을 사용한 DSA (디지털 서명 알고리즘)</li>
+
+<li>MD5 다이제스트 알고리즘을 사용한 RSA 알고리즘</li>
+      </ul>
+
+<p>구체적으로는, 서명자의 공개키와 비공개키가 DSA 열쇠인 경우,<b>jarsigner</b> 는 SHA1withDSA 알고리즘을 사용해 JAR 파일에 서명을 붙입니다. 서명자의 열쇠가 RSA 열쇠인 경우,<b>jarsigner</b> 는 MD5withRSA 알고리즘을 사용해 JAR 파일에 서명을 붙입니다. </p>
+
+      <p>이러한 디폴트의 서명 알고리즘은,<i>-sigalg</i> 옵션을 사용해 오버라이드(override) 할 수 있습니다. </p> 
+    </blockquote>
+
+<h3><a name="DefaultAlgs">서명 첨부 JAR 파일</a> </h3>
+
+    <blockquote>
+<p><b>jarsigner</b> 를 사용해 JAR 파일에 서명을 붙였을 경우, 출력되는 서명 첨부 JAR 파일은 입력 JAR 파일과 같습니다만, 다음의 2 개의 추가 파일이 META-INF 디렉토리에 놓여지는 점이 다릅니다. </p>
+
+      <ul>
+<li>. SF 확장자(extension)가 붙은 서명 파일</li>
+
+<li>. DSA 확장자(extension)가 붙은 서명 블록 파일</li>
+</ul>이것들 2 개의 파일의 베이스 파일명은,<code>-sigFile</code> 옵션의 값으로부터 작성됩니다. 예를 들어, 다음과 같이 옵션을 지정했다고 합니다.
+      <pre>
+  -sigFile MKSIGN
+</pre>이 경우, 파일명은 각각 MKSIGN.SF 와 MKSIGN.DSA 가 됩니다.
+
+<p>커멘드행으로 <code>-sigfile</code> 옵션을 지정하지 않았던 경우,. SF 파일과 . DSA 파일의 베이스 파일명은, 커멘드행으로 지정된 별명의 선두의 8 문자를 모두 대문자로 변환한 것이 됩니다. 별명이 8 문자 미만의 경우는, 별명이 그대로 사용됩니다. 별명안에, 서명 파일명에 사용할 수 없는 문자가 포함되어 있는 경우는, 해당하는 문자를 밑줄 (_)에 옮겨놓아 파일명이 작성됩니다. 사용할 수 있는 문자는, 알파벳, 숫자, 밑줄 (_), 하이픈입니다. </p>
+
+<h4><a name="SFFile" id="SFFile">서명 (. SF) 파일</a> </h4>
+
+      <blockquote>
+서명 파일 (. SF 파일)은,<b>jarsigner</b> 로 서명을 붙인 JAR 파일에 항상 포함되는 Manifest 파일과 닮아 있습니다. 즉, Manifest 파일 같이,. SF 파일에는, JAR 파일에 포함되어 있는 원시 파일 마다, 다음의 3 개의 행이 있습니다.
+
+        <ul>
+<li>파일명</li>
+
+<li>사용되고 있는 다이제스트 알고리즘 (SHA)의 이름</li>
+
+<li>SHA 다이제스트의 값</li>
+</ul>Manifest 파일에서는, SHA 다이제스트의 값은, 원시 파일의 바이너리 데이터의 다이제스트 (해시)입니다. 한편,. SF 파일에서는, 원시 파일의 다이제스트의 값은, Manifest 파일중의 해당하는 원시 파일에 대응하는 3 행의 해시입니다.
+
+<p>서명 파일에는, 디폴트로 Manifest 파일 전체의 해시도 포함되어 있습니다. 후술의<a href="#Verifying">「JAR 파일의 검증」</a>으로 설명하도록(듯이), 이 헤더의 존재에 의해 검증의 최적화가 가능하게 되어 있습니다. </p>
+      </blockquote>
+
+<h4>서명 블록 (. DSA) 파일</h4>
+
+      <blockquote>
+. SF 파일에는 서명을 붙일 수 있어 서명은 . DSA 파일에 놓여집니다.. DSA 파일에는, 키스토어로부터의 증명서 또는 증명서 체인도 encode 된 형태로 포함되어 있습니다.  증명서 또는 증명서 체인은, 서명에 사용된 비공개키에 대응하는 공개키를 인증합니다.
+      </blockquote>
+    </blockquote>
+
+<h3><a name="Timestamp" id="Timestamp">서명 타임 스탬프</a> </h3>
+
+    <blockquote>
+J2SE 5.0 릴리스의 <code>jarsigner</code> 툴은, JAR 파일의 서명시에 서명 타임 스탬프를 생성 및 포함할 수 있게 되었습니다. 게다가<code>jarsigner</code> 는 대체 서명 기구를 지원합니다. 이 동작은 생략 가능해, 서명시에 다음의 각 옵션에 의해 제어됩니다.
+
+      <ul>
+<li><a href="#tsa"><code>-tsa url</code></a> </li>
+
+<li><a href="#tsacert"><code>-tsacert alias</code></a> </li>
+
+<li><a href="#altsigner"><code>-altsigner  class</code></a> </li>
+
+<li><a href="#altsignerpath"><code>-altsignerpath  classpathlist</code></a> </li>
+</ul>이러한 각 옵션의 상세한 것에 대하여는, 후술의<a href=       "#Options">「옵션」</a>절을 참조해 주세요.
+    </blockquote>
+
+<h3><a name="Verifying" id="Verifying">JAR 파일의 검증</a> </h3>
+
+    <blockquote>
+<p>JAR 파일의 검증이 성공하는 것은, 서명이 유효하고, 한편 서명의 생성 이후에 JAR 파일내의 어느 파일도 변경되어 있지 않은 경우입니다. JAR 파일의 검증은, 다음의 순서로 행해집니다. </p>
+
+      <ol>
+<li>. SF 파일 그 자체의 서명을 검증합니다.
+
+<p>이 순서에서는, 각 서명 블록 (. DSA) 파일에 포함되고 있는 서명이, 실제로, 공개키에 대응하는 비공개키를 사용해 생성된 것인 것을 확인합니다.  . DSA 파일에는, 공개키의 증명서 (또는 증명서 체인)도 포함되어 있습니다. 또, 이 순서에서는, 목적의 서명이, 대응하는 서명 (. SF) 파일내의 유효한 서명일지 어떨지를 조사해. SF 파일이 개편되지 않은 것도 확인합니다. </p>
+        </li>
+
+<li>. SF 파일내의 각 엔트리의 다이제스트를 Manifest내의 대응하는 각 섹션과 맞대어 검증합니다.
+
+<p>. SF 파일에는, Manifest 파일 전체의 해시가 포함된 헤더가 디폴트로 포함되어 있습니다. 이 헤더가 존재하는 경우는, 헤더내의 해시가 실제로 Manifest 파일의 해시와 일치할지 어떨지를 검증할 수가 있습니다. 해시가 일치하는 경우는, 다음의 순서에 진행됩니다. </p>
+
+<p>해시가 일치하지 않는 경우는, 효율적으로는 뒤떨어지는 방법을 사용해 검증을 실시합니다. 구체적으로는,. SF 파일내의 각 원시 파일 정보 섹션의 해시가, Manifest 파일내의 대응하는 섹션의 해시와 일치할지 어떨지를 확인합니다 (<a href="#SFFile">「서명 (. SF) 파일」</a>을 참조). </p>
+
+<p>. SF 파일의 헤더에 포함된 Manifest 파일의 해시와 실제의 Manifest 파일의 해시가 일치하지 않는 경우는, 서명 ( 및 . SF 파일)의 생성 후에, JAR 파일에 1 개 이상의 파일이 추가 (<code>jar</code> 툴을 사용)된 가능성이 있습니다. <code>jar</code> 툴을 사용해 파일을 추가했을 경우, Manifest 파일은 변경됩니다만 (새로운 파일용의 섹션이 추가된다),. SF 파일은 변경되지 않습니다. 이 경우,. SF 파일의 헤더 이외의 섹션에 포함된 해시가, Manifest 파일내의 대응하는 섹션의 해시와 일치할 때는, 서명의 생성시에 JAR 파일내에 존재하고 있던 파일 가운데, 어느 파일도 변경되어 있지 않게 되어, 검증은 성공한 것으로서 다루어집니다. </p>
+        </li>
+
+<li>JAR 파일내의 파일 가운데,. SF 파일내에 엔트리를 가지는 각 파일을 읽어들입니다. read중에 파일의 다이제스트를 계산해, 결과를 Manifest 섹션내의 해당하는 파일의 다이제스트와 비교합니다. 2 개의 다이제스트는 같지 않으면 안되어, 그렇지 않은 경우는 검증이 실패합니다. </li>
+      </ol>
+
+<p>검증 프로세스의 도중에 하등의 중대한 검증 에러가 발생했을 경우, 검증 프로세스는 중지되어 시큐리티 예외가 throw 됩니다. throw 된 시큐리티 예외는,<b>jarsigner</b> 가 캐치 해 표시합니다. </p>
+    </blockquote>
+
+<h3>1 개의 JAR 파일을 대상으로 하는 복수의 서명</h3>
+
+    <blockquote>
+1 개의 JAR 파일에 대해서 <b>jarsigner</b> 툴을 여러 차례 실행해, 실행마다, 다른 사용자의 별명을 지정하면, JAR 파일에 복수의 사용자의 서명을 붙일 수가 있습니다.
+      <pre>
+  jarsigner myBundle.jar susan
+  jarsigner myBundle.jar kevin
+</pre>JAR 파일이 여러 차례 서명되고 있는 경우, 그 JAR 파일에는 . SF 파일과 . DSA 파일의 대가 복수 포함되게 됩니다.  . SF 파일과 . DSA 파일의 대는, 1 회의 서명에 대해서 1 개 작성됩니다. 따라서, 위의 예로 출력되는 JAR 파일에는, 다음의 이름을 가지는 파일이 포함됩니다.
+      <pre>
+  SUSAN.SF
+  SUSAN.DSA
+  KEVIN.SF
+  KEVIN.DSA
+</pre>주:JAR 파일에서는, JDK 1.1 의 <b>javakey</b> 툴로 생성된 서명과 <b>jarsigner</b> 로 생성된 서명을 혼재할 수 있습니다. 즉, 벌써 <b>javakey</b> 를 사용해 서명을 붙일 수 있고 있는 JAR 파일에,<b>jarsigner</b> 를 사용해 서명을 붙일 수가 있습니다.
+    </blockquote>
+  </blockquote>
+
+<h2><a name="Options" id="Options">옵션</a> </h2>
+
+  <blockquote>
+<p>이하에서는,<b>jarsigner</b> 의 옵션에 대해 설명합니다. 주:</p>
+
+    <ul>
+<li>어느 옵션명에도 선두에 마이너스 기호 (-)가 붙는다</li>
+
+<li>옵션은 임의의 순서로 지정할 수 있다</li>
+
+<li>이탤릭체의 항목의 실제의 값 (옵션의 값)은, 사용자가 지정할 필요가 있다</li>
+
+<li><code>-keystore</code>,<code>-storepass</code>,<code>-keypass</code>,<code>-sigfile</code>,<code>-sigalg</code>,<code>-digestalg</code> 및 <code>-signedjar</code> 의 각 옵션을 사용할 수 있는 것은, JAR 파일에 서명을 붙이는 경우 뿐이다. 이러한 옵션은, JAR 파일을 검증하는 경우에는 사용할 수 없다. 같이 별명을 커멘드행으로 지정하는 것은, JAR 파일에 서명을 붙이는 경우 뿐이다</li>
+    </ul>
+
+    <dl>
+<dt><b><code>-keystore</code></b> <i>url</i></dt>
+
+      <dd>
+키스토어의 장소를 나타내는 URL 를 지정합니다. 디폴트는, 사용자의 홈 디렉토리내의 파일 <i>. keystore</i> 입니다.  사용자의 홈 디렉토리는, user.home 시스템 프로퍼티에 의해 정해집니다.
+
+<p>서명할 때는 키스토어가 필요합니다.  이 때문에, 디폴트의 키스토어가 존재하지 않는 경우, 혹은 디폴트 이외외의 키스토어를 사용하는 경우는, 키스토어를 명시적으로 지정할 필요가 있습니다. </p>
+
+<p>검증할 때는 키스토어는 필요 없습니다.  다만, 키스토어가 지정되고 있든가, 혹은 디폴트의 키스토어가 존재하고 있어, 한층 더 <code>-verbose</code> 옵션도 지정되고 있는 경우는, JAR 파일의 검증에 사용되는 증명서가 키스토어에 존재할지 어떨지에 대한 추가 정보가 출력됩니다. </p>
+
+<p>주:<code>-keystore</code> 의 인수에는, URL 대신에 파일명 (와 패스)을 지정할 수 있습니다. 파일명 (와 패스)을 지정했을 경우는, 「file:」URL 로서 다루어집니다. 예를 들어, 다음과 같이 지정할 수 있습니다. </p>
+        <pre>
+  -keystore <i>filePathAndName</i>
+</pre>이것은, 다음의 지정과 같은 것으로서 다루어집니다.
+        <pre>
+  -keystore file:<i>filePathAndName</i>
+</pre>JRE 의 <tt>$JAVA_HOME/lib/security</tt> 디렉토리에 포함된 <tt>java.security</tt> 시큐리티 프로퍼티 파일내에서 Sun PKCS#11 프로바이더가 설정되어 있는 경우, keytool 와 jarsigner 는 PKCS#11 토큰에 근거해 동작할 수 있습니다. 다음의 옵션을 지정합니다.
+
+        <ul>
+<li><code>-keystore NONE</code></li>
+
+<li><code>-storetype PKCS11</code></li>
+</ul>예를 들어, 다음의 커멘드는, 설정된 PKCS#11 토큰의 내용을 일람표 가리킵니다.
+
+        <blockquote>
+          <pre>
+   jarsigner -keystore NONE -storetype PKCS11 -list
+  
+</pre>
+        </blockquote>
+      </dd>
+
+<dt><b><code>-storetype</code></b> <i>storetype</i></dt>
+
+      <dd>
+인스턴스를 생성하는 키스토어의 타입을 지정합니다. 디폴트의 키스토어타이프는, 시큐리티 프로퍼티 파일내의 keystore.type 프로퍼티의 값으로 지정된 타입입니다. 이 값은,<code>java.security.KeyStore</code> 의 static <code>getDefaultType</code> 메소드로 취득할 수 있습니다.
+
+<p><code>-storepass</code> 옵션을 사용해 PCKS#11 토큰의 PIN 를 지정할 수도 있습니다. 아무것도 지정하지 않았던 경우, keytool 와 jarsigner 는 사용자에게 토큰 PIN 의 입력을 요구합니다. 토큰에 보호된 인증 패스 (전용의 PIN 패드나 생체 읽기기등)가 있는 경우,<tt>-protected</tt> 옵션을 지정할 필요가 있습니다만, 패스워드 옵션을 지정할 필요는 없습니다. </p>
+      </dd>
+
+<dt><b><code>-storepass</code></b> <i>password</i></dt>
+
+      <dd>
+키스토어에 액세스 하는데 필요한 패스워드를 지정합니다. 이 옵션이 필요한 것은, JAR 파일에 서명을 붙일 때 뿐입니다 (JAR 파일을 검증할 때는 불요). 서명을 붙일 때, 커멘드행으로 <code>-storepass</code> 옵션을 지정하지 않았던 경우는, 패스워드의 입력이 요구됩니다.
+
+<p>주:테스트를 목적으로 하는 경우, 또는 안전하다라고 하는 것이 알고 있는 시스템으로 실행하는 경우 이외는, 커멘드행이나 스크립트로 패스워드를 지정하지 말아 주세요. </p>
+      </dd>
+
+<dt><b><code>-keypass</code></b> <i>password</i></dt>
+
+      <dd>
+커멘드행으로 지정된 별명에 대응하는 키스토어엔트리의 비공개키를 보호하는데 사용하는 패스워드를 지정합니다. <b>jarsigner</b> 를 사용해 JAR 파일에 서명을 붙일 때는, 패스워드가 필요합니다. 커멘드행으로 패스워드가 지정되지 않고, 필요한 패스워드가 스토어의 패스워드와 다른 경우는, 패스워드의 입력이 요구됩니다.
+
+<p>주:테스트를 목적으로 하는 경우, 또는 안전하다라고 하는 것이 알고 있는 시스템으로 실행하는 경우 이외는, 커멘드행이나 스크립트로 패스워드를 지정하지 말아 주세요. </p>
+      </dd>
+
+<dt><b><code>-sigfile</code></b> <i>file</i></dt>
+
+      <dd>
+. SF 파일과 . DSA 파일의 생성에 사용하는 베이스 파일명을 지정합니다. 예를 들어,<i>file</i> 에 DUKESIGN 를 지정하면(자), 생성된다 . SF 파일과 . DSA 파일의 이름은, 각각 DUKESIGN.SF 와 DUKESIGN.DSA 가 됩니다.  이러한 파일은, 서명 첨부 JAR 파일의 META-INF 디렉토리에 놓여집니다.
+
+<p><i>file</i> 에 사용할 수 있는 문자는 「a-zA-Z0-9_-」입니다. 즉, 문자, 숫자, 밑줄, 및 하이픈만을 사용할 수 있습니다. 주:. SF 및 . DSA 의 파일명에서는, 소문자는 모두 대문자에 변환됩니다. </p>
+
+<p>커멘드행으로 <code>-sigfile</code> 옵션을 지정하지 않았던 경우,. SF 파일과 . DSA 파일의 베이스 파일명은, 커멘드행으로 지정된 별명의 선두의 8 문자를 모두 대문자로 변환한 것이 됩니다. 별명이 8 문자 미만의 경우는, 별명이 그대로 사용됩니다. 별명안에, 서명 파일명에 사용할 수 없는 문자가 포함되어 있는 경우는, 해당하는 문자를 밑줄 (_)에 옮겨놓아 파일명이 작성됩니다. </p>
+      </dd>
+
+<dt><b><code>-sigalg</code></b> <i>algorithm</i></dt>
+
+      <blockquote>
+JAR 파일의 서명에 사용하는 서명 알고리즘의 이름을 지정합니다.
+
+<p>표준 서명 알고리즘명의 일람에 대해서는, 「Java Cryptography Architecture」에 있는 <a href="../../guides/security/crypto/CryptoSpec.html#appa">「Appendix A 」</a>를 참조해 주세요. 이 알고리즘은, JAR 파일의 서명에 사용하는 비밀열쇠와 호환성이 있는 것 나오지 않으면 안됩니다. 이 옵션을 지정하지 않았던 경우, 비밀열쇠의 타입에 응해 SHA1withDSA, MD5withRSA 중 한쪽이 사용됩니다. 지정된 알고리즘의 구현을 제공하는 프로바이더가 정적으로 인스톨 되고 있든가, 혹은 사용자가 그러한 프로바이더를 <i>-providerClass</i> 옵션을 사용해 지정할 필요가 있습니다. 그렇지 않은 경우, 커멘드의 실행이 실패합니다. </p>
+      </blockquote>
+
+<dt><b><code>-digestalg</code></b> <i>algorithm</i></dt>
+
+      <blockquote>
+JAR 파일의 엔트리를 다이제스트 할 때에 사용하는 메세지 다이제스트 알고리즘의 이름을 지정합니다.
+
+<p>표준 메세지 다이제스트 알고리즘명의 일람에 대해서는, 「Java Cryptography Architecture」에 있는 <a href="../../guides/security/crypto/CryptoSpec.html#appa">「Appendix A 」</a>를 참조해 주세요. 이 옵션을 지정하지 않았던 경우, SHA-1 가 사용됩니다. 지정된 알고리즘의 구현을 제공하는 프로바이더가 정적으로 인스톨 되고 있든가, 혹은 사용자가 그러한 프로바이더를 <i>-providerClass</i> 옵션을 사용해 지정할 필요가 있습니다. 그렇지 않은 경우, 커멘드의 실행이 실패합니다. </p>
+      </blockquote>
+
+<dt><b><code>-signedjar</code></b> <i>file</i></dt>
+
+      <dd>
+서명 첨부 JAR 파일의 이름을 지정합니다.
+
+<p>커멘드행으로 이름을 지정하지 않았던 경우는, 입력 JAR 파일 (서명의 대상이 되는 JAR 파일)의 이름과 같은 이름이 사용됩니다.  이 경우, 입력 JAR 파일은 서명 첨부 JAR 파일에 의해 덧쓰기됩니다. </p>
+      </dd>
+
+<dt><b><code>-verify</code></b></dt>
+
+      <dd>
+커멘드행으로 이 옵션이 지정되고 있는 경우는, 지정된 JAR 파일이 검증됩니다.  JAR 파일에의 서명은 행해지지 않습니다. 검증이 성공하면(자), 「jar verified」라고 하는 메세지가 표시됩니다. 서명되어 있지 않은 JAR 파일, 또는 지원되어 있지 않은 알고리즘 (RSA 프로바이더의 인스톨을 종료하고 있지 않는 경우의 RSA 등)을 사용해 서명된 JAR 파일을 검증하려고 하면(자), 「jar is unsigned. (signatures missing or not parsable)」라고 하는 메세지가 표시됩니다.
+
+<p>서명 첨부 JAR 파일은,<b>jarsigner</b> 또는 JDK 1.1 의 <b>javakey</b> 툴, 혹은 그 양쪽 모두를 사용해 검증할 수 있습니다. </p>
+
+<p>검증에 대한 자세한 것은,<a href=         "#Verifying">「JAR 파일의 검증」</a>을 참조해 주세요. </p>
+      </dd>
+
+<dt><b><code>-certs</code></b></dt>
+
+      <dd>
+커멘드행으로,<code>-verify</code> 및 <code>-verbose</code> 옵션과 함께 이 옵션이 지정되고 있는 경우는, JAR 파일의 각 서명자의 증명서 정보도 출력됩니다. 증명서 정보에는 다음의 것이 포함됩니다.
+
+        <ul>
+<li>서명자의 공개키를 증명한다 (. DSA 파일에 포함된) 증명서의 종류의 이름</li>
+
+<li>증명서가 X. 509 증명서 (즉,<code>java.security.cert.X509Certificate</code> 의 인스턴스)인 경우는, 서명자의 식별명</li>
+        </ul>
+
+<p>키스토어의 확인도 행해집니다. 커멘드행으로 키스토어의 값이 지정되어 있지 않은 경우, 디폴트의 키스토어파일이 있으면, 검사됩니다. 서명자의 공개키의 증명서가 키스토어내의 엔트리와 일치했을 경우는, 다음의 정보도 표시됩니다. </p>
+
+        <ul>
+<li>서명자에 해당하는 키스토어엔트리의 별명. 이 별명은 괄호로 둘러싸입니다.  다만, 키스토어는 아니고 JDK 1.1 의 아이덴티티 데이타베이스에 유래하는 서명자의 경우는, 괄호는 아니고 대괄호로 둘러싸입니다. </li>
+        </ul>
+      </dd>
+
+<dt><b><code>-verbose</code></b></dt>
+
+<dd>커멘드행으로 이 옵션이 지정되고 있는 경우,<b>jarsigner</b> 는 「장황」모드로 동작해, JAR 의 서명 또는 검증의 진행 상황에 관한 추가 정보를 출력합니다. </dd>
+
+<dt><b><code>-internalsf</code></b></dt>
+
+<dd>이전에는, JAR 파일의 서명시에 생성되었다 . DSA (서명 블록) 파일안에, 생성되었다 . SF 파일 (서명 파일)의 완전한 카피가 encode 된 형태로 포함되어 있었습니다. 이 동작은 변경되었습니다. 이 동작은 변경이 되어, 현재는, 출력 JAR 파일 전체의 사이즈를 작게 하기 위해서, 디폴트에서는 . SF 파일이 . DSA 파일에 포함되지 않게 되어 있습니다. 다만, 커멘드행으로 <code>-internalsf</code> 옵션을 지정하면(자), 이전과 같이 동작합니다. <b>이 옵션은, 테스트를 실시하는 경우에는 편리합니다만, 그 이외에는 사용하지 말아 주세요.  이 옵션을 사용하면(자), 유익한 최적화를 하지 않게 됩니다. </b></dd>
+
+<dt><b><code>-sectionsonly</code></b></dt>
+
+      <dd>
+커멘드행으로 이 옵션이 지정되고 있는 경우, JAR 파일의 서명시에 생성된다 . SF 파일 (서명 파일)에는, Manifest 파일 전체의 해시를 포함한 헤더는 추가되지 않습니다. 이 경우,. SF 파일에 포함되는 것은, JAR 파일내의 각 원시 파일에 관한 정보 및 해시 뿐입니다. 자세한 것은,<a href="#SFFile">「서명 (. SF) 파일」</a>을 참조해 주세요.
+
+<p>디폴트에서는, 최적화를 실시하기 위해서(때문에), Manifest 파일 전체의 해시를 포함한 헤더가 추가됩니다. 헤더가 존재하는 경우는, JAR 파일의 검증시에, 우선 헤더내의 해시가, Manifest 파일 전체의 해시와 실제로 일치할지 어떨지가 확인됩니다. 해시가 일치하는 경우, 검증은 다음의 순서에 진행됩니다. 해시가 일치하지 않는 경우는, 효율적으로는 뒤떨어지는 방법을 사용해 검증을 실시합니다.  구체적으로는,. SF 파일내의 각 원시 파일 정보 섹션의 해시가, Manifest 파일내의 대응하는 섹션의 해시와 일치할지 어떨지를 확인합니다. </p>
+
+<p>자세한 것은,<a href="#Verifying">「JAR 파일의 검증」</a>을 참조해 주세요. </p>
+
+<p><b>이 옵션은, 테스트를 실시하는 경우에는 편리합니다만, 그 이외에는 사용하지 말아 주세요.  이 옵션을 사용하면(자), 유익한 최적화를 하지 않게 됩니다. </b></p>
+      </dd>
+
+<dt><b><code>-provider</code></b> <i>provider-class-name</i></dt>
+
+      <dd>
+서비스 프로바이더가 시큐리티 프로퍼티 파일 (<tt>java.security</tt>)의 리스트에 들어가 있지 않을 때에, 암호화 서비스 프로바이더의 마스터 클래스 파일의 이름을 지정합니다.
+
+<p><code>-providerArg</code> <i>ConfigFilePath</i> 옵션과 조합해 사용합니다. keytool 와 jarsigner 는 프로바이더를 동적으로 인스톨 합니다 (여기서,<i>ConfigFilePath</i> 는 토큰 설정 파일에의 패스입니다). 시큐리티 프로퍼티 파일내에서 Sun PKCS#11 프로바이더가 설정되어 있지 않은 경우에 PKCS#11 키스토어를 일람표시 하는 커멘드의 예를 다음에 나타냅니다. </p>
+
+        <blockquote>
+          <pre>
+jarsigner -keystore NONE -storetype PKCS11 \
+          -providerClass sun.security.pkcs11.SunPKCS11 \
+          -providerArg /foo/bar/token.config \
+          -list
+</pre>
+        </blockquote>
+      </dd>
+
+<dt><b><code>-providerName</code></b> <i>providerName</i></dt>
+
+      <dd>
+<tt>java.security</tt> 시큐리티 프로퍼티 파일내에서 2 개 이상의 프로바이더가 설정되어 있는 경우,<tt>-providerName</tt> 옵션을 사용해 특정의 프로바이더 인스턴스를 선택할 수 있습니다. 이 옵션의 인수는, 프로바이더의 이름입니다.
+
+<p>Sun PKCS#11 프로바이더의 경우,<i>providerName</i> 는 <tt>SunPKCS11-<i>TokenName</i></tt> 라고 하는 형식이 됩니다. 여기서 「<tt><i>TokenName</i></tt>」는, 프로바이더 인스턴스가 구성된 이름의 접미사(suffix)입니다. 자세한 것은<a href=         "../../guides/security/p11guide.html#KeyToolJarSigner#ATTRS">구성 속성의 겉(표)</a>를 참조해 주세요. 예를 들어, 이하의 커멘드에서는, 이름접미사(suffix) <tt>SmartCard</tt> 의 PKCS#11 키스토어프로바이다인스탄스의 내용을 리스트 합니다. </p>
+
+        <blockquote>
+          <pre>
+jarsigner -keystore NONE -storetype PKCS11 \
+        -providerName SunPKCS11-SmartCard \
+        -list
+</pre>
+        </blockquote>
+      </dd>
+
+<dt><b><code>-J</code></b><i>javaoption</i></dt>
+
+      <dd>
+지정된 <i>javaoption</i> 캐릭터 라인을 Java interpreter에 직접 건네줍니다. (<b>jarsigner</b> 는, 실제로는 Java interpreter에 대한 「래퍼」입니다. 이 옵션에는, 공백을 포함할 수 없습니다. 이 옵션은, 실행 환경 또는 메모리 사용을 조정하는 경우에 편리합니다. 지정할 수 있는 interpreter 옵션을 일람표시 하려면 , 커멘드행으로 <code>java -h</code> 또는 <code>java -X</code> 라고 입력해 주세요.
+
+        <p><a name="tsa" id="tsa"></a> </p>
+      </dd>
+
+<dt><b><code>-tsa</code></b> <i>url</i></dt>
+
+      <dd>
+JAR 파일의 서명시에 커멘드행에 「<code>-tsa http://example.tsa.url</code>」가 표시되는 경우, 서명의 타임 스탬프가 생성됩니다. URL <code>http://example.tsa.url</code> 는, TSA (Time Stamping Authority)의 장소를 특정합니다. 이것은,<code>-tsacert</code> 옵션으로 검출된 URL 를 오버라이드(override) 합니다. <code>-tsa</code> 옵션에서는, TSA 의 공개키 증명서를 키스토어에 배치할 필요는 없습니다.
+
+<p>타임 스탬프를 생성하기 위해(때문에),<code>jarsigner</code> 는 <a href=         "http://www.ietf.org/rfc/rfc3161.txt">RFC 3161</a>  으로 정의되고 있는 TSP (Time-Stamp Protocol)를 사용해 TSA 와 통신합니다. 성공하면(자), TSA 로부터 반환된 타임 스탬프 토큰은 서명 블록 파일의 서명과 함께 보존됩니다. </p>
+
+        <p><a name="tsacert" id="tsacert"></a> </p>
+      </dd>
+
+<dt><b><code>-tsacert</code></b> <i>alias</i></dt>
+
+      <dd>
+JAR 파일의 서명시에 커멘드행에 「<code>-tsacert alias</code>」가 표시되는 경우, 서명의 타임 스탬프가 생성됩니다. <code>alias</code> 는, 키스토어내의 현재 유효한 TSA 의 공개키 증명서를 특정합니다. 엔트리의 증명서로, TSA 의 장소를 특정하는 URL 를 포함한 Subject Information Access 확장 기능이 확인됩니다.
+
+<p>TSA 의 공개키 증명서는,<code>-tsacert</code> 를 사용했을 경우, 키스토어에 배치되고 있을 필요가 있습니다. </p>
+
+        <p><a name="altsigner" id="altsigner"></a> </p>
+      </dd>
+
+<dt><b><code>-altsigner</code></b> <i>class</i></dt>
+
+      <dd>
+대체 서명 기구를 사용하는 것을 지정합니다. 완전 수식 클래스명은,<code>com.sun.jarsigner.ContentSigner</code> 의 abstract 클래스를 확장하는 클래스 파일을 특정합니다. 이 클래스 파일에의 패스는,<code>-altsignerpath</code> 옵션에 의해 정의됩니다. <code>-altsigner</code> 옵션을 사용했을 경우,<code>jarsigner</code> 는 지정된 클래스가 제공하는 서명 기구를 사용합니다. 또는,<code>jarsigner</code> 는 디폴트의 서명 기구를 사용합니다.
+
+<p>예를 들어,<code>com.sun.sun.jarsigner.AuthSigner</code> 라고 하는 클래스가 제공하는 서명 기구를 사용하려면 ,<code>jarsigner</code> 옵션 「<code>-altsigner com.sun.jarsigner.AuthSigner</code>」를 사용합니다. </p>
+
+        <p><a name="altsignerpath" id="altsignerpath"></a> </p>
+      </dd>
+
+<dt><b><code>-altsignerpath</code></b> <i>classpathlist</i></dt>
+
+      <dd>
+클래스 파일 (클래스 파일명은 상기와 같이 <code>-altsigner</code> 옵션으로 지정된다) 및 그것이 의존하는 JAR 파일에의 패스를 지정합니다. 클래스 파일이 JAR 파일내에 있는 경우, 이하의 예의 같게 JAR 파일에의 패스가 지정됩니다.
+
+<p>절대 패스 또는 현재의 디렉토리로부터의 상대 패스를 지정할 수 있습니다. <code>classpathlist</code> 에는, 복수의 패스 또는 JAR 파일을 포함할 수가 있습니다.  그 경우, 각 패스 또는 JAR 파일을, Solaris 의 경우에는 구두점 (<code>:</code>), Windows 의 경우에는 세미콜론 (<code>;</code>)으로 단락짓습니다. 목적의 클래스가 벌써 검색 패스내에 있는 경우는, 이 옵션은 불필요합니다. </p>
+
+<p>클래스 파일을 포함한, JAR 파일에의 패스를 지정하는 예를 나타냅니다. </p>
+
+        <blockquote>
+<code>-altsignerpath /home/user/lib/authsigner.jar</code>
+</blockquote>JAR 파일명이 포함되어 있는 것에 주의해 주세요.
+
+<p>클래스 파일을 포함한 JAR 파일에의 패스를 지정하는 예를 나타냅니다. </p>
+
+        <blockquote>
+<code>-altsignerpath /home/user/classes/com/sun/tools/jarsigner/</code>
+</blockquote>JAR 파일명은 포함되지 않은 것에 유의해 주세요.
+      </dd>
+    </dl>
+  </blockquote>
+
+<h2>례</h2>
+
+  <blockquote>
+<h3>JAR 파일의 서명</h3>
+
+    <blockquote>
+<p>bundle.jar 라는 이름의 JAR 파일이 있다고 합니다. 이 파일에, 키스토어의 별명이 jane 인 사용자의 비공개키를 사용해, 서명을 붙인다고 합니다. 키스토어는, mystore 라는 이름으로, C 드라이브의 working 디렉토리에 있어, 키스토어의 패스워드는 mypass,<i>jane</i> 의 비공개키의 패스워드는 j638klm 로 합니다. 이 경우, 다음의 커멘드를 실행하면(자), JAR 파일에 서명을 붙여 sbundle.jar 라고 하는 서명 첨부 JAR 파일을 작성할 수 있습니다. </p>
+      <pre>
+    jarsigner -keystore /working/mystore -storepass myspass
+      -keypass j638klm -signedjar sbundle.jar bundle.jar jane 
+</pre>
+
+<p>위의 커멘드에서는 <code>-sigfile</code> 옵션이 지정되어 있지 않기 때문에, 서명 첨부 JAR 파일에 포함된다 . SF 파일과 . DSA 파일의 이름은, 별명으로부터 디폴트명이 붙여집니다. 즉,<code>JANE.SF</code> 와 <code>JANE.DSA</code> 가 됩니다. </p>
+
+<p>스토어의 패스워드와 비공개키의 패스워드를 나중에 입력하는 경우는, 위의 커멘드를 단축해 다음과 같이 입력할 수 있습니다. </p>
+      <pre>
+    jarsigner -keystore /working/mystore
+      -signedjar sbundle.jar bundle.jar jane 
+</pre>디폴트의 키스토어 (홈 디렉토리내의 . keystore 라는 이름의 키스토어)를 사용하는 경우는, 다음에 나타내도록(듯이), 키스토어의 지정을 생략 할 수 있습니다.
+      <pre>
+    jarsigner -signedjar sbundle.jar bundle.jar jane 
+</pre>또, 서명 첨부 JAR 파일로 입력 JAR 파일 (<code>bundle.jar</code>)을 덧쓰기하는 경우는,<code>-signedjar</code> 옵션의 지정도 생략 할 수 있습니다.
+      <pre>
+    jarsigner bundle.jar jane 
+</pre>
+    </blockquote>
+
+<h3>서명 첨부 JAR 파일의 검증</h3>
+
+    <blockquote>
+다음에 나타내는 것은, 서명 첨부 JAR 파일을 검증해, 서명이 유효해 JAR 파일이 개편되지 않은 것을 확인하기 위한 커멘드예입니다.
+      <pre>
+    jarsigner -verify sbundle.jar 
+</pre>
+
+<p>검증이 성공하면(자), 다음과 같은 메세지가 표시됩니다. </p>
+      <pre>
+    jar verified.
+</pre>그렇다고 하는 메세지가 표시됩니다. 검증이 성공하지 않았던 경우는, 에러 메세지가 표시됩니다.
+
+<p><code>-verbose</code> 옵션을 사용하면(자), 보다 많은 정보가 표시됩니다. 다음에 나타내는 것은,<code>-verbose</code> 옵션을 지정한 <b>jarsigner</b> 의 실행예와 그 출력 결과입니다. </p>
+      <pre>
+    jarsigner -verify -verbose sbundle.jar
+
+           198 Fri Sep 26 16:14:06 PDT 1997 META-INF/MANIFEST.MF
+           199 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.SF
+          1013 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.DSA
+    smk   2752 Fri Sep 26 16:12:30 PDT 1997 AclEx.class
+    smk    849 Fri Sep 26 16:12:46 PDT 1997 test.class
+
+      s = signature was verified
+      m = entry is listed in manifest
+      k = at least one certificate was found in keystore
+
+    jar verified.
+</pre>
+
+<h3>증명서 정보를 사용한 검증</h3>검증시에,<code>-verify</code> 와 <code>-verbose</code> 옵션에 가세해 <code>-certs</code> 옵션을 지정했을 경우는, JAR 파일내의 각 서명자의 증명서 정보도 출력됩니다.  이것에는, 증명서의 타입, 서명자의 식별명 정보 (X. 509 증명서의 경우), 및 JAR 파일의 공개키의 증명서가 키스토어엔트리의 공개키의 증명서와 일치하는 경우에는, 괄호로 둘러싸인 서명자의 키스토어 별명이 포함됩니다. 다음에 예를 나타냅니다.
+      <pre>
+    jarsigner -keystore /working/mystore -verify -verbose -certs myTest.jar
+
+           198 Fri Sep 26 16:14:06 PDT 1997 META-INF/MANIFEST.MF
+           199 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.SF
+          1013 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.DSA
+           208 Fri Sep 26 16:23:30 PDT 1997 META-INF/JAVATEST.SF
+          1087 Fri Sep 26 16:23:30 PDT 1997 META-INF/JAVATEST.DSA
+    smk   2752 Fri Sep 26 16:12:30 PDT 1997 Tst.class
+
+      X. 509, CN=Test Group, OU=Java Software, O=Sun Microsystems, L=CUP, S=CA, C=US (javatest)
+      X. 509, CN=Jane Smith, OU=Java Software, O=Sun, L=cup, S=ca, C=us (jane)
+
+      s = signature was verified
+      m = entry is listed in manifest
+      k = at least one certificate was found in keystore
+
+    jar verified.
+</pre>서명자의 증명서가 X. 509 증명서가 아닌 경우는, 식별명 정보는 표시되지 않습니다. 그 경우에는, 증명서의 타입과 별명만이 표시됩니다. 예를 들어, 증명서가 PGP 증명서로, 별명이 bob 의 경우는, 다음과 같이 표시됩니다.
+      <pre>
+      PGP, (bob)
+</pre>
+
+<h3>아이덴티티 데이타베이스의 서명자를 포함한 JAR 파일의 검증</h3>JAR 파일이, JDK 1.1 의 <b>javakey</b> 툴을 사용해 서명되고 있는 경우, 서명자는 아이덴티티 데이타베이스내의 별명입니다. 이 경우, 검증의 출력에는 i 라고 하는 기호가 포함됩니다. JAR 파일이, 아이덴티티 데이타베이스내의 별명과 키스토어내의 별명의 양쪽 모두에 의해 서명되고 있는 경우는, k 와 i 의 양쪽 모두가 표시됩니다.
+
+<p><code>-certs</code> 옵션을 지정했을 경우, 키스토어의 별명은 괄호로 둘러싸이는데 대해, 아이덴티티 데이타베이스내의 별명은 꺽쇄묶음으로 둘러싸여 표시됩니다. 예를 나타냅니다. </p>
+      <pre>
+    jarsigner -keystore /working/mystore -verify -verbose -certs writeFile.jar
+
+           198 Fri Sep 26 16:14:06 PDT 1997 META-INF/MANIFEST.MF
+           199 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.SF
+          1013 Fri Sep 26 16:22:10 PDT 1997 META-INF/JANE.DSA
+           199 Fri Sep 27 12:22:30 PDT 1997 META-INF/DUKE.SF
+          1013 Fri Sep 27 12:22:30 PDT 1997 META-INF/DUKE.DSA
+   smki   2752 Fri Sep 26 16:12:30 PDT 1997 writeFile.html
+
+      X. 509, CN=Jane Smith, OU=Java Software, O=Sun, L=cup, S=ca, C=us (jane)
+      X. 509, CN=Duke, OU=Java Software, O=Sun, L=cup, S=ca, C=us [duke]
+
+      s = signature was verified
+      m = entry is listed in manifest
+      k = at least one certificate was found in keystore
+      i = at least one certificate was found in identity scope
+
+    jar verified.
+</pre>별명 duke 는 꺽쇄묶음으로 둘러싸여 있으므로, 이 별명은 키스토어의 별명은 아니고, 아이덴티티 데이타베이스의 별명입니다.
+    </blockquote>
+  </blockquote>
+
+<h2>관련 항목</h2>
+
+  <blockquote>
+    <ul>
+<li><a href="jar.html">jar</a>  툴의 문서</li>
+
+<li><a href="keytool.html">keytool</a>  툴의 문서</li>
+
+<li><b>jarsigner</b> 툴의 사용예에 대해서는,<a href=       "http://java.sun.com/docs/books/tutorial/"><b>[Java 튜토리얼」</b></a> 의<a href=       "http://java.sun.com/docs/books/tutorial/security/index.html"><b>「Security」</b></a> 를 참조</li>
+    </ul>
+  </blockquote>
+  <hr size="3" noshade="noshade" />
+
+  <table border="0" width="100%" summary="layout">
+    <tr valign="top">
+      <td>
+<p><font size="-2"><a href=         "../../../legal/SMICopyright.html">Copyright</a>  &copy; 2002-2006 <a href="http://www.sun.com">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+      </td>
+
+<td align="right"><img src="../../../images/sunlogo64x30.gif"       alt="Sun" border="0" width="64" height="30" /><br /> <font size="+1"><i> Java Software </i></font></td>
+    </tr>
+  </table>
+</body>
+</html>

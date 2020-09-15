@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>도크 렛의 개요 - xrath.com 에서 번역됨</title>
+  </head>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+
+<TR>
+
+<TD>
+
+<IMG SRC="../../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+<td>
+<CENTER>
+<h1>도크 렛의 개요</h1>
+</CENTER>
+</td>
+
+<TD WIDTH="52">&nbsp;
+
+</TD>
+
+</TR>
+</table>
+
+<!-- Body text begins here -->
+
+<h2>목차</h2>
+<ul>
+<li><a href="#basics">도크 렛의 기본</a> 
+<li><a href="#simple">간단한 예</a> 
+<li><a href="#custom">예 - 표준 도크 렛의 서브 클래스화</a> 
+<li><a href="#customtags">예 - 커스텀 태그의 작성과 처리</a> 
+<li><a href="#options">예 - 커스텀 커멘드행 옵션의 사용</a> 
+</ul>
+
+<a name="basics"></a> 
+<h2>도크 렛의 기본</h2>
+도크 렛이란, Java<font size="-2"><sup>TM</sup></font> 프로그램 언어로 기술한 프로그램 가운데,<a href="../../../../jdk/api/javadoc/doclet/index.html">도크 렛 API</a>  를 사용해 Javadoc 툴의 내용과 출력 형식을 지정한 것입니다. 디폴트에서는, HTML 형식의 API 문서를 생성하기 위한 , Sun<font size="-2"><sup>TM</sup></font> 가 제공한<a href="../standard-doclet.html">「표준」도크 렛</a>이 사용되고 빌려주어, 독자적인 도크 렛을 작성해 Javadoc 의 출력을 기호의 형식에 커스터마이즈 할 수도 있습니다. 도크 렛은, 도크 렛 API 를 사용해 제로로부터 작성하는 일도, 필요에 따라서 표준 도크 렛에 손보는 형태로 작성할 수도 있습니다.
+<p>
+도크 렛은, 다음의 기본 순서에 따라 작성해, 사용합니다.
+<ol>
+<li>도크 렛이 되는 Java 프로그램을 기술합니다. 도크 렛 API 를 사용하기 위해서는, com.sun.javadoc. * (을)를 임포트 할 필요가 있습니다. 작성한 프로그램의 엔트리 포인트는,<tt>public static boolean start</tt> 메소드가 있는 클래스입니다. 그 메소드는, 파라미터로서 <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/RootDoc.html">RootDoc</a>  를 취합니다.
+<li>도크 렛을 컴파일 합니다. 컴파일에는, Java 2 SDK 에 포함되는 컴파일러 javac 를 사용할 수 있습니다.
+<li><b><tt>-doclet</tt> <i>startingclass</i></b>&nbsp; 옵션을 지정해 Javadoc 툴을 실행해, 작성한 도크 렛이 지정하는 출력을 생성합니다. 여기서,<i>startingclass</i> 는, 순서 1 으로 설명한 개시 클래스의 완전 지정의 이름입니다.
+</ol>
+도크 렛 API 의 클래스 파일은, SDK 의 <tt>lib/tools.jar</tt> 파일에 포함되어 있습니다. 도크 렛을 컴파일 할 때는,<tt>tools.jar</tt> 가 클래스 패스에 존재할 필요가 있습니다. 이러한 경우는, javac 의 <tt>-classpath</tt> 옵션을 사용할 수 있습니다.   
+<p>
+커멘드행 옵션 <tt>-doclet</tt> 를 지정 하지않고서 javadoc 를 실행했을 경우는, HTML 형식의 API 문서를 생성하는 표준 도크 렛이 사용됩니다.
+<p>
+com.sun.javadoc 패키지는, 도크 렛 API 를 정의하는 몇개의 인터페이스로 구성되어 있습니다. 이러한 인터페이스는, Java 2 SDK 의 <tt>lib/tools.jar</tt> 파일에 포함되어 있습니다. 이 파일에는, 이러한 인터페이스를 구현하는 클래스가 포함되는 private 패키지도 들어가 있습니다. 게다가<tt>tools.jar</tt> 파일에는, 표준 도크 렛을 구현한 클래스도 포함되어 있습니다.
+
+
+
+<a name="simple"></a> 
+<h2>간단한 예</h2>
+다음에, 작은 클래스가 1 개만 포함되는 간단한 도크 렛의 예를 나타냅니다. 이 예를 보면, 도크 렛의 구조에 대해 감촉을 잡을 수 있을 것입니다.
+<blockquote><pre>
+import <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/package-summary.html">com.sun.javadoc. *</a> ;
+
+public class ListClass {
+    public static boolean start(<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/RootDoc.html">RootDoc</a>  root) {
+        <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/ClassDoc.html">ClassDoc</a> [] classes = root. <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/RootDoc.html#classes()">classes()</a> ;
+        for (int i = 0; i < classes.length; ++i) {
+            System.out.println(classes[i]);
+        }
+        return true;
+    }
+}
+</blockquote></pre>
+
+코드로부터 추측할 수 있도록(듯이), 이 도크 렛은, javadoc 의 처리 대상이 되는 클래스에 도착해, 그 이름을 표준 출력에 써냅니다.
+<p>
+도크 렛에 관해서 최초로 주의해야 할 점은, 도크 렛 API 를 사용할 수 있도록(듯이) 하기 위해서 com.sun.javadoc 패키지를 임포트 해야 한다고 하는 것입니다. 엔트리 포인트는, 어느 도크 렛의 경우에도 <tt>public&nbsp;static&nbsp;boolean&nbsp;start</tt> 메소드입니다. <tt>start</tt> 메소드는, 파라미터로서 RootDoc 를 취합니다. 이 파라미터에는, javadoc 의 실행시에 커멘드행으로 지정된 옵션과 javadoc 의 처리 대상이 되는 클래스와 패키지에 대한 정보가 들어가 있습니다.
+<p>
+RootDoc 는,<tt>classes</tt> 라고 하는 메소드를 정의하고 있습니다. 이 메소드로부터는, javadoc 가 해석하는 클래스가 요소로서 들어가 있는 ClassDoc 배열이 돌려주어집니다. 다음에,<tt>for</tt> 루프로, ClassDoc 배열에 포함되는 각 클래스의 이름을 출력합니다. ClassDoc 를 <tt>println</tt> 에 인도하면(자), ClassDoc 가 나타내고 있는 클래스의 이름이 출력됩니다.
+<p>
+이 도크 렛을 실행하려면 , 우선 컴파일 할 필요가 있습니다. 컴파일은, javac 컴파일러로 실시합니다. 도크 렛 API 의 클래스 파일은 Java 2 SDK 의 <tt>lib/tools.jar</tt> 파일에 포함되어 있습니다만, javac 는 이 클래스 파일을 자동적으로는 로드하지 않습니다. 이 때문에, 다음의 예의 같게 해, 컴파일러의 classpath 에 <tt>tools.jar</tt> 를 포함할 필요가 있습니다.
+<blockquote><pre>
+javac -classpath C:\jdk1. 3\lib\tools.jar ListClass.java 
+</pre></blockquote>
+
+ListClass 도크 렛을 실행하려면 , 컴파일 한 도크 렛을 javadoc 의 <tt>-doclet</tt> 및 <tt>-docletpath</tt> 태그로 지정합니다. 예를 들어, 이 도크 렛을 <tt>MyClass.java</tt> 라고 하는 파일에 대해서 실행하려면 , 다음의 커멘드를 사용합니다 (<tt>ListClass.class</tt> 가 현재의 디렉토리내에 있으면(자) 상정).
+<blockquote><pre>
+% javadoc -doclet ListClass -docletpath .   MyClass.java
+</pre></blockquote>
+출력은, 「<tt>MyClass</tt>」라고 하는 캐릭터 라인이 됩니다. 이 커멘드를 사용할 때,<tt>tools.jar</tt> 를 클래스 패스상에 둘 필요는 없습니다.  그 파일은, javadoc 툴이 자동적으로 로드하기 때문입니다.
+<p>
+커멘드행 옵션에 대한 주:<tt>javadoc&nbsp;-help</tt> 를 실행한다고 알도록(듯이), Javadoc 툴에는 커멘드행 옵션이 2 세트 있습니다. 한편세트는 범용으로, 어느 도크 렛에서도 사용할 수 있습니다. 이제(벌써) 한편세트는, 표준 도크 렛 전용으로, 커스텀 도크 렛을 사용하는 경우에는 이용할 수 없습니다. 커스텀 도크 렛에서는, 도크 렛 독자적인 커멘드행 옵션을 정의할 수도 있습니다. 이후에의<a href="#options">예</a>를 참조해 주세요.
+<p>
+API 문서를 생성하려면 , 도크 렛은, 이 간단한 예보다 꽤 복잡하게 됩니다. javadoc 로 생성하는 API 문서의 형식을 커스터마이즈 하는 경우는, 도크 렛을 스스로 제로로부터 작성하는 것보다도, 디폴트의 표준 도크 렛에 수정을 더하는 형태로 작성하는 것이 간단합니다.  
+
+
+<a name="custom"></a> 
+
+<!-- EVENTUALLY COPY THE FOLLOWING EXAMPLE HERE -->
+
+<h2>예 - 표준 도크 렛의 서브 클래스화</h2>
+Javadoc 툴의 출력을 커스터마이즈 하려면 , 필요한 출력의 내용과 형식을 지정하는 독자적인 도크 렛을 작성할 필요가 있습니다. 디폴트의 출력과 거의 같은 형식의 HTML 출력이 필요한 경우는, 도크 렛 작성의 출발점으로서 표준 도크 렛을 이용하면(자) 편리합니다. 표준 도크 렛에 포함되는 적절한 클래스를 서브 클래스화해, 필요한 출력이 생성되도록(듯이) 메소드를 추가 또는 오버라이드(override) 합니다. 혹은, 표준 도크 렛 전체를 카피해, 거기에 수정을 더해 간다고 하는 방법도 있습니다. 표준 도크 렛의 카피를 출발점으로서 사용하는 경우는, 필요에 따라서, 각 원시 파일의 선두에 있는 <tt>package</tt> 문을 삭제해, 새로운 독자적인 패키지명에 옮겨놓아 주세요.
+<p>
+
+실례는, 「<a href="http://java.sun.com/j2se/javadoc/faq/index.html#sourcedoclet">How can I modify the standard doclet to produce links to source code from the API documentation? </a> 」(을)를 참조해 주세요.   
+
+<!-- NEED TO TEST THE FOLLOWING As a trivial example, suppose you want to customize the HTML  output generated by Javadoc so that the horizontal rules were  bolder and thicker than the default horizonal rules in the  standard output.  How would you go about modifying the APIs in the standard doclet to  produce these to changes?  Because the customization in question  involves a change in the HTML formatting, the above <a href="#api">API summary</a>  suggests that  you might need to modify the APIs in class <tt>HtmlWriter</tt>.   If you look at the <a href="source/HtmlWriter.java">source</a>  for  the HtmlWriter class, you will find methods for writing the HTML  tags used in generating the default HTML documentation.  Among these,  there is a method for writing the HTML tag for horizonal rules: <blockquote><pre>
+public void hr() {
+    println("&lt;hr&gt;");
+}
+</pre></blockquote> You'll also notice that the HtmlWriter class doesn't provide a  way to produce the custom horizontal rules that you want.  You can  therefore add a method to HtmlWriter, or an HtmlWriter subclass, that  prints the custom tag that you want.  For example, you might  add this method: <blockquote><pre>
+public void hrCustom() {
+    println("&lt;hr size=3 noshade&gt;");
+}
+</pre></blockquote> and call it instead of the <tt>hr</tt> method when you want to  your output to use the thicker horizontal rules.  <p> --> <a name="customtags">
+<h2>예 - 커스텀 태그의 작성과 처리</h2></a>  다큐멘테이션 코멘트 중(안)에서,<tt>@param</tt> 나 <tt>@return</tt> 등의 표준 태그에 가세해, 커스텀 태그 (<tt>@mytag</tt>)를 사용하는 경우에 대해 생각해 보겠습니다. 커스텀 태그안의 정보를 사용하려면 , 그 커스텀 태그를 나타내는 <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/Tag.html"><tt>Tag</tt></a>  의 인스턴스를 도크 렛으로 사용할 필요가 있습니다. 이 때문에의 가장 간단한 방법의 1 개는,<tt>Doc</tt> 또는 <tt>Doc</tt> 의 서브 클래스의 <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/Doc.html#tags(java.lang.String)"><tt>tags(String)</tt></a>  메소드를 사용하는 것입니다. 이 메소드는, 이름이 String 인수에 일치하는 모든 태그를 포함한 <tt>Tag</tt> 객체의 배열을 돌려줍니다. 예를 들어,<tt>method</tt> 가 <tt>MethodDoc</tt> 의 인스턴스인 경우, 코드는 다음과 같이 됩니다.  
+<blockquote><pre>
+method.tags("mytag")
+</pre></blockquote>
+이 코드는, 메소드의 다큐멘테이션 코멘트에 포함되는 모든 <tt>@mytag</tt> 를 나타내는 <tt>Tag</tt> 객체의 배열을 돌려줍니다. <tt>@mytag</tt> 태그내의 정보에는,<tt>Tag</tt> 의 <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/Tag.html#text()"><tt>text</tt></a>  메소드를 사용하면 액세스 할 수 있습니다. 이 메소드는, 태그의 내용을 나타내는 캐릭터 라인을 돌려주므로, 용도에 응해 이 캐릭터 라인을 해석하거나 사용하거나 할 수 있습니다. 예를 들어, 다큐멘테이션 코멘트에, 다음과 같은 커스텀 태그가 포함되어 있다고 합니다.
+<blockquote><pre>
+@mytag Some dummy text.
+</pre></blockquote>
+이 경우,<tt>text</tt> 메소드는, 「<tt>Some dummy text. </tt>」라고 하는 캐릭터 라인을 돌려줍니다.
+<p>
+다음에 나타내는 코드는, 지금까지 설명한 생각을 사용해, 메소드의 코멘트내에 발견되는 태그 가운데, 지정된 태그의 모든 인스턴스에 관련지을 수 있었던 텍스트를 표시하는 스탠드얼론 도크 렛입니다.  이것은 표준 도크 렛의 서브 클래스가 아닙니다. 이 도크 렛은, 모든 코멘트내의 해당 태그의 모든 인스턴스를 검출하도록(듯이) 확장할 수가 있습니다.
+<blockquote><pre>
+import com.sun.javadoc. *;
+
+public class ListTags {
+    public static boolean start(RootDoc root){ 
+        String tagName = "mytag";
+        writeContents(root.classes(), tagName);
+        return true;
+    }
+
+    private static void writeContents(ClassDoc[] classes, String tagName) {
+        for (int i=0; i < classes.length; i++) {
+            boolean classNamePrinted = false;
+            MethodDoc[] methods = classes[i]. methods();
+            for (int j=0; j < methods.length; j++) {
+                Tag[] tags = methods[j]. tags(tagName);
+                if (tags.length > 0) {
+                    if (! classNamePrinted) {
+                        System.out.println("\n" + classes[i]. name() + "\n");
+                        classNamePrinted = true;
+                    }
+                    System.out.println(methods[j]. name());
+                    for (int k=0; k < tags.length; k++) {
+                        System.out.println("   " + tags[k]. name() + ": " 
+                            + tags[k]. text());
+                    }
+                } 
+            }
+        }
+    }
+}
+</pre></blockquote>
+이 도크 렛이 검색하는 태그는, 변수 <tt>tagName</tt> 에 의해 지정되고 있습니다. <tt>tagName</tt> 에는, 커스텀 태그에서도 표준 태그에서도, 임의의 태그의 이름을 지정할 수 있습니다. 이 도크 렛은 결과를 표준 출력에 출력합니다만, 출력의 형식은 변경 가능합니다. 예를 들어, HTML 형식의 출력을 파일에 써낼 수가 있습니다.
+
+<a name="options">
+<h2>예 - 커스텀 커멘드행 옵션의 사용</h2></a> 
+
+커스텀의 커멘드행 옵션으로 도크 렛을 작성할 수도 있습니다. 여기에서는, 검색하는 태그의 이름을 커멘드행 옵션으로 지정할 수 있도록(듯이), 상기의 도크 렛을 확장합니다.  
+<p>
+커스텀 옵션을 사용하는 도크 렛에는,<tt>int</tt> 형의 값을 돌려주는 <tt>optionLength(String option)</tt> 라고 하는 메소드가 필요합니다. <tt>optionLength</tt> 는, 도크 렛이 인식하는 커스텀 옵션 마다, 그 옵션을 구성하는 요소 (토큰)의 수를 돌려주지 않으면 안됩니다. 여기에서는,<tt>-tag mytag</tt> 라고 하는 형식의 커스텀 옵션을 사용할 수 있도록(듯이) 해 보겠습니다. 이 커스텀 옵션은,<tt>-tag</tt> 옵션 그 자체와 그 값이라고 하는 2 개의 요소로 구성되므로, 작성하는 도크 렛의 <tt>optionLength</tt> 메소드는,<tt>-tag</tt> 옵션에 대해서는 <tt>2</tt> 를 돌려주지 않으면 안됩니다. 또, 인식할 수 없는 옵션에 대해서는,<tt>0</tt> 을 돌려주도록(듯이) 합니다.
+<p>
+확장을 베푼 도크 렛의 완전한 코드를 다음에 나타냅니다.
+<blockquote><pre>
+import com.sun.javadoc. *;
+
+public class ListTags {
+    public static boolean start(RootDoc root){ 
+        String tagName = readOptions(root.options());
+        writeContents(root.classes(), tagName);
+        return true;
+    }
+
+    private static void writeContents(ClassDoc[] classes, String tagName) {
+        for (int i=0; i < classes.length; i++) {
+            boolean classNamePrinted = false;
+            MethodDoc[] methods = classes[i]. methods();
+            for (int j=0; j < methods.length; j++) {
+	        Tag[] tags = methods[j]. tags(tagName);
+	        if (tags.length > 0) {
+	            if (! classNamePrinted) {
+	                System.out.println("\n" + classes[i]. name() + "\n");
+	                classNamePrinted = true;
+	            }
+	            System.out.println(methods[j]. name());
+	            for (int k=0; k < tags.length; k++) {
+	                System.out.println("   " + tags[k]. name() + ": " + tags[k]. text());
+	            }
+	        } 
+	    }
+        }
+    }
+
+    private static String readOptions(String[][] options) {
+        String tagName = null;
+        for (int i = 0; i < options.length; i++) {
+            String[] opt = options[i];
+	    if (opt[0]. equals("-tag")) {
+	        tagName = opt[1];
+	    }
+        }
+	return tagName;
+    }
+
+    public static int optionLength(String option) {
+        if(option.equals("-tag")) {
+	    return 2;
+        }
+        return 0;
+    }
+
+    public static boolean validOptions(String options[][], 
+				       DocErrorReporter reporter) {
+	boolean foundTagOption = false;
+        for (int i = 0; i < options.length; i++) {
+            String[] opt = options[i];
+            if (opt[0]. equals("-tag")) {
+	        if (foundTagOption) {
+	            reporter.printError("Only one -tag option allowed. ");
+		    return false;
+	        } else { 
+		    foundTagOption = true;
+		}
+	    } 
+	}
+	if (! foundTagOption) {
+	    reporter.printError("Usage: javadoc -tag mytag -doclet ListTags ...");
+	}
+	return foundTagOption;
+    }
+}
+</pre></blockquote>
+수정이 더해진 이 도크 렛에서는, 변수 <tt>tagName</tt> 를, 커멘드행 옵션 <tt>-tag</tt> 로 설정하게 되어 있습니다. 또, 이 커스텀 옵션에 대해서 2 를 돌려주는 <tt>optionLength</tt> 메소드가 준비되어 있습니다. 덧붙여<tt>optionLength</tt> 를 명시적으로 호출할 필요는 없습니다.
+<p>
+게다가 이 도크 렛에는, 커멘드행 옵션을 해석해 <tt>-tag</tt> 옵션을 찾는 <tt>readOptions</tt> 메소드도 추가되고 있습니다. 이 메소드에서는, 옵션의 정보가 포함된 String 형의 2 차원 배열을 돌려주는 <a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/RootDoc.html#options()"><tt>Rootdoc.options</tt></a>  메소드를 이용하고 있습니다. 예를 들어, 다음의 커멘드를 실행한다고 합니다.  
+<blockquote><pre>
+javadoc -foo this that -bar other ...
+</pre></blockquote>
+<tt>RootDoc.options</tt> 메소드는 다음의 반환값을 돌려줍니다.
+<blockquote><pre>
+options()[0][0] = "-foo"
+options()[0][1] = "this"
+options()[0][2] = "that"
+options()[1][0] = "-bar"
+options()[1][1] = "other"
+</pre></blockquote>
+배열의 2 번째의 첨자에 들어가 있는 요소수는,<tt>optionLength</tt> 메소드에 의해 판별됩니다. 이 예에서는,<tt>optionLength</tt> 는,<tt>-foo</tt> 옵션에 대해서는 <tt>3</tt> 을 돌려주어,<tt>-bar</tt> 옵션에 대해서는 <tt>2</tt> 를 돌려줍니다.
+<p>
+<tt>validOptions</tt> 메소드는, 커멘드행 태그의 지정이 올바른지 어떤지를 체크하기 위한 , 생략 가능한 메소드입니다. <tt>validOptions</tt> 메소드는, 존재하면 자동적으로 불려 가기 (위해)때문에, 명시적으로 호출할 필요는 없습니다. 이 메소드에서는, 옵션의 지정이 올바른 경우는 <tt>true</tt> 를 돌려주어, 그렇지 않은 경우는 <tt>false</tt> 를 돌려주도록(듯이) 합니다. 또, 지정의 올바르지 않은 커멘드행 옵션이 발견되었을 경우에,<tt>validOptions</tt> 로부터 적절한 에러 메세지를 표시할 수도 있습니다. 이 도크 렛의 <tt>validOptions</tt> 메소드에서는,<tt>-tag</tt> 옵션이 1 개 지정되고 있는지 어떤지, 그리고 2 개(살) 이상 지정되어 있지 않은지 어떤지를 체크하고 있습니다.
+<p>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-98
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT>
+</P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+
+  </body>
+</html>

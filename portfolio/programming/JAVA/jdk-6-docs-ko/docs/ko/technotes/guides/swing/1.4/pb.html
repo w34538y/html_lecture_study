@@ -1,0 +1,169 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>불확정 진척 바 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>불확정 진척 바</h1>
+
+<p>이 문서에서는, 불확정 진척 바의 구현에 대해서 간 변경에 대해 설명합니다. 이 바는, 일반적으로의 진척 바와 닮은 외관의 GUI 컴퍼넌트이며, 일반적으로의 진척 바와 같게, 시간이 걸리는 조작이 발생하고 있는 것을 나타내는 애니메이션을 사용합니다. 다만 일반적으로의 진척 바와 달리, 불확정 진척 바는, 조작 완료까지의 정도는 가리키지 않습니다. 이 문서에는 다음의 마디가 있습니다.  
+
+<ul>
+<li><a href="#use">신규 JProgressBar API</a> 
+<li><a href="#uidefaults">신규 UI 디폴트</a> 
+<li><a href="#laf">신규 BasicProgressBarUI API</a> 
+<li><a href="#converting">기존의 진척 바 구현의 변환</a> 
+<li><a href="#implementation">구현의 상세</a> 
+<li><a href="#api">신규 API 를 위한 Javadoc</a>  
+</ul>
+
+<h3><a name=use>신규 JProgressBar API</a> </h3>
+
+<p>특히 지정하지 않는 경우는, 몇개의 <a href="../../../../api/javax/swing/JProgressBar.html"><code>JProgressBar</code></a>  생성자 안의 1 개를 사용해 작성되는 각 진척 바는, 확정적입니다. <code><a href="#setIndeterminate">setIndeterminate</a> </code> 메소드를 사용하면(자), 어떠한 <code>JProgressBar</code> 불확정 진척 바에서도 작성할 수 있습니다.
+
+<pre>
+    pb.setIndeterminate(true);
+</pre>
+
+<p>불확정 진척 바의 표시는, 항상 움직이고 있습니다. 진척 바를 확정적으로 해 현재가를 최소치로 설정하는 것으로, 애니메이션을 정지해, 진척 바를 클리어 할 수가 있습니다. 예를 나타냅니다.
+
+<pre>
+    pb.setValue(pb.getMinimum());
+    pb.setIndeterminate(false);
+</pre>
+
+<p>임의의 시점에서, 확정 모드와 불확정 모드를 바꿀 수가 있습니다. 진척 바가 불확정인가 어떤가는,<code><a href="#isIndeterminate">isIndeterminate</a> </code> 메소드를 사용해 확인할 수 있습니다.
+
+<p>진척 바가 불확정인 경우는, 그 모델 (<code>BoundedRangeModel</code>)이 무시됩니다. 다만, 불확정 진척 바용으로 갱신되지 않았던 Look &amp; Feel 가 이 모델을 사용할 가능성이 있기 (위해)때문에, 모델은 존재해, 적절한 데이터를 포함하고 있을 필요가 있습니다.  <!--PENDING: Watch this space for links to examples of using indeterminate progress bar.--></p>
+
+<h3><a name=uidefaults>신규 UI 디폴트</a> </h3>
+
+<p>진척 바의 애니메이션의 속도를 개발자가 제어할 수 있도록(듯이), 2 개의 신규 UI 디폴트가 추가되었습니다. </p>
+
+<ul>
+<li><code>&quot;ProgressBar.repaintInterval&quot;</code>
+<li><code>&quot;ProgressBar.cycleTime&quot;</code>
+</ul>
+
+<p><code>「ProgressBar.cycleTime」</code>UI 디폴트를 사용해, Look & Feel 의 구현자나 다른 개발자가, 애니메이션의 각 사이클에 걸리는 시간을, 밀리 세컨드 단위로 지정합니다. 예를 들어, 사이클 시간이 500 의 경우는, 불확정 모드의 진척 바의 애니메이션은, 초쯤 2 회 반복해집니다. 디폴트의 draw 코드는, 이 값을 재페인트의 간격, 박스의 길이, 및 컴퍼넌트의 내부 영역과 함께 사용해, 박스가 draw 될 때 마다 도약하는 길이를 결정합니다. 이 값은, 재페인트 간격의 짝수배로 할 필요가 있습니다. 예를 들어, 재페인트의 간격이 100 의 경우는, 유효한 사이클 시간은 200, 1000, 1200 등이어, 100 또는 500 이 아닙니다.  사용자가 무효인 사이클 시간을 지정했을 경우는, 불확정 진척 바의 코드에 의해 적절한 값이 되도록(듯이) 사이클 시간이 자동적으로 늘려집니다.
+
+<p>재페인트의 간격과 사이클 시간의 디폴트는, 다음과 같이 설정합니다.
+
+<pre>
+    UIManager.put(&quot;ProgressBar.repaintInterval&quot;, new Integer(250));
+    UIManager.put(&quot;ProgressBar.cycleTime&quot;, new Integer(6000));
+</pre>
+
+<p class=MsoNormal>재페인트의 간격과 사이클 시간을 입수하려면 , 다음과 같이 합니다. </p>
+
+<pre>
+    int interval = UIManager.getInt(&quot;ProgressBar.repaintInterval&quot;);
+    int totalTime = UIManager.getInt(&quot;ProgressBar.cycleTime&quot;);
+</pre>
+
+<p>Sun 로부터 제공되는 BASIC, JLF, Motif, 및 Windows 구현에서는, 진척 바가 불확정 모드로 전환할 수 있었을 경우에만, 이러한 디폴트가 확인됩니다.
+
+<h3><a name=laf>신규 BasicProgressBarUI API</a> </h3>
+
+<p>프로그래머가 진척 바의 Look & Feel 를 구현할 때의 도움이 되도록(듯이), 다음의 API 가 <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html"><code>BasicProgressBarUI</code></a>  클래스에 추가되었습니다.
+
+<p>페인트 관련의 메소드
+
+<ul>
+<li><code>protected void <a href="#paintIndeterminate">paintIndeterminate</a> (Graphics g, JComponent c)</code>
+<li><code>protected void <a href="#paintDeterminate">paintDeterminate</a> (Graphics g, JComponent c)</code>
+<li><code>protected Rectangle <a href="#getBox">getBox</a> (Rectangle)</code>
+</ul>
+
+<p>애니메이션의 현행 프레임의 인덱스를 설정 및 취득하는 메소드
+
+<ul>
+<li><code>protected int <a href="#getAnimationIndex">getAnimationIndex</a> ()</code>
+<li><code>protected void <a href="#setAnimationIndex">setAnimationIndex</a> (int newValue)</code>
+<li><code>protected void <a href="#incrementAnimationIndex">incrementAnimationIndex</a> ()</code>
+</ul>
+
+<p>커스텀의 애니메이션 thread를 개시 또는 정지하는 메소드
+
+<ul>
+<li><code>protected void <a href="#startAnimationTimer">startAnimationTimer</a> ()</code>
+<li><code>protected void <a href="#stopAnimationTimer">stopAnimationTimer</a> ()</code>
+</ul>
+
+<p>종래는 진척 바의 페인트를 모두 사전에 형성한 <code>paint</code> 메소드는, 현재는, 진척 바의 불확정성 관련의 프로퍼티치에 응해, 모든 draw를 <code>paintDeterminate</code> 또는 <code>paintIndeterminate</code> 에 위양 합니다. 진척 바가 불확정 모드의 경우는,<code>paint</code> 메소드 (따라 <code>paintIndeterminate</code> 메소드도)는, 「재페인트의 간격」의 밀리 세컨드 단위로 실행됩니다. <code> paintIndeterminate</code> 메소드는 진척 바를 애니메이션 상태에 맞추어 페인트 할 필요가 있습니다만, 이 상태는 <code>getAnimationIndex</code> 메소드로 지정됩니다.
+
+<p><code>getBox</code> 메소드를 사용해, 도약 박스의 페인트를 커스터마이즈 할 수 있습니다. 예를 들어,<code>MetalProgressBarUI</code> 이 그 <code>paintIndeterminate</code> 메소드내에서 <code>getBox</code> 를 호출해 슈퍼 클래스의 <code>BasicProgressBarUI</code> 에 박스를 draw시켜, 그 후 윤곽선을 박스에 추가합니다. <code>getBox</code> 메소드를 오버라이드(override) 하는 것으로,<code>paintIndeterminate</code> 를 다시 구현하지 않아도, 도약 박스의 사이즈와 위치를 완전하게 제어할 수가 있습니다.
+
+<p><code>paintIndeterminate</code> 또는 <code>getBox</code> 를 오버라이드(override) 하는 경우는, 유효한 값으로 올바르게 순환하도록(듯이),<code>incrementAnimationIndex</code> 도 오버라이드(override) 할 필요가 있을 가능성이 있습니다. 최초의 draw를 나타내는 값은 0 입니다.  규정에 의해, 2 번째의 draw가 1, 3 번째의 draw가 2 와 같이 계속됩니다. 마지막 유효한 값은, 규정에 의해, 애니메이션 사이클내의 총draw수로부터 1 을 뺀 것입니다. draw 총수를 판단하려면 , 재페인트의 간격과 아마, 컴퍼넌트의 사이즈도 고려에 넣을 필요가 있습니다. 「규정에 의해」가 암묵에 나타내도록(듯이), 애니메이션의 인덱스는, 0 이 애니메이션 사이클의 시작을 나타내고 있는 한, 희망하는 의미와 값을 가지도록(듯이) 구현할 수가 있습니다.
+
+<p>제공된 애니메이션 thread를 사용하지 않는 경우는, 2 개의 <em>xxx</em><code>AnimationTimer</code> 메소드를 오버라이드(override) 할 필요가 있습니다. 이것으로, 정기적으로 애니메이션의 인덱스를 증가시켜, 진척 바상에서 <code>repaint</code> 를 호출하는 독자적인 구현을 제공할 수 있습니다.
+
+<p>진척 바에 관한 개발 작업의 간접적인 결과적으로, 다음의 새로운 메소드가 <a href="../../../../api/javax/swing/SwingUtilities.html"><code>SwingUtilities</code></a>  에 추가되었습니다.
+
+<ul>
+<li><code>public static Rectangle <a href="#calculateInnerArea">calculateInnerArea</a> (Component c, Rectangle r)</code>
+</ul>
+
+<p><code>calculateInnerArea</code> 메소드는, draw 하는 모든 클래스에 있어 유용합니다. 이 메소드에 의해, 컴퍼넌트를 draw 할 수 있는 영역, 즉 경계 영역 (컴퍼넌트의 인 세트)을 제외하는 컴퍼넌트의 모든 부분을 포함한 사각형 (컴퍼넌트의 좌표계내)이 돌려주어집니다.
+
+<h3><a name=converting>기존의 진척 바 구현의 변환</a> </h3>
+
+<p>기존의 Look &amp; Feel 의 불확정 진척 바를 변환하는 것은, 비교적 단순합니다. 기존의 Look &amp; Feel 의 진척 바 UI 가 <code>paint</code> 를 오버라이드(override) 하지 않는, 또는 오버라이드(override) 해도 <code>super.paint</code> 를 호출하는 경우는, 불확정 진척 바가 자동적으로 지원됩니다. <code>WindowsProgressBarUI</code>,<code>MotifProgressBarUI</code>, 및 <code>MetalProgressBarUI</code> 가 이것에 상당합니다.
+
+<p>Look &amp; Feel 의 진척 바 UI 클래스가 <code>BasicProgressBarUI</code> 의 서브 클래스에서 만나며, 슈퍼 클래스를 호출하지 않아도 <code>paint</code> 를 오버라이드(override) 하는 경우는, 확정 모드가 계속해 작용합니다만, 불확정 모드도 확정 모드와 같이 보입니다.
+
+<p>기존의 draw 코드를 <code>paint</code> 메소드로부터 꺼내, 새로운 <code>paintDeterminate</code> 메소드로 옮길 필요가 있습니다. 불확정인 페인트를 위한 코드는, 새로운 <code>paintIndeterminate</code> 메소드로 옮길 필요가 있습니다. 결국, 상기의 작업이 모두 가능하면,<code>super.paint</code> 가 불려 가지 않는 이상<code>paint</code> 메소드를 오버라이드(override) 해야 하지는 않습니다. 그 이유는,<code>paint</code> 메소드의 <code>BasicProgressBarUI</code> 구현이 디폴트의 애니메이션 thread를 처리해, 퍼포먼스와 동작을 확장할 수 있기 때문입니다.
+
+<p>이후 메인트넌스 되지 않는 Sun 의 버젼과 Apple 버젼의 양쪽 모두의 Look &amp; Feel 는, 슈퍼 클래스를 호출하지 말고 <code>paint</code> 를 오버라이드(override) 하는 Look &amp; Feel 의 예입니다.
+
+<p>불확정인 페인트에 대한 thread의 schema가 벌써 있는 경우는,<code>startAnimationTimer</code> 및 <code>stopAnimationTimer</code> 를 오버라이드(override) 해, 그 schema를 계속 사용할 수가 있습니다. 또는, 단지 독자적인 thread 코드를 삭제해, 제공된 schema를 사용할 수도 있습니다.
+
+<h3><a name=implementation>구현의 상세</a> </h3>
+
+<p><code>BasicProgressBarUI</code> 클래스에는, 불확정 진척 바의 구현의 대부분이 포함되어 있습니다. draw 코드를 제외하면, 구현 코드의 대부분은, 애니메이션 thread를 구현하는 <code>Animator</code> 와 불확정 모드의 변환을 대기하는 <code>PropertyChangeHandler</code> 의, 2 개의 private 내부 클래스내에 있습니다.
+
+<p><code>Animator</code> 는, Swing 의 <a href="../../../../api/javax/swing/Timer.html"><code>Timer</code></a>  클래스를 사용해 디폴트의 애니메이션 thread를 구현합니다. <code>Animator</code> 인스턴스는, 필요한 경우에 <code>BasicProgressBarUI.startAnimationTimer</code> 메소드에 의해 작성됩니다. 이 메소드는, 진척 바가 불확정 모드에 바뀌었을 때에 프로퍼티 핸들러를 호출합니다. 진척 바가 불확정인 경우에,<code>Animator</code> 의 타이머가, 「재페인트의 간격」의 밀리 세컨드 마다 1 회, 액션 이벤트를 기동합니다. <code>Animator</code> 의 액션 이벤트 핸들러가,<code>incrementAnimationIndex</code> 와 그 후에 <code>repaint</code> 를 호출합니다 (<code>repaint</code> 는,<code>paintIndeterminate</code> 를 실행시킨다). 「재페인트의 간격」은,<code>ProgressBar.repaintInterval</code> 의 UI 디폴트로 지정되어 이것은 <code>startAnimationTimer</code> 에 체크됩니다.
+
+<p><code>PropertyChangeHandler</code> 는, 자신을 진척 바상의 프로퍼티의 청취자로서 등록합니다. 「불확정」인 프로퍼티이 검출되면(자), 핸들러는 변경을 통지해 <code>stopAnimationTimer</code> 또는 <code>startAnimationTimer</code> 의 어느 쪽인지를 호출합니다.
+
+<h3><a name=api>신규 API 를 위한 Javadoc</a> </h3>
+
+<p><a href="../../../../api/javax/swing/JProgressBar.html"><code>javax.swing.JProgressBar</code></a>  내
+
+<pre>
+    <a name=setIndeterminate><code>public void <a href="../../../../api/javax/swing/JProgressBar.html#setIndeterminate(boolean)">setIndeterminate(boolean newValue)</a> </code></a> 
+
+    <a name=isIndeterminate><code>public boolean <a href="../../../../api/javax/swing/JProgressBar.html#isIndeterminate()">isIndeterminate()</a> </code></a> 
+</pre>
+
+<p><br> <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html"><code>javax.swing.plaf.basic.BasicProgressBarUI</code></a>  내
+
+<pre>
+    <a name=paintIndeterminate><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#paintIndeterminate(java.awt.Graphics,%20javax.swing.JComponent)">paintIndeterminate(Graphics g, JComponent c)</a> </code></a> 
+
+    <a name=paintDeterminate><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#paintDeterminate(java.awt.Graphics,%20javax.swing.JComponent)">paintDeterminate(Graphics g, JComponent c)</a> </code></a> 
+
+    <a name=getAnimationIndex><code>protected int <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#getAnimationIndex()">getAnimationIndex()</a> </code></a> 
+
+    <a name=setAnimationIndex><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#setAnimationIndex(int)">setAnimationIndex(int newValue)</a> </code></a> 
+
+    <a name=incrementAnimationIndex><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#incrementAnimationIndex()">incrementAnimationIndex()</a> </code></a> 
+
+    <a name=startAnimationTimer><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#startAnimationTimer()">startAnimationTimer()</a> </code></a> 
+
+    <a name=stopAnimationTimer><code>protected void <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#stopAnimationTimer()">stopAnimationTimer()</a> </code></a> 
+
+    <a name=getBox><code>protected Rectangle <a href="../../../../api/javax/swing/plaf/basic/BasicProgressBarUI.html#getBox(java.awt.Rectangle)">getBox(Rectangle r)</a> </code></a> 
+</pre>
+ 
+<p><br> <a href="../../../../api/javax/swing/SwingUtilities.html"><code>javax.swing.SwingUtilities</code></a>  내
+
+<pre>
+    <a name=calculateInnerArea><code>public static Rectangle <a href="../../../../api/javax/swing/SwingUtilities.html#calculateInnerArea(javax.swing.JComponent,%20java.awt.Rectangle)">calculateInnerArea(JComponent c, Rectangle r)</a> </code></a> 
+</pre>
+
+</body>
+</html>

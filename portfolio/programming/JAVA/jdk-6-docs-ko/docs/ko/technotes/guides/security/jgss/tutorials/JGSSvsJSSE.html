@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java GSS-API 및 JSSE 를 언제 사용할까 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<center>
+<H1>Java GSS-API 및 JSSE 를 언제 사용할까</H1>
+</center>
+
+<br> <br>
+
+
+<p>Java GSS-API 및 JSSE 의 어느쪽이나, 다음의 기본적인 시큐리티 기능 세트를 제공합니다.
+
+<ol>
+
+<li>클라이언트/서버의 인증<p>
+
+<li>전송 데이터의 암호화 및 무결성 보호
+
+</ol>
+
+<p>다만, 2 개(살)에는, 중요한 차이점이 있습니다. 이 문서에서는, 사용중의 환경에서 어느 쪽의 시큐리티 기구를 사용할까를 판단하는데 도움이 되는, 몇개의 차이점을 나타냅니다.
+
+<ol>
+
+<li> <b>Kerberos 싱글 싸인온의 지원</b>
+
+<p>Java 2 Standard Edition 에서는, GSS-API 에 Kerberos 의 지원가 필수의 시큐리티 기구로서 포함됩니다. 이것은, 사용하는 데스크탑이 Kerberos 를 지원하는 경우, 사용자에게 패스워드의 입력을 결코 요구하지 않는, Java GSS-API 베이스의 어플리케이션을 기술할 수 있는 것을 의미합니다.  
+
+<p>현재로서는, JSSE 는 Kerberos 베이스의 인증을 사용하는 encode 방식을 지원하고 있습니다. 이 암호 스위트의 지원는, Internet Engineering Task Force (IETF)에 의한 TLS 프로토콜의 표준화 작업에 의존하고 있습니다. <p>
+
+
+<li><b>통신 API</b>
+
+<p>JSSE 는, 소켓 베이스의 API 를 지원합니다. JSSE 소켓은 <code>java.net</code> 내의 소켓 클래스를 확장해, JSSE 소켓 팩토리는 <code>javax.net</code> 내의 소켓 팩토리를 확장합니다. 이 때문에, 기술한 어플리케이션으로 소켓 팩토리를 개입시킨 시큐리티가 필요한 경우, JSSE 가 적합합니다. JSSE 소켓에서는, 신뢰할 수 있는 전송 수단을 사용할 필요가 있습니다. 일반적으로, 구현에는 TCP 가 사용됩니다.  
+
+<p>한편, Java GSS-API 는 토큰 베이스의 API 이며, 통신의 실행은 어플리케이션에 의존합니다. 이것은, 어플리케이션이, TCP 소켓, UDP 데이터 그램, 또는 Java GSS-API 에 의해 생성된 토큰의 이송을 허가하는 다른 임의의 채널을 사용할 수 있는 것을 의미합니다. 사용하는 어플리케이션이 다양한 통신 프로토콜을 필요로 하는 경우, Java GSS-API 가 적합합니다. Java GSS-API 는, 입력 및 출력 스트림을 사용해, 토큰의 읽기 및 기입을 실행할 수 있습니다. 다만, 스트림 자체를 설정할 필요가 있습니다. <p>
+
+
+<li><b>쿠레덴샤르의 위양</b>
+
+<p>Java GSS-API 를 사용하면(자), Kerberos 의 사용시에, 클라이언트로부터 서버에 쿠레덴샤르를 위양 할 수 있습니다. 어플리케이션이, 연구 최종 단계층과의 통신시에 중간적 존재가 클라이언트를 가장할 필요가 있는 다층 환경에 배치되고 있는 경우는, Java GSS-API 가 적합합니다. <p>
+
+
+<li><b>선택적 암호화</b>
+
+<p>Java GSS-API 는 토큰 베이스이기 (위해)때문에, 특정의 메세지 (모두는 아니다)를 선택적으로 암호화할 수 있습니다. 사용하는 어플리케이션으로 plaintext와 암호 텍스트를 혼재시킬 필요가 있는 경우에는, Java GSS-API 가 적합합니다. <p>
+
+
+<li><b>프로토콜 요건</b>
+
+<p>JSSE 는 RFC 2246 에 정의되고 있는 TLS 프로토콜의 구현을 제공합니다.  Java GSS-API 는, RFC 2853 에 정의되고 있는 GSS-API 시스템의 구현과 RFC 1964 에 정의되고 있는 Kerberos 버젼 5 기구 (Microsoft Windows 플랫폼에서는 「SSPI with Kerberos」라고 불린다)의 구현을 제공합니다. TLS 를 사용하는 HTTPS 등의 서버의 경우, JSSE 가 적합합니다. SASL 를 사용하는 LDAP 서버등의 다른 서버에서는, Kerberos 첨부의 GSS-API 가 필요한 경우가 있습니다. 이 경우, Java GSS-API 가 적합합니다.
+
+
+</body>
+
+</html>
+

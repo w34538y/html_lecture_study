@@ -1,0 +1,463 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JAAS Login 유틸리티의 사용 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="AcnAndAzn.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="ClientServer.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+<center>
+<H1>JAAS Login 유틸리티의 사용</H1>
+</center>
+
+<br> <br>
+
+<p>전의 2 개의 튜토리얼,<a href="AcnOnly.html">「JAAS 인증」이라고</a> <a href="AcnAndAzn.html">「JAAS 승인」</a>에서는,LoginContext 및 Subject 클래스를 사용해 이하와 같은 프로그램을 작성하는 방법을 소개했습니다.  
+
+<ul>
+
+<li>사용자를 인증해, 식별 정보를 검증한다 <p>
+
+<li>사용자를 나타내는 특정 클래스의 인스턴스 (Subject 인스턴스)를, 액세스 제어 문맥에 관련짓는다. 그 때, 현행의 정책에 의해 사용자에게 필요한 액세스권이 부여되는 경우, 이후의 시큐리티 관련 조작이 허가되는 것 같은 방법으로 관련짓고를 실시한다
+
+</ul>
+
+<p>이 튜토리얼에서는, 상기의 조작을 행한 뒤, 인증된 사용자로서 지정된 임의의 어플리케이션을 실행하는 Login 유틸리티에 대해 설명합니다.
+
+<p>이 튜토리얼에서는, 샘플 어플리케이션으로 Login 유틸리티를 사용하는 방법을 나타냅니다. <a href="ClientServer.html">다음의 튜토리얼</a>로 가리키는,Java GSS-API 를 사용하는 클라이언트/서버 어플리케이션도, Login 유틸리티를 사용하고 있습니다.
+
+<p>이 튜토리얼을 읽기 전에, JAAS 인증 및 승인에 관한, 전의 2 개의 튜토리얼을 읽을 필요는 없습니다. 다만,<a href="AcnAndAzn.html#UserPFStmts">사용자 베이스의 정책 파일문의 작성 방법 </a>등, 특정의 토픽의 상세를 알기 위해서(때문에), 이러한 튜토리얼내의 섹션을 참조하는 것은 유용합니다. 또, 이 튜토리얼을 포함해 일련의 튜토리얼의 모두로 로그인 구성 파일을 사용하기 위해(때문에),<a href="LoginConfigFile.html">「JAAS 로그인 구성 파일」</a>로 그 내용을 확인해 두는 일도 추천합니다.
+
+<p>일련의 튜토리얼 모두로, 인증 지원의 기반이 되는 기술로서 Kerberos 를 사용하고 있습니다. 자세한 것은,<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+
+<ul>
+
+<li><a href="#LMFacts">Login 유틸리티에 관한 중요한 정보</a>  <p>
+
+<li><a href="#LMProgReqs">어플리케이션 및 다른 파일 요건</a>   <p>
+
+<li><a href="#SampleProg">샘플 응용 프로그램</a>  <p>
+
+<li><a href="#LCF">로그인 구성 파일</a>  <p>
+
+<li><a href="#PF">정책 파일</a>  <p>
+
+<li><a href="#RunSample">Login 유틸리티를 사용한 샘플 프로그램의 실행</a>  
+
+</ul>
+
+<p>튜토리얼의 코드를 최초로 실행해 보는 경우,<a href="#RunSample">「Login 유틸리티를 사용한 샘플 프로그램의 실행」</a>을 먼저 읽고 나서, 최초로 돌아와, 학습을 계속해 주세요.
+
+<br> <br>
+
+<a name="LMFacts"></a> 
+<H2>Login 유틸리티에 관한 중요한 정보</H2>
+
+<blockquote>
+
+<p><a href = "Login.java">Login.java</a>  에 포함되는 코드에 대해 이해할 필요는 없습니다. 실행 가능한 한으로 충분합니다. 다만, 프로그램, 정책 파일, 로그인 구성 파일을 올바르게 이용하기 위해서는, 이 코드의 기능에 대해 어느 정도 이해해 둘 필요가 있습니다. 다음에 그 개략을 나타냅니다. 거기에 계속되는 섹션으로 상세한 정보 및 예를 나타냅니다.
+
+<p>Login 클래스는, 다음의 조작을 실행합니다.
+
+<ul>
+
+<li>인수로서 어플리케이션의 톱 레벨의 클래스명으로 어플리케이션에 필요한 그 외의 인수가 건네받는 것으로 합니다.  
+<p>
+
+<li>톱 레벨의 어플리케이션 클래스의 클래스명이, 로그인 구성 파일에서의 검색 대상의 엔트리명에도 사용되는 것으로 합니다.  <p>
+
+<li>사용자와의 통신에 사용하는 클래스로서 TextCallbackHandler 클래스 (<code>com.sun.security.auth.callback</code> 패키지내)를 지정합니다. 이 클래스는, 사용자명 및 패스워드의 입력을 사용자에게 요구합니다.  <p>
+
+<li>LoginContext 를 사용해 사용자를 인증합니다. LoginContext 는 적절한 인증 테크놀러지 또는 LoginModule 를 호출해, 인증을 실행합니다. LoginModule 는, 필요에 따라서 CallbackHandler (이 예에서는 TextCallbackHandler)를 사용해, 사용자와 통신합니다.  <p>
+
+<li>다음의 3 방법의 로그인 방법을, 사용자에게 허가합니다.  <p>
+
+<li>MyAction 클래스의 인스턴스 (<code>Login.java</code> 에도 포함된다)를 작성해, 이것에 어플리케이션 인수 (존재하는 경우)를 건네줍니다.  <p>
+
+<li><code>Subject.doAsPrivileged</code> 를 호출해, 사용자를 나타내는 주제, MyAction 인스턴스, null AccessControlContext 에 건네줍니다. 그 결과, 어플리케이션의 공개의 main 메소드 (static 메소드)가 불려 갑니다. 이 경우, 어플리케이션 코드는 자동적으로 실행되는 것이라고 보여집니다.
+
+</ul>
+
+</blockquote>
+
+
+<a name="LMProgReqs"></a> 
+<H2>어플리케이션 및 다른 파일 요건</H2>
+
+<blockquote>
+
+<p>Login 유틸리티를 사용해 사용자를 인증해, 어플리케이션을 실행하려면 , 로그인 구성 파일 및 정책 파일에 대해, 이하와 같은 약간의 추가 또는 변경을 실시할 필요가 있습니다.
+
+<ul>
+
+<li><a href="#AppReqs">어플리케이션 요건</a>  <p>
+
+<li><a href="#LCFReqs">로그인 구성 파일 요건</a>  <p>
+
+<li><a href="#PFReqs">정책 파일 요건</a>  
+
+</ul>
+
+
+<a name="AppReqs"></a> 
+<H3>어플리케이션 요건</H3>
+
+<blockquote>
+
+<p>Login 유틸리티는, 어플리케이션 코드에 특별한 변경을 더하지 않아도 이용할 수 있습니다. 어플리케이션의 엔트리 포인트에 필요한 것은, 일반적으로과 같은, 기술하는 클래스의 <code>main</code> 메소드 뿐입니다.
+
+<p>다음에, Login 를 호출해 사용자의 인증을 실시해, MyAction 의 인스턴스화를 실행해 어플리케이션을 호출하는 방법을 나타냅니다.
+
+<blockquote>
+<pre>
+java &lt;options&gt; Login &lt;AppName&gt; &lt;app arguments&gt; 
+</pre>
+</blockquote>
+
+여기서, &lt;AppName&gt; 에는 어플리케이션의 톱 레벨 클래스의 이름, &lt;app arguments&gt; 에는 어플리케이션이 필요로 하는 인수를 지정합니다. 이 튜토리얼로 사용하는 모든 커멘드에 대해서는,<a href="#RunSample">「Login 유틸리티를 사용한 샘플 프로그램의 실행」</a>을 참조해 주세요.  
+
+</blockquote>
+
+
+<a name="LCFReqs"></a> 
+<H3>로그인 구성 파일 요건</H3>
+
+<blockquote>
+
+<p>사용자의 인증에 LoginContext 를 사용하는 경우는, 로그인 구성 파일을 사용해, 사용하는 로그인 모듈을 지정할 필요가 있습니다. 로그인 구성 파일 및 그 내용의 자세한 것은, JAAS 인증 튜토리얼의<a href="AcnOnly.html#ConfigFile">「로그인 구성 파일」</a>섹션을 참조해 주세요.
+
+<p>Login 유틸리티를 사용하는 경우, 로그인 구성 파일의 엔트리명이, 톱 레벨의 어플리케이션 클래스명과 정확하게 일치할 필요가 있습니다. 구체적인 예는, 이 튜토리얼의<a href="#LCF">「로그인 구성 파일」</a>을 참조해 주세요.
+
+</blockquote>
+
+
+<a name="PFReqs"></a> 
+<H3>정책 파일 요건</H3>
+
+<blockquote>
+
+<p>시큐리티 매니저를 사용해 어플리케이션을 실행하는 경우는, 항상 특정의 코드 (특정의 사용자에 의해 실행되는 특정의 코드)에 부여하는 액세스권을 나타내는 정책가 필요합니다. 정책를 지정하는 1 개의 방법은, 정책 파일의 <code>grant</code> 문을 사용하는 것입니다. 상세한 것에 대하여는,<a href = "#PF">「정책 파일」</a>을 참조해 주세요.
+
+<p>Login 유틸리티를 사용해 어플리케이션을 기동하는 경우는,<a href="#LMAPerms">「Login 및 MyAction 클래스에 필요한 액세스권」</a>의 설명에 따라 다양한 액세스권을 부여할 필요가 있습니다.
+
+</blockquote>
+
+
+</blockquote>
+
+
+<a name="SampleProg"></a> 
+<H2>샘플 응용 프로그램</H2>
+
+<blockquote>
+
+이 튜토리얼로 사용하는 <a href = "Sample.java">Sample.java</a>  어플리케이션의 동작은, 전의 (<a href="AcnAndAzn.html">「JAAS 승인」</a>) 튜토리얼의 <code>SampleAction.java</code> 어플리케이션의 동작과 같습니다. 이하의 조작을 실행합니다.
+
+<ul>
+
+<li><code>java.home</code> 시스템 프로퍼티의 값을 읽어내, 출력한다
+<p>
+
+<li><code>user.home</code> 시스템 프로퍼티의 값을 읽어내, 출력한다 <p>
+
+<li>현행의 디렉토리에 <code>foo.txt</code> 라는 이름의 파일이 존재할지 어떨지를 확인한다
+
+</ul>
+
+<p>다음에, 코드를 나타냅니다.
+
+<blockquote>
+<pre>
+import java.io.File;
+
+public class Sample {
+
+  public static void main (String[] args) throws SecurityException {
+
+    // If there were any arguments to read, we'd do it here.
+
+    System.out.println("\nYour java.home property value is: "
+                +System.getProperty("java.home"));
+
+    System.out.println("\nYour user.home property value is: "
+                +System.getProperty("user.home"));
+
+    File f = new File("foo.txt");
+    System.out.print("\nfoo.txt does ");
+    if (! f.exists())
+        System.out.print("not ");
+    System.out.println("exist in the current working directory. ");
+  }
+}
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="LCF"></a> 
+<H2>로그인 구성 파일</H2>
+
+<blockquote>
+
+<p>이 튜토리얼의 <a href = "sample.conf">sample.conf</a>  로그인 구성 파일에는, 전의 (<a href="AcnAndAzn.html">JAAS Authorization</a> ) 튜토리얼의 로그인 구성 파일과 같이, 단일의 엔트리가 포함됩니다. 어느 쪽의 경우도, 사용하는 어플리케이션 기술이 <code>com.sun.security.auth.module</code> 패키지의 Krb5LoginModule 이기 (위해)때문에, 엔트리의 내용은 같게 됩니다.
+
+<p>유일한 차이는, 엔트리에 사용하는 이름입니다. 전의 튜토리얼에서는, 「JaasSample」라고 하는 이름을 사용했습니다. 이것은, JaasAzn 클래스가 엔트리의 조합에 이 이름을 사용하기 (위해)때문에입니다. 어플리케이션으로 Login 유틸리티를 사용하는 경우, Login 유틸리티는 로그인 구성 파일의 엔트리명이 톱 레벨의 어플리케이션 클래스의 이름과 같다라고 봅니다. 이 튜토리얼로 사용하는 어플리케이션 클래스의 이름은 「Sample」이기 (위해)때문에, 로그인 구성 파일의 엔트리도 이 이름으로 할 필요가 있습니다. 이 때문에, 로그인 구성 파일은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+Sample {
+   com.sun.security.auth.module.Krb5LoginModule required;
+};
+</pre>
+</blockquote>
+
+<p>「required」는, 인증이 성공했다고 보여지기 위해서(때문에)는, Krb5LoginModule 를 사용하는 로그인이 「성공」할 필요가 있는 것을 나타냅니다. Krb5LoginModule 가 성공하는 것은, 사용자가 입력한 이름 및 패스워드를 사용해, Kerberos KDC 에의 로그인에 성공했을 경우만입니다.
+
+<p>Krb5LoginModule 에 인도해 가능한 모든 옵션의 자세한 것은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule 문서</a>를 참조해 주세요.
+
+</blockquote>
+
+
+
+<a name="PF"></a> 
+<H2>정책 파일</H2>
+
+<blockquote>
+
+<p>Login, MyAction, 및 Sample 클래스는 모두 시큐리티 관련 조작을 실행하기 위해(때문에), 조작을 실행하려면 , 정책 파일내에 관련하는 액세스권을 지정할 필요가 있습니다.
+
+<a name="LMAPerms"></a> 
+<H3>Login 및 MyAction 클래스에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p>이 튜토리얼에서는,<code>Login.class</code> 파일과 <code>MyAction.class</code> 파일을 포함한 <code>Login.jar</code> JAR 파일을 작성합니다. <code>Login.jar</code> 에는 다양한 액세스권을 부여할 필요가 있습니다. 특히,<code>Login.jar</code> 클래스에 의해 불려 가는 시큐리티 보호의 필요한 메소드를 호출하는 액세스권과 어플리케이션이 필요로 하는 액세스권은 필수입니다. 필요한 액세스권을 부여하지 않는 경우, 액세스 제어 체크는 실패합니다.
+
+<p>가장 간단한 방법인,<code>Login.jar AllPermission</code> 를 부여하는 방법을 추천합니다. 이 튜토리얼에서는,<code>Login.jar</code> 파일은 현재의 디렉토리내에 있어, 정책 파일에는 이하가 포함되는 것으로 합니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /Login.jar" {
+   permission java.security.AllPermission;
+};
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<H3>Sample 에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p>덧붙여 이 섹션은, 기본적으로 전의 (<a href="AcnAndAzn.html">「JAAS 승인」</a>) 튜토리얼의<a href="AcnAndAzn.html#AznPF">「SampleAction 에 필요한 액세스권」</a>섹션을 변경한 것입니다. Sample 와 SampleAction 가 실행하는 조작은 같기 때문에, 필요한 액세스권도 같게 됩니다.
+
+<p><p><code>Sample</code> 코드는, 액세스권의 필요한 다음의 3 개의 조작을 실행합니다. It
+
+<ul>
+
+<li>"java.home" 시스템 프로퍼티의 값의 읽기 <p>
+
+<li>"user.home" 시스템 프로퍼티의 값의 읽기 <p>
+
+<li>현행의 디렉토리에 <code>foo.txt</code> 라는 이름의 파일이 존재할지 어떨지의 확인
+
+</ul>
+
+<p>이러한 조작에는, 다음의 액세스권이 필요합니다.
+
+<blockquote>
+<pre>
+permission java.util.PropertyPermission "java.home", "read";
+permission java.util.PropertyPermission "user.home", "read";
+permission java.io.FilePermission "foo.txt", "read";
+</pre>
+</blockquote>
+
+<p>이러한 액세스권을 <code>Sample.class</code> 내의 코드에 부여할 필요가 있습니다. 이 파일은,<code>Sample.jar</code> 라는 이름의 JAR 파일내에 배치됩니다. 다만,<code>grant</code> 문은, 액세스권을 「코드」 만이 아니고, 코드를 실행하는 인증 끝난 특정 사용자에게도 부여합니다. 이것은,<code>grant</code> 문의 Principal 지시부를 사용해, 코드내의 시큐리티 관련 조작에 필요한 액세스권을, 코드를 실행하는 모든 사용자에게 부여하는 것이 아니라, 특정의 사용자에게 제한하는 방법을 나타냅니다.
+
+<p>이 때문에,<a href="AcnAndAzn.html#UserPFStmts">「법칙 베이스의 정책 파일문의 작성 방법」</a>으로 설명한 것처럼,<code>grant</code> 문은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /Sample.jar",
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "your_user_name@your_realm"  {
+
+   permission java.util.PropertyPermission "java.home", "read";
+   permission java.util.PropertyPermission "user.home", "read";
+   permission java.io.FilePermission "foo.txt", "read";
+};
+</pre>
+</blockquote>
+
+<b>중요:"<code>your_user_name@your_realm</code>" 에는, 사용하는 Kerberos 사용자명, 「@」, 및 영역을 지정할 필요가 있습니다. </b>예를 들어, 사용자명이 「mjones」, 영역이 「KRBNT-OPERATIONS.ABC.COM」의 경우,"mjones@KRBNT-OPERATIONS.ABC.COM" (인용부호도 붙인다)를 지정합니다 
+
+</blockquote>
+
+
+
+<H3>완전한 정책 파일 </H3>
+
+<blockquote>
+
+<p>완전한 정책 파일은,<a href = "sample.policy">sample.policy</a>  입니다.
+</blockquote>
+ 
+
+</blockquote>
+
+
+
+
+<a name="RunSample"></a> 
+<H2>Login 유틸리티를 사용한 샘플 프로그램의 실행</H2>
+
+<blockquote>
+
+<p>Login 유틸리티를 사용해 Sample 어플리케이션을 실행하려면 , 다음의 조작을 실행합니다.  
+
+<ol>
+
+<li>다음의 파일을 1 개의 디렉토리내에 포함합니다.  <p>
+
+<ul>
+<li><a href = "Login.java">Login.java</a>  원시 파일
+<li><a href = "Sample.java">Sample.java</a>  원시 파일
+<li><a href = "sample.conf">sample.conf</a>  로그인 구성 파일
+<li><a href = "sample.policy">sample.policy</a>  정책 파일
+</ul>
+
+<p>
+
+<li><code>sample.policy</code> 내의 "your_user_name@your_realm" 를, 실제의 사용자명 및 영역에서 옮겨놓습니다.  <p>
+
+<li><code>Login.java</code> 및 <code>Sample.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac Login.java Sample.java
+</pre>
+</blockquote>
+
+<p><code>Login.java</code> 에는 2 개의 클래스가 포함되기 (위해)때문에,<code>Login.java</code> 를 컴파일 하면(자) <code>Login.class</code> 및 <code>MyAction.class</code> 가 생성됩니다.  <p>
+
+<li><code>Login.class 및 MyAction.class</code> 를 포함한 <code>Login.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf Login.jar Login.class MyAction.class
+</pre>
+</blockquote>
+
+<li><code>Sample.class</code> 를 포함한 <code>Sample.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf Sample.jar Sample.class
+</pre>
+</blockquote>
+
+
+<li>이하를 지정해,<code>Login</code> 클래스를 실행합니다.  <p>
+
+<ul>
+
+<li>적절한 <code>-classpath</code> 절 (<code>Login.jar</code> 및 <code>Sample.jar</code> JAR 파일내에서 클래스를 검색하기 위해(때문에)) <p>
+
+<li><code>-Djava.security.manager</code>. 시큐리티 매니저의 인스톨을 지정합니다.  <p>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역)<p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC)<p>
+
+<li><code>-Djava.security.policy=sample.policy</code> (정책 파일 <code>sample.policy</code> 를 사용) <p>
+
+<li><code>-Djava.security.auth.login.config=sample.conf</code> (로그인 구성 파일 <code>sample.conf</code> 를 사용)
+
+</ul>
+
+<p>Login 의 인수로서 어플리케이션의 이름 (여기에서는 "Sample")을 건네줍니다. 다음에, 어플리케이션에 필요한 임의의 인수를 추가합니다. 다만, 여기에서는 Sample 에는 아무것도 추가할 필요는 없습니다.
+
+<p>다음에, Microsoft Windows 및 Unix 시스템의 양쪽 모두로 사용 가능한 모든 커멘드를 나타냅니다. classpath 항목의 단락으로서 UNIX 시스템에서는 구두점을 사용하는데 대해, Windows 시스템에서는 세미콜론을 사용하는 점만이 다릅니다. <b><code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역과<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 와 옮겨놓아 주세요.
+
+<p>다음에 Windows 시스템의 전커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar;Sample.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=sample.policy 
+ -Djava.security.auth.login.config=sample.conf Login Sample
+</pre>
+</blockquote>
+
+<p>다음에 UNIX 시스템의 전커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar:Sample.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=sample.policy 
+ -Djava.security.auth.login.config=sample.conf Login Sample
+</pre>
+</blockquote>
+
+<p>커멘드 전체를 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. 커멘드가 너무 긴 경우는,. bat 파일 (Windows) 또는 . sh 파일 (UNIX)에 기술합니다.  이 파일을 실행하는 것으로, 커멘드를 실행할 수 있습니다.
+
+<p>Kerberos 사용자명과 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된, 기반이 되는 Kerberos 로그인 모듈에 의해, Kerberos 에의 로그인을 합니다. 인증이 성공하면(자),<code>Sample</code> 의 코드가 사용자의 입장에서 실행됩니다. 정책 파일 <code>sample.policy</code> 에 의해, 필요한 액세스권이 부여됩니다. 이 때문에,<code>java.home</code> 및 <code>user.home</code> 시스템 프로퍼티의 값, 및 <code>foo.txt</code> 라는 이름의 파일이 현재의 디렉토리에 존재할지 어떨지를 나타내는 문장이 표시됩니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="AcnAndAzn.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="ClientServer.html" target="_top"><img src="images/NextArrow.gif"  width="26" height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</ol></body>
+
+</html>
+

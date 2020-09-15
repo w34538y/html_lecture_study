@@ -1,0 +1,94 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>특별한 애플릿 속성 - xrath.com 에서 번역됨</title>
+
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>특별한 애플릿 속성</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <script src="menu_script.js" language="JavaScript"></script>
+  </select>
+</form>
+<p>애플릿에는, 그 자체에 관련지을 수 있고 있는 디폴트의 속성이 있습니다. image 나 boxmessage 등이 특별한 속성은, 애플릿에 관련지어, 애플릿의 다운로드시의 애플릿 윈도우를 커스터마이즈 할 경우에 사용할 수 있습니다. 이러한 특별한 속성을 사용하면(자), JavaBean 컴퍼넌트를 커스터마이즈 할 수도 있습니다. 이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#default">애플릿의 디폴트의 외관 </a> </li>
+<li><a href="#specialattributes">애플릿의 특별한 속성 </a> </li>
+<li><a href="#precedence">애플릿 속성의 우선 순위</a> </li>
+<li><a href="#failure">트러블 슈팅 시나리오</a> </li>
+</ul>
+<h2><a name="default"></a> 애플릿의 디폴트의 외관</h2>
+<p>특별한 속성을 사용하고 있지 않는 경우의 애플릿의 디폴트의 외관은, 다음과 같습니다. </p>
+<ul>
+<li>Java 의 로고가 애플릿의 영역의 중앙에 표시됩니다. </li>
+<li>Java 로고 마크를 둘러싸도록(듯이) 희게 빛나는 부분 (인연의 확실치 않은 엔)이 있습니다.  </li>
+<li>김이 움직이는 애니메이션은, 처리를 하고 있는 것을 나타냅니다.  </li>
+<li>Java 의 로고의 하단에는 진행 상황 바가 있어, 애플릿이 다운로드되는 진행 상황을 나타냅니다.  </li>
+<li>애플릿의 표시 영역의 사이즈에 의해, 디폴트의 외관은 변화합니다.  </li>
+<li>애니메이션의 디자인은, 다양한 폭과 높이의 편성에 응해, 확대 축소됩니다.   </li>
+<li>애플릿의 로드안에 마우스를 애플릿의 영역으로 이동하면(자), 커서가 일반적으로의 하이퍼 텍스트(hyper text) 커서에 변화해, 이 요소가 Web 페이지의 대화적 요소인 것이 나타납니다. </li>
+<li> 회색의 박스내의 임의의 장소를 클릭 또는 선택하면(자), 다른 브라우저 윈도우가 열려,<a href="http://www.java.com">www.java.com</a>  Web 페이지가 표시됩니다.  </li>
+</ul>
+<h2><a name="specialattributes"></a> 애플릿의 특별한 속성</h2>
+<h2><code><a name="image"></a> image</code></h2>
+<p><code>image</code> 속성을 사용하면(자), 디폴트의 애니메이션을 커스텀 도형으로 옮겨놓을 수가 있습니다. 표준의 <code>APPLET</code> 요소에서는, 다음의 형식에서 이 속성을 사용합니다.  </p>
+<blockquote>
+<p><code>&lt;APPLET ...&gt;<br> &lt;PARAM name=&quot;image&quot; value="my_image.gif"&gt;<br> &lt;/APPLET&gt;</code></p>
+</blockquote>
+<p><code>OBJECT</code> 태그나 <code>EMBED</code> 태그에서의 사용법에 대해서는,<a href="using_tags.html">「Java Plug-in 에서의 <code>OBJECT</code>,<code>EMBED</code>, 및 <code>APPLET</code> 태그의 사용」</a>을 참조해 주세요. </p>
+<p>커스텀 도형을 지정하는 경우, 그 사이즈는 애플릿 윈도우의 영역과 일치할 필요가 있습니다. 사이즈가 일치하지 않는 경우, 애플릿용으로 지정되고 있는 영역의 좌상구석에 도형이 배치됩니다. 도형이 애플릿 윈도우보다 큰 경우는, 그 일부가 잘라 떨어뜨려집니다. 도형이 애플릿 윈도우보다 작은 경우는, 그 주위에 흰색 (또는 <code>boxbgcolor</code> 로 지정되고 있는 색)의 영역이 생깁니다. </p>
+<p>GIF 또는 JPEG 의 이미지를 사용할 수 있습니다.  또, 애플릿의 다른 자원과 같은 디렉토리에 둘 필요가 있습니다.  즉, 애플릿으로 <code>codebase</code> 속성이 사용되고 있는 경우는, 이 이미지를 <code>codebase</code> 디렉토리에 둘 필요가 있습니다.  
+</p>
+<p><b><font size="+1">주:</b> 패키지화된 JAR 파일에는, 애플릿의 다른 자원이 포함됩니다만, 이미지 파일은 자원의 다운로드중에 표시할 필요가 있으므로, JAR 파일에는 넣지 말아 주세요.  </p>
+<p>마우스로 애플릿 윈도우를 포인트 하면(자), 브라우저의 상태 바에 「<code>Loading Java Applet ...</code>」라고 표시됩니다.  </p>
+<h2><code><a name="boxmessage"></a> boxmessage</code></h2>
+<p><code>boxmessage</code> 속성에서는, 브라우저의 상태 바에 표시되는 텍스트를 커스터마이즈 할 수 있습니다. 이 속성은,<code>image</code> 속성이 사용되고 있는 경우에 유효하게 됩니다. 표준의 <code>APPLET</code> 요소에서는, 다음의 형식에서 이 속성을 사용합니다. </p>
+<blockquote>
+<p><code>&lt;APPLET ...&gt;<br> &lt;PARAM name=&quot;boxmessage&quot; value=&quot;&lt;your custom message goes here&gt;&quot;&gt;<br> &lt;/APPLET&gt;</code></p>
+</blockquote>
+<h2><code><a name="color"></a> boxbgcolor, boxfgcolor</code></h2>
+<p>이러한 속성을 사용하면(자), 애플릿 윈도우의 배색을 커스터마이즈 할 수 있습니다. </p>
+<p>이러한 속성은,<code>image</code> 속성이 사용되고 있는 경우에 유효하게 됩니다. 애플릿 표시 영역의 디폴트의 외관으로서 커스텀 칼라는 지정할 수 없습니다.
+<p>디폴트에서는 애플릿 윈도우의 백그라운드 칼라는 흰색입니다. <code><b>boxbgcolor</b></code> 속성을 사용하면(자), 다른 백그라운드 칼라를 지정할 수 있습니다. 표준의 <code>APPLET</code> 요소에서는, 다음의 형식에서 이 속성을 사용합니다. </p>
+<blockquote> 
+<p><code>&lt;APPLET ...&gt;</code><br> <code>&lt;PARAM name=&quot;boxbgcolor&quot; value=&quot;&lt;value&gt;&quot;&gt;<br></code><code>&lt;/APPLET&gt;</code></p>
+</blockquote>
+<p><code>&lt;value&gt;</code> 로 지정할 수 있는 값은 이하대로입니다.  </p>
+<ul>
+<li><code>java.awt.Color</code> 에 의한 임의의 <code>Color</code></li>
+<li><code>r, g, b</code>. <code> r</code>,<code>g</code>, 및 <code>b</code> 는 <code>0-255</code> 의 범위의 정수로,<code>Color</code> 생성자 의 <code>Color(int r, int g, int b)</code> 에 대해 불투명한 표준 RGB (sRGB) 색을 draw 합니다. </li>
+<li>HTML 의 표준색:silver, green, maroon, purple, navy, teal, 및 olive</li>
+<li>16 진형식</li>
+</ul>
+<p><b>각 형식의 예:</b> <code>value=&quot;cyan&quot;</code>, <code>value=&quot;111, 222,145&quot;</code>, <code>value=&quot;silver&quot;</code>, <code>value=&quot;#33FF33&quot;</code></p>
+<p>디폴트에서는 애플릿 윈도우의 foreground색은 흑입니다. boxfgcolor</b></code> 속성을 사용하면(자), 다른 foreground 칼라를 지정할 수 있습니다. 칼라치는 상술한 것 것과 같습니다. 표준의 <code>APPLET</code> 요소에서는, 다음의 형식에서 이 속성을 사용합니다. </p>
+<blockquote> 
+<p><code>&lt;APPLET ...&gt;</code><br> <code>&lt;PARAM name=&quot;boxfgcolor&quot; value=&quot;&lt;value&gt;&quot;&gt;<br></code><code>&lt;/APPLET&gt;</code></p>
+</blockquote>
+<h2><a name="precedence"></a> 애플릿 속성의 우선 순위</h2>
+<p>애플릿의 이러한 속성의 우선 순위는, 다음과 같습니다.  </p>
+<p>1) 어느 파라미터도 지정되어 있지 않은 경우는, 디폴트의 외관이 사용됩니다 (상기의<a href="#default">「디폴트의 외관」</a>을 참조). <br><code>image</code> 속성으로 커스텀 도형이 지정되고 있는 경우는, 그 커스텀 도형이 표시됩니다 (상기의<a href="#image">「<code>image</code>」</a>를 참조). <br><code>boxmessage</code> 속성으로 커스텀 텍스트가 지정되고 있는 경우는, 그 커스텀 텍스트가 표시됩니다 (상기의<a href="#boxmessage">「<code>boxmessage</code>」</a>를 참조). </p>
+<p><code>image</code> 및 <code>boxmessage</code> 의 각 속성을 어떻게 조합하는 경우에서도,<code>boxbgcolor</code> 및 <code>boxfgcolor</code> 의 각 속성으로 커스텀 칼라를 지정할 수 있습니다. </p>
+<h2><a name="failure"></a> 트러블 슈팅 시나리오</h2>
+<p>애플릿이 로드에 실패하면(자), 다음의 액션이 실행됩니다. </p>
+<ul>
+<li>애플릿 윈도우에 에러 정보가 표시됩니다. </li>
+<li> 애플릿 윈도우는, foreground 칼라에 흰색을 사용한 1 픽셀폭의 경계를 가져, 좌상구석에는 작은 「망가졌다」도형이 표시됩니다. </li>
+</ul>
+<p> 애플릿 윈도우를 오른쪽 클릭하면(자), pop-up menu가 표시되어 다음의 옵션의 어느쪽이든을 열 수가 있습니다.  
+</p>
+<ul>
+  <ul>
+<li>Java 콘솔을 연다</li>
+<li>윈도우를 열어, Java VM 및 Java Plug-in 에 관한 정보를 표시한다</li>
+  </ul>
+</ul>
+<p>&nbsp;</p>
+</body>
+</html>

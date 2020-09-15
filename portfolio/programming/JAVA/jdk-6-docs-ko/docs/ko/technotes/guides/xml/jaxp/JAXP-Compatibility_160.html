@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
+	<TITLE>JAXP 호환성 - xrath.com 에서 번역됨</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Solaris x86)">
+	<META NAME="CREATED" CONTENT="20060828;18101400">
+	<META NAME="CHANGED" CONTENT="20060828;18294100">
+	<!--<?xml version="1.0" encoding="UTF-8"?>v --> <!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> --> <!-- $Id: JAXP-Compatibility_160.html,v 1.3 2006/08/28 23:06:38 lindstro Exp $ --> <!-- <link href="style/document.css" rel="stylesheet" type="text/css"> -->
+	<STYLE>
+	<!--
+		TD P { color: #000000 }
+		P { color: #000000 }
+		H2 { color: #000000 }
+		H4 { color: #000000 }
+		H3 { color: #000000 }
+		BLOCKQUOTE { color: #000000 }
+		PRE { color: #000000 }
+		DD { color: #000000 }
+		DT { color: #000000 }
+		A:link { color: #0000ff }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" LINK="#0000ff" BGCOLOR="#ffffff" DIR="LTR">
+<H2 ALIGN=CENTER><FONT COLOR="#000099">JAXP 호환성 가이드 <BR> J2SE 6 Platform 용</FONT></H2>
+<H4>목차</H4>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#new">신기능</A>  
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#dom">DOM Level 3</A>  
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><A HREF="#addedMethods">DOM 인터페이스에 추가된 메소드</A>  
+		</P>
+		<LI><P STYLE="margin-bottom: 0in"><A HREF="#preserving">XML 형식의 보관 유지</A>  
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#SAX">SAX 2.0. 2</A>  
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#invokingXSLT">XSLT 의 호출</A>  
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><A HREF="#xsltXpath">프로그래밍에 의한 Xalan XPath 에의 액세스</A>  
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#packageNames">패키지명의 변경</A>  
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><A HREF="#packageNamesWhy">변경점이라고 변경의 이유</A>  
+		</P>
+		<LI><P STYLE="margin-bottom: 0in"><A HREF="#packageNamesUsing">시스템 프로퍼티 및 구현 클래스의 사용</A>  
+		</P>
+	</UL>
+	<LI><P><A HREF="#JAXP_security">상자로 된 엔티티 정의에 의한 시큐리티의 문제</A>  
+	</P>
+</UL>
+<H2>처음에</H2>
+<P>J2SE 1.4 플랫폼에는, JAXP 1.1 의 「Crimson」레퍼런스 구현이 포함되어 있었습니다. J2SE 6 플랫폼에는, Apache 「Xerces」라이브러리에 근거하는 JAXP 1.4 의 레퍼런스 구현이 포함되어 있습니다.  
+</P>
+<P>이러한 구현은 완전히 다른 코드 베이스가 기본으로 되어 있어 한편 JAXP 표준은 1.1 에서 1.4 로 발전했기 때문에, 어느쪽이나 JAXP 표준에 준거하고 있습니다만, 이러한<SPAN LANG="en-US">구현</SPAN>간에는 몇 안 되는 차이가 있습니다. 이것들 2 개의 요인이 짜 합쳐지기 위해서(때문에), 이 가이드로 설명하는 호환성의 문제가 발생하고 있습니다. </P>
+<H2><A NAME="new"></A> 신기능 
+</H2>
+<P><A HREF="ReleaseNotes_160.html">릴리스 노트</a>를 참조해 주세요. </P>
+<H2><A NAME="dom"></A> DOM Level 3</H2>
+<P>J2SE 1.4 의 레퍼런스 구현에서는 DOM Level 2 API 를 지원하고 있습니다만, J2SE 6 의 구현에서는 DOM Level 3 패밀리의 API 를 지원하고 있습니다. 이 섹션에서는, 이 변경에 수반하는, JAXP 1.1 레퍼런스 구현을 사용하는 프로그램에의 영향을 설명합니다. </P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#addedMethods">DOM 인터페이스에 추가된 메소드</A>  
+	</P>
+	<LI><P><A HREF="#preserving">XML 형식의 보관 유지 </A> 
+	</P>
+</UL>
+<P>자세한 것은, DOM Level 3 의 부록 <a  href="http://www.w3.org/TR/DOM-Level-3-Core/changes.html">Changes</A>  에 있는 변경점의 완전한 일람을 참조해 주세요. </P>
+<H3><A NAME="addedMethods"></A> DOM 인터페이스에 추가된 메소드 
+</H3>
+<P>DOM Level 3 에서는, 다음의 인터페이스에 메소드가 추가 정의되었습니다. </P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Attr 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Document 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">DOMImplementation 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Element 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">엔티티 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Node 
+	</P>
+	<LI><P>텍스트 
+	</P>
+</UL>
+<P>추가된 메소드에 의해 영향을 받는 것은, 인터페이스를 직접 구현하고 있는 어플리케이션만으로, 그것도 그러한 어플리케이션을 재컴파일 했을 때 뿐입니다. 어플리케이션으로 이러한 인터페이스의 구현 클래스를 취득하기 위해서 팩토리 메소드를 사용하고 있는 경우는, 문제 없습니다. </P>
+<H3><A NAME="preserving"></A> XML 형식의 보관 유지</H3>
+<P>이러한 변경의 영향을 받는 어플리케이션은, XML 데이터를 DOM 에 읽어들여 변경해, 원의 데이터 형식을 보관 유지 품질 써내는 것 같은 어플리케이션입니다.  
+</P>
+<P>JAXP 1.1 에서는, 여분의 공백은 입력시에 자동적으로 삭제되었습니다. 이 때, 예를 들어 엔티티노드나 CDATA 노드를 보관 유지하기 위해서, 단일 프로퍼티 (<FONT FACE="Courier New, Courier, mono">ignoringLexicalInfo</FONT>)이 <FONT FACE="Courier New, Courier, mono">false</FONT> 로 설정되어 있었습니다. 이러한 노드를 포함하는 것으로, DOM 는 처리가 얼마인가 복잡하게 되어 있었습니다.  그러나 이러한 노드가 포함되어 있기 위해서(때문에) 공백 출력 (인덴트나 신규행)이 추가되어 가독성이 높고, 서식화 된, 입력 내용에 매우 가까운 XML 데이터를 출력할 수 있었습니다.  
+</P>
+<P>JAXP 1.4 에서는, 처리에 이용할 수 있는 자구 (서식) 정보의 정도를 판별하기 위해서 어플리케이션이 사용하는 API 가 4 개 있어, 각각 이하의 <FONT FACE="Courier New, Courier, mono">DocumentBuilderFactory</FONT> 메소드를 사용합니다. </P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><B><FONT FACE="Courier New, Courier, mono">setCoalescing()</FONT></B><BR> CDATA 노드를 Text 노드로 변환해, 인접한다 <BR> Text 노드가 있으면, 그 노드에 추가한다 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B><FONT FACE="Courier New, Courier, mono">setExpandEntityReferences()</FONT></B><BR> 엔티티 참조 노드를 전개한다 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B><FONT FACE="Courier New, Courier, mono">setIgnoringComments()</FONT></B><BR> 코멘트를 무시한다 
+	</P>
+	<LI><P><B><FONT FACE="Courier New, Courier, mono">setIgnoringElementContentWhitespace()</FONT></B><BR> 공백이 요소의 내용에 중요하지 않은 경우는,<BR> 그 공백을 무시한다 
+	</P>
+</UL>
+<P>이러한 프로퍼티의 디폴트 값는 모두 <FONT FACE="Courier New, Courier, mono">false</FONT> 로, 받은 문서를 원의 형식에 재구축 하기 위해서 필요한 자구 정보가 모두 보관 유지됩니다. 이러한 프로퍼티을 모두 <FONT FACE="Courier New, Courier, mono">true</FONT> 로 설정하면(자), 가장 단순한 DOM 를 구축할 수 있기 (위해)때문에, 어플리케이션에서는 자구 구문의 상세를 고려하는 일 없이, 데이터의 세만틱콘텐트에 집중할 수가 있습니다. </P>
+<BLOCKQUOTE><STRONG>주: </STRONG><BR>새로운 노드를 추가할 때는, 가독성을 높이기 위해서(때문에) 필요한 인덴트나 신규행의 서식은 자동적으로 부가되지 않기 때문에, 어플리케이션으로 부가할 필요가 있습니다. </BLOCKQUOTE>
+<H2><A NAME="SAX"></A> <A NAME="SAX2"></A> SAX 2.0. 2</H2>
+<P><A NAME="SAX1"></A> SAX 2.0. 0 으로 SAX 2.0. 2 로 행해진 변경으로, 호환성에 영향을 미칠 가능성이 있는 것은 이하대로입니다. </P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><CODE>DeclHandler.externalEntityDecl</CODE> 는, 현재는 <CODE>DTDHandler.unparsedEntityDecl</CODE> 와의 일관성을 유지하기 (위해)때문에 절대 시스템 식별자를 돌려주는 퍼서가 필요. 이 때문에, 비호환성이 생길 가능성이 있다. </P>
+	<LI><P>SAX 2.0. 1 에서는, 어플리케이션은 <FONT FACE="Courier New, Courier, mono">ErrorHandler</FONT>,<FONT FACE="Courier New, Courier, mono">EntityResolver</FONT>,<FONT FACE="Courier New, Courier, mono">ContentHandler</FONT>, 또는 <FONT FACE="Courier New, Courier, mono">DTDHandler</FONT> 를 <FONT FACE="Courier New, Courier, mono">null</FONT> 로 설정할 수 있습니다. 이와 같이 하면(자) SAX 2.0 에서는 <FONT FACE="Courier New, Courier, mono">NullPointerException</FONT> (NPE)가 발생하고 있었지만, 이 제약이 느슨해졌다</P>
+	<P>그 때문에, JAXP 1.3 에서는, 다음의 코드도 유효</P>
+	<PRE STYLE="margin-right: 0.39in">SAXParserFactory spf = SAXParserFactory.newInstance();
+SAXParser sp = spf.newSAXParser();
+XMLReader reader = sp.getXMLReader();
+reader.setErrorHandler(null);
+reader.setContentHandler(null);
+reader.setEntityResolver(null);
+reader.setDTDHandler(null);</PRE>
+	<LI><P><A NAME="entityResolver"></A> <span  class="Fixed">EntityResolver</span> API 의 <span class="Fixed">resolveEntity()</span> 메소드로,<span class="Fixed">IOException</span> 와 <span class="Fixed">SAXException</span> 를 throw 하게 되었다(지금까지는 <FONT FACE="Courier New, Courier, mono">SAXException</FONT> 만이 throw 되고 있었다).
+		</P>
+	<P><FONT FACE="Courier New, Courier, mono">DefaultHandler</FONT> 를 이러한 방법으로 사용하는 어플리케이션은 매우 일부 뿐이다.  또,<FONT FACE="Courier New, Courier, mono">DefaultHandler</FONT> 구현 클래스가 추가의 예외를 선언하도록(듯이) 변경되었기 때문에, 대부분의 어플리케이션은 이 영향을 받지 않는다 
+	</P>
+	<P>어플리케이션에 영향이 있는 것은,<FONT FACE="Courier New, Courier, mono">resolveEntity()</FONT> 메소드를 오버라이드(override) 해, 한편<em></em> <FONT FACE="Courier New, Courier, mono">super.resolveEntity()</FONT> 를 호출하는 경우 뿐이다. 이 경우, 어플리케이션은,<FONT FACE="Courier New, Courier, mono">super.resolveEntity()</FONT> 가 throw 하는 IOException 를 처리하도록(듯이) 메소드를 변경할 때까지, J2SE 5 로 컴파일 되지 않는다</P>
+	<LI><P STYLE="margin-bottom: 0in">신기능은 다음대로 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, Courier, mono">http://xml.org/sax/features/external-general-entities<BR></FONT> 외부의 일반적인 엔티티를 포함할 수가 있다 
+		</P>
+		<LI><P><FONT FACE="Courier New, Courier, mono">http://xml.org/sax/features/external-parameter-entities<BR></FONT>외부의 파라메이타엔티티와 외부의 DTD 부분집합을 포함할 수가 있다. &nbsp;
+				</P>
+	</UL>
+	<P>또, 새로운 프로퍼티은 다음대로</P>
+	<UL>
+		<LI><P><FONT FACE="Courier New, Courier, mono">http://xml.org/sax/properties/xml-string<BR></FONT>현재의 이벤트에 관련하는 캐릭터 라인을 취득한다 
+		</P>
+	</UL>
+	<P>Xerces 의 기능 및 프로퍼티의 완전한 일람은,<A HREF="http://xml.apache.org/xerces2-j/features.html">http://xml.apache.org/xerces2-j/features.html</A>  및 <A HREF="http://xml.apache.org/xerces2-j/properties.html">http://xml.apache.org/xerces2-j/properties.html</A>  를 참조해 주세요. </P>
+</UL>
+<P STYLE="margin-left: 0.42in"><STRONG>주: </STRONG><BR>호환성이 있는 점도 설명합니다. J2SE 1.4 (JAXP 1.1)에서는, 이름 공간의 인식은, 디폴트로 오프가 되었습니다. 하위 호환성이기 때문에, 이 방침은 J2SE 6 (JAXP 1.4)에서도 바뀌지 않습니다. 다만,<a href="http://www.saxproject.org/">www.saxproject.org</A>  로부터 입수할 수 있는 공식의 SAX 구현에서는, 이름 공간의 인식이 디폴트로 「온」이 되어 있습니다. JAXP 의 관점으로부터는 엄밀하게는 호환성의 문제가 되지 않습니다만, 생각치 못한 결과를 부르는 일이 있습니다. </P>
+<H2><A NAME="invokingXSLT"></A> XSLT 의 사용</H2>
+<P>표준 JAXP API 를 사용해, XSL 트랜스 포머를 작성하거나 XSL 트랜스 포머에 액세스 하거나 하는 코드는, 변경할 필요가 없습니다. 출력은 같습니다만, 대부분의 경우는 생성이 고속으로 됩니다.  이것은, Xalan 트랜스 포머는 아니고, XSLTC 의 컴파일 트랜스 포머가 디폴트로 사용되기 (위해)때문에입니다. </P>
+<BLOCKQUOTE><STRONG>주:</STRONG><BR> XSL 스타일 시트의 개발이나 테스트 등, 작은 데이터 세트로 1 회 실행하는 경우는, Xalan 와 XSLTC 의 퍼포먼스상의 큰 차이는 없습니다. 그러나, 큰 데이터 세트로 XSLTC 를 사용하는 경우에는, 퍼포먼스상의 큰 이점이 있습니다. </BLOCKQUOTE>
+<H3><A NAME="xsltXpath"></A> 프로그래밍에 의한 Xalan XPath 에의 액세스</H3>
+<P>JAXP 1.4 에서는, XPath 표현을 평가하기 위한 표준 XPath API 를 제공합니다. 이 API 를 사용하는 것을 추천합니다. Xalan 해석은, 레퍼런스 참조에 포함되어 있지 않습니다. 어플리케이션으로 단독의 XPath 표현 (XSLT 스타일 시트가 일부에서 없는 것)을 평가하기 위해서 Xalan XPath API 를 명시적으로 사용하고 있는 경우는, Xalan 용의 Apache 라이브러리를 다운로드해 인스톨 할 필요가 있습니다. </P>
+<H2><A NAME="packageNames"></A> 패키지명의 변경</H2>
+<P>이 변경점은, 표준 JAXP API 를 사용하도록(듯이) 제한되고 있는 어플리케이션에는 영향 없습니다. 다만, 1.3 이전의 JAXP 버젼으로 정의된 XML 프로세서의 구현 고유의 기능에 액세스 하는 어플리케이션은, 변경할 필요가 있습니다. </P>
+<P>변경에 의해, 종래의 어플리케이션에는 다음의 영향이 있습니다. </P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">내부 구현에 액세스 하기 위해서 사용되고 있던 프로퍼티치를 변경할 필요가 있다 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Xalan 구현 클래스에서 내부 API 를 사용하는 어플리케이션에서는, 그러한 API 에 액세스하기 위한 import 문을 변경할 필요가 있다 
+	</P>
+	<LI><P>Crimson 구현으로부터 내부 API 를 사용하고 있던 어플리케이션은,<SPAN LANG="en-US">기록할</SPAN>필요가 있다. 이 때 가능하면, 새로운 JAXP API 또는, 필요에 따라서 Xerces API 를 사용한다.  
+	</P>
+</OL>
+<H3><A NAME="packageNamesWhy"></A> 변경점과 그 이유</H3>
+<P>J2SE 1.4 에서는, JAXP 가 Java 플랫폼에 짜넣어졌다고 하는 것에는 이점도 결점도 있었습니다. 한편, 어플리케이션은, JAXP 가 짜넣어지고 있다고 하는 사실에 의존할 수가 있었습니다. 한편, 대부분의 어플리케이션에서는, 이후의 버젼으로 입수 가능하게 된 기능이나 버그 수정이 필요했습니다.  
+</P>
+<P>그러나, 내부 클래스는 항상 classpath 보다 우선되기 (위해)때문에, 새로운<SPAN LANG="en-US">라이브러리</SPAN>를 추가해도 효과는 없었습니다. 1.4 에서는 이 문제를 해결하기 위해서, 승인이 끝난 표준 기구가 사용되었습니다. 그러나 그 기구는 새롭고, 어플리케이션 개발자 뿐만이 아니라 최종 사용자에도 여분의 노력이 필요하게 되었습니다.  
+</P>
+<P>JAXP 1.3 이후에서는, 구현으로 사용되는 Apache 라이브러리의 패키지명을 변경하는 것으로 해결합니다. 이 변경에 의해, classpath 로 새로운 Apache 라이브러리를 참조할 수 있기 (위해)때문에, 어플리케이션 개발자는 그 라이브러리를 지금까지같은 방법으로 사용하면서, Java 플랫폼에 추가된 그 외의 기능을 이용할 수 있습니다. </P>
+<P>JAXP 1.3 레퍼런스 구현으로 Apache 패키지에 붙일 수 있던 새로운 이름은 다음과 같습니다. </P>
+<DL>
+	<DD>
+	<TABLE WIDTH=92% BORDER=1 CELLPADDING=2 CELLSPACING=2>
+		<TR>
+			<TD WIDTH=12%>
+				<P>&nbsp;</P>
+			</TD>
+			<TD WIDTH=34%>
+				<P>JAXP 1.1 
+				</P>
+			</TD>
+			<TD WIDTH=54%>
+				<P>Since JAXP 1.3 
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD>
+				<P>JAXP</P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">org.apache.crimson</FONT></P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">-/-<BR>com.sun.org.apache.xerces.internal</FONT></P>
+			</TD>
+		</TR>
+		<TR>
+			<TD>
+				<P>&nbsp;</P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">org.apache.xml</FONT></P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">com.sun.org.apache.xml.internal</FONT></P>
+			</TD>
+		</TR>
+		<TR>
+			<TD>
+				<P>XSLT</P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">org.apache.xalan<BR>org.apache.xpath<BR>org.apache.xalan.xsltc</FONT></P>
+			</TD>
+			<TD>
+				<P><FONT FACE="Courier New, Courier, mono">com.sun.org.apache.xalan.internal<BR>com.sun.org.apache.xpath.internal<BR>com.sun.org.apache.xalan.internal.xsltc</FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</DL>
+<H3><A NAME="xslt"></A> <A NAME="JAXP_security"></A> 상자로 된 엔티티 정의에 의한 시큐리티의 문제</H3>
+<P>XML 에서는, 재귀적인 엔티티 정의는 인정되지 않습니다만, 상자로 된 엔티티 정의는 인정됩니다.  그러나, 외부 소스로부터의 XML 데이터를 허가하는 서버가 서비스 방해 공격을 받을 가능성이 있습니다. 예를 들어, 다음과 같이 매우 깊게 상자로 된 엔티티 정의가 포함되는 SOAP 문서는, 엔티티를 전개하는데 CPU 시간의 100 % 과 대량의 메모리를 소비해 버립니다. </P>
+<PRE STYLE="margin-left: 0.39in; margin-right: 0.39in">&lt;? xml version=&quot;1. 0&quot; encoding =&quot;UTF-8&quot;? &gt;
+ &lt;! DOCTYPE foobar[
+ &lt;! ENTITY x100 &quot;foobar&quot;&gt;
+ &lt;! ENTITY  x99 &quot;&amp;x100;&amp;x100;&quot;&gt;
+ &lt;! ENTITY  x98 &quot;&amp;x99;&amp;x99;&quot;&gt;
+ ...
+ &lt;! ENTITY   x2 &quot;&amp;x3;&amp;x3;&quot;&gt;
+ &lt;! ENTITY   x1 &quot;&amp;x2;&amp;x2;&quot;&gt;
+ ]&gt;
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV=...&gt;
+&lt;SOAP-ENV:Body&gt;
+&lt;ns1:aaa xmlns:ns1=&quot;urn:aaa&quot; SOAP-ENV:encodingStyle=&quot;...&quot;&gt;
+&lt;foobar xsi:type=&quot;xsd:string&quot;&gt;&amp;x1;&lt;/foobar&gt;
+&lt;/ns1:aaa&gt;
+&lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt; </PRE><P>
+외부 XML 데이터를 받아들이지 않는 시스템에서는 이 문제를 고려할 필요는 없습니다만, 받아들이는 시스템에서는 이 문제를 막기 위해서(때문에), 다음과 같은 예방 수단의 어떤 것인지를 이용할 수가 있습니다. </P>
+<DL>
+	<DL>
+		<DT><B>엔티티 전개를 제한하기 위한 새로운 시스템 프로퍼티</B> 
+		</DT><DD>
+		<TT>entityExpansionLimit</TT> 시스템 프로퍼티을 사용하면(자), 기존의 어플리케이션은, 코드를 재컴파일 하지 않아도, 엔티티 전개의 총회수를 제한할 수 있습니다. 엔티티 전개의 상한에 이르면(자), 퍼서는 치명적인 에러를 throw 합니다 (디폴트에서는, 64000 에 제한되고 있습니다). <BR><BR>시스템 프로퍼티으로 엔티티 전개의 상한을 설정하려면 , Java 커멘드행으로 다음과 같은 옵션을 사용합니다. <TT>-DentityExpansionLimit=100000</TT> 
+		</DD><DT>
+		<BR>
+		</DT><DT>
+		<B>DTD 를 허가하지 않기 위한 새로운 퍼서 프로퍼티</B> 
+		</DT><DD STYLE="margin-bottom: 0.2in">
+		어플리케이션에서는,<TT>http://apache.org/xml/features/disallow-doctype-decl</TT> 퍼서 프로퍼티을 true 로 설정할 수도 있습니다. 이 경우, 받은 XML 문서에 DOCTYPE 선언이 포함되어 있으면(자), 치명적인 에러가 throw 됩니다. 이 프로퍼티의 디폴트 값는 false 입니다. SOAP 메세지에는 DTD (Document Type Declaration)를 포함할 수가 없기 때문에, 일반적으로 이 프로퍼티은 SOAP 베이스의 어플리케이션으로 편리합니다. </DD><DT>
+		<B>시큐리티 보호된 처리를 위한 신기능</B> 
+		</DT><DD STYLE="margin-bottom: 0.2in">
+		JAXP 1.3 에는, 새롭고<A HREF="../../../../api/javax/xml/XMLConstants.html#FEATURE_SECURE_PROCESSING">시큐리티 보호 기능</a>이 포함되어 있기 (위해)때문에, 어플리케이션에서는 <A HREF="../../../../api/javax/xml/parsers/SAXParserFactory.html#setFeature(java.lang.String, boolean)">SAXParserFactory</A>  또는 <A HREF="../../../../api/javax/xml/parsers/DocumentBuilderFactory.html#setFeature(java.lang.String, boolean)">DocumentBuilderFactory</A>  를 설정해, 시큐리티 보호된 방법으로 동작하는 XML 프로세서를 취득할 수 있습니다. 이 기능을 true 로 설정하면(자), 엔티티 전개의 제한이 64000 으로 설정됩니다. 디폴트의 제한은,<CODE>entityExpansionLimit</CODE> 시스템 프로퍼티을 사용해 늘릴 수가 있습니다. </DD><DD STYLE="margin-bottom: 0.2in">
+		<BR><BR>
+		</DD></DL>
+</DL>
+</BODY>
+</HTML>

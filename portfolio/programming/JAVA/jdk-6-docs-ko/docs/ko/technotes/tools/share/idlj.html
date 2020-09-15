@@ -1,0 +1,475 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Mozilla/4.02 [en] (X11; U; SunOS 5.6 sun4u)
+[Netscape]" />
+<TITLE>idlj - IDL-to-Java 컴파일러 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1>idlj - IDL-to-Java 컴파일러</H1>
+
+<BLOCKQUOTE>
+<B>idlj</B> 는, 지정된 IDL 파일로부터 Java 바인딩을 생성합니다.
+</BLOCKQUOTE>
+
+<H2>형식</H2>
+
+<BLOCKQUOTE>
+<pre>idlj [ <A HREF="#Options">options</A>  ] <I>idl-file</I></pre>
+<p>
+<i>idl-file</i> 는, 인터페이스 정의 언어 (IDL)에 의한 정의가 들어간 파일의 이름입니다. <i>options</i> 의 차례는 임의입니다만,<i>idl-file</i> 보다 전으로 지정하지 않으면 안됩니다.
+</p></BLOCKQUOTE>
+
+<H2>설명</H2>
+
+<BLOCKQUOTE>
+IDL-to-Java 컴파일러는, 지정된 IDL 파일에 대해 Java 바인딩을 생성합니다. 바인딩의 자세한 것은,<A HREF="../../guides/idl/mapping/jidlMapping.html">OMG IDL to Java Language Mapping Specification</A>  를 참조해 주세요. IDL-to-Java 컴파일러의 이전의 릴리스안에는,<tt>idltojava</tt> 라는 이름이었던 것이 있습니다.
+</BLOCKQUOTE>
+
+
+<h3>클라이언트 바인딩 및 서버 바인딩의 발행</h3>
+<blockquote>My.idl 라는 이름의 IDL 파일에 대해서 Java 바인딩을 생성하려면 , 다음의 커멘드를 실행합니다.
+
+<UL><TT>idlj My.idl</TT></UL>
+
+이것에 의해, 클라이언트측의 바인딩이 생성됩니다. 이 커멘드는, 다음의 커멘드와 등가입니다.
+
+<UL><TT>idlj <B>-fclient</B> My.idl</TT></UL>
+
+클라이언트측의 바인딩에는, 서버측의 스켈리턴은 짜넣어지고 있지 않습니다. 인터페이스에 대해서 서버측의 바인딩을 생성하려면 , 다음의 커멘드를 실행합니다.
+
+<UL><TT>idlj <B>-fserver</B> My.idl</TT></UL>
+
+서버측의 바인딩에는, 클라이언트측의 바인딩에 가세해, 스켈리턴이 짜넣어지고 있어 있습니다. 이것들은, 모두 <code>POA</code> (상속 모델) 클래스입니다. 클라이언트측과 서버측의 양쪽 모두의 바인딩을 생성하는 경우는, 다음의 커멘드 (모두 등가) 가운데 1 개를 사용합니다.
+
+<UL>
+<TT>idlj <B>-fclient -fserver</B> My.idl</TT> <BR /> <TT>idlj <B>-fall</B> My.idl</TT></UL>
+
+<P>서버측의 모델로서는, 2 개의 모델이 가능합니다. 그것은, 상속 모델과<a  href="#tie">Tie 위양 모델</a>입니다.  
+
+</p><P>디폴트의 서버측의 모델은, 「이식 가능 서번트 상속 모델」입니다. <tt>My.idl</tt> 내에서 <tt>My</tt> 인터페이스가 정의되고 있는 경우는,<tt>MyPOA.java</tt> 라고 하는 파일이 생성됩니다. <tt>My</tt> 에 대해서 그 구현을 제공해, 이 구현은 <tt>_MyPOA</tt> 로부터 상속할 필요가 있습니다.   
+
+</p><P><TT>MyPOA.java</TT> 는 <a  href="../../../api/org/omg/PortableServer/Servant.html"><tt>org.omg.PortableServer.Servant</tt></A>  를 확장하는 스트림 베이스의 스켈리턴으로, 스켈리턴이 구현하는 IDL 인터페이스에 관련지을 수 있고 있는 <tt>InvokeHandler</tt> 인터페이스와 오퍼레이션 인터페이스를 구현합니다.
+
+</p><P><a href="../idl/POA.html">Portable Object Adapter (POA)</a>  의 <TT>PortableServer</TT> 모듈은, 네이티브의 <tt>Servant</tt> 형을 정의합니다. Java 프로그램 언어에서는,<tt>Servant</tt> 형은, Java 의 <TT>org.omg.PortableServer.Servant</TT> 클래스에 매핑 되고 있습니다. 이것은 모든 POA 서번트 구현의 base class가 되어 다수의 메소드를 제공합니다. 이러한 메소드는 어플리케이션 프로그래머가 호출하는 것 만이  아니고, POA 자신으로부터도 불려 가 경우에 따라서는 서번트의 동작을 제어하기 위해서 사용자가 오버라이드(override) 하는 일도 있습니다.
+ 
+ 
+</p><P>상속 모델의 이제(벌써) 1 개의 옵션은,<tt>-oldImplBase</TT> 플래그를 사용해, J2SE 1.4 보다 전의 버젼의 Java 프로그램 언어와 호환성이 있는 서버측 바인딩을 생성하는 것입니다. 다만,<tt>-oldImplBase</TT> 플래그를 사용하는 것은, 표준적인 수법이 아닙니다. 이러한 API 는 추천 되고 있지 않습니다. 이 플래그를 사용하는 것은, J2SE 1.3 으로 기술된 기존의 서버와의 호환성을 유지하는 경우만입니다. 그 경우, 기존의 MAKEFILE 를 변경해 <tt>idlj</tt> 컴파일러에 <tt>-oldImplBase</TT> 플래그를 추가할 필요가 있습니다. 플래그를 추가하지 않는 경우, POA 베이스의 서버측 매핑이 생성됩니다. 하위 호환성이 있는 서버측 바인딩을 생성하려면 , 다음의 커멘드를 사용합니다.
+
+</p><UL>
+<TT>idlj <B>-fclient -fserver</B> <B>-oldImplBase</B> My.idl</TT> <BR /> <TT>idlj <B>-fall</B> <B>-oldImplBase</B> My.idl</TT>
+</UL>
+
+<tt>My.idl</tt> 내에서 <tt>My</tt> 인터페이스가 정의되고 있는 경우는,<tt>_MyImplBase.java</tt> 라고 하는 파일이 생성됩니다. <tt>My</tt> 에 대해서 그 구현을 제공해, 이 구현은 <tt>_MyImplBase</tt> 로부터 상속하지 않으면 안됩니다.
+
+<a name="tie"></a> 
+<P>이제(벌써) 1 개의 서버측 모델은, Tie 모델로 불리는 것입니다. 이 서버측 모델은, 위양 모델입니다. Tie 와 스켈리턴을 동시에 생성할 수 없기 때문에, 그것들은 따로 따로 생성하지 않으면 안됩니다. 다음의 커멘드에 의해, Tie 모델용의 바인딩이 생성됩니다.
+
+</p><UL><TT>idlj <B>-fall</B> My.idl</TT> <BR /><TT>idlj <B>-fallTIE</B> My.idl</TT></UL>
+
+<tt>My</tt> 라고 하는 인터페이스의 경우, 상기의 2 번째의 커멘드에 의해,<tt>MyPOATie.java</tt> 가 생성됩니다. <tt>MyPOATie</tt> 의 생성자 은,<tt>delegate</tt> 를 취합니다. 이 예에서는, 디폴트의 POA 모델을 사용하고 있기 (위해)때문에, 생성자 에도 <tt>poa</tt> 가 필요합니다. <tt>delegate</tt> 에 대해서 구현을 제공하지 않으면 안됩니다, 이 구현은 <tt>MyOperations</tt> 인터페이스로부터 상속할 필요가 있는 것만으로, 그 외의 클래스로부터 상속할 필요는 없습니다. 그러나, 이 구현을 ORB 와 함께 사용하려면 ,<tt>MyPOATie</tt> 내에서 구현을 랩 하지 않으면 안됩니다. 예를 들어, 다음과 같이 합니다.
+
+<UL>
+<pre>
+    ORB orb = ORB.init(args, System.getProperties());
+
+    // Get reference to rootpoa & activate the POAManager
+    POA rootpoa = (POA) orb.resolve_initial_references("RootPOA");
+    rootpoa.the_POAManager(). activate();
+
+    // create servant and register it with the ORB
+    MyServant myDelegate = new MyServant();
+    myDelegate.setORB(orb); 
+
+    // create a tie, with servant being the delegate.
+    MyPOATie tie = new MyPOATie(myDelegate, rootpoa);
+
+    // obtain the objectRef for the tie
+    My ref = tie. _this(orb);
+</pre>
+</UL>
+
+다른 구현으로부터 상속해야 하는 경우, 표준의 상속 모델은 아니고 Tie 모델을 사용하는 일이 있습니다. Java 의 경우는, 인터페이스의 상속의 개수에 제한은 없습니다만, 클래스의 상속에 사용할 수 있는 슬롯은 1 개 뿐입니다. 상속 모델을 사용했을 경우는, 그 슬롯이 점유 됩니다. Tie 모델을 사용했을 경우는, 그 슬롯이 사용되지 않고, 사용자가 독자적인 목적으로 사용할 수가 있습니다. 다만, 간접 참조의 레벨이 1 개 도입된다고 하는 결점이 있습니다. 즉, 메소드를 호출할 때 여분의 메소드 호출이 발생합니다.
+
+<P>IDL 의 버젼으로부터 J2SE 1.4 보다 전의 버젼의 Java 언어에의 매핑과 호환성이 있는, 서버측의 Tie 모델의 바인딩을 생성하려면 , 다음의 커멘드를 사용합니다.   
+
+</p><UL><TT>idlj <B>-oldImplBase</B> <B>-fall</B> My.idl</TT> <BR /><TT>idlj <B>-oldImplBase</B> <B>-fallTIE</B> My.idl</TT></UL>
+
+<P><tt>My</tt> 라고 하는 인터페이스의 경우, 이것에 의해 <tt>My_Tie.java</tt> 가 생성됩니다. <tt>My_Tie</tt> 의 생성자 은,<tt>impl</tt> 를 취합니다. <tt>impl</tt> 에 대해서 구현을 제공하지 않으면 안됩니다, 그 구현은 <tt>HelloOperations</tt> 인터페이스로부터 상속할 필요가 있는 것만으로, 그 외의 클래스로부터 상속할 필요는 없습니다. 그러나, 이 구현을 ORB 와 함께 사용하려면 ,<tt>My_Tie</tt> 내에서 구현을 랩 하지 않으면 안됩니다. 예를 들어, 다음과 같이 합니다.
+
+</p><UL>
+<pre>
+    ORB orb = ORB.init(args, System.getProperties());
+
+    // create servant and register it with the ORB
+    MyServant myDelegate = new MyServant();
+    myDelegate.setORB(orb); 
+
+    // create a tie, with servant being the delegate.
+    MyPOATie tie = new MyPOATie(myDelegate);
+
+    // obtain the objectRef for the tie
+    My ref = tie. _this(orb);
+</pre>
+</UL>
+</blockquote>
+
+<h3>발행된 파일의 대체 위치의 지정</h3>
+<blockquote>
+발행된 파일을 커런트 디렉토리 이외의 디렉토리에 두려면 , 다음과 같은 커멘드로 컴파일러를 호출합니다.
+
+<BLOCKQUOTE>
+<TT>idlj <b>-td /altdir</b> My.idl</TT>
+</BLOCKQUOTE>
+
+<tt>My</tt> 인터페이스의 경우, 바인딩은,<tt>. /My.java</tt> 는 아니고,<tt>/altdir/My.java</tt> 등에 발행됩니다.
+</blockquote>
+
+
+<h3>인클루드 파일의 대체 위치의 지정</h3>
+<blockquote>
+<tt>My.idl</tt> 에 이제(벌써) 1 개의 IDL 파일 <tt>MyOther.idl</tt> 가 인클루드 되고 있는 경우, 컴파일러는, 로컬 디렉토리에 <tt>MyOther.idl</tt> 가 있는 것과 상정합니다. 만약 그 파일이, 예를 들어 <tt>/includes</tt> 에 있는 경우는, 다음과 같은 커멘드로 컴파일러를 호출합니다.
+
+<UL>
+<TT>idlj <B>-i /includes</B> My.idl</TT>
+</UL>
+
+또, 만약 <tt>My.idl</tt> 에, 예를 들어 <tt>/moreIncludes</tt> 에 있는 <tt>Another.idl</tt> 도 인클루드 되고 있다면, 다음과 같은 커멘드로 컴파일러를 호출합니다.
+
+<UL><TT> idlj <B>-i /includes -i /moreIncludes</B> My.idl </TT></UL>
+
+이러한 형식에서 인클루드를 지정하면(자), 커멘드가 길고 복잡하게 됩니다. 거기서, 인클루드 파일을 검색하는 장소를 컴파일러에 지시하기 위한별의 방법이 준비되어 있습니다. 이 방법은, 환경 변수의 생각과 닮아 있습니다. CLASSPATH 에 리스트 되고 있는 디렉토리내에 <tt>idl.config</tt> 라는 이름의 파일을 작성합니다. 그 <tt>idl.config</tt> 안에, 다음과 같은 형식의 행을 넣습니다.
+
+<UL><TT>includes=/includes;/moreIncludes</TT></UL>
+
+컴파일러는, 이 파일을 검색해, 인클루드 리스트를 읽어들입니다. 이 예에서는, 디렉토리의 사이의 단락 문자는 세미콜론 (;)이 되어 있습니다. 이 단락 문자는, 플랫폼에 따라서 다릅니다. 예를 들어, Windows 플랫폼에서는 세미콜론입니다만, Unix 플랫폼에서는 구두점입니다. <tt> 인클루드</tt>의 상세한 것에 대하여는,<a href="../index.html#general">CLASSPATH 의 설정</A>  을 참조해 주세요. </blockquote>
+
+
+<h3>인클루드 파일에 대한 바인딩의 발행</h3>
+<blockquote>
+디폴트에서는, 커멘드행으로 지정한 IDL 파일로 정의되고 있는 인터페이스나 구조체 등에 대한 보고, Java 바인딩이 생성됩니다. 인클루드 된 파일로 정의되고 있는 형태에 대해서는, Java 바인딩은 생성되지 않습니다. 예를 들어, 다음의 2 개의 IDL 파일에 대해 생각해 봅시다.
+
+<UL>
+<HR ALIGN=LEFT NOSHADE WIDTH="18%" />
+<B><I><FONT SIZE=-1>My.idl</FONT></I></B></UL>
+<UL><TT>#include &lt;MyOther.idl></TT> <BR /><TT>interface My</TT> <BR /><TT>{</TT> <BR /><TT>};</TT> <BR />
+
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+<B><I><FONT SIZE=-1>MyOther.idl</FONT></I></B>
+<P><TT>interface MyOther</TT> <BR /><TT>{</TT> <BR /><TT>};</TT>&nbsp;
+</p><HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+</UL>
+
+다음의 커멘드에서는,<tt>My</tt> 에 대한 Java 바인딩만이 생성됩니다.
+
+<UL><TT>idlj My.idl</TT></UL>
+
+<tt>My.idl</tt> 로 정의되고 있는 형태와<tt>My.idl</tt> 에 인클루드 된 파일 (이 예에서는 <tt>MyOther.idl</tt>)로 정의되고 있는 형태 모두에 임해서 Java 바인딩을 생성하려면 , 다음의 커멘드를 사용합니다.
+
+<UL><TT> idlj <B>-emitAll</B> My.idl </TT></UL>
+
+이 디폴트의 규칙에 관해서 주의하지 않으면 안 되는 것이 있습니다. 글로벌 스코프로 지정한 <tt>#include</tt> 문은, 전술대로 처리됩니다. 이러한 <tt>#include</tt> 문은, 임포트문이라고 볼 수가 있습니다. 그에 대해, 다른 정의에 둘러싸인 스코프내로 지정한 <tt>#include</tt> 문은, 진정한 의미에서의 <tt>#include</tt> 문으로서 처리됩니다. 즉, 인클루드 된 파일에 있는 코드가, 원의 파일에 그대로 지정되어 있는 것과 같게 처리되어 그에 대한 Java 바인딩이 발행됩니다. 다음에 예를 나타냅니다.
+
+<UL>
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+<B><I><FONT SIZE=-1>My.idl</FONT></I></B></UL>
+<UL><TT>#include &lt;MyOther.idl></TT> <BR /><TT>interface My</TT> <BR /><TT>{</TT> <BR /><TT>&nbsp; #include &lt;Embedded.idl></TT> <BR /><TT>};&nbsp;
+
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" /></TT> <B><I><FONT SIZE=-1>MyOther.idl</FONT></I></B>
+</UL>
+<UL><TT>interface MyOther</TT> <BR /><TT>{</TT> <BR /><TT>};&nbsp;
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+</TT><B><I><FONT SIZE=-1>Embedded.idl</FONT></I></B></UL>
+
+<UL><TT>enum E {one, two, three};</TT>&nbsp;
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+</UL>
+
+이 때, 다음의 커멘드를 실행하면(자),
+
+<UL><TT>idlj My.idl</TT></UL>
+
+다음과 같은 일련의 Java 파일이 생성됩니다.
+
+<UL>
+<TT>. /MyHolder.java</TT> <BR /><TT>. /MyHelper.java</TT> <BR /><TT>. /_MyStub.java</TT> <BR /><TT>. /MyPackage</TT> <BR /><TT>. /MyPackage/EHolder.java</TT> <BR /><TT>. /MyPackage/EHelper.java</TT> <BR /><TT>. /MyPackage/E.java</TT> <BR /><TT>. /My.java</TT>
+</UL>
+
+임포트문이라고 보여지는 <tt>#include</tt> 에 정의되고 있기 (위해)때문에,<tt>MyOther.java</tt> 는 생성되지 않습니다. 다만, 진정한 의미에서의 <tt>#include</tt> 로 정의되고 있기 (위해)때문에,<tt>E.java</tt> 는 생성됩니다. 게다가<tt>Embedded.idl</tt> 가 <tt>My</tt> 인터페이스의 스코프내에 인클루드 되고 있었기 때문에,<tt>My</tt> 의 스코프내 (즉,<tt>MyPackage</tt> 내)에 생성되고 있습니다.
+
+<P>상기의 예로 <i>-emitAll</i> 플래그를 사용하면, 인클루드 된 모든 파일에 있는 모든 형태가 발행됩니다.
+</p></blockquote>
+
+
+<h3>패키지의 접두사의 삽입</h3>
+<blockquote>
+ABC 라는 이름의 회사를 위해서(때문에) 작업하고 있어, 다음과 같은 IDL 파일을 구축했다고 합시다.
+<UL>
+<HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+<BR /><B><I><FONT SIZE=-1>Widgets.idl</FONT></I></B>
+
+<P><TT>module Widgets</TT> <BR /><TT>{</TT> <BR /><TT>&nbsp; interface W1 {...};</TT> <BR /><TT>&nbsp; interface W2 {...};</TT> <BR /><TT>};</TT>&nbsp;
+</p><HR ALIGN=LEFT NOSHADE WIDTH="20%" />
+</UL>
+
+이 파일에 대해서 IDL-to-Java 컴파일러를 실행하면(자),<tt>W1</tt> 및 <tt>W2</tt> 에 대한 Java 바인딩이 <tt>Widgets</tt> 패키지내에 생성됩니다. 그러나, 업계의 관례에 의하면, 회사의 패키지는,<tt>com. &lt;회사명 &gt;</tt> 라는 이름의 패키지내에 두게 되어 있습니다. 그 때문에,<tt>Widgets</tt> 패키지로는 불충분합니다. 관례에 따르려면 , 패키지를 <tt>com.abc.Widgets</tt> 로 할 필요가 있습니다. 이 패키지 접두사를 <tt>Widgets</tt> 모듈에 부가하려면 , 다음의 커멘드를 실행합니다.
+
+<UL><TT> idlj <B>-pkgPrefix Widgets com.abc</B> Widgets.idl </TT></UL>
+
+<tt>Widgets.idl</tt> 를 인클루드 하고 있는 IDL 파일이 있는 경우는, 그 커멘드에도 <tt>-pkgPrefix</tt> 플래그가 필요합니다. 이 플래그를 지정하지 않으면 그 IDL 파일은,<tt>com.abc.Widgets</tt> 패키지는 아니고,<tt>Widgets</tt> 패키지를 검색하게 됩니다.   
+
+<P>접두사가 필요한 패키지가 얼마든지 있는 경우는, 전술의 <tt>idl.config</tt> 파일로 접두사를 지정하는 것이 간단합니다. 패키지의 접두사를 지정하는 행은, 각각 다음의 형식에서 기술합니다.
+
+</p><UL><TT>PkgPrefix. &lt;type>=&lt;prefix></TT></UL>
+
+따라서, 상기의 예의 경우는, 다음과 같이 기술합니다.
+
+<UL><TT>PkgPrefix.Widgets=com.abc</TT></UL>
+
+<P>이 옵션을 사용해도, 리포지터리(repository) ID 는 영향을 받지 않습니다.
+</p></blockquote>
+
+
+<h3>컴파일전의 심볼의 정의</h3>
+<blockquote>
+컴파일용의 심볼이 IDL 파일내에서 정의되어 있지 않은 경우는, 그 심볼을 정의할 필요가 있습니다. 이것은, 예를 들어, 바인딩내에 디버그 코드를 집어 넣을 때 사용합니다. 다음의 커멘드는,
+
+<UL><TT> idlj <B>-d</B> MYDEF My.idl </TT></UL>
+
+<tt>My.idl</tt> 내에 <tt>#define MYDEF</tt> 라고 하는 행을 지정했을 경우와 등가입니다.
+</blockquote>
+
+
+<h3>기존의 바인딩의 보관 유지</h3>
+<blockquote>
+Java 바인딩 파일이 벌써 존재하는 경우는,<i>-keep</i> 플래그를 지정하면(자), 컴파일러에 의한 덧쓰기를 회피할 수 있습니다. 디폴트에서는, 벌써 존재할지 어떨지에 관계없이, 모든 파일이 생성됩니다. 이러한 파일을 커스터마이즈 했을 경우 (다만, 그러한 내용이 정확하다라고 나무 이외는 커스터마이즈는 피한다), -keep 옵션은 유용합니다. 다음의 커멘드는,
+
+<UL><TT> idlj <B>-keep</B> My.idl </TT></UL>
+
+클라이언트측의 바인딩으로, 아직 존재하지 않는 것을 모두 발행합니다.
+</blockquote>
+
+
+<h3>컴파일의 진척 상황의 표시</h3>
+<blockquote>
+IDL-to-Java 컴파일러는, 실행의 각 단계에서 상태 메세지를 생성합니다. 「장황」모드 (메세지가 많은 모드)로 하려면 ,<tt>-v</tt> 옵션을 사용합니다.
+
+<UL><TT>idlj <B>-v</B> My.idl</TT></UL>
+
+디폴트에서는, 컴파일러는 장황 모드에서는 실행되지 않습니다.
+</blockquote>
+
+
+<h3>버젼 정보의 표시</h3>
+<blockquote>
+<P>IDL-to-Java 컴파일러의 빌드 버젼을 표시하려면 , 커멘드행으로 <i>-version</i> 옵션을 지정합니다.
+
+</p><P><TT>idlj -version</TT>
+
+</p><P>버젼 정보는, 컴파일러에 의해 생성된 바인딩내에도 기입해지고 있습니다. 이 옵션을 커멘드행으로 지정하면(자), 그 이외의 옵션을 지정해도, 모두 무시됩니다.
+
+</p></blockquote>
+
+<A NAME="Options"></A> 
+<H2>옵션</H2>
+
+<BLOCKQUOTE>
+
+<DL>
+<DT>
+<B>-d <i>symbol</i></B>
+</DT>
+
+<DD>
+이 옵션은, IDL 파일에 다음과 같은 행을 추가했을 경우와 등가입니다.
+</DD>
+<blockquote>
+<pre>
+#define <i>symbol</i>
+</pre>
+</blockquote>
+<p>
+
+</p><DT>
+<B>-emitAll</B>
+</DT>
+<DD>
+<code>#include</code> 파일내에서 정의되고 있는 것도 포함해, 모든 형태를 발행합니다.
+</DD>
+
+<p>
+
+</p><DT>
+<B>-f<i>side</i></B>
+</DT>
+<DD>
+발행하는 바인딩을 정의합니다. <i>side</i> 는,<tt>client</tt>,<tt>server</tt>,<tt>serverTIE</tt>,<tt>all</tt>,<tt>allTIE</tt> 의 어느 쪽인지입니다. <tt>-fserverTIE</tt> 또는 <tt>-fallTIE</tt> 옵션을 지정하면(자), 위양 모델 스켈리턴이 발행됩니다. 이 플래그를 지정하지 않았던 경우는,<tt>-fclient</tt> 가 지정된 것이라고 보여집니다.
+</DD>
+
+<p>
+
+</p><dt>
+<b>-i <i>include-path</i></b>
+</dt>
+<dd>
+디폴트에서는, 인클루드 파일은 커런트 디렉토리로부터 검색됩니다. 이 옵션을 지정하면(자), 다른 디렉토리를 추가할 수 있습니다.  
+</dd>
+<p>
+
+
+
+</p><dt>
+<b>-keep</b>
+</dt>
+<dd>
+생성되는 파일이 벌써 존재하고 있는 경우는, 그 파일이 덧쓰기되지 않습니다. 디폴트에서는, 덧쓰기됩니다.
+</dd>
+<p>
+
+</p><dt>
+<b>-noWarn</b>
+</dt>
+<dd>
+경고 메세지를 표시하지 않게 합니다.
+</dd>
+<p>
+
+</p><dt>
+<b>-oldImplBase</b>
+</dt>
+<dd>
+v1. 4 보다 전의 JDK ORB 와 호환성이 있는 스켈리턴을 생성합니다. 디폴트에서는, POA 상속 모델의 서버측 바인딩이 생성됩니다. 이 옵션을 지정하면(자),<tt>ImplBase</tt> 상속 모델의 클래스인 서버측 바인딩이 생성되므로, 낡은 버젼의 Java 프로그램 언어와의 하위 호환성을 얻을 수 있습니다.  
+</dd>
+<p>
+
+</p><DT>
+<B>-pkgPrefix <i>type prefix</i></B>
+</DT>
+<DD>
+<i>type</i> 가 파일 스코프로 검출되었을 경우는, 그 형태에 대해서 생성되는 모든 파일에 대해, 생성되는 Java 패키지명에 <i>prefix</i> 라고 하는 접두사가 부가됩니다. <i>type</i> 는, 톱 레벨 모듈의 단순명인가, 어느 모듈보다 외측에서 정의된 IDL 형의 단순명의 어느 쪽인지입니다.
+</DD>
+<P>
+</p><DT>
+<B>-pkgTranslate <i>type package</i></B>
+</DT>
+<DD>
+식별자안에 모듈명 type 가 검출되면(자), 생성되는 Java 패키지내의 모든 파일에 대해, 식별자안의 그 이름을 package 로 옮겨놓을 수 있습니다. 최초로 <tt>pkgPrefix</tt> 를 변경합니다. type 는, 톱 레벨의 모듈, 또는 모든 모듈의 외부에서 정의된 IDL 형의 단순명입니다. 그리고, 완전한 패키지명에 정확하게 일치하지 않으면 안됩니다.  
+
+<P>1 개의 식별자 중(안)에서 복수의 변환이 매치 하는 경우는, 가장 긴 매치이 선택됩니다. 예를 들어, 다음과 같은 인수가 지정되고 있는 경우는,
+</p><P>
+</p><pre>
+  -pkgTranslate foo bar -pkgTranslate foo.baz buzz.fizz
+</pre>
+<p>
+다음과 같은 변환이 실시됩니다.
+</p><P>
+</p><pre>
+foo          =>	bar
+foo.boo      =>	bar.boo
+foo.baz      =>	buzz.fizz
+foo.baz.bar  =>	buzz.fizz.bar
+</pre>
+
+
+<P>다음의 패키지명을 변환할 수 없습니다.
+</p><UL>
+	<LI><tt>org</tt>
+	</li><LI><tt>org.omg</tt>, 또는 <tt>org.omg</tt> 의 서브 패키지
+</li></UL>
+<P>이러한 패키지명을 변환하려고 하면(자), 호환성이 없는 코드가 생성됩니다. 그리고,<tt>-pkgTranslate</tt> 의 뒤의 최초의 인수로서 그러한 패키지를 사용하면(자), 에러로서 다루어집니다.
+</p></DD>
+
+<p>
+</p><DT>
+<B>-skeletonName <i>xxx%yyy</i></B>
+</DT>
+<DD>
+<i>xxx%yyy</i> 가, 스켈리턴에 이름을 붙이는 패턴으로서 사용됩니다. 디폴트는, 다음과 같습니다.
+<UL>
+	<LI><tt>POA</tt> base class의 경우는 「%POA」(<tt>-fserver</tt> 또는 <tt>-fall</tt>)
+	</li><LI><tt>oldImplBase</tt> 클래스의 경우는 「_%ImplBase」(<tt>-oldImplBase</tt> 한편 (<tt>-fserver</tt> 또는 <tt>-fall</tt>))
+</li></UL>
+</DD>
+
+
+<p>
+</p><DT>
+<B>-td <i>dir</i></B>
+</DT>
+<DD>
+출력 디렉토리로서 커런트 디렉토리는 아니고,<i>dir</i> 가 사용됩니다.
+</DD>
+
+<p>
+</p><DT>
+<B>-tieName <i>xxx%yyy</i></B>
+</DT>
+<DD>
+이 패턴에 따라 Tie 에 이름을 붙일 수 있습니다. 디폴트는, 다음과 같습니다.
+<UL>
+	<LI><tt>POA</tt> Tie base class의 경우는 「%POATie」(<tt>-fserverTie</tt> 또는 <tt>-fallTie</tt>)
+	</li><LI><tt>oldImplBase</tt> Tie 클래스의 경우는 「%_Tie」(<tt>-oldImplBase</tt> 한편 (<tt>-fserverTie</tt> 또는 <tt>-fallTie</tt>))
+</li></UL>
+</DD>
+
+
+<p>
+</p><DT>
+<B>-verbose</B>
+</DT>
+<DD>
+장황 모드가 됩니다.
+</DD>
+
+<p>
+
+</p><DT>
+<B>-version</B>
+</DT>
+<DD>
+버젼 정보를 표시해 종료합니다.
+</DD>
+
+</DL>
+각 옵션의 상세한 것에 대하여는, 「설명」의 섹션을 참조해 주세요.
+</blockquote>
+
+<H2>제약</H2>
+<blockquote>
+<ul><li>
+글로벌 스코프내의 이스케이프 된 식별자는, IDL 원시형의 <tt>Object</tt> 또는 <tt>ValueBase</tt> 와 같은 철이어 되지 않습니다. 이러한 식별자에 대해서는, 심볼 테이블이 사전에 로드 되고 있어 이러한 식별자의 재정의를 허가하면(자) 원의 정의가 덧쓰기되어 버립니다. 이것은, 아마 항구적인 제약입니다. </li>
+
+
+<li>
+<tt>fixed</tt> 라고 하는 IDL 형은 지원되고 있지 않습니다. </li>
+
+</ul>
+</blockquote>
+
+
+<H2>기존의 문제점</H2>
+<blockquote>
+<ul>
+<li>글로벌 식별자에 대해 임포트가 생성되지 않습니다. 예기 되지 않는 로컬 impl 를 호출하면(자), 예외를 받습니다.  그러나, 그 원인은,<tt>ServerDelegate</tt> DSI 코드내의 <tt>NullPointerException</tt> 에 있는 것 같습니다. </li>
+
+</ul>
+
+</BLOCKQUOTE>
+<HR SIZE=3 NOSHADE />
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2001 &#169;Sun Microsystems, Inc. <A HREF="http://www.sun.com">All Rights Reserved. </FONT></P>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30 /> <BR /> <FONT SIZE="+1"><i>Java Software </i></FONT>
+</TD>
+</TR>
+</TABLE>
+
+</BODY>
+</HTML>
+
+

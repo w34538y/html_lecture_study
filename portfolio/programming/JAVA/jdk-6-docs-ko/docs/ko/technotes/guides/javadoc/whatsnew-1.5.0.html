@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>신기능에 대해서는, 다음의 문서로 설명합니다.  - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="white">
+
+
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+
+<TD>
+<center>
+<h1>신기능에 대해서는, 다음의 문서로 설명합니다. </h1>
+</center>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Javadoc 툴</a> </font>
+</TD>
+</TR>
+</TABLE>
+<p>
+
+<!-- ==================== CONTENTS ============================== -->
+
+
+이 문서에서는, 버젼 1.4. 2 에서 5.0 (이전의 명칭은 1.5. 0)에의 이행으로 Javadoc 툴에 대해서 행해진 변경에 대해 설명합니다.  
+<p>
+게재되고 있는 변경점에는, 버그 번호와 그 수정이 Javadoc 툴의 프론트엔드에 대하는 것 ( 「툴」)인지, 또는 표준 도크 렛에 대하는 것 ( 「표준 도크 렛」)일지가 나타나고 있습니다. 「리그렛션」이라고 하는 용어는, 1.3.x 에서는 동작하고 있었는데, 1.4.x 로 동작하지 않게 되어, 5.0 으로 수정된 기능에 대해서 사용됩니다.
+
+<ul>
+<li><a href="#newfeatures">주요한 신기능</a> 
+<li><a href="#bugfixes">주요한 버그 수정</a> 
+<li><a href="#knownbugs">기존의 버그</a> 
+<li><a href="#incompatibilitieswithcustomdoclets">신기능:</a> 
+<li><a href="#featuresandfixes">신기능과 버그 수정</a> 
+  <ul type="disc">
+<li><a href="#commandlineoptions">커멘드행 옵션</a> 
+<li><a href="#tags">버그 수정:</a> 
+<li><a href="#links">링크</a> 
+<li><a href="#generatedapispec">생성되는 API 스펙</a>  <!--    <li><a href="#html">Javascript</a>   -->
+<li><a href="#invalidhtml"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4852280.html">4852280</a> , 표준 도크 렛)</a> 
+<li><a href="#navbar"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4689286.html">4689286</a> , 표준 도크 렛)</a> 
+<li><a href="#accessibility">Accessibility</a> 
+<li><a href="#runningjavadoc">Javadoc 의 실행</a> 
+<li><a href="#messages">에러 메세지, 경고 메세지, 상태 메세지</a> 
+<li><a href="#docletapi">도크 렛 API</a> 
+  </ul>
+</ul>
+
+<p>
+
+
+<!-- ================== NEW FEATURES ====================== -->
+
+
+<a name="newfeatures"></a> 
+<h3>주요한 신기능</h3>
+
+<!--      Decided not to include all with at least 1 vote, because      that would subject everyone to reading trivial bugs for the      sake of a single person (who might not even read this).  -->
+
+<ul>
+
+<li><b>총칭, 열거형, 가변 인수:</b> 이러한 새로운 언어 기능에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4421066.html">4421066</a> , 툴)와 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4789689.html">4789689</a> , 표준 도크 렛, 투표수 1)에 추가했습니다.
+
+<li><b>주석:</b> 주석 및 주석형에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugPa
+rade/bugs/4904495.html">4904495</a> , 툴)과 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4905985.html">4905985</a> , 표준 도크 렛)에 추가했습니다.
+
+  <a name="breakiterator"></a> 
+<li><b>BreakIterator:</b> 5.0 에서는, -breakiterator 의 경고 메세지를 제거했습니다.  또, 문장의 단락을 판별하는 디폴트 알고리즘은, 이전의 릴리스와 같습니다. 즉, -breakiterator 옵션은, 5.0 에서는 디폴트가 아니게 되었습니다.  또, 향후 디폴트로 할 예정도 없습니다. 이것은, 「다음의 메이저 릴리스」(5.0)로 디폴트를 변경할 예정이라고 하기 이전의 방침이 변경이 된 것을 의미합니다. 따라서, 1.4.x 로 breakiterator 의 경고의 표시를 없애기 위한 원시 코드 변경을 행하지 않은 경우는, 아무것도 조치를 취할 필요가 없습니다.  5.0 에서는 경고가 표시되지 않게 되기 때문입니다. 이러한 방침 전환의 이유는, -breakiterator 를 디폴트로 하는 것의 메리트보다, 그 변경에 수반해 필요하게 되는 원시 코드 변경의 수고라고 하는 디메리트가 크다고 생각한 것입니다. 이 건으로 여러분에게 여분의 수고를 걸쳐 , 혼란을 부른 것을 사과하겠습니다. (덧붙여 -breakiterator 옵션은 1.4. 0 으로 추가되었다.  또, 영어 로케일의 경우, 이 옵션을 지정하면(자) 다큐멘테이션 코멘트내의 최초의 문장의 마지막을 판별하기 위해서 BreakIterator 클래스가 강제적으로 사용됩니다. (영어 이외의 언어에서는, BreakIterator 에 의한 판별이 이전부터 실행되고 있었습니다.  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4959985.html">4959985</a> , 툴)<br> 게다가 장래의 릴리스 (가능하면 5.1 로부터에서는, 새로운 javadoc 태그를 추가해 (기능 요구 <a href="http://developer.java.sun.com/developer/bugParade/bugs/4921374.html">4921374</a> ), 개요를 명시적으로 마크 할 수 있도록(듯이) 할 예정입니다. 그 결과, 어떠한 검출법을 사용할 필요가 없어집니다.   
+
+  <a name="{@code}"></a> 
+<li><b>새로운 태그 {@literal} 및 {@code}:</b> {@literal} 태그는, 리터럴 텍스트를 나타냅니다. 예를 들어, 다큐멘테이션 코멘트 <tt>{@literal a&lt;B&gt;c}</tt> 는, 생성되는 HTML 페이지로 미변경인 채 <tt>a&lt;B&gt;c</tt> 라고 표시됩니다. 즉,<tt>&lt;B&gt;</tt> 는 볼드 태그로서 해석되지 않습니다. <br><tt>{@code}</tt> 태그는, 리터럴 텍스트를 코드 폰트로서 서식 지정합니다. <tt>{@code abc}</tt> 는 <tt>&lt;code&gt;{@literal abc}&lt;/code&gt;</tt> 와 등가입니다.
+
+ <a name="{@value}"></a> 
+<li><b>태그 {@value <em>arg</em>}:</b>이 인 라인 태그는, 다음과 같이, 프로그램 요소명을 받아들이게 되었습니다. <code>{@value package.class#field}</code>. 이러한 표기는, 정수 필드의 다큐멘테이션 코멘트내 뿐만이 아니라, 임의의 다큐멘테이션 코멘트내에서 사용할 수 있습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4764045.html">4764045</a> , 표준 도크 렛, 투표수 2)
+
+ <a name="package-info.java"></a> 
+<li><b>package-info.java</b>:이 이름으로 원시 파일을 작성해, 패키지의 코멘트와 주석을 보존할 수가 있습니다. <code>package.html</code> (코멘트만을 지원해, 주석은 지원하지 않는다)의 대용이 됩니다. <code>package-info.java</code> 가 존재하는 경우, javadoc 는 <code>package.html</code> 를 무시해, (경우에 따라서는 주석을 붙일 수 있었던) 패키지 선언의 직전에 package doc 코멘트를 찾습니다. javadoc 툴은,<code>package-info.java</code> 및 <code>package.html</code> 의 선택과 해석을 실시해, doc 코멘트를 도크 렛에 건네줍니다. <a href="../../../technotes/tools/windows/javadoc.html#packagecomment"><code>「패키지 코멘트 파일」</code>을 참조해 주세요.
+
+<a name="@Deprecated"></a> </a> <li><a href="../../../technotes/tools/windows/javadoc.html#packagecomment"><b>@Deprecated 주석</b>:이것은 5.0 의 새로운 주석으로, 프로그램 요소를 비추천으로 하기 위한 <code>@deprecated</code> 태그에 추가해 사용합니다. Java 언어 스펙에서는,<code>@Deprecated</code> 주석 (반드시 태그는 아니다)을 사용하는 경우, 경고를 발행하는 컴파일러가 필요합니다.  <code>@deprecated</code> 태그에는, 비추천 프로그램 요소에 대신하는 요소를 기술하는 장소가 있습니다. </a> <a href="deprecation/deprecation.html">「@Deprecated 주석」</a>을 참조해 주세요.
+
+ <a name="stddocletimpl"></a> 
+<li><b>표준 도크 렛을 재구현: </b> 표준 도크 렛 및 MIF 도크 렛이 재구현되어 가능한 한 많은 코드를 공유하게 되었습니다. 이것에 의해, 양쪽 모두의 도크 렛의 버그를 삭감하는 것이나, MIF 도크 렛의 기능을 표준 도크 렛의 기능에 승격 지난 일이 가능하게 됩니다. 덧붙여 새로운 MIF 도크 렛은 아직 릴리스 되고 있지 않습니다 (아마, 버젼 1.4 Beta 1 이라고 하는 명칭이 될 예정). 이 2 개의 도크 렛을 병합 하는 주된 이유는, 어느 쪽의 도크 렛도 형식이 다른 (HTML 와 PDF)만으로 본질적으로는 같은 문서를 생성하는 것이기 때문입니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4638723.html">4638723</a> , 표준 도크 렛, 투표수 2)<br> 이 공유 코드는, 도크 렛 툴 킷으로서 공개하는 것을 예정하고 있습니다. <a href="http://java.sun.com/j2se/javadoc/"> Javadoc 의 홈 페이지</a>를 참조해 주세요.
+<p>
+
+모든 신기능에 대해서는,<a href="#featuresandfixes">아래에 </a>게재합니다.
+
+</ul>
+
+<!-- ================== NOTABLE BUG FIXES ====================== -->
+
+<p>
+
+<a name="bugfixes"></a> 
+<h3>주요한 버그 수정</h3>
+
+<ul>
+
+<li><b>옵션 -tag</b>:(리그렛션) -tag 태그를 수정해, 그 이름에 데쉬 「-」을 포함할 수가 있도록(듯이) 되돌렸습니다 (1.4. 1 으로 같이).  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4920381.html">4920381</a> , 표준 도크 렛, 투표수 59)
+
+<li><b>{@inheritDoc} 가 원인의 행업</b>:{@inheritDoc} 를 (1) 상속할 수 없는 경우, 혹은 (2) super-superinterface 를 상속하지 않는 경우, 행업 하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4812240.html">4812240</a> , 표준 도크 렛, 투표수 18)
+
+<li><b>태그 @param</b>:(리그렛션) @param 를 수정해, 파라미터명 ( 제 1 인수)이 잘못되어 있어도, 파라미터명을 출력하도록(듯이) 했습니다 (1.3. 1 으로 같이).  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4802275.html">4802275</a> , 표준 도크 렛, 투표수 1)
+
+<li><b>태그 {@value}</b>:{@value} 를 커스텀 태그 중(안)에서 사용해도, NullPointerException 가 생성되지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4821796.html">4821796</a> , 표준 도크 렛, 투표수 1)
+
+<li><b>브라우저의 스크롤 바</b>:정수치의 개요로, 클래스 표제의 주위에 테이블의 테두리를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4852280.html">4852280</a> , 표준 도크 렛, 투표수 5)
+
+<li><b>package-private 문서의 상속</b>:-private 옵션을 사용했을 때, package-private 클래스로부터 상속된 메소드가, 상속된 메소드의 개요 테이블에만 문서화 되어 상세 섹션에는 문서화 되지 않는다고 하는, 올바른 동작을 하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4780441.html">4780441</a> , 표준 도크 렛, 투표수 5)
+
+<li><b>최초의 문장이 {@inheritDoc} 로 끝나 있는 경우</b>:{@inheritDoc} 를 포함한 최초의 문장의 마지막이 올바르게 판단됩니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4767038.html">4767038</a> , 표준 도크 렛, 투표수 4)
+
+<li><b>최초의 문장에 {@docRoot} 가 포함되어 있으면(자) 링크가 망가지는</b>:{@docRoot} 링크를 포함한 최초의 문장은, 단일 페이지 인덱스에서는 망가지지 않습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4760191.html">4760191</a> , 표준 도크 렛, 투표수 3)
+
+<li><b>상속된 코멘트에의 링크</b>:상속된 코멘트가, 단지 클래스에 링크할 뿐만 아니라, 적절한 멤버에게 직접 링크하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4368820.html">4368820</a> , 표준 도크 렛, 투표수 1)
+
+<li>모든 버그 수정에 대해서는,<a href="#featuresandfixes">아래에 </a>게재합니다. 기존의 버그 Javadoc 5.0 에는, 행업이나 크래쉬를 일으키는 기존의 버그가 있습니다. (그 일람은, 「Bug Parade」의 데이타베이스로 볼 수가 있습니다.
+
+<p>
+상세한 것에 대하여는,<a href="http://java.sun.com/j2se/javadoc/faq/index.html#bugs">Javadoc FAQ</a>  를 참조해 주세요.
+
+</ul>
+
+
+<!-- ================== KNOWN BUGS ====================== -->
+
+<a name="knownbugs"></a> 
+<h3>기존의 버그</h3>
+
+Javadoc 5.0 에는, 행업이나 크래쉬의 원인이 되는 버그는 없습니다. <a href="http://java.sun.com/j2se/javadoc/faq/index.html#bugs">Javadoc FAQ</a>  에 기재된 Bug Parade 로, 데이타베이스의 일람표를 참조해 주세요.
+주요한 버그는 다음과 같습니다.
+<ul>
+<li>이러한 기능에 대응하기 위해(때문에), 커스텀 도크 렛도 개정할 필요가 있습니다. Javadoc 툴은, 이른바 「유산 (종래의)」도크 렛에 대해서, 가능한 범위에서 다음과 같은 프로그람뷰를 제시하려고 합니다. 회피책:없음 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/5081166.html">5081166</a> )
+
+<li>따라서, 예를 들어, 범용형의 구조로부터는 형태 파라미터와 형태 인수가 제거되어 형태 변수와 와일드 카드형은 새롭게 옮겨놓을 수 있어<code>ClassDoc.fields()</code> 는 enum 정수를 돌려줍니다. 회피책:없음 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4778311.html">4778311</a> )
+
+<li><b>부정한 「정수치」페이지를 생성</b> 정수에 꺽쇄묶음 '&lt;'가 포함되는 경우<br>회피책：없음 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/5077317.html">5077317</a> )
+
+<li>예를 들어, 5.0 의 Javadoc 툴을 사용하는 경우에, 도크 렛은 1.4 를 베이스로 하고 있어 처리 대상의 원시 코드도 1.4 를 베이스로 하고 있다고 해도, 그 도크 렛을 컴파일 할 수가 있어 도크 렛은 이전과 같이 동작합니다 (버그 수정은 제외하다). 에러 메세지:<tt>java.util.MissingResourceException:이후에의 리스트에는, 5.0 에 있어서의 실질적으로 모든 신기능과 버그의 수정을 게재합니다. 매우 작은 변경은 생략 하고 있습니다 (도크 렛 API 문서로 망가져 있던 링크의 수정 등). 커멘드행 옵션 <b>신기능:</b> -keywords 옵션에 의해, 생성되는 각 HTML 파일에, 검색에 편리한 META 태그가 추가되도록(듯이) 했습니다. 예를 들어 <tt>&lt;action&gt;</tt> 가 부정한 <tt>&lt;a&gt;</tt> 태그라고 해석됩니다.  (<a href="http://developer.java.sun.com/developer/bugParade/bugs/5082928.html">5082928</a> )
+
+</ul>
+
+<!-- ================== INCOMPATIBILITIES ====================== -->
+
+<a name="incompatibilitieswithcustomdoclets"></a> 
+<h3>커스텀 도크 렛과의 비호환성</h3>
+
+5.0 보다 전에 기술된 커스텀 도크 렛은, 5.0 의 새로운 언어 기능을 사용하는 원시 파일에 대해서 실행하면(자), 호환성의 문제가 발생합니다.
+
+<ul>
+<li><b>새로운 언어 기능</b>:도크 렛 API 및 표준 도크 렛은, 5.0 의 새로운 언어 기능 (범용형, 열거형, 가변 인수 및 주석)을 처리할 수 있도록(듯이) 개정되었습니다. 이러한 기능에 대응하기 위해(때문에), 커스텀 도크 렛도 개정할 필요가 있습니다.
+<p>
+Javadoc 툴은, 이른바 「유산 (종래의)」도크 렛에 대해서, 가능한 범위에서 다음과 같은 프로그람뷰를 제시하려고 합니다. (1) 5.0 보다 전의 원시 코드에서도 계속해 동작한다. (2) 5.0 원시 코드로 기대되는 일에 적합한다. 따라서, 예를 들어, 총칭의 구조로부터는 형태 파라미터와 형태 인수가 제거되어 형태 변수와 와일드 카드형은 새롭게 옮겨놓을 수 있어<code>ClassDoc.fields()</code> 는 enum 정수를 돌려줍니다.
+<p>
+그렇다고는 해도, 유산 지원의 스펙은 정밀도가 높지는 않습니다. 처리 대상의 언어를 이해할 수 있도록(듯이) 도크 렛이 갱신될 때까지 의, 잠정적인 호환 모드입니다. 보증되고 있는 것은, 도크 렛 그 자체의 소스 및 바이너리의 호환성 뿐입니다. 예를 들어, 5.0 의 Javadoc 툴을 사용하는 경우에, 도크 렛은 1.4 를 베이스로 하고 있어 처리 대상의 원시 코드도 1.4 를 베이스로 하고 있다고 해도, 그 도크 렛을 컴파일 할 수가 있어 도크 렛은 이전과 같이 동작합니다 (버그 수정은 제외하다).  
+
+</ul>
+
+<hr>
+
+<!-- =============== NEW FEATURES AND BUG FIXES ================== -->
+
+<a name="featuresandfixes"></a> 
+<h3>신기능과 버그 수정</h3>
+
+이후에의 리스트에는, 5.0 에 있어서의 실질적으로 모든 신기능과 버그의 수정을 게재합니다. 매우 작은 변경은 생략 하고 있습니다 (도크 렛 API 문서로 망가져 있던 링크의 수정 등).
+<p>
+
+<a name="commandlineoptions"></a>  <b>커멘드행 옵션</b>
+
+<ul>
+
+<!-- DON'T DOCUMENT YET <li><b>New feature:</b> Added -packagesheader option for upper left frame    (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4766385.html">4766385</a> , stddoclet) -->
+
+<!-- THIS ISN'T IN BETA1 -- PROBABLY BETA2 <li><b>New feature:</b> Added "-sourcetab &lt;n&gt;" option to convert each tab to &lt;n&gt; spaces.      (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4510979.html">4510979</a> , stddoclet) -->
+
+<li><b>신기능:</b> -keywords 옵션에 의해, 생성되는 각 HTML 파일에, 검색에 편리한 META 태그가 추가되도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4776637.html">4776637</a> , 표준 도크 렛)
+ 
+<li><b>신기능:</b>새롭다 -notimestamp 옵션을 사용하면(자), HTML 페이지 위에 파묻히고 있는 은폐 표시의 타임 스탬프가 억제됩니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4777717.html">4777717</a> )
+
+<li><b>신기능:</b>이름에 하이픈을 포함한 테스트용의 서브 패키지를 작성할 수 있게 되었습니다. -subpackages 를 사용했을 때, 그러한 서브 패키지는 스킵 되어 경고는 생성되지 않습니다. 즉, 이 옵션에서는, Java 명으로서 무효인 이름의 디렉토리에 조우해도 경고를 생성하지 않습니다 (Java 명으로서 무효인 이름의 규칙은, 무효인 원시 파일명과 같다). (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4773013.html">4773013</a> , 툴)
+ 
+<li>버그 수정 :-help 옵션으로 사용 방법으로 「[classnames]」가 표시된다고 하는 실수가 수정되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4775743.html">4775743</a> , 툴)
+ 
+<li>버그 수정 :-group 옵션으로, 경고의 중복이 없어졌습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4924383.html">4924383</a> , 표준 도크 렛)
+
+</ul>
+
+<a name="tags"></a>  <b>태그와 태그 렛</b>
+
+<ul>
+
+<li><b>신기능:</b> {@literal} 태그는 리터럴 텍스트를 나타냅니다. 이 태그로 둘러싸인 텍스트에는, HTML 마크 업이나, 상자의 javadoc 태그가 포함되지 않는 것으로서 해석됩니다. 예를 들어, 다음의 다큐멘테이션 코멘트{@literal a&lt;B&gt;c} 는, 생성되는 HTML 페이지로 미변경인 채 표시됩니다. a&lt;B&gt;c - 즉, &lt;B&gt; 는 볼드 태그로서 해석되지 않습니다.
+
+<li><b>신기능:</b> {@code} 태그는, 리터럴 텍스트를 코드 폰트로서 서식 지정합니다. 이것은 &lt;code&gt;{@literal}&lt;/code&gt; 와 등가입니다.
+
+<li><b>신기능:</b> {@value} 인 라인 태그가, 다음과 같이, 프로그램 요소 및 라벨의 이름을 받아들이게 되었습니다. <code>{@value package.class#member label}</code>. 그 때문에, 임의의 다큐멘테이션 코멘트 중(안)에서 이 태그를 사용할 수 있습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4764045.html">4764045</a> , 표준 도크 렛)
+ 
+<li><b>신기능:</b>Javadoc 태그가 아닌 @Deprecated 주석은 5.0 으로부터의 신기능으로, 프로그램 요소를 비추천으로 하기 위한 <code>@deprecated</code> 태그에 추가해 사용합니다. <a href="deprecation/deprecation.html">「@Deprecated 주석」</a>을 참조해 주세요.
+
+<li>버그 수정:(리그렛션) :@param 를 수정해, 파라미터명 ( 제 1 인수)이 잘못되어 있어도, 파라미터명을 출력하도록(듯이) 했습니다 (1.3. 1 으로 같다).  (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4802275.html">4802275</a> , 표준 도크 렛)
+ 
+<li>버그 수정:(리그렛션) -tag 태그를 수정해, 그 이름에 데쉬 「-」을 포함할 수가 있도록(듯이) 되돌렸습니다 (1.4. 1 으로 같다).  (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4920381.html">4920381</a> , 표준 도크 렛)
+ 
+<li>버그 수정:최초의 문장에 {@docRoot} 링크가 포함되어 있어도, 단일 페이지의 인덱스로 링크가 망가지지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4760191.html">4760191</a> , 표준 도크 렛)
+ 
+<li>버그 수정:최초의 문장에 {@inheritDoc} 가 포함되어 있는 경우에, 문장의 마지막을 올바르게 판별하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4767038.html">4767038</a> , 표준 도크 렛, 투표수 4)
+
+<li>버그 수정:{@docroot} 태그를 -bottom 의 텍스트로 사용해도, help-doc.html 페이지로 링크가 망가지지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4851991.html">4851991</a> , 표준 도크 렛)
+
+<li>버그 수정:태그 렛의 코드를 수정해, 스탠드얼론 태그로 인 라인 태그를 처리할 수 있도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4654308.html">4654308</a> , 표준 도크 렛)
+ 
+<li>버그 수정:{@value} 를 커스텀 태그 중(안)에서 사용해도, NullPointerException 가 생성되지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4821796.html">4821796</a> , 표준 도크 렛)
+ 
+<li>버그 수정:인 라인 태그안에, 인 라인 태그의 일부에서는 없는, 상자안괄호를 기술할 수 있게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4965490.html">4965490</a> , 툴)
+  
+<li>버그 수정:@param, @return, 및 일부의 @throws 태그가, 코멘트를 올바르게 상속하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4915434.html">4915434</a> , 표준 도크 렛)
+ 
+<li>버그 수정:예외가 체크되는 경우, @throws 문서가 자동으로 상속되게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4947455.html">4947455</a> , 표준 도크 렛)
+
+</ul>
+
+
+<a name="links"></a>  <b>링크</b>
+
+<ul>
+ 
+<li>버그 수정:상속된 코멘트가, 단지 클래스에 링크할 뿐만 아니라, 적절한 멤버에게 직접 링크하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4368820.html">4368820</a> , 표준 도크 렛)
+ 
+<li>버그 수정:클래스가 직접적인 멤버를 가지지 않고, 멤버를 상속하고 있는 경우에, 개요의 표제가 결핍 하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904036.html">4904036</a> , 표준 도크 렛)
+ 
+<li>버그 수정:최초의 문장의  &lt;a href&gt; 에 상대 링크가 포함되어 있는 경우, 그것이 다른 페이지에 표시될 때, 망가진 링크를 생성하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4460354.html">4460354</a> , 표준 도크 렛)
+<p>
+링크에 관련한 그 외의 버그 수정에 대해, 「태그와 태그 렛」섹션에 있는 <code>{@docRoot}</code> 태그에 관련한 항목을 참조해 주세요.
+
+</ul>
+
+
+<a name="documentedsourcefiles"></a>  <b>원시 파일 문서</b>
+<ul>
+<li><b>신기능:</b> <code>package-info.java</code> 는, 원시 파일에 패키지의 코멘트와 주석을 보존하기 위한 예약명입니다. <a href="#package-info.java"><code>package-info.java</code></a>  의 내용에 대해서는 전술의 설명을 참조해 주세요.
+</ul>
+
+<a name="generatedapispec"></a>  <b>생성되는 API 스펙</b>
+
+<ul>
+
+<li><b>신기능:</b> 총칭, 열거형, 변수 인수에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4421066.html">4421066</a> , 툴)와 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4789689.html">4789689</a> , 표준 도크 렛)에 추가했습니다.
+
+<li><b>신기능:</b> 주석 및 주석형에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904495.html">4904495</a> , 툴)와 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4905985.html">4905985</a> , 표준 도크 렛)에 추가했습니다.
+ 
+<li><b>신기능:</b> 읽기 쉽게 하기 위해서, long 형의 정수 필드를 소문자의 「l」는 아니고 「L」로서 출력하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4869993.html">4869993</a> , 툴)
+ 
+<li><b>신기능:</b> 읽기 쉽게 하기 위해서, long 형의 serialVersionUID 치를 소문자의 「l」는 아니고 「L」로서 출력하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4821483.html">4821483</a> , 표준 도크 렛)
+ 
+<li><b>신기능:</b> 「추천되어 있지 않은 API」리스트의 상단에 목차를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4927552.html">4927552</a> , 표준 도크 렛)
+ 
+<li>버그 수정:{@inheritDoc} 가 (1) 슈퍼-슈퍼 인터페이스로부터 상속할 수 없는 경우, 또는 (2) 슈퍼 슈퍼 인터페이스로부터 상속하고 있는 경우에, 행업 하는 것이 없어졌습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4812240.html">4812240</a> , 표준 도크 렛)
+
+<li>버그 수정:상속하고 있는 public 이외의 슈퍼 클래스에는 언급하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4874845.html">4874845</a> , 표준 도크 렛)
+ 
+<li>버그 수정:「정의:」 및 「오버라이드(override):」의 코멘트를, 외부적으로 참조하고 있는 클래스로부터 상속하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4857717.html">4857717</a> , 표준 도크 렛)
+ 
+<li>버그 수정:문서에 대해, package-private 클래스의 멤버로부터는 상속하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4780441.html">4780441</a> , 표준 도크 렛)
+ 
+<li>버그 수정:메소드의 설명의 순서가 실행 마다 변동한다고 하는 것이 없어졌습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4885372.html">4885372</a> , 표준 도크 렛)
+ 
+<li>버그 수정:클래스 B 가 인터페이스 I 를 구현하고 있는 클래스 A 를 확장한 것인 경우, 인터페이스 I 의 문서에, B 가 I 를 구현하고 있다고 문서화하도록(듯이) 했습니다 ( 「기존의 구현 클래스의 일람」섹션). (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4947464.html">4947464</a> , 표준 도크 렛)
+ 
+<li>버그 수정:있는 메소드가, 오버라이드(override) 한 메소드로부터 문서를 상속하는 경우에, 그 메소드와 오버라이드(override) 한 메소드로 반환값의 형태가 차이가 날 때, 멤버의 개요에 올바른 반환값의 형태가 기재되게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4951228.html">4951228</a> , 표준 도크 렛)
+ 
+<li>버그 수정:직렬화 된 형식의 페이지에, readObjectNoData()의 문서를 생성하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4770063.html">4770063</a> , 표준 도크 렛)
+ 
+<li>버그 수정:이름이 없는 패키지가 존재하는 경우에, 그 패키지에 대해서도 패키지의 개요 페이지를 생성하게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4774450.html">4774450</a> , 표준 도크 렛)
+ 
+<li>버그 수정:이름이 없는 패키지의 이름으로서 빈 상태(empty)의 캐릭터 라인을 출력하는 것이 아니라, 「이름 없음 (Unnamed)」이라고 출력하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904075.html">4904075</a> , 표준 도크 렛)
+ 
+<li>버그 수정:복수의 인터페이스를 확장하고 있는 경우에, 상속한 메소드가 모두 문서화 되게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4933335.html">4933335</a> , 표준 도크 렛)
+ 
+<li>버그 수정:인터페이스의 메소드가 「public」라고 마크 되는 것이 없어졌습니다. 이것은, 실제로는 버그는 아니고, 단순한 변경입니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4682448.html">4682448</a> , 표준 도크 렛)
+
+<li>버그 수정:생성자 의 코멘트가 올바르고 인덴트 되도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904037.html">4904037</a> , 표준 도크 렛)
+ 
+<li>버그 수정:생성되는 파일안에 packages.html 파일 (파일명은 복수형)이 포함되지 않게 되었습니다. 1.1 이래, 이 파일은 사용되지 않고, 불필요합니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4475679.html">4475679</a> , 표준 도크 렛)
+ 
+<li>버그 수정:멤버의 개요에 있는 형태 파라미터가 10 문자보다 긴 경우에, 개행을 추가해 폭을 줄이도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4927167.html">4927167</a> , 표준 도크 렛)
+ 
+</ul>
+
+<!-- <a name="javascript"></a>  <b>Javascript</b>  <ul> </ul> -->
+
+<a name="invalidhtml"></a>  <b>서식 지정과 무효인 HTML</b>
+
+<ul>
+
+<li>버그 수정:각 &lt;SCRIPT&gt; 태그와 함께 &lt;NOSCRIPT&gt; 태그를 출력하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4855054.html">4855054</a> , 표준 도크 렛)
+ 
+<li>버그 수정 :Internet Explorer 로 프레임을 표시했을 때, 불필요한 수평 스크롤 바가 표시되지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4852280.html">4852280</a> , 표준 도크 렛)
+ 
+<li>버그 수정:개행을 「\n」로서 하드 코드 하는 것을 그만두었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4938109.html">4938109</a> , 표준 도크 렛)
+ 
+<li>버그 수정:정수치의 개요로, 클래스 표제의 주위에 테이블의 테두리를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904025.html">4904025</a> , 표준 도크 렛)
+
+<li>버그 수정:특정의 HTML 소스 코멘트를 출력할지 어떨지, 조건 판단을 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904038.html">4904038</a> , 표준 도크 렛)
+ 
+</ul>
+
+
+<a name="navbar"></a>  <b>네비게이션 바</b>
+<ul>
+
+<li>버그 수정:네비게이션 바의 최초의 행에 여분의 열을 표시하지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4664607.html">4664607</a> , 표준 도크 렛, 투표수 1)
+ 
+<li>버그 수정:패키지를 1 개만 문서화했을 때에도, 패키지 링크가 액티브하게 되도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4689286.html">4689286</a> , 표준 도크 렛)
+ 
+<li>버그 수정:「전의 클래스」 및 「다음의 클래스」링크를 클릭했을 때, 현재의 패키지에 있는 모든 인터페이스<em>및</em>모든 클래스를 차례로 이동할 수 있도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4131628.html">4131628</a> , 표준 도크 렛)
+
+</ul>
+<p>
+
+<a name="accessibility"></a>  <b>Accessibility</b>
+
+<ul>
+
+<li>버그 수정:테이블의 표제에 <td> 는 아니게 <th> 를 사용하도록(듯이) 했습니다. <th> <td>.  (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4905786.html">4905786</a> , 표준 도크 렛)
+ 
+<li>버그 수정 :inherit.gif 의 대체 텍스트의 말미에, 결핍 하고 있던 공백 문자를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4956908.html">4956908</a> , 표준 도크 렛)
+
+</ul>
+
+<a name="runningjavadoc"></a>  <b>Javadoc 의 실행</b>
+
+<ul>
+
+<li>버그 수정:원시 파일이, 잘못한 디렉토리에 있는 다른 원시 파일에 링크하고 있는 경우에서도, InvocationTargetException 를 받지 않게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4835749.html">4835749</a> , 표준 도크 렛)
+ 
+<li>버그 수정:(리그렛션) 내부 클래스에서 문제가 일어나지 않게 되었습니다 (1.4. 1 에서는 정상적으로 동작하고 있었다). (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4843578.html">4843578</a> , 툴)
+
+</ul>
+
+<p>
+
+<a name="messages"></a>  <b>에러 메세지, 경고 메세지, 상태 메세지</b>
+
+<ul>
+ 
+<li><b>신기능:</b> void 메소드에 @return 태그가 있는 경우에, 경고를 내게 되었습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4490068.html">4490068</a> , 표준 도크 렛)
+ 
+<li><b>신기능:</b> 생성처 디렉토리를 새롭게 작성할 경우에, 메세지를 표시하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4657239.html">4657239</a> , 표준 도크 렛)
+ 
+<li>버그 수정 :BreakIterator 의 경고를 표시하지 않게 했습니다. 상세한 것에 대하여는,<a href="#breakiterator">전술의 설명</a>  을 참조해 주세요. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4959985.html">4959985</a> , 툴)
+
+<li>버그 수정:「first sentence」경고가 stderr 와 stdout 에 분할되는 것이 없어졌습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4753853.html">4753853</a> , 툴)
+ 
+<li>버그 수정 :DocLocale.java 의 구현을 수정해, 올바르게 번역할 수 있도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4780921.html">4780921</a> , 툴)
+ 
+<li>버그 수정:옵션의 에러를 출력하기 위해서, MessageRetriever 는 아니고, DocletErrorReporter 를 사용하도록(듯이) 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4927928.html">4927928</a> , 표준 도크 렛)
+ 
+<li>버그 수정 :package-list 파일이 결핍 하고 있다고 하는 메세지가 실제로는 「경고」인 경우, 「에러」로서 출력하지 않게 했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4625883.html">4625883</a> , 표준 도크 렛)
+
+</ul>
+
+
+<a name="docletapi"></a>  <b>도크 렛 API</b>
+
+<ul>
+
+<li><b>신기능:</b> 총칭, 열거형, 가변 인수에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4421066.html">4421066</a> , 툴)와 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4789689.html">4789689</a> , 표준 도크 렛)에 추가했습니다.
+
+<li><b>신기능:</b> 주석 및 주석형에 대한 지원를, javadoc 툴의 프론트엔드 (도크 렛 API) (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4904495.html">4904495</a> , 툴)와 표준 도크 렛 (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4905985.html">4905985</a> , 표준 도크 렛)에 추가했습니다.
+
+<li><b>신기능:</b> 도크 렛을 작성할 경우에 대상으로 한 Java 원시 코드의 버젼을 판별하기 위한 , Doclet.languageVersion 메소드를 추가했습니다. (<a href="http://developer.java.sun.com/developer/bugParade/bugs/4909767.html">4909767</a> , 툴)
+ 
+</ul>
+<p>
+
+<a name="stddoclet"></a>  <b>표준 도크 렛의 구현</b>
+
+<ul>
+
+<li>버그 수정:표준 도크 렛을 에뮤레이트 하는 도크 렛과의 코드 공유를 최대한으로 하기 위한(해), 표준 도크 렛을 다시 구현했습니다.  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4638723.html">4638723</a> , 표준 도크 렛)
+ 
+</ul>
+
+
+
+
+<!-- ======================================================= -->
+<p>
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE BORDER="0" WIDTH="100%" summary="layout">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2004 <A HREF="http://www.sun.com">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+</TR>
+</TABLE>
+
+
+
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+
+</body>
+</html>

@@ -1,0 +1,756 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>입문: RMI-IIOP 의 사용법POA 모델 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<!-- updated by dcarson for j2se 5.0 -->
+
+<CENTER><H1>입문: RMI-IIOP 의 사용법<BR>POA 베이스의 서버측 모델의 사용예</H1></CENTER>
+
+<HR>
+
+<P>이 튜토리얼에서는, 친숙한 「Hello World」프로그램의 분산 시스템판을, Java<sup><font size=-2>TM</font></sup> 의 RMI (Remote Method Invocation, 원격 메소드 호출)를 Internet Inter-ORB Protocol (IIOP) 경유로 사용해 작성하는 순서를 설명합니다. RMI-IIOP 는, CORBA (Common Object Request Broker Architecture) 기능을, 다른 많은 프로그램 언어 및 플랫폼에 대한 Java 접속성에 추가합니다. RMI-IIOP 에 의해, Web 대응의 분산 Java 원격 Management Group 가 가능하게 됩니다. 런타임 컴퍼넌트에는, IIOP 통신을 사용한 만큼 산컴퓨팅용의 Java ORB 가 포함되어 있습니다.
+   
+
+
+<P><a href="index.html">RMI-IIOP</a>  는, IIOP 를 배후의 트랜스폴트로서 사용해, RMI 인터페이스에 대한 프로그램을 작성하고 싶은 Java 프로그래머전용입니다. RMI-IIOP 는 다양한 언어로 구현되는 CORBA 객체와의 상호 운용성을 제공합니다만, 원격 인터페이스를 미리 Java RMI 인터페이스로서 정의해 둘 필요가 있습니다. EJB 의 원격 객체 모델은 RMI 베이스이므로, Enterprise JavaBeans (EJB)를 사용하는 프로그래머에게는 특히 유용합니다.    
+
+<P>분산 어플리케이션을 작성하기 위한 이제(벌써) 1 개의 선택사항으로서<a  href="../idl/index.html">Java<sup><font size=-2> TM</font></sup> IDL</a>  가 있습니다. Java IDL 는, CORBA 인터페이스 정의 언어 (IDL)로 정의된 인터페이스에 근거해 Java 프로그램 언어로 프로그램을 기술하고 싶은 CORBA 프로그래머전용입니다. 이것은 「일반적으로 대로의」CORBA 프로그래밍으로, C++ 나 COBOL 와 같은 다른 언어와 완전히 같은 방법으로 Java 를 지원하고 있습니다.
+<p>
+<hr>
+<h1>튜토리얼:「Hello World」어플리케이션</h1>
+
+<P>여기서 예로서 소개하는 분산형의 「Hello World」프로그램에서는, 클라이언트 어플리케이션으로부터 IIOP 경유로 서버 (그 클라이언트 어플리케이션의 다운로드원의 호스트상에서 가동하고 있다)에 대해서 원격 메소드 호출해 실시합니다. 이 클라이언트 어플리케이션을 실행하면(자), 「Hello World!」(이)가 표시됩니다.
+
+<P>이 튜토리얼의 구성은, 다음과 같습니다.
+<OL>
+	<LI>
+	<A HREF="#7738">원시 파일을 작성하는 순서</A> 
+
+	<LI>
+	<A HREF="#7437">클래스 파일을 컴파일 하는 순서</A> 
+
+	<LI>
+	<A HREF="#7445">네임 서비스, 서버, 및 클라이언트를 기동하는 순서</A> 
+</OL>
+
+
+
+
+
+<HR>
+
+<A NAME="7738"></A> 
+<H1>원시 파일의 작성 또는 다운로드</H1>
+
+
+
+<P>여기서 실시하는 작업은 4 개 있습니다.
+<OL>
+	<LI>
+	<A HREF="#5174">원격 클래스의 함수를 Java 프로그램 언어로 작성된 인터페이스로서 정의한다</A> 
+
+	<LI>
+	<A HREF="#5182">구현 클래스를 작성한다</A> 
+	
+	<LI>
+	<A HREF="#server">서버 클래스를 작성한다</A> 
+
+	<LI>
+	<A HREF="#5228">원격 서비스를 이용하는 클라이언트 프로그램을 작성한다</A> 
+</OL>
+
+이 튜토리얼로 작성하는 원시 파일 (<a href="RMIHelloPOA.zip">여기</a>로부터 다운로드할 수 있다)은 다음과 같습니다.
+<UL>
+	<LI> <A HREF="#5180"> <code>HelloInterface.java</code></A>  -  원격 인터페이스
+
+	<LI> <code><A HREF="#5192">HelloImpl.java</A> </code> -  <code>HelloInterface</code> 를 구현하는 원격 객체의 구현
+	
+	<LI> <code><a href="#helloserver">HelloServer.java</a> </code> - 원격 객체 구현의 인스턴스를 작성해, 그 인스턴스를 네임 서비스의 이름에 바인드 하는, RMI 서버
+
+	<LI><code><A HREF="#5235">HelloClient.java</A> </code> -  원격 메소드 <code>sayHello()</code> 를 호출하는 클라이언트 어플리케이션
+
+	
+</UL>
+
+
+<A NAME="5174"></A> <h2>원격 클래스의 함수를 Java 프로그램 언어로 작성된 인터페이스로서 정의한다</h2>
+
+Java 프로그램 언어에서는, 원격 객체는,<code>Remote</code> 인터페이스를 구현하는 클래스의 인스턴스입니다. 작성하는 원격 인터페이스에서는, 다른 머신으로부터 호출하고 싶은 각 메소드를 선언합니다. 원격 인터페이스에는, 다음의 특성이 있습니다.
+<UL>
+	<LI>
+	원격 인터페이스는,<code>public</code> 로서 선언할 필요가 있다. 그렇게 하지 않으면 클라이언트가 원격 인터페이스와 같은 패키지내에 있는 경우를 제외해, 원격 인터페이스를 구현하고 있는 원격 객체를 클라이언트가 로드하려고 한 시점에서 에러가 발생한다
+
+	<LI>
+	원격 인터페이스는,<code>java.rmi.Remote</code> 인터페이스를 상속한다
+
+	<LI>
+	각 메소드는, 어플리케이션 고유의 예외 외에,<code>throws</code> 절내에서 <code>java.rmi.RemoteException</code> (또는 <code>RemoteException</code> 의 슈퍼 클래스)를 선언할 필요가 있다
+	
+	<LI>
+	인수나 반환값으로서 (직접, 또는 로컬 객체내에 파묻혀) 주고 받아 되는 원격 객체의 데이터형은, 구현 클래스 (<code>HelloImpl</code>)는 아니고, 원격 인터페이스의 형태 (예를 들어,<code>HelloInterface</code>)로서 선언할 필요가 있다
+
+</ul>
+
+<P>이 예에서는, 모든 원시 파일을 같은 디렉토리 (예를 들어,<code>$HOME/mysrc/RMIHelloPOA</code>) 내에 작성합니다. 원격 인터페이스 <code>HelloInterface</code> 의 인터페이스 정의는, 다음과 같습니다. 이 인터페이스에는, 다만 1 개의 메소드 <code>sayHello</code> 가 포함되어 있습니다.  <a name="5180"></a> 
+<ul>
+<pre>
+//<b>HelloInterface.java</b>
+import java.rmi.Remote;
+
+public interface HelloInterface extends java.rmi.Remote {
+  public void sayHello() throws java.rmi.RemoteException;
+}
+</pre>
+</ul>
+
+원격 메소드 호출에서는, 로컬 메소드 호출과는 다른 방법으로 에러가 발생하는 일이 있습니다. 이것은, 네트워크 통신상의 문제나, 서버의 문제가 에러의 원인이 되기 때문입니다. 이 때문에, 원격 메소드는, 통신상의 장해를,<code>java.rmi.RemoteException</code> 를 throw 하는 것에 의해 보고합니다. 분산 시스템상에서의 장해 및 복원의 상세한 것에 대하여는,<A HREF="http://research.sun.com/techrep/1994/abstract-29.html">「A Note on Distributed Computing」</a>를 참조해 주세요. <I></I>
+
+<a name="5182"></a> 
+<h2>구현 클래스를 작성한다</h2>
+
+<P>원격 객체의 구현 클래스 <code>HelloImpl.java</code> 는, 적어도 다음의 조건을 채우지 않으면 안됩니다.
+
+<UL>
+	<LI>
+	<A HREF="#5193">적어도 1 개의 원격 인터페이스의 구현을 선언하고 있다</A> 
+
+	<LI>
+	<A HREF="#5864">원격 객체의 생성자 을 정의한다</A> 
+
+	<LI>
+	<A HREF="#5866">원격로부터 호출할 수 있는 메소드의 구현을 제공하고 있다</A> 
+</UL>
+
+
+<code>HelloImpl.java</code> 의 소스는 다음과 같습니다. 그 후, 상기의 각 스텝에 대해 설명합니다.  <A NAME="5192"></A> 
+<ul><pre>
+//<b>HelloImpl.java</b>
+import javax.rmi.PortableRemoteObject;
+
+public class HelloImpl extends PortableRemoteObject implements HelloInterface {
+  public HelloImpl() throws java.rmi.RemoteException {
+    super();     // invoke rmi linking and remote object initialization
+  }
+
+  public void sayHello() throws java.rmi.RemoteException {
+    System.out.println( "It works!   Hello World!!" );
+  }
+}
+</pre></ul>
+
+
+<A NAME="5193"></A> <h3>원격 인터페이스를 구현한다</h3>
+
+<p>Java 프로그램 언어에서는, 어느 인터페이스를 구현하는 것을 클래스가 선언하면(자), 그 클래스와 컴파일러의 사이에 계약이 연결됩니다. 이 계약에 의해, 그 클래스는, 그 인터페이스내에서 선언된 각 메소드시그니챠에 대해서, 메소드의 본체 (즉 정의)를 제공할 것을 약속합니다. 인터페이스의 메소드는, 암묵중에 <code>public</code> 및 <code>abstract</code> 로서 선언되고 있기 (위해)때문에, 구현 클래스에서 그 계약이 완수해지지 않은 경우, 그 클래스는 정의에 근거해 <code>abstract</code> 가 됩니다. 그 클래스가 <code>abstract</code> 로서 선언되어 있지 않은 경우는, 컴파일러에 의해 그 사실이 지적됩니다.
+
+<P>이 예에서는, 구현 클래스는 <code>HelloImpl</code> 입니다. 이 클래스는, 어느 원격 인터페이스를 구현하는지를 선언합니다. <code>HelloImpl</code> 클래스의 선언은, 다음과 같습니다.
+
+<A NAME="5194"></A> 
+<pre>
+  public class HelloImpl extends PortableRemoteObject
+    implements HelloInterface{
+</pre>
+
+편의상, 구현 클래스는 원격 클래스를 상속할 수 있습니다. 이 예에서는, 원격 클래스는 <code>javax.rmi.PortableRemoteObject</code> 입니다. <code>PortableRemoteObject</code> 를 상속하고 있는 것으로,<code>HelloImpl</code> 클래스를, 통신에 IIOP 베이스의 트랜스폴트를 사용하는 원격 객체를 작성하기 위해서 이용할 수 있습니다.   
+
+<!--  <P>Another option is to extend <tt>UnicastRemoteObject</tt>.   Extending <tt>UnicastRemoteObject</tt> without using the Portable Object Adapter enables you to use either JRMP or IIOP for the transport protocol.   You can use a runtime switch to determine which transport protocol is used.  -->
+
+
+
+
+<P><A NAME="5864"></A> <h3>원격 객체의 생성자 을 정의한다</h3>
+
+원격 클래스의 생성자 은, 원격 이외의 클래스의 생성자 과 같은 기능을 제공합니다. 즉, 그 클래스의 새롭게 작성된 인스턴스 마다 변수를 초기화해, 생성자 을 호출한 프로그램에 그 클래스의 인스턴스를 돌려줍니다.
+
+<P>게다가 원격 객체의 인스턴스는 「export」될 필요가 있습니다. 원격 객체를 export 하면(자), 그 객체는, 익명 포트상에서 원격 객체에의 착호를 감시하는 것에 의해, 착신한 원격 메소드 요구를 받아들일 수가 있게 됩니다. <code>javax.rmi.PortableRemoteObject</code> 를 상속하면(자), 그 클래스는 작성시에 자동적으로 export 됩니다.
+
+
+<P>객체의 export는,<code>java.rmi.RemoteException</code> 를 throw 할 가능성이 있기 (위해)때문에, 생성자 이 그 밖에 아무것도 실시하지 않는 경우에서도,<code>RemoteException</code> 를 throw 하는 생성자 을 정의할 필요가 있습니다. 생성자 을 정의하지 않았던 경우는,<code>javac</code> 는, 다음의 에러 메세지를 생성합니다.
+
+<pre>
+	HelloImpl.java:3: unreported exception java.rmi.RemoteException; must be
+	caught or declared to be thrown.  
+        
+        public class HelloImpl extends PortableRemoteObject implements HelloInterface{
+               ^ 
+        1 error
+</pre>
+
+<B>복습:</B><I> 원격 객체의 구현 클래스가 실시할 필요가 있는 일은, 다음과 같습니다. </I>
+<UL>
+	<LI>
+	<I>원격 인터페이스를 구현한다</I>
+	
+	<LI>
+	<I>객체를 export 해, 착신하는 원격 메소드 호출을 받아들이고 가능하게 한다</I>
+	
+	<LI>
+	최악이어도,<code>java.rmi.RemoteException</code> 를 throw 하도록(듯이) 생성자 을 정의한다
+</UL>
+
+<code>HelloImpl</code> 클래스의 생성자 은, 다음과 같습니다.
+<pre>
+  public HelloImpl() throws java.rmi.RemoteException { 
+    super(); 
+  }</pre>
+
+다음의 점에 주의해 주세요.
+<UL>
+	<LI>
+	<code>super</code> 메소드 호출은, 원격 객체를 export 하는 <code>javax.rmi.PortableRemoteObject</code> 의 인수 없음의 생성자 을 호출한다
+	
+	<LI>
+	통신 자원을 이용할 수 없는 경우는, RMI 가 원격 객체를 구축중에 export 하려고 하면(자) 실패할 가능성이 있기 (위해)때문에, 생성자 은 <code>java.rmi.RemoteException</code> 를 throw 할 필요가 있다
+</UL>
+<p><code>java.rmi.RemoteException</code> 는, 실행시 예외는 아니고, 확인이 끝난 예외입니다.
+<p>
+슈퍼 클래스의 인수 없음의 생성자 <code>super()</code> 에의 호출은, 생략 했다고 해도 디폴트로 발생합니다만, 이 예에서는, 클래스의 앞에 슈퍼 클래스가 구축되는 것을 명확하게 하기 위해서, 이 호출을 생략 하지 않고 기술했습니다.
+
+<P><A NAME="5866"></A> 
+<h3>각 원격 메소드에 구현을 제공한다</h3>
+
+원격 객체의 구현 클래스는, 원격 인터페이스로 지정된 각 원격 메소드를 구현하는 코드를 포함합니다. 예를 들어,<code>sayHello</code> 메소드의 구현예는, 다음과 같이 됩니다. 이 예에서는, 호출 측에 「It works!  Hello World!」라고 하는 캐릭터 라인이 돌려주어집니다.
+
+<pre>
+  public void sayHello() throws java.rmi.RemoteException {
+    System.out.println( "It works!   Hello World!!" );
+  }
+</pre>
+
+원격 메소드에 건네주는 인수, 또는 원격 메소드로부터의 반환값은, Java 플랫폼용의 어느 데이터형이어도 상관하지 않습니다. 게다가 인터페이스 <code>java.io.Serializable</code> 를 구현한 객체이면, 객체형이어도 상관하지 않습니다. <code>java.lang</code> 및 <code>java.util</code> 내의 코어 Java 클래스의 대부분은,<code>Serializable</code> 인터페이스를 구현하고 있습니다. RMI 에서는, 다음과 같이 됩니다.
+<UL>
+	<LI>
+	디폴트에서는, 로컬 객체는 카피에 의해 건네받는다. 즉,<code>static</code> 또는 <code>transient</code> 와 마크 된 것 이외는, 객체의 모든 데이터 멤버 (또는 필드)가 카피된다.
+	
+	
+	<LI>
+	원격 객체는 참조에 의해 건네받는다. 원격 객체에의 참조는, 실제로는 Stub (클라이언트측에서의 원격 객체의 프록시)에의 참조이다. Stub의 작성법에 대해서는,<A HREF="#5287">「<code>rmic</code> 를 사용해 Stub 및 스켈리턴을 생성한다」</a>로 설명한다. <i></i>
+
+</UL>
+
+
+<A NAME="server"></A> 
+<H2>서버 클래스를 작성한다</H2>
+
+<P>서버 클래스는, 원격 객체 구현의 인스턴스를 생성해, 그 인스턴스를 네임 서비스의 이름에 바인드 하는 <code>main</code> 메소드를 가집니다. 이 <code>main</code> 메소드를 포함한 클래스는, 구현 클래스 그 자체인 경우도, 완전히 별개의 클래스인 경우도 있습니다.
+
+<P>이 예에서는,<code>main</code> 는 <code>HelloServer.java</code> 의 일부로서 포함되어 있어 다음의 처리를 실행합니다.
+<UL>
+	<LI>
+	<A HREF="#5872">적절한 정책를 가지는 Portable Object Adapter (POA)를 작성한다</A> 
+	
+	<LI>
+	<A HREF="#poamanager">POA 매니저를 기동한다</A> 
+	
+	<LI>
+	<A HREF="#instantiate">서번트의 인스턴스를 생성해, Tie 를 기동해, 원격 객체의 인스턴스를 생성한다</A> 
+		
+	<LI>
+	<A HREF="#5908">객체 참조를 공개한다</A> 
+
+	<LI>
+	<A HREF="#5912">클라이언트로부터의 요구를 받아들일 준비를 한다</A> 
+</UL>
+
+<code>HelloServer.java</code> 의 소스는 다음과 같습니다. 그 후, 상기의 각 스텝에 대해 설명합니다.  <a name="helloserver"></a> 
+<P>
+<UL><pre>
+//<b>HelloServer.java</b>
+import javax.naming.InitialContext;
+import javax.naming.Context;
+import javax.rmi.PortableRemoteObject ;
+//<strong>Please note that internal Sun APIs
+//may change in future releases</strong>.
+import com.sun.corba.se.internal.POA.POAORB;
+import org.omg.PortableServer. *;
+import java.util. *;
+import org.omg.CORBA. *;
+import javax.rmi.CORBA.Stub;
+import javax.rmi.CORBA.Util;
+
+public class HelloServer {
+  public HelloServer(String[] args) {
+    try {
+      Properties p = System.getProperties();
+      // add runtime properties here
+      //<strong>Please note that the name of the <code>servertool</code> 
+      //class may change in future releases</strong>.
+      p.put("org.omg.CORBA.ORBClass", 
+          "com.sun.corba.se.internal.POA.POAORB");
+      p.put("org.omg.CORBA.ORBSingletonClass", 
+          "com.sun.corba.se.internal.corba.ORBSingleton");
+
+      ORB orb = ORB.init( args, p );
+
+      POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
+
+      // STEP 1: Create a POA with the appropriate policies
+      Policy[] tpolicy = new Policy[3];
+      tpolicy[0] = rootPOA.create_lifespan_policy(
+        LifespanPolicyValue.TRANSIENT );
+      tpolicy[1] = rootPOA.create_request_processing_policy(
+        RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY );
+      tpolicy[2] = rootPOA.create_servant_retention_policy(
+        ServantRetentionPolicyValue.RETAIN);
+      POA tPOA = rootPOA.create_POA("MyTransientPOA", null, tpolicy);
+          
+      // STEP 2: Activate the POA Manager, otherwise all calls to the
+      // servant hang because, by default, POAManager will be in the 
+      // HOLD state.
+      tPOA.the_POAManager(). activate();
+
+      // STEP 3: Instantiate the Servant and activate the Tie, If the
+      // POA policy is USE_ACTIVE_OBJECT_MAP_ONLY
+      HelloImpl helloImpl = new HelloImpl();
+      _HelloImpl_Tie tie = (_HelloImpl_Tie) Util.getTie( helloImpl );
+      String helloId = "hello";
+      byte[] id = helloId.getBytes();
+      tPOA.activate_object_with_id( id, tie );
+
+
+      // STEP 4: Publish the object reference using the same object id
+      // used to activate the Tie object.
+      Context initialNamingContext = new InitialContext();
+      initialNamingContext.rebind("HelloService", 
+        tPOA.create_reference_with_id(id, 
+          tie. _all_interfaces(tPOA, id)[0]) );
+      System.out.println("Hello Server: Ready...");
+      
+      // STEP 5: Get ready to accept requests from the client
+      orb.run();
+    } 
+      catch (Exception e) {
+        System.out.println("Problem running HelloServer: " + e);
+        e.printStackTrace();
+      } 
+  }
+
+
+  public static void main(String args[]) {
+    new HelloServer( args );
+  }
+}
+</pre></UL>
+<P>
+
+
+
+
+
+
+<A NAME="5872"></A> <h3>적절한 정책를 가지는 Portable Object Adapter (POA)를 작성한다</h3>
+
+서버의 <code>main</code> 메소드에서는, 우선, 적절한 정책를 가지는 <a href="../idl/POA.html">Portable Object Adapter (POA)</a>  를 작성할 필요가 있습니다. 예를 나타냅니다.
+
+<pre>
+      Policy[] tpolicy = new Policy[3];
+      tpolicy[0] = rootPOA.create_lifespan_policy(
+        LifespanPolicyValue.TRANSIENT );
+      tpolicy[1] = rootPOA.create_request_processing_policy(
+        RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY );
+      tpolicy[2] = rootPOA.create_servant_retention_policy(
+        ServantRetentionPolicyValue.RETAIN);
+      POA tPOA = rootPOA.create_POA("MyTransientPOA", null, tpolicy);
+</pre>
+
+<P>Portable Object Adaptor (POA)는, 복수의 ORB 구현으로 사용할 수 있는 객체 어댑터를 제공하기 위해서 설계되고 있어, 다른 벤더의 구현에 대응하는 경우도 최저한의 재작성으로 끝나게 되어 있습니다. POA 의 지원는, J2SE version 1.4 로 도입되었습니다.
+
+<P>POA 는, 적어도 클라이언트의 입장으로부터는 지속 객체가 가능하게 되도록(듯이) 하고 있습니다. 즉, 서버가 물리적으로 몇번 재기동되어도, 또는 많은 다른 객체 구현에 의해 구현이 제공되어도, 그 클라이언트가 관계하는 범위에서는, 이러한 객체는 항상 가동하고 있어, 객체에 포함된 데이터값가 유지되고 있습니다.  
+
+<P>POA 를 이용하면(자), 객체의 구현자는, 훨씬 많은 제어가 가능하게 됩니다. 이전에는, 객체를 구현하는 것은, 메소드의 요구에 응답해 실행되는 코드만의 책임이었습니다. 지금은, 거기에 더해, 객체의 구현자가, 객체의 식별, 상태, 기억 영역, 및 라이프 사이클을 좀 더 제어할 수가 있습니다.
+
+
+<P>이 예에서는, 다음과 같은 정책치를 설정해 있습니다.
+
+<P>
+<UL>
+<LI><code>LifespanPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.
+	<UL>
+	 <LI><code>TRANSIENT</code> - POA 로 구현된 객체는, 그 객체가 최초로 작성된 POA 인스턴스보다 길게 지속할 수 없다 
+	 <LI><code>PERSISTENT</code> - POA 로 구현된 객체는, 그 객체가 최초로 작성된 프로세스보다 길게 지속할 수 있다
+	 </UL>
+	 <P>
+	 
+<LI><code>RequestProcessingPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.   
+	  <UL>
+	  <LI><code>USE_ACTIVE_OBJECT_MAP_ONLY</code> - 객체 ID 가 액티브 객체 맵내에서 발견되지 않는 경우, 클라이언트에 <code>OBJECT_NOT_EXIST</code> 예외가 반환된다. 이 경우,<code>RETAIN</code> 정책도 필요
+	  <LI><code>USE_DEFAULT_SERVANT</code> - 객체 ID 가 액티브 객체 맵내에서 발견되지 않는 경우, 또는 <code>NON_RETAIN</code> 정책가 존재하는 경우,<code>set_servant</code> 오퍼레이션을 사용해 디폴트 서번트가 POA 에 등록되어 있으면, 요구는 디폴트 서번트에게 발송 된다 
+	  <LI><code>USE_SERVANT_MANAGER</code> - 객체 ID 가 액티브 객체 맵내에 발견되지 않는 경우인가,<code>NON_RETAIN</code> 정책가 존재하는 경우,<code>set_servant_manager</code> 조작을 사용해 서번트 매니저가 POA 에 등록되어 있다면, 서번트 매니저가 서번트를 검색하는지, 예외를 발생시킨다 
+	  </UL><P>
+	  
+<LI><code>ServantRetentionPolicyValue</code> 에는, 다음의 값을 지정할 수 있습니다.  
+	  <UL>
+	  <LI><code>RETAIN</code> - POA 가 액티브 객체 맵내에 액티브한 서번트를 보관 유지하는 것을 나타내는 POA 의 작성시에 <code>ServantRetentionPolicy</code> 가 지정되어 있지 않은 경우, 디폴트는 <code>RETAIN</code> 가 된다
+	  <LI><code>NON_RETAIN</code> - 서번트가 POA 에 의해 보관 유지되지 않는 것을 나타낸다 
+	  </UL>
+</UL>
+
+<P>POA 정책의 자세한 것은, CORBA/IIOP 2.3. 1 스펙 (<a href="http://www.omg.org/cgi-bin/doc?formal/99-10-07">http://www.omg.org/cgi-bin/doc? formal/99-10-07</a> )의 제 11 장 「Portable Object Adapter」를 참조해 주세요.  <em></em>
+
+
+<P><A NAME="poamanager"></A> 
+<h3>POA 매니저를 기동한다</H3>
+
+<P>각 <code>POA</code> 객체에는,<code>POAManager</code> 객체를 관련지을 수 있고 있습니다. POA 매니저는, 1 개(살) 이상의 POA 객체에 관련지을 수 있는 일이 있습니다. POA 매니저는, 관련지을 수 있고 있는 POA 의 처리 상태를 캡슐화합니다. 이 스텝에서는, POA 매니저를 기동합니다. 이 스텝을 실행하지 않으면 POA 매니저는 디폴트에서는 <code>HOLD</code> 상태가 되어 있기 (위해)때문에,<code>Servant</code> 에 대한 모든 호출이 행업 해 버립니다.
+<P>
+<pre>
+      tPOA.the_POAManager(). activate();
+</pre>
+
+<P><A NAME="instantiate"></A> 
+<h3>원격 객체의 인스턴스를 작성해, Tie 를 기동한다</h3>
+
+서버의 <code>main</code> 메소드에서는, 원격 객체 구현의 인스턴스 (즉 「서번트」)를 작성할 필요가 있습니다. 예를 나타냅니다.
+<pre>
+    HelloImpl helloImpl = new HelloImpl();</pre>
+
+생성자 은 원격 객체를 export 합니다. 이것은, 원격 객체가 작성된 시점에서, 그 원격 객체는 착호를 받아들일 준비가 되어 있는 것을 의미합니다.
+
+<P>RMI-IIOP 테크놀러지를 사용하고 있는 구현은, 그 구현을 인터페이스에 관련짓기 위해서(때문에) 위양 ( 「Tie 모델」이라고 불린다)을 사용합니다. 상기와 같이, 구현의 인스턴스를 작성했을 때는, 그 인스턴스를 CORBA 인터페이스에 관련짓기 위해서(때문에) Tie 객체를 작성할 필요도 있습니다. 다음의 코드행은, Tie 를 기동하기 위한의 것입니다 (다만, POA 정책가 <code>USE_ACTIVE_OBJECT_MAP_ONLY</code> 의 경우만).
+<P>
+<pre>
+      _HelloImpl_Tie tie = (_HelloImpl_Tie) Util.getTie( helloImpl );
+      String helloId = "hello";
+      byte[] id = helloId.getBytes();
+      tPOA.activate_object_with_id( id, tie );
+</pre>
+
+<P>
+
+<a name="5908"></a> 
+<h3>Tie 객체를 기동하는데 사용한 것과 같은 객체 ID 를 사용해 객체 참조를 공개한다</h3>
+
+호출측 (클라이언트, 피어, 또는 클라이언트 어플리케이션)이 원격 객체의 메소드를 호출하려면 , 호출측은 우선 원격 객체에의 참조를 취득할 필요가 있습니다.
+
+<P>원격 객체가 서버에 등록된 뒤는, 호출측은, 객체를 이름으로 검색해 (네임 서비스를 이용한다), 원격 객체에의 참조를 취득해 처음, 그 객체의 메소드를 원격로부터 호출할 수 있게 됩니다. 이 예에서는,<a href="../../tools/share/orbd.html">Object Request Broker Daemon</a>  (<code>orbd</code>)를 사용하고 있습니다. <code>orbd</code> 는, bootstrap 서비스, 일시 네임 서비스, 지속 네임 서비스, 및 서버 매니저가 들어가 있는 demon 프로세스입니다.  
+
+
+<P>예를 들어, 다음의 코드는, 「HelloService」라고 하는 이름을 원격 객체에의 참조에 바인드 합니다.
+<P>
+<pre>
+      Context initialNamingContext = new InitialContext();
+      initialNamingContext.rebind("HelloService", 
+        tPOA.create_reference_with_id(id, 
+          tie. _all_interfaces(tPOA, id)[0]) );
+      System.out.println("Hello Server: Ready...");
+</pre>
+<p>
+<code>rebind</code> 메소드 호출의 인수에 대해서는, 다음의 점에 주의해 주세요.
+<UL>
+	<LI>
+	제 1 의 인수 <code>"HelloService"</code> 는, 바인드 하는 원격 객체의 이름을 나타내는 <code>java.lang.String</code> 이다
+	
+	<p>
+	<LI>제 2 의 인수 <code>tPOA.create_reference_with_id(id, tie. _all_interfaces(tPOA, id)[0]</code> 은, 바인드 하는 원격 객체의 객체 ID 이다
+</UL>
+
+<a name="5912"></a> 
+<h3>클라이언트로부터의 요구를 받아들일 준비를 한다</h3>
+
+다음의 코드행이 메인 thread로부터 불려 가면(자), ORB 는, 그 메인 thread를 사용해 작업을 실행할 수 있게 됩니다.  
+
+<P>
+<pre>
+      orb.run();
+</pre>
+
+
+<p>
+<A NAME="5228"></A> 
+<h2>원격 서비스를 이용하는 클라이언트 프로그램을 작성한다</h2>
+
+<P>이 예의 클라이언트 어플리케이션은, 원격로부터 <code>sayHello</code> 메소드를 호출해, 클라이언트 어플리케이션이 실행되었을 때에 「Hello World!」라고 하는 캐릭터 라인을 표시합니다. 클라이언트 어플리케이션의 코드는, 다음과 같습니다.
+
+<ul><A NAME="5235"></A> 
+<pre>
+//<b>HelloClient.java</b>
+import java.rmi.RemoteException;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import javax.rmi. *;
+import java.util.Vector;
+import javax.naming.NamingException;
+import javax.naming.InitialContext;
+import javax.naming.Context;
+
+public class HelloClient {
+
+  public static void  main( String args[] ) {
+    Context ic;
+    Object objref;
+    HelloInterface hi;
+
+    try {
+      ic = new InitialContext();
+    } catch (NamingException e) {
+        System.out.println("failed to obtain context" + e);
+        e.printStackTrace();
+        return;
+    }
+        
+    // STEP 1: Get the Object reference from the Name Service
+    // using JNDI call.
+    try {
+      objref = ic.lookup("HelloService");
+      System.out.println("Client: Obtained a ref.  to Hello server. ");
+    } catch (NamingException e) {
+        System.out.println("failed to lookup object reference");
+        e.printStackTrace();
+        return;
+    }
+
+    // STEP 2: Narrow the object reference to the concrete type and
+    // invoke the method.
+    try {
+      hi = (HelloInterface) PortableRemoteObject.narrow(
+        objref, HelloInterface.class);
+      hi.sayHello();
+    } catch (ClassCastException e) {
+        System.out.println("narrow failed");
+        e.printStackTrace();
+        return;
+      } catch( Exception e ) {
+            System.err.println( "Exception " + e + "Caught" );
+            e.printStackTrace( );
+            return;
+        }
+  }
+}
+</pre></ul>
+
+<P>
+	우선, 클라이언트 어플리케이션은, 원격 객체 구현 ( 「HelloService」로서 공개되고 있다)에의 참조를, Java Naming and Directory Interface [TM] (JNDI) 호출을 사용해 네임 서비스로부터 가져옵니다. <code>Naming.rebind</code> 메소드와 같이,<code>Naming.lookup</code> 메소드도, 검색하는 객체의 이름을 나타내는 <code>java.lang.String</code> 치를 인수로서 취합니다. 검색하고 싶은 객체의 이름을 <tt>Naming.lookup()</tt> 에 제공하면(자), 그 이름에 바인드 된 객체가 돌려주어집니다.   
+	<UL>
+	<LI><tt>Naming.lookup</tt> 는, 다음의 작업을 처리한다
+		<UL>
+			<LI>
+			네임 서비스는, 그 이름에 바인드 된 <code>_HelloImpl_Stub</code> 인스턴스를 돌려준다
+
+			<LI>
+			<code>lookup</code> 메소드는, 원격 객체 (<code>HelloImpl</code>)의 Stub 인스턴스를 받아, Stub 클래스 (<code>_HelloImpl_Stub</code>)를 로드한다
+			<LI> <code>Naming.lookup</code> 는, 호출측 (<code>HelloClient</code>)에 Stub를 돌려준다
+	</UL>
+	<p>
+
+	<LI>
+	클라이언트 어플리케이션은, 서버의 원격 객체의 원격 메소드 <code>sayHello</code> 를 호출해, 커멘드행에 「It works! Hello World!!」라고 하는 캐릭터 라인을 표시시킨다
+</UL>
+
+
+
+
+
+
+<HR>
+<A NAME="7437"></A> 
+<H1>클래스 파일의 컴파일</H1>
+
+이 예의 원시 코드는, 이것으로 완성했습니다. 디렉토리에는, 다음의 4 개의 파일이 들어가 있을 것입니다.
+<UL>
+	<LI>
+	<code>HelloInterface.java</code> - 원격 인터페이스의 원시 코드가 들어가 있다
+
+	<LI>
+	<code>HelloImpl.java</code> - 원격 객체 구현의 원시 코드가 들어가 있다 
+	 
+	 <LI><code>HelloServer.java</code> - 서버의 원시 코드가 들어가 있다 
+
+	<LI>
+	<code>HelloClient.java</code> - 클라이언트 어플리케이션의 원시 코드가 들어가 있다
+
+	
+</UL>
+
+여기에서는, 원격 객체 구현의 파일 <code>HelloImpl.java</code> 를 컴파일 해,<code>rmic</code> 를 실행하는데 필요한 <code>. class</code> 파일을 작성합니다. 다음에,<code>rmic</code> 컴파일러를 실행해, Stub와 스켈리턴을 작성합니다. Stub란, 원격 객체의 클라이언트측의 프록시로, RMI-IIOP 호출을 서버측의 디스펫쳐에 전송 합니다. 계속되어, 디스펫쳐는, 그 호출을 실제의 원격 객체 구현에 전송 합니다. 마지막으로, 나머지의 <code>. java</code> 원시 파일을 컴파일 해,<code>. class</code> 파일을 작성합니다.
+
+<P>이 섹션으로 실행하는 작업은 다음과 같습니다.
+<P><OL>
+	<LI>
+	<A HREF="#compileimpl">원격 객체 구현을 컴파일 한다</A> 
+	
+	<LI>
+	<A HREF="#5287"><code>rmic</code> 를 사용해 Stub 및 스켈리턴을 생성한다</A> 
+	
+	<LI>
+	<A HREF="#5284">원시 파일을 컴파일 한다</A> 
+</OL>
+
+
+<A NAME="compileimpl"></A> 
+<H2>원격 객체 구현을 컴파일 한다</H2>
+
+<P>Stub 파일과 스켈리턴 파일을 작성하려면 , 원격 객체 구현이 들어간 컴파일이 끝난 클래스 파일의 완전 지정의 패키지명에 대해,<code>rmic</code> 를 실행할 필요가 있습니다. 이 예에서는, 원격 객체 구현이 들어간 파일은 <code>HelloImpl.java</code> 입니다. Stub와 스켈리턴을 생성하기 위해서는, 우선, 다음과 같이 해 <code>HelloImpl.java</code> 를 컴파일 할 필요가 있습니다.
+
+<P>
+<pre>
+    javac -d .  -classpath .  HelloImpl.java
+</pre>
+
+<P>「<code>-d . </code>」옵션은, 생성된 파일을, 컴파일러를 실행하고 있는 것과 같은 디렉토리에 두는 것을 나타냅니다. 「<code>-classpath . </code>」옵션은,<code>HelloImpl.java</code> 가 의존하고 있는 파일이, 이 디렉토리내에 있는 것을 나타냅니다.
+
+<A NAME="5287"></A> 
+<H2><code>rmic</code> 를 사용해 Stub 및 스켈리턴을 생성한다</H2>
+
+CORBA 대응의 Stub 및 스켈리턴 파일을 작성하려면 ,<code>rmic</code> 를,<code>-poa -iiop</code> 오브 숀을 지정해 실행합니다. <code>rmic&nbsp;-poa&nbsp;-iiop</code> 커멘드는, 인수에 1 개 이상의 클래스명을 취해,<code>_MyImpl_Tie.class</code> 및 <code>_MyInterface_Stub.class</code> 라고 하는 형식의 클래스 파일을 생성합니다. 이 예에서는, 원격 구현 파일 <code>HelloImpl.class</code> 의 클래스명을 건네줍니다.
+
+
+<P><code>rmic</code> 의 옵션의 자세한 것은,<A HREF="../../tools/solaris/rmic.html">Solaris 오퍼레이팅(operating) 환경용 <code>rmic</code>&nbsp; 의 메뉴얼 페이지 </a>또는 <A  HREF="../../tools/windows/rmic.html">Microsoft Windows 용 <code>rmic</code> 의 메뉴얼 페이지</a>를 참조해 주세요.
+
+<P><code>HelloImpl</code> 원격 객체 구현의 Stub 및 스켈리턴을 작성하려면 , 다음과 같이 <code>rmic</code> 를 실행합니다.
+<p>
+<pre>
+    rmic -poa -iiop HelloImpl
+</pre>
+<p>
+상기의 커멘드에 의해, 다음의 파일이 작성됩니다.
+<UL>
+	<LI>
+	<code>_HelloInterface_Stub.class</code> - 클라이언트 Stub
+
+
+	<LI>
+	<code>_HelloImpl_Tie.class</code> - 서버 스켈리턴
+
+</UL>
+
+
+
+<A NAME="5284"></A> 
+
+<H2>원시 파일을 컴파일 한다</H2>
+
+
+<P>원시 파일을 컴파일 하려면 , 다음의 <code>javac</code> 커멘드를 실행합니다.
+<P>
+<pre>
+    javac -d .  -classpath .  HelloInterface.java HelloServer.java HelloClient.java
+</pre>
+<p>
+이 커멘드에 의해,<code>HelloInterface.class</code>,<code>HelloServer.class</code>, 및 <code>HelloClient.class</code> 의 각 클래스 파일이 작성됩니다. 이러한 파일은 각각, 원격 인터페이스, 서버, 그리고 클라이언트 어플리케이션입니다. <code>javac</code> 의 옵션의 자세한 것은,<A HREF="../../tools/solaris/javac.html">Solaris 용 <code>javac</code> 의 메뉴얼 페이지 </a>또는 <A HREF="../../tools/windows/javac.html">Microsoft Windows 용 <code>javac</code> 의 메뉴얼 페이지</a>를 참조해 주세요.
+
+
+
+
+<hr>
+
+
+<A NAME="7445"></A> 
+<H1>네임 서비스, 서버, 및 클라이언트 어플리케이션의 기동</H1>
+
+이 섹션으로 실행하는 작업은 다음과 같습니다.
+<OL>
+	<LI>
+	<A HREF="#5522">네임 서비스를 기동한다</A> 
+
+	<LI>
+	<A HREF="#5321">서버를 기동한다</A> 
+
+	<LI>
+	<A HREF="#5326">클라이언트 어플리케이션을 실행한다</A> 
+</OL>
+
+
+
+<A NAME="5522"></A> 
+<H2>네임 서비스를 기동한다</H2>
+
+이 예에서는, Object Request Broker Daemon (<code>orbd</code>)를 사용합니다. 이것에는, 일시 네임 서비스와 지속 네임 서비스의 양쪽 모두가 짜넣어지고 있어 J2SE 1.4 이후를 다운로드하면 입수할 수 있습니다.    
+
+<P>호출측 (클라이언트, 피어, 또는 클라이언트 어플리케이션)이 원격 객체의 메소드를 호출하려면 , 호출측은 우선 원격 객체에의 참조를 취득할 필요가 있습니다.
+
+	
+<P>원격 객체가 서버에 등록되면(자), 호출측은, 그 객체를 이름에 의해 검색해, 원격 객체에의 참조를 취득할 수 있습니다. 그러면, 그 객체의 메소드를 원격로부터 호출할 수 있습니다.
+
+<P>네임 서비스를 기동하려면 , 커멘드행으로부터 <code>orbd</code> 를 실행합니다. 이 커멘드로부터는 무슨 출력도 없습니다. 일반적으로, 백그라운드에서 실행됩니다. <code>orbd</code> 툴의 자세한 것은,<A HREF="../../tools/share/orbd.html"><code>orbd</code> 의 메뉴얼 페이지</a>를 참조해 주세요.
+
+<P>이 예의 경우, Solaris  operating system에서는 다음의 커멘드를 실행합니다.
+<P>
+<pre>
+    orbd -ORBInitialPort 1060&
+</pre>
+
+<P>Microsoft Windows  operating system에서는, 다음의 커멘드를 실행합니다.
+<P>
+<pre>
+    start orbd -ORBInitialPort 1060
+</pre>
+
+<P>이 커멘드에서는,<code>orbd</code> 를 실행하는 포트를 지정하지 않으면 안됩니다. 이 예로 포트로서 <code>1060</code> 이 선택되고 있는 것은, Solaris  operating system에서는, 프로세스를 1024 보다 아래의 포트로 개시하는 사용자는 루트가 될 필요가 있기 때문입니다.   
+
+<p>
+원격 인터페이스를 변경하거나 변경 또는 추가된 원격 인터페이스를 원격 객체의 구현으로 사용하는 경우는, 반드시 서버를 일단 정지하고 나서 재기동할 필요가 있습니다. 그렇게 하지 않으면 네임 서비스로 바인드 되는 객체 참조의 형태가, 수정된 클래스와 일치하지 않게 됩니다. </I>
+
+<A NAME="5321"></A> 
+<H2> 서버를 기동한다</H2>
+
+<P>단말 윈도우를 이제(벌써) 1 개(살) 열어, 이 예의 원시 파일이 들어가 있는 디렉토리로 옮깁니다. 클라이언트를 실행하기 위한 아래와 같은 커멘드는, 읽기 쉽게 하기 위해서 복수행으로 나누어 있습니다만, 실제로 커멘드를 입력할 경우에는 개행을 넣지 말아 주세요. 이 커멘드는,<code>HelloServer</code> 서버를 기동하는 방법을 나타내고 있습니다. 물론,<code>orbd</code> 툴을 기동할 경우에 1060 이외의 포트나 <tt>localhost</tt> 이외의 호스트를 사용했을 경우에는, 아래와 같은 커멘드의 해당하는 값을,<code>orbd</code> 를 기동할 경우에 사용한 실제의 값으로 옮겨놓아 주세요.
+
+<p>
+<pre>
+    java 
+      -classpath .  
+      -Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory
+      -Djava.naming.provider.url=iiop://localhost:1060 
+      HelloServer 
+</pre>
+
+<P><code>java</code> 의 옵션에 대한 자세한 것은,<A HREF="../../tools/solaris/java.html">Solaris 용 <code>java</code> 의 메뉴얼 페이지 </a>또는 <A HREF="../../tools/windows/java.html">Microsoft Windows 용 <code>java</code> 메뉴얼 페이지</a>를 참조해 주세요.
+
+
+<P>출력은, 다음과 같이 됩니다.
+
+<P>
+<pre>
+Hello Server: Ready ...
+</pre>
+
+
+<A NAME="5326"></A> 
+<H2>클라이언트 어플리케이션을 실행한다</H2>
+네임 서비스와 서버를 기동한 뒤는, 클라이언트 어플리케이션을 실행할 수가 있습니다. 새로운 단말 윈도우로부터, 원시 코드의 디렉토리로 옮겨, 아래와 같은 예의 같게 해 커멘드행으로부터 클라이언트 어플리케이션을 실행합니다. 클라이언트를 실행하기 위한 아래와 같은 커멘드는, 읽기 쉽게 하기 위해서 복수행으로 나누어 있습니다만, 실제로 커멘드를 입력할 경우에는 개행을 넣지 말아 주세요. 물론,<code>orbd</code> 툴을 기동할 경우에 1060 이외의 포트나 <tt>localhost</tt> 이외의 호스트를 사용했을 경우에는, 아래와 같은 커멘드의 해당하는 값을,<code>orbd</code> 를 기동할 경우에 사용한 실제의 값으로 옮겨놓아 주세요.
+
+<pre>
+    java 
+      -classpath .  
+      -Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory
+      -Djava.naming.provider.url=iiop://localhost:1060 
+      HelloClient 
+</pre>
+
+클라이언트 어플리케이션을 실행하면(자), 다음과 같은 출력이 단말 윈도우 또는 커멘드 prompt 윈도우에 표시됩니다.
+
+<pre>
+Client: Obtained a ref.  to Hello server.
+</pre>
+
+<p>서버 윈도우가 다음의 메세지를 돌려줍니다.
+<pre>
+It works!  Hello World!!
+</pre>
+
+
+<P>이것으로 튜토리얼을 끝마칩니다. 한층 더 복잡한 어플리케이션의 작성하러 진행되는 경우는, 다음에 드는 정보가 도움이 됩니다.
+<P>
+<UL>
+<LI><a href="http://forum.java.sun.com/forum.jsp?forum=59">http://forum.java.sun.com/forum.jsp? forum=59</a> .  RMI-IIOP 에 관한 Sun 의 개발자 포럼. 이 사이트에 액세스 하기 위해서는 Java Developer Connection 에의 등록이 필요
+<P>
+<LI>RMI-IIOP 프로토콜을 사용한 J2EE 의 EJB 층이라고 대화하는 EJB 클라이언트. 이 방법으로 RMI-IIOP 를 사용하는 방법의 자세한 것은, Java&nbsp;2 Platform, Enterprise Edition 의 <a href="http://java.sun.com/blueprints/enterprise/index.html">Blueprints (상세 계획의 소개)</a>  나 <a href="http://java.sun.com/products/ejb/index.jsp">EJB 의 튜토리얼</a>을 참조해 주세요.
+<P>
+<LI>Java IDL 의 튜토리얼에는, 클라이언트와 서버를 다른 머신상에서 실행하는 경우의 예가 포함되어 있다. <a href="../idl/tutorial/jidl2machines.html">「2 대의 머신으로 실행하는 Hello World 프로그램」</a>으로 소개되고 있는 개념은, 이 예에도 들어맞읍니다.  <!--<LI><a href="http://www-106.ibm.com/developerworks/java/rmi-iiop/">IBM DeveloperWorks</a>  RMI-IIOP page-->
+</UL>
+
+
+<!-- Body text ends here --><!--  ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR VALIGN=TOP>
+<TD><FONT SIZE=-2><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A>  2001-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>&nbsp;
+
+<TD ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0  HEIGHT=30 WIDTH=64>&nbsp;
+</TR>
+</TABLE>
+</BODY>
+</HTML>

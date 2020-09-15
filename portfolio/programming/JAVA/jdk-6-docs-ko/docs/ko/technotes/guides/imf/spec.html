@@ -1,0 +1,248 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Input Method Framework 스펙 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#000077">
+
+<P><TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD WIDTH=60>
+<P><IMG SRC="../../../images/javalogo52x88.gif" ALT="Java"          WIDTH=52 HEIGHT=88 BORDER=0 ALIGN=bottom>
+      </TD><TD>
+<H1><CENTER>Input Method Framework 스펙
+         </CENTER></H1>
+      </TD><TD WIDTH=60>
+         <P>
+      </TD></TR>
+</TABLE><!-- Body text begins here --><p></P>
+
+<H2>목차</H2>
+
+<OL>
+<LI><A HREF="#Framework Architecture">시스템의 아키텍쳐(architecture)</A> 
+   
+<LI><A HREF="#Client Components">클라이언트 컴퍼넌트</A> 
+   
+<LI><A HREF="#Input Styles">입력 방식</A> 
+   
+<LI><A HREF="#Input Method Engines and Adapters">입력 메소드 엔진과 입력 메소드 어댑터</A> 
+   
+<LI><A HREF="#Context Management">문맥 관리</A> 
+   
+<LI><A HREF="#Information Flow Through the Framework">시스템를 경유하는 정보 플로우</A> 
+</OL>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Framework Architecture"></A> 1.  시스템의 아키텍쳐(architecture)
+</H2>
+
+<P>다음의 그림은, 시스템와 그 클라이언트의 전체적인 구조를 나타내고 있습니다. 태선범위의 부분은, Java 2 플랫폼의 일부로서 입력 메소드 시스템와 함께 통합됩니다. 그 외의 부분은, 독립계 소프트웨어 벤더가 독자적으로 개발해 배포할 수 있습니다.
+</P>
+
+<P><CENTER><IMG SRC="framework.gif" ALT="이후의 문장으로, 이 그림에 대해 설명하고 있습니다. " WIDTH=382 HEIGHT=204 ALIGN=bottom></CENTER></P>
+
+<P>입력 메소드 클라이언트 API 로 정의되고 있는 클래스와 인터페이스를 사용하면(자), 텍스트 편집 컴퍼넌트로 통합 텍스트 입력 사용자 인터페이스를 구현할 수 있습니다. AWT 텍스트 컴퍼넌트 <TT>TextArea</TT> 와 <TT>TextField</TT> 는, 구현 방법에 따라, 온더 스포트 편집 또는 오버더 스포트 편집의 기능을 제공합니다. Swing 사용자 인터페이스 툴 킷의 텍스트 컴퍼넌트는, 통합 텍스트 입력 사용자 인터페이스를 제공합니다. 문맥 관리는, 텍스트 편집 컴퍼넌트와 입력 메소드의 사이의 통신 경로를 관리합니다. 입력 메소드 엔진 SPI 에는, 입력 메소드 엔진 및 입력 메소드 어댑터를 시스템에 플러그 인하기 위한 인터페이스를 정의합니다. 입력 메소드 엔진은, 이러한 인터페이스를 사용해 Java 프로그램 언어내에 직접 구현할 수 있습니다. 호스트의 입력 메소드 매니저에게 통합되고 있는 네이티브 입력 메소드를 사용할 수 있도록(듯이), 어댑터는, 네이티브 입력 메소드 및 입력 메소드 시스템로 사용되는 데이터 모델간에 정보를 변환해, 변환용 윈도우를 표시합니다. 또, Java Speech 또는 Internet-Intranet Input Method Protocol (IIIMP) 등, 그 외의 입력 시스템용의 어댑터도, 이 인터페이스를 사용해 구현할 수 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Client Components"></A> 2.  클라이언트 컴퍼넌트</H2>
+
+<P><TT>Component</TT> 클래스의 인스턴스는, 모두 Input Method Framework 의 클라이언트입니다. 시스템에서는, 다음의 4 종류의 컴퍼넌트가 식별됩니다. </P>
+
+<UL>
+<LI>「액티브 클라이언트」란,<TT><A HREF="../../../api/java/awt/Component.html#getInputMethodRequests()">getInputMethodRequests</A> </TT> 구현으로부터 null 이외의 값이 반환되는 컴퍼넌트입니다. 시스템는, 이 컴퍼넌트로 입력 메소드 클라이언트 API 가 액티브하게 사용되고 있는 것을 전제로 하고 있어,<TT><A HREF="../../../api/java/awt/event/InputMethodListener.html">InputMethodListener</A> </TT> 인터페이스의 구현을 제공합니다. 이 컴퍼넌트는, 입력 메소드의 정보의 이벤트 및 요구를 처리해, 이벤트 및 요구에 송신된 변환 텍스트를 draw 합니다.
+   
+<LI>「비클라이언트」란,<TT><A HREF="../../../api/java/awt/Component.html#enableInputMethods(boolean)">enableInputMethods</A> </TT> 메소드를 사용해 입력 메소드의 지원를 무효로 한 컴퍼넌트입니다.
+   
+<LI>「피어 클라이언트」란, 피어 텍스트 컴퍼넌트로,<TT>TextComponent</TT> 클래스의 인스턴스입니다. 피어 클라이언트의 동작은 구현에 의존하고 있어, 입력 메소드의 지원가 제한되는 일이 있습니다. Sun 의 Windows 용 Java 2 Runtime Environment 에서는, 피어 텍스트 컴퍼넌트는 액티브 클라이언트와 같게 동작합니다. Sun 의 Solaris 용 Java 2 Runtime Environment 에서는, 피어 텍스트 컴퍼넌트는, 호스트의 입력 메소드로부터의 입력만을 받아, 야자과 상록교목더 스포트 입력 방식은 지원하고 있습니다 (이후시에를 참조).
+   
+<LI>「패시브 클라이언트」란, 그 외 모든 컴퍼넌트입니다. 시스템에서는, 패시브 클라이언트에서는 입력 메소드 클라이언트의 API 가 사용되지 않는 것을 전제로 하고 있습니다만, 입력 메소드로부터의 텍스트 입력은 받을 필요가 있습니다.
+</UL>
+
+<P>이것들 4 종류의 컴퍼넌트는, 같은 윈도우에 공존시킬 수가 있습니다. 이 때문에, Input Method Framework 에서는, 컴퍼넌트의 기능을 결정해, 포커스가 컴퍼넌트간을 이동할 때의 동작을 조정할 필요가 있습니다. </P>
+
+<P>후보 리스트의 draw, 또는 입력 메소드의 동작을 제어하는 사용자 인터페이스 요소의 처리는, 클라이언트 컴퍼넌트의 역할이 아닙니다. 플랫폼의 종류에 의해, 입력 메소드, 호스트의 입력 메소드 매니저, 또는 Input Method Framework 가, 이 처리를 실시합니다. </P>
+
+<P>입력 메소드에서는, 클라이언트 컴퍼넌트간의 차이는 고려되지 않습니다. 입력 메소드간의 대화는, Input Method Framework 를 개입시켜 간접적으로 행해집니다. Input Method Framework 에서는, 액티브 클라이언트와 같은 인터페이스가 사용되어 차이는 내부에서 처리됩니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Input Styles"></A> 3.  입력 방식</H2>
+
+<P>Input Method Framework 에서는, 다음의 입력 방식이 지원됩니다. </P>
+
+<UL>
+<LI>「온더 스포트」입력. 클라이언트 컴퍼넌트에 의해, 출력처의 문서의 문맥에 변환 텍스트가 draw 됩니다. 다만, draw 된 텍스트는, 한층 더 입력 메소드에 의한 변환 또는 확정이 필요합니다. 액티브 클라이언트의 디폴트의 입력 방식이 됩니다.
+   
+<LI>「야자과 상록교목더 스포트」입력. 변환 텍스트는, 다른 변환용 윈도우에 표시됩니다. 변환용 윈도우는, 확정된 텍스트의 삽입 포인트의 직하에 자동적으로 자리매김됩니다. 윈도우의 장소는, 윈도우가 열린 직후에 계산되어 확정된 텍스트가 클라이언트 컴퍼넌트에 배분될 때마다 갱신됩니다. 윈도우가 삽입 포인트아래에 자리매김되었을 때에, 윈도우의 일부 또는 모든 것이 화면의 밖에 표시되었을 경우는, 삽입 포인트 위에 이동됩니다. 이 입력 방식은, 후술 하도록(듯이), 액티브 클라이언트의 경우에 선택됩니다.
+   
+<LI>「루트 윈도우」입력. 변환 텍스트는, 다른 변환용 윈도우에 표시됩니다. 변환용 윈도우의 자리 매김은, 수동으로 실시합니다. 이 입력 방식은, 패시브 클라이언트의 경우에 사용됩니다.
+</UL>
+
+<P>액티브 클라이언트의 경우는, 시스템 프로퍼티 또는 AWT 프로퍼티 「java.awt.im.style」에 근거해, 시스템에 의해 온더 스포트 또는 야자과 상록교목더 스포트 입력으로부터 선택됩니다. 시스템 프로퍼티은, 최종 사용자가 커멘드행으로부터 정의합니다. AWT 프로퍼티은, 로컬라이제이션 담당자 또는 시스템 관리 책임자가, 로컬라이즈 된 awt.properties 파일에 정의합니다. 양쪽 모두의 프로퍼티을 정의했을 경우는, 시스템 프로퍼티이 우선됩니다. 프로퍼티의 값이 「below-the-spot」의 경우는, 야자과 상록교목더 스포트가 사용됩니다. 「below-the-spot」이외의 경우는, 온더 스포트 입력이 사용됩니다. </P>
+
+<P>네이티브 입력 메소드를 사용한 야자과 상록교목더 스포트 입력의 지원는, 플랫폼에 의존하고 있습니다. Sun 의 Java 2 Runtime Environment 의 경우는, Windows 상에서는 지원됩니다만, Solaris 상에서는 지원되지 않습니다. 지원되어 있지 않은 경우는, 온더 스포트 입력이 대신에 사용됩니다. </P>
+
+<P>피어 텍스트 컴퍼넌트 (<TT>TextComponent</TT> 클래스의 인스턴스)에 대해서 사용되는 입력 방식은, 구현에 의존하고 있어, 위의 3 개의 입력 방식은 사용되지 않습니다. Sun 의 Windows 용 Java 2 Runtime Environment 의 경우는, 야자과 상록교목더 스포트 입력이 선택됩니다. 그 이외의 경우는, 오버더 스포트 입력이 사용됩니다. 오버더 스포트 입력의 경우는, 변환 텍스트는 삽입 포인트상에 겹쳐 표시되는 다른 윈도우에 draw 됩니다. Sun 의 Solaris 용 Java 2 Runtime Environment 의 경우는, 입력 방식은 입력 메소드에 의존합니다. </P>
+
+<P>비클라이언트 컴퍼넌트에 관계 붙일 수 있었던 입력 방식은 없습니다. </P>
+
+<P>입력 메소드에서는, 입력 방식간의 차이는 고려되지 않습니다. 클라이언트 컴퍼넌트간의 대화는, Input Method Framework 를 개입시켜 간접적으로 행해집니다. Input Method Framework 에서는, 온더 스포트 입력을 전제로 한 인터페이스가 사용되어 차이는 내부에서 처리됩니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Input Method Engines and Adapters"></A> 4.  입력 메소드 엔진과 입력 메소드 어댑터</H2>
+
+<P>입력 메소드 엔진 SPI 를 사용하면(자), Java 프로그램 언어로 입력 메소드를 개발할 수가 있습니다. 또, Java Speech 또는 Internet-Intranet Input Method Protocol 등, 그 외의 입력 시스템용의 어댑터도, 이 인터페이스를 사용해 구현할 수 있습니다. SPI 에 대한 자세한 것은,<A HREF="../../../api/java/awt/im/spi/package-summary.html#package_specification">SPI 패키지의 스펙</a>을 참조해 주세요. </P>
+
+<P>SPI 는, 호스트의 입력 메소드 어댑터로도 사용됩니다.  호스트의 입력 메소드 어댑터는, Microsoft Windows 의 Input Method Manager, MacOS 의 Text Services Manager, Solaris 의 XIM 등, 호스트의 입력 메소드 매니저와 통합된 네이티브 입력 메소드에 접속되고 있습니다. 호스트의 입력 메소드 어댑터는, Input Method Framework 내에서의 입력 메소드의 역할을 완수해, AWT 와 Input Method Framework 의 옆에서 사용되는 데이터 모델과 호스트의 입력 메소드 매니저의 옆에서 사용되는 데이터 모델의 사이로, 이벤트와 요구의 변환을 실시합니다. 또, 변환용 윈도우의 관리에서는, 입력 문맥과도 제휴합니다. 일반적으로, 호스트의 입력 메소드라고 대화하고 있는 패시브 클라이언트에서는, 호스트의 입력 메소드 매니저가 제공하는 루트 윈도우가 사용됩니다. 어댑터는 특정의 입력 메소드에의 요구를 호스트에게 건네줍니다만, 호스트의 선택 기구를 사용해 사용자가 입력 메소드를 선택할 수도 있습니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2><A NAME="Context Management"></A> 5.  문맥 관리</H2>
+
+<P><TT>InputContext</TT> 의 인스턴스는, 클라이언트 컴퍼넌트와 입력 메소드의 사이의 통신 문맥을 관리합니다. 입력 문맥의 주된 기능은, 현재의 클라이언트 컴퍼넌트로부터 현재의 입력 메소드에의 접속을 유지하는 것입니다. 입력 문맥은, 키 이벤트나 마우스 이벤트등의 입력 이벤트를 컴퍼넌트로부터 현재의 입력 메소드에 발송 해, 입력 메소드의 이벤트를 입력 메소드로부터 클라이언트 컴퍼넌트에 발송 합니다. 또, 입력 메소드로부터 클라이언트 컴퍼넌트에의 정보의 요구도 발송 합니다. </P>
+
+<P><TT>InputContext</TT> 인스턴스 마다, 다른 입력 문맥과 독립한 독자적인 텍스트 입력 환경이 제공됩니다. 이 때문에, 복수의 입력 조작을 동시에 실시할 수가 있는 어플리케이션을 작성할 수 있습니다. 예를 들어, 문서에 텍스트를 입력하고 있을 때, 파일 다이얼로그를 열어 파일명을 입력할 수가 있습니다. 이 때, 문서에 입력하고 있는 텍스트의 변환 상태에는 영향을 주지 않습니다. </P>
+
+<P>디폴트에서는, 윈도우의 인스턴스 마다 1 개의 <TT>InputContext</TT> 의 인스턴스가 작성되어, 윈도우의 포함 관계의 계층에 포함되는 모든 컴퍼넌트가 이 입력 문맥을 공유합니다. 필요에 따라서, 컴퍼넌트는 사적인 입력 문맥을 작성할 수 있습니다. 독자적인 입력 문맥을 가지지 않는 컴퍼넌트는, 부모의 입력 문맥을 사용합니다. 입력 문맥에는, 포커스가 현재 설정되어 있는, 현재의 클라이언트 컴퍼넌트만이 포함됩니다. 새로운 클라이언트 컴퍼넌트로 전환하면(자), 입력 문맥으로부터 <TT><A HREF="../../../api/java/awt/im/InputContext.html#endComposition()">endComposition</A> </TT> 메소드가 불려 가 직전의 클라이언트 컴퍼넌트의 변환용 텍스트가 확정 또는 캔슬됩니다. </P>
+
+<P>입력 문맥은, 클라이언트 컴퍼넌트가 사용할 필요가 있는 입력 메소드 엔진 마다, 입력 메소드의 인스턴스를 작성합니다. 입력 문맥의 인스턴스 마다, 독자적인 입력 메소드의 인스턴스가 작성됩니다. 인스턴스는, 입력 문맥이 파기될 때까지 남아 있으므로, 윈도우로 입력된 텍스트에 대한 정보를 보관 유지할 수 있습니다. </P>
+
+<P>또, 입력 문맥은, 입력 메소드를 선택해, 변환용 윈도우를 처리합니다. </P>
+
+<H4><A NAME="Selecting Input Methods"></A> 입력 메소드의 선택
+</H4>
+
+<P>입력 문맥에는, 현재의 입력 메소드 및 현재의 로케일이 포함됩니다.
+</P>
+
+<P>Input Method Framework 로 입력 메소드 및 입력 로케일을 선택하는 경우, 다음의 2 개의 방법이 있습니다. </P>
+
+<UL>
+<LI><TT><A HREF="../../../api/java/awt/im/InputContext.html#selectInputMethod(java.util.Locale)">InputContext.selectInputMethod</A> </TT> 메소드를 사용해, 특정의 로케일이 지원되는 입력 메소드를 어플리케이션으로부터 요구한다
+   
+<LI>사용자 인터페이스를 사용해, 사용자가 입력 메소드를 이름으로 요구해, 입력 로케일을 지정한다. 사용자 인터페이스로부터 선택해도, 현재 액티브한 입력 문맥 이외에는 영향을 주지 않는다
+</UL>
+
+<P>시스템에서는, 몇개의 선택 방법이 우선될 것은 없습니다. 이 때문에, 마지막에 정상 종료한 선택 방법이, 입력 문맥으로 사용되는 현재의 입력 메소드가 됩니다. 요구된 로케일을 지원하고 있는 입력 메소드가 존재하지 않는 경우는,<TT>selectInputMethod</TT> 는 실패합니다. </P>
+
+<P>입력 문맥은, 새로운 입력 메소드로 전환하기 전에, 낡은 입력 메소드의 <TT>endComposition</TT> 메소드를 호출합니다. 입력 문맥은, 낡은 입력 메소드의 인스턴스를 보관 유지해, 같은 입력 메소드가 다음에 재차 선택되었을 때에 재사용합니다. </P>
+
+<P><TT>InputContext.selectInputMethod</TT> 는, 인스톨 떠날 수 있어 모든 입력 메소드의 <TT>InputMethodDescriptor.getAvailableLocales</TT> 메소드를 사용해, 목적의 로케일이 지원되고 있는 입력 메소드를 검색합니다. 사용자가, 목적의 로케일의 입력 메소드를 벌써 사용자 인터페이스로부터 선택하고 있는 경우는, 그 입력 메소드가 선택됩니다. 그 이외 때는, 목적의 로케일이 복수의 입력 메소드로 지원되고 있는 경우, 입력 메소드는 구현에 의존해 선택됩니다. </P>
+
+<P>입력 메소드 선택용의 사용자 인터페이스는, 구현에 의존하고 있습니다. 사용 가능한 입력 메소드가 모두 표시되어 사용자가 거기로부터 선택할 수 없으면 안됩니다. 입력 메소드로 복수의 로케일이 지원되고 있는 경우는, 사용자 인터페이스로부터 특정의 입력 로케일을 선택할 수 없으면 안됩니다. 호스트로부터 입력 로케일을 선택하기 위한 대체 기능이 제공되는 경우는, 이 기능은 생략 됩니다. 라이센스 계약자가, 각 플랫폼용의 Java Runtime Environment 를 개발하고 있는 경우는, 키보드 또는 입력 메소드를 선택하기 위한 사용자 인터페이스를, 기존의 인터페이스와 통합하는 것을 추천합니다. </P>
+
+<P>Sun 의 Windows 용 및 (Motif 베이스의 AWT 를 사용한다) Solaris 용의 Java 2 Runtime Environment 의 사용자 인터페이스는, 3 개의 부분으로부터 구성됩니다. 즉, Motif 의 「윈도우」메뉴 또는 Windows 의 「시스템」메뉴에 추가되는 「입력 방식의 변환」메뉴 항목, 사용자 정의의 입력 방식 변환 키, 「입력 방식의 변환」메뉴 항목 또는 입력 방식 변환 키에 의해 표시되는 pop-up menu입니다. [입력 방식의 변환] 메뉴 항목은, Java Runtime Environment 로 사용 가능한 입력 메소드가 복수 존재하는 경우에, 또는 입력 메소드로 복수의 로케일이 지원되고 있는 경우에만 표시됩니다 (호스트의 입력 메소드 어댑터는 1 개의 입력 메소드로서 다루어진다). pop-up menu에는, 사용 가능한 입력 메소드가 표시되어 복수의 로케일이 지원되는 입력 메소드의 경우는, 지원되고 있는 로케일이 부메뉴로서 표시됩니다. 사용자는, 이 리스트로부터 선택할 수가 있습니다. Sun 의 (<A HREF="../awt/1.5/xawt.html">X 베이스의 AWT</A>  를 사용한다) Solaris 및 Linux 용 Java 2 Runtime Environment 에는, 「입력 방식의 변환」메뉴 항목이 없습니다.  즉, 입력 방식 변환 키를 눌렀을 때에만, pop-up menu가 표시됩니다. 입력 방식 변환 키의 정의는, 기본 키의 코드값의 정의와 수식자의 정의의, 2 개의 설정을 사용해 지속적으로 보존됩니다. 「수식자」의 설정은 옵션입니다. 정의된 수식자의 엔트리가 keyCode 엔트리와 일치하지 않는 경우, 그 수식자 엔트리는 무시됩니다. 다음의 겉(표)에 그 내용을 나타냅니다.
+</P>
+
+<P><CENTER><TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2
+summary="keys and values" nosave>
+   <TR>
+      <TH nosave>
+<P>키명 (캐릭터 라인)
+      </TH><TH>
+<P>값 (int)
+      </TH></TR>
+   <TR>
+      <TD nosave>
+<P><CENTER>keyCode</CENTER>
+      </TD><TD>
+<P><CENTER>임의의 java.awt.event.KeyEvent.VK_* 치 (VK_UNDEFINED 를 제외한다)</CENTER>
+      </TD></TR>
+   <TR>
+      <TD>
+<P><CENTER>수식자</CENTER>
+      </TD><TD>
+<P>java.awt.event.InputEvent. *_MASK 의 임의의 편성
+      </TD></TR>
+</TABLE></CENTER><p></P>
+
+<P>Java 2 Runtime 에서는, 이러한 설정은 사용자의 설정 트리 노드의 /java/awt/im/selectionKey 로 최초로 검색됩니다.  정의가 검출되지 않는 경우는, 시스템의 설정 노드의 같은 패스가 검색됩니다. </P>
+
+<H4><A NAME="Composition Window"></A> 변환용 윈도우</H4>
+
+<P>패시브 클라이언트, 및 야자과 상록교목더 스포트 입력을 사용하고 있는 액티브 클라이언트의 경우는, Input Method Framework 에 변환용 윈도우가 제공됩니다. 이 윈도우는, 입력 메소드에 의해 변환 텍스트의 송신이 개시되었을 때에 열어, 모든 텍스트가 확정되었을 때에 닫습니다. 현재 복수의 변환이 개별의 입력 문맥을 사용해 행해지고 있는 경우에서도, 열리는 변환용 윈도우는 1 개 뿐입니다. </P>
+
+<P>야자과 상록교목더 스포트 입력의 경우는, 윈도우는, 확정된 텍스트의 삽입 포인트의 직하에 자동적으로 자리매김됩니다. 윈도우의 장소는, 윈도우가 열린 직후에 계산되어 확정된 텍스트가 클라이언트 컴퍼넌트에 배분될 때마다 갱신됩니다. 윈도우가 삽입 포인트아래에 자리매김되었을 때에, 윈도우의 일부 또는 모든 것이 화면의 밖에 표시되었을 경우는, 삽입 포인트 위에 이동됩니다. </P>
+
+<P>
+<HR>
+<p></P>
+
+<H2>6.  시스템를 경유하는 정보 플로우</H2>
+
+<P>시스템에서는, 현재의 클라이언트 문맥 및 현재의 입력 메소드간의 정보를 통신하기 위해서, 다음의 2 개의 기구가 제공됩니다.
+</P>
+
+<UL>
+<LI>사용자 액션의 정보를 입력 메소드에 건네줄 때, 및 입력 텍스트의 변경을 컴퍼넌트에 통지할 경우에는, AWT 이벤트가 사용된다. 이 모델에서는, 다른 입력 조작과 일관성이 있는 프로그래밍 인터페이스가 제공된다. 다만,<TT>InputMethodEvent</TT> 는 일반적으로, 컴퍼넌트의 메소드에 동기적으로 발송 되는데 대해, 다른 AWT 이벤트의 발송는 이벤트 큐를 통해 비동기에게 발송 된다
+   
+<LI><TT>InputMethodRequests</TT> 인터페이스에는, 클라이언트 컴퍼넌트로부터 정보를 요구할 경우에, 입력 메소드로부터 불려 가는 메소드를 정의한다. 이 호출은, 동기적으로 행해진다
+</UL>
+
+<P><TT>InputMethodRequests</TT> 메소드의 발송 및 호출을 실시하는 이벤트는, 입력 문맥을 개입시켜 간접적으로 실행됩니다. 이 때문에, 입력 문맥에서는, 필요에 따라서 정보가 변환용 윈도우에 리다이렉트(redirect) 됩니다. 변환용 윈도우에서는, 액티브 클라이언트의 구현이 모두 제공됩니다. 입력 메소드에서는, 항상 액티브 클라이언트와의 대화가 전제가 되고 있습니다. </P>
+
+<P>이후시에에서는, Input Medthod Framework 를 경유하는 이벤트 플로우, 및 입력 메소드의 요구에 관련하는 처리에 대해 설명합니다. 클라이언트 컴퍼넌트의 종류 및 선택한 입력 형식에 응해, 4 개의 이벤트 플로우를 소개합니다. 이러한 이벤트 플로우에서는, 입력 메소드 엔진 SPI 를 사용해, 입력 메소드가 Java 프로그램 언어로 구현되고 있는 것을 전제로 하고 있습니다. 피어 텍스트 컴퍼넌트 또는 네이티브 입력 메소드의 이벤트 플로우는, 구현에 의존하고 있어, 크게 다르기 (위해)때문에, 여기에서는 설명하지 않습니다. </P>
+
+<H4>온더 스포트 입력을 사용한 액티브 클라이언트</H4>
+
+<P><CENTER><IMG SRC="eventflow-active-ots.gif" ALT="이후의 문장으로, 이 그림에 대해 설명하고 있습니다. " WIDTH=427 HEIGHT=247 ALIGN=bottom></CENTER></P>
+
+<P><TT>KeyEvent</TT> 나 <TT>MouseEvent</TT> 등의 입력 이벤트는,<TT>InputContext</TT> 객체를 통해 현재의 입력 메소드에 보내집니다. 입력 메소드에서는, 텍스트 변환의 이벤트를 사용했을 경우, 이벤트가 사용된 것을 지정해, 컴퍼넌트에 대한 입력 메소드 이벤트를 생성합니다. 클라이언트 컴퍼넌트에서는, 입력 메소드로부터 보내져 오는 <TT>InputMethodEvent</TT> 를 처리해, 변환 및 확정된 텍스트를 받을 수가 있도록,<TT>InputMethodListener</TT> 를 등록할 필요가 있습니다. </P>
+
+<P>입력 메소드로부터 <TT>InputMethodRequests</TT> 가 불려 갔을 경우는, 클라이언트 컴퍼넌트의 <TT><A HREF="../../../api/java/awt/Component.html#getInputMethodRequests()">getInputMethodRequests</A> </TT> 메소드로부터 반환된 객체에 전송 됩니다. </P>
+
+<H4>야자과 상록교목더 스포트 입력을 사용한 액티브 클라이언트</H4>
+
+<H4><CENTER><IMG SRC="eventflow-active-bts.gif" ALT="이후의 문장으로, 이 그림에 대해 설명하고 있습니다. " WIDTH=427 HEIGHT=247 ALIGN=bottom></CENTER></H4>
+
+<P><TT>KeyEvent</TT> 나 <TT>MouseEvent</TT> 등의 입력 이벤트는,<TT>InputContext</TT> 객체를 통해 현재의 입력 메소드에 보내집니다. 입력 메소드에서는, 텍스트 변환의 이벤트를 사용했을 경우, 이벤트가 사용된 것을 지정해, 입력 메소드 이벤트를 생성합니다. 야자과 상록교목더 스포트 입력이 선택되고 있기 (위해)때문에, 이벤트는 변환용 윈도우에 리다이렉트(redirect) 되고 나서 처리됩니다. 텍스트의 일부 또는 모든 것이 확정되었을 때에, 변환용 윈도우에 의해 새로운 입력 메소드 이벤트가 생성됩니다. 이 이벤트에는, 클라이언트 컴퍼넌트에 대해서 확정된 텍스트가 보관 유지되고 있습니다. 클라이언트 컴퍼넌트에서는, 변환용 윈도우로부터 보내져 오는 <TT>InputMethodEvent</TT> 를 처리할 수 있도록(듯이) <TT>InputMethodListener</TT> 를 등록할 필요가 있습니다. 이 때,<TT>InputMethodEvent</TT> 에는, 확정된 텍스트만이 포함됩니다. </P>
+
+<P>변환 텍스트의 표시에 관련하는 입력 메소드로부터 행해진 <TT>InputMethodRequests</TT> 호출 (<TT>getTextLocation</TT>,<TT>getLocationOffset</TT>)는, 변환용 윈도우로 처리됩니다. 그 외의 모든 호출은, 클라이언트 컴퍼넌트의 <TT><A HREF="../../../api/java/awt/Component.html#getInputMethodRequests()">getInputMethodRequests</A> </TT> 메소드로부터 반환된 객체에 전송 됩니다. 변환용 윈도우는, 클라이언트 컴퍼넌트의 <TT>getTextLocation</TT> 구현을 사용하고 자리 매김을 하고 됩니다. </P>
+
+<H4>패시브 클라이언트</H4>
+
+<P><CENTER><IMG SRC="eventflow-passive.gif" ALT="이후의 문장으로, 이 그림에 대해 설명하고 있습니다. " WIDTH=427 HEIGHT=247 ALIGN=bottom></CENTER></P>
+
+<P><TT>KeyEvent</TT> 나 <TT>MouseEvent</TT> 등의 입력 이벤트는,<TT>InputContext</TT> 객체를 통해 현재의 입력 메소드에 보내집니다. 입력 메소드에서는, 텍스트 변환의 이벤트를 사용했을 경우, 이벤트가 사용된 것을 지정해, 입력 메소드 이벤트를 생성합니다. 이 이벤트는, 변환용 윈도우에 리다이렉트(redirect) 되어 처리됩니다. 텍스트가 확정되면(자), 변환용 윈도우에서는, 그 텍스트가, 클라이언트의 실제의 키 이벤트 청취자에 대한 키 이벤트에 변환됩니다. KEY_TYPED 이벤트만이 송신됩니다. </P>
+
+<P>입력 메소드로부터의 <TT>InputMethodRequests</TT> 호출은, 변환용 윈도우로 처리됩니다. 변환 텍스트의 표시에 관련하는 호출 (<TT>getTextLocation</TT>, <TT>getLocationOffset</TT>)은, 표시되는 변환 텍스트의 정보에 근거해 처리됩니다. 그 외의 호출은, 항상, 변환이 개시되었던 바로 직후로 확정 텍스트가 존재하지 않는 것을 전제로 해서 처리됩니다. 변환용 윈도우에는, 클라이언트 컴퍼넌트의 텍스트에 대한 액세스권이 없기 때문입니다. </P>
+
+<H4>비클라이언트</H4>
+
+<P><CENTER><IMG SRC="eventflow-non.gif" ALT="이후의 문장으로, 이 그림에 대해 설명하고 있습니다. " WIDTH=427 HEIGHT=67 ALIGN=bottom></CENTER></P>
+
+<P>비클라이언트의 이벤트는, 입력 문맥에는 전송 되지 않습니다. 모든 이벤트는, 컴퍼넌트의 청취자에게 직접 전송 됩니다. 여기에서는, 키 청취자에게 전송 되고 있습니다.
+</P>
+
+<P><!-- Body text ends here --><!-- ============================================================== -->
+<HR SIZE="3" NOSHADE>
+<TABLE BORDER=0 WIDTH="100%" summary="layout">
+   <TR>
+      <TD VALIGN=top>
+<P><FONT          SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2"> 2004 </FONT><FONT          SIZE="-2"><A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> </FONT><FONT SIZE="-2">All Rights Reserved. </FONT>
+         </P>
+         
+<P><FONT          SIZE="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/1.5.0/docs/technotes/guides/imf/spec.html&category=api&mailsubject=Internationalization">연락처</A> </FONT>
+      </TD><TD VALIGN=top align=RIGHT>
+<P ALIGN=RIGHT><IMG SRC="../../../images/sunlogo64x30.gif"          ALT="Sun" WIDTH=64 HEIGHT=30 BORDER=0 ALIGN=bottom><BR>
+         
+<I><FONT SIZE="+1">Java Software</FONT></I>
+      </TD></TR>
+</TABLE><p></P>
+</BODY>
+</HTML>

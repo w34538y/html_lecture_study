@@ -1,0 +1,621 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>assertion를 사용한 프로그래밍 - xrath.com 에서 번역됨</TITLE>
+ <link rel="stylesheet" href="../../../technotes/guides/language/doc.css" type="text/css">
+</HEAD>
+
+<BODY bgColor=#ffffff>
+ <TABLE summary="layout" width="100%" border=0>
+ <TBODY>
+  <TR>
+    <TD width=60>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+    </TD>
+    <TD>
+      <div align=CENTER>
+<H1>assertion를 사용한 프로그래밍</H1></div>
+    </TD>
+    <TD vAlign=top align=right>
+<FONT size=-1><A href="../../../index.html">문서의 목차</a> </FONT>
+    </TD>
+  </TR>
+ </TBODY>
+ </TABLE>
+
+<HR>
+
+<P>assertion는, 프로그램에 관한 전제를 테스트할 수 있는 Java <font size=-1><sup>TM</sup></font> 프로그램 언어의 문장입니다. 예를 들어, 입자의 속도를 계산하는 메소드를 기술했을 경우에, 계산되는 속도가 광속보다 늦은 일을 전제로 하는 일이 있습니다.
+
+<p>각 assertion는, assertion가 실행되었을 때에 true 가 되면(자) 상정되는 boolean 식을 포함하고 있습니다. true 가 되지 않는 경우는, 시스템에 의해 에러가 throw 됩니다. assertion는, boolean 식이 true 인 것을 확인하는 것에 의해, 프로그램의 동작에 관한 전제를 검증합니다. 이것에 의해, 프로그램에 에러가 없을 가능성이 높아집니다.
+
+<p>프로그래밍중에 assertion를 기술하면(자), 재빠르게 한편 가장 효과적으로 버그를 발견해 수정할 수 있는 것이 경험적으로 실증 되고 있습니다. 게다가 assertion는 프로그램의 내부적인 동작의 문서화에 도움이 되므로, 보수가 용이하게 된다고 하는 이점도 있습니다.
+
+
+<p>이 문서에서는, assertion를 사용한 프로그래밍 방법에 대해 설명합니다. 다음의 토픽에 대해 설명합니다.
+<ul>
+<li><a href="#intro">처음에</a>  </li>
+<li><a href="#usage">코드에의 assertion의 삽입</a>  </li>
+<li><a href="#compiling">assertion를 사용하는 파일의 컴파일</a>   </li>
+<li><a href="#enable-disable">assertion의 유효화 및 무효화</a>   </li>
+<li><a href="#compatibility">기존의 프로그램과의 호환성</a>  </li>
+<li><a href="#design-faq">Java 컬렉션 API 의 설계에 관한 FAQ</a>  </li>
+</ul>
+
+
+<HR>
+<a name="intro"><H2>처음에</H2></a> 
+
+<p>assertion문은 2 개의 형식에서 기술할 수 있습니다. 최초로 단순한 형식을 나타냅니다.
+
+<pre>
+assert <VAR>Expression<SUB>1</SUB></VAR> ;
+</pre>
+<P>
+<var>Expression<font size=-1><sub>1</sub></font></var> 은,<code>boolean</code> 식입니다. assertion는, 시스템에 의해 실행되면(자),<var>Expression<font size=-1><sub>1</sub></font></var> 을 평가해, 결과가 <code>false</code> 의 경우는, 상세 메세지를 표시하지 않고 <a href="../../../api/java/lang/AssertionError.html"><CODE>AssertionError</CODE></a>  를 throw 합니다.
+
+<p>다음에, assertion문의 2 번째의 형식을 나타냅니다.
+
+<pre>
+assert <VAR>Expression<SUB>1</SUB></VAR> : <VAR>Expression<SUB>2</SUB></VAR> ;</pre>
+
+<p>설명 
+<ul>
+<li><var>Expression<font size=-1><sub>1</sub></font></var> 은, boolean 식입니다.  </li>
+
+<li><var>Expression<font size=-1><sub>2</sub></font></var> 는, 값을 가지는 식입니다. <code>void</code> 로서 선언된 메소드의 호출을 이 식으로서 사용할 수 없습니다.
+</ul>
+
+<p>이 형식의 <code>assert</code> 문은,<code>AssertionError</code> 의 상세 메세지를 제공하기 위해서 사용합니다. 시스템이 <var>Expression<font size=-1><sub>2</sub></font></var> 의 값을 적절한 <code>AssertionError</code> 생성자 에 건네주어, 생성자 은 값의 캐릭터 라인 표현을 에러의 상세 메세지로서 사용합니다.
+
+<p>상세 메세지의 목적은, assertion의 실패의 상세를 파악해 전달하는 것입니다. 이 메세지를 참조해, assertion의 실패의 원인이 된 에러를 진단해, 최종적으로는 에러를 해결할 수 있도록(듯이) 할 필요가 있습니다. 상세 메세지는, 사용자 레벨의 에러 메세지는 아니기 때문에, 일반적으로, 그대로 이해할 수 있는 메세지로 하거나 국제화 하거나 할 필요는 없습니다. 상세 메세지는, 실패한 assertion를 포함한 원시 코드와 조합해, 스택 트레이스 전체의 문맥내에서 해석됩니다.
+
+<p>모든 캐치 되지 않는 예외와 같이, 일반적으로 스택 트레이스내의 assertion 실패에는, throw원의 파일과 행 번호의 라벨을 붙일 수 있습니다. 실패의 진단에 도움이 되는 추가 정보를 프로그램을 제공할 수 있는 경우에게만, assertion문의 최초의 형식보다, 2 번째의 형식을 우선적으로 사용합니다. 예를 들어,<VAR>Expression<SUB>1</SUB></VAR> 에, 2 개의 변수 <code>x</code> 와 <code>y</code> 의 관계가 포함되는 경우는, 2 번째의 형식을 사용할 필요가 있습니다. 이러한 상황에서는,<VAR>Expression<SUB>2</SUB></VAR> 로서 <code>"x:" + x + ", y:" + y</code> 와 같은 식이 자주(잘) 사용됩니다.
+
+<p>경우에 따라서는,<var>Expression<font size=-1><sub>1</sub></font></var> 의 평가에 시간이 걸리는 일이 있습니다. 예를 들어 소트되어 있지 않은 리스트내의 최소 요소를 검색하는 메소드를 기술해, 선택된 요소가 확실히 최소인가 어떤가를 확인하기 위한 assertion를 추가한다고 합니다. assertion에 의해 실행되는 처리에는, 적어도 메소드 자체에 의해 실행되는 처리와 같은 시간이 걸립니다. 배치 후의 어플리케이션의 퍼포먼스에 assertion가 영향을 주지 않게 하기 위해서, 프로그램의 기동시에 assertion를 유효 또는 무효로 할 수 있습니다. 디폴트에서는 assertion는 무효가 됩니다. assertion를 무효로 하면(자), 퍼포먼스에 대한 영향이 완전하게 없어집니다. 무효가 된 assertion는, 시멘틱스 및 퍼포먼스의 관점으로부터 보면(자), 기본적으로 공문과 같습니다. 상세한 것에 대하여는<a href="#enable-disable">「assertion의 유효화 및 무효화」</a>를 참조해 주세요.
+
+<p>Java 프로그램 언어에의 <code>assert</code> 키워드의 추가에 의해 기존의 코드가 영향을 받습니다. 상세한 것에 대하여는,<a href="#compatibility">「기존의 프로그램과의 호환성」</a>을 참조해 주세요.
+</p>
+<a name="usage"><H2>코드에의 assertion의 삽입</H2></a> 
+
+<p>assertion의 사용이 도움이 되는 상황은 다음과 같이 많이 있습니다.
+
+<ul>
+<li><a href="#usage-invariants">내부의 불변 조건</a>  
+<li><a href="#usage-control">제어 플로우의 불변 조건</a>  
+<li><a href="#usage-conditions">사전 조건, 사후 조건, 및 클래스의 불변 조건</a> 
+</ul>
+
+<p>또, 상황에 따라서는, assertion를 사용하지 않게 할 필요가 있습니다.
+
+<ul>
+<li>assertion는, public 메소드내의 인수 체크에 사용하지 말아 주세요.
+
+<p>인수의 체크는 일반적으로, 메소드의 스펙 (또는 규약)의 일부가 되어 있어, assertion의 유효/무효에에 관계없이, 이 스펙에 준거할 필요가 있습니다. assertion를 사용해 인수를 체크했을 경우, 부정한 인수에 의해 런타임 예외 (<code>IllegalArgumentException</code>,<code>IndexOutOfBoundsException</code>,<code>NullPointerException</code> 등)가 발생할 가능성이 있습니다. assertion가 실패해도, 적절한 예외는 throw 되지 않습니다. </li>
+
+<li>어플리케이션의 올바른 동작에 필요한 처리를 실행하기 위해서 assertion를 사용하지 말아 주세요.
+
+<p>assertion는 무효로 하는 일이 있기 (위해)때문에, assertion에 포함되는 boolean 식이 평가되는 것을 전제로 하지 말아 주세요. 이 규칙을 지키지 않으면 문제가 발생합니다. 예를 들어,<code>names</code> 라고 하는 리스트로부터 모든 null 의 요소를 삭제할 필요가 있어, 1 개(살) 이상의 null 가 리스트에 포함되어 있는 것을 알 수 있고 있다고 합니다. 이것을 다음과 같이 처리하는 것은 실수입니다.
+<pre>
+<b>// Broken!  - action is contained in assertion</b>
+assert names.remove(null);
+</pre>
+<p>
+assertion가 유효하게 되어 있는 경우는 프로그램은 정상적으로 기능합니다만, assertion가 무효가 되어 있으면(자), null 요소가 리스트로부터 삭제되지 않기 때문에 프로그램은 정상적으로 기능하지 않습니다. 처리를 실행한 후에, assertion를 실행해 처리가 정상적으로 완료한 것을 표명하는 것이 올바른 방법입니다.
+<pre>
+<b>// Fixed - action precedes assertion</b>
+boolean nullsRemoved = names.remove(null);
+assert nullsRemoved;  // Runs whether or not asserts are enabled
+</pre>
+<p>
+일반적으로, assertion내에서는, 부작용이 없는 식을 사용할 필요가 있습니다. 즉, 식의 평가가 완료한 후의 가시 상태에 대해서 boolean 식이 영향을 주어 되지 않습니다. 다만 이 규칙의 예외로서 assertion는, 다른 assertion내로부터 마셔 사용되는 상태를 변경할 수 있습니다. <a href="#complexpostconditions">이 예외를 이용하는 코드</a>에 대해서는, 이 문서로 후술 합니다.
+</li>
+</ul>
+
+<a name=usage-invariants><H3>내부의 불변 조건</H3></a> 
+
+<P>assertion가 등장할 때까지, 많은 프로그래머는, 코멘트를 사용해 프로그램의 동작에 관한 전제를 나타내고 있었습니다. 예를 들어, if 문내의 <CODE>else</CODE> 구에 관한 전제를 설명하기 위해서, 다음과 같은 코드를 기술했다고 합니다.   
+
+<pre>
+if (i % 3 == 0) {
+    ...
+} else if (i % 3 == 1) {
+    ...
+} else { <b>// We know (i % 3 == 2)</b>
+    ...
+}
+</pre>
+
+<p>현재는,<b>불변 조건을 표명하는 코멘트를 기술했을 때에는 항상 assertion를 사용할 필요가 있습니다</b>. 예를 들어 위의 if 문은 다음과 같이 기술할 필요가 있습니다.  
+
+<pre>
+if (i % 3 == 0) {
+   ...
+} else if (i % 3 == 1) {
+    ...
+} else {
+    <b>assert i % 3 == 2 : i;</b>
+    ...
+}
+</pre>
+
+<p>위의 예의 assertion는,<code>i</code> 가 부의 경우, 실패합니다. <code>%</code> 연산자는, 진정한 계수(modulus) 연산자가 아닙니다만, 잉여가 발생했을 때에, 부가 될 가능성이 있습니다.
+
+<p>assertion는,<code>디폴트</code>의 case 가 없는 <code>switch</code> 문에서도 사용합니다. <code>디폴트</code>의 case 가 없는 것은, 일반적으로, 프로그래머가 몇개의 case 가 항상 실행된다고 확신하고 있는 것을 나타냅니다. 특정의 변수가 적은 수의 값의 어느 쪽인가에 된다고 하는 전제는, assertion를 사용해 체크할 필요가 있는 불변 조건입니다. 예를 들어, 다음의 <code>switch</code> 문이, 트럼프의 카드를 취급하는 프로그램내에서 사용되고 있다고 합니다.  
+
+<pre>
+switch(suit) {
+  case Suit.CLUBS:
+    ...
+  break;
+
+  case Suit.DIAMONDS:
+    ...
+  break;
+
+  case Suit.HEARTS:
+    ...
+    break;
+
+  case Suit.SPADES:
+      ...
+}
+</pre>
+
+<p>이 코드는 아마,<code>suit</code> 변수가 4 개의 값의 어느 쪽인가에 된다고 하는 전제를 나타내고 있습니다. 일전에제를 테스트하려면 , 다음의 디폴트의 case 를 추가합니다.   
+
+<pre>
+default:
+    assert false : suit;
+</pre>
+
+<p>assertion가 유효하게 되어 있을 때 <code>suit</code> 변수가 다른 값을 받으면(자), assertion는 실패해,<code>AssertionError</code> 가 throw 됩니다.
+
+<p>대신에 다음의 코드를 사용할 수 있습니다.
+<pre>
+default:
+    throw new AssertionError(suit);
+</pre>
+
+<P>
+이 코드는 assertion가 무효가 되어 있는 경우에서도 보호 기능을 제공해, 게다가 보호를 추가해도 부하는 증가하지 않습니다. 이것은, 프로그램이 실패하지 않는 한,<code>throw</code> 문이 실행되지 않기 때문입니다. 게다가 이 코드는,<code>assert</code> 문을 사용할 수 없는 것 같은 상황에서도 유효합니다. 포함 하는 메소드가 값을 돌려주어,<code>switch</code> 문내의 각 case 가 <code>return</code> 문을 포함해, 한층 더 <code>switch</code> 문의 후에 <code>return</code> 문이 없는 경우, assertion를 사용해 디폴트의 case 를 추가한다고 구문 에러가 됩니다. 일치하는 case 가 없게 assertion가 무효가 되어 있는 경우, 메소드는 값을 돌려주지 않고 복귀합니다.
+</P>
+
+<a name=usage-control><H3>제어 플로우의 불변 조건</H3></a> 
+
+<p>전의 예는, 불변 조건을 테스트할 뿐만 아니라, 어플리케이션의 제어 플로우에 관한 전제도 체크합니다. 원의 <code>switch</code> 문의 작성자는 아마,<code>suit</code> 변수가 항상 4 개의 값의 어느쪽이든을 취하는 것 뿐만이 아니고, 4 개의 case 중 한쪽이 항상 실행되는 일도 전제로 하고 있습니다. 이것은, assertion가 일반적으로 사용되는 다른 영역을 나타내고 있습니다. <b>즉, assertion는 도달하지 않는다고 예상되는 장소에 배치합니다. </b>. 다음의 assertion문을 사용합니다.  
+
+<pre>
+assert false;
+</pre>
+
+<p>예를 들어, 다음과 같은 메소드를 상정합니다.   
+
+<pre>
+void foo() {
+    for (...) {
+      if (...)
+        return;
+    }
+    <b>// Execution should never reach this point!!!</b>
+}
+</pre>
+
+<p>다음의 코드와 같이 마지막 코멘트를 옮겨놓습니다. </p>
+
+<pre>
+void foo() {
+    for (...) {
+      if (...)
+        return;
+    }
+    <b>assert false; // Execution should never reach this point! </b>
+}
+</pre>
+
+<p>
+<b>Note:</b> 이 기법은, 주의해 사용해 주세요. Java 언어 스펙 ( <a href="http://java/sun.com/docs/books/jls/second_edition/html/statements.doc.html#236365"> JLS 14.20</a> )에 정의되고 있도록(듯이) 문장이 도달하지 않는 경우는, 도달 불가능한 것을 표명하려고 하면(자), 컴파일시에 에러가 발생합니다. 여기에서도, 단순하게 <code>AssertionError</code> 를 throw 하는 코드를 대신에 사용할 수 있습니다.
+</p>
+
+<a name=usage-conditions><H3>사전 조건, 사후 조건, 및 클래스의 불변 조건</H3></a> 
+
+<P>assert 구문은, 계약에 의한 설계를 완전하게 적용한 기능이 아닙니다. 다만, 비공식인, 계약에 의한 설계 스타일의 프로그래밍은, 지원할 수 있습니다. 여기에서는, 다음의 목적으로 assertion를 사용하는 방법을 설명합니다.
+<ul>
+<li><a href="#preconditions">사전 조건</a>  &mdash; 메소드가 불려 갔을 때에 채워지지 않으면 안 되는 것 </li>
+  <ul>
+<li><a href=#usage-adv-locks>락 상태 사전 조건</a>  &mdash; 지정된 락의 유무에 관한 사전 조건
+  </ul>
+
+<li><a href="#postconditions">사후 조건</a>  &mdash; 메소드의 실행이 성공한 후에 채워지지 않으면 안 되는 것</li>
+
+<li><a href="#class-invariants">클래스의 불변 조건</a>  &mdash; 클래스의 각 인스턴스에 대해 채워지지 않으면 안 되는 것</li>
+</ul>
+
+<a name="preconditions"></a> <H4>사전 조건</H4>
+
+<P>규약에 의해, public 메소드의 사전 조건은, 특정의 지정된 예외를 throw 하는 명시적인 체크에 의해 적용됩니다. 예를 나타냅니다.
+
+<pre>
+/**
+  * Sets the refresh rate.
+  *
+  * @param  rate refresh rate, in frames per second.
+  * @throws IllegalArgumentException if rate &lt;= 0 or
+  * rate &gt; MAX_REFRESH_RATE.
+*/
+public void setRefreshRate(int rate) {
+  // <B>Enforce specified precondition in public method</B>
+  if (rate &lt;= 0 || rate &gt; MAX_REFRESH_RATE)
+    throw new IllegalArgumentException("Illegal rate: " + rate);
+    setRefreshInterval(1000/rate);
+  }
+</pre>
+
+<p>이 규약은,<code>assert</code> 구문을 추가해도 영향을 받지 않습니다. <b>public 메소드의 파라미터의 체크에는 assertion를 사용하지 말아 주세요. </b> public 메소드는, 항상 인수 체크를 적용하는 것을 보증하므로, assert 는 적합하지 않습니다. public 메소드는, assertion가 유효한가 어떤가에 관계없이 인수를 체크할 필요가 있습니다. 게다가<code>assert</code> 구문은, 지정한 종류의 예외를 throw 하지 않습니다. <code>assert</code> 구문을 throw 할 수 있는 것은,<code>AssertionError</code> 뿐입니다.
+
+<P>다만, 클라이언트가 클래스를 사용해 실시하는 처리의 내용에 관계없이 true 가 되는 것을 알 수 있고 있는 private 메소드의 사전 조건에 대해서는, assertion를 사용해 그 사전 조건을 테스트할 수 있습니다. 예를 들어, 전술의 메소드에 의해 불려 가는 다음의 「헬퍼 메소드」내에서는 assertion의 사용이 적합합니다.
+
+<pre>
+/**
+ * Sets the refresh interval (which must correspond to a legal frame rate).
+ *
+ * @param  interval refresh interval in milliseconds.
+*/
+ <b>private</b> void setRefreshInterval(int interval) {
+  <b>// Confirm adherence to precondition in nonpublic method</b>
+  assert interval &gt; 0 &amp;&amp; interval &lt;= 1000/MAX_REFRESH_RATE : interval;
+
+  ... // Set the refresh interval
+ } </pre>
+
+<p>위의 예의 assertion는,<code>MAX_REFRESH_RATE</code> 가 1000 보다 커져, 사용자가 1000 을 넘는 refresh rate를 선택하면(자), 실패합니다.  즉, 라이브러리내에 버그가 존재하고 있습니다.
+</p>
+<a name=usage-adv-locks><h5>락 상태 사전 조건</h5></a> 
+
+<p>multi-thread화에 의한 사용을 목적으로 해 설계된 클래스는, 자주, 락의 유무에 관한 사전 조건을 사용하는 private 메소드를 포함하고 있습니다. 예를 들어, 다음과 같은 코드가 자주(잘) 사용됩니다.
+</p>
+<pre>
+private Object[] a;
+public synchronized int find(Object key) {
+  return find(key, a, 0, a.length);
+}
+
+<b>// Recursive helper method - always called with a lock on this object</b>
+private int find(Object key, Object[] arr, int start, int len) {
+ ...
+} </pre>
+
+<p><code>holdsLock</code> 라고 하는 static 메소드가 <code>Thread</code> 클래스에 추가되었습니다. 이 메소드는, 현재의 thread가 지정된 객체를 잠그고 있는지 어떤지를 테스트합니다. 이 메소드를 <code>assert</code> 문과 조합해 사용하면(자), 다음의 예에 나타내도록(듯이), 락 상태 사전 조건을 설명하는 코멘트를 추가할 수가 있습니다.
+
+<pre>
+// Recursive helper method - always called with a lock on this.
+private int find(Object key, Object[] arr, int start, int len) {
+  <b>assert Thread.holdsLock(this); // lock-status assertion </b>
+  ...
+} </pre>
+
+<p>특정의 락이 보관 유지되어 있지 않은 것을 표명하는 락 상태 assertion를 기술할 수도 있습니다.
+
+<a name="postconditions"></a> <H4>사후 조건</H4>
+
+<p>사후 조건은, public 메소드와 public 가 아닌 메소드의 양쪽 모두로, assertion를 사용해 테스트할 수 있습니다. 예를 들어, 다음의 public 메소드는,<code>assert</code> 문을 사용해 사후 조건을 체크합니다.
+
+<pre> /**
+  * Returns a BigInteger whose value is (this<SUP>-1</SUP> mod m).
+  *
+  * @param  m the modulus.
+  * @return this<SUP>-1</SUP> mod m.
+  * @throws ArithmeticException  m &lt;= 0, or this BigInteger
+  *has no multiplicative inverse mod m (that is, this BigInteger
+  *is not <I>relatively prime</I> to m).
+  */
+public BigInteger modInverse(BigInteger m) {
+  if (m.signum &lt;= 0)
+    throw new ArithmeticException("Modulus not positive: " + m);
+  ... // Do the computation
+  <b>assert this.multiply(result). mod(m). equals(ONE) : this;</b>
+  return result;
+}
+</pre>
+
+<p>
+<a name="complexpostconditions"></a> 사후 조건을 체크하기 위해서, 계산을 실행하기 전에 일부의 데이터의 보존이 필요한 일이 있습니다. 데이터의 보존은, 2 개의 assert 문과 1 개 이상의 변수 상태를 보존하는 단순한 내부 클래스를 사용해 실시할 수가 있습니다. 데이터를 보존해 두면, 계산의 뒤에 체크 (또는 재체크)할 수가 있습니다. 예를 들어, 다음과 같은 코드를 상정합니다.
+
+<pre> void foo(int[] array) {
+  // Manipulate array
+  ...
+
+  // At this point, array will contain exactly the ints that it did
+  // prior to manipulation, in the same order.
+ }
+</pre>
+
+<p>다음에, 위의 메소드를 변경해, 사후 조건의 캐릭터 라인의 assertion를 함수의 assertion로 변환합니다.
+
+<pre> void foo(final int[] array) {
+
+  <b>// Inner class that saves state and performs final consistency check</b>
+  class DataCopy {
+private int[] arrayCopy;
+
+DataCopy() { arrayCopy = (int[]) array.clone(); }
+
+boolean isConsistent() { return Arrays.equals(array, arrayCopy); }
+  }
+
+  DataCopy copy = null;
+
+  <b>// Always succeeds; has side effect of saving a copy of array</b>
+  assert ((copy = new DataCopy()) ! = null);
+
+  ... // Manipulate array
+
+  <b>// Ensure array has same ints in same order as before manipulation. </b>
+  assert copy.isConsistent();
+  } </pre>
+
+<p>여기에서는, 복수의 데이터 필드를 보존해, 복수의 assertion를 임의의 장소에서 사용해 계산전 및 계산 후의 값을 검증하는 방법에 대해, 매우 일반적으로 가리키고 있습니다.
+
+<P>최초의 assert 문은, 오로지 그 부작용을 위해서(때문에) 실행되고 있습니다만, 다음과 같은보다 표현적인 식에 옮겨놓고 싶어질지도 모릅니다.
+
+<pre> copy = new DataCopy(); </pre>
+
+<p>이러한 치환 하행 함정 있고로 주세요. 위의 문장은, assertion가 유효하다 제발에 관계없이 배열을 카피하기 위해(때문에), assertion를 무효로 했을 때에 다른 처리에 영향을 미치지 않는다고 하는, assertion의 사용 원칙에 위반합니다.
+
+<a name="class-invariants"></a> <H4>클래스의 불변 조건</H4>
+<P>
+클래스의 불변 조건은,<a href="#usage-invariants">내부 불변 조건</a>의 일종으로, 항상 클래스의 모든 인스턴스에 적용됩니다.  다만, 인스턴스가 1 개가 안정된 상태로부터 다른 상태로 이행하고 있을 때는 적용되지 않습니다. 클래스의 불변 조건은, 복수의 속성간의 관계를 지정할 수가 있어 또 메소드의 완료전과 완료 후에 true 가 되어 있을 필요가 있습니다. 예를 들어, 밸런스 트리의 데이터 구조를 구현하는 것을 상정합니다. 트리의 밸런스와 순서가 적절히 되어 있는 것이 클래스의 불변 조건이라고 합니다.
+
+<p>assertion는, 특히 내부 불변 조건의 체크전용으로 설계되고 있는 것은 아닙니다. 경우에 따라서는, 복수의 식을 조합해 필요한 제약을 체크하고 나서, assertion로부터 호출할 수 있는 단일 내부 메소드에 건네주면(자) 편리한 일이 있습니다. 밸런스 트리의 예에서는, 데이터 구조의 기술에 따라 트리가 효율적으로 구축되고 있는 것을 체크하는 private 메소드를 구현하는 것이 적절한 경우도 있습니다.
+
+<pre> // Returns true if this tree is properly balanced
+ private boolean balanced() {
+  ...
+ }
+</pre>
+
+<p>이 메소드는, 메소드의 완료전과 완료 후에 true 가 되어 있을 필요가 있는 제약을 체크하므로, 각 public 메소드와 생성자 은, 복귀의 직전에 다음의 행을 포함하고 있을 필요가 있습니다.
+
+<pre> assert balanced(); </pre>
+
+<p>네이티브 메소드가 밸런스 트리의 데이터 구조를 구현하고 있는 경우를 제외해, 일반적으로은, 각 public 메소드의 선두에 같은 체크를 실시할 필요는 없습니다. 이 예에서는, 각 메소드 호출동안에, 메모리가 파괴되는 버그에 의해 네이티브 피어의 데이터 구조가 파괴되는 일이 있습니다. 메소드의 선두에서 assertion가 실패했을 경우는, 메모리 파괴가 발생한 것을 나타냅니다. 다만, 클래스 상태가 다른 클래스에 의해 변경될 가능성이 있는 경우는, 가능한 한 메소드의 선두에서 클래스 불변 조건을 체크해 주세요(클래스를 설계할 때는, 클래스 상태가 다른 클래스로부터 직접 참조할 수 없게 하는 것을 추천합니다).
+</p>
+
+<a name=usage-advanced><H3>고도의 사용법</H3></a> 
+<P>
+이하의 섹션으로 설명하는 토픽은, 자원에 제약이 있는 디바이스와 필드내의 assertion를 무효로 할 필요가 있는 시스템에만 들어맞읍니다. 이러한 토픽에 관심이 없는 경우는, 다음의<a href="#compiling">「assertion를 사용하는 파일의 컴파일」</a>에 진행해 주세요.
+</p>
+
+<a name=usage-adv-removing><H4>모든 assertion의 트레이스를 클래스 파일로부터 삭제한다</H4></a> 
+
+<P>자원이 제약되고 있는 디바이스전용의 어플리케이션을 개발하고 있는 경우는, 클래스 파일로부터 assertion를 모두 삭제하는 것을 추천합니다. assertion를 삭제하면(자), assertion를 유효하게 할 수 없게 됩니다만, 클래스 파일의 사이즈가 작아져, 많은 경우, 클래스를 로드할 때의 퍼포먼스가 향상합니다. JIT 의 성능이 높지 않은 경우는, assertion를 삭제하는 것에 의해, 프로그램의 사이즈가 작아져, 실행시의 퍼포먼스가 향상합니다.
+
+<P>assertion 기능에는, 클래스 파일로부터 assertion를 삭제하는 기능은 없습니다. 다만, assert 문을 사용할 경우에,<a href="http://java.sun.com/docs/books/jls/second_edition/html/statements.doc.html#236365"> JLS 14.20</a>  에 규정되고 있는 「조건부 컴파일」방식과 조합할 수가 있습니다. 이것에 의해, 컴파일러가 생성한 클래스 파일로부터, 모든 assertion의 트레이스를 삭제할 수가 있습니다.
+
+<pre> static final boolean asserts = ... ; // false to eliminate asserts
+
+ if (asserts)
+  assert &lt;expr&gt; ; </pre>
+
+<a name=usage-adv-requiring><H4>assertion를 유효하게 할 때</H4></a> 
+
+<p>중요한 시스템을 개발하고 있는 프로그래머는, assertion를 무효로 하고 싶지 않은 것이 있습니다. 다음의 정적인 초기화 방식을 사용하면(자), assertion가 무효가 되어 있는 경우에 클래스가 초기화되지 않습니다.
+
+<pre> static {
+  boolean assertsEnabled = false;
+  assert assertsEnabled = true; // <B>Intentional side effect!!!</B>
+  if (! assertsEnabled)
+throw new RuntimeException("Asserts must be enabled!!!");
+ } </pre>
+
+<p>이 정적 초기화자는, 클래스의 선두에 추가합니다.
+</p>
+
+<a name=compiling><H2>assertion를 사용하는 파일의 컴파일</H2></a> 
+
+<p><code>javac</code> 컴파일러가 assertion를 포함한 코드를 받아들이도록(듯이) 하려면 ,<code>-source&nbsp;1. 4</code> 커멘드행 옵션을 이하의 예의 같게 사용하지 않으면 안됩니다.
+
+<pre> javac <b>-source 1.4</b> MyClass.java </pre>
+<p>
+이 플래그가 필요한 것은, 소스의<a href="#compatibility">호환성</a>의 문제가 발생하지 않게 하기 (위해)때문에입니다.
+</p>
+
+<H2><a name=enable-disable>assertion의 유효화 및 무효화</a> </H2>
+
+<p>디폴트에서는, 실행시에 assertion는 무효가 되어 있습니다. 2 개의 커멘드행 스윗치를 사용해, assertion의 유효/무효를 바꿀 수가 있습니다.
+
+<P>다양한 상세 레벨로 assertion를 유효하게 하려면 ,<nobr><code>-enableassertions</code></nobr> 스윗치 또는 <nobr><code>-ea</code></nobr> 스윗치를 사용합니다. 다양한 상세 레벨로 assertion를 무효로 하려면 ,<nobr><code>-disableassertions</code></nobr> 스윗치 또는 <nobr><code>-da</code></nobr> 스윗치를 사용합니다. 상세 레벨은, 다음과 같이 스윗치에 건네주는 인수를 사용해 지정합니다.
+
+<ul><a name=arg-list></a> 
+<li>인수 없음<br> &nbsp;&nbsp;&nbsp;시스템 클래스를 제외한 모든 클래스내의 assertion를 유효 또는 무효로 한다
+
+<li><i>packageName</i><code>...</code><br> &nbsp;&nbsp&nbsp;이름 첨부의 패키지내 및 임의의 서브 패키지내의 assertion를 유효 또는 무효로 합니다.
+
+<li><code>...</code><br> &nbsp;&nbsp;&nbsp;현재의 작업 디렉토리내의 이름이 없는 패키지내의 assertion를 유효 또는 무효로 한다
+
+<li><i>className</i><br> &nbsp;&nbsp;&nbsp;지정한 클래스내의 assertion를 유효 또는 무효로 한다
+</ul>
+
+<p>예를 들어, 다음의 커멘드는,<code>com.wombat.fruitbat</code> 패키지와 그 서브 패키지내에서만 assertion를 유효하게 해,<code>BatTutor</code> 프로그램을 실행합니다.
+
+<pre> java -ea:com.wombat.fruitbat... BatTutor</pre>
+
+<p>단일 커멘드행에 이러한 스윗치의 인스턴스를 복수 지정했을 경우는, 지정한 스윗치가 차례로 처리되고 나서 클래스가 로드 됩니다. 예를 들어, 다음의 커멘드는,<code>com.wombat.fruitbat</code> 패키지내의 assertion를 유효하게 해,<code>com.wombat.fruitbat.Brickbat</code> 클래스내의 assertion를 무효로 해,<code>BatTutor</code> 프로그램을 실행합니다.
+
+<pre> java -ea:com.wombat.fruitbat... -da:com.wombat.fruitbat.Brickbat BatTutor </pre>
+
+<p>위의 스윗치는 모든 클래스 로더에 적용됩니다. 예외적으로, 명시적인 클래스 로더를 가지지 않는 시스템 클래스에도 적용됩니다. 다만, 인수를 취하지 않는 스윗치는, 전술과 같이 시스템 클래스에는 적용되지 않습니다.  이 동작을 이용하면, 시스템 클래스를 제외한 모든 클래스에서 assertion를 간단하게 유효하게 할 수가 있습니다.  또, 일반적으로은, 이와 같이 할 필요가 있습니다.
+
+<p>모든 시스템 클래스내의 assertion를 유효하게 하려면 ,<nobr><code>-enablesystemassertions</code></nobr> 또는 <nobr><code>-esa</code> 라고 하는 다른 스윗치를 사용합니다. </nobr>같이 시스템 클래스내의 assertion를 무효로 하려면 ,<nobr><code>-disablesystemassertions</code></nobr> 또는 <nobr><code>-dsa</code></nobr> 를 사용합니다.
+
+<p>예를 들어, 다음의 커멘드는, 시스템 클래스내에 가세해,<code>com.wombat.fruitbat</code> 패키지와 그 서브 패키지내의 assertion를 유효하게 해,<code>BatTutor</code> 프로그램을 실행합니다.
+
+<pre> java -esa -ea:com.wombat.fruitbat... </pre>
+
+<p>
+클래스의 assertion 상태 (유효 또는 무효)는, 클래스가 초기화될 때 설정되어 변경되지 않습니다. 그러나, 특히 주의가 필요한 특수한 케이스가 있습니다. 일반적으로 바람직하지는 않습니다가, 메소드나 생성자 은, 초기화전에 실행할 수가 있습니다. 이러한 실행은, 클래스 계층의 정적인 초기화에, 순환 정의가 포함되는 경우에 발생합니다.
+<p><tt>assert</tt> 문이 그 클래스의 초기화전에 실행되는 경우, 그 클래스내에서 assertion가 유효하게 되어 있도록(듯이) 실행될 필요가 있습니다. 이 토픽에 대해서는,<a href="http://java.sun.com/docs/books/jls/assert-spec.html#semantics">「assertion의 스펙」</a>으로 자세하게 설명합니다.
+</p>
+
+<a name=compatibility><H2>기존의 프로그램과의 호환성</H2></a> 
+
+<p>Java 프로그램 언어에의 <code>assert</code> 키워드의 추가에 의해, 기존의 바이너리 (<code>. class</code> 파일)에 문제가 발생할 것은 없습니다. 다만,<code>assert</code> 를 식별자로서 사용하는 어플리케이션을 컴파일 하면(자), 경고 또는 에러 메세지가 표시됩니다. <code>assert</code> 식별자가 허가되는 환경이 허가되지 않는 환경에 간단하게 이행 할 수 있도록(듯이), 이 릴리스의 컴파일러에서는, 다음의 2 개의 조작 모드를 지원하고 있습니다.
+
+<UL>
+<li><b>소스 모드 1.3</b> (디폴트) &mdash; 컴파일러는 <code>assert</code> 를 식별자로서 사용하는 프로그램을 받아들입니다만, 경고가 표시됩니다. 이 모드에서는, 프로그램에서의 <code>assert</code> 문의 사용은 허가되지 않습니다. </li> 
+
+<li><b>소스 모드 1.4</b> &mdash; 프로그램이 <code>assert</code> 를 식별자로서 사용하고 있으면(자), 컴파일러가 에러 메세지를 생성합니다. 이 모드에서는, 프로그램에서의 <code>assert</code> 문의 사용은 허가됩니다. </li>
+</UL>
+
+<p><code>-source 1.4</code> 플래그를 사용해 특히 소스 모드 1.4 를 요구하지 않는 한, 컴파일러는, 소스 모드 1.3 으로 동작합니다. 이 플래그를 지정하는 것을 잊으면(자), 새로운 <code>assert</code> 문을 사용하는 프로그램은 컴파일 되지 않습니다. 컴파일러의 디폴트의 동작으로서<code>assert</code> 를 식별자로서 사용할 수 있는 낡은 시멘틱스가 사용되고 있는 것은, 소스의 호환성을 최대한으로 유지하기 (위해)때문에입니다. 소스 모드 1.3 은, 향후 단계적으로 지원되지 않게 될 예정입니다.
+</p>
+
+<a name=design-faq><H2>Java 컬렉션 API 의 설계에 관한 FAQ</H2></a> 
+
+<p>여기에서는, assertion 기능의 설계에 관한 FAQ 를 정리해 있습니다.
+<UL>
+<li><a href="#design-faq-general">일반적인 질문</a> 
+
+<li><a href="#design-faq-compat">호환성</a> 
+
+<li><a href="#design-faq-ss">구문 및 시멘틱스</a> 
+
+<li><a href="#design-faq-error"><code>AssertionError</code> 클래스</a> 
+
+<li><a href="#design-faq-enable-disable">assertion의 유효화 및 무효화</a>  </li>
+</UL>
+
+<a name=design-faq-general><H3>일반적인 질문</H3></a> 
+
+<UL><li>
+<B>왜 assertion 기능이 지원되었는지요. Java 프로그램 언어에 대한 assertion의 프로그래밍은, 특히 지원가 없어도 가능합니다. </b> 
+
+<P>assertion 목적의 구현도 가능했습니다만, 각 assertion에 <code>if</code> 문이 필요하게 되기 (위해)때문에 이해하기 어려워지거나 assertion를 무효로 해도 조건이 평가되기 (위해)때문에 비효율적으로 됩니다. 또, assertion의 유효/무효를 바꿀 때는, 독자적인 방법으로 실시하기 (위해)때문에, 특히 필드내에서 디버그 할 때의 범용성이 낮아집니다. 이러한 단점이 있기 (위해)때문에, Java 프로그램 언어를 사용하는 엔지니어의 사이에 assertion는 그만큼 보급되어 있지 않았습니다. Java 플랫폼에 대한 assertion의 지원는, 이러한 상황을 개선하는 것을 목적으로 하고 있습니다.
+
+<li><B>왜 assertion의 구현에, 라이브러리의 변경은 아니고, 언어의 변경을 채용했습니까. </B>
+
+<P>언어의 변경은, 많은 공정수를 필요로 해, 간단하게 실시할 수 없습니다. 라이브러리를 사용한 방법도 고려했습니다. 그러나, assertion를 무효로 했을 경우는, 그 런타임 코스트는 매우 불과가 아니면 안된다고 생각되고 있습니다. 라이브러리를 채용했을 경우, 런타임 코스트를 억제하려면 , 각 assertion를 <code>if</code> 문으로서 하드 코드 하지 않으면 안됩니다. 많은 프로그래머는, 이 방법은 선택하지 않을 것입니다. if 문을 기술하지 않고 퍼포먼스를 희생하는지, assertion를 전혀 실시하지 않는가지요. 실은, James Goslin 가 최초로 개발한 Java 프로그램 언어의 스펙에는, assertion가 짜넣어지고 있었습니다. 그러나, 시간의 제약에 의해 만족이 가는 설계와 구현을 실시할 수가 없었기 (위해)때문에, Oak 스펙으로부터는 삭제되었습니다.
+
+<li><B>사전 조건, 사후 조건, 및 클래스의 불변 조건에 관해서, Eiffel 프로그램 언어와 같은 계약에 의한 설계를 본격적으로 적용하지 않았던 것은 왜입니까. </B>
+
+<P>계약에 의한 설계를 적용하는 일도 고려했습니다. 그러나, 이 방법을 Java 프로그램 언어에 적용하려면 , Java 플랫폼 라이브러리를 큰폭으로 변경할 필요가 있어, 낡은 라이브러리와의 사이에 큰 부정합이 발생할 가능성이 있었습니다. 또, 계약에 의한 설계를 채용했을 때에, Java 프로그램 언어의 특성인 단순함을 유지할 수 있는 것을 확신할 수 없었습니다. 모든 일을 고려한 결과, 단순한 boolean 형의 assertion 기능이, 훨씬 단순하고, 큰폭으로 리스크가 적다고 하는 결론에 이르렀습니다. 다만, boolean 형 assertion 기능을 Java 에 추가해도, 장래가 있는 시점에서, 계약에 의한 설계를 본격적으로 적용할 가능성은 있습니다.
+
+<P>단순한 assertion 기능을 사용했을 경우에서도,<a href="#usage-conditions">계약에 의한 설계 방식의 프로그래밍</a>을, 한정적으로 도입할 수가 있습니다. <code>assert</code> 문은, public 가 아닌 사전 조건, 사후 조건, 및 클래스 불변 조건의 체크에 적절하고 있습니다. public 인 사전 조건을 체크할 때는, 메소드내에서 실시할 필요가 있습니다. 이 경우,<code>IllegalArgumentException</code> 나 <code>IllegalStateException</code> 등, 문서화 된 예외가 발생합니다.
+
+<li><B>assertion를 무효로 했을 때에 코드 블록 전체의 실행을 억제하는 기능 등, boolean 형의 assertion 이외에 assert 를 닮은 구문이 제공되지 않는 것은 왜입니까. </B>
+
+<P>이러한 구문을 제공하면(자), assertion를 다른 메소드 로 분리시키는 것이 좋은 경우에도, 프로그래머가 복잡한 assertion를 인 라인에 배치할 가능성이 있기 (위해)때문에입니다.  
+  </li>
+</UL>
+
+<a name=design-faq-compat><H3>호환성</H3></a> 
+
+<UL>
+<li><B>새로운 키워드를 도입하면(자),<code>assert</code> 가 식별자로서 사용되고 있는 기존의 프로그램과의 사이에 호환성의 문제가 발생하지 않겠습니까. </B>
+
+<P>원시 파일에 대해서는, 호환성의 문제가 발생합니다. 다만,<code>assert</code> 를 식별자로서 사용하는 클래스의 바이너리는, 계속해 정상적으로 기능합니다. 원시 파일을 간단하게 이행 하려면 ,<a href="#compatibility">「소스의 호환성」</a>을 참조해 주세요. 이행 기간중이라도, 개발자는 계속해 <code>assert</code> 를 식별자로서 사용할 수 있습니다.
+</li>
+  <li>
+<b>이 기능을 위해서(때문에), 낡은 JRE 에 대해서 실행할 수 없는 클래스 파일이 생성될 것은 없습니까. </b> 
+
+<p>할 수 있습니다. 클래스 파일은,<tt>desiredAssertionStatus</tt> 등이 새로운 <tt>ClassLoader</tt> 메소드와 <tt>Class</tt> 메소드의 호출을 포함합니다. 이러한 메소드의 호출을 포함한 클래스 파일이,<tt>ClassLoader</tt> 클래스에 이러한 메소드가 정의되어 있지 않은 낡은 JRE 에 대해서 실행되면(자), 프로그램의 실행이 실패해,<tt>NoSuchMethodError</tt> 가 throw 됩니다. 일반적으로, 새로운 기능을 사용하는 프로그램과 낡은 릴리스와의 호환성을 유지할 수 없는 것은, 이러한 경우입니다.
+  </p>
+</UL>
+
+<a name=design-faq-ss><H3>구문 및 시멘틱스</H3></a> 
+
+<UL>
+<li><B><VAR>Expression <font size="1"><SUB>2</SUB></font></VAR> 내에서 원시형을 사용할 수 있는 것은 왜입니까. </B>
+
+<P>이 식의 형태는, 특히 제한할 필요는 없습니다. 임의의 형태를 사용할 수 있으면, 개발이 용이하게 됩니다. 예를 들어, 각 assertion에 대해서 일의의 정수 코드를 관련지을 때 사용할 수 있습니다. 임의의 형태에 대응하기 위해(때문에), 이 식은,<code>System.out.println(...)</code> 의 인수와 같이 되어 있습니다.
+
+  </li>
+</UL>
+
+<a name=design-faq-error><H3>AssertionError 클래스</H3></a> 
+
+<UL>
+<li><B><var>Expression<font size="-1"><SUB>2</SUB></font></var> 를 지정하지 않고 assert 문을 실행했을 때에,<code>AssertionError</code> 가 생성되었을 경우, 표명한 조건의 프로그램 텍스트가 상세 메세지 (예를 들어 <nobr>&quot;<code>height &lt; maxHeight</code>&quot;</nobr>)로서 사용되지 않는 것은 왜입니까. </B>
+
+<P>이와 같이 하면(자), assertion가 사용하기 쉽게 되는 경우가 있습니다. 그러나, 이 이점을 고려해도, 모든 캐릭터 라인 정수를 <code>. class</code> 파일과 실행시 이미지에 추가하는 코스트는 무시할 수 없습니다.
+  </li>
+<li><B><code>AssertionError</code> 가 발생했을 때에, 에러를 생성한 객체에 액세스 할 수 없는 것은 왜입니까. 같이 상세 메세지 대신에, assertion로부터 임의의 객체를 <code>AssertionError</code> 생성자 에 건네주지 않는 것은 왜입니까. </B>
+
+<P>이러한 객체에 액세스 할 수 있도록(듯이) 하면(자), 프로그래머가 assertion의 실패로부터의 회복을 시도할 가능성이 있습니다. 이것은, AssertionError 의 목적으로부터 일탈합니다.
+  </li>
+<li><B><code>AssertionError</code> 가 발생했을 때에,<code>getFile</code>,<code>getline</code>,<code>getMethod</code> 와 같은 문맥 액세스용 메소드를 사용할 수 없는 것은 왜입니까. </B>
+
+<P>AssertionError 는,<code>Throwable</code> 객체에 가장 적합합니다. 이 때문에, assertion 에러 이외에, 모든 throw 가능한 객체에 사용할 수 있습니다. 또, 이 기능을 제공하기 위해서,<code>getStackTrace</code> 를 사용해 <code>Throwable</code> 객체를 확장했습니다.
+  </li>
+<li><B><code>AssertionError</code> 는, 왜 <code>RuntimeException</code> 는 아니고 <code>Error</code> 의 서브 클래스인 것입니다인가. </B>
+
+<P>이 문제에는, 다양한 의견이 있었습니다. 기술자 그룹은, 이 문제에 대해 철저하게 논의했습니다. 그 결과,<code>Error</code> 의 서브 클래스로 하면, 프로그래머가 assertion의 실패로부터 회복하려고 할 가능성이 낮아진다, 라고 하는 결론에 이르렀습니다. 일반적으로, assertion의 실패의 원인을 특정하는 것은, 곤란 또는 불가능합니다. assertion의 실패는, 프로그램이 예기치 않은 동작을 실행하고 있는 것을 나타내고 합니다. 이 때문에, 계속 실행하면(자) , 장해가 발생할 가능성이 있습니다. 또, 메소드로 지정되고 있는 실행시 예외는, throw 되는 빈도의 높은 것으로, 문서에는<code>@throws</code> 코멘트를 사용해 기술합니다. 메소드의 스펙에 대해서, assertion의 실패를 생성하는 논리를 기술해도, 거의 의미가 없습니다. assertion의 실패는, 구현의 상세 항목으로 보여지고 있어 구현 및 릴리스 마다 다릅니다.  
+  </li>
+</UL>
+
+<a name=design-faq-enable-disable><H3>assertion의 유효화 및 무효화</H3></a> 
+
+<UL>
+<li><B>객체 파일로부터 assertion를 완전하게 삭제하는 컴파일러 플래그는, 왜 제공되지 않습니까. </B>
+
+<P>필드내에서 assertion를 유효하게 하는 기능은, 항상 요구되고 있어 있으면 편리한 사용이 향상합니다. 컴파일시에 객체 파일로부터 assertion를 삭제하는 기능도, 구현할 수 있습니다. assertion에는 목적 이외의 처리가 포함되어 있는 일이 있기 (위해)때문에 (가능한 한 사용하지 말아 주세요), 플래그를 사용하면(자), 프로그램의 동작이 큰폭으로 변경되는 일이 있습니다. 유효한 Java 프로그램에 관련짓는 시멘틱스는, 할 수 있으면 1 개(살)인 만큼 해 주세요. 또, assertion를 객체 파일에 남겨 두어 필드내에서 유효/무효를 교체되도록(듯이) 하는 것을 추천합니다. 또, assertion의 스펙에 의해, 클래스가 초기화전에 실행되는 경우, assertion는 유효하게 되어 있도록(듯이) 동작할 필요가 있습니다. assertion가 클래스 파일로부터 삭제되면(자), 이러한 시멘틱스를 제공할 수 없게 됩니다. 다만, JLS 14,20 에 기술되고 있는 표준의 「조건부 컴파일」을 사용하면, 필요에 따라서 이 효과를 실현할 수 있습니다.
+  </li>
+<li><B>assertion를 유효 또는 무효로 하는 커멘드가, 종래의 패키지형의 시멘틱스는 아니고, 패키지 트리형의 시멘틱스를 사용하는 것은 왜입니까. </B>
+
+<P>시멘틱스를 계층 구조로 제어할 수 있으면, 프로그래머에게 있어 편리합니다. 코드를 체계화할 경우에, 패키지 계층을 사용하는 것이 많기 때문입니다. 예를 들어, 패키지 트리형의 시멘틱스를 사용하면, 모든 Swing 내의 assertion를 한 번에 유효 또는 무효로 할 수 있습니다.
+
+<li><B><code>setClassAssertionStatus</code> 를 호출한 타이밍이 늦었기(위해)때문에, assertion 상태를 설정할 수 없었던 경우 (지명한 클래스가 벌써 초기화되고 있다), 예외가 throw 되지 않고 ,<code>boolean</code> 치가 반환되는 것은 왜입니까. </b>
+
+<P>타이밍의 문제로 assertion 상태를 설정할 수 없는 경우, 경고 메세지등 이외는, 대처는 필요없는지, 대처하지 말아 주세요. 예외의 throw는 적절하지는 않습니다.
+  </li>
+<li><B><code>setDefaultAssertionStatus</code> 및 <code>setAssertionStatus</code> 대신에, 단일 메소드명을 overload 하지 않는 것은 왜입니까. </b>
+
+<p>메소드의 이름부에서는, 알기 쉬움을 우선합니다. overload는, 혼란을 부르는 경향이 있습니다.
+  </li>
+  <li>
+<b><tt>desiredAssertionStatus</tt> 의 시멘틱스를 조정해, 클래스가 벌써 초기화되고 있는 경우에 실제의 assertion 상태를 돌려주도록(듯이) 하면(자), 프로그래머에게 있어 사용하기 쉽게 될 것입니다만, 그처럼 하지 않는 것은 왜입니까. </b>
+
+<p>그처럼 조정한 메소드의 용도가 명백하지는 않습니다. 이 메소드는, 어플리케이션 프로그래머에 의한 사용을 상정해 설계되고 있지 않습니다. 또, 처리가 늦어져 필요이상으로 복잡하게 되는 것은 바람직하지는 않습니다.
+  </li>
+<li><B>애플릿으로부터 assertion를 유효화 또는 무효화할 수 없게 하는 <code>RuntimePermission</code> 가 없는 것은 왜입니까. </b>
+
+<P>애플릿으로부터는,<code>ClassLoader</code> 메소드를 호출해, assertion 상태를 변경할 것은 없습니다. 또, 변경해도 효과는 없습니다. 초기화하는 클래스의 assertion를 유효하게 하면(자), 애플릿의 퍼포먼스가 저하하는 일이 있습니다. 애플릿으로부터 액세스 가능한 클래스 로더를 사용해 클래스를 로드했을 경우는, 그 클래스의 assertion 상태는 애플릿으로부터 변경할 수 있습니다. 기존의 <code>RuntimePermission</code> 는, 신뢰할 수 없는 코드가 클래스 로더 (<code>getClassLoader</code>)에 액세스 하는 것을 방지합니다.
+  </li>
+<li><B>포함 클래스의 assertion 상태를 조회하는 구문이 없는 것은 왜입니까. </B>
+
+<P>이러한 구문을 구현하면(자), 복잡한 assertion 코드가 인 라인으로 기술될 가능성이 있다, 라고 판단 했기 때문입니다.
+
+  <!-- :  <pre> if (assertsEnabled()) {
+  ...
+ } </pre>  <p> -->
+
+포함 클래스의 assertion 상태를 조회하는 경우는, 현재의 API 의 최상정도로 assertion 상태를 조회해 주세요.
+
+<pre>boolean assertsEnabled = false;
+assert assertsEnabled = true;  // <B>Intentional side-effect!!!</B>
+// Now assertsEnabled is set to the correct value </pre>
+
+</li>
+<li>
+<b><tt>assert</tt></b> 문이 그 클래스의 초기화전에 실행되면(자), 그 클래스내에서 assertion가 유효하게 된 것처럼 동작하는 것은 왜입니까. </b></li>
+
+<p>클래스의 생성자 과 메소드를 클래스의 초기화전에 실행할 수 있는 것을 알고 있는 프로그래머는 많지 않습니다. 클래스의 초기화전에는, 클래스의 불변 조건이 아직 확립되어 있지 않을 가능성이 높고, 그 때문에(위해) 발견되기 어려운 중대한 버그가 발생할 가능성이 있습니다. 이 상태로 실행되는 assertion는 모두 실패할 가능성이 있어, 프로그래머에게 있어 문제가 됩니다. 따라서, 일반적으로, 이 상태 때에 검출된 assertion를 모두 실행하는 것이 프로그래머에게 있어 유효합니다.
+
+</UL>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<HR noShade SIZE=3>
+
+<TABLE summary="layout" width="100%" border=0>
+  <TBODY>
+  <TR vAlign=top>
+ <TD>
+<P><FONT size=-2><a href="../../../legal/SMICopyright.html">Copyright</a>  &copy; 2002 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </FONT></TD>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH="64" HEIGHT="30"> <BR><FONT size=+1><I> Java Software</I></FONT></TR></TBODY></TABLE>
+
+</BODY>
+</HTML>

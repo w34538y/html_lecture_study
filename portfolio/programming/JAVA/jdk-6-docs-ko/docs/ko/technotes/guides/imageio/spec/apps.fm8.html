@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:3 - Image I/O 어플리케이션의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm7.html">전의 항목</a>  | <a href="extending.fm1.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="997341"><i>3.8	</i> <code>IIOException</code> 를 사용하는 에러 처리</a> </h2>
+
+<blockquote>
+<a name="997068"><!-- --></a>  지금까지 소개한 예에서는, 치명적 에러의 가능성을 고려에 넣고 있지 않았습니다. 에러의 발생원은 몇개인가 생각됩니다. 예를 들어, 실제의 입출력 에러 (파일이 발견되지 않는, 파일을 읽어들일 수 없는, 미디어가 망가져 있는, 등), 시큐리티 위반 (애플릿으로부터의 파일 read가 용서되지 않은, 등), 파일 형식의 문제 (파일의 내용이 망가져 있는, 플러그 인이 지원하고 있지 않는 변화(variation)의 형식이 사용되고 있는, 등)외, API 의 구현이나 플러그 인에 버그가 있을 가능성도 있습니다. <p>
+<a name="997069"><!-- --></a>  Image I/O API 에서는, 표준의 <code>IOException</code> 클래스를 독자적으로 서브 클래스화한 <code>IIOException</code> 라고 하는 클래스를 이용합니다. <code>IIOException</code> 는, 원시 파일의 해석중에 조우한 모든 에러 (예를 들어, 체크 섬의 잘못이나, 파일내의 특정 바이트의 값이 무효)를 통지하기 위해서 사용됩니다. 이것에는, read 플러그 인의 내부에서 <code>IOException</code> 가 throw 되는 결과가 되는, 실제의 입출력 에러도 포함됩니다. <p>
+<a name="998535"><!-- --></a>  <code>IIOException</code> 에는, 예외의 이유를 기술한 메세지 ( 각 언어에의 대응 없음)와 그 <code>IIOException</code> 의 원인이 된 다른 <code>Exception</code> 에의 참조 (그러한 예외가 존재하는 경우)가 포함되어 있습니다. <p>
+<a name="997071"><!-- --></a>  따라서, 어플리케이션 코드로 적절한 에러 처리를 제공하려고 하면(자), 다음과 같은 코드가 됩니다. <p>
+</blockquote><blockquote><pre>
+File f = new File(&#34;c:\images\myimage.gif&#34;);
+ImageInputStream iis = null;
+try {
+	iis = ImageIO.createImageInputStream(f);
+} catch (IIOException iioe1) {
+	System.out.println(&#34;Unable to create an input stream! &#34;);
+	return;
+}
+
+reader.setInput(stream);
+try {
+	reader.read(0, param);
+} catch (IIOException iioe2) {
+	System.out.println(&#34;An error occurred during reading: &#34; +
+				 iioe2.getMessage());
+	Throwable t = iioe2.getCause();
+	if ((t ! = null) &amp;&amp; (t instanceof IOException)) {
+		System.out.println(&#34;Caused by IOException: &#34; +
+		                   t.getMessage());
+	}
+}
+</pre></blockquote><blockquote>
+<a name="997090"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="apps.fm7.html">전의 항목</a>  | <a href="extending.fm1.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher 3.5.0 --> <!-- by Suzette Pelouch --> <!-- Last updated: Fri Apr 27 11:22:59 2001 -->
+ 
+
+
+</body>
+</html>

@@ -1,0 +1,1156 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Plug-in 에서의 OBJECT, EMBED, 및 APPLET 태그의 사용 - xrath.com 에서 번역됨</title>
+
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>Java Plug-in 에서의 <code>OBJECT</code>,<code>EMBED</code>, 및 <code>APPLET</code> 태그의 사용 </h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p><p>이 장에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li> <a href="#intro">처음에</a> </li>
+<li><a href="#in-ie">Windows 상의 IE 로 동작하는 Java<sup><font size="-2">TM</font></sup> Plug-in</a>  </li>
+<li><a href="#in-nav">Windows 또는 Solaris<sup><font size="-2">TM</font></sup> 오퍼레이팅(operating) 환경의 Navigator<sup><font size="-2">TM</font></sup> 로 동작하는 Java Plug-in</a>  </li>
+<li><a href="#ie-nav">IE 및 Navigator 로 동작하는 Java Plug-in</a>  </li>
+<li><a href="#anywhere">그 외의 환경에서의 Java Plug-in</a>  </li>
+<li><a href="#summary">통계</a>  </li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p> 이 문서에서는, Java Plug-in 에 필요한,<code>OBJECT</code> 및 <code>EMBED</code> 태그를 포함한 태그 구조에 대해 설명합니다. 대상 독자로서 HTML 페이지에 Java Plug-in 태그를 수동으로 삽입하는 Web 페이지 작성자를 상정하고 있습니다.  
+<p>&nbsp;
+<table summary="layout" width="80%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" bordercolor="#000000" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u>설명</u></h2>
+      <ol>
+<li>Sun Microsystems 로부터 무료로 입수 가능한 <a href="html_converter.html">HTML 컨버터</a>에서는, 태그 구조를 자동적으로 생성할 수 있습니다. Web 페이지 작성자에게는, 이 툴을 이용하는 것을 강하게 추천합니다. </li>
+<li>이 컨버터를 사용하면(자), 페이지를 아래와 같은 어느 형식에도 변환할 수 있습니다. </li>
+<li>후술과 같이,<code>. cab</code> 파일을 개입시켜 자동적으로 다운로드할 수 있는 JRE 릴리스의 일람에 대해서는,<a href="../../deployment/deployment-guide/autodl-files.html">「자동 다운로드 파일 (Windows 마셔)」</a>를 참조해 주세요. </li>
+      </ol>
+    </td>
+  </tr>
+</table>
+<p> 일반적으로, 애플릿은, HTML 파일내에서 다음과 같이 지정됩니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" bgcolor="#CCCCCC" align="center">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM name=&quot;model&quot; value=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4. 2 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p> 또, 일반적으로,<code>APPLET</code> 태그에는, 애플릿에 관한 정보를 지정합니다. <code>&lt;APPLET&gt;</code> 와 <code>&lt;/APPLET&gt;</code> 태그의 사이에 배치되는 <code>&lt;PARAM</code>&gt; 태그에는, 인스턴스마다의 애플릿 정보를 포함합니다. </p>
+<p><tt>APPLET</tt> 는 브라우저에 의해 draw 됩니다만, 브라우저에 인터럽트를 실시해, Sun 의 Java Runtime Environment (JRE)를 사용한 애플릿의 실행을 강제하는, 간단한 방법은 없습니다. 브라우저에 이 동작을 실행시키려면 , HTML 페이지로, 일반적으로의 <code>APPLET</code> 태그 대신에,<code>OBJECT</code> 와 <code>EMBED</code> 태그의 언젠가 또는 양쪽 모두를 포함한, Java Plug-in 의 특별한 태그 구조를 사용합니다. 이것에 의해, 브라우저가 Java Plug-in 를 기동시켜, Sun 의 JRE 를 사용해 애플릿이 실행됩니다. </p>
+<p>다음의 섹션에서는, 특정의 브라우저와 플랫폼을 조합한 환경에서 실시하는 조작을 세세하게 설명합니다. </p>
+<table summary="layout" width="80%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u><a name="note"></a> 버젼 번호에 관한 주기</u></h2>
+<p><i></i>제품의 버젼 번호는, 다음의 형식이 됩니다. </p>
+      <blockquote> 
+<p><code>n1.n2.n3_n4n5</code></p>
+      </blockquote>
+<p>여기서,<code>n1.n2</code> 는 「메이저 버젼 번호」,<code>n3</code> 는 「마이너 버젼 번호」( 「보수 버젼 번호」라고도 불린다),<code>n4n5</code> 는 「패치 버젼 번호」( 「갱신 버젼 번호」라고도 불린다)을 나타냅니다. </p>
+<p>이후의 예에서는, 버젼 번호의 메이저 릴리스로서 <code>1.4</code> 를, 마이너 릴리스 번호로서 <code>2</code> 를,<span class="bg">가상의 패치 번호</span>로서 <code><span class="bg">mn</span></code> 를 사용합니다. 가상의 값을 실제의 Web 페이지의 HTML 에 기입하지 말아 주세요. </p>
+      </td>
+  </tr>
+</table>
+<h2><a name="in-ie"></a> Windows 상의 IE 로 동작하는 Java Plug-in</h2>
+<p> Windows 상의 IE 로 Java Plug-in 를 사용하는 경우,<tt>OBJECT</tt> 태그를 이용합니다. <tt>APPLET</tt> 태그를 Java Plug-in 태그에 매핑 하는 예를, 다음에 나타냅니다.  </p>
+<h3> 원의 <code>APPLET</code> 태그:</h3>
+<table summary="layout" width="90%" cellpadding="5" bgcolor="#CCCCCC" align="center">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM name=&quot;model&quot; value=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4. 2 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h3><a name="new_object_tag"></a> 신규 <code>OBJECT</code> 태그: </h3>
+<table summary="layout" width="90%" cellpadding="5" align="center">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+      <pre>
+<font color="#000000">&lt;OBJECT classid=&quot;clsid:CAFEEFAC-0014-0002-0000-ABCDEFFEDCBA&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;&nbsp;
+&nbsp;&nbsp;&nbsp; codebase=&quot;http://java.sun.com/products/plugin/autodl/jinstall-1_4_2-windows-i586.cab#Version=1, 4,2,0&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM name=&quot;code&quot; value=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM name=&quot;codebase&quot; value=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM name=&quot;type&quot; value=&quot;application/x-java-applet;jpi-version=1. 4.2&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM name=&quot;model&quot; value=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM name=&quot;scriptable&quot; value=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4. 2 support for APPLET!!
+&lt;/OBJECT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p><table summary="layout" width="80%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u><a name="note_3"></a> 주:</u></h2>
+<p><i></i>정적 버젼 관리의 경우는,<code>codebase</code> 를 다음과 같이 설정합니다.  </p>
+      <blockquote> 
+<p><code>http://java.sun.com/products/plugin/autodl/&lt;.cab file for the version you want&gt;</code></p>
+      </blockquote>
+<p>예를 들어, 1.4. 2 릴리스의 정적 버젼 관리의 경우는 (<code>clsid:CAFEEFAC-0014-0002-0000-ABCDEFFEDCBA</code> 라고 하는 <code>classid</code> 가 사용된다),<code>codebase</code> 를 다음과 같이 설정합니다. </p>
+      <blockquote> 
+<p><code>http://java.sun.com/products/plugin/autodl/jinstall-1_4_2-win.cab</code></p>
+      </blockquote>
+<p><code>. cab</code> 파일을 개입시켜 자동적으로 다운로드할 수 있는 JRE 릴리스의 일람에 대해서는,<a href="../../deployment/deployment-guide/autodl-files.html">「자동 다운로드 파일 (Windows 마셔)」</a>를 참조해 주세요. </p>
+<p><i></i>동적 버젼 관리의 경우는 (<code>clsid:8AD9C840-044E-11D1-B3E9-00805F499D93</code> 라고 하는 <code>classid</code> 가 사용된다), codebase 를 다음과 같이 설정합니다. </p>
+      <blockquote> 
+<p><code>http://java.sun.com/products/plugin/autodl/jinstall-&lt;major version of family in underscore format&gt;-windows-i586.cab#Version=&lt;full version number for lowest version in family in comma-separated format&gt;</code></p>
+      </blockquote>
+<p>어느 버젼의 Java 도 인스톨되어 있지 않은 경우나, 패밀리의 메이저 버젼 번호보다 작은 버젼이 인스톨 되고 있는 경우는, 패밀리의 최신 버젼에 대응하는 최신의 <code>. cab</code> 에 자동적으로 리다이렉트(redirect) 됩니다. </p>
+<p>예를 들어, 1.4. 2 릴리스의 경우로,<code>codebase</code> 를 다음과 같이 설정했다고 합니다. </p>
+      <blockquote>
+<p><code>http://java.sun.com/products/plugin/autodl/jinstall-1_4-windows-i586.cab#Version=1, 4,0,0</code></p>
+      </blockquote>
+<p>사용자의 환경에 버젼 1.3. 1 이 인스톨 되고 있는 경우는, 1.4 패밀리의 최신 버젼이 다운로드되어 인스톨 됩니다. 다만, 1.4 패밀리의 몇개의 버젼이 인스톨 되고 있는 경우는 그것이 사용되므로, 다운로드는 행해지지 않습니다. </p>
+<p>자동 다운로드용의 <code>. cab</code> 파일은, 패치의 릴리스에 수반해 변경될 가능성이 있습니다. <code><a href="#codebase">codebase</a> </code> 의 해석에 관한 자세한 것은, 이하를 참조해 주세요. </p>
+    </td>
+  </tr>
+</table>
+<p><tt>OBJECT</tt> 태그에는,<tt>APPLET</tt> 태그와 같은 정보가 포함되는 것에 유의해 주세요. IE 로 Java Plug-in 를 기동하려면 , 이것으로 충분합니다. <tt>OBJECT</tt> 태그의 <tt>classid</tt> 는, Java Plug-in 자체의 클래스 식별자입니다. IE 가 <tt>OBJECT</tt> 태그내에서 이 클래스 식별자를 draw 할 때, 브라우저내에의 Java Plug-in 의 로드를 시도합니다. 버젼 관리에 관한 정보는, 후술의<a href="#classid">「classid 속성」</a>을 참조해 주세요. </p>
+<p></p>
+<p> <tt>width</tt>,<tt>height</tt>, 및 <tt>align</tt> 등,<tt>OBJECT</tt> 태그내의 몇개의 속성은,<tt>APPLET</tt> 태그내의 대응하는 속성으로부터 직접 매핑 됩니다. IE 는, 이것들에 포함되는 포맷 정보를 이용해, Java Plug-in 의 위치를 설정합니다. 이 정보는 변경되는 일 없이 직접 매핑 되기 (위해)때문에, Java Plug-in 를 사용하는 애플릿의 위치 및 외관은,<tt>APPLET</tt> 태그를 사용하는 애플릿과 같게 됩니다.  
+</p>
+<p> <tt>APPLET</tt> 태그의 모든 속성을,<tt>OBJECT</tt> 태그 속성에 매핑 할 수 있는 것은 아닙니다. 예를 들어, <tt>APPLET</tt> 태그의 <tt>code</tt> 및 <tt>codebase</tt> 속성은,<tt>OBJECT</tt> 태그 속성에 매핑 되지 않습니다. 그 대신해,<tt>code</tt> 속성은 <tt>PARAM</tt> <tt>code</tt> 에 매핑 됩니다.  이것은, w3c.org 의 HTML 스펙에서는,<tt>OBJECT</tt> 태그내에 <tt>code</tt> 속성은 존재하지 않기 때문입니다. <tt>OBJECT</tt> 태그 속성에 대응하지 않는 다른 속성도 존재합니다. 이러한 속성은, 1 개의 예외를 제외해 <tt>PARAM</tt> 태그에 매핑 할 필요가 있습니다. </p>
+<table summary="layout" width="80%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u>주:</u></h2>
+<p>Java Plug-in 의 <code>OBJECT</code> 태그에서는, 중복 하는 파라미터명의 사용은 금지되고 있습니다.  </p>
+    </td>
+  </tr>
+</table>
+<p><a name="codebase"></a> 다만,<tt>codebase</tt> 속성은 예외입니다. <tt>APPLET</tt> 태그에서는,<tt>codebase</tt> 속성은, 추가의 클래스 파일 및 JAR 파일의 다운로드원래의 위치를 나타냅니다. 한편,<tt>OBJECT</tt> 태그에서는,<tt>codebase</tt> 속성은, 로컬 머신에 Java Plug-in 가 발견되지 않는 경우의 Java Plug-in 의 다운로드원래의 위치를 나타냅니다. <tt>codebase</tt> 속성은 <tt>APPLET</tt> 태그와 <tt>OBJECT</tt> 태그로 다른 의미를 가지고 있습니다. 따라서, 경합을 회피하기 위해서,<code>APPLET</code> 태그내의 <code>codebase</code> 속성은,<tt>OBJECT</tt> 태그내의 <tt>PARAM</tt> <tt>codebase</tt> 에 매핑 됩니다.  </p>
+<p> 위의 예에서는, <tt>APPLET</tt> 태그의 <tt>code</tt> 및 <tt>codebase</tt> 속성은,<tt>OBJECT</tt> 태그의 파라미터에 매핑 됩니다. <tt>PARAM</tt> <tt>code</tt> 는 애플릿을 식별하기 위해(때문에), 그 값을 <tt>APPLET</tt> 태그의 <tt>code</tt> 속성과 같게 할 필요가 있습니다. <tt>PARAM codebase</tt> 는, 애플릿의 <code>codebase</code> 를 식별합니다. Java Plug-in 는, 파라미터로부터 이 정보를 읽어낼 수가 있기 (위해)때문에, 애플릿 또는 JavaBeans 컴퍼넌트의 다운로드처를 인식합니다. 파라미터 <tt>type</tt> 는,<tt>APPLET</tt> 태그로부터 매핑 될 것은 없습니다만,<tt>OBJECT</tt> 태그에서는 필요하게 됩니다. 이것은, Java 실행 가능 파일의 타입 (애플릿 또는 JavaBean 등)을 식별합니다.  이 때문에, Java Plug-in 는 Java 실행 가능 파일의 초기화 방법을 인식할 수 있습니다. 위의 예로, 이것들 3 개의 <tt>PARAM</tt> 태그 (<tt>code</tt>,<tt>codebase</tt>, 및 <tt>type</tt>)는, Java Plug-in 용으로 지정되고 있습니다.  이러한 태그는, 원의 <tt>APPLET</tt> 태그의 <tt>PARAM</tt> 에는 존재하지 않습니다. <tt>OBJECT</tt> 태그내의 <tt>model</tt> 파라미터는,<tt>APPLET</tt> 태그내의 <tt>model</tt> 파라미터와 동일한 것으로 유의해 주세요. Java Plug-in 로 지정하는 이것들 최초의 3 개의 파라미터 이외의 파라미터는,<tt>APPLET</tt> 태그내의 파라미터와 같습니다.  </p>
+<p> Java Plug-in 1.3 에서는,<tt>PARAM scriptable</tt> 가 새롭게 추가되었습니다 (1.4.x 에서도 유효). 이것이 추가된 이유는, JavaScript 나 VBScript 를 필요로 하지 않는 애플릿의 퍼포먼스 향상입니다. 애플릿이 스크립팅 지원를 필요로 하는 경우는 <tt>true</tt> 에, 필요로 하지 않는 경우는 <tt>false</tt> 에 값을 설정할 필요가 있습니다. 디폴트 값는 <tt>false</tt> 입니다.  
+<p> <tt>PARAM scriptable</tt> 는 <tt>PARAM mayscript</tt> 와 같지 않는 것에 유의해 주세요.  <tt>mayscript</tt> 는 Java 애플릿으로부터 JavaScript 에의 통신만을 지원하는데 대해,<tt>scriptable</tt> 는 Internet Explorer 에서의 JavaScript 로부터 Java 애플릿에의 통신만을 지원합니다.
+<p> <tt>APPLET</tt> 태그내의 텍스트 「<tt>No Java 2 SDK, Standard Edition v 1.4. 2 support for APPLET!!</tt>」(은)는,<tt>&lt;OBJECT&gt;</tt> 및 <tt>&lt;/OBJECT&gt;</tt> 태그내에서 매핑 됩니다. 본래, 이 텍스트는, 브라우저가 Java 를 지원하지 않는 경우에게만 표시됩니다. 이 텍스트를 <tt>OBJECT</tt> 태그의 내부에 매핑 하면(자), 브라우저가 <tt>OBJECT</tt> 태그를 지원하지 않는 경우, 이 텍스트가 표시됩니다.  </p>
+<p> <tt>APPLET</tt> 태그로부터 <tt>OBJECT</tt> 태그에의 속성의 매핑은 다음과 같습니다.  
+</p>
+<table summary="tag attribute mapping" border="2" cellpadding="2" width="90%" align="center">
+  <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+<th><b><font size="+1">속성명</font></b></th>
+<th><b><tt><font size="+1">APPLET</font></tt><font size="+1"> 태그의 지원</font></b></th>
+<th><b><tt><font size="+1">OBJECT</font></tt><font size="+1"> 태그의 지원</font></b></th>
+<th><b><font size="+1"><tt>OBJECT</tt> 태그에의 속성 매핑</font></b></th>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>align</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>align</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>alt</code></td>
+<td>0</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>archive</code></td>
+<td>0</td>
+    <td>&nbsp;</td>
+<td><code>PARAM</code> 요소의 <code>archive</code></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>code</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>PARAM</code> 요소의 <code>code</code></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>codebase</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>PARAM</code> 요소의 <code>codebase</code></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>height</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>height</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>hspace</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>hspace</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>name</code></td>
+<td>0</td>
+<td>0</td>
+    <td>
+<p><code>OBJECT</code> 의 <code>name</code> 속성,<code>PARAM</code> 요소의 <code>name</code></p>
+<p>이 경우는 예외입니다. 원의 <code>APPLET</code> 요소의 <code>name</code> 속성은,<code>OBJECT</code> 요소와 상자로 된 <code>PARAM</code> 의 양쪽 모두로,<code>name</code> 속성에 매핑 될 필요가 있습니다. 원의 애플릿이 다음과 같은 것이라고 가정합니다. </p>
+<p><code>&lt;APPLET name=&quot;clock&quot; ...&gt;<br>&lt;/APPLET&gt;</code></p>
+<p>이 경우, 매핑은 다음과 같이 됩니다. </p>
+<p><code>&lt;OBJECT name=&quot;clock&quot; ...&gt;<br>&lt;PARAM name=&quot;name&quot; value=&quot;clock&quot;&gt;<br> &lt;/OBJECT&gt;</code></p>
+      </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>object</code></td>
+<td>0</td>
+    <td>&nbsp;</td>
+<td><code>PARAM</code> 요소의 <code>object</code></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>title</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>title</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>vspace</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>vspace</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>width</code></td>
+<td>0</td>
+<td>0</td>
+<td><code>OBJECT</code> 의 <code>width</code> 속성</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>mayscript</code></td>
+<td>0</td>
+    <td>&nbsp;</td>
+<td><code>PARAM</code> 요소의 <code>mayscript</code></td>
+  </tr>
+</table>
+<p><code>OBJECT</code> 의 속성과 상자로 된 <code>PARAM</code> 요소에는,<tt>OBJECT</tt> 태그에 고유의 것도 있습니다. 이것들은 다음과 같습니다.  </p>
+<table summary="special attributes and elements" border="2" cellpadding="2" width="90%" align="center">
+  <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+<th><b><font size="+1">속성/<code>PARAM</code></font></b></th>
+<th><font size="+1"><b><tt>OBJECT</tt> 태그내의 의미</b></font></th>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><a name="classid"></a> <code>classid</code> 속성</td>
+    <td align="left" valign="top"> 
+<p>동적 버젼의 지원의 경우는, 같은 값 (<code>clsid:8AD9C840-044E-11D1-B3E9-00805F499D93</code> 등)을 보관 유지할 필요가 있습니다. 정적 버젼의 지원의 경우는, 버젼 고유의 값 (<code>clsid:CAFEEFAC-0014-0002-0000-ABCDEFFEDCBA</code> 등)이 보관 유지됩니다. </p>
+<p>정적 버젼 관리와 동적 버젼 관리의 대비에 대해서는,<a href="http://java.sun.com/products/plugin/versions.html">「Encountering OBJECT, EMBED, and APPLET Tags With Different Plug-in Versions and Browsers」</a>를 참조해 주세요. </p>
+<p><font size="4"><b>주:</b></font> 상기의 예에서는, 정적 버젼 관리가 사용되고 있습니다.  
+      </p>
+    </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>codebase</code> 속성</td>
+    <td align="left" valign="top">
+<p>네트워크상의 <code>. cab</code> 파일을 지시하는 완전한 URL 를 지정할 필요가 있습니다. 이 속성의 목적은, 사용자의 컴퓨터에 Plug-in 가 전혀 인스톨되어 있지 않은 경우나, 인스톨 되고 있는 Plug-in 의 버젼이 적절하지 않은 경우에, Plug-in 의 다운로드와 인스톨을 가능하게 하는 것입니다. 디폴트에서는, URL 는 Java Software Web 사이트상의 페이지를 지시합니다. </p>
+<p><b>례:</b></p>
+<p><a href="#new_object_tag">상기의 예</a>로,<code>codebase</code> 는 다음과 같습니다. </p>
+<p><font color="#000000"><code> codebase=&quot;http://java.sun.com/products/plugin/autodl/jinstall-1_4_2-windows-i586.cab#Version=1, 4,2,0&quot;</code></font></p>
+<p><font color="#000000">다만, 이것은 정적 버젼 관리의 경우의 예입니다.  또,<code>. cab</code> 파일의 후에 부가된 버젼 번호는, 사용자의 컴퓨터에 버젼 <code>1.4. 2</code> 의 Plug-in 가 인스톨 되고 있을 필요가 있는 것을 나타내고 있습니다.  이 조건이 채워지지 않은 경우는, 다운로드와 인스톨이 시도됩니다. </font></p>
+<p><font color="#000000">동적 버젼 관리의 경우는,<code>codebase</code> 는 다음과 같이 됩니다. </font></p>
+<p><font color="#000000"><code>codebase=&quot;http://java.sun.com/products/plugin/autodl/jinstall-1_4-windows-i586.cab#Version=1, 4,0,0&quot;</code></font></p>
+<p><font color="#000000">말미에 부가된 버젼 번호는, 사용자의 컴퓨터에 버젼 <code>1.4. 0</code> 이후의 Plug-in 가 인스톨 되고 있는 경우, 다운로드는 행해지지 않는 것을 나타내고 있습니다. 즉, 1.4 패밀리 (메이저 버젼 <code>1.4</code>)의 Plug-in 가 인스톨 되고 있으면, 그것이 실행됩니다. 이것보다 전의 버젼이 인스톨 되고 있는 경우는,<code>. cab</code> 파일을 개입시켜 새로운 버젼의 다운로드와 인스톨이 시도됩니다. </font></p>
+    </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>type</code></td>
+    <td align="left" valign="top"> 
+<p><code>type</code> 파라미터의 <code>value</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-&lt;object_type&gt;;&lt;version_type&gt;=&lt;implementation_version&gt;&quot;</code></p>
+      </blockquote>
+<p>이 예에서는,</p>
+      <blockquote> 
+<p><code>object_type</code> 는 <code>applet</code> 또는 <code>bean</code> 입니다. </p>
+<p><code>version_type</code> 는, 정적 버젼 관리의 경우는 <code>jpi-version</code>, 동적 버젼 관리의 경우는 <code>version</code> 입니다.  </p>
+<p><code>implementation_version</code> 는 Implementation-Version 입니다. 이것은,<a href="version_format.html">「부록 6:Sun 의 지원하는 <code>Specification-Version</code> 및 <code>Implemenation-Version</code> 의 형식」</a>에서 정의되고 있습니다. </p>
+      </blockquote>
+<p>정적 버젼 관리와 동적 버젼 관리의 대비에 대해서는,<a href="http://java.sun.com/products/plugin/versions.html">「Encountering OBJECT, EMBED, and APPLET Tags With Different Plug-in Versions and Browsers」</a>를 참조해 주세요. </p>
+<p><b>례:</b></p>
+<p>Plug-in 의 버젼이 <code>1.4. 1</code>, 패치 릴리스가 <code>02</code> 의 정적 버젼 관리를 위해서(때문에) 배치되는 애플릿의 경우는,<code>type</code> 의 <code>value</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-applet;jpi-version=1. 4.1_02&quot;</code></p>
+      </blockquote>
+<p>Plug-in 의 버젼이 <code>1.4. 1</code>, 패치 릴리스가 <code>03</code> 의 동적 버젼 관리를 위해서(때문에) 배치되는 Bean 의 경우는,<code>type</code> 의 <code>value</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-bean;version=1. 4&quot;</code></p>
+      </blockquote>
+<p>이것은, 동적 버젼 관리의 경우는 메이저 버젼 번호만이 체크되기 (위해)때문에입니다.  즉, 그 메이저 버젼의 패밀리에 속하는 Plug-in 가 인스톨 되고 있는 경우, 다운로드는 불필요합니다. </p>
+    </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>codebase</code></td>
+<td align="left" valign="top">애플릿의 베이스 URL 를 지정합니다. 상대 URL 또는 절대 URL 를 지정할 수 있습니다만, 현재의 문서와 같은 도메인내에 있는 것이 필요합니다. 이 <code>PARAM</code> 요소가 필요하게 되는 것은, 문서와는 다른 디렉토리에 애플릿이 놓여져 있는 경우만입니다. </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>code</code></td>
+<td align="left" valign="top">Java 애플릿 또는 JavaBeans 컴퍼넌트의 이름을 지정합니다. 같은 <tt>OBJECT</tt> 태그내에, 상자로 된 <code>PARAM</code> 요소의 <tt>object</tt> 가 있는 경우는, 병용 할 수 없습니다. </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>scriptable</code></td>
+<td align="left" valign="top">JavaScript 또는 VBScript 를 사용해, HTML 페이지로부터 애플릿을 스크립트 기술 가능한가 어떤가를 지정합니다. 값에는,<code>true</code> 또는 <code>false</code> 를 지정할 수 있습니다. 이것은, Java Plug-in 1.4 로 새롭게 추가된 속성입니다. </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>object</code></td>
+<td align="left" valign="top">직렬화 된 Java 애플릿 또는 JavaBeans 컴퍼넌트의 이름을 지정합니다. 같은 <tt>OBJECT</tt> 태그내에, 상자로 된 <code>PARAM</code> 요소의 <tt>code</tt> 가 있는 경우는, 병용 할 수 없습니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>archive</code></td>
+<td align="left" valign="top">Java Archive 의 이름을 지정합니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>PARAM</code> 요소의 <code>mayscript</code></td>
+<td align="left" valign="top"><code>netscape.javascript.JSObject</code> 에의 액세스를 애플릿에 허가할지 어떨지를 지정합니다. 값에는,<code>true</code> 또는 <code>false</code> 를 지정할 수 있습니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+</table>
+<p>원의 <code>APPLET</code> 요소에 <tt>type</tt>,<tt>codebase</tt>,<tt>code</tt>,<tt>object</tt>, 또는 <tt>archive</tt> 속성이 사용되고 있는 경우로, 상자로 된 <code>PARAM</code> 요소에도 <tt>type</tt>,<tt>codebase</tt>,<tt>code</tt>,<tt>object</tt>, 또는 <tt>archive</tt> 속성이 사용되고 있을 때는,<code>APPELET</code> 로부터 <code>PARAM</code> 에의 직접적인 속성 매핑에 문제가 발생합니다.  이것은, 복수의 <code>PARAM</code> 요소로 <code>name</code> 속성이 중복 하기 (위해)때문에입니다. </p>
+<p>다음에 예를 나타냅니다. </p>
+<blockquote> 
+<p><code>&lt;APPLET codebase = &quot;a/b/c ...&gt;<br>&lt;PARAM name=&quot;codebase&quot; value=&quot;my.jar&quot;&gt;<br> &lt;/APPLET&gt;</code></p>
+</blockquote>
+<p>이 경우, 직접 매핑은 다음과 같이 됩니다. </p>
+<blockquote> 
+<p><code>&lt;OBJECT ...&gt;<br> &lt;PARAM <font color="#000000">name=&quot;codebase&quot;</font> value=&quot;a/b/c&quot;&gt;<br> &lt;PARAM name=&quot;codebase&quot; value=&quot;my.jar&quot;&gt;<br> &lt;/OBJECT&gt;</code></p>
+</blockquote>
+<p>이 문제를 회피하려면 , 원의 애플릿의 <code>APPLET</code> 에, 그 속성과 같은 <code>PARAM</code> 요소가 포함되어 있는 경우는, 다음과 같이 매핑 할 필요가 있습니다. </p>
+<table summary="APPLET and PARAM mapping" border="2" cellpadding="2" align="center" width="75%">
+  <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+<th><b><font size="+1"><code>APPLET</code> 요소내의 원의 속성</font></b></th>
+<th> <b><font size="+1"><code>OBJECT</code> 요소의 <code>PARAM</code> 의 새로운 속성</font></b></th>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>code</tt></td>
+<td><tt>java_code</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>codebase</tt></td>
+<td><tt>java_codebase</tt></td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><tt>archive</tt></td>
+<td><tt>java_archive</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>object</tt></td>
+<td><tt>java_object</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>type</tt></td>
+<td><tt>java_type</tt></td>
+  </tr>
+</table>
+<p> 이러한 새로운 <code>PARAM</code> 요소의 속성명은, 필요한 경우만 사용하도록 해 주세요. 1 개의 <tt>OBJECT</tt> 태그에 <code>PARAM</code> 의 새로운 속성명과 원의 속성명의 양쪽 모두가 존재하는 경우, Java Plug-in 는 새로운 <code>PARAM</code> 요소의 속성명에 관련지을 수 있었던 값을 사용해, 애플릿 또는 JavaBean 를 로드합니다.  </p>
+<h3>례</h3>
+<p>원의 애플릿이 다음과 같은 것이라고 가정합니다. </p>
+<blockquote>
+<p><code>&lt;APPLET codebase = &quot;a/b/c ...&gt;<br>&lt;PARAM name=&quot;codebase&quot; value=&quot;my.jar&quot;&gt;<br> &lt;/APPLET&gt;</code></p>
+</blockquote>
+<p>이 경우, 매핑은 다음과 같이 됩니다. </p>
+<blockquote>
+<p><code>&lt;OBJECT ...&gt;<br> &lt;PARAM name=&quot;java_codebase&quot; value=&quot;a/b/c&quot;&gt;<br> &lt;PARAM name=&quot;codebase&quot; value=&quot;my.jar&quot;&gt;<br> &lt;/OBJECT&gt;</code></p>
+</blockquote>
+<h2><a name="in-nav"></a> Windows 또는 Solaris<sup><font size="-2">TM</font></sup> 오퍼레이팅(operating) 환경의 Netscape Navigator 로 동작하는 Java Plug-in</h2>
+<p> Windows 또는 Solaris 오퍼레이팅(operating) 환경의 Netscape Navigator 4. x 로 Java Plug-in 를 사용하려면 ,<tt>EMBED</tt> 태그를 사용합니다. 다음의 예는, 종래의 <tt>APPLET</tt> 태그로부터 Java Plug-in 의 <tt>EMBED</tt> 태그에의 매핑을 나타내고 있습니다. </p>
+<h3>원의 <code>APPLET</code> 태그:</h3>
+<table summary="layout" width="90%" cellpadding="5" align="center">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+      <pre>
+<font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+ &nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM name=&quot;model&quot; value=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4. 1 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h3>신규 <code>EMBED</code> 태그:</h3>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;EMBED type=&quot;application/x-java-applet;jpi-version=1. 4.1&quot; width=&quot;200&quot;
+&nbsp;&nbsp; height=&quot;200&quot; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot;
+&nbsp;&nbsp;&nbsp;codebase=&quot;html/&quot; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp;pluginspage=&quot;http://java.sun.com/j2se/1. 4.1/download.html&quot;&gt;
+&lt;NOEMBED&gt;
+&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4. 1 support for APPLET!!
+&lt;/NOEMBED&gt;
+&lt;/EMBED&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p><tt>EMBED</tt> 태그에는 <tt>APPLET</tt> 태그와 같은 정보가 포함됩니다.  Navigator 로 Java Plug-in 를 기동하려면 , 이 정보로 충분합니다. <tt>EMBED</tt> 태그의 <tt>type</tt> 속성은, Java 실행 가능 파일의 타입 (애플릿이나 Bean 등)의 식별로 사용합니다. Navigator 가 <tt>EMBED</tt> 태그내에서 속성을 draw 할 때, 브라우저내에의 Java Plug-in 의 로드를 시도합니다. 버젼 번호도 부가됩니다. 사용자의 컴퓨터에 인스톨 되고 있는 버젼과 이 번호가 비교되어 다른 버젼의 인스톨이 필요한가 어떤가가 판단됩니다. 이 상세한 것에 대하여는, 아래와 같은 2 번째의 겉(표)로 설명합니다. </p>
+<p> 위의 예에서는,<tt>EMBED</tt> 태그내의 <tt>width</tt>,<tt>height</tt>, 및 <tt>align</tt> 등의 속성은,<tt>APPLET</tt> 태그내의 대응하는 속성으로부터 직접 매핑 됩니다. Navigator 는, 이것들에 포함되는 포맷 정보를 이용해, Java Plug-in 의 위치를 설정합니다. 이 정보는 변경되는 일 없이 직접 매핑 되기 (위해)때문에, Java Plug-in 를 사용하는 애플릿의 위치 및 외관은,<tt>APPLET</tt> 태그를 사용하는 애플릿과 같게 됩니다.  
+</p>
+<p><tt>OBJECT</tt> 태그와는 달라, 모든 정보를 <tt>&lt;EMBED&gt;</tt> 태그의 내부에 포함할 필요가 있습니다. <tt>EMBED</tt> 태그에서는 <tt>PARAM</tt> 요소는 사용되지 않습니다. 따라서,<code>APPLET</code> 의 속성 및 관련하는 <code>PARAM</code> 요소는 모두,<tt>EMBED</tt> 태그의 내부에 속성으로서 <code>name=&quot;value&quot;</code> 페어의 형식에서 매핑 할 필요가 있습니다.  </p>
+<p>위의 예에서는, <tt>APPLET</tt> 태그의 <tt>code</tt> 및 <tt>codebase</tt> 속성은,<tt>EMBED</tt> 태그 속성에 매핑 됩니다. <tt>code</tt> 속성은, 애플릿을 식별합니다. 이 속성의 값은,<tt>APPLET</tt> 태그의 <tt>code</tt> 속성과 같게 할 필요가 있습니다. <tt>codebase</tt> 속성은, 애플릿의 코드 베이스를 식별합니다. Java Plug-in 는, 이 정보를 속성으로부터 읽어낼 수가 있기 (위해)때문에, 애플릿 또는 JavaBeans 컴퍼넌트의 다운로드처를 인식합니다. <tt>EMBED</tt> 태그내의 <tt>model</tt> 속성은,<tt>APPLET</tt> 태그내에 상자로 된 <code>PARAM</code> 요소의 <tt>model</tt> 로부터 매핑 됩니다.  </p>
+<p><tt>OBJECT</tt> 태그의 <tt>codebase</tt> 속성과 같이, 사용자의 컴퓨터에 Java Plug-in 가 인스톨되어 있지 않은 경우나, 인스톨 되고 있는 Java Plug-in 의 버젼이 적절하지 않은 경우에는,<tt>EMBED</tt> 태그의 <tt>pluginspage</tt> 속성이 Navigator 에 의해 사용됩니다. 여기에서는 Java Software Web 사이트상의 Java Plug-in 다운로드 페이지를 가리킵니다.  혹은, 인트라넷에서의 배치의 경우는, 인트라넷상의 Java Plug-in 의 다운로드 페이지를 가리키도록(듯이) 합니다. </p>
+<p> <tt>APPLET</tt> 태그내의 텍스트<tt>「No Java 2 SDK, Standard Edition v 1.4. 1 support for APPLET!!」</tt>(은)는,<tt>&lt;NOEMBED&gt;</tt> 및 <tt>&lt;/NOEMBED&gt;</tt> 태그 내부에 매핑 됩니다. 종래의 APPLET 태그에서는, 브라우저가 Java 의 내부 지원를 가지고 있지 않은 경우만, 이 텍스트가 표시됩니다. 이 텍스트는 <tt>NOEMBED</tt> 태그 내부에 매핑 되기 (위해)때문에, 브라우저가 <tt>EMBED</tt> 태그를 지원하고 있지 않는 경우나, Navigator 가 Java Plug-in 의 기동에 실패했을 경우에 표시됩니다.  </p>
+<p> <tt>APPLET</tt> 태그로부터 <tt>EMBED</tt> 태그에의 속성의 매핑은 다음과 같습니다. </p>
+<table summary="APPLET EMBED tag attribute mapping" border="2" cellpadding="2" align="center" width="90%">
+  <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+    <th> 
+<div align="center"><font size="+1"><b>속성</b></font></div>
+    </th>
+    <th> 
+<div align="center"><font size="+1"><b><tt>APPLET</tt> 태그의 지원</b></font></div>
+    </th>
+    <th> 
+<div align="center"><font size="+1"><b><tt>EMBED</tt> 태그의 지원</b></font></div>
+    </th>
+    <th> 
+<div align="center"><font size="+1"><b><tt>EMBED</tt> 태그에의 속성 매핑</b></font></div>
+    </th>
+  </tr>
+  <tr> 
+    <td align="left" valign="top"> 
+<p><code>align</code></p>
+      </td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>align</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>alt</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>alt</code> 속성</td>
+  </tr>
+  <tr> 
+<td><code>archive</code></td>
+<td>0</td>
+    <td>&nbsp;</td>
+<td><code>archive</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>code</code></td>
+<td align="left" valign="top">0</td>
+    <td align="left" valign="top">&nbsp;</td>
+<td align="left" valign="top"><code>code</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>codebase</code></td>
+<td align="left" valign="top">0</td>
+    <td align="left" valign="top">&nbsp;</td>
+<td align="left" valign="top"><code>codebase</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>height</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>height</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>hspace</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>hspace</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>name</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>name</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>object</code></td>
+<td align="left" valign="top">0</td>
+    <td align="left" valign="top">&nbsp;</td>
+<td align="left" valign="top"><code>object</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>title</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>title</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>vspace</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>vspace</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>width</code></td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top">0</td>
+<td align="left" valign="top"><code>width</code> 속성</td>
+  </tr>
+  <tr> 
+<td align="left" valign="top"><code>mayscript</code></td>
+<td align="left" valign="top">0</td>
+    <td align="left" valign="top">&nbsp;</td>
+<td align="left" valign="top"><code>mayscript</code> 속성</td>
+  </tr>
+</table>
+<p><tt>EMBED</tt> 태그 독자적인 속성도 있습니다. 이러한 속성을 다음에 나타냅니다.  
+</p>
+<table summary="special EMBED tag attributes" border="2" cellpadding="2" align="center" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+    <th>
+<div align="center"><b><font size="+1">속성</font></b></div>
+    </th>
+    <th>
+<div align="center"><font size="+1"><b><tt>EMBED</tt> 태그내의 의미</b></font></div>
+    </th>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>type</code> 속성</td>
+    <td> 
+<p><code>type</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-&lt;object_type&gt;;&lt;version_type&gt;=&lt;implementation_version&gt;&quot;</code></p>
+      </blockquote>
+<p>이 예에서는,</p>
+      <blockquote> 
+<p><code>object_type</code> 는 <code>applet</code> 또는 <code>bean</code> 입니다. </p>
+<p><code>version_type</code> 는, 정적 버젼 관리의 경우는 <code>jpi-version</code>, 동적 버젼 관리의 경우는 <code>version</code> 입니다.  </p>
+<p><code>implementation_version</code> 는 Implementation-Version 입니다. 이것은,<a href="version_format.html">「부록 6:Sun 의 지원하는 <code>Specification-Version</code> 및 <code>Implemenation-Version</code> 의 형식」</a>에서 정의되고 있습니다. </p>
+      </blockquote>
+<p>정적 버젼 관리와 동적 버젼 관리의 대비에 대해서는,<a href="http://java.sun.com/products/plugin/versions.html">「Encountering OBJECT, EMBED, and APPLET Tags With Different Plug-in Versions and Browsers」</a>를 참조해 주세요. </p>
+<p><b>례:</b></p>
+<p>Plug-in 의 버젼이 <code>1.4. 1</code>, 패치 릴리스가 <code>02</code> 때, 정적 버젼 관리를 위해서(때문에) 배치되는 애플릿의 경우는,<code>type</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-applet;jpi-version=1. 4.1_02&quot;</code></p>
+      </blockquote>
+<p>Plug-in 의 버젼이 <code>1.4. 1</code>, 패치 릴리스가 <code>03</code> 때, 동적 버젼 관리를 위해서(때문에) 배치되는 Bean 의 경우는,<code>type</code> 는 다음과 같이 됩니다. </p>
+      <blockquote> 
+<p><code>&quot;application/x-java-bean;version=1. 4&quot;</code></p>
+      </blockquote>
+<p>이것은, 동적 버젼 관리의 경우는 메이저 버젼 번호만이 체크되기 (위해)때문에입니다.  즉, 그 메이저 버젼의 패밀리에 속하는 Plug-in 가 인스톨 되고 있는 경우, 다운로드는 불필요합니다. </p>
+    </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>codebase</code> 속성</td>
+<td>애플릿 또는 JavaBeans 컴퍼넌트의 베이스 URL 를 지정합니다. 상대 URL 또는 절대 URL 를 지정할 수 있습니다만, 현재의 문서와 같은 도메인내에 있는 것이 필요합니다. 이 속성이 필요하게 되는 것은, 문서와는 다른 디렉토리에 애플릿이 놓여져 있는 경우만입니다. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>code</code> 속성</td>
+<td>Java 애플릿 또는 JavaBeans 컴퍼넌트의 이름을 지정합니다. 같은 <tt>EMBED</tt> 태그내의 파라미터 <tt>object</tt> 와 병용 할 수 없습니다. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>object</code> 속성</td>
+<td>직렬화 된 Java 애플릿 또는 JavaBeans 컴퍼넌트의 이름을 지정합니다. 같은 <tt>EMBED</tt> 태그내의 <tt>code</tt> 속성과 병용 할 수 없습니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>archive</code> 속성</td>
+<td>Java Archive 의 이름을 지정합니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>pluginspage</code> 속성</td>
+<td>Java Plug-in 를 다운로드하기 위한 HTML 페이지를 가리키는, 완전한 URL 를 지정합니다. 사용자의 컴퓨터에 Plug-in 가 전혀 인스톨되어 있지 않은 경우나, 인스톨 되고 있는 Plug-in 의 버젼이 <code>type</code> 속성으로 지정되고 있는 것과 다르고 있는 경우는, 이 페이지가 표시됩니다. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><code>mayscript</code> 속성</td>
+<td><code>netscape.javascript.JSObject</code> 에의 액세스를 애플릿에 허가할지 어떨지를 지정합니다. 값에는,<code>true</code> 또는 <code>false</code> 를 지정할 수 있습니다. 이 속성은 생략 가능합니다. </td>
+  </tr>
+</table>
+<p><tt>OBJECT</tt> 태그의 경우와 같이, 원의 <tt>APPLET</tt> 태그에 <tt>PARAM</tt> 요소의 <tt>type</tt>,<tt>codebase</tt>,<tt>code</tt>,<tt>object</tt>, 또는 <tt>archive</tt> 속성이 포함되어 있는 경우는, 이것을 <tt>EMBED</tt> 태그 속성에 매핑 하면(자) 문제가 발생합니다. 이것을 피하기 위해서(때문에), Java Plug-in 에서는,<code>EMBED</code> 태그의 신규 속성명세트도, 아래와 같이 지원되고 있습니다. </p>
+<p><tt>OBJECT</tt> 요소의 경우와 같게, 원의 <code>APPLET</code> 요소에 <tt>type</tt>,<tt>codebase</tt>,<tt>code</tt>,<tt>object</tt>, 또는 <tt>archive</tt> 속성이 사용되고 있는 경우로, 상자로 된 <code>PARAM</code> 요소에도 <tt>type</tt>,<tt>codebase</tt>,<tt>code</tt>,<tt>object</tt>, 또는 <tt>archive</tt> 속성이 사용되고 있을 때는,<code>APPELET</code> 로부터 <code>EMBED</code> 에의 직접적인 속성 매핑에 문제가 발생합니다. 이 문제를 회피하기 위해서, Java Plug-in 에서는,<code>EMBED</code> 태그의 신규 속성명세트도, 아래와 같이 지원되고 있습니다. </p>
+<table summary="new attribute names" border="2" cellpadding="2" align="center" width="50%">
+  <tr bgcolor="#CCCCCC"> 
+    <th>
+<div align="center"><b><font size="+1">원의 속성명</font></b></div>
+    </th>
+    <th>
+<div align="center"><b><font size="+1">신규 속성명</font></b></div>
+    </th>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>code</tt></td>
+<td><tt>java_code</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>codebase</tt></td>
+<td><tt>java_codebase</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>archive</tt></td>
+<td><tt>java_archive</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>object</tt></td>
+<td><tt>java_object</tt></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td><tt>type</tt></td>
+<td><tt>java_type</tt></td>
+  </tr>
+</table>
+<p>이러한 새로운 속성명은, 필요한 경우만 사용하도록 해 주세요. 1 개의 <tt>EMBED</tt> 태그에 새로운 속성명과 원의 속성명의 양쪽 모두가 존재하는 경우, Java Plug-in 는 새로운 속성명에 관련지을 수 있었던 값을 사용해, 애플릿 또는 Bean 를 로드합니다. </p>
+<h2><a name="ie-nav"></a> IE 및 Navigator 로 동작하는 Java Plug-in</h2>
+<p>애플릿 가지는 Web 페이지에서는, 전술과 같이 새로운 <code>OBJECT</code> 요소의 방식에 의해, Java Plug-in 를 Internet Explorer 로 사용할 수 있게 됩니다.  또, 새로운 <code>EMBED</code> 요소의 방식에 의해, Java Plug-in 를 Netscape 로 사용할 수 있게 됩니다. 다만, Web 페이지가 양쪽 모두의 브라우저로 표시되는 경우에는 변경이 필요하게 됩니다. 즉, Internet Explore 로 표시되는 경우에는 <code>OBJECT</code> 방식을 사용해, Netscape 로 표시되는 경우에는 EMBED 방식을 사용하는 것 같은 방법이 필요합니다. 이러한 방식에 대해서는, 이후에 설명합니다. </p>
+<h3>원의 <code>APPLET</code> 요소:</h3>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Editoin v 1.4 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h3>상자로 된 <code>EMBED</code> 요소를 가지는 새로운 <code>OBJECT</code> 요소:</h3>
+<p>
+<table summary="layout" width="90%" cellpadding="5" align="center">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+      <pre>
+<font color="#000000">&lt;OBJECT classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+    &lt;PARAM NAME=&quot;code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+    &lt;PARAM NAME=&quot;codebase&quot; VALUE=&quot;html/&quot;&gt;
+    &lt;PARAM NAME=&quot;type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+    &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+    &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+    &lt;COMMENT&gt;
+&nbsp;&nbsp;&nbsp;     &lt;EMBED type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     height=&quot;200&quot; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot;&nbsp;
+&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;     codebase=&quot;html/&quot; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&nbsp;&nbsp;&nbsp;         &lt;NOEMBED&gt;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;        No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp;         &lt;/NOEMBED&gt;
+        &lt;/EMBED&gt;
+    &lt;/COMMENT&gt;
+&lt;/OBJECT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p> 
+<p></p>
+<p>IE 는 <tt>&lt;OBJECT&gt;</tt> 태그를 인식하기 위해(때문에), Java Plug-in 의 기동을 시도합니다. <tt>&lt;COMMENT&gt;</tt> 태그는, IE 만이 이해하는 특수한 HTML 태그인 것에 유의해 주세요. IE 는,<tt>&lt;COMMENT&gt;</tt> 와 <tt>&lt;/COMMENT&gt;</tt> 태그의 사이의 텍스트를 무시합니다. 실제의 곳, 상기의 태그는 다음과 같이 됩니다. </p>
+<p><code>&lt;COMMENT&gt;</code> 는 IE 고유의 요소입니다. IE 는,<code>&lt;COMMENT&gt;</code> 와 <code>&lt;/COMMENT&gt;</code> 요소의 사이의 텍스트를 무시합니다. 따라서, 상기의 구조는, IE 에서는 다음과 같이 읽어내집니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;OBJECT classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+ &nbsp;&nbsp; codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&lt;/OBJECT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p>이것은, 전술의 새로운 <tt>OBJECT</tt> 태그의 예와 동일합니다. </p>
+<p> Navigator 에서는,<tt>OBJECT</tt> 요소도 <tt>COMMENT</tt> 요소도 인식되지 않기 때문에, 상기의 구조는, Navigator 4 에서는 다음과 같이 읽어내집니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td>
+<pre><font color="#000000">&lt;EMBED type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot;
+ &nbsp;&nbsp;height=&quot;200&quot; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot;&nbsp;
+&nbsp; &nbsp;codebase=&quot;html/&quot; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp;pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp; &lt;/NOEMBED&gt;
+&lt;/EMBED&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p>이것은, 전술의 새로운 <tt>EMBED</tt> 요소의 예와 동일합니다.  
+</p>
+<p>따라서, 이 새로운 요소 구조 (상자로 된 <code>EMBED</code> 요소를 가지는 <code>OBJECT</code> 요소)를 사용하는 것으로, IE 에서도 Netcape 에서도, 애플릿이 포함되어 있는 페이지에 조우했을 때에 Java Plug-in 를 호출할 수가 있습니다. 이 형식을 사용하는 것을 추천합니다. <br>
+</p>
+<h2><a name="anywhere"></a> 그 외의 환경에서의 Java Plug-in</h2>
+<table summary="layout" width="80%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" cellspacing="0">
+  <tr> 
+    <td> 
+<h2><u><font color="#FF0000">경고! </font></u></h2>
+<p>이 섹션의 내용은 낡아지고 있습니다. 향후 이 내용은 갱신됩니다. 아래와 같은 스크립트의 설명은, HtmlConverter 의 Extended 옵션에 대응하는 것입니다. 현재, 이 옵션은 사용하지 않게 해 주세요. Standard 옵션을 사용하는 것을 추천합니다. </p>
+    </td>
+  </tr>
+</table>
+<p>인터넷 또는 인트라넷의 대부분의 환경에서, HTML 페이지는 다양한 플랫폼이나 브라우저로 표시될 가능성이 있습니다. 따라서, 적절한 브라우저와 플랫폼의 편성에서만 Java Plug-in 를 기동하도록 해 주세요. 그 이외의 경우는, 애플릿으로 브라우저의 디폴트 JVM 를 사용할 필요가 있습니다. 이것은, 다음의 Java Plug-in 형식을 사용해 실시합니다. </p>
+<h3>원의 <code>APPLET</code> 요소: </h3>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h3>신규 스타일의 형식: </h3>
+<p>등가인 Java Plug-in 형식의 예를, 다음에 나타냅니다. 이 예에는, 코멘트가 포함되어 있습니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+      <pre>
+<font color="#000000">&lt;! -- The following code is specified at the beginning of the &lt;BODY&gt; tag.  --&gt;
+&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _info = navigator.userAgent; 
+    var _ns = false;
+&nbsp;&nbsp;&nbsp; var _ie = (_info.indexOf(&quot;MSIE&quot;) &gt; 0 &amp;&amp; _info.indexOf(&quot;Win&quot;) &gt; 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; _info.indexOf(&quot;Windows 3.1&quot;) &lt; 0);
+//--&gt;&lt;/SCRIPT&gt;
+&lt;COMMENT&gt;&lt;SCRIPT LANGUAGE=&quot;JavaScript1. 1&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _ns = (navigator.appName.indexOf(&quot;Netscape&quot;) &gt;= 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; ((_info.indexOf(&quot;Win&quot;) &gt; 0 &amp;&amp; _info.indexOf(&quot;Win16&quot;) &lt; 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; java.lang.System.getProperty(&quot;os.version&quot;). indexOf(&quot;3. 5&quot;) &lt; 0)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; || _info.indexOf(&quot;Sun&quot;) &gt; 0));
+//--&gt;&lt;/SCRIPT&gt;&lt;/COMMENT&gt;
+
+
+&lt;! -- The following code is repeated for each APPLET tag --&gt;
+&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; if (_ie == true) document.writeln('
+&lt;OBJECT
+&nbsp;&nbsp;&nbsp; classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;&lt;XMP&gt;');
+&nbsp;&nbsp;&nbsp; else if (_ns == true) document.writeln('
+&lt;EMBED
+&nbsp;&nbsp;&nbsp; type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot; height=&quot;200&quot;
+&nbsp;&nbsp;&nbsp; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot;
+&nbsp;&nbsp;&nbsp; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp; pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;&lt;XMP&gt;');
+//--&gt;&lt;/SCRIPT&gt;
+&nbsp;&nbsp;&nbsp;&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;/XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/APPLET&gt;&lt;/NOEMBED&gt;&lt;/EMBED&gt;
+&lt;/OBJECT&gt;
+
+&lt;! --
+&nbsp;&nbsp;&nbsp; &lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp; &lt;/APPLET&gt;
+--&gt;</font><font color="#8000FF">
+</font></pre>
+    </td>
+  </tr>
+</table>
+<p>이 태그는 이전의 <tt>APPLET</tt> 태그에 비하면(자) 복잡하게 보입니다만, 실제는 그렇지는 않습니다. 대부분의 Java Plug-in 태그는, 사용하는 애플릿에 관계없이 같습니다. 대체로의 경우, Web 마스터는 Java Plug-in 태그를 카피＆페이스트 할 수 있습니다.  </p>
+<p>스크립트의 최초의 블록에서는, 브라우저 및 플랫폼을 추출하고 있습니다. 애플릿이 가동하고 있는 브라우저 및 플랫폼을 판별할 필요가 있습니다. JavaScript<sup><font size="-2">TM</font></sup> 를 사용해, 최초로 브라우저명, 다음에 플랫폼을 추출하는 것으로써, 이것을 실행할 수 있습니다. HTML 문서 마다, 이 조작을 실시합니다.  
+<p> 스크립트의 2 번째의 블록에서는,<tt>APPLET</tt> 태그를 옮겨놓고 있습니다. 각 <tt>APPLET</tt> 태그를, 유사한 코드 블록으로 옮겨놓을 필요가 있습니다. 이 스크립트는,<tt>APPLET</tt> 태그를, 브라우저에 응해 <tt>EMBED</tt> 태그 또는 <tt>OBJECT</tt> 태그에 옮겨놓습니다. IE 에는 <tt>OBJECT</tt> 태그를, Netscape Navigator 에는 <tt>EMBED</tt> 태그를 사용합니다. 마지막으로, 원의 <tt>APPLET</tt> 태그가, 코멘트로서 말미에 포함됩니다. Java Plug-in 의 호출을 삭제하는 경우를 염두에 두어, 원의 <tt>APPLET</tt> 태그를 포함해 두는 것은 바람직한 방법입니다.  
+</p>
+<p>최초의 JavaScript 에 의해, 브라우저 및 브라우저의 가동하는 플랫폼이 확립됩니다. 이 조작이 필요한 것은, 현재로서는, Java Plug-in 는, Windows 95, Windows 98, Windows NT 4.0, 및 Solaris 만을 지원하기 (위해)때문에입니다. Java Plug-in 가 지원하지 않는 Win32 플랫폼은, Windows NT 3.51 뿐입니다. Java Plug-in 의 호출은, 지원되는 브라우저 및 플랫폼에서만 실시할 필요가 있습니다. 브라우저가 Internet Explorer 의 경우, 스크립트에 의해 변수 <tt>_ie</tt> 가 true 로 설정됩니다. 브라우저가 Navigator 의 경우, 변수 <tt>_ns</tt> 가 true 로 설정됩니다. (JavaScript 에서는 모든 변수명이 「_」으로 시작되는 것에 주목해 주세요. 이것은, 같은 페이지의 다른 JavaScript 변수와 경합 하는 것을 막기 위해입니다. ) 
+</p>
+<p>적절한 브라우저를 검출하기 위해(때문에), JavaScript 는 Navigator 객체내의 3 개의 캐릭터 라인<tt>userAgent</tt>,<tt>appVersion</tt>, 및 <tt>appName</tt> 를 평가합니다. 이러한 캐릭터 라인에는, 브라우저 및 플랫폼에 관한 정보가 포함됩니다. 캐릭터 라인 <tt>userAgent</tt> 의 예를 몇개인가 본다면,<tt>userAgent</tt> 를 평가해 브라우저를 판별하는 방법을 이해할 수 있겠지요. 다음에, Internet Explorer 로 표시되는 다른 플랫폼용의 <tt>userAgent</tt> 캐릭터 라인의 예를 나타냅니다.  </p>
+<table summary="example userAgent strings" border="2" cellpadding="2" align="center" width="90%">
+  <tr bgcolor="#CCCCCC"> 
+<th><b>플랫폼 및 브라우저</b></th>
+<th><b>JavaScript 의 </b><b><tt>Navigator.userAgent</tt></b><b> 캐릭터 라인</b></th>
+  </tr>
+  <tr> 
+<td>Windows 2000 및 IE 5.0</td>
+<td>&quot;Mozilla/4. 0 (compatible; MSIE 5.01; Window NT5. 0)</td>
+  </tr>
+  <tr> 
+<td>Windows NT 4.0 및 IE 4.0</td>
+<td>&quot;Mozilla/4. 0 (compatible; MSIE 4.0; Windows NT) &quot;&nbsp;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 4.0 및 IE 3.02</td>
+<td>&quot;Mozilla/2. 0 (compatible; MSIE 3.02; Windows NT) &quot;&nbsp;</td>
+  </tr>
+  <tr> 
+<td>Windows 95 및 IE 4.0</td>
+<td>&quot;Mozilla/4. 0 (compatible; MSIE 4.0; Windows 95) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows 95 및 IE 3.02</td>
+<td>&quot;Mozilla/2. 0 (compatible; MSIE 3.02; Windows 95) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 3.51 및 IE 4.0</td>
+<td>&quot;Mozilla/4. 0 (compatible; MSIE 4.0; Windows 3.1) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows 3.1 및 IE 4.0</td>
+<td>&quot;Mozilla/4. 0 (compatible; MSIE 4.0; Windows 3.1) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 4.0 및 Navigator 4.04</td>
+<td>&quot;Mozilla/4. 04 [en] (WinNT; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 4.0 및 Navigator 3.04</td>
+<td>&quot;Mozilla/3. 04 (WinNT; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 3.51 및 Navigator 4.04&nbsp;</td>
+<td>&quot;Mozilla/4. 04 [en] (WinNT; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows NT 3.51 및 Navigator 3.04&nbsp;</td>
+<td>&quot;Mozilla/3. 04 (WinNT; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows 95 및 Navigator 4.03</td>
+<td>&quot;Mozilla/4. 03 [en] (Win95; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Windows 95 및 Navigator 3.03</td>
+<td>&quot;Mozilla/3. 03 (Win95; I) &quot;</td>
+  </tr>
+  <tr> 
+<td>Solaris 2.6 및 Navigator 4.02</td>
+<td>&quot;Mozilla/4. 02 [en] (X11; l; SunOS 5.6 sun4u)</td>
+  </tr>
+</table>
+<p>어느 경우에서도, Internet Explorer 의 <tt>userAgent</tt> 캐릭터 라인에는, 부분 캐릭터 라인 「MSIE」가 항상 존재하는 것에 주목해 주세요. 또, Windows 3.1 및 Windows 3.51 으로 가동하는 IE 에서는,<tt>userAgent</tt> 캐릭터 라인에 부분 캐릭터 라인 「Windows 3.1」이 포함됩니다. 이러한 플랫폼의 IE 는 16 비트이기 (위해)때문에입니다. IE 4 는 Solaris 및 Mac 에서도 동작합니다만, 이러한 버젼에서는 <tt>userAgent</tt> 캐릭터 라인에 부분 캐릭터 라인 「Win」는 포함되지 않습니다. 또, Windows CE 로 가동하는 IE 는, JavaScript 를 지원하지 않습니다. 이것들은, 다음과 같이 정리할 수가 있습니다. &nbsp; </p>
+<table summary="summary of useAgent strings" border="2" cellpadding="2" width="90%" align="center">
+  <tr bgcolor="#CCCCCC"> 
+<th align="center" valign="top">userAgent 캐릭터 라인/브라우저</th>
+<th align="center" valign="top">Windows 3.1 상의 IE 3/4</th>
+<th align="center" valign="top">Windows NT 3.51 상의 IE 3/4</th>
+<th align="center" valign="top">Windows 95 상의 IE 3/4</th>
+<th align="center" valign="top">Windows NT 4.0 상의 IE 3/4</th>
+<th align="center" valign="top">Windows CE 상의 IE</th>
+<th align="center" valign="top">Mac 상의 IE</th>
+<th align="center" valign="top">UNIX 상의 IE</th>
+<th align="center" valign="top">몇개의 플랫폼에서 가동하는 다른 브라우저</th>
+  </tr>
+  <tr> 
+<td align="center" valign="top">「MSIE」를 포함한다</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+    <td align="center" valign="top">&nbsp;</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+    <td align="center" valign="top">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center" valign="top">「Win」를 포함한다</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+    <td align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center" valign="top">「Windows 3.1」을 포함하지 않는다</td>
+    <td align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+    <td align="center" valign="top">&nbsp;</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+<td align="center" valign="top">0</td>
+  </tr>
+</table>
+<p>위의 겉(표)로부터, Windows 95 및 Windows NT 4.0 상에서 가동하는 IE 만이 Java Plug-in 브라우저 및 플랫폼 요건을 채우는 것을 알 수 있습니다. 다만, 이것은, IE 의 장래의 릴리스, 또는 IE 를 포함한 장래의 Windows 의 릴리스를 고려에 넣고 있지 않습니다. Win32 로 가동하는 IE 의 장래의 릴리스에서도,<tt>userAgent</tt> 캐릭터 라인에 「MSIE」 및 「Win」가 포함되는 한, 상기의 코드는 동작합니다.  </p>
+<p>상기의 논리를 정리하면(자), 다음과 같이 됩니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _info = navigator.userAgent;
+&nbsp;&nbsp;&nbsp; var _ie = (_info.indexOf(&quot;MSIE&quot;) &gt; 0 &amp;&amp; _info.indexOf(&quot;Win&quot;) &gt; 0
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; _info.indexOf(&quot;Windows 3.1&quot;) &lt; 0);
+//--&gt;&lt;/SCRIPT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p>적절한 플랫폼에서 동작하는 Navigator 를 검출하는 것은, 보다 난이도의 높은 작업입니다. JavaScript 만을 사용하는 경우, 브라우저가 Windows NT 3.51 및 Windows NT 4.0  operating system의 어디에서 가동하고 있을까를 판단할 수 없습니다. (상기의 겉(표)를 참조해,<tt>userAgent</tt> 캐릭터 라인을 확인해 주세요. Navigator 에서는, Windows NT 3.51 및 Windows NT 4.0 오퍼레이팅(operating) 플랫폼의 <tt>userAgent</tt> 캐릭터 라인은 같습니다. ) Java Plug-in 가 지원하는 것은 Windows NT 4.0 오퍼레이팅(operating) 플랫폼 뿐이기 (위해)때문에, 이 차이를 분별하는 것은 중요합니다. 적절한 플랫폼에서 Java Plug-in 를 실행하려면 , Navigator 로 LiveConnect 를 사용해, OS 의 버젼 번호를 판별할 필요가 있습니다. 이것들은, 다음과 같이 정리할 수가 있습니다. &nbsp; </p>
+<table summary="summary" border="2" cellpadding="0" width="90%" align="center">
+  <tr bgcolor="#CCCCCC"> 
+<th align="center">테스트 논리/브라우저</th>
+<th align="center">Windows 3.1 상의 NS 3/4</th>
+<th align="center">Windows NT 3.51 상의 NS 3/4</th>
+<th align="center">Windows 95 상의 NS 3/4</th>
+<th align="center">Windows NT 4.0 상의 NS 3/4</th>
+<th align="center">Solaris 상의 NS</th>
+<th align="center">Solaris 상의 IE</th>
+<th align="center">다른 플랫폼상의 NS</th>
+<th align="center">다른 플랫폼상의 IE</th>
+<th align="center">몇개의 플랫폼에서 가동하는 다른 브라우저</th>
+  </tr>
+  <tr> 
+<td align="center">appName 에 「Netscape」를 포함한다</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center">userAgent 에 「Win」를 포함한다</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center">userAgent 에 「Win16」를 포함하지 않는다</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center">os.version 에 3.5 를 포함하지 않는다</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+<td align="center">OS 에 의존</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+  <tr> 
+<td align="center">userAgent 에 「Sun」를 포함한다</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+<td align="center">0</td>
+<td align="center">0</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+</table>
+<p>상기의 논리를 정리하면(자), 다음과 같은 코드가 됩니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _info = navigator.userAgent; var _ns = false;
+//--&gt;&lt;/SCRIPT&gt;
+&lt;COMMENT&gt;&lt;SCRIPT LANGUAGE=&quot;JavaScript1. 1&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp;&nbsp; var _ns = (navigator.appName.indexOf(&quot;Netscape&quot;) &gt;= 0
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; ((_info.indexOf(&quot;Win&quot;) &gt; 0&nbsp; &amp;&amp; _info.indexOf(&quot;Win16&quot;) &lt; 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; java.lang.System.getProperty(&quot;os.version&quot;). indexOf(&quot;3. 5&quot;) &lt; 0)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; || _info.indexOf(&quot;Sun&quot;) &gt; 0));
+//--&gt;&lt;/SCRIPT&gt;&lt;/COMMENT&gt;</font></pre>
+      <p></p>
+
+</td>
+  </tr>
+</table>
+<p>상기의 겉(표)에 의하면, 테스트에 합격하는 것은, Windows 95, Windows NT 4.0, 및 Solaris 오퍼레이팅(operating) 환경에서 가동하는 Navigator 만입니다. LiveConnect 는 OS 의 버젼 번호의 취득에 사용되어 Navigator 만이 LiveConnect 를 지원하기 위해(때문에), LiveConnect 에 액세스 하는 JavaScript 는 IE 로부터는 인식되지 않습니다. 이것이 문제가 되는 것을 막으려면 , IE 고유의 코멘트 태그인 <tt>COMMENT</tt> 태그를 사용해, 이 스크립트부를 차단합니다. IE 는 <tt>COMMENT</tt> 태그내의 텍스트를 무시합니다만, Navigator 는 무시하지 않습니다. 또, 브라우저가 Navigator 2 의 경우, 스크립트 언어를 JavaScript1. 1 으로 지정해 이것을 차단할 필요가 있습니다.  </p>
+<p>지금까지의 IE 및 Navigator 의 논리를 정리하면(자), 다음과 같은 스크립트가 됩니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;! -- The following code is specified at the beginning of the &lt;BODY&gt; tag.  --&gt;
+&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _info = navigator.userAgent; var _ns = false;
+&nbsp;&nbsp;&nbsp; var _ie = (_info.indexOf(&quot;MSIE&quot;) &gt; 0 &amp;&amp; _info.indexOf(&quot;Win&quot;) &gt; 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; _info.indexOf(&quot;Windows 3.1&quot;) &lt; 0);
+//--&gt;&lt;/SCRIPT&gt;
+&lt;COMMENT&gt;&lt;SCRIPT LANGUAGE=&quot;JavaScript1. 1&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; var _ns = (navigator.appName.indexOf(&quot;Netscape&quot;) &gt;= 0
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; ((_info.indexOf(&quot;Win&quot;) &gt; 0 &amp;&amp; _info.indexOf(&quot;Win16&quot;) &lt; 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; java.lang.System.getProperty(&quot;os.version&quot;). indexOf(&quot;3. 5&quot;) &lt; 0)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; || _info.indexOf(&quot;Sun&quot;) &gt; 0));
+//--&gt;&lt;/SCRIPT&gt;&lt;/COMMENT&gt;&nbsp;</font></pre>
+    </td>
+  </tr>
+</table>
+<p>이 JavaScript 블록은, HTML 의 <tt>&lt;BODY&gt;</tt> 의 선두에 배치하는 것에 유의해 주세요. 선두에 배치하는 것은, 다른 JavaScript 가 변수 <tt>_ie</tt> 및 <tt>_ns</tt> 를 참조할 수 있도록(듯이) 하기 (위해)때문에입니다. 이 JavaScript 는, 모든 HTML 파일로 같고, HTML 본문 마다 1 회만 필요하게 됩니다.  </p>
+<p>HTML 태그의 2 번째의 블록은, 대응하는 <tt>OBJECT</tt> 및 <tt>EMBED</tt> 태그입니다. 이러한 태그는,<tt>APPLET</tt> 태그내의 데이터로부터 매핑 됩니다. 브라우저가 Windows 95, Windows 98, 또는 Windows NT 4.0 오퍼레이팅(operating) 환경에서 가동하는 IE 의 경우, JavaScript 는 <tt>OBJECT</tt> 태그를 출력하는 것에 유의해 주세요. 브라우저가 Windows 95, Windows 98, Windows NT 4.0, 또는 Solaris 오퍼레이팅(operating) 환경에서 가동하는 Navigator 3/4 의 경우, JavaScript 는 <tt>EMBED</tt> 태그도 (조금 다른 구문으로) 출력합니다. 브라우저 및 플랫폼의 검출 메카니즘은, 전술의 섹션으로 해설이 끝난 상태입니다. (HTML 에서는, 코멘트에 &lt;! -- and --&gt; 태그가 사용됩니다. ) </p>
+<h3>원의 <code>APPLET</code> 태그:</h3>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;
+&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h3>신규 스타일 태그: </h3>
+<table summary="layout" width="90%" cellpadding="5" align="center">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+<pre><font color="#000000">&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;&lt;! --
+&nbsp;&nbsp;&nbsp; if (_ie == true) document.writeln('&lt;OBJECT
+&nbsp;&nbsp;&nbsp; classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;&lt;XMP&gt;');
+&nbsp;&nbsp;&nbsp; else if (_ns == true) document.writeln('&lt;EMBED
+&nbsp;&nbsp;&nbsp; type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot; height=&quot;200&quot;
+&nbsp;&nbsp;&nbsp; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot;
+&nbsp;&nbsp;&nbsp; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp; pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;&lt;XMP&gt;');
+//--&gt;&lt;/SCRIPT&gt;
+&nbsp;&nbsp;&nbsp; &lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;LUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp; &lt;/APPLET&gt;&lt;/NOEMBED&gt;&lt;/EMBED&gt;&lt;/OBJECT&gt;&nbsp;</font></pre>
+      </td>
+  </tr>
+</table>
+<p>원의 <tt>APPLET</tt> 태그도, 신규 Java Plug-in 태그에 매핑 되는 것에 유의해 주세요. 이것은, Java Plug-in 를, 지원되는 플랫폼에서만 사용하는 것을 의도하고 있기 (위해)때문에입니다. 스크립트내에 <tt>APPLET</tt> 태그를 남겨 두는 것으로, Java Plug-in 를 지원하지 않는 브라우저나 JavaScript 를 지원하지 않는 브라우저가, 디폴트의 JVM 를 사용해 애플릿을 적절히 처리할 수 있게 됩니다. Java Plug-in 를 지원하지 않는 플랫폼의 HotJava 브라우저, IE, 및 Navigator, 또는 JavaScript 를 지원하지 않는 브라우저는, 상기의 태그를 다음과 같이 읽어냅니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/XMP&gt;
+&lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/APPLET&gt;&lt;/NOEMBED&gt;&lt;/EMBED&gt;&lt;/OBJECT&gt;&nbsp;</font></pre>
+    </td>
+  </tr>
+</table>
+<p>이러한 브라우저는, 대응하는 <tt>&lt;XMP&gt;</tt>,<tt>&lt;OBJECT&gt;</tt>,<tt>&lt;EMBED&gt;</tt>, 및 <tt>&lt;NOEMBED&gt;</tt> 태그가 존재하지 않기 때문에,<tt>&lt;/XMP&gt;</tt>,<tt>&lt;/OBJECT&gt;</tt>,<tt>&lt;/EMBED&gt;</tt>, 및 <tt>&lt;/NOEMBED&gt;</tt> 태그를 무시합니다. Java Plug-in 는 Java 2 SDK, Standard Edition v 1.4 또는 그 이후의 릴리스의 기능을 타겟으로 하고 있기 (위해)때문에, Java 2 SDK 1.4 를 풀 지원하지 않고, 또 Java Plug-in 를 지원하지 않고 않은 이러한 브라우저에서는, 「No Java 2 SDK, Standard Edition v 1.4 support for APPLET」라고 하는 메세지가 표시됩니다.  </p>
+<p>전의 예와는 달라, 매핑 된 <tt>PARAM</tt> 명에는,<tt>code</tt>,<tt>codebase</tt>,<tt>type</tt> 대신에,<tt>java_code</tt>,<tt>java_codebase</tt>,<tt>java_type</tt> 가 포함됩니다. 이것이 필요한 이유는,<tt>&lt;APPLET&gt;</tt> 와 <tt>&lt;/APPLET&gt;</tt> 태그 내부의 <tt>&lt;PARAM&gt;</tt> 에 <tt>code</tt> 및 <tt>codebase</tt> 를 지정하면(자), 브라우저에 따라서는 문제가 발생하기 (위해)때문에입니다.  </p>
+<p>Windows 상의 IE 는, 태그를 다음과 같이 읽어냅니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;OBJECT classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;NOEMBED&gt;&lt;XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp; &lt;/APPLET&gt;&lt;/NOEMBED&gt;&lt;/EMBED&gt;
+&lt;/OBJECT&gt;</font>&nbsp;</pre>
+      <p></p>
+
+</td>
+  </tr>
+</table>
+<p><tt>&lt;XMP&gt;</tt> 태그를 사용하는 경우는, 주의가 필요합니다. IE 는 <tt>&lt;OBJECT&gt;</tt> 태그를 draw 하기 위한(해),<tt>&lt;APPLET&gt;</tt> 태그를 무효로 할 필요가 있습니다. 무효로 하지 않는 경우, 2 개의 애플릿이 브라우저에 동시에 표시됩니다. 1 개의 애플릿은 Microsoft 의 JVM 로, 이제(벌써) 1 개의 애플릿은 Sun 의 JVM 로 Java Plug-in 를 사용해 가동합니다. <tt>&lt;XMP&gt;</tt> 태그를 사용하는 것으로, 이 문제를 해결할 수 있습니다. 기본적으로,<tt>&lt;XMP&gt;</tt> 및 <tt>&lt;/XMP&gt;</tt> 태그는, 태그 내부의 HTML 태그를 정적 텍스트의 스트림로 변환합니다. 위의 예에서는,<tt>&lt;XMP&gt;</tt> 및 <tt>&lt;/XMP&gt;</tt> 태그를 사용하는 것으로, 브라우저는 <tt>&lt;APPLET&gt;</tt> 태그를 HTML 태그로서가 아니고, 정적 텍스트로서 처리합니다. 브라우저는 <tt>&lt;OBJECT&gt;</tt> 태그 및 <tt>&lt;PARAM&gt;</tt> 태그간의 정적 텍스트를 무시하기 위해(때문에), 상기의 태그는 실질적으로 다음과 같이 됩니다.  
+</p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;OBJECT classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+codebase=&quot;http://java.sun.com/products/plugin/1. 4/jinstall-14-win32.cab#Version=1, 4,0, mn&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/OBJECT&gt;&nbsp;</font></pre>
+      <p></p>
+</td>
+  </tr>
+</table>
+<p>이것은, 벌써 개요를 설명한 <tt>OBJECT</tt> 태그의 예와 동일합니다. <tt>&lt;OBJECT&gt;</tt> 태그는,<tt>&lt;NOEMBED&gt;</tt>,<tt>&lt;/NOEMBED&gt;</tt>, 및 <tt>&lt;/EMBED&gt;</tt> 태그를 무시하는 것에 유의해 주세요.  </p>
+<p>Windows 오퍼레이팅(operating) 환경에서 동작하는 Navigator 는, 태그를 다음과 같이 읽어냅니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;EMBED type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot; height=&quot;200&quot;
+&nbsp;&nbsp;&nbsp; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot;
+&nbsp;&nbsp;&nbsp; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp; pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&lt;NOEMBED&gt;&lt;XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/XMP&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_codebase&quot; VALUE=&quot;html/&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;java_type&quot; VALUE=&quot;application/x-java-applet;jpi-version=1. 4&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+&nbsp;&nbsp;&nbsp; &lt;PARAM NAME=&quot;scriptable&quot; VALUE=&quot;true&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&nbsp;&nbsp;&nbsp; &lt;/APPLET&gt;&lt;/NOEMBED&gt;&lt;/EMBED&gt;&lt;/OBJECT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<p><tt>&lt;APPLET&gt;</tt> 태그도 무효로 하기 (위해)때문에,<tt>&lt;XMP&gt;</tt> 태그가 <tt>&lt;EMBED&gt;</tt> 태그내에서 재차 사용되고 있는 점에 주목해 주세요. <tt>&lt;EMBED&gt;</tt> 태그는,<tt>&lt;PARAM&gt;</tt> 및 <tt>&lt;/OBJECT&gt;</tt> 태그도 무시합니다. 실제의 곳, 상기의 태그는 다음과 같이 됩니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td> 
+<pre><font color="#000000">&lt;EMBED type=&quot;application/x-java-applet;jpi-version=1. 4&quot; width=&quot;200&quot; height=&quot;200&quot;
+&nbsp;&nbsp;&nbsp; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot;
+&nbsp;&nbsp;&nbsp; model=&quot;models/HyaluronicAcid.xyz&quot;
+&nbsp;&nbsp;&nbsp; pluginspage=&quot;http://java.sun.com/products/plugin/1. 4/plugin-install.html&quot;&gt;
+&lt;NOEMBED&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+&lt;/NOEMBED&gt;
+&lt;/EMBED&gt;&nbsp;</font></pre>
+      <p></p>
+
+</td>
+  </tr>
+</table>
+<p>이것은, 벌써 개요를 설명한 <tt>EMBED</tt> 태그의 예와 동일합니다.  </p>
+<p>결합된 <tt>OBJECT-EMBED-JavaScript</tt> 태그를 사용해, 적절한 플랫폼의 적절한 브라우저로 Java Plug-in 를 기동할 수 있습니다. 이 결합된 태그는 복잡하기 때문에, 이종 혼재 환경에서 사용자가 HTML 페이지를 브라우즈 하는 경우에게만 사용해 주세요.  <br>
+</p>
+<h2><a name="summary"></a> 통계</h2>
+<p>이 문서에서는, Java Plug-in 의 사용하는 <tt>OBJECT</tt> 태그 및 <tt>EMBED</tt> 태그의 스타일에 대해 설명했습니다. 특히,<tt>APPLET</tt> 태그로부터 <tt>OBJECT</tt> 및 <tt>EMBED</tt> 태그에의 변환에 초점을 맞혀 해설했습니다. 현재로서는, HTML 4.0 에서는, HTML 페이지에 Java 애플릿 및 JavaBeans 컴퍼넌트를 삽입하는 방법으로서는,<tt>OBJECT</tt> 태그가 최선의 선택사항입니다. 이 문서가 가까운 장래 갱신되려면 ,<tt>OBJECT</tt> 태그를 Java Plug-in 의 태그 스타일로 변환할 필요가 생겨 오겠지요. 이 문서로 공개한 정보의 목적은, HTML 이행 툴을 기술하는 ISV, 및 Java Plug-in 로 이행하려 하고 있는 Web 마스터를 지원하는 것입니다. 이 문서로 설명한 태그 스타일은, 장래 변경될 가능성이 있습니다.  </p>
+<p>Java Plug-in 의 사용은, 이 문서로 설명한 태그 스타일로 한정되고 있지 않습니다. 실제, Web 마스터에는, 필요에 따라서 태그 스타일을 변경하는 것이나, 태그를 JavaScript 와 조합하는 것이 권유받고 있습니다. 이 문서로 해설한 <tt>OBJECT</tt> 태그를 IE 로, 또 <tt>EMBED</tt> 태그를 Navigator 로 사용하는 한, Java Plug-in 의 실행에는 무슨 문제도 없습니다. 현재로서는, Java Plug-in HTML 컨버터에는 몇개의 변환 템플릿이 동고 되고 있습니다. Web 마스터는, 그 중에서 스스로의 요구에 맞은 템플릿을 찾아낼 수가 있습니다. 또, 필요에 따라서 이러한 템플릿을 수정하는 일도 권유받고 있습니다. </p>
+<p>&nbsp;</p>
+                </body>
+</html>

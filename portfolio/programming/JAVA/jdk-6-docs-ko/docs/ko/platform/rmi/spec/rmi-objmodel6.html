@@ -1,0 +1,98 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:2 - 분산 객체 모델
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel5.html">전의 항목</a>  | <a href="rmi-objmodel7.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">2.5	 원격 인터페이스의 구현</a> </h2>
+
+<a name="5102"><!-- --></a> 
+<blockquote>
+<a name="3553"><!-- --></a>  원격 인터페이스를 구현하는 클래스의 일반적인 규약은, 다음과 같습니다. <p>
+</blockquote>
+
+
+<blockquote>
+<ul><li>
+<a name="3554"><!-- --></a>  클래스는 일반적으로 <code>java.rmi.server.UnicastRemoteObject</code> 를 확장하는 것으로써 <code>java.rmi.server.RemoteObject</code> 나 <code>java.rmi.server.RemoteServer</code> 클래스가 제공하는 원격 동작을 상속한다
+</li>
+<li>
+<a name="3574"><!-- --></a>  클래스는 임의의 수의 원격 인터페이스를 구현할 수 있다
+</li>
+<li>
+<a name="3555"><!-- --></a>  클래스는 별도인 원격 구현 클래스를 확장할 수 있다
+</li>
+<li>
+<a name="3556"><!-- --></a>  클래스는 원격 인터페이스에는 나타나지 않는 메소드를 정의할 수도 있지만, 이러한 메소드는 로컬에 대해서만 사용할 수 있어 원격로부터는 사용할 수 없다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="1917"><!-- --></a>  예를 들어, 다음에 나타내는 클래스 <code>BankAcctImpl</code> 는 <code>BankAccount</code> 원격 인터페이스를 구현해,<code>java.rmi.server.UnicastRemoteObject</code> 클래스를 확장하고 있습니다. <p>
+</blockquote><blockquote><pre>package mypackage;
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class BankAccountImpl
+	extends UnicastRemoteObject
+	implements BankAccount
+{
+	private float balance = 0.0;
+
+	public BankAccountImpl(float initialBalance) 
+		throws RemoteException 
+	{
+		balance = initialBalance;
+	}
+	public void deposit(float amount) throws RemoteException {
+		...
+	}
+	public void withdraw(float amount) throws OverdrawnException,
+		RemoteException {
+		...
+	}
+	public float getBalance() throws RemoteException {
+		...
+	}
+}
+
+
+</pre></blockquote><blockquote>
+<a name="3543"><!-- --></a> 필요에 따라서, 원격 인터페이스를 구현하는 클래스는 <code>java.rmi.server.UnicastRemoteObject</code> 이외의 몇개의 클래스를 확장할 수 있습니다. 다만 구현 클래스는, 객체의 export (<code>UnicastRemoteObject</code> 생성자 에 의해 처리된다), 및 <code>java.lang.Object</code> 클래스로부터 상속되는 <code>hashCode</code>,<code>equals</code>, 및 <code>toString</code> 메소드의 올바른 원격 시멘틱스의 구현 (필요한 경우)에 대할 책임을 지지 않으면 안됩니다. <p>
+</blockquote>
+
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel5.html">전의 항목</a>  | <a href="rmi-objmodel7.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

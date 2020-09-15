@@ -1,0 +1,136 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>가변 인수 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>가변 인수</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Language 의 목차</a> </font>
+<p>
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+
+<hr size=3 noshade>
+
+지금까지의 릴리스에서는, 임의의 개수의 값을 받는 메소드에서는, 그 메소드의 호출전에, 배열을 작성해 값을 대입할 필요가 있었습니다. 예를 들어,<a href="../../../api/java/text/MessageFormat.html"><code>MessageFormat</code></a>  클래스를 사용해 메세지를 포맷 하는 예를 나타냅니다.
+<blockquote>
+<pre>Object[] arguments = {
+    new Integer(7),
+    new Date(),
+    "a disturbance in the Force"
+};
+
+String result = MessageFormat.format(
+    "At {1, time} on {1, date}, there was {2} on planet "
+     + "{0, number, integer}. ", arguments);
+</pre>
+</blockquote>
+
+<p>복수의 인수를 배열로 건네줄 필요가 있는 것은 서로 바뀝니다만 , 가변 인수 기능에 의해 자동적으로 처리를 해 사용자로부터는 숨겨집니다. 게다가 기존의 API 와의 상위 호환성이 있습니다. 그 때문에, 예를 들어 <code>MessageFormat.format</code> 메소드에, 다음의 선언이 추가되었습니다.
+
+<pre>    public static String format(String pattern,
+                                <font color="#009900">Object...</font> arguments);
+</pre>
+
+<p>마지막 인수의 형태의 뒤에 계속되는 3 개의 피리어드는, 마지막 인수가 배열, 또는 일련의 인수로서 건네받는 것을 나타내고 있습니다. 가변 인수는, 마지막 인수의 위치에서만 사용할 수 있습니다. <code>MessageFormat.format</code> 의 새로운 가변 인수 선언에서는, 상기의 호출은, 다음과 같이 짧고 알기 쉬운 호출에 옮겨놓을 수가 있습니다.
+<blockquote>
+<pre>String result = MessageFormat.format(
+    "At {1, time} on {1, date}, there was {2} on planet "
+    + "{0, number, integer}. ",
+    <font color="#009900">7</font>, new Date(), "a disturbance in the Force");
+</pre>
+</blockquote>
+
+<p><a href="autoboxing.html">오토 박싱 기능</a>과 가변 인수와의 사이에는, 강한 상승효과가 있습니다.  리플렉션을 사용한 다음의 프로그램에, 상승효과의 예를 나타냅니다.
+
+<blockquote>
+<pre><b>// Simple test framework</b>
+public class Test {
+    public static void main(String[] args) {
+        int passed = 0;
+        int failed = 0;
+        for (String className : args) {
+            try {
+                Class c = Class.forName(className);
+                <font color="#009900">c.getMethod("test"). invoke(c.newInstance());</font>
+                passed++;
+            } catch (Exception ex) {
+                <font color="#009900">System.out.printf("%s failed: %s%n", className, ex);</font>
+                failed++;
+            }
+        }
+        System.out.printf("passed=%d; failed=%d%n", passed, failed);
+    }
+}
+</pre>
+</blockquote>
+
+<p>이 짧은 프로그램은, 완전하게 동작하는, 최소한의 테스트 시스템입니다. 커멘드행으로, 클래스명의 리스트를 취합니다. 프로그램은, 클래스명 마다 파라미터가 없는 생성자 을 사용해 클래스를 인스턴스화해, test 라고 하는 파라미터가 없는 메소드를 호출합니다. 인스턴스화, 또는 호출로 예외를 throw 했을 경우, test 는 실패했다고 보여집니다. 장해는 출력되어 그 후에 test 의 결과의 개요가 계속됩니다. 리플렉트에 의한 인스턴스화 및 호출을 위해서(때문에), 명시적으로 배열을 작성할 필요는 없어졌습니다. <code> getMethod</code> 메소드와 <code>invoke</code> 메소드는, 가변 인수의 리스트를 받아들일 수가 있습니다. 또 이 프로그램에서는, 가변 인수를 이용하는 새로운 <a href="../../../api/java/io/PrintStream.html#printf(java.lang.String,%20java.lang.Object...)"><code>printf</code></a>  의 기능을 사용하고 있습니다. 가변 인수를 사용하지 않는 경우와 비교해, 프로그램은 매우 읽기 쉬워집니다.
+
+<p>가변 인수를 사용하는 케이스는, 고객측에서 하면(자), API 로 가변 인수를 사용할 수 있을 때는, 반드시 이용해야 합니다. 코어 API 로 사용하는 중요한 경우로서는, 리플렉트, 메세지 서식 지정, 새로운 <code>printf</code> 기능등이 있습니다. API 설계자측에서 하면(자), 가변 인수는, 이점이 뚜렷한 경우에만, 신중하게 사용해야 합니다. 일반적으로, 가변 인수를 사용하는 메소드는 overload 하지 않게 합니다.  overload 하면(자), 프로그래머에게 있어서는, 어느 overload가 불려 갔는지 이해하기 어려워지기 때문입니다.
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+   <FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved.
+
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>

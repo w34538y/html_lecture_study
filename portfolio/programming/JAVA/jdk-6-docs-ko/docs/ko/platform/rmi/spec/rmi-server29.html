@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:5 - 서버 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-server28.html">전의 항목</a>  | <a href="rmi-server210.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a> 
+<h2><a name="5112">5.8	RMI 소켓 팩토리</a> </h2>
+
+<blockquote>
+<a name="7709"><!-- --></a>  RMI 런타임 구현에는, 접속을 위해서(때문에) <code>java.net.Socket</code> 및 <code>java.net.ServerSocket</code> 가 필요합니다.  RMI 런타임 구현은, 이러한 클래스의 객체를 직접 초기화하는 것이 아니라, static 메소드 <code>RMISocketFactory.getSocketFactory</code> 에 의해 반환되는, 현재의 <code>RMISocketFactory</code> 객체의 <code>createSocket</code> 및 <code>createServerSocket</code> 메소드를 호출합니다. 이것에 의해, 어플리케이션은,<code>java.net.Socket</code> 및 <code>java.net.ServerSocket</code> 클래스의 대체 서브 클래스등의 RMI 전송으로 사용되는 소켓의 종류를 커스터마이즈하기 위한 훅을 보관 유지할 수 있습니다. 사용되는 <code>RMISocketFactory</code> 의 인스턴스는, 신뢰할 수 있는 시스템 코드에 의해 한 번으로 설정할 수 있습니다. JDK1. 1 에서는, 이 커스터마이즈는, 소켓의 종류에 대한 전반적인 설정을 실시하는 경우에 한정되어 있었습니다.  이것은, 팩토리의 메소드에게 건네지는 파라미터가,<code>createSocket</code> 의 <code>host</code> 와 <code>port</code>, 및 <code>createServerSocket</code> 의 <code>port</code> 뿐이었기 때문입니다. <p>
+<a name="7710"><!-- --></a>  Java SE 플랫폼에서는, 원격 객체와의 통신에 어느 프로토콜을 사용할까에 임해서, 보다 유연하게 커스터마이즈 할 수 있도록(듯이) 하기 위한(해), 새로운 인터페이스 <code>RMIServerSocketFactory</code> 및 <code>RMIClientSocketFactory</code> 가 도입되었습니다.  <p>
+<a name="7711"><!-- --></a>  RMI 를 사용한 어플리케이션으로, 이러한 새로운 소켓 팩토리 인터페이스를 이용하기 위해서,<code>UnicastRemoteObject</code> 와 <code>java.rmi.activation.Activatable</code> 의 양쪽 모두에, 몇개의 새로운 생성자  및 <code>exportObject</code> 메소드가 추가되었습니다.  이러한 생성자  및 메소드는, 클라이언트 및 서버 소켓 팩토리가 추가된 파라미터로서 이용합니다. <p>
+<a name="7712"><!-- --></a>  이 새로운 생성자  또는 <code>exportObject</code> 메소드의 어딘가에 따라 (<code>RMIClientSocketFactory</code> 및 <code>RMIServerSocketFactory</code> 파라미터를 사용해) export 되는 원격 객체는, RMI 런타임에 의해 특별히 다루어집니다. 원격 객체의 존속 기간중, 런타임은,<code>ServerSocket</code> 를 작성해 원격 객체에의 착호를 받아들이기 위해서(때문에), 커스텀의 <code>RMIServerSocketFactory</code> 를 사용해,<code>Socket</code> 를 작성해 클라이언트를 원격 객체에 접속하기 위해서, 커스텀의 <code>RMIClientSocketFactory</code> 를 사용합니다. <p>
+<a name="7713"><!-- --></a>  커스텀 소켓 팩토리와 함께 export 되는 원격 객체의 Stub 및 스켈리턴내에서 사용되는 <code>RemoteRef</code> 및 <code>ServerRef</code> 의 구현은, 각각 <code>UnicastRef2</code> 및 <code>UnicastServerRef2</code> 입니다. <code>UnicastRef</code> 형의 와이어의 표현에서는, 접속하기 위한 「엔드 포인트」의 표현에, UTF 형식의 호스트 명문자열과 그 후에 정수의 포트 번호만을 사용하고 있었습니다. <code>UnicastRef2</code> 형의 와이어의 표현에는, 이것과는 다른 표현이 포함되어 있습니다. <code>UnicastRef2</code> 에서는, 엔드 포인트의 와이어 표현은, 나머지의 엔드 포인트 표현의 내용을 지정하는 형식의 바이트 (장래의 엔드 포인트 표현의 확장용), 및 거기에 계속되는 지정된 형식의 데이터에 의해 구성되어 있습니다. 현재로서는, 데이터는, UTF 형식의 호스트명, 포트 번호, 및 (엔드 포인트의 형식 바이트에 의해 지정되었을 때는) 클라이언트가 이 엔드 포인트로 원격 객체에의 소켓 접속을 생성하기 위해서 사용하는 <code>RMIClientSocketFactory</code> 객체의 직렬화 표현으로 구성됩니다. 엔드 포인트의 표현에는, 원격 객체의 export시로 지정된 <code>RMIServerSocketFactory</code> 객체는 포함되지 않습니다. <p>
+<a name="7714"><!-- --></a> <code>UnicastRef2</code> 형의 참조를 사용해 호출을 했을 경우, 런타임은, 지정된 원격 객체에의 접속용 소켓의 작성시에, 엔드 포인트의 <code>RMIClientSocketFactory</code> 객체의 <code>createSocket</code> 메소드를 사용합니다. 또, 런타임이 특정의 원격 객체에 대해서 DGC 「dirty」 및 「clean」호출을 실행할 때에, 원격 참조로 지정된 것과 같은 <code>RMIClientSocketFactory</code> 객체로부터 생성된 접속을 사용해, 원격 JVM 상의 DGC 를 호출할 필요가 있습니다. 서버측의 DGC 구현은, 이 처리가 올바르게 행해진 것을 확인할 필요가 있습니다. <p>
+<a name="7715"><!-- --></a>  커스텀 소켓 팩토리를 인수로서 취하지 않는 <code>UnicastRemoteObject</code> 상의 낡은 생성자  또는 메소드를 사용해 export 된 원격 객체에서는, 이전과 같게,<code>UnicastRef</code> 및 <code>UnicastServerRef</code> 형의 <code>RemoteRef</code> 및 <code>ServerRef</code> 가 사용됩니다. 이러한 객체에는, 엔드 포인트의 낡은 와이어 표현인, UTF 형식의 호스트 캐릭터 라인에 이어 포트 번호를 지정하는 정수가 사용됩니다. 이것은, 새로운 1.2 의 기능을 사용하지 않는 RMI 서버가, 이전의 버젼의 RMI 클라이언트와 상호 운용을 가능하게 하기 (위해)때문에입니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="7721"><!-- --></a>  5.8. 1	<code>RMISocketFactory</code> 클래스
+</h3>
+
+<blockquote>
+<a name="4186"><!-- --></a> <code>java.rmi.server.RMISocketFactory </code> abstract 클래스는, 트랜스폴트가 소켓을 취득하는 방법을 지정하는 인터페이스를 제공합니다. 이하의 클래스는,<code>java.net</code> 패키지의 <code>Socket</code> 및 <code>ServerSocket</code> 를 사용합니다. <p>
+</blockquote><blockquote><pre>package java.rmi.server;
+
+public abstract class RMISocketFactory 
+	implements RMIClientSocketFactory, RMIServerSocketFactory
+{
+
+	public abstract Socket createSocket(String host, int port)
+		throws IOException;
+&#160;	public abstract ServerSocket createServerSocket(int port)
+		throws IOException;
+	public static void setSocketFactory(RMISocketFactory fac)
+		throws IOException {...}
+	public static RMISocketFactory getSocketFactory() {...}
+	public static void setFailureHandler(RMIFailureHandler fh) {...}
+	public static RMIFailureHandler getFailureHandler() {...}
+}
+
+
+</pre></blockquote><blockquote>
+<a name="4368"><!-- --></a>  static 메소드 <code>setSocketFactory</code> 는, RMI 가 소켓을 취득하기 위한 소켓 팩토리를 설정합니다. 어플리케이션이 자신의 <code>RMISocketFactory</code> 의 인스턴스를 위해서(때문에) 이 메소드를 호출할 수 있는 것은 1 회 뿐입니다. 어플리케이션의 정의에 의한 <code>RMISocketFactory</code> 의 구현은, 예를 들어 접속 요구에 대해서 사전에 필터링을 행해 예외를 throw 하든가, 혹은 <code>java.net.Socket</code> 또는 <code>java.net.ServerSocket</code> 클래스의 독자적인 확장을 돌려주어, 확실한 통신 채널을 확보합니다. <code>RMISocketFactory</code> 를 설정할 수 있는 것은, 실행중의 시큐리티 매니저가 소켓 팩토리의 설정을 허가하고 있는 경우 뿐인 것에 주의해 주세요.  소켓 팩토리의 설정이 허가되어 있지 않은 경우에는,<code>SecurityException</code> 가 throw 됩니다. <p>
+<a name="4364"><!-- --></a>  static 메소드 <code>getSocketFactory</code> 는, RMI 에 의해 사용되는 소켓 팩토리를 돌려줍니다. 소켓 팩토리가 설정되어 있지 않으면, 이 메소드는 <code>null</code> 를 돌려줍니다. <p>
+<a name="4374"><!-- --></a>  트랜스폴트층은, 트랜스폴트로 소켓의 작성이 필요하게 되면(자),<code>getSocketFactory</code> 메소드가 값을 돌려준 <code>RMISocketFactory</code> 상에서 <code>createSocket</code> 와 <code>createServerSocket</code> 메소드를 호출합니다. 예를 나타냅니다. <p>
+</blockquote><blockquote><pre>RMISocketFactory.getSocketFactory(). createSocket(myhost, myport)
+
+
+</pre></blockquote><blockquote>
+<a name="4525"><!-- --></a> <code>createSocket</code> 메소드는, 지정된 호스트와 포트에 접속되는 클라이언트 소켓을 작성하는 것입니다. <code>createServerSocket</code> 는, 지정된 포트상에 서버 소켓을 작성하는 것입니다.  <p>
+<a name="7730"><!-- --></a>  디폴트 트랜스폴트에 있어서의 <code>RMISocketFactory</code> 의 구현은, 다음과 같이 HTTP 를 사용해 방화벽(fire wall)를 빠져 나가는 투과성이 있는 RMI 를 제공합니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4375"><!-- --></a> <code>createSocket</code> 상에서, 팩토리는 직접 소켓에 의한 접속을 할 수 없는 호스트에게 자동적으로 HTTP 접속을 시도한다
+</li>
+<li>
+<a name="4380"><!-- --></a> <code>createServerSocket</code> 상에서, 팩토리는 서버 소켓을 돌려주어, 새롭게 받아들일 수 있었던 접속이 HTTP POST 요구인지를 자동 검출한다. 그렇다면, 트랜스폴트에의 요구의 본체만을 투과적으로 전해 출력을 HTTP 응답으로서 정형한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="4226"><!-- --></a> <code>setFailureHandler</code> 메소드는, 서버 소켓의 작성에 실패하면(자) 실패용 핸들러를 RMI 런타임에 의해 불려 가도록(듯이) 설정합니다. 실패용 핸들러는 불리언 값을 돌려주어, 리트라이를 행해도 좋은지 어떤지를 나타냅니다. 디폴트의 실패용 핸들러는 <code>false</code> 를 돌려주어, 디폴트 조건에서는 런타임은 소켓 작성의 리트라이를 실시하지 않는 것을 나타냅니다. <p>
+<a name="4355"><!-- --></a> <code>getFailureHandler</code> 메소드는, 소켓 작성 실패의 현재의 핸들러를 돌려주어, 실패용 핸들러가 설정되어 있지 않으면,<code>null</code> 를 돌려줍니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="7731"><!-- --></a>  5.8. 2	<code>RMIServerSocketFactory</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="7767"><!-- --></a>  <code>RMIServerSocketFactory</code> API 문서를 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="7733"><!-- --></a>  5.8. 3	<code>RMIClientSocketFactory</code> 인터페이스
+</h3>
+
+<blockquote>
+<a name="8695"><!-- --></a>  <code>RMIClientSocketFactory</code> API 문서를 참조해 주세요. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-server28.html">전의 항목</a>  | <a href="rmi-server210.html">다음의 항목</a>  
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

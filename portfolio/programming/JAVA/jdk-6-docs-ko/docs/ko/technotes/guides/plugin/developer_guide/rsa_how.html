@@ -1,0 +1,45 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Plug-in 에서의 RSA 서명 첨부 애플릿의 검증 동작 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<blockquote>
+  <hr>
+</blockquote>
+<h1>Java Plug-in 에서의 RSA 서명 첨부 애플릿의 검증</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a> &nbsp; </li>
+<li><a href="#verification">RSA 검증의 지원</a> </li>
+<li> <a href="#trust">동적 신뢰성 관리의 지원</a> &nbsp; </li>
+<li> <a href="#use"><code>usePolicy</code> 액세스권</a> &nbsp;</li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p> 이 페이지에서는, Java Plug-in 로 RSA 서명 첨부 애플릿을 검증하는 방법의 개요를 설명합니다. RSA 서명 첨부 애플릿의 사용 방법의 개요에 대해서는,<a href=rsa_deploying.html>「Java Plug-in 에서의 RSA 서명 첨부 애플릿의 배치 방법」</a>을 참조해 주세요.  
+<h2><a name="verification"></a> RSA 검증의 지원</h2>
+<p> 브라우저에 의존하지 않는 방법으로 RSA 서명을 검증할 수 있도록(듯이) 하기 위한(해), 암호화 서비스 프로바이더 (CSP)가 Java Plug-in 에 포함되어 있습니다. CSP 에서는 「MD2withRSA」, 「MD5withRSA」, 및 「SHA1withRSA」디지털 서명 알고리즘이 지원되고 있습니다. 이것은,<code>PluginClassLoader</code> 의 정적인 초기화자의 일부로서 Java 암호화 아키텍쳐(architecture) 시스템에 자동적으로 등록됩니다.  
+<h2><a name="trust"></a> 동적 신뢰성 관리의 지원</h2>
+<p> Java SE 에는, 「코드 베이스」 및 「보호 도메인」에 근거하는 상세한 액세스 제어가 있습니다. JAR 파일로부터 로드 되는 각 클래스는, 코드 소스를 보관 유지합니다. 코드 소스에는, 2 개의 정보가 캡슐화됩니다.  
+<ul>
+<li>클래스의 호출원래의 위치 (URL). 게다가 클래스 로더에 의해 로드 되는 각 클래스는, 코드 소스 (즉, 클래스의 출처(소) 및 서명자)에 근거해, 1 개의 보호 도메인에만 소속합니다 . 각 보호 도메인은, 구성 끝난 시큐리티 정책에 근거해, 관련지을 수 있었던 액세스권세트를 보관 유지합니다. 다음에, 코드 소스와 거기에 부여되는 액세스권을 캡슐화합니다. </li>
+<li>증명서에 서명한 법칙의 리스트 코드 소스내의 각 서명자의 법칙은, X. 509 공개키 증명서 및 지원하는 증명서 체인에 의해 나타내집니다. </li>
+</ul>
+<p>증명서 체인은, 계층적으로 순서 붙일 수 있었던 공개키 증명서의 리스트입니다. 이것은, 서명자의 공개키 증명서로 시작되어, 루트 증명서 발행국 (루트 CA)에서 끝납니다. 체인내가 있는 증명서의 공개키는, 체인내의 앞의 증명서에 포함되는 서명의 검증에 사용됩니다. 루트 CA 의 증명서는, 자기 서명 증명서입니다. 루트 CA 는 잘 알려져 있고 넓게 공개되고 있으므로 신뢰성이 높은 것으로 되어 있습니다.
+<p> <code>PluginClassLoader</code> 는, 구성 끝난 시큐리티 정책를 체크해, 특정의 코드 소스에 부여하는 액세스권을 결정합니다. 다음에, 코드 소스와 거기에 부여되는 액세스권이 보호 도메인을 형성합니다. 이 동작은, 시큐리티 보호된 클래스 로더 (<tt>java.security.SecureClassLoader</tt> 의 인스턴스) 모두에게 공통입니다.  
+<p><tt>sun.plugin.security.PluginClassLoader</tt> 는,<tt>java.net.URLClassLoader</tt> 의 서브 클래스인 <tt>sun.applet.AppletClassLoader</tt> 를 확장합니다. 한편,<tt>java.net.URLClassLoader</tt> 는 <tt>java.security.SecureClassLoader</tt> 를 확장합니다. <code>PluginClassLoader</code> 는, 다음의 보완적인 작업도 실행합니다. 애플릿이 서명 첨부이며, 거기에 부여된 액세스권이 특별한 <a href="#use"><code>usePolicy</code></a>  액세스권을 포함하지 않는 경우,<code>PluginClassLoader</code> 가 애플릿의 코드 소스로부터 서명자 ( 및 서명자의 지원하는 증명서 체인)를 추출해, 그러한 검증을 실시합니다.
+<p> Plug-in 가 증명서 체인을 루트 CA 증명서까지 검증 가능한 경우, 루트 CA 증명서가, 신뢰할 수 있는 루트 CA 증명서의 데이타베이스에 포함될지 어떨지를 확인할 수 있습니다. 루트 CA 증명서가 데이타베이스에 포함되는 경우, Plug-in 는 인증된 서명자의 증명서 체인을 표시해, 그 법칙에 의해 서명된 코드에 <code>AllPermission</code> 를 부여할지 어떨지를 사용자에게 문의합니다. <code>AllPermission</code> 액세스권을 할당할 수 있었던 Java 코드는 시스템 코드와 같게 다루어져 시스템 코드가 보관 유지하는 모든 특권을 보관 유지합니다. 다음에, 사용자는, 법칙에 의해 서명된 코드에 <code>AllPermission</code> 를 부여할지 어떨지라고 부여하는 경우는 액세스권의 부여를 이후의 세션 모두에게 적용할까 그렇지 않으면 현행의 세션인 만큼 한정하는지를 선택할 수 있습니다.  
+<p>애플릿이 서명 첨부가 아닌 경우, 또는, 서명 첨부의 애플릿의 액세스권이 <code>usePolicy</code> 를 포함하고 있는 경우에 대해서는,<a href="security.html">「개요&#151;애플릿의 시큐리티의 기본」</a>을 참조해 주세요.
+<h2><a name="use"></a> <code>usePolicy</code> 액세스권</h2>
+<p> 시스템 관리 책임자는,<code>usePolicy</code> 라는 이름의 액세스권을 사용해,<code>PluginClassLoader</code> 의 동작을 무효로 할 수 있습니다. <code>usePolicy</code> 액세스권을, 구성 끝난 시큐리티 정책를 사용해 코드 소스에 부여하는 경우, 사용자에게로의 요구는 행해지지 않습니다. 시큐리티 정책내에서 지정된 액세스권만이 코드 소스에 부여됩니다. </p>
+</body>
+</html>

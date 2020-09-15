@@ -1,0 +1,141 @@
+<HTML><HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<TITLE>
+JDK 1.1 에서의 소켓의 확장
+
+ - xrath.com 에서 번역됨</TITLE></HEAD>
+<!-- Changed by: David Brown, 21-Aug-1996 --> <!-- Changed by: David Brown, 21-Aug-1996 -->
+<BODY>
+
+<H2>
+<IMG alt="Duke 아이콘" SRC="images/duke4.gif" ALIGN=CENTER WIDTH=55 HEIGHT=68> JDK 1.1 에서의 소켓의 확장
+</H2>
+
+<P>
+JDK 1.1 에서의 <code>java.net</code> 클래스의 몇개의 개선에 의해, 소켓(Socket/ServerSocket)을 확장 가능한 클래스로 할 수 있게 되었습니다. 기본적인 목표는, 어플리케이션 코드를 고쳐 쓰지 않고 , base class Socket 가 사용되고 있는 곳은 어디에서라도 확장된 소켓을 사용할 수 있도록(듯이) 하는 것입니다. 거기서 예를 들어, 기존의 전자 메일 클라이언트에는, Socket 의 서브 클래스가 투과적으로 처리하는 피어 인증 또는 암호화를 실시하는 Socket 의 서브 클래스를 건네주는 것이 가능합니다. 다른 예로서는, 압축을 투과적으로 사용하는 소켓, 또는 복수의 서버에 트래픽의 미러링등의 기능을 추가하는 소켓이 있습니다 (신뢰할 수 있는 차례 붙일 수 있었던 멀티 캐스트의 사용 등).
+
+<P>
+이 문서에는 다음의 마디가 있습니다.   <UL>
+
+<LI> JDK 1.0:<A HREF="#SocketImpl">SocketImpl 및 SocketImplFactory</A> 
+<LI> JDK 1.1:<A HREF="#Non-Final">JDK 1.1 에서의 변경</A> 
+<LI> Socket:<A HREF="#Socket">Socket 의 변경</A> 
+<LI> ServerSocket:<A HREF="#ServerSocket">ServerSocket 의 변경</A> 
+
+</UL>
+
+
+<!-- *********************************************************** -->
+<H2><HR WIDTH=50%>
+<A name="SocketImpl"> JDK 1.0:SocketImpl 및 SocketImplFactory </A> 
+</H2>
+
+<P>
+JDK 1.0 에서는, 있는 매우 특별한 방법으로 사용자가 소켓의 기능을 확장할 수 있도록(듯이) 했습니다. 사용자는 <code> java.net.SocketImpl </code> 를 서브 클래스화해, 필요에 따라서 이러한 클래스를 돌려주는 확장된 java.net.SocketImplFactory()를 제공할 수 있습니다.
+<P>
+SocketImpl/SocketImplFactory 방식은, 다른 트랜스폴트 기구를 사용하는 환경간에서 이식성이 있는 Java 애플릿 및 어플리케이션을 작성하는데 유용하고, 그 때문에(위해) 설계되었습니다. java.net.Socket 를 사용하는 클라이언트 어플리케이션은, 네트워크 접속이 특정을 실행할 필요가 있는 환경 에 있어서 뿐만 아니라, 일반적인 케이스 (Java Runtime 가 PlainSocketImpl 를 사용한다)에서도 동작할 수가 있습니다. 예를 들어, 그 환경에서 적절한 종류의 SocketImpl 가 Java Runtime 에 대해서 설정되어 있으면(자) 가정하면(자),<A HREF="http://www.socks.permeo.com/">SOCKS</A>  와 같은 프록시 프로토콜을 경유해 인터넷에 접속할 필요가 있는 방화벽(fire wall)의 배후에서도, Java 의 프로그램은 동작할 수 없으면 안됩니다.   
+<P>
+SocketImpl 는 Java 의 애플릿에 프록시 지원를 투과적으로 제공하는 것 같은 것에 있어 유용합니다만, 이 유틸리티는, 네트워크 트랜스폴트의 추가 기능을 제공하는 방법, 혹은 TCP 의 상부에 다른 프로토콜을 계층화하는 방법으로서는 한정되고 있습니다. 게다가 Java Runtime 에 대해서는 단일형의 SocketImpl 를 인스톨 하는 것만이 가능하기 때문에, 대규모 어플리케이션을 제한하게 됩니다. ServerSocket 및 Socket 를 확장 가능하게 하는 방법은 명확하고, 직감적으로 알기 쉬운 것입니다.   
+<P>
+SocketImpl 기구는 Socket 의 서브 클래스가 제공하는 기능에 직교 하도록(듯이) 설계되고 있는 것에 주의해 주세요. 예를 들어, 그 스트림상에서 압축을 실행할 수 있는 Socket 의 서브 클래스는, 여전히 시스템 디폴트의 SocketImpl 를 사용해, 어떤 종류의 방화벽(fire wall)의 배후에서 프록시 지원를 얻고 싶으면 희망할 가능성이 있습니다. 시스템 디폴트의 SocketImpl 는, 어플리케이션 측에서의 배려를 필요로 하지 않는 트랜스폴트층의 확장으로서 생각할 수가 있습니다.  그리고, Socket/ServerSocket 의 서브 클래스는 응용 계층으로 풍부한 기능을 제공합니다.
+
+<P>
+
+<A name="Non-Final"><H2><HR WIDTH=50%>JDK 1.1 에서의 변경</H2></A> 
+<P>
+
+JDK 1.1 에서는, Socket 및 ServerSocket 는 확장 가능하게 되어, 이것은 지극히 간단한 변경입니다. 주로 시큐리티상의 이유로써, 서브 클래스는, base class의 부하의 SocketImpl 에 직접 액세스 할 수 없는 것에 주의해 주세요. 그러나, 그 이외에서는 Socket/ServerSocket 의 서브 클래스는, 그 슈퍼 클래스의 메소드를 상속해 오버라이드(override) 할 수 있습니다.
+<P>
+JDK 는 다음과 같이 변경되었습니다.   <UL>
+
+<LI><code>Socket</code> 및 <code>ServerSocket</code> 클래스로부터 <code>final</code> 수식자를 삭제
+
+<LI>그 <code>final</code> 수식자를, 시큐리티 매니저의 호출을 우회 하지 않게 하기 위해서 필요한 메소드인 만큼 재접속
+
+<LI>새롭게 받아들여진 소켓을 초기화할 때 사용하기 위해서, ServerSocket 로 새로운 메소드를 시그니챠 <code>protected final void implAccept(Socket client)</code> 와 함께 정의
+
+<LI>Socket 서브 클래스가 슈퍼 클래스에서 실제의 접속을 하지 않고 그 슈퍼 클래스를 초기화할 수 있도록(듯이), 디폴트의 <code>Socket</code> 생성자 을 공개. 이것은, ServerSocket 서브 클래스가 accept()로부터 올바른 Socket 서브 클래스를 돌려주기 위해서(때문에)도 필요 (FooServerSocket.accept()는 FooSocket 를 돌려주는 등)
+
+</UL>
+
+<A name="Socket"><H2><HR WIDTH=50%>Socket 의 변경</H2></A> 
+<P>
+다음의 일반 형식의 Socket 의 public 생성자 은, 슈퍼 클래스를 초기화하기 위해서 사용할 수 있습니다.
+<pre>
+	Socket(String host, int port) {
+	  ...
+	}
+</pre>
+다만, 이것들은 또 시스템 디폴트의 SocketImpl 를 생성해, 그것을 지정한 호스트, 포트에 접속합니다. Socket 는, Socket 에 접속하지 않고 슈퍼 클래스를 초기화하기 위해서 2 개의 protected 생성자 을 가집니다.
+<pre>
+	protected Socket() {
+	  /* install system-default SocketImpl */
+	  ...
+	}
+
+	protected Socket(SocketImpl impl) {
+	  this.impl = impl;
+	}
+</pre>
+
+최초의 생성자 은 시스템 디폴트의 SocketImpl 를 인스톨 합니다 (팩토리 또는 PlainSocketImpl 로부터). 2 번째의 생성자 은, Socket 의 서브 클래스가 필요에 따라서 자신의 impl 를 인스톨 할 수 있도록(듯이) 합니다. Socket 서브 클래스가 디폴트의 SocketImpl 를 필요로 하지 않는 경우, 2 번째의 생성자 을 사용해 거기에 null 를 건네주는 것은 완전하게 유효합니다. 다만, 이 케이스에서는, 서브 클래스는 부하의 모든 SocketImpl 에 의존하고 있기 (위해)때문에,<B>모든</B>base class 메소드를 오버라이드(override) 할 필요가 있습니다.
+
+
+<!-- *********************************************************** --> <A name="ServerSocket"><H2><HR WIDTH=50%>ServerSocket 의 변경</H2></A> 
+<P>
+ServerSocket 의 서브 클래스는 또, 이것들에 공개되는 protected 생성자 을 가져, 이 생성자 은 base class내에서 디폴트의 SocketImpl 를 생성합니다.  그러나, 그렇지 않은 경우, 이것을 초기화합니다.  예를 들어, impl.create(), impl.bind(), impl.listen()를 호출하지 않습니다. ServerSocket 의 public 생성자 은, 부하의 SocketImpl 를 초기화합니다.
+
+<pre>
+	protected ServerSocket() {
+	  /* install system-default SocketImpl */
+	  ...
+	}
+</pre>
+
+이 그 밖에 ServerSocket 의 확장에 관해서 설명이 필요한 일로서는, 다음 일 뿐입니다.  Socket/ServerSocket 의 부하의 SocketImpl 가 서브 클래스에 액세스 가능하지 않은 경우의, accept()의 오버라이드(override)의 방법이 있습니다. base class는 서브 클래스에 액세스 할 수 있으므로, ServerSocket 는 서브 클래스 대신에 부하의 SocketImpl 에 대해서 필요한 호출을 행하기 위한다음의 메소드를 가집니다.
+<pre>
+public class ServerSocket {
+	...
+	protected final void implAccept(Socket s) throws IOException {
+	   ...
+	   // on return from this call s will be connected to a client
+	}
+	...
+</pre>
+
+SocketImpl 를 사용하지 않는 Socket/ServerSocket 서브 클래스는, 이 메소드를 사용할 필요가 없는 것에 주의해 주세요. 이 기능 방법에 대해, 다음에 SSL 코드의 예를 나타냅니다.
+
+<pre>
+<CODE>
+class SSLServerSocket extends ServerSocket {
+    ...
+    public Socket accept () throws IOException
+    {
+	SSLSocket s = new SSLSocket (certChain, privateKey);
+	// create an unconnected client SSLSocket, that we'll
+	// return from accept
+
+	implAccept (s);
+	s.handshake ();
+	return s;
+    }
+    ...
+}
+
+class SSLSocket extends java.net.Socket {
+    ...
+    public SSLSocket(CertChain c, PrivateKey k) {
+	super();
+	...
+    }
+    ...
+}
+</CODE>
+</pre>
+
+
+<P><HR>
+최종 갱신일:<em>1996년 8 월 21 일</em> <AUTHOR><BR><A HREF="mailto:db@eng.sun.com">David Brownell</A>  <BR><A HREF="mailto:brown@eng.sun.com">David Brown</A> </AUTHOR>
+
+</BODY></HTML>
+

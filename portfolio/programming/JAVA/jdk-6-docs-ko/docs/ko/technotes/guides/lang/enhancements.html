@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>java.lang 및 java.util. * 의 확장 기능 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+  </head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<h1 align=center>java.lang. * 패키지와<br> java.util. * 패키지의 확장 기능</h1>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<UL>
+<LI><a href="#6">Java SE 6 의 확장 기능</a> 
+<LI><a href="#5.0">J2SE 5.0 에서의 확장 기능</a> 
+<LI><a href="#1.4">J2SDK 1.4 에서의 확장 기능</a> 
+<LI><a href="#1.3">J2SDK 1.3 에서의 확장 기능</a> 
+</UL>
+<hr>
+
+<h2><a name="6">Java SE 6 의 확장 기능</a> </h2>
+
+<h3><a name="6util">java.util</a> </h3>
+
+<ul>
+<li> <b><a href="../../../api/java/util/ServiceLoader.html">ServiceLoader</a> </b> - 서비스의 특정의 구현을 로드하는 기능.
+</ul>
+
+<h2><a name="5.0">J2SE 5.0 에서의 확장 기능</a> </h2>
+
+<h3><a name="5.0lang">java.lang</a> </h3>
+
+<ul>
+<li> <a href="../../../api/java/lang/ProcessBuilder.html"><b>ProcessBuilder</b></a>  - 새로운 <code>ProcessBuilder</code> 클래스에서는,<a   href="../../../api/java/lang/Runtime.html#exec(java.lang.String,%20java.lang.String%5B%5D,%20java.io.File)">Runtime.exec</a>  보다 간단하게 서브 프로세스를 호출할 수가 있습니다. 실제, ProcessBuilder 를 사용하면(자), 변경된 프로세스 환경 (즉, 부모의 프로세스 환경을 베이스(�조금 변경을 더한 환경)에서 서브 프로세스를 개시하는 것이 간단하게 되었습니다.
+
+<li> <b>thread</b> - <code>java.lang.Thread</code> 클래스에는, 다음의 확장 기능이 추가되었습니다.
+   <ul>
+<li> <a href="../vm/thread-priorities.html">thread 우선 순위</a>의 처리가 변경되었다
+<li> thread의 실행 상태를 조회하기 위해(때문에),<a href="../../../api/java/lang/Thread.State.html"><code>Thread.State</code></a>  enum 클래스와 새로운 <a href="../../../api/java/lang/Thread.html#getState()"><code>getState()</code></a>  API 가 준비되었습니다.
+<li> 새로운 thread 덤프 API - <code>Thread</code> 클래스의 <a href="../../../api/java/lang/Thread.html#getStackTrace()"><code>getStackTrace</code></a>  및 <a href="../../../api/java/lang/Thread.html#getAllStackTraces()"><code>getAllStackTraces</code></a>  메소드. 프로그래밍에 의해, 1 thread 또는 모든 thread의 스택 트레이스를 취득할 수 있습니다.
+<li>이전에는 ThreadGroup 클래스 경유에서만 이용할 수 있던 <a href="../../../api/java/lang/Thread.html#setUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)"><code>uncaughtExceptionHandler</code></a>  기구가, Thread 클래스를 개입시켜 직접 이용할 수 있게 되었다
+<li> <code>sleep()</code> 메소드의 새로운 형식에 의해, 1 밀리 세컨드 미만의 sleeve 시간이 가능하게 되었다 
+   </ul>
+
+</ul>
+
+<h3><a name="5.0inst">java.lang.instrument</a> </h3>
+
+<ul>
+<li><b><a name=instrument>Instrumentation</a> </b> - 새로운 <a   href="../../../api/java/lang/instrument/package-summary.html"><code>java.lang.instrument</code></a>  패키지에서는, 메소드의 바이트 코드를 실행시로 변경하는 것으로 Java 프로그래밍 에이전트가 가상 머신상에서 실행되는 프로그램을 짜넣는 것을 가능하게 하는 서비스를 제공합니다.
+</ul>
+
+<h3><a name="5.0util">java.util</a> </h3>
+
+<ul>
+<LI><b><a href="../../../api/java/util/Formatter.html">Formatter</a> </b> - printf 형식의 서식화 캐릭터 라인의 interpreter인 <code>Formatter</code> 클래스에서는, 레이아웃의 조정 및 위치네, 수치, 캐릭터 라인, 및 일자와 시각의 데이터의 일반적인 서식, 또 로케일 고유의 출력에 대해, 지원하고 있습니다. <code><code>byte</code>,<a href="../../../api/java/math/BigDecimal.html"><code>java.math.BigDecimal</code></a> ,<a href="../../../api/java/util/Calendar.html"><code>java.util.Calendar</code></a>  등이 일반적인 Java 의 형태를 지원합니다. 임의의 사용자형에 대한 한정적인 서식의 커스터마이즈에 대해서는,<a href="../../../api/java/util/Formattable.html"><code>java.util.Formattable</code></a>  인터페이스를 사용합니다.
+
+<LI><b><a href="../../../api/java/util/Scanner.html">Scanner</a> </b> - <code>java.util.Scanner</code> 클래스는, 텍스트를 원시형 또는 <code>String</code> 형으로 변환합니다.  이 클래스는 <a href="../../../api/java/util/regex/package-summary.html"><code>java.util.regex</code></a>  패키지를 기본으로 하고 있기 (위해)때문에, 스트림, 파일 데이터, 캐릭터 라인, 또는 <a href="../../../api/java/lang/Readable.html"><code>Readable</code></a>  인터페이스의 구현자에 대한 정규 표현 베이스의 검색을 실행하는 방법도 준비되어 있습니다.
+
+<LI><b><a href="../collections/index.html">Collections Framework 의 확장 기능</a> </b> - Collections Framework 에는 많은 확장 기능이 있습니다.
+
+</ul>
+
+<h2><a name="1.4">Java 2 SDK, v1. 4 의 확장 기능</a> </h2>
+
+<h3><a name="1.4lang">java.lang</a> </h3>
+
+<ul>
+
+<li><a href="chained-exceptions.html"><b>예외 체인 기능</b></a>  - 있는 예외가 다른 예외를 일으킨 사실을 기록해, 원인이 된 예외에 액세스 해, 표준 스택의 백 트레이스의 일부로서 「원인의 체인」전체에 액세스하기 위한 공통 API 를 제공하는 새로운 기능입니다. 이것에 의해, 작성자가 추가 작업을 실시하지 않아도 기존의 프로그램이 이 정보를 제공할 수 있게 됩니다.
+
+<li> <a href="../../../api/java/lang/String.html"><b>String</b></a>  - 2 개의 <code>split</code> 메소드가 새롭게 추가되었습니다. 게다가<code>subSequence</code> 메소드가 추가되었다 (<code>String</code> 가 구현하게 된 <code>CharSequence</code> 인터페이스로 필요). <code>matches</code>,<code>replaceAll</code>, 및 <code>replaceFirst</code> 라고 하는 3 개의 메소드가 추가되었다.
+
+<li> <a href="../../../api/java/lang/StringBuffer.html"><b>StringBuffer</b></a>  - <code>subSequence</code> 메소드가 추가되었습니다 (<code>StringBuffer</code> 가 구현하게 된 <code>CharSequence</code> 인터페이스로 필요).
+
+<li> <a href="../../../api/java/lang/Thread.html"><b>Thread</b></a>  - <code>interrupt</code> 메소드가, 채널 입출력 조작으로 블록 되는 thread에 끼어들 수 있도록(듯이) 개정되었습니다.
+
+</ul>
+
+<h3><a name="1.4log">java.util.logging</a> </h3>
+
+<ul>
+<li> <b><a href="../logging/index.html">Logging API</a> </b> - Java Logging API 는, 고객 소프트웨어의 서비스 및 보수를 지원하는 API 로, 최종 사용자, 시스템 관리 책임자, 필드 서비스 엔지니어, 및 소프트웨어 개발 팀이 분석에 사용하는 로그 리포트를 작성합니다. Logging API 에서는, 어플리케이션 또는 플랫폼에서 발생한 시큐리티의 실패, 구성 에러, 퍼포먼스의 장해, 버그등의 정보를 수중에 넣습니다. 주요 패키지에서는, plaintext 또는 XML 형식의 로그 레코드를 메모리, 출력 스트림, 콘솔, 파일, 및 소켓에 전달합니다. Logging API 에는, 호스트  operating system상의 기존의 로그 서비스라고 대화하는 기능이 있습니다.
+</ul>
+
+<h3><a name="1.4pref">java.util.prefs</a> </h3>
+
+<ul>
+<li> <b><a href="../preferences/index.html">Preferences API</a> </b> - <a   href="../../../api/java/util/prefs/package-summary.html"><code>java.util.prefs</code></a>  패키지가 구현하는 Preferences API 를 사용하면, 사용자 및 시스템의 설정 및 구성 데이터를, 어플리케이션으로부터 포함 및 취득할 수가 있습니다. 이 데이터는, 구현 마다 다른 배킹 스토어에 지속적으로 보존됩니다. Preferences API 는,<code>java.util.Properties</code> 클래스의 사용 빈도의 높은 프로퍼티을 옮겨놓는 목적으로 설계되고 있어 경량함을 유지하면서, 다양한 점을 정정하고 있습니다.
+</ul>
+
+<h2><a name="1.3">Java 2 SDK, v1. 3 의 확장 기능</a> </h2>
+
+<h3><a name="1.3lang">java.lang</a> </h3>
+
+<ul>
+
+<li> <a name="math"><b>java.lang.Math 와 java.lang.StrictMath</b></a>  - 일반적인 수치 연산용의 API 를 제공하는, 2 개(살)의 새로운 클래스.
+
+  <ul>
+<li> <a href="../../../api/java/lang/StrictMath.html"><code>java.lang.StrictMath</code></a>  - <code>java.lang.StrictMath</code> 클래스의 API 는, 종래의 <code>java.lang.Math</code> 클래스의 API 와 같습니다. <code> java.lang.Math</code> 클래스는, 이전의 버젼의 Java 플랫폼으로부터 존재하고 있습니다. 다만,<code>Math</code> 클래스와 달리,<code>StrictMath</code> 클래스는, 모든 구현으로 비트마다의 재현 가능한 결과를 돌려주도록(듯이) 정의되고 있습니다.
+
+<li><a href="../../../api/java/lang/Math.html"><code>java.lang.Math</code></a>  - 클래스 <code>java.lang.Math</code> 는, 클래스 <code>StrictMath</code> 와 같은 API 세트를 제공합니다. 다만, 클래스 <code>StrictMath</code> 의 일부의 수치 함수와는 달라, 클래스 <code>Math</code> 의 등가인 함수의 모든 구현은, 비트 단위까지 같은 결과를 돌려주도록(듯이)는 정의되지 않고, 특정의 제약내에서 결과가 다른 일이 있습니다. 이 때문에, 엄밀한 재현성이 요구되지 않는 구현에 대해 퍼포먼스의 향상이 가능하게 됩니다.
+  </ul>
+
+<li> <a name=timer><b>Timer API</b></a>  - 다음의 새로운 2 개의 클래스가, 애니메이션, 사용자 입력의 타임 아웃, 온스크린 의 시계와 달력, 워크스케쥬르르틴, 통지 기능등의 목적으로 사용할 수 있는 타이머 기능용 API 를 제공합니다.
+  <ul>
+<li> <a href="../../../api/java/util/Timer.html"><code>java.util.Timer</code></a> 
+<li> <a href="../../../api/java/util/TimerTask.html"><code>java.util.TimerTask</code></a> 
+  </ul>
+
+<a href=Countdown.java><code>Countdown.java</code></a>  는, Timer API 를 사용한 간단한 데모 어플리케이션입니다.
+
+
+<li> <a name="hooks"><b>가상 머신의 종료 훅</b></a> 
+
+복잡한 어플리케이션에서는, 많은 경우, 예기 한 종료 또는 예기치 않은 이상종료(ABEND)에 관계없이, 가상 머신의 종료시에 특정의 액션을 실행하는 기능이 필요하게 됩니다. 표준에서는, 네트워크 접속이 모두 닫아 세션 상태가 보존되어 임시 파일이 삭제됩니다. 주요한  operating system에서는, 네이티브 어플리케이션에 대해서 이 기능이 제공되고 있습니다.  다만, 기능의 자세한 것은, 플랫폼 마다 다릅니다. <code>java.lang.Runtime</code> 에는, 3 개의 메소드가 추가되어 이 기능에 대해서 이식성이 있는 간단한 인터페이스가 제공됩니다. 새로운 메소드는 다음의 3 개입니다.
+
+  <ul>
+<li> <a href="../../../api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)"><code>addShutdownHook</code></a> 
+<li> <a href="../../../api/java/lang/Runtime.html#removeShutdownHook(java.lang.Thread)"><code>removeShutdownHook</code></a> 
+<li> <a href="../../../api/java/lang/Runtime.html#halt(int)"><code>halt</code></a> 
+  </ul>
+
+또,<a href="../../../api/java/lang/Runtime.html#exit(int)"><code>Runtime.exit</code></a>  메소드도 개정되었습니다. 자세한 것은,<a href=hook-design.html>「종료 훅 API 의 설계」</a>를 참조해 주세요.
+
+</ul>
+
+<h3><a name="1.3util">java.util</a> </h3>
+
+<ul>
+
+<li> <a name="collections"><b>Enhanced Collections Framework</b></a>  - Collections Framework 에는, 다음의 새로운 간이 API 가 짜넣어지고 있습니다.
+   <ul>
+<li><b><a        href="../../../api/java/util/Collections.html#singletonList(java.lang.Object)">Collections.singletonList</a>  와 <a        href="../../../api/java/util/Collections.html#singletonMap(K,%20V)">Collections.singletonMap</a> 의 추가. </b>이전에는, 단독 Set 의 간이 구현은 있었지만, List 및 Map 의 간이 구현은 없었던 사용자로부터의 요망에 응해 추가한 구현입니다.
+<li><b><a        href="../../../api/java/util/Collections.html#EMPTY_MAP">Collections.EMPTY_MAP</a> 의 추가. </b>종래는, 빈 상태(empty)의 Set 및 List 의 간이 구현 (불변)은 존재하고 있었습니다만, Map 에 대응하는 구현은 존재하지 않았습니다.
+  </ul>
+다음의 특정 목적의 구현이 추가되었습니다.
+  <ul>
+<li> <b>WeakHashMap 용<a href="../../../api/java/util/WeakHashMap.html#WeakHashMap(java.util.Map)">맵 생성자 </a>의 추가</b>. <a        href="../../../api/java/util/Map.html">Map</a>  인터페이스에는, Map 인수를 취하는 「copy constructor」가 대부분의 Map 의 구현으로 필요하다라고 정의되고 있다. 릴리스 1.2 에서는, WeakHashMap 에 이러한 생성자 은 없었다
+  </ul>
+
+</ul>
+
+<h3><a name="1.3jarzip">java.util.jar<br>java.util.zip</a> </h3>
+
+<ul>
+
+<li> <a name=caching><b>새로운 URL JAR 파일 캐쉬</b></a>  - <code>java.util.zip</code> 및 <code>java.util.jar</code> 클래스의 API 가 확장되어 다음의 모드가 추가되었습니다.
+  <ul>
+<li> <a href="../../../api/java/util/zip/ZipFile.html#OPEN_READ"><code>java.util.zip.OPEN_READ</code></a> 
+<li> <a href="../../../api/java/util/zip/ZipFile.html#OPEN_DELETE"><code>java.util.zip.OPEN_DELETE</code></a> 
+<li> <a href="../../../api/java/util/zip/ZipFile.html#ZipFile(java.io.File,%20int)"><code>java.util.zip.ZipFile(File file, int mode)</code></a> 
+<li> <a href="../../../api/java/util/jar/JarFile.html#JarFile(java.io.File,%20boolean,%20int)"><code>java.util.jar.JarFile(File file, boolean verify, int mode)</code></a> 
+  </ul>
+다운로드된 Jar 파일을 캐쉬할 경우에, 이전의 구현에서는, 장시간 실행하고 있는 서버 어플리케이션 및 RMI 로 장해가 발생하고 있었습니다. <code>JarURLConnection</code> 를 열 때마다, Jar 파일의 일자를 보관 유지하는 일시 로컬 파일이 작성되어 JarFile 객체가 그 임시 파일의 선두에 작성됩니다. 이 때, 각 임시 파일상에서 열고 있는 파일 핸들 및 기술자가 닫지 않았기 (위해)때문에, 서버 어플리케이션을 장시간 실행하고 있는 경우는, 임시 파일에 의해 디스크 용량이 곧바로 가득 될 가능성이 있습니다. 이 새로운 API 에서는, Zip 파일 및 Jar 파일을 열 때, 새로운 delete-on-close 모드를 사용할 수 있으므로, 이 문제를 해결할 수가 있습니다.
+
+</ul>
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1999-2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT> <br> <!-- <FONT SIZE="-1"> Please send comments to: </FONT> -->
+
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+  </body>
+</html>

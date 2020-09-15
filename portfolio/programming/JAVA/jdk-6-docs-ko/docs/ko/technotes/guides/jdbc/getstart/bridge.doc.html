@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+
+
+<GettingStartedTOC.fm.html">[Top] <a href="mapping.html">[Prev]</a>  <a href="appendixA.html">[Next]</a>  <hr> <br>
+ 
+<a name="996747"></a>  <h1> 9 - JDBC-ODBC 브릿지 드라이버 </h1>
+
+<h2>9.1	 &nbsp;&nbsp; JDBC 드라이버의 취득</h2>데이타베이스 벤더, 데이타베이스 미들웨어 벤더등의 벤더로부터 상용의 JDBC 드라이버를 취득하는 것을 추천합니다. 현재 입수할 수 있는 드라이버의 리스트<a href="http://industry.java.sun.com/products/jdbc/drivers">를 체크해 주세요. </a> <P>JDBC-ODBC 브릿지 드라이버는, 시험용으로서 또는 그 밖에 대신이 되는 드라이버를 이용할 수 없는 경우에만 사용하는 것을 추천합니다.
+
+<a name="997135"></a>  <h2>9.2	 &nbsp;&nbsp; JDBC-ODBC 브릿지</h2> <a name="996910"></a> 가능하면, 브릿지나 ODBC 드라이버는 아니고, Pure Java JDBC 드라이버를 사용해 주세요. Pure Java JDBC 드라이버를 사용하면(자), ODBC 가 필요로 하는 클라이언트측의 설정을 실행하지 않아도 됩니다. 또, 브릿지에 부속되는 native code (예를 들어, 브릿지 네이티브 라이브러리, ODBC 드라이버 매니저 라이브러리, ODBC 드라이버 라이브러리, 및 데이타베이스 클라이언트 라이브러리) 안의 에러에 의해 Java VM 가 오염될 가능성도 없어집니다. <P>JDBC-ODBC 브릿지 드라이버는, prototype의 개발 단계, 및 JDBC 테크놀러지를 베이스로 한 드라이버가 그 밖에 존재하지 않는 경우에만 사용하는 것을 추천합니다. 모두 Java 로 기술된 상용의 JDBC 드라이버를 이용할 수 있는 경우는, 브릿지는 아니고 그 드라이버를 사용하는 것을 추천합니다. <p> <a name="996913"></a>  <h3>9.2. 1	 &nbsp; &nbsp;JDBC-ODBC 브릿지의 개요 &nbsp; JDBC-ODBC 브릿지의 개요</h3> <a name="997016"></a>  JDBC-ODBC 브릿지는, JDBC 드라이버의 1 개입니다.  이 드라이버는, JDBC 조작을 ODBC 조작으로 번역하는 것으로 JDBC 조작을 구현합니다. ODBC 에는, 이 드라이버가 일반적으로의 응용 프로그램으로 간주해집니다. 이 브릿지는, ODBC 드라이버가 사용 가능한 모든 데이타베이스에 JDBC 를 구현하고 있습니다. 이 브릿지는,<code>sun.jdbc.odbc</code> Java 패키지로서 구현되어 ODBC 에 액세스 하기 위해서 사용되는 네이티브 라이브러리가 포함되어 있습니다. 브릿지는 <a href="http://www.merant.com">Merant</a>  와 Java Software 가 공동으로 개발한 것입니다. <p> <a name="996914"></a>  <h3>9.2. 2	 &nbsp; &nbsp; ODBC 의 호환성과 지원되는 ODBC 버젼</h3> <a name="997019"></a>  <P> Solaris 에서는, JDBC 2.0 브릿지는 ODBC 3. x 드라이버 매니저와 함께 사용할 필요가 있습니다. 이 브릿지는 ODBC 2. x 와 ODBC 3. x 의 양쪽 모두의 드라이버를 지원하고 있습니다만, ODBC 3. x 드라이버를 사용한 테스트만을 하고 있습니다. <P>NT 에서는, JDBC 2.0 브릿지는, ODBC 2. x 및 ODBC 3. x 의, 드라이버 매니저 및 드라이버를 지원하고 있습니다. JDBC 2.0 브릿지의 테스트는, ODBC 3. x 의 드라이버 매니저를 사용해, 한편, ODBC 2. x 및 3. x 의 드라이버를 사용해 행해지고 있습니다. <P>Merant 는, 버젼 3.5 이상의 Merant DataDirect ODBC 드라이버와 함께 JDBC 2.0 브릿지를 사용하는 것을 추천 하고 있습니다.
+
+<p> <a name="996913"></a>  <h3>9.2. 3	 &nbsp; &nbsp; 브릿지의 구현</h3> <a name="997026"></a> 이 브릿지는, Java 언어로 구현되어 ODBC 를 호출하는데, Java 네이티브 메소드를 사용하고 있습니다. <p> <a name="996913"></a>  <h3>9.2. 4	 &nbsp; &nbsp; 인스톨</h3> <a name="997033"></a>  이 브릿지는, JDK 의 인스톨시에 패키지 <code>sun.jdbc.odbc</code> 로서 자동적으로 인스톨 됩니다. ODBC 의 인스톨과 설정에 대한 자세한 것은, ODBC 드라이버 벤더에 문의해 주세요. 브릿지를 위한 특별한 설정은 필요 없습니다. 클라이언트의 인스톨과 설정에 대한 자세한 것은, 데이타베이스 벤더에 문의해 주세요. Solaris 에서는, 일부의 ODBC 드라이버 매니저는, 각각의 라이브러리에 <code>libodbcinst.so</code> 및 <code>libodbc.so</code> 라고 하는 이름을 붙입니다. 이 브릿지는, 이러한 라이브러리가 <code>libodbcinst.so. 1</code> 및 <code>libodbc.so. 1</code> 이라고 명명해지고 있으면(자) 상정하고 있으므로, 이러한 이름에 대해서 기호 연결을 작성할 필요가 있습니다. <p> <a name="996917"></a>  <h3>9.3	 &nbsp;&nbsp; 브릿지의 사용 </h2> <a name="997040"></a>  이 브릿지를 사용하는 경우는, URL 및 <code>odbc</code> 서브 프로토콜을 사용해 JDBC 접속을 엽니다. URL 의 예에 대해서는 이하를 참조해 주세요. 접속이 확립되기 전에, 브릿지 드라이버 클래스 <code>sun.jdbc.odbc.JdbcOdbcDriver</code> 를,<code>jdbc.drivers</code> 라는 이름의 <code>java.lang.System</code> 프로퍼티에 추가해 두는지, Java 클래스 로더를 사용해 명시적으로 로드해 둘 필요가 있습니다. 명시적인 로드는, 다음의 코드에 의해 행해집니다. <p><pre><a name="996978"></a>     Class.forName("sun.jdbc.odbc.JdbcOdbcDriver"); 
+</pre><a name="996979"></a>  ODBC 드라이버 (모든 적합한 JDBC 드라이버등)는, 로드 되면(자), 자신의 인스턴스를 작성해, 이것을 JDBC 드라이버 매니저에게 등록합니다. <p>
+
+<a name="996918"></a>  <h3>9.3. 1	 &nbsp; &nbsp; 애플릿의 브릿지의 사용</h3> <a name="997093"></a>  Pure Java JDBC 드라이버로 사용되는 JDBC 는, 애플릿의 사용시에 정상적으로 동작합니다. 브릿지 드라이버는 애플릿과 함께 정상적으로 동작하지 않습니다. <p> <a name="996919"></a>  <h3>9.3. 2	 &nbsp; &nbsp; 대부분의 브라우저는 브릿지를 지원하고 있지 않는</h3> <a name="997100"></a>  브릿지는 JDK 의 옵션의 원가요소이므로, 브라우저에 의해 제공되지 않는 것도 있습니다. 제공되고 있어도, 그 브릿지를 사용할 수가 있는 것은, 신뢰할 수 있는 애플릿 (파일에 기입할 수가 있는 애플릿)만입니다. 이것은, 애플릿 샌드 박스의 시큐리티를 확보하기 위해서 필요합니다. 게다가 애플릿을 신뢰할 수 있어도, ODBC 와 DBMS 클라이언트 라이브러리가 각 클라이언트상에서 설정되어 있을 필요가 있습니다. <p> <a name="996920"></a>  <h3>9.3. 3	 &nbsp; &nbsp; 테스트가 끝난 구성 </h3> <a name="997107"></a>  Solaris 로부터는, Merant 사제 ODBC 드라이버의 버젼 3.5 를 사용해, 브릿지를 사용해 Oracle 8.1. 5 에 액세스 했습니다. NT 로부터는, Microsoft 사의 최신의 ODBC 드라이버를 사용해, 브릿지를 사용해 SQL Server 6. x 에 액세스 했습니다. <p> <a name="996921"></a>  <h3>9.3. 4	 &nbsp; &nbsp; 브릿지와 함께 동작하는 것이 확인되고 있는</h3> <a name="997114"></a>  ODBC 드라이버는, Oracle, Sybase, Informix, Microsoft SQL Server, 및 Ingres 로 사용 가능합니다. MERANT ODBC 드라이버 스위트는, JDBC-ODBC 브릿지와 완전한 호환성이 있습니다. MERANT ODBC 드라이버의 평가 또는 구입에 대해서는,1-800-547-4000 의 옵션 2, 또는 WWW 사이트 <code>http://www.merant.com</code> 경유로 MERANT DataDirect Sales 에 연락해 주세요. MS SQL Server 드라이버도 또 NT 상에서 정상적으로 사용할 수 있었습니다. 다른 많은 ODBC 드라이버도 이와 같이 기능합니다. <p> <a name="996922"></a>  <a name="996923"></a>  <h3>9.3. 5	 &nbsp; &nbsp;브릿지에 의해 지원되고 있는 JDBC 의 URL</h3> <a name="997123"></a>  브릿지 드라이버는 <code>odbc</code> 서브 프로토콜을 사용합니다. 이 서브 프로토콜의 URL 는 이하의 형식을 취합니다. <p><pre><a name="997124"></a>     <code>jdbc:odbc:&lt;data-source-name&gt;[&lt;attribute-name&gt;=&lt;attribute-value&gt;]*
+</code></pre><a name="997125"></a>  예:<p> <pre><a name="997006"></a>     jdbc:odbc:sybase
+<a name="997007"></a>     jdbc:odbc:mydb;UID=me;PWD=secret
+<a name="997013"></a>     jdbc:odbc:ora123;Cachesize=300
+</pre> <a name="996924"></a>  <h3>9.3. 6	 &nbsp; &nbsp; 디버그</h3> <a name="997077"></a>  이 브릿지는,<code>DriverManager</code> 트레이스가 유효하게 되어 있는 경우, 확장적인 트레이스를 실시합니다. 이하의 코드예로 트레이스가 유효하게 되어 결과는 표준 출력에 출력됩니다. <p><pre><a name="997072"></a>      java.sql.DriverManager.setLogStream(java.lang.System.out);
+</pre> <a name="996927"></a>  <p><a name="996877"></a> 
+
+<p> <h2>9.4	 &nbsp;&nbsp; 브릿지에서 지원되고 있는 JDBC 2.0 API 의 새로운 기능</h2> <P> 이 릴리스의 JDBC-ODBC 브릿지 드라이버는, JDBC 2.0 API 의 다음의 새로운 기능을 지원하고 있습니다. <UL> <LI>배치 갱신 <LI>갱신 가능한 결과 세트 <LI>스크롤 가능한 결과 세트 <LI>새로운 <code>BigDecimal</code> 메소드 <LI>새로운 <code>Date</code>,<code>Time</code>, 및 <code>Timestamp</code> 메소드 </UL> <P> 브릿지의 현재의 릴리스는 multi-thread의 ODBC 드라이버를 지원하고 있어, 다수의 버그가 수정되고 있습니다.
+
+
+
+<br> <hr> <a href="GettingStartedTOC.fm.html">[선두의 항목]</a>  <a href="mapping.html">[전의 항목]</a>  <a href="appendixA.html">[다음의 항목]</a>  <p>
+
+<address> <a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>  또는 <a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>  </address>
+
+<font size="-1"><i><a href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 1996 - 1999 Sun Microsystems, Inc.    All rights reserved. </i></font>
+
+</body> </html>

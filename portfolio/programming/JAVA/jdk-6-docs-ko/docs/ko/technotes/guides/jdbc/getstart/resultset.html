@@ -1,0 +1,439 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="statement.html">[전의 항목]</a>  <a href="preparedstatement.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="1003004"> </a> 
+<h2> ResultSet</h2>
+<p><a name="1029207"> </a> 주:이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="998035"> </a> 
+<h3>5.1	 ResultSet 의 개요</h3>
+<p><a name="996958"> </a> <code>ResultSet</code> 는, SQL 쿼리의 실행 결과를 포함한 Java 객체입니다. 즉,<code>ResultSet</code> 에는 쿼리의 조건을 채우는 행이 포함됩니다. <code>ResultSet</code> 객체에 포함된 데이터는, 현재행의 다양한 열에의 액세스를 가능으로 하는,<code>get</code> 메소드 세트를 사용해 취득됩니다. <code>ResultSet.next</code> 메소드는,<code>ResultSet</code> 의 다음의 행으로 이동하기 위해서(때문에) 사용되어 다음의 행이 현재행이 되도록(듯이) 합니다.
+</p><p><a name="999210"> </a>  ResultSet 의 일반적인 형식은, 열의 표제와 쿼리의 결과에 대응하는 값으로부터 완성되는 테이블입니다. 예를 들어, 쿼리가 <code>SELECT a, b, c  FROM Table1</code> 이면, 결과는 다음과 같은 형식이 됩니다.
+</p><p><a name="1000122"> </a> 
+
+</p><blockquote><pre>	
+a           b               c
+----------  ------------    ----------- 
+12345       Cupertino       2459723.495
+83472       Redmond         1.0
+83492       Boston          35069473.43
+</pre></blockquote>
+<p><a name="1011851"> </a> 
+
+</p><p><a name="1011852"> </a>  다음의 코드는, 열 <code>a</code> 를 <code>int</code>, 열 <code>b</code> 를 <code>String</code>, 그리고 열 <code>c</code> 를 <code>float</code> 로 하는 행의 컬렉션을 되돌리는 SQL 문의 실행예입니다.
+</p>
+<blockquote><pre>
+java.sql.Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table1");
+while (rs.next()) {
+	// retrieve and print the values for the current row
+	int i = rs.getInt("a");
+	String s = rs.getString("b");
+	float f = rs.getFloat("c");
+	System.out.println("ROW = " + i + " " + s + " " + f);
+}
+</pre></blockquote><a name="997942"> </a> 
+<h4>5.1. 1	 행과 열</h4>
+<p><a name="1012150"> <a name="1012150"> RDB는, 복수의 테이블로 구성되어 각 테이블은 행과 열로 구성됩니다. RDB의 테이블안의 행은, 테이블이 나타내는 엔티티의 인스턴스를 나타내고 있다고 볼 수가 있습니다. 예를 들어, 종업원 테이블이 존재하는 경우, 각 행에는 특정의 종업원에 관한 정보가 포함됩니다. 종업원에 관한 각 단편 데이터는 열에 포함됩니다.  이 때문에, 예를 들어, 종업원 테이블에는, ID 번호, 이름, 급여, 및 채용 일자를 포함하는 열이 포함됩니다. 어느 행의 내부의 열에는, 특정의 종업원의 ID 번호, 이름, 급여, 및 채용 일자가 포함됩니다.
+</p><p><a name="1012162"> </a>  결과 세트도 행 및 열을 포함한 테이블입니다만, 결과 세트에는, 쿼리의 조건을 채우는 데이타베이스 테이블에서 취득한 렬치만이 포함됩니다. 바꾸어 말하면(자), 결과 세트행에는, 기본으로 되는 데이타베이스 테이블내의 열의 부분집합이 포함됩니다 (다만, 쿼리에 의해 테이블내의 모든 것이 선택되는 경우를 제외합니다.  그 경우에는, 결과 세트 테이블에는, 데이타베이스 테이블내의 모든 행의 모든 렬치가 포함됩니다). 과거에 있어, RDB 테이블 (즉 결과 세트 테이블)의 렬치는, 불가분 (atomic)인 값, 즉 1 개의 분할 불가능한 값이 아니면 안됩니다. 예를 들어, 배열은 복수의 요소로 구성되기 (위해)때문에, 배열을 렬치로 할 수 없었습니다. 그러나, SQL3 데이터형의 출현에 의해, 테이블열에 포함할 수 있는 내용은 극적으로 확장되었습니다. 현재는, 배열이나 사용자 정의의 구조화형조차도 렬치로 할 수 있습니다. 이 새로운 기능에 의해, RDB는 복합형의 인스턴스를 렬치로서 포함할 수 있게 되었습니다.  그 결과, RDB는 객체 데이타베이스에 의해 가까운 것이 되어, RDB와 객체 데이타베이스와의 경계는 애매하게 되고 있습니다. 프로그래머는, SQL3 형을 지원한 JDBC 2.0 드라이버를 사용하는 것으로써, 이러한 새로운 데이터형을 활용할 수 있습니다.
+</p><a name="1012149"> </a> 
+<h4>5.1. 2	 커서</h4>
+<p><a name="997936"> <code>ResultSet</code> 객체는, 현재행의 데이터를 지시하는 커서를 유지합니다. 커서는 <code>next</code> 메소드가 불려 갈 때마다 1 행씩 아래로 이동합니다. <code>ResultSet</code> 의 최초의 작성시에, 커서가 최초의 행의 전에 배치됩니다.  이 때문에,<code>next</code> 메소드의 최초의 호출에 의해, 커서는 최초의 행으로 이동해, 거기가 현재행이 됩니다. <code>ResultSet</code> 의 행은, 최상행으로부터 차례차례 아래에 취득되어 다음의 <code>next</code> 메소드의 호출마다 커서가 1 행씩 아래로 이동합니다. 커서가 순서 방향에만 이동한다고 하는 이 능력은,<code>ResultSet</code> 의 디폴트 동작으로, JDBC 1.0 API 만을 구현하는 드라이버는 이 동작만 가능합니다. 이런 종류의 결과 세트는,<code>ResultSet.TYPE_FORWARD_ONLY</code> 형을 가져, 순서 방향 전용의 결과 세트로 불립니다.  
+</p><p><a name="1021983"> </a>  드라이버가 커서 이동 메소드를 JDBC 2.0 코어 API 로 구현하고 있는 경우, 그 결과 세트는 스크롤 가능하게 됩니다. 스크롤 가능한 결과 세트의 커서는, 특정의 행에의 이동에 가세해 순서 방향에도 역방향에도 이동 가능합니다. 메소드 <code>previous</code>,<code>first</code>,<code>last</code>,<code>absolute</code>,<code>relative</code>,<code>afterLast</code>, 및 <code>beforeFirst</code> 는, 각각, 커서를 현재행으로부터 역방향으로, 최초의 행, 마지막 행, 특정의 행 번호등으로 이동합니다. 결과 세트를 스크롤 가능하게 하는 방법 및 그 실례에 대해서는,<a href="resultset.html#1012735">「타입이 다른 결과 세트의 작성」</a>으로 설명합니다.
+</p><p><a name="1019363"> </a>  커서가 <code>ResultSet</code> 객체내가 있는 행 (선두행의 전이나 맨 마지막 줄의 다음에는 없고)에 위치하는 경우, 그 행이 현재행이 됩니다. 즉, 커서가 그 행에 위치하고 있는 동안에 불려 간 메소드는, (1) 그 행의 값에 근거해 처리를 실시하는지 (<code>getXXX</code> 나 <code>updateXXX</code> 등의 메소드), (2) 그 행 전체에 대해서 처리를 실시하는지 (<code>updateRow</code>,<code>insertRow</code>,<code>deleteRow</code>,<code>refresh-Row</code> 등의 메소드), 또는 (3) 그 행을 다른 행으로 이동하기 위한 시점으로서 사용합니다 (<code>relative</code> 등의 메소드).
+</p><p><a name="1010990"> </a>  커서는,<code>ResultSet</code> 객체 또는 게다가 위의 <code>Statement</code> 객체가 닫혀질 때까지 유효하게 되어 있습니다.
+</p><a name="1013227"> </a> 
+<h4>5.1. 3	 커서 이동의 예</h4>
+<p><a name="1013228"> </a>  전의 섹션으로 설명한 것처럼, 순서 방향만의 결과 세트에서는, 표준적인 커서 이동은,<code>next</code> 메소드를 사용해, 결과 세트의 각 행을  1 회만 최초부터 끝까지 차례로 이동하는 것입니다. 스크롤 가능한 결과 세트에서는, 어느 행에 돌아오거나 결과 세트에 대해서 몇회에서도 반복해 처리를 실시하는 것이 가능합니다. 이것이 가능한 것은, 커서를 선두행의 전에 언제라도 이동할 수 있기 (위해)때문에입니다 (<a ><CB>beforeFirst<Default Para Font> method (<CB>ResultSet<Default Para Font> interface)><code>beforeFirst</code> 메소드를 사용) (<code>ResultSet</code> 인터페이스의 <code>beforeFirst</code> 메소드를 사용). 커서는 결과 세트 전체의 처리를 <code>next</code> 메소드를 사용해 한번 더 개시할 수 있습니다. 다음의 예에서는, 커서를 선두행의 전에 배치한 뒤, 결과 세트의 내용에 대해서 순서 방향의 반복 처리를 행하고 있습니다. 처리하는 행이 없어질 때까지,<code>getString</code> 메소드 및 <code>getFloat</code> 메소드는, 각 행의 렬치를 가져옵니다. 처리하는 행이 없어지면(자),<code>next</code> 메소드는 값 <code>false</code> 를 돌려줍니다. </a> </p><a ><blockquote><pre>
+rs.beforeFirst();
+while (rs.next()) {
+	System.out.println(rs.getString("EMP_NO") +
+		" " + rs.getFloat("SALARY");
+}
+</pre></blockquote></a> <p><a ><a name="1026909"> </a>  다음의 예에 나타내도록(듯이), 결과 세트의 처리를 역방향으로 반복할 수도 있습니다. 커서는, 우선 결과 세트의 끝으로 이동합니다 (</a> <code>afterLast</code> 메소드를 사용).  다음에 <code>while</code> 루프내에서 <code>previous</code> 메소드가 불려 가 반복마다 전의 행으로 이동해, 결과 세트의 내용을 처리합니다. <code>previous</code> 메소드는, 그 이상행이 존재하지 않는 경우는 <code>false</code> 를 돌려주므로, 모든 행을 처리하면(자) 루프는 종료합니다.
+</p><blockquote><pre>
+rs.afterLast();
+while (rs.previous()) {
+	System.out.println(rs.getString("EMP_NO") +
+		" " + rs.getFloat("SALARY");
+}
+</pre></blockquote><p><a name="1013259"> <code>ResultSet</code> 인터페이스는, 스크롤 가능한 결과 세트의 행을 반복 처리하기 위한 다른 방법도 제공합니다. 다만, 다음의 예에 나타내는 것 같은, 부정한 방법을 지정하지 않게 주의할 필요가 있습니다.
+</p><blockquote><pre>
+// incorrect!
+while (! rs.isAfterLast()) {
+  rs.relative(1);
+  System.out.println(
+	rs.getString("EMP_NO") + " " + rs.getFloat("SALARY"));
+}
+</pre></blockquote>
+
+<p><a name="1013270"> </a>  이 예에서는, 스크롤 가능한 결과 세트에 대해서 순서 방향의 반복 처리를 실시하려 하고 있습니다만, 몇개의 이유로써 이 방법은 올바르지는 않습니다. 문제의 1 개는, 결과 세트가 빈 상태(empty)의 경우에 <code>ResultSet.isAfterLast</code> 를 호출하면(자), 맨 마지막 줄이 존재하지 않기 때문에 <code>false</code> 치가 돌려주어져 버리는 것입니다. 이 때문에, 루프 본체가 실행되어 버립니다.  이것은 예기치 않은 동작입니다. 이제(벌써) 1 개의 문제는, 결과 세트에 데이터가 포함되어 있는 경우로, 결과 세트의 선두행의 전에 커서가 배치되고 있을 때 일어납니다. 이 상태로 <code>rs.relative(1)</code> 가 불려 가면(자), 현재행이 존재하지 않기 때문에, 에러가 됩니다. <code>relative</code> 메소드는, 커서를 현재행으로부터 지정된 번호의 행에 이동합니다.  이 메소드 호출은, 커서가 현재행에 있는 경우에게만 실행 가능합니다.
+</p><p><a name="1013277"> </a>  다음의 코드는, 위의 예의 문제를 해결한 것입니다. 이 예에서는,<code>ResultSet.first</code> 메소드를 사용해, 결과 세트가 빈 상태(empty)의 경우와 데이터가 포함되는 경우를 구별하고 있습니다. <code>ResultSet.isAfterLast</code> 는, 결과 세트가 빈 상태(empty)이 아닌 경우에만 불려 가기 (위해)때문에, 루프 제어는 올바르게 동작합니다. <code>ResultSet. </code><a ><code><CB>first<Default Para Font> 메소드 (<CB>ResultSet<Default Para Font> 인터페이스)>first</code> 에 의해 최초의 행에 커서가 배치되기 (위해)때문에,<code>ResultSet.relative(1)</code> 메소드는 의도했던 대로 각 행을 처리합니다. </a> </p><a ><blockquote><pre>
+if (rs.first()) {
+  while (! rs.isAfterLast()) {
+    System.out.println(
+         rs.getString("EMP_NO") + " " + rs.getFloat("SALARY"));
+    rs.relative(1);
+    }
+}
+</pre></blockquote><a name="1022134"> </a> 
+<h4>5.1. 4	 결과 세트내의 행수의 판정</h4>
+<p><a name="1022135"> </a>  새로운 커서 이동 관련의 메소드를 사용하면(자), 스크롤 가능한 <code>ResultSet</code> 객체에 포함되는 행수를 용이하게 알 수 있습니다. 방법은 간단해, 결과 세트의 맨 마지막 줄로 이동해, 그 행 번호를 취득할 뿐입니다. 다음의 예에서는, rs 는 종업원 마다 1 개의 행을 보관 유지합니다.
+</p><blockquote><pre>
+ResultSet rs = stmt.executeQuery(
+		"SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES");
+rs.last();
+int numberOfRows = rs.getRow();
+System.out.println("XYZ, Inc.  has " + numberOfRows + " employees");
+rs.beforeFirst();
+while (next()) {
+	.  .  .  // retrieve first and last names of each employee
+}
+</pre></blockquote><p><a name="1022141"> <a name="1022141"> 위의 예만큼 간단하지는 않습니다만, 스크롤 불가능한 결과 세트에 포함되는 행수를 알 수도 있습니다. 다음의 예는, 행수를 아는 1 개의 방법을 나타냅니다.
+</p><blockquote><pre>
+ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM EMPLOYEES");
+rs.next();
+int count = rs.getInt(1);
+System.out.println("XYZ, Inc.  has " + count + " employees");
+
+ResultSet rs2 = stmt.executeQuery(
+		"SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES");
+while (rs2.next()) {
+	.  .  .  // retrieve first and last names of each employee
+}
+</pre></blockquote><p><a name="1022705"> </a>  스크롤 가능한 결과 세트의 경우, 같은 결과 세트에의 반복 처리를 개시해 그 데이터를 가져오려면 , 단지 커서를 재차 자리 매김을 할 뿐입니다. 다만, 전의 예에서는, 카운트를 취득하기 위해서 쿼리를 1 개(살) 필요로 해, 목적의 데이터를 보관 유지하는 결과 세트를 취득하기 위해서 다른 쿼리를 필요로 합니다. 물론, 카운트가 정확하기 때문에 는, 양쪽 모두의 쿼리가 동일 사이즈의 결과 세트를 취득할 필요가 있습니다.
+</p><p><a name="1022765"> </a>  순서 방향만의 결과 세트로 행수를 조사하는 다른 방법은, 다음의 예에 나타내도록(듯이), 결과 세트내에서 처리를 반복할 때마다 변수의 값을 증가시키는 것입니다. 순서 방향만의 결과 세트의 경우, 어플리케이션은, 반복 처리를 1 회밖에 실행할 수 없기 때문에, 같은 쿼리를 2 번 실행할 필요가 있습니다. 이 예에서는, 최초의 rs 에 대한 반복에 의해 행수가 카운트 되어 2 번째의 rs 에 대한 반복에 의해 데이터를 취득하고 있습니다.
+</p><blockquote><pre>
+ResultSet rs = stmt.executeQuery(
+		"SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES");
+int count = 0;
+while (rs.next()) {
+	count++;
+}
+System.out.println("Company XYZ has " + count " employees. ");
+rs = stmt.executeQuery(
+		"SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES");
+while (rs.next()) {
+	.  .  .  // retrieve first and last names of each employee
+}
+</pre></blockquote><a name="1010994"> </a> </a> <h4><a >5.1. 5	 </a> 렬치의 취득</h4>
+<p><a name="1010997"> <code>ResultSet.getXXX</code> 메소드는, 현재행으로부터 렬치를 취득하는 수단을 제공합니다. 순서 방향만의 결과 세트로 이식성을 최대로 하기 위해서(때문에)는, 값을 왼쪽에서 오른쪽으로 1 회만 취득해, 한편 렬치를 읽어내 전용으로 합니다. 스크롤 가능한 결과 세트에서는, 이러한 제한은 없습니다.
+</p><p><a name="996961"> </a>  어느 열로부터 데이타를 뽑아 출시작하는지를 지정하려면 , 렬명 또는 열번호의 어느 쪽인지를 사용할 수 있습니다. 예를 들어,<code>ResultSet</code> 객체 rs 의 2 번째가 <code>TITLE</code> 라는 이름으로, 값을 캐릭터 라인으로서 포함하는 경우는, 다음의 어디라도 그 열에 포함된 값을 꺼냅니다.
+</p><blockquote><pre>
+String s = rs.getString(2);
+String s = rs.getString("<code>TITLE</code>");
+</pre></blockquote><p><a name="1003486"> </a> 열에는, 왼쪽에서 오른쪽으로 열 1 으로부터 시작되는 번호를 붙일 수 있고 있는 것에 주의해 주세요.  또,<code>getXXX</code> 메소드에의 입력에 사용되는 렬명은 대문자 소문자가 구별되지 않습니다.  
+</p><p><a name="1003455"> </a>  쿼리로 렬명을 지정한 사용자가 <code>getXXX</code> 메소드의 인수로서 같은 이름을 사용할 수 있도록(듯이), 렬명을 사용하는 옵션이 제공되었습니다. 한편,<code>SELECT</code> 문에 렬명이 지정되어 있지 않은 경우 ("<code>SELECT * FROM TABLE1</code>" 인지, 또는 열이 도출된 열인 경우등)에는, 열번호를 사용해야 합니다. 그러한 경우는, 사용자가 렬명을 확실히 아는 방법은 없습니다.
+</p><p><a name="1002645"> </a>  경우에 따라서는, SQL 쿼리의 결과가 동명의 열을 복수 가지는 결과세트를 돌려주는 일도 있을 수 있습니다. <code>getXXX</code> 메소드를 가리키는 파라미터로서 렬명이 사용되고 있는 경우에는,<code>getXXX</code> 는 최초로 일치하는 렬명의 값을 돌려줍니다. 따라서, 동명의 열이 다수 있는 경우는, 올바른 렬치를 꺼냈는지를 확인하기 위해서 열의 첨자를 사용할 필요가 있습니다. 또, 열번호를 사용한 (분)편이 다소 효율적이다고 말할 수 있습니다.
+</p><p><a name="1003561"> </a>  열의 이름이 기존이지만 그 첨자를 모르는 경우는, 메소드 <code>findColumn</code> 를 사용해 열번호를 검색할 수가 있습니다.
+</p><p><a name="997930"> <code>ResultSet.getMetaData</code> 메소드를 호출하면(자),<code>ResultSet</code> 안의열에 관한 정보를 입수할 수 있습니다. 반환되는 <code>ResultSetMetaData</code> 객체로부터, 그 <code>ResultSet</code> 객체의 열의 번호, 형태, 및 프로퍼티을 얻을 수 있습니다.
+</p><a name="1012368"> </a> 
+<h4>5.1. 6	 어느 getXXX 메소드를 사용할까</h4>
+<p><a name="1012369"> </a>  JDBC 드라이버는, 강제형 변환을 지원합니다. <code>getXXX</code> 메소드가 불려 가면(자), 드라이버는 기본으로 되는 데이터를 Java 프로그램 언어의 <code>XXX</code> 형으로 변환하려고 시도하고 나서, 적절한 값을 돌려줍니다. 예를 들어,<code>getXXX</code> 메소드가 <code>getString</code> 이며, 기반으로 되어 있는 데이타베이스의 데이터의 형태가 <code>VARCHAR</code> 인 경우, JDBC 에 준거한 드라이버는 <code>VARCHAR</code> 치를 Java 프로그램 언어의 <code>String</code> 객체로 변환합니다. <code>String</code> 객체는,<code>getString</code> 에 의해 반환되는 값이 됩니다.
+</p><p><a name="1012284"> </a>  JDBC 2.0 API 는, 새로운 SQL3 데이터형의 취득용으로,<code>ResultSet.getXXX </code> 메소드를 새롭게 추가합니다. 이러한 메소드는, JDBC 1.0 API 로 <code>getXXX</code> 메소드가 완수하는 것과 같은 역할을 완수합니다.  즉, SQL3 JDBC 형을 Java 프로그램 언어의 형태에 매핑 해, 그 형태를 돌려줍니다. 예를 들어,<code>getClob</code> 메소드는 데이타베이스로부터 JDBC <code>CLOB</code> 치를 취득해,<code>java.sql.Clob</code> 인터페이스의 인스턴스인 <code>Clob</code> 객체를 돌려줍니다.
+</p><p><a name="1020705"> </a> <code>getObject</code> 메소드는, 모든 데이터형을 가져옵니다. 이 <code>Object</code> 는 가장 총칭적인 형태로, Java 프로그램 언어의 다른 모든 객체형은 이 형태로부터 생성되고 있으므로 가능해집니다. 이것은, 기가 되는 데이터형이 데이타베이스 고유의 형태인지, 총칭 어플리케이션이 모든 데이터형을 받아들일 필요가 있는 경우에 특히 유용합니다. <code>getObject</code> 메소드는, 그 이름으로부터 예상되는 대로, 형태를 한정해 사용하기 위해서 네로우 변환이 필요한 Java <code>Object</code> 를 돌려줍니다. 바꾸어 말하면(자), 파생형으로서 사용하려면 , 그 전에 총칭 <code>Object</code> 형으로부터 파생형에 캐스트 할 필요가 있습니다. 다음의 코드는,<code>getObject</code> 메소드를 사용해,<code>ResultSet</code> 객체 rs 의 현재행의 <code>ADDRESS</code> 열로부터 <code>Struct</code> 치를 취득하는 방법을 나타냅니다. <code>getObject</code> 가 돌려주는 <code>Object</code> 는,<code>Struct</code> 에 네로우 변환되고 나서, 변수 주소에 대입됩니다.
+</p><blockquote><pre>
+Struct address = (Struct) rs.getObject("ADDRESS");
+</pre></blockquote><p><a name="1020618"> <code>getObject</code> 메소드는, 임의의 데이터형으로부터 값을 취득 가능한 한은 아니고, 커스텀 매핑을 실시하는 유일한 <code>ResultSet.getXXX</code> 메소드이기도 합니다. 이 때문에, 커스텀 매핑을 실시하려면 , 데이터형은 <code>getObject</code> 메소드를 사용해 취득할 필요가 있습니다. 커스텀 매핑의 가능한 2 개의 SQL 데이터형은 모두 사용자 정의형이며, 그것들은 SQL 구조화형 및 <code>DISTINCT</code> 형입니다. JDBC <code>DISTINCT</code> 의 값은, 일반적으로, 그 기본으로 되어 있는 형태에 적절한 <code>getXXX</code> 메소드를 사용해 취득됩니다.  다만, 이 값이 커스텀 매핑을 보관 유지하는 경우에는, 커스텀 매핑을 위해서(때문에) <code>getObject</code> 메소드를 사용해 취득할 필요가 있습니다. JDBC <code>STRUCT</code> 는,<code>getObject</code> 메소드에서만 취득 가능합니다.  그 이유는,<code>getObject</code> 메소드를 사용하면(자), JDBC <code>STRUCT</code> 치의 커스텀 매핑이 존재하는 경우에, 그 사용을 보증할 수 있기 때문입니다.
+</p><p><a name="1010363"> </a> 
+ 
+<center><img src="resultset.gif" alt="ResultSet.getXXX 메소드에 의한 JDBC 형태의 취득" longdesc="table5.1.html"><a href="table5.1.html" title="자세한 설명">[D]</a> </center>
+
+</p><p><a name="1010365"> </a>  「x」는, 지정된 JDBC 형의 취득에, 그 <code>getXXX</code> 메소드를 사용할 수 있을 가능성이 있는 것을 나타냅니다.  
+</p><p><a name="1000160"> </a>  「<strong>X</strong>」는, 지정된 JDBC 형의 취득에, 그 <code>getXXX</code> 메소드가 추천 되고 있는 것을 나타냅니다.
+</p><a name="1011815"> </a> 
+<h4>5.1. 7	 결과 세트의 형태</h4>
+<p><a name="1011879"> </a>  결과 세트는, 다양한 레벨의 기능을 가집니다. 예를 들어, 결과 세트는 스크롤 가능 또는 스크롤 불가능합니다. 스크롤 가능한 결과 세트는, 순서 방향 및 역방향에의 이동에 가세해 특정의 행에의 이동도 가능한 커서를 가지고 있습니다. 또, 결과 세트가 열리고 있는 동안에 행해진 변경을 반영할지 어떨지도 설정할 수 있습니다.  즉, 데이타베이스내에서 수정된 렬치에의 변경을 반영할지 어떨지를 결정할 수 있습니다. 개발자는,<code>ResultSet</code> 객체에 기능을 추가하면(자), 오버헤드가 증가하는 것을 항상 염두에 둘 필요가 있습니다.  이 때문에, 필요한 경우만 사용하도록 해 주세요.
+</p><p><a name="1012587"> <a name="1012587"> 스크롤 기능 및 변경의 반영 방법에 의해, JDBC 2.0 코어 API 로 이용 가능한 결과 세트에는 3 개의 타입이 있습니다. 다음의 정수는,<code>ResultSet</code> 인터페이스로 정의되어 이것들 3 개의 결과 세트의 지정에 사용됩니다.
+</p><ol>
+<a name="1011818"> </a> 
+<li>TYPE_FORWARD_ONLY
+<ul>
+<li>결과 세트는 스크롤 불가능합니다.  커서는 선두로부터 말미에, 순서 방향에게만 이동합니다.
+<li>결과 세트내의 데이터의 보이는 방법은, DBMS 가 결과를 인크리멘탈에 생성할지 어떨지에 의존합니다.
+</ul>
+<li>TYPE_SCROLL_INSENSITIVE
+<ul>
+<li>결과 세트는 스크롤 가능합니다. 커서는 순서 방향 및 역방향으로 이동 가능해, 이동처의 행을 직접 지정하는 일도, 현재 위치로부터의 상대 위치에서 지정할 수도 있습니다.
+<li>일반적으로, 결과 세트는, 기가 되는 데이타베이스가 열려 있는 동안에 행해진 변경을 나타내지 않습니다. 일반적으로, 행의 멘바십, 순서, 및 렬치는, 결과 세트의 작성시에 고정됩니다.
+</ul>
+<li>TYPE_SCROLL_SENSITIVE
+<ul>
+<li>결과 세트는 스크롤 가능합니다.  커서는 순서 방향 및 역방향으로 이동 가능해, 이동처의 행을 직접 지정하는 일도, 현재 위치로부터의 상대 위치에서 지정할 수도 있습니다.
+<li>결과 세트는, 열려 있는 동안에 행해진 변경을 반영합니다. 기가 되는 렬치가 변경되면(자), 새로운 값이 반영됩니다.  즉, 기가 되는 데이터의 동적인 뷰를 제공합니다. 결과 세트에 포함되는 행과 그 순서는, 구현에 의해 고정되는 일도, 되지 않는 것도 있습니다.
+</ul>
+</ol>
+<a name="1011841"> </a> 
+<h4>5.1. 8	 동시성 처리의 타입</h4>
+<p>
+결과 세트는, 타입이 다른 갱신 기능을 복수 가질 수가 있습니다. 스크롤 기능에 관해서는,<code>ResultSet</code> 객체를 갱신 가능하게 하면(자) 오버헤드가 증가하기 (위해)때문에, 필요한 경우에만 사용할 필요가 있습니다. 즉, 편리성의 것보다 높은 방법은, 갱신을 프로그램적으로 실행하는 것이어, 이것은 결과 세트가 갱신 가능한 경우에게만 실시할 수가 있습니다. JDBC 2.0 코어 API 는, 2 개의 갱신 기능을 제공합니다.  각 기능은,<code>ResultSet</code> 인터페이스내의 다음의 정수로 지정됩니다.
+</p><ol>
+<a name="1013304"> </a> 
+<li>CONCUR_READ_ONLY
+<ul>
+<li>프로그램적으로 갱신 불가능한 결과 세트를 나타냅니다.
+<li>JDBC 1.0 API 만을 구현하는 드라이버로부터 이용 가능한 동시성 처리의 타입
+<li>최고 레벨의 동시성 처리를 제공합니다 (동시 사용 가능한 사용자수를 최대로 합니다). 읽기 전용의 동시성 처리이 가능한 <code>ResultSet</code> 객체로 락을 설정하는 경우에는, 읽기 전용 락이 사용됩니다. 이것에 의해, 사용자는 데이터를 읽어낼 수가 있습니다만, 변경은 할 수 없습니다. 데이터에 대해서 동시에 설정 가능한 읽기 전용 락의 수는 무제한하기 때문에, DBMS 또는 드라이버가 제한을 부과하지 않는 이상 동시 사용하는 사용자수에는 제한이 없습니다.
+</ul>
+<li>CONCUR_UPDATABLE
+<ul>
+<li>프로그램적으로 갱신 가능한 결과 세트를 나타냅니다.
+<li>JDBC 2.0 코어 API 를 구현하는 드라이버로부터 이용 가능 
+<li>동시성 처리의 레벨을 저하시킵니다. 한 번에 데이터 항목에 액세스 가능한 사용자를 1 명인 만큼 한정하는 경우, 갱신 가능한 결과 세트는 기입해 전용 락을 사용합니다. 이것에 의해, 2 명 이상의 사용자가 같은 데이터를 변경할 가능성이 배제되기 (위해)때문에, 데이타베이스의 일관성이 보증됩니다. 다만, 이 일관성의 대상으로서 동시성 처리의 레벨이 저하합니다.
+</ul></ol>
+<p><a name="1011949"> </a>  보다 고도의 동시성 처리를 실현하기 위해서(때문에), 갱신 가능한 결과 세트가 오프티미스틱 동시성 처리 제어 방식을 사용하도록(듯이) 구현할 수도 있습니다. 이 구현에서는, 경합이 보기 드물게 밖에 일어나지 않는 것, 및 경합이 발생했을 경우에는 기입해 전용 락을 사용해 회피한다고 하는 전제 앞으로, 보다 많은 사용자가 데이터에 동시에 액세스 하는 것을 허가합니다. 어떠한 갱신을 실행하는 것보다도 전에, 행을 값 또는 버젼 번호로 비교하는 것으로써, 경합이 발생했는지의 여부를 체크합니다. 2 개의 트랜잭션(transaction)간에 갱신시에 경합이 발생했을 경우는, 어느 쪽인가의 트랜잭션(transaction)가 중지되어 일관성이 유지됩니다. 오프티미스틱 동시성 처리 제어 구현은, 병행성을 향상시킬 수가 있습니다.  다만, 경합이 너무 많으면(자) 퍼포먼스가 실질적으로 저하합니다.  <a name="1011961"> </a> 
+<h4>5.1. 9	 퍼포먼스 힌트의 제공</h4>
+<p><a name="1013894"> </a>  많은 DBMS 및 드라이버는, 다양한 상황으로 최선의 퍼포먼스를 제공할 수 있도록(듯이) 최적화되고 있습니다.  이 때문에, 일반적으로, 데이타베이스 프로그래머는 디폴트의 설정을 사용하는 것이 추천 되고 있습니다. 다만, 특정의 어플리케이션에 대해서 데이타베이스의 퍼포먼스를 튜닝 하는 경우에는, JDBC 2.0 API 는 결과 세트 데이터에의 액세스 효율을 향상시키는 힌트를 드라이버에게 주는 메소드를 제공합니다. 이러한 퍼포먼스 힌트는 어디까지나 힌트이기 (위해)때문에, JDBC 준거의 드라이버는 이것들을 무시할 수도 있습니다.
+</p><p><a name="1013900"> </a>  다음의 2 개의 힌트는, 드라이버에 대해, 퍼포먼스를 향상시키기 위한 지침을 줍니다.
+</p><ol>
+<a name="1013895"> </a> 
+<li>새로운 행이 필요하게 될 때마다 데이타베이스로부터 페치 되는 행의 수. <a name="1026927"></a> 취득되는 행수는, 「페치 사이즈」라고 불려<code>Statement.setFetchSize</code> 및 <code>ResultSet.setFetchSize</code> 라고 하는 2 개가 다른 메소드를 사용해 설정할 수 있습니다. ResultSet</code> 객체를 생성하는 문장은,<code>ResultSet</code> 객체의 디폴트 페치 사이즈를 <code>Statement</code> 의 <code>setFetchSize</code> 메소드를 사용해 설정합니다. 페치 사이즈가 변경될 때까지,<code>Statement</code> 객체 stmt 에 의해 작성된 모든 결과 세트는, 자동적으로 페치 사이즈가 25 가 됩니다.
+<blockquote><pre>
+Statement stmt = con.createStatement();
+stmt.setFetchSize(25);
+ResultSet rs = stmt.executeQuery(SELECT * FROM EMPLOYEES);
+</pre></blockquote><a name="1012653"> </a>  결과 세트의 디폴트 페치 사이즈는,<code>setFetchSize</code> 메소드의 <code>ResultSet</code> 버젼을 사용해 새로운 페치 사이즈를 설정하는 것으로써, 변경 가능합니다. 다음의 코드행은, 전의 코드로부터의 계속으로, rs 의 페치 사이즈를 50 으로 변경합니다.
+<blockquote><pre>
+rs.setFetchSize(50);
+</pre></blockquote><a name="1019880"> <a name="1019880"> 일반적으로, 드라이버에 적절한 가장 효율적인 페치 사이즈가 디폴트 값로서 설정되어 있습니다. <code>setFetchSize</code> 메소드는, 특정의 페치 사이즈가 특정의 어플리케이션에 대해서 디폴트 값보다 효과적인가 어떤가를 간단하게 시험하기 위한 기능을, 프로그래머에 대해서 제공합니다.  <a name="1029122"> </a> 
+<p>
+<li>행이 처리될 방향
+<p>
+<code>ResultSet</code> 인터페이스는, 행의 처리 방향을 지정하는,<code>FETCH_FORWARD</code>,<code>FETCH_REVERSE</code>,<code>FETCH_UNKNOWN</code> 라고 하는 3 개의 정수를 정의하고 있습니다. 페치 사이즈와 같이, 페치 방향을 설정하는 2 개의 메소드가 존재합니다. 페치 사이즈와 같이, 페치 방향을 설정하는 2 개의 메소드가 존재합니다.  1 개(살)은 <code>Statement</code> 인터페이스의 메소드이며, 이제(벌써) 1 개(살)은 <code>ResultSet</code> 인터페이스의 메소드입니다. 결과 세트를 작성하는 문장은,<code>Statement</code> 의 <code>setFetchDirection</code> 메소드를 사용해 디폴트의 페치 방향을 판별합니다. 다음의 코드는, 아래에서 위로 행의 처리를 하도록(듯이) <code>ResultSet</code> 객체 rs 의 페치 방향을 설정합니다. 페치 방향이 변경될 때까지, 객체 stmt 에 의해 작성되는 모든 결과 세트의 페치 방향은, 자동적으로 역방향이 됩니다.
+<blockquote><pre>
+Statement stmt = con.createStatement();
+stmt.setFetchDirection(FETCH_REVERSE);
+ResultSet rs = stmt.executeQuery(SELECT * FROM EMPLOYEES);
+</pre></blockquote><a name="1012739"> </a>  결과 세트의 디폴트 페치 방향은,<code>ResultSet</code> 의 <code>setFetchDirection</code> 메소드를 사용하는 것으로써, 언제라도 변경 가능합니다. 다음의 코드행은, 전의 코드로부터의 계속으로, rs 의 페치 방향을 순서 방향으로 변경합니다.
+<blockquote><pre>
+rs.setFetchDirection(FETCH_FORWARD);
+</pre></blockquote>
+<code>ResultSet</code> 객체 rs 는, 드라이버가 행을 순서 방향으로 처리한다고 하는 힌트를 제공합니다. 이 힌트는,<code>ResultSet.setFetchDirection</code> 메소드가 rs 에 대해서 재차 불려 가, 시사된 페치 방향이 변경될 때까지 유효합니다.
+<p>
+페치 사이즈와 같이, 드라이버는 일반적으로 가장 효율적인 페치 방향을 사용하도록(듯이) 최적화되고 있기 (위해)때문에, 디폴트 값를 변경하면(자) 최적화된 설정에 반해 동작해 버리는 일이 있습니다. <code>setFetchDirection</code> 메소드는, 퍼포먼스를 향상시키는 목적으로 어플리케이션의 튜닝을 간단하게 시험하는 기능을 브로그라마에 제공합니다.
+</ol>
+<a name="1012735"> </a> 
+<h4>5.1. 10	 타입이 다른 결과 세트의 작성</h4>
+<p><a name="1011962"> </a>  결과 세트는, 쿼리를 실행하는 것으로 작성됩니다.  결과 세트의 타입은 <code>Connection</code> 의 <code>createStatement</code> 메소드 (또는 <code>prepareStatement</code> 나 <code>prepareCall</code>)에게 건네지는 인수에 따라서 다릅니다. JDBC 1.0 API 만을 사용하고 있는 다음의 코드에서는,<code>createStatement</code> 메소드에 인수를 제공하고 있지 않기 때문에, 디폴트의 <code>ResultSet</code> 객체 (순서 방향만으로, 읽기 전용을 동시성 처리 한다)를 생성합니다.
+</p><blockquote><pre>
+Connection con = DriverManager.getConnection(
+		"jdbc:my_subprotocol:my_subname");
+Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery(
+	"SELECT EMP_NO, SALARY FROM EMPLOYEES");
+</pre></blockquote><p><a name="1011971"> </a>  변수 rs 는,<code>EMPLOYEES</code> 테이블의 각 행으로부터 취득한 <code>EMP_NO</code> 및 <code>SALARY</code> 열의 값을 포함한 <code>ResultSet</code> 객체를 나타냅니다. 이 결과 세트는 스크롤 불가이기 (위해)때문에,<code>next</code> 메소드를 사용해, 결과 세트의 행 전체에 건너 커서를 위에서 아래로 이동하는 것만이 가능합니다. <code>ResultSet</code> 객체 rs 는, 갱신할 수 없습니다.  퍼포먼스상의 힌트는 아무것도 주어지지 않기 때문에, 드라이버는 최선의 퍼포먼스를 얻을 수 있다고 생각되는 것이면 뭐든지 실행할 수 있습니다. 트랜잭션(transaction)의 차단 레벨도 설정되지 않기 때문에, rs 는 기반이 되는 데이타베이스의 디폴트의 트랜잭션(transaction) 차단 레벨을 사용합니다. 트랜잭션(transaction) 차단 레벨에 대한 자세한 것은,<a href="connection.html#998958">「트랜잭션(transaction)의 차단 레벨」</a>을 참조해 주세요.
+</p><p><a name="1011989"> </a>  다음에 나타내는 예에서는, 새로운 JDBC 2.0 코어 API 를 사용해, 스크롤 가능한 결과 세트를 작성합니다.  이것은, 갱신을 검지해 (<code>ResultSet.TYPE_SCROLL_SENSITIVE</code> 의 지정), 한편 갱신 가능한 (<code>ResultSet.CONCUR_UPDATABLE</code> 의 지정) 결과 세트입니다.  
+</p><blockquote><pre>
+Connection con = DriverManager.getConnection(
+		"jdbc:my_subprotocol:my_subname");
+
+Statement stmt = con.createStatement(
+		ResultSet.TYPE_SCROLL_SENSITIVE,
+ 		ResultSet.CONCUR_UPDATABLE);
+stmt.setFetchSize(25);
+
+ResultSet rs2 = stmt.executeQuery(
+		"SELECT EMP_NO, SALARY FROM EMPLOYEES");
+
+</pre></blockquote><p><a name="1012080"> </a>  변수 rs2 에는, 전의 예의 rs 와 같은 값이 포함됩니다.  다만, rs 과는 달리, rs2 는 스크롤 가능, 갱신 가능해, 한편 기가 되는 테이블의 데이터 변경을 검출할 수 있습니다. 또, 새로운 행이 필요하게 될 때마다 드라이버가 데이타베이스로부터 25 행을 페치 하도록(듯이) 힌트를 줍니다. Statement</code> 객체 stmt 가 실행될 때마다, 스크롤 가능, 갱신 가능, 데이터의 변경을 검출 가능해, 페치 사이즈가 25 의 결과 세트가 작성됩니다.  결과 세트는 그 페치 사이즈를 변경할 수 있습니다만, 형태와 병행성을 변경할 수 없습니다.
+</p><p><a name="1021935"> </a>  이미 설명했던 대로, 결과 세트를 스크롤 가능 또는 갱신 가능하게 하는 것에는 대상이 수반합니다.  이 때문에, 이러한 기능을 가지는 결과 세트는, 필요한 경우에만 작성하는 것을 추천합니다.
+</p><a name="1020844"> </a> 
+<h4>5.1. 11	 PreparedStatement 를 사용한 결과 세트의 작성</h4>
+<p><a name="1020845"> </a> <code>PreparedStatement</code> 및 <code>CallableStatement</code> 객체는,<code>Statement</code> 인터페이스로 정의된 메소드를 상속하기 위해(때문에), 몇개의 다른 타입의 <code>ResultSet</code> 객체를 생성할 수 있습니다.
+</p><p><a name="1012116"> <a name="1012116"> 다음의 코드에서는,<code>Statement</code> 객체 대신에 <code>PreparedStatement</code> 객체를 사용해, 결과 세트를 작성합니다. 결과 세트는, 트랜잭션(transaction) 차단 레벨이 접속용으로 설정되는 것을 제외해, 전술의 예와 같은 속성을 가집니다.
+</p><blockquote><pre>
+Connection con = DriverManager.getConnection(
+			"jdbc:my_subprotocol:my_subname");
+con.setTransactionIsolation(TRANSACTION_READ_COMMITTED);
+
+PreparedStatement pstmt = con.prepareStatement(
+			"SELECT EMP_NO, SALARY FROM EMPLOYEES WHERE EMP_NO = ? ",
+			ResultSet.TYPE_SCROLL_SENSITIVE,
+			ResultSet.CONCUR_UPDATABLE);
+pstmt.setFetchSize(25);
+pstmt.setString(1, "1000010");
+
+ResultSet rs3 = pstmt.executeQuery();
+</pre></blockquote><p><a name="1012129"> </a>  변수 rs3 에는,<code>EMP_NO</code> 의 값이 <code>1000010</code> 인 행의 <code>EMP_NO</code> 및 <code>SALARY</code> 열의 값이 포함됩니다. <code> ResultSet</code> 객체 rs3 는, 스크롤 가능, 갱신 가능, 및 데이터의 변경을 검출 가능하다라고 말하는 점, 또 드라이버가 한 번에 데이타베이스로부터 25 행을 페치 하는 것을 힌트로서 주는 점으로써 rs2 와 같습니다. 한편, 접속이 더티 읽기 (위탁되기 전에 값을 읽어내는 것)를 하지 않게 지정을 실시하는 점에서는 rs3 는 rs2 와 다릅니다. rs2 에 대해서는 트랜잭션(transaction) 차단 레벨은 설정되지 않기 때문에, 기반이 되는 데이타베이스의 차단 레벨이 디폴트로 설정됩니다.
+</p><a name="1012090"> </a> 
+<h4>5.1. 12	 지원되지 않는 기능의 요구</h4>
+<p><a name="1025246"> </a>  JDBC 2.0 API 에서의 신기능의 추가에 의해, DBMS 또는 드라이버가 지원하지 않는 기능을 어플리케이션을 요구할 수 있게 되었습니다. 예를 들어, 드라이버가 스크롤 가능한 결과 세트를 지원하지 않는 경우, 순서 방향만의 결과 세트를 돌려줄 수가 있습니다. 또, 쿼리에 따라서는 갱신 불가능한 결과 세트를 돌려주는 것이 있습니다.  이 경우, 갱신 가능한 결과 세트를 요구해도 이러한 쿼리에는 무슨 영향도 없습니다. 일반적인 규칙으로서 쿼리가 선택하는 열의 1 개에 주키를 포함하는 것, 및 쿼리를 1 개의 테이블만을 참조하도록(듯이) 하는 것을 염두에 두어 주세요.  
+</p><p><a name="1025261"> </a>  JDBC 2.0 API 의 신규 메소드를 사용하면(자), 어플리케이션은, 드라이버가 지원하는 결과 세트 기능을 식별할 수 있습니다. 어느 기능이 지원되고 있는지 어떤지가 의심스러운 경우, 그 기능을 요구하기 전에 다음의 메소드를 호출하는 것을 추천합니다. 다음의 <code>DatabaseMetaData</code> 의 메소드는, 드라이버가 지정된 결과 세트의 타입 또는 지정된 결과 세트의 동시성 처리를 지원할지 어떨지를 나타냅니다.
+</p>
+<ul>
+<li><code>DatabaseMetaData.supportsResultSetType</code> - 지정된 결과 세트 타입을 드라이버가 지원할지 어떨지를 나타내는 <code>boolean</code> 치를 돌려줍니다.
+<li><code>DatabaseMetaData.supportsResultSetConcurrency</code> - 드라이버가, 지정된 동시성 처리의 타입을, 지정된 결과 세트 타입과 조합해 지원할지 어떨지를 나타내는 <code>boolean</code> 치를 돌려줍니다.
+</ul>
+<p><a name="1012443"> </a>  다음의 <code>ResultSet</code> 메소드는, 메소드의 호출처인 특정의 결과 세트에 대한 결과 세트 타입 및 결과 세트의 병행성을 돌려줍니다.
+</p>
+<ul>
+<li><code>ResultSet.getType</code> - 결과 세트의 타입을 돌려줍니다.
+<li><code>ResultSet.getConcurrency</code> - 결과 세트의 동시성 처리 모드를 돌려줍니다.
+</ul>
+<p><a name="1012484"> </a>  어플리케이션이 스크롤 가능한 결과 세트를 지정해, 한편 드라이버가 스크롤을 지원하지 않는 경우, 드라이버는 문장을 작성한 <code>Connection</code> 객체에 대해서 경고를 발행해, 순서 방향만의 결과 세트를 돌려줍니다. 비록 드라이버가 스크롤 가능한 결과 세트를 지원한다고 해도, 어플리케이션은, 드라이버가 지원하지 않는 스크롤 가능 타입을 요구할 가능성이 있습니다. 그 경우, 드라이버는 문장을 작성한 <code>Connection</code> 객체에 대해서 <code>SQLWarning</code> 를 발행해, 지원하는 타입의 스크롤 가능 결과 세트를 (요구된 타입과 정확하게 일치하지 않는 경우에서도) 돌려줍니다. 예를 들어, 어플리케이션이 <code>TYPE_SCROLL_SENSITIVE</code> 결과 세트를 요구했지만 드라이버가 그 타입을 지원하지 않는 경우, 드라이버는 <code>TYPE_SCROLL_INSENSITIVE</code> 결과 세트를 지원한다면, 그것을 돌려줍니다. 드라이버는, 미지원의 결과 세트 타입을 요구하는 문장을 생성한 <code>Connection</code> 객체에 대해서 <code>SQLWarning</code> 를 발행하는 것으로써, 어플리케이션에 대해서, 요구된 것과 정확하게 일치하는 타입을 돌려주지 않는 것을 경고합니다.
+</p><p><a name="1012481"> </a>  같이 어플리케이션이 갱신 가능한 결과 세트를 지정하면(자), 갱신 가능한 결과 세트를 지원하지 않는 드라이버는, 문장을 생성한 <code>Connection</code> 객체에 대해서 <code>SQLWarning</code> 를 발행해, 읽기 전용의 결과 세트를 돌려줍니다. 어플리케이션이 미지원의 결과 세트 타입 및 미지원의 동시성 처리 타입을 요구하는 경우, 드라이버는 결과 세트 타입의 (분)편을 최초로 선택합니다.
+</p><p><a name="1012521"> </a>  어느 경우에는, 문장의 실행시에, 드라이버측에서 다른 타입의 결과 세트 또는 동시성 처리를 선택하지 않으면 안 되는 것이 있습니다. 예를 들어, 복수의 테이블에 걸친 결합을 하는 <code>SELECT</code> 문에서는, 갱신 불가능한 결과 세트가 생성되는 경우가 있습니다. 그 경우, 드라이버는,<code>Connection</code> 객체에 대해서 경고를 발행하는 대신에 결과 세트를 작성하려고 한 <code>Statement</code>,<code>PreparedStatement</code>, 또는 <code>CallableStatement</code> 객체에 대해서 <code>SQLWarning</code> 를 발행합니다. 다음에, 드라이버는, 상기의 2 개의 단락에 나타낸 지침에 따라, 적절한 결과 세트 타입과 동시성 처리 타입의 언젠가 또는 양쪽 모두를 선택합니다.
+</p><a name="1012546"> </a> 
+<h4>5.1. 13	 updateXXX 메소드의 사용</h4>
+<p><a name="1012816"> <code>ResultSet</code> 객체는, 그 동시성 처리 타입이 <code>CONCUR_UPDATABLE</code> 의 경우, 프로그램적으로 갱신 (행의 변경, 삽입, 또는 삭제)이 가능합니다. JDBC 2.0 API 는 <code>updateXXX</code> 메소드 및 다른 다양한 메소드를 <code>ResultSet</code> 인터페이스에 추가하고 있으므로,<code>ResultSet</code> 객체와 데이타베이스의 양쪽 모두로 행을 프로그램적으로 갱신할 수 있습니다.
+</p><p><a name="1012817"> </a>  신규의 <code>updateXXX</code> 메소드는, SQL 커멘드를 사용하지 않고 결과 세트내의 값을 갱신 가능하게 합니다. 데이터형 마다 <code>updateXXX</code> 메소드가 존재합니다. <code> getXXX</code> 및 <code>setXXX</code> 메소드의 경우와 같이,<code>XXX</code> 에는 Java 프로그램 언어의 데이터형이 들어맞읍니다. <code>setXXX</code> 메소드의 경우와 같이, 드라이버는, 데이타베이스에 송신하기 전에 이 데이터형을 SQL 데이터형으로 변환합니다. 이 때문에, 예를 들어,<code>updateBoolean</code> 메소드는 JDBC <code>BIT</code> 치를 데이타베이스에 송신해,<code>updateCharacterStream</code> 메소드는 JDBC <code>LONGVARCHAR</code> 치를 데이타베이스에 송신합니다.
+</p><p><a name="1012813"> <code>updateXXX</code> 메소드는, 2 개의 파라미터를 취합니다.  최초의 파라미터는 갱신 대상의 열을 나타내, 2 번째의 파라미터는 지정된 열에 할당하는 값을 제공합니다. <code>getXXX</code> 메소드의 경우와 같이, 열은, 그 이름 또는 인덱스를 사용해 지정할 수 있습니다. 어플리케이션이 렬명을 사용해 결과 세트로부터 값을 취득했을 경우, 값을 갱신하는 경우에도 일반적으로 렬명을 사용합니다. 같이<code>getXXX</code> 메소드에 열인덱스를 지정해 값을 취득했을 경우, 대응하는 <code>updateXXX</code> 메소드는 값을 갱신할 때에 일반적으로 열인덱스를 사용합니다.
+</p><p><a name="1013018"> <code>ResultSet</code> 메소드와 함께 사용하는 열인덱스는, 데이타베이스 테이블내의 열번호는 아니고, 결과 세트내의 열번호 (양자는 다른 경우가 많다)를 참조하는 것에 유의해 주세요. (열번호는, 테이블의 열 모든 것이 선택되고 있는 경우에게만 동일하게 됩니다. ) 결과 세트 테이블과 데이타베이스 테이블의 어느 쪽의 경우에서도, 최초의 열의 인덱스는 <code>1</code>, 2 번째의 열의 인덱스는 <code>2</code> 라고 하는 상태가 됩니다.
+</p><p><a name="1012931"> </a>  다음의 코드에서는,<code>ResultSet</code> 객체 rs 의 3 번째의 렬치는,<code>getInt</code> 메소드를 사용해 취득됩니다.  이 렬치를 <code>int</code> 치 <code>88</code> 으로 갱신하기 위해서 <code>updateInt</code> 가 사용되고 있습니다.
+</p><blockquote><pre>
+int n = rs.getInt(3); // n contains the value in column 3 of rs
+.  .  .
+rs.updateInt(3, 88); // the value in column 3 of rs is set to 88
+int n = rs.getInt(3); // n = 88
+</pre></blockquote><p><a name="1012823"> </a>  3 번째의 열의 이름이 <code>SCORES</code> 의 경우, 다음의 코드행도 <code>ResultSet</code> 객체 rs 의 제 3 열에 <code>int</code> 치 <code>88</code> 을 할당하는 것으로 갱신합니다.
+</p><blockquote><pre>
+int n = rs.getInt("SCORES");
+.  .  .
+rs.updateInt("SCORES", 88);
+</pre></blockquote><p><a name="1012844"> <code>updateXXX</code> 메소드는, 결과 세트의 현재행의 값을 갱신합니다.  다만, 기반이 되는 데이타베이스 테이블의 값은 갱신하지 않습니다. 데이타베이스의 갱신을 실시하는 것은,<code>updateRow</code> 메소드입니다. 커서가 현재행 (갱신 대상의 행)에 있는 동안에 <code>updateRow</code> 메소드를 호출하는 것이 중요합니다. 실제의 곳, 어플리케이션이 <code>updateRow</code> 를 호출하기 전에 커서를 이동하면(자), 드라이버는 갱신 내용을 파기하지 않으면 안되어, 그리고 결과 세트도 데이타베이스도 갱신되지 않습니다.
+</p><p><a name="1012859"> </a>  어플리케이션은,<code>cancelRowUpdates</code> 메소드를 호출하는 것으로, 명시적으로 행의 갱신을 취소할 수 있습니다. 이 메소드는,<code>updateXXX</code> 메소드를 호출한 후, 한편 <code>updateRow</code> 메소드를 호출하기 전에 호출하지 않으면 유효하게 되지 않습니다. 다른 어떠한 경우로 <code>cancelRowUpdates</code> 가 불려 가도, 효과는 없습니다.
+</p><p><a name="1012872"> </a>  다음의 예에서는,<code>ResultSet</code> 객체 rs 의 제 4 행의 2 번째 및 3 번째의 열이 갱신됩니다. 갱신은 현재행에 대해서 행해지기 (위해)때문에, 커서를 우선 갱신 대상의 행 (이 경우는 제 4 행)으로 이동합니다. 다음에 <code>updateString</code> 메소드가 불려 가, rs 의 제 2 열의 값을 <code>321 Kasten</code> 로 변경합니다. <code>updateFloat</code> 메소드는 rs 의 제 3 열의 값을 <code>10101.0</code> 으로 변경합니다. 마지막으로,<code>updateRow</code> 메소드가 불려 가, 변경된 2 개의 렬치를 포함한 데이타베이스내의 행을 갱신합니다.
+</p><blockquote><pre>
+rs.absolute(4);
+rs.updateString(2, "321 Kasten");
+rs.updateFloat(3, 10101.0f);
+rs.updateRow();
+</pre></blockquote><p><a name="1012890"> </a>  제 2 열의 이름이 <code>ADDRESS</code> 로, 제 3 열의 이름이 <code>AMOUNT</code> 의 경우, 다음의 코드는 전의 예와 완전히 같은 동작을 합니다.
+</p><blockquote><pre>
+rs.absolute(4);
+rs.updateString("ADDRESS", "321 Kasten");
+rs.updateFloat("AMOUNT", 10101.0f);
+rs.updateRow();
+</pre></blockquote><p><a name="1013075"> </a>  프로그램적으로 갱신을 실시하는 것에 가세해 JDBC 2.0 코어 API 는 배치 갱신을 송신하는 기능도 제공합니다. 배치 갱신 기능은,<code>Statement</code> 객체내에서 실행됩니다. 자세한 것은,<a href="statement.html#1000712">「배치 갱신의 송신」</a>을 참조해 주세요.
+</p><a name="1013056"> </a> 
+<h4>5.1. 14	 행의 삭제</h4>
+<p><a name="1013057"> </a>  JDBC 2.0 API 는,<code>ResultSet</code> 객체내의 행을 Java 프로그램 언어의 메소드만을 사용해 삭제할 수가 있도록(듯이),<code>deleteRow</code> 메소드를 제공합니다. 이 메소드는 현재행을 삭제합니다.  이 때문에,<code>deleteRow</code> 를 호출하기 전에, 어플리케이션은 커서를 삭제하는 행에 배치할 필요가 있습니다. 결과 세트내가 있는 행에만 유효한 <code>updateXXX</code> 메소드와는 달라, 이 메소드는 결과 세트내의 현재행과 데이타베이스내의 기가 되는 행의 양쪽 모두에 대해서 효과가 있습니다. 다음의 2 개의 코드행은,<code>ResultSet</code> 객체 rs 의 선두행을 삭제해, 한편 그 기가 되는 행 (데이타베이스 테이블의 선두행일지도 모르고, 그렇지 않을지도 모른다)을 데이타베이스로부터 삭제합니다.
+</p><blockquote><pre>
+rs.first();
+rs.deleteRow();
+</pre></blockquote><a name="1012952"> </a> 
+<h4>5.1. 15	 행의 삽입</h4>
+<p><a name="1012964"> </a>  JDBC 2.0 코어 API 로 새롭게 추가된 메소드를 사용해, 신규의 행을 결과 세트 테이블 및 기가 되는 데이타베이스 테이블에 삽입할 수 있습니다. 이것을 가능하게 하기 위해서, API 는 「삽입행」이라고 하는 개념을 정의하고 있습니다. 이것은, 결과 세트의 일부에서는 없고, 결과 세트에 관련지을 수 있던 특별한 행으로, 새로운 행을 작성하기 위한 준비 영역으로서 사용되는 것입니다. 삽입행에 액세스에는, 어플리케이션은 <code>ResultSet</code> 의 <code>moveToInsertRow</code> 메소드를 호출해 커서를 삽입행에 배치합니다. 다음에, 적절한 <code>updateXXX</code> 메소드를 호출해, 열의 값을 삽입행에 추가합니다. 삽입하는 행의 열 모든 설정이 완료한 시점에서, 어플리케이션은 <code>insertRow</code> 메소드를 호출합니다. 이 메소드는 삽입행을, 결과 세트와 기가 되는 데이타베이스의 양쪽 모두에 동시에 추가합니다. 마지막으로, 어플리케이션은 커서를 결과 세트내의 행에 되돌릴 필요가 있습니다.
+</p><p><a name="1013128"> </a>  다음의 코드는, Java 프로그램 언어로 기술된 어플리케이션으로부터 행의 삽입을 실행하기 위한 3 개의 스텝을 나타냅니다.
+</p><blockquote><pre>
+rs.moveToInsertRow();
+rs.updateObject(1, myArray);
+rs.updateInt(2, 3857);
+rs.updateString(3, "Mysteries");
+rs.insertRow();
+rs.first();
+</pre></blockquote><p><a name="1013142"> </a>  몇개의 상세한 점에 유의해 주세요. 우선,<code>ResultSet.getXXX</code> 메소드를 사용해 삽입행으로부터 값을 취득할 수 있습니다. 다만,<code>updateXXX</code> 메소드를 사용해 값이 삽입행에 할당할 수 없을지, 그 내용은 미정도리입니다. 이 때문에,<code>moveToInsertRow</code> 메소드의 호출해 다음에 <code>updateXXX</code> 메소드의 호출전에 <code>getXXX</code> 메소드가 불려 갔을 경우, 미정도리의 값이 돌려주어집니다.
+</p><p><a name="1013155"> </a>  다음에, 삽입행에 대해서 <code>updateXXX</code> 메소드를 호출하는 것으로,<code>ResultSet</code> 객체내의 행에 대해서 이 메소드를 호출하는 것으로는 다릅니다. 커서가 결과 세트내의 행에 있는 경우,<code>updateXXX</code> 메소드에의 호출은 결과 세트내의 값을 변경합니다. 커서가 삽입행상에 있는 경우,<code>updateXXX</code> 메소드에의 호출은 삽입 은행내의 값을 갱신합니다만, 결과 세트에는 아무것도 실시하지 않습니다. 어느 쪽의 경우도,<code>updateXXX</code> 메소드는 기가 되는 데이타베이스에는 일절 영향을 주지 않습니다.
+</p><p><a name="1013156"> </a>  제 3 에,<code>insertRow</code> 메소드의 호출은, 결과 세트와 데이타베이스의 양쪽 모두에 삽입행을 추가합니다만, 삽입행의 렬수가 데이타베이스 테이블의 렬수와 일치하지 않는 경우,<code>SQLException</code> 를 throw 합니다. 예를 들어,<code>updateXXX</code> 메소드를 호출하지 않아서, 열에 값이 지정되어 있지 않은 경우에는, 열이 null 치를 허가하지 않는 한 <code>SQLException</code> 가 throw 됩니다. 또, 결과 세트에 포함되지 않은 열이 테이블상에 존재하고 있는 경우도, 그 부족한 열이 null 치를 허가하지 않는 한 <code>SQLException</code> 가 throw 됩니다.
+</p><p><a name="1013190"> </a>  4 번째에, 커서가 삽입 은행내로 이동할 때, 결과 세트는 커서가 어느 위치에 있었는지를 추적합니다. 그 결과,<code>ResultSet</code>. <code>moveToCurrentRow</code> 메소드에의 호출은,<code>moveToInsertRow</code> 메소드가 불려 가기 직전에 현재행인 행에 커서를 되돌립니다. 현재행과의 상대 위치를 사용하는 메소드를 포함한, 다른 커서 이동 메소드도, 직전의 현재행으로부터 기능합니다.
+</p><a name="1012961"> </a> 
+<h4>5.1. 16	 위치 결정 된 갱신</h4>
+<p><a name="1011955"> </a>  JDBC 2.0 API 가 Java 프로그램 언어로 「프로그램적인 갱신」기능을 실현하기 이전은, 결과 세트와 함께 페치 된 행을 변경하는 유일한 방법은, 「위치 결정 된 갱신」이라고 불리는 기능을 사용하는 것이었습니다. 위치 결정 된 갱신은 SQL 커멘드를 사용해 실행되어 갱신 대상의 결과 세트의 행을 나타내는 이름 첨부 커서를 필요로 합니다.
+</p><p><a name="1019695"> <code>Statement</code> 인터페이스가 제공하는 <code>setCursorName</code> 메소드를 사용하면(자), 다른 문장으로 생성되는 다음의 결과 세트와 연결시킬 수 있는 커서의 커서명을, 어플리케이션을 지정할 수 있습니다. 그리고, 이 이름은, 위치 결정 된 갱신 또는 위치 결정 된 삭제의 SQL 문 중(안)에서, 전의 문장에 의해 생성된 <code>ResultSet</code> 객체내의 현재행을 식별하는데 사용됩니다. 위치 결정 된 갱신 또는 삭제의 기능을 결과 세트로 유효하게 하기 위해서는, 이것을 생성하는 쿼리는 다음의 형식이 아니면 안됩니다.
+</p><blockquote><pre>
+SELECT .  .  .  FROM .  .  .  WHERE .  .  .  FOR UPDATE .  .  .
+</pre></blockquote><p><a name="1019746"> <code>FOR UPDATE</code> 라고 하는 말을 포함하는 것으로, 커서가 갱신을 지원하는 적절한 차단 레벨을 가지는 것이 확실히 됩니다.
+</p><p><a name="1019716"> </a> <code>executeQuery</code> 메소드가 문장에 대해서 불려 간 뒤, 얻을 수 있던 <code>ResultSet</code> 객체의 커서명은 <code>ResultSet</code> 의 <code>getCursorName</code> 메소드를 호출하는 것으로 취득할 수 있습니다. DBMS 에 대해 위치 결정 된 갱신 또는 삭제가 가능한 경우에는, 갱신 또는 삭제용의 SQL 커멘드에 대해서 그 커서명을 파라미터로서 줄 수가 있습니다. 위치 결정 된 갱신에서는, <code>ResultSet</code> 객체를 생성한 <code>Statement</code> 객체와는 다른 <code>Statement</code> 객체를 사용하지 않으면 안됩니다. 다음의 코드에서는, 커서를 명명해 SQL 의 갱신문으로 사용하는 방법을 나타냅니다.  여기서 stmt 및 stmt2 는 다른 <code>Statement</code> 객체입니다.
+</p><blockquote><pre>
+stmt.setCursorName("x");
+ResultSet rs = stmt.executeQuery(
+		"SELECT .  .  .  FROM .  .  .  WHERE .  .  .  FOR UPDATE .  .  . ")
+String cursorName = rs.getCursorName;
+int updateCount = stmt2.executeUpdate(
+		"UPDATE .  .  .  WHERE CURRENT OF " + cursorName);
+</pre></blockquote><p><a name="1019723"> <code>ResultSet</code> 객체에 대해서 <code>getCursorName</code> 메소드가 불려 갔던 것은, 반드시 JDBC 2.0 코어 API 로 이용 가능한 <code>ResultSet.updateXXX</code> 메소드를 사용해 이 객체가 갱신 가능한 것을 의미하지 않는 것에 유의해 주세요. <code>ResultSet</code> 객체를 <code>updateXXX</code> 메소드를 사용해 갱신하려면 , 결과 세트를 생성하는 <code>executeQuery</code> 문에 <code>CONCUR_UPDATABLE</code> 스펙을 포함할 필요가 있습니다.  다만, 다음의 모든 순서를 적절히 실행한다면, 이 스펙없이 작성된 결과 세트에 대한 위치 결정 된 갱신이 가능합니다.  (1) 커서를 명명해, (2) 결과 세트를 생성하는 SQL 쿼리는,<code>SELECT .  .  .  FROM .  .  .  WHERE .  .  .  FOR UPDATE .  .  . </code> 의 형식에서 지정해, (3) SQL 갱신문은 <code>UPDATE .  .  .  WHERE CURRENT OF <cursorName></code> 의 형식에서 지정합니다.
+</p><p><a name="1019751"> </a>  모든 DBMS 가 위치 결정 된 갱신을 지원하고 있는 것은 아닙니다. DBMS 가 위치 결정 된 갱신을 지원하는 것을 확인하기 위해서는, 어플리케이션은 <code>DatabaseMetaData</code> 에 대해서 <code>supportsPositionedDelete</code> 메소드 및 <code>supportsPositionedUpdate</code> 메소드를 호출해, 특정의 접속이 이러한 조작을 지원할지 어떨지를 확인할 수 있습니다. 이러한 조작이 지원되고 있는 경우, 위치 결정 된 갱신이, 갱신중에 이상해지거나 그 외의 경합에 종착해 버리지 않게 하기 위해서, DBMS 드라이버는, 선택되고 있는 행이 적절히 확실히 락 되도록(듯이) 할 필요가 있습니다.
+</p><a name="1013200"> </a> 
+<h4>5.1. 17	 갱신 가능한 결과 세트를 생성하는 쿼리</h4>
+<p><a name="1013201"> </a>  쿼리의 안에는, 결과 세트의 타입에 관계없이, 갱신 불가능한 결과 세트를 생성하는 것이 있습니다. 예를 들어, 주키열을 선택하고 있지 않는 쿼리에 대해서, 갱신 불가능한 결과 세트를 생성하는 경우가 있습니다. 데이타베이스의 구현상의 상위를 위해서(때문에), JDBC 2.0 코어 API 는, 갱신 가능한 결과 세트를 확실히 생성하는 엄밀한 SQL 쿼리세트를 지정하고 있습니다. 그 대신해, 갱신 기능을 지원하는 JDBC 준거 드라이버를 위해서(때문에), 갱신 가능한 결과 세트를 일반적으로 생성하는 스펙세트를 정의하고 있습니다. 쿼리가 다음의 지침에 따르고 있는 경우, 일반적으로, 개발자는 갱신 가능한 결과 세트가 생성되는 것을 기대할 수 있습니다.
+</p><ol>
+<a name="1013208"> </a> 
+<li>그 쿼리가, 데이타베이스중의 테이블을 1 개 밖에 참조하고 있지 않다
+<li>그 쿼리가, 결합 조작 또는 <code>GROUP BY</code> 구를 포함하지 않았다
+<li>그 쿼리가, 참조하는 테이블의 주키를 선택하고 있다
+<p><a name="1013221"> </a>  결과 세트에 대해서 삽입을 실행하는 경우에는, SQL 쿼리는 상기의 3 개의 지침의 1 개에 가세해 다음의 3 개의 추가 조건을 채울 필요가 있습니다.
+</p>
+<a name="1013212"> </a> 
+<li>사용자는 테이블에 대해서 읽어내/기입 데이타베이스 권한을 가지고 있다
+<li>그 쿼리가, 기가 되는 테이블에 포함되는 열 가운데, null 로 설정할 수 없는 열을 모두 선택하고 있다
+<li>그 쿼리가, 디폴트 값를 가지지 않는 열을 모두 선택하고 있다
+</ol>
+<p><a name="1013222"> </a>  4 번째 및 5 번째의 조건이 필요한 것은, 열이 null 치 또는 디폴트 값를 받아들이므로 없는 한, 테이블에 삽입되는 행은 각각의 열에 값을 가질 필요가 있기 (위해)때문에입니다. 삽입 조작의 실행 대상의 결과 세트에, 값을 필요로 하고 있는 열이 모두 포함되지 않은 경우, 삽입은 실패합니다.
+</p><p><a name="1020922"> </a>  쿼리의 실행 이외 방법으로 작성된 결과 세트 (<code>DatabaseMetaData</code> 인터페이스의 몇개의 메소드에 의해 반환되는 결과 세트등)는, 스크롤 가능해도 갱신 가능하지도 않습니다 해, 그 필요도 없습니다.
+</p>
+<a name="1013482"> </a> 
+<h4>5.1. 18	 행의 극히 큰 값에 스트림을 사용한다</h4>
+<p><a name="1013426"> </a>  JDBC 2.0 코어 API 의 새로운 인터페이스인 <code>Blob</code> 및 <code>Clob</code> 는, SQL3 데이터형의 <code>BLOB</code> (Binary Large Object) 및 <code>CLOB</code> (Character Large Object)를 Java 프로그램 언어에 매핑 한 것입니다. 이러한 데이터형을 사용하는 것으로써, 데이타베이스는 매우 큰 바이너리 또는 캐릭터 객체를 확실히 포함할 수 있게 됩니다. 이 경우,<code>ResultSet</code> 의 <code>getBlob</code> 메소드 및 <code>getClob</code> 메소드를 사용해, 포함된 객체를 가져옵니다.
+</p><p><a name="1013453"> </a> <code>ResultSet</code> 객체는, JDBC 1.0 API 만을 사용해도, 임의의 큰 <code>LONGVARBINARY</code> 또는 <code>LONGVARCHAR</code> 데이터를 취득할 수 있습니다. 메소드 <code>getBytes</code> 와 <code>getString</code> 는, 1 개(살)의 큰 덩어리로서 데이터를 돌려줍니다 (<code>Statement.getMaxFieldSize</code> 의 반환값에 의해 부과되고 있는 한계까지). 이 데이터의 큰 덩어리를, 작은 고정 사이즈의 덩어리로서 취득하는 일도 가능합니다. 이것을 실시하려면 , 데이터를 덩어리로 읽어낼 수가 있는 <code>ResultSet</code> 클래스의 반환값 <code>java.io.Input</code> 스트림이 필요합니다. 이 스트림은,<code>ResultSet</code> 객체에 대한 다음의  <code>getXXX</code> 메소드의 호출로 자동적으로 닫혀져 버리기 (위해)때문에, 곧바로 액세스 할 필요가 있는 것에 주의해 주세요. 이 동작은, JDBC API 의 제한은 아니고, 어느 데이타베이스 시스템의 기가 되는 구현에 의해 라지 blob 액세스에 적용되어 버리는 제한입니다.
+</p><p><a name="997800"> </a>  JDBC 1.0 API 에는 스트림을 취득하는 개별 메소드가 3 개 있어, 각각이 다른 반환값을 돌려줍니다.  
+</p><ul><a name="997807"> </a> 
+<li><code>getBinaryStream</code> - 데이타베이스로부터의 생의 바이트 데이터를 생성하는 스트림을 돌려줍니다.  전혀 변환하지 않습니다.
+<li><code>getAsciiStream</code> - 1 바이트의 ASCII 문자를 생성하는 스트림을 돌려줍니다. 이 메소드는, 문자를 ASCII 형식에서 포함하고 있는 DBMS 에서는 보다 효율적으로 기능합니다.
+<li><code>getUnicodeStream</code> - 2 바이트의 Unicode 문자를 생성하는 스트림을 돌려줍니다. 이 메소드는, 여전히 이용 가능합니다만, 신규 메소드 <code>getCharacterStream</code> 에 벌써 옮겨놓을 수 있고 있습니다. (이하를 참조)
+</ul><p>
+ASCII 문자와 Unicode 문자의 양쪽 모두의 스트림을 취득하는 다음의 메소드는, JDBC 2.0 코어 API 로 새롭게 추가되었습니다.
+</p><p><a name="1026999"> </a> 
+
+</p><a name="1027000"> </a> 
+<ul>
+<li><code>getCharacterStream</code> - Unicode 문자를 생성하는 <code>java.io.Reader</code> 객체를 돌려줍니다. DBMS 가 문자를 포함하는 방법에는 관계없이, 드라이버는 문자를 Unicode 문자의 스트림로서 돌려줍니다.
+</ul><p><a name="1010928"> <code>getAsciiStream</code> 에 의해 반환되는 스트림은, 각 바이트가 ASCII 문자의 바이트 스트림을 돌려줍니다. 이것은, 2 바이트의 Unicode 문자의 스트림을 돌려주는 <code>getCharacterStream</code> 와는 다릅니다. <code>getCharacterStream </code> 메소드는,<code>Reader</code> 객체를 돌려주기 전에 드라이버가 ASCII 문자를 Unicode 문자로 변환하기 (위해)때문에, ASCII 문자와 Unicode 문자의 양쪽 모두를 사용할 수 있습니다. DBMS 및 드라이버가 JDBC 2.0 API 를 지원하고 있지 않기 위해(때문에) <code>getUnicodeStream</code> 를 사용할 필요가 있는 경우, JDBC Unicode 스트림이 빅 endian 데이터를 돌려주게도 유의해 주세요. 즉, 이러한 스트림은 데이터를 받을 때 최초로 고위의 바이트를, 다음에 저위의 바이트를 기대합니다. 이것은, Java 프로그램 언어에 의해 정의된 표준의 endian와 일치합니다.  이것은 프로그램의 이식성을 유지하기 위해서(때문에) 중요한 점입니다. 빅 endian의 순서에 관한 자세한 것은, Tim Lindholm 및 Frank Yellin 저의 Java<sup><font size=-2>TM</font></sup> Virtual Machine 스펙을 참조해 주세요.
+</p><p><a name="1010933"> </a>  다음의 코드는,<code>getAsciiStream</code> 메소드의 사용법을 나타냅니다.
+</p><blockquote><pre>
+java.sql.Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT x FROM Table2");
+// Now retrieve the column 1 results in 4 K chunks:
+byte [] buff = new byte[4096];
+while (rs.next()) {
+	java.io.InputStream fin = rs.getAsciiStream(1);
+	for (;;) {
+		int size = fin.read(buff);
+		if (size == -1) { // at end of stream
+					break;
+		}
+
+
+		// Send the newly-filled buffer to some ASCII output stream
+		output.write(buff, 0, size);
+	}
+}
+</pre></blockquote><a name="997826"> </a> 
+<h4>5.1. 19	 NULL 의 결과치</h4>
+<p><a name="1021009"> </a>  지정된 결과치가 JDBC <code>NULL</code> 일지 어떨지를 판단하기 (위해)때문에, 우선 열을 읽어내고 나서,<code>ResultSet.wasNull</code> 메소드를 사용할 필요가 있습니다. 이것은,<code>ResultSet.getXXX</code> 메소드의 1 개에 의해 취득된 JDBC <code>NULL</code> 는, 값의 형태에 의해 <code>null</code>,<code>0</code>, 또는 <code>false</code> 의 어떤 것인가에 변환되기 (위해)때문에입니다.
+</p><p><a name="997698"> </a>  다음의 리스트는, JDBC <code>NULL</code> 의 취득시에,<code>getXXX</code> 메소드에 의해 반환되는 값을 나타냅니다.
+</p><blockquote><pre>
+</pre></blockquote><ul><a name="1026596"> </a> 
+<li><code>null</code> - Java 프로그램 언어로 객체를 돌려주는 <code>getXXX</code> 메소드의 경우 (<code>getString</code>,<code>getBigDecimal</code>,<code>getBytes</code>,<code>getDate</code>,<code>getTime</code>,<code>getTime-stamp</code>,<code>getAsciiStream</code>,<code>getCharacterStream</code>,<code>getUnicodeStream</code>,<code>getBinary-Stream</code>,<code>getObject</code>,<code>getArray</code>,<code>getBlob</code>,<code>getClob</code>, 및 <code>getRef</code>)
+<li><code>0</code> (제로) - <code>getByte</code>,<code>getShort</code>,<code>getInt</code>,<code>getLong</code>,<code>getFloat</code>, 및 <code>getDouble</code> 의 경우
+<li><code>false</code> - <code>getBoolean</code> 의 경우
+</ul><p><a name="1021031"> </a>  예를 들어,<code>getInt</code> 메소드가 <code>null</code> 치를 허가하는 열로부터 <code>0</code> 을 돌려주었을 경우, 다음의 코드에 나타내도록(듯이), 어플리케이션은 데이타베이스내의 값이 <code>0</code> 또는 <code>NULL</code> 인가,<code>wasNull</code> 메소드를 호출할 때까지는 알 수 없습니다.  여기서, rs 는 <code>ResultSet</code> 객체입니다.
+</p><blockquote><pre>
+int n = rs.getInt(3);
+boolean b = rs.wasNull();
+
+</pre></blockquote><p><a name="1021038"> </a>  b 가 <code>true</code> 의 경우, rs 의 현재행의 제 3 열에 포함된 값은 JDBC <code>NULL</code> 입니다. <code>wasNull</code> 메소드는, 취득한 마지막 값만을 검사합니다.  이 때문에, n 가 <code>NULL</code> 화도인지를 판별하려면 , 다른 <code>getXXX</code> 메소드를 호출하기 전에 <code>wasNull</code> 를 호출할 필요가 있습니다.
+</p><a name="1003662"> </a> 
+<h4>5.1. 20	 ResultSet 객체의 클로즈</h4>
+<p><a name="1021049"> </a> <code>ResultSet</code> 객체를 닫으려면 , 아무것도 할 필요는 없습니다.  그렇다고 하는 것도, 그 <code>ResultSet</code> 객체를 생성한 <code>Statement</code> 객체가 닫혀질 때, 재실행될 때, 또는 일련의 복수 결과로부터 다음의 결과를 검색하기 위해서 사용될 때, 그 <code>Statement</code> 객체가 <code>ResultSet</code> 객체를 자동적으로 닫기 때문입니다. </a> </a> <code><code>close</code> 메소드는,<code>ResultSet</code> 객체를 명시적으로 닫기 위해서(때문에) 제공되고 있습니다. 이 메소드는,<code>ResultSet</code> 객체가 보관 유지하고 있던 자원을 곧바로 해제합니다. 이것은, 복수의 문장이 사용되고 있는 상황으로, 데이타베이스의 자원의 경합을 막는데 충분히 빠른 시기에 자동 클로즈를 하지 않는 경우에, 필요할지도 모릅니다.  
+</p><a name="1021052"> </a> 
+<h4>5.1. 21	 JDBC 의 스펙에의 준거</h4>
+<p><a name="1021053"> <a name="1021053"> JDBC 에 준거한 드라이버는, 일반적으로 스크롤 가능한 결과 세트를 지원합니다.  다만, 이것은 요구되고 있지 않습니다. 그 목적은, JDBC 드라이버가, 기가 되는 데이타베이스 시스템이 제공하고 있는 지원를 사용해, 스크롤 가능한 결과 세트를 구현하는 것입니다. DBMS 가 스크롤 기능을 지원하지 않는 경우, 드라이버는 이 기능을 생략 할 수가 있습니다.
+</p><p><a name="1014855"> </a>  스크롤 기능이 옵션이다고 해도, 이 기능의 생략이 추천 되고 있는 것은 아닙니다. 이것이 옵션이 되어 있는 것은, 스크롤 기능을 지원하지 않는 데이터 소스로, JDBC 드라이버를 구현할 때의 복잡함을 경감하기 위해(때문에)만의 목적입니다. 실제의 곳, 추천 되고 있는 대체 수단은, 드라이버가 스크롤 기능을 DBMS 의 최상정도에 층으로서 구현하는 것입니다. 이것을 실현하는 1 개의 방법은, 결과 세트를 행 세트로서 구현하는 것입니다. 이것을 실현하는 메소드를 제공하는 <code>RowSet</code> 인터페이스는, JDBC Standard Extention API 의 일부분입니다.
+</p><p><a name="1019456"> </a> 
+
+</p>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="statement.html">[전의 항목]</a>  <a href="preparedstatement.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

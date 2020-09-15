@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 5 - 2D 그래픽스의 인쇄와 스트림 전달
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing2d.fm1.html">전의 항목</a>  | <a href="appendix_printPS.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="999771"><i></i> 서비스 서식 설정이 끝난 데이터</a> </h2>
+
+<blockquote>
+<a name="999772"><!-- --></a>  DocPrintJob 및 서비스 서식 설정이 끝난 DocFlavor 를 사용해, Pageable 또는 Printable 객체에 캡슐화된 2D 그래픽스를 인쇄 또는 스트림 전달할 수가 있습니다. DocFlavor 는, Java 객체 등, 모든 종류의 데이터를 표현할 수 있습니다. Pageable 또는 Printable 인터페이스의 구현은, Java 객체입니다. <a href="docflavor.fm.html#996958">「문서의 종류의 지정」</a>설명한 것처럼,Java 인쇄 서비스 API 에는, Java 객체의 형식에서, 인쇄 데이터전용의 정의가 끝난 DocFlavor 객체 정수가 짜넣어지고 있습니다. 어플리케이션에서는, 이 종류의 데이터를 지원하는 인쇄 서비스 또는 스트림 인쇄 서비스를 검색해, Doc 구현내에 객체를 캡슐화해, DocPrintJob 내의 서비스에 송신할 수가 있습니다. <a href="printing2d.fm2.html#999853">「서비스 서식 설정이 끝난 데이터의 인쇄」</a>에서는, 데이터를 인쇄하는 예를 나타냅니다. <a href="printing2d.fm2.html#999490">「서비스 서식 설정이 끝난 인쇄 데이터의 스트림 전달」</a>에서는, 데이터를 스트림 전달하는 예를 나타냅니다. DocPrintJob 를 사용해 2D 그래픽스를 인쇄하는 어플리케이션에 이벤트를 등록하는 방법은, DocPrintJob 를 사용해 문서를 인쇄하는 어플리케이션에 이벤트를 등록하는 방법과 같습니다. 상세한 것에 대하여는,<a href="printing.fm5.html#998697">「이벤트의 등록」</a>을 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="999853"><!-- --></a>  <i></i> 서비스 서식 설정이 끝난 데이터의 인쇄
+</h3>
+
+<blockquote>
+<a name="999854"><!-- --></a>  서비스 서식 설정이 끝난 데이터에 대응한 인쇄 서비스를 검색하려면 , 적절한 서비스 서식 설정이 끝난 DocFlavor 객체 정수를 lookupPrintServices 메소드에 건네줍니다. <p>
+<a name="999868"><!-- --></a> 
+<p>
+<a name="998830"><!-- --></a> 
+<blockquote><pre>PrintService []services =
+	PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PRINTABLE,
+							null);
+</pre></blockquote>
+
+
+<a name="999878"><!-- --></a>  인쇄 어플리케이션이 Printable 인터페이스를 구현합니다. Doc 를 작성하려면 , SimpleDoc 를 사용합니다. 이 때, this 를 printData 에 건네줍니다. 즉, 서비스 서식 설정이 끝난 DocFlavor 정수 및 옵션의 속성 세트를 DocFlavor 에 건네줍니다. <p>
+<a name="999887"><!-- --></a> 
+<blockquote><pre>Doc  doc = new SimpleDoc(this, DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
+</pre></blockquote>
+
+
+<a name="1000035"><!-- --></a>  DocPrintJob 를 작성해, 그것을 서비스에 송신합니다. <p>
+<a name="1000036"><!-- --></a> 
+<blockquote><pre>DocPrintJob pj = service[0]. createPrintJob();
+pj.print(doc);
+</pre></blockquote>
+
+
+<a name="1000043"><!-- --></a>  어플리케이션 전체에 대해서는,<a href="appendix_2Dgraphicsdoc.fm.html#7083">「예: Print2DGraphics.java」</a>를 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="999490"><!-- --></a>  <i></i> 서비스 서식 설정이 끝난 인쇄 데이터의 스트림 전달
+</h3>
+
+<blockquote>
+<a name="999902"><!-- --></a>  스트림 인쇄 서비스를 사용해, Java 객체에 캡슐화된 2D 그래픽스를 다른 서식에 export 할 수가 있습니다. 다음의 예에서는, Printable 의 그래픽스를 Postscript 에 export 하고 있습니다. <p>
+<a name="999493"><!-- --></a> 
+<blockquote><pre>DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE
+StreamPrintServiceFactory []factories =
+	StreamPrintServiceFactory.lookupStreamPrintServiceFactories(flavor,
+							"application/postscript"));
+if (factories.length == 0) {
+	System.err.println(&#34;No suitable factories&#34;);
+	System.exit(0);
+}
+try{
+	FileOutputStream fos = new FileOutputStream(&#34;out.ps&#34;);
+	StreamPrintService sps = factories[0]. getPrintService(fos);
+}
+Doc  doc = new SimpleDoc(this, flavor, null);
+sps.createPrintJob(). print(doc);
+</pre></blockquote>
+
+
+<a name="999763"><!-- --></a>  어플리케이션 전체에 대해서는,<a href="appendix_printGIFStream.fm.html#7083">「예:PrintGIFtoStream.java」</a>를 참조해 주세요. <p>
+<a name="999491"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing2d.fm1.html">전의 항목</a>  | <a href="appendix_printPS.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

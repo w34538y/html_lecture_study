@@ -1,0 +1,1268 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:08:40 오후 2002" />
+<title>Graphics2D 를 사용한 렌더링  - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-intro.html" />
+    <link rel="Next" href="j2d-geom.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-intro.html">전의 항목</a>  | <a accesskey="n" href="j2d-geom.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp70026"> </a> <h2 class="pChapNum">
+제 2 장&#160;&#160;
+</h2>
+<a name="wp70028"> </a> <h2 class="pChapTitle">
+Graphics2D 를 사용한 렌더링 
+</h2>
+<a name="wp70029"> </a> <p class="pBody">
+<code class="cCode">java.awt.Graphics</code> 을 상속하는 <code class="cCode">Graphics2D</code> 에서는, 도형, 텍스트, 및 이미지의 표시에 대해 제어할 수 있는 내용이, 한층 고도의 것이 되어 있습니다. Java 2D&#8482; 의 렌더링 처리는,<code class="cCode">Graphics2D</code> 객체와 그 상태 속성을 사용해 제어합니다.  
+</p>
+<a name="wp68316"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 상태 속성에는 선의 형상이나 변환등이 있어, 그래픽 객체가 렌더링 될 때 적용됩니다. <code class="cCode">Graphics2D</code> 에 관한 상태 속성의 집합을,<code style="font-style: normal" class="cCode">Graphics2D</code> 「문맥」이라고 부릅니다. 텍스트나 도형이나 이미지를 렌더링 하려면 ,<code class="cCode">Graphics2D</code> 문맥을 설정하고 나서,<code class="cCode">draw</code> 나 <code class="cCode">fill</code> 등의 <code class="cCode">Graphics2D</code> 렌더링 메소드를 호출합니다.
+</p>
+<a name="wp68318"> </a> <h2 class="pHeading1">
+2.1	인터페이스와 클래스
+</h2>
+<a name="wp68838"> </a> <p class="pBody">
+다음의 겉(표)는,<code class="cCode">Graphics2D</code> 문맥에 관련해 사용하는 인터페이스와 클래스의 일람입니다.  상태 속성을 나타내는 클래스도 포함되어 있습니다. 이러한 대부분의 클래스는,<code class="cCode">java.awt</code> 패키지에 포함되어 있습니다.  
+</p>
+<a name="wp65733"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp63965">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp63965"> </a> <div class="pCellHeading">
+인터페이스
+</div>
+</th>
+    <th><a name="wp63967"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63969"> </a> <div class="pCellBody">
+<code class="cCode">Composite</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63971"> </a> <div class="pCellBody">
+기본으로 되는 그래픽스 영역에 draw 프리미티브(primitive)을 합성하기 위한 메소드를 정의합니다. <code class="cCode">AlphaComposite</code> 로 구현됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63973"> </a> <div class="pCellBody">
+<code class="cCode">CompositeContext</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63975"> </a> <div class="pCellBody">
+합성 조작을 위한 캡슐화되어 최적화된 환경을 정의합니다. 프로그램으로 독자적인 합성 규칙을 구현할 경우에 사용됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63977"> </a> <div class="pCellBody">
+<code class="cCode">Paint</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63979"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">Transparency</code>
+</div>
+<a name="wp63980"> </a> <div class="pCellBody">
+<code class="cCode">draw</code> 조작 또는 <code class="cCode">fill</code> 조작에서의 색을 정의합니다. <code class="cCode">Color</code>,<code class="cCode">GradientPaint</code>, 및 <code class="cCode">TexturePaint</code> 로 구현됩니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63982"> </a> <div class="pCellBody">
+<code class="cCode">PaintContext</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63984"> </a> <div class="pCellBody">
+전부 칠해 조작을 위한 캡슐화되어 최적화된 환경을 정의합니다. 프로그램으로 독자적인 전부 칠해 조작을 구현할 경우에 사용됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63990"> </a> <div class="pCellBody">
+<code class="cCode">Stroke</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63992"> </a> <div class="pCellBody">
+렌더링 되는 <code class="cCode">Shape</code> 의 윤곽선을 둘러싸는 <code class="cCode">Shape</code> 를 생성합니다. <code class="cCode">BasicStroke</code> 로 구현됩니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp65734"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp63345">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp63345"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp63347"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68194"> </a> <div class="pCellBody">
+<code class="cCode">AffineTransform</code>
+</div>
+<a name="wp68195"> </a> <div class="pCellBody">
+<code class="cCode">(java.awt.geom)</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68175"> </a> <div class="pCellBody">
+2 차원의 아핀 변환을 나타냅니다.  어느 2 차원 좌표로부터 다른 2 차원 좌표에의 선형 변환을 실시합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63404"> </a> <div class="pCellBody">
+<code class="cCode">AlphaComposite</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63467"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Composite</code> 
+</div>
+<a name="wp63468"> </a> <div class="pCellBody">
+도형, 텍스트, 이미지를 합성할 때의 투과율에 관한 기본적인 규칙을 구현합니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63406"> </a> <div class="pCellBody">
+<code class="cCode">BasicStroke</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63472"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Stroke</code>
+</div>
+<a name="wp63473"> </a> <div class="pCellBody">
+<code class="cCode">Shape</code> 의 윤곽선에 적용되는 「펜의 스타일」을 정의합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp69586"> </a> <div class="pCellBody">
+Color
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp69588"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Paint</code>
+</div>
+<a name="wp69596"> </a> <div class="pCellBody">
+<code class="cCode">Shape</code> 에 균일한 칠해를 정의합니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63412"> </a> <div class="pCellBody">
+<code class="cCode">GradientPaint</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp69633"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Paint</code>
+</div>
+<a name="wp63488"> </a> <div class="pCellBody">
+<code class="cCode">Shape</code> 에 그라데이션의 전부 칠해 패턴을 정의합니다. 이 전부 칠해 패턴은, 점 P1 의 색 C1 로부터 점 P2 의 색 C2 까지 변화합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63414"> </a> <div class="pCellBody">
+<code class="cCode">Graphics2D</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63492"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode"> Graphics</code>
+</div>
+<a name="wp63493"> </a> <div class="pCellBody">
+2 차원 렌더링의 기본 클래스입니다. 원의 <code class="cCode">java.awt.Graphics</code> 클래스를 상속하고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63426"> </a> <div class="pCellBody">
+<code class="cCode">TexturePaint</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63514"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Paint</code>
+</div>
+<a name="wp63515"> </a> <div class="pCellBody">
+재질감 또는 패턴을 사용한 <code class="cCode">Shape</code> 의 칠해를 정의합니다. 재질감이나 패턴은,<code class="cCode">BufferedImage</code> 로부터 생성됩니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp63340"> </a> <h2 class="pHeading1">
+2.2	렌더링의 컨셉
+</h2>
+<a name="wp67675"> </a> <p class="pBody">
+Java 2D&#8482; API 를 사용해 그래픽 객체를 렌더링 하려면 ,<code class="cCode">Graphics2D</code> 문맥을 설정하고 나서,<code class="cCode">Graphics2D</code> 렌더링 메소드의 1 개에 그래픽 객체를 건네줍니다.  
+</p>
+<a name="wp67676"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥을 구성하는 상태 속성을 변경하는 것으로, 다음의 조작이 가능합니다.  
+</p>
+<ul class="pBullet1"><a name="wp68359"> </a> <div class="pBullet1"><li>stroke의 폭의 변경</li></div>
+<a name="wp68360"> </a> <div class="pBullet1Plus"><li>stroke를 결합하는 방법의 변경</li></div>
+<a name="wp61830"> </a> <div class="pBullet1Plus"><li>렌더링 되는 영역을 제한하는 클리핑 패스의 설정</li></div>
+<a name="wp68302"> </a> <div class="pBullet1Plus"><li>렌더링 되는 객체의 평행이동, 회전, 확대 축소, 또는 변형</li></div>
+<a name="wp68365"> </a> <div class="pBullet1Plus"><li>도형을 전부 칠하는 색 및 패턴의 정의</li></div>
+<a name="wp61834"> </a> <div class="pBullet1Last"><li>복수의 그래픽스 객체를 거듭해 맞추는 방법의 지정</li></div>
+</ul>
+<a name="wp67162"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 에서는, 그래픽스 문맥의 속성을 추가 또는 변경하기 위한 메소드가 몇개인가 정의되고 있습니다. 대부분의 메소드는,<code class="cCode">Paint</code> 객체나 <code class="cCode">Stroke</code> 객체 등, 특정의 속성을 나타내는 객체를 받습니다.  
+</p>
+<a name="wp68341"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥은, 이러한 속성 객체의 「참조」를 보관 유지합니다. 속성 객체는 복제되지 않습니다. <code class="cCode">Graphics2D</code> 문맥에 포함되는 속성 객체를 변경하는 경우는, 적절한 <code class="cCode">set</code> 메소드를 호출해, 문맥에 통지할 필요가 있습니다. 렌더링 조작동안에 속성 객체를 변경하면(자), 예측할 수 없는 동작을 했을 경우에 따라서는 동작이 불안정하게 됩니다.  
+</p>
+<a name="wp67506"> </a> <h3 class="pHeading2">
+2.2. 1	렌더링 처리
+</h3>
+<a name="wp67507"> </a> <p class="pBody">
+그래픽 객체의 렌더링에서는, 기하 형상, 이미지, 및 속성의 정보가 정리되어, 디스플레이상에서 변경할 필요가 있는 픽셀치가 산출됩니다.  
+</p>
+<a name="wp67528"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 의 렌더링 처리는, 4 개의 스텝으로 나눌 수가 있습니다.
+</p>
+<ol class="pList1"><a name="wp67534"> </a> <div class="pList1"><li><code class="cCode">Shape</code> 로 stroke의 draw가 필요한 경우는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Stroke</code> 속성을 사용해, draw 되는 패스를 둘러싸는 새로운 <code class="cCode">Shape</code> 를 생성합니다.  </li></div>
+<a name="wp68346"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D</code> 문맥의 변환 속성에 따라,<code class="cCode">Shape</code> 의 패스의 좌표를 사용자 공간으로부터 디바이스 공간으로 변환합니다. </li></div>
+<a name="wp67511"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D</code> 문맥의 클리핑 속성을 사용해,<code class="cCode">Shape</code> 의 패스를 클리핑 합니다. </li></div>
+<a name="wp67512"> </a> <div class="pList1Last"><li><code class="cCode">Shape</code> 에 draw 되는 부분이 있는 경우는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 속성과 <code class="cCode">Composite</code> 속성을 사용해 전부 칠합니다. </li></div>
+</ol>
+<a name="wp67513"> </a> <p class="pBody">
+텍스트의 렌더링은,<code class="cCode">Shape</code> 의 렌더링과 거의 같습니다.  텍스트는 개별의 Glyph로서 렌더링 되어, Glyph는 각각이 <code class="cCode">Shape</code> 입니다. 유일한 차이는, 렌더링의 전에, 텍스트에 적용되는 <code class="cCode">Font</code> 를 판별해,<code class="cCode">Font</code> 로부터 적절한 Glyph를 취득할 필요가 있는 것입니다.
+</p>
+<a name="wp67514"> </a> <p class="pBody">
+이미지의 처리는 텍스트나 도형과 달리, 변환 조작과 클리핑 조작은 이미지의 바운딩 박스에 대해서 행해집니다. 색의 정보는 이미지 자체로부터 꺼내져, 이미지의 픽셀이 렌더링면에 합성될 때는, 색정보의 알파 채널이 그 때의 <code class="cCode">Composite</code> 속성과 함께 사용됩니다.
+</p>
+<a name="wp61856"> </a> <h3 class="pHeading2">
+2.2. 2	렌더링 품질의 제어
+</h3>
+<a name="wp68861"> </a> <p class="pBody">
+Java 2D API 에서는, 속도와 품질의 어느 쪽을 우선해 객체를 렌더링 할까 지정할 수 있습니다. 우선 정보는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">RenderingHints</code> 속성을 사용해 힌트로서 지정합니다. 렌더링 모드의 변경에 대응하고 있지 않는 플랫폼도 있기 (위해)때문에, 지정한 렌더링 힌트가 반드시 사용된다고는 할 수 없습니다.
+</p>
+<a name="wp69745"> </a> <p class="pBody">
+<code class="cCode">RenderingHints</code> 클래스는, 다음의 종류의 힌트를 지원하고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp69749"> </a> <div class="pBullet1"><li>알파 보간 &#8212; 디폴트, 품질 우선, 또는 속도 우선으로 설정 가능.  </li></div>
+<a name="wp69750"> </a> <div class="pBullet1Plus"><li>평활화 &#8212; 디폴트, 온, 또는 오프로 설정 가능.  </li></div>
+<a name="wp69957"> </a> <div class="pBullet1Plus"><li>칼라 렌더링 &#8211; 디폴트, 품질 우선, 또는 속도 우선으로 설정 가능. </li></div>
+<a name="wp69958"> </a> <div class="pBullet1Plus"><li>디저링 &#8212; 디폴트, 무효, 또는 유효하게 설정 가능.  </li></div>
+<a name="wp69959"> </a> <div class="pBullet1Plus"><li>부분 메트릭스 &#8212; 디폴트, 온, 또는 오프로 설정 가능.  </li></div>
+<a name="wp69930"> </a> <div class="pBullet1Plus"><li>보간 &#8212; 최근옆보간, 바이리니아 보간, 바이큐빅크 보간으로 설정 가능. </li></div>
+<a name="wp69931"> </a> <div class="pBullet1Plus"><li>렌더링 &#8212; 디폴트, 품질 우선, 또는 속도 우선으로 설정 가능. </li></div>
+<a name="wp69932"> </a> <div class="pBullet1Last"><li>텍스트 평활화 &#8212; 디폴트, 온, 또는 오프로 설정 가능.  </li></div>
+</ul>
+<a name="wp69990"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">RenderingHints</code> 속성을 설정 또는 변경하려면 ,<code class="cCode">setRenderingHints</code> 를 호출합니다. 힌트를 디폴트로 설정하면(자), 플랫폼에서의 렌더링의 디폴트 설정이 사용됩니다.
+</p>
+<a name="wp70008"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp68882">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp68882"> </a> <div class="pCellHeading">
+평활화
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp69228"> </a> <p class="pBody">
+graphics primitive를 래스터 그래픽 디스플레이 장치에 렌더링 하면(자), 「앨리어스(alias)화」를 위해서(때문에) 인연이 깔쭉깔쭉하게 되는 경우가 있습니다. 호나 대각선의 경우, 직선이나 곡선의 경로에 가장 가까운 픽셀을 온으로 해 근사 표현하므로, 톱니모양 한 표시가 됩니다. 해상도의 낮은 장치에서는 이 현상이 특히 현저하게 되기 (위해)때문에, 수평이나 수직의 선의 매끄러운 인연에 대해, 톱니 모양의 인연이 두드러져 보여 버립니다.  
+</p>
+<a name="wp69327"> </a> <p class="pBody">
+「평활화」는, 객체의 인연을 매끄럽게 렌더링 하기 위해서 사용되는 기법입니다. <em class="cEmphasis"></em>단순하게 직선이나 곡선에 가장 가까운 픽셀을 온으로 하는 것이 아니라, 렌더링 되는 형상에 의해 커버되는 영역의 크기 에 비례해, 주위의 픽셀의 휘도가 설정됩니다. 이것에 의해, 객체의 인연이 날카롭지 않게 되어, 복수의 픽셀에 걸쳐 온으로부터 오프로 이행 하게 됩니다. 다만, 평활화를 실시하면 필요한 자원이 증가하기 (위해)때문에, 렌더링의 속도가 늦어지는 경우가 있습니다.
+</p>
+<a name="wp71974"> </a> <p class="pBody">
+. </p><div align="left"><img src="images/j2d-awta.gif" height="85" width="358" alt="이 그래픽스는, 전의 문장으로 설명한 것처럼, 앨리어스(alias)화 된 그래픽스와 평준화된 그래픽스의 예입니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp61854"> </a> <h3 class="pHeading2">
+2.2. 3	stroke 속성
+</h3>
+<a name="wp67742"> </a> <p class="pBody">
+<code class="cCode">GeneralPath</code> 객체와 같은 <code class="cCode">Shape</code> 의 stroke를 draw 하는 것은,<code class="cCode">GeneralPath</code> 의 세그먼트(segment)에 따라 논리적인 펜을 달리게 하는 것에 상당합니다. <code class="cCode"><code class="cCode">Graphics2D</code> 의 <code class="cCode">Stroke</code> 속성은, 펜에 의해 draw 되는 궤적의 특성을 정의하는 것입니다.
+</p>
+<a name="wp67856"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥의 stroke 속성을 정의하려면 ,<code class="cCode">BasicStroke</code> 객체를 사용합니다. <code class="cCode">BasicStroke</code> 에서는, 선의 폭, 선단의 스타일, 세그먼트(segment)의 접합 스타일, 파선 패턴등의 특성이 정의되고 있습니다. <code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Stroke</code> 속성을 설정 또는 변경하려면 ,<code class="cCode">setStroke</code> 메소드를 호출합니다.
+</p>
+<a name="wp69253"> </a> <p class="pBody">
+</p><div align="left"><img src="images/endcaps5.gif" height="58" width="478" alt="이 그래픽스는,BasicStroke 에 의해 지원되는, 잘라내, 둥근 붙어, 또는 모퉁이 첨부의 선단을 포함한 첨단 스타일입니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69256"> </a> <div class="pFigureCaption">
+그림 2-1	BasicStroke 에 의해 지원되는 선단 스타일<br /><br />
+</div><a name="wp65703"> </a> <p class="pBody">
+</p><div align="left"><img src="images/joins13.gif" height="81" width="478" alt="이 그래픽스는,BasicStroke 에 의해 지원되는, 경사면, 둥근, 또는 모퉁이를 붙인 선단을 포함한 접속 스타일입니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69259"> </a> <div class="pFigureCaption">
+그림 2-2	BasicStroke 에 의해 지원되는 접속 스타일<br /><br />
+</div><a name="wp63039"> </a> <p class="pBody">
+예를 들어,<a  href="j2d-awt.html#wp61897">그림&#160;2-3</a>  의 최초의 이미지는 모퉁이를 붙인 접속 스타일을 사용하고 있어 2 번째의 이미지는 만 접속 스타일, 만 선단 스타일, 및 파선 패턴을 사용하고 있습니다.
+</p>
+<a name="wp61895"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-awt2.gif" height="90" width="479" alt="전의 문장에서의 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp61897"> </a> <div class="pFigureCaption">
+그림 2-3	stroke의 스타일<br /><br />
+</div><a name="wp68772"> </a> <p class="pBody">
+<code class="cCode">Stroke</code> 속성을 사용하는 <code class="cCode">Graphics2D</code> 렌더링 메소드는,<code class="cCode">draw</code>,<code class="cCode">drawArc</code>,<code class="cCode">drawLine</code>,<code class="cCode">drawOval</code>,<code class="cCode">drawPolygon</code>,<code class="cCode">drawPolyline</code>,<code class="cCode">drawRect</code>, 및 <code class="cCode">drawRoundRect</code> 입니다.  이러한 메소드를 호출하면(자), 지정한 <code class="cCode">Shape</code> 의 윤곽이 렌더링 됩니다. <code class="cCode"><code class="cCode">Stroke</code> 속성은 선의 특성을 정의해,<code class="cCode">Paint</code> 속성은 펜에 의해 draw 되는 궤적의 색과 패턴을 정의하는 것입니다.  
+</p>
+<a name="wp68775"> </a> <p class="pBody">
+예를 들어,<code class="cCode">draw(myRectangle)</code> 를 호출하면(자), 다음의 처리를 합니다.
+</p>
+<ol class="pList1"><a name="wp68709"> </a> <div class="pList1"><li><code class="cCode">Stroke</code> 속성을, 구형의 윤곽선에 적용한다.  </li></div>
+<a name="wp68710"> </a> <div class="pList1Plus"><li>draw 하는 윤곽선을,<code class="cCode">Shape</code> 객체로 변환한다</li></div>
+<a name="wp68711"> </a> <div class="pList1Last"><li>윤곽선을 나타내는 <code class="cCode">Shape</code> 의 외형의 안쪽에 있는 픽셀에,<code class="cCode">Paint</code> 속성을 적용한다 </li></div>
+</ol>
+<a name="wp69350"> </a> <p class="pBody">
+<a  href="j2d-awt.html#wp68717">그림&#160;2-4</a>  은, 이 처리를 구체적인 예로 가리킨 것입니다.
+</p>
+<a name="wp71997"> </a> <p class="pBody">
+</p><div align="left"><img src="images/stroking6.gif" height="124" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68717"> </a> <div class="pFigureCaption">
+그림 2-4	Shape 의 stroke<br /><br />
+</div><a name="wp70202"> </a> <h3 class="pHeading2">
+2.2. 4	전부 칠해 속성
+</h3>
+<a name="wp70203"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥의 전부 칠해 속성은,<code class="cCode">Paint</code> 객체로 나타내집니다. <code class="cCode"><code class="cCode">Graphics2D</code> 문맥에 <code class="cCode">Paint</code> 객체를 추가하려면 ,<code class="cCode">setPaint</code> 메소드를 호출합니다.  
+</p>
+<a name="wp70204"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 또는 Glyph를 draw 하면(자) (<code class="cCode">Graphics2D.draw</code>,<code class="cCode">Graphics2D.drawString</code>), 객체의 윤곽선을 draw 하는 <code class="cCode">Shape</code> 의 안쪽에 있는 모든 픽셀에,<code class="cCode">Paint</code> 가 적용됩니다. <code class="cCode">Shape</code> 를 전부 칠하면(자) (<code class="cCode">Graphics2D.fill</code>),<code class="cCode">Shape</code> 의 외형의 안쪽에 있는 모든 픽셀에,<code class="cCode">Paint</code> 가 적용됩니다. <code class="cCode"></code>
+</p>
+<a name="wp70205"> </a> <p class="pBody">
+단순한 균일의 칠하지는,<code class="cCode">setColor</code> 메소드로 설정할 수 있습니다. <code class="cCode"><code class="cCode">Color</code> 는,<code class="cCode">Paint</code> 인터페이스의 가장 간단한 구현입니다.  
+</p>
+<a name="wp70206"> </a> <p class="pBody">
+그라데이션이나 texture와 같은 한층 더 복잡한 스타일로 <code class="cCode">Shape</code> 를 전부 칠하려면 , Java 2D 의 <code class="cCode">Paint</code> 인터페이스의 <code class="cCode">GradientPaint</code> 클래스와 <code class="cCode">TexturePaint</code> 클래스를 사용합니다. 단순한 일색 칠로 복잡한 칠해를 실시하려고 할 시간이 걸리는 작업이 됩니다만, 이러한 클래스를 사용하면(자) 수고가 걸리는 작업은 필요없게 됩니다. <a  href="j2d-awt.html#wp70216">그림 2-5</a>  에 나타내는 2 종류의 칠하지는,<code class="cCode">GradientPaint</code> 와 <code class="cCode">TexturePaint</code> 로 간단하게 정의할 수 있습니다.
+</p>
+<a name="wp70214"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-awt3.gif" height="75" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp70216"> </a> <div class="pFigureCaption">
+그림 2-5	복잡한 칠해의 스타일<br /><br />
+</div><a name="wp70217"> </a> <p class="pBody">
+<code class="cCode">fill</code> 를 호출해 <code class="cCode">Shape</code> 를 렌더링 하면(자), 시스템에서는 다음의 처리를 합니다.
+</p>
+<ol class="pList1"><a name="wp70218"> </a> <div class="pList1"><li><code class="cCode">Shape</code> 를 구성하는 픽셀을 특정한다</li></div>
+<a name="wp70219"> </a> <div class="pList1Plus"><li><code class="cCode">Paint</code> 객체로부터 각 픽셀의 색을 취득한다</li></div>
+<a name="wp70220"> </a> <div class="pList1Plus"><li>색을 출력 길이치의 적절한 픽셀치로 변환한다</li></div>
+<a name="wp70221"> </a> <div class="pList1Last"><li>출력 길이치에 픽셀을 써낸다</li></div>
+</ol>
+<a name="wp70233"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp70224">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp70224"> </a> <div class="pCellHeading">
+배치처리
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp70226"> </a> <p class="pBody">
+픽셀을 효율적으로 처리하기 위해(때문에), Java 2D API 는 배치로 픽셀을 처리합니다. 특정의 주사선이 연속한 픽셀군 또는 픽셀의 블록을 배치처리 할 수 있습니다. 이 배치처리는, 2 개의 스텝에서 행해집니다.
+</p>
+<ol class="pList1"><a name="wp70227"> </a> <div class="pList1"><li><code class="cCode">Paint</code> 객체의 <code class="cCode">createContext</code> 메소드를 호출해,<code class="cCode">PaintContext</code> 를 작성합니다. <code class="cCode">PaintContext</code> 에는, 현재의 렌더링 조작에 대한 문맥 정보와 색의 생성에 필요한 정보가 포함됩니다. <code class="cCode">createContext</code> 메소드에는, 칠해의 대상이 되고 있는 그래픽스 객체의 사용자 공간과 디바이스 공간에 있어서의 바운딩 박스, 색의 생성에 사용되는 <code class="cCode">ColorModel</code>, 및 사용자 공간으로부터 디바이스 공간에의 매핑으로 사용되는 변환이 건네받습니다. 임의의 <code class="cCode">ColorModel</code> 를 지원할 수 없는 <code class="cCode">Paint</code> 객체도 있으므로,<code class="cCode">ColorModel</code> 는 힌트로서 다루어집니다. <code class="cCode">ColorModel</code> 의 상세한 것에 대하여는,<a  href="j2d-color.html#wp61757">「색」</a>을 참조해 주세요. </li></div>
+<a name="wp70231"> </a> <div class="pList1Last"><li><code class="cCode">getColorModel</code> 메소드를 호출해, 생성된 전부 칠해 색의 <code class="cCode">ColorModel</code> 를 <code class="cCode">PaintContext</code> 로부터 가져옵니다.  </li></div>
+</ol>
+<a name="wp70232"> </a> <p class="pBody">
+다음에,<code class="cCode">getRaster</code> 메소드를 반복해 호출해, 각 배치의 실제의 색데이터를 포함한 <code class="cCode">Raster</code> 를 가져옵니다. 이 정보는 렌더링 파이프라인의 다음의 단계에게 건네져, 그곳에서는, 생성된 색이 현재의 <code class="cCode">Composite</code> 객체를 사용해 draw 됩니다.
+</p>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp68462"> </a> <h3 class="pHeading2">
+2.2. 5	클리핑 패스
+</h3>
+<a name="wp68463"> </a> <p class="pBody">
+「클리핑 패스」는,<code class="cCode">Shape</code> 또는 <code class="cCode">Image</code> 안의 렌더링이 필요한 부분을 나타내는 것입니다. <code class="cCode">Graphics2D</code> 문맥에 클리핑 패스가 포함되어 있는 경우,<code class="cCode">Shape</code> 또는 <code class="cCode">Image</code> 로 실제로 렌더링 되는 것은, 클리핑 패스의 안쪽에 있는 부분만큼입니다.  
+</p>
+<a name="wp68464"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥에 클리핑 패스를 추가하려면 ,<code class="cCode">setClip</code> 메소드를 호출합니다. 임의의 <code class="cCode">Shape</code> 를 사용해, 클리핑 패스를 정의할 수 있습니다.  
+</p>
+<a name="wp68778"> </a> <p class="pBody">
+클리핑 패스를 변경하려면 ,<code class="cCode">setClip</code> 를 호출해 새로운 패스를 지정하든가, 혹은 <code class="cCode">clip</code> 를 호출해, 낡은 클리핑 패스와 새로운 <code class="cCode">Shape</code> 의 교차하고 있는 부분을 새로운 클리핑 패스로 합니다.
+</p>
+<a name="wp68474"> </a> <h3 class="pHeading2">
+2.2. 6	변환
+</h3>
+<a name="wp68950"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥에 포함되어 있는 변환은, 렌더링으로 사용자 공간으로부터 디바이스 공간에 객체를 변환할 경우에 사용됩니다. 회전이나 확대 축소 등, 이외의 변환을 실시하려면 , 그 변환을 <code class="cCode">Graphics2D</code> 문맥에 추가합니다. 추가한 변환은, 렌더링 시에 적용되는 변환의 파이프라인의 일부가 됩니다.  
+</p>
+<a name="wp68965"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 에서는,<code class="cCode">Graphics2D</code> 문맥의 변환을 변경할 방법이 몇개인가 제공되고 있습니다. 무엇보다 간단한 방법은,<code class="cCode">rotate</code>,<code class="cCode">scale</code>,<code class="cCode">shear</code>,<code class="cCode">translate</code> 등의<code class="cCode">Graphics2D</code> 변환 메소드를 호출하는 것입니다. 렌더링으로 적용하는 변환의 특성을 지정하면(자),<code class="cCode">Graphics2D</code> 가 자동적으로 적절한 변경을 실시합니다.
+</p>
+<a name="wp68966"> </a> <p class="pBody">
+현재의 <code class="cCode">Graphics2D</code> 의 변환에,<code class="cCode">AffineTransform</code> 를 명시적으로 「연결」할 수도 있습니다. <code class="cCode"><code class="cCode">AffineTransform</code> 는, graphics primitive의 그룹에 대해, 평행이동, 확대 축소, 회전, 변형등의 선형 변환을 실시합니다. 기존의 변환에 새로운 변환을 연결하면(자), 지정한 마지막 변환이 「최초로」적용됩니다. <em class="cEmphasis"></em>현재의 변환에 새로운 변환을 연결하려면 ,<code class="cCode">Graphics2D.transform</code> 에 <code class="cCode">AffineTransform</code> 를 건네줍니다.  
+</p>
+<a name="wp71904"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 클래스에는 <code class="cCode">setTransform</code> 메소드도 포함됩니다만, 기존의 변환에 다른 좌표변화를 연결하기 위해서 이 메소드를 사용하지 말아 주세요. <code class="cCode"><code class="cCode">setTransform</code> 메소드는 <code class="cCode">Graphics2D</code> 객체의 현행의 변환을 덧쓰기합니다. 이 기능은, 다음과 같은 조작을 실시하는 경우에 필요합니다.
+</p>
+<ul class="pBullet1"><a name="wp71909"> </a> <div class="pBullet1"><li>프린터의 해상도에 맞추어 슬캘링 변환을 실시한다</li></div>
+<a name="wp71910"> </a> <div class="pBullet1Plus"><li>제로 이외의 변환으로, 부모의 원점으로부터 <code class="cCode">JComponent</code> 를 페인트 한다</li></div>
+<a name="wp71911"> </a> <div class="pBullet1Plus"><li>컴퍼넌트를 확대해 보기 쉽게 한다. </li></div>
+<a name="wp71923"> </a> <div class="pBullet1Last"><li><code class="cCode">Graphics2D</code> 객체의 공급자가, 렌더링의 변환으로 효과를 얻을 가능성이 있는 다른 모든 상황.  </li></div>
+</ul>
+<a name="wp68967"> </a> <p class="pBody">
+<code class="cCode">setTransform</code> 메소드는, 변환한 그래픽스, 텍스트, 또는 이미지의 렌더링 후에,<code class="cCode">Graphics2D</code> 객체를 원의 변환에 되돌리는 경우에 사용합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+AffineTransform aT = g2d.getTransform();<a name="wp71938"> </a> 
+g2d.transform(...) ;g2d.draw(...);<a name="wp71939"> </a> 
+g2d.setTransform(aT);<a name="wp71940"> </a> 
+</pre></div>
+<a name="wp71935"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 에서는, 파라미터로서 <code class="cCode">AffineTransform</code> 를 받는 형식의 <code class="cCode">drawImage</code> 메소드도 제공되고 있습니다. 이 메소드를 사용하면(자), 변환의 파이프라인을 변경하지 않아도, 이미지 객체를 draw 할 경우에 목적의 변환을 적용할 수 있습니다. 이미지는,<code class="cCode">Graphics2D</code> 문맥의 현재의 변환에 새로운 변환을 연결했을 경우와 같이 draw 됩니다.
+</p>
+<a name="wp70236"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp68984">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp68984"> </a> <div class="pCellHeading">
+아핀 변환
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp69003"> </a> <p class="pBody">
+Java 2D API 에서는,<code class="cCode">AffineTransform</code> 라고 하는 변환 클래스가 제공되고 있습니다. <code class="cCode"><code class="cCode">AffineTransform</code> 를 사용해, 렌더링때의 텍스트, 도형, 및 이미지의 변환을 합니다. <code class="cCode">Font</code> 객체에 변환을 적용해, 새로운 폰트 파생을 만들 수도 있습니다. 상세한 것에 대하여는,<a  href="j2d-fonts.html#wp74065">「폰트 파생의 작성」</a>을 참조해 주세요.
+</p>
+<a name="wp69007"> </a> <p class="pBody">
+아핀 변환은, graphics primitive의 그룹에 대해서 선형의 변환을 실시합니다. 직선은 직선에, 평행선은 평행선에, 항상 변환됩니다만, 점의 사이의 거리 및 평행이 아닌 선의 사이의 각도는 바뀝니다.  
+</p>
+<a name="wp69008"> </a> <p class="pBody">
+아핀 변환은, 다음의 형식의 2 차원 행렬에 근거해 행해집니다.
+</p>
+<a name="wp69009"> </a> <p class="pBody">
+&#160;
+</p>
+<a name="wp69019"> </a> <p class="pIndented1">
+<em class="cEmphasis"><img src="images/j2d-awt7.gif" height="51" width="47" alt="a,c 및 t 의 서브 x 를 포함한 선두행을 가지는 2 x 3 의 배열.  2 번째의 행은,b,d 및 t 의 서브 y 를 포함하고 있습니다. " border="0" hspace="0" vspace="0"/></em> 여기에서는,<img src="images/j2d-awt8.gif" height="18" width="110" alt="x prime equals a x plus c y plus t sub x" border="0" hspace="0" vspace="0"/> 및 <img src="images/j2d-awt9.gif" height="17" width="121" alt="y prime equals b x plus d y plus t sub y" border="0" hspace="0" vspace="0"/> 입니다.
+</p>
+<a name="wp69020"> </a> <p class="pIndented1">
+&#160;
+</p>
+<a name="wp69021"> </a> <p class="pBody">
+변환을 조합하는 것으로, 객체에 적용할 수 있는 일련의 변환군, 즉 변환의 「파이프라인」을 효과적으로 작성할 수 있습니다. 이 편성을 「연결」이라고 부릅니다. <em class="cEmphasis"></em><code class="cCode">AffineTransform.concatenate</code> 등의 기존의 변환에 새로운 변환을 연결하면(자), 마지막에 지정한 변환이 「최초」에 적용됩니다. <em class="cEmphasis"></em>기존의 변환에, 새로운 변환을 「 전연결」할 수도 있습니다. <em class="cEmphasis"></em>이 경우는, 마지막에 지정한 변환이 「최후」에 적용됩니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp68990"> </a> <p class="pBody">
+전연결은, 사용자 공간은 아니고 디바이스 공간에 관계하는 변환을 실시하기 위해서(때문에) 사용합니다. 예를 들어, 절대 픽셀 공간에 관계하는 변환을 실행하려면 ,<code class="cCode">AffineTransform.preConcatenate</code> 를 사용합니다.
+</p>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp68556"> </a> <h4 class="pHeading3">
+2.2. 6.1	AffineTransform 의 작성
+</h4>
+<a name="wp68557"> </a> <p class="pBody">
+<code class="cCode">AffineTransform</code> 에서는,<code class="cCode">AffineTransform</code> 객체를 작성하기 위한 편리한 메소드군이 제공되고 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp68502"> </a> <div class="pBullet1"><li><code class="cCode">getTranslateInstance</code></li></div>
+<a name="wp68503"> </a> <div class="pBullet1Plus"><li><code class="cCode">getRotateInstance</code></li></div>
+<a name="wp68504"> </a> <div class="pBullet1Plus"><li><code class="cCode">getScaleInstance</code></li></div>
+<a name="wp68505"> </a> <div class="pBullet1Last"><li><code class="cCode">getShearInstance</code></li></div>
+</ul>
+<a name="wp68506"> </a> <p class="pBody">
+이러한 메소드를 사용해 작성하는 변환의 특성을 지정하면(자),<code class="cCode">AffineTransform</code> 가 적절한 변환 행렬을 생성합니다. 변환 행렬의 요소를 직접 지정해,<code class="cCode">AffineTransform</code> 를 작성할 수도 있습니다.
+</p>
+<a name="wp64398"> </a> <h3 class="pHeading2">
+2.2. 7	거듭해 맞댐 속성
+</h3>
+<a name="wp68322"> </a> <p class="pBody">
+2 개의 그래픽 객체가 겹치는 경우, 겹친 부분의 픽셀을 어떠한 색으로 렌더링 할까를 결정할 필요가 있습니다. 예를 들어, 붉은 구형과 푸른 구형을 거듭하는 경우, 2 개의 도형이 공유하는 픽셀은, 적, 청, 또는 2 개의 색의 임의의 편성으로 렌더링 하게 됩니다. 겹치는 영역의 픽셀의 색에 의해, 어느 쪽의 구형이 위가 되어 있어, 어느 정도 비쳐 보일지가 정해집니다. 겹치는 객체로 공유되고 있는 픽셀을 어떠한 색으로 렌더링 할까 결정하는 처리를, 「거듭해 맞댐 처리」라고 부릅니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp67997"> </a> <p class="pBody">
+ Java 2D 의 합성 처리 모델의 기초가 되는 것은,<code class="cCode">Composite</code> 와 <code class="cCode">CompositeContext</code> 라고 하는 2 개의 인터페이스입니다.  
+</p>
+<a name="wp68671"> </a> <p class="pBody">
+사용하는 합성의 스타일을 지정하려면 ,<code class="cCode">setComposite</code> 메소드를 호출해,<code class="cCode">Graphics2D</code> 문맥에 <code class="cCode">AlphaComposite</code> 객체를 추가합니다. <code class="cCode"><code class="cCode">Composite</code> 인터페이스의 구현인 <code class="cCode">AlphaComposite</code> 에서는, 다양한 합성 스타일이 지원되고 있습니다. 이 클래스의 인스턴스는, 기존의 색과 새로운 색을 혼합하는 방법을 기술한 합성의 규칙을 구체적으로 나타내고 있습니다.  
+</p>
+<a name="wp68680"> </a> <p class="pBody">
+<code class="cCode">AlphaComposite</code> 클래스에서 사용되는 가장 일반적인 거듭해 맞댐 규칙의 1 개는 SRC_OVER 로, 이것은, 새로운 색 (소스색)을 기존의 색 (목적지색) 위에 혼합하도록(듯이) 지정하는 것입니다.
+</p>
+<a name="wp72008"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+ </div><div align="left">
+<table border="0" cellpadding="7" id="wp68600">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp68600"> </a> <div class="pCellHeading">
+AlphaComposite 의 합성 규칙
+</div>
+</th>
+    <th><a name="wp68602"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+    <th><a name="wp68604"> </a> <div class="pCellHeading">
+례
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68606"> </a> <div class="pCellBody">
+CLEAR
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68608"> </a> <div class="pCellBody">
+Clear
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68610"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68612"> </a> <div class="pCellBody">
+DEST_IN
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68614"> </a> <div class="pCellBody">
+목적지가 안쪽
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68616"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68618"> </a> <div class="pCellBody">
+DEST_OUT
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68620"> </a> <div class="pCellBody">
+목적지가 외측
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68622"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68624"> </a> <div class="pCellBody">
+DEST_OVER
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68626"> </a> <div class="pCellBody">
+목적지가 위
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68628"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68630"> </a> <div class="pCellBody">
+SRC
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68632"> </a> <div class="pCellBody">
+소스
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68634"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68636"> </a> <div class="pCellBody">
+SRC_IN
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68638"> </a> <div class="pCellBody">
+소스가 안쪽
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68640"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68642"> </a> <div class="pCellBody">
+SRC_OUT
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68644"> </a> <div class="pCellBody">
+소스가 외측
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68646"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68648"> </a> <div class="pCellBody">
+SRC_OVER
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68650"> </a> <div class="pCellBody">
+소스가 위
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68652"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp68654"> </a> <h4 class="pHeading3">
+2.2. 7.1	투명도의 관리
+</h4>
+<a name="wp69138"> </a> <p class="pBody">
+색의 「알파」치는 투명도의 단위로, 색을 거듭했을 때에 전에 렌더링 되고 있는 색이 어느 정도 차단해질까를, 퍼센트로 가리킵니다. <em class="cEmphasis"></em>이 값은, 색을 거듭했을 때에 전에 렌더링 되고 있는 색이 어느 정도 차단해질까를, 퍼센트로 가리킵니다. 불투명한 색 (<code class="cCode">alpha=1. 0</code>)은 아래가 되어 있는 색을 전혀 통하지 않고, 투명한 색 (<code class="cCode">alpha=0. 0</code>)은 아래의 색을 완전하게 통합니다.
+</p>
+<a name="wp69162"> </a> <p class="pBody">
+텍스트와 <code class="cCode">Shape</code> 의 렌더링에서는, 알파치는 <code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 속성으로부터 도출됩니다. <code class="cCode"><code class="cCode">Shape</code> 와 텍스트가 평활화되는 경우는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 속성으로부터 얻을 수 있는 알파치는, 라스터화 된 패스로부터의 픽셀 카버리지 정보와 결합됩니다. 이미지는 독자적인 알파 정보를 보관 유지하고 있습니다. 상세한 것에 대하여는,<a  href="j2d-awt.html#wp64995">「투명도와 이미지」</a>를 참조해 주세요.
+</p>
+<a name="wp64994"> </a> <p class="pBody">
+<code class="cCode">AlphaComposite</code> 객체를 작성할 때에, 알파치를 추가 지정할 수 있습니다. 이 <code class="cCode">AlphaComposite</code> 객체를 <code class="cCode">Graphics2D</code> 문맥에 추가하면(자), 추가한 알파치에 의해, 렌더링 되는 그래픽 객체의 투명도가 커집니다. 즉, 각 그래픽 객체의 알파치에,<code class="cCode">AlphaComposite</code> 의 알파치를 걸 수 있습니다.  
+</p>
+<a name="wp64995"> </a> <h4 class="pHeading3">
+2.2. 7.2	투명도와 이미지
+</h4>
+<a name="wp62010"> </a> <p class="pBody">
+이미지에는, 이미지내의 각 픽셀에 대한 투명도의 정보를 갖게할 수가 있습니다. 「알파 채널」이라고 불리는 이 정보는, 이미지와 기존의 draw 결과를 혼합하기 위해서,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Composite</code> 객체와 조합해 사용됩니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp62014"> </a> <p class="pBody">
+예를 들어,<a  href="j2d-awt.html#wp62022">그림&#160;2-6</a>  은, 다른 투명도 정보를 가지는 3 종류의 이미지입니다. 어느 경우도, 이미지는 푸른 구형에 거듭해 표시됩니다. 이 예에서는,<code class="cCode">Graphics2D</code> 문맥은, 합성 조작으로서 SRC_OVER 를 사용하는 <code class="cCode">AlphaComposite</code> 객체를 포함하고 있는 것으로 합니다.
+</p>
+<a name="wp62020"> </a> <p class="pBody">
+</p><div><img src="images/j2d-awt4.gif" height="268" width="710" alt="다음의 문맥으로 이 그래픽스를 설명합니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp62022"> </a> <div class="pFigureCaption">
+그림 2-6	투명도와 이미지<br /><br />
+</div><a name="wp62023"> </a> <p class="pBody">
+ 최초의 이미지에서는, 모든 픽셀이 완전하게 불투명 (개의 몸) 또는 완전하게 투명 (배경)이 되어 있습니다. 이러한 효과는, Web 페이지로 자주(잘) 사용됩니다. 2 번째의 이미지에서는, 개의 몸의 전픽셀을 불투명하지 않는 일정한 알파치로 렌더링 하는 것으로써, 푸른 배경이 비쳐 보입니다. 3 번째의 이미지에서는, 개의 얼굴의 주위의 픽셀은 완전하게 불투명 (알파 = 1.0)입니다만, 얼굴로부터 멀어지는에 따라, 픽셀의 알파치는 서서히 작아지고 있습니다.
+</p>
+<a name="wp68374"> </a> <h2 class="pHeading1">
+2.3	Graphics2D 문맥의 설정
+</h2>
+<a name="wp70032"> </a> <p class="pBody">
+렌더링을 위한 <code class="cCode">Graphics2D</code> 문맥을 구성하려면 ,<code class="cCode">Graphics2D</code> 의 설정 (set) 메소드를 사용해,<code class="cCode">RenderingHints</code>,<code class="cCode">Stroke</code>,<code class="cCode">Paint</code>, 클리핑 패스,<code class="cCode">Composite</code>,<code class="cCode">Transform</code> 등의 속성을 지정합니다.
+</p>
+<a name="wp65412"> </a> <h3 class="pHeading2">
+2.3. 1	렌더링 힌트의 설정
+</h3>
+<a name="wp70103"> </a> <p class="pBody">
+<code class="cCode">RenderingHints</code> 객체는, 객체를 렌더링 하는 방법에 관한 설정을 모두 캡슐화하고 있습니다. <code class="cCode"><code class="cCode">Graphics2D</code> 문맥에 렌더링 힌트를 설정하려면 ,<code class="cCode">RenderingHints</code> 객체를 생성해,<code class="cCode">Graphics2D.setRenderingHints</code> 에 그것을 건네줍니다.
+</p>
+<a name="wp70042"> </a> <p class="pBody">
+렌더링 모드의 변경을 지원하고 있지 않는 플랫폼도 있으므로, 렌더링 힌트를 설정해도, 특정의 렌더링 알고리즘의 사용이 보증되는 것은 아닙니다.
+</p>
+<a name="wp70057"> </a> <p class="pBody">
+다음의 예에서는, 평활화를 유효하게 해, 렌더링의 preference를 quality 로 설정해 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+qualityHints = new               RenderingHints(RenderingHints.KEY_ANTIALIASING,               RenderingHints.VALUE_ANTIALIAS_ON);<a name="wp70060"> </a> 
+qualityHints.put(RenderingHints.KEY_RENDERING,               RenderingHints.VALUE_RENDER_QUALITY);<a name="wp70066"> </a> 
+g2.setRenderingHints(qualityHints);<a name="wp70110"> </a> 
+</pre></div>
+<a name="wp70111"> </a> <h3 class="pHeading2">
+2.3. 2	stroke 속성의 지정
+</h3>
+<a name="wp70112"> </a> <p class="pBody">
+<code class="cCode">BasicStroke</code> 에서는,<code class="cCode">Shape</code> 의 경계선에 적용되는 특성이 정의되고 있습니다. 이것에는, 선의 폭과 파선 패턴, 선의 세그먼트(segment)의 접속 방법, 및 선단에 적용되는 형상이 포함됩니다. <code class="cCode">Graphics2D</code> 문맥에 stroke 속성을 설정하려면 ,<code class="cCode">BasicStroke</code> 객체를 생성해, 그것을 <code class="cCode">setStroke</code> 메소드에 건네줍니다.
+</p>
+<a name="wp70121"> </a> <h4 class="pHeading3">
+2.3. 2.1	stroke의 폭의 설정
+</h4>
+<a name="wp70123"> </a> <p class="pBody">
+stroke의 폭을 설정하려면 , 목적의 폭을 지정해 <code class="cCode">BasicStroke</code> 객체를 생성해,<code class="cCode">setStroke</code> 메소드를 호출합니다.  
+</p>
+<a name="wp70136"> </a> <p class="pBody">
+다음의 예에서는, stroke의 폭은 12 포인트로 설정해, 접속과 선단의 형상에는 디폴트의 설정을 사용하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+wideStroke = new BasicStroke(12.0f);<a name="wp70134"> </a> 
+g2.setStroke(wideStroke);<a name="wp70135"> </a> 
+</pre></div>
+<a name="wp70122"> </a> <h4 class="pHeading3">
+2.3. 2.2	접속 스타일과 선단 스타일의 지정
+</h4>
+<a name="wp70193"> </a> <p class="pBody">
+접속 스타일과 선단 스타일을 설정하려면 , 목적의 속성을 지정해 <code class="cCode">BasicStroke</code> 객체를 생성합니다.
+</p>
+<a name="wp70194"> </a> <p class="pBody">
+다음의 예에서는, stroke의 폭은 12 포인트로 설정해, 접속부와 선단의 형상에는, 디폴트의 설정은 아니고, 둥그스름을 붙인 스타일을 지정하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+roundStroke = new BasicStroke(4.0f, BasicStroke.CAP_ROUND,              BasicStroke.JOIN_ROUND);<a name="wp70141"> </a> 
+g2.setStroke(roundStroke);<a name="wp70142"> </a> 
+</pre></div>
+<a name="wp68450"> </a> <h4 class="pHeading3">
+2.3. 2.3	파선 패턴의 설정
+</h4>
+<a name="wp64466"> </a> <p class="pBody">
+<code class="cCode">BasicStroke</code> 객체에서는, 복잡한 파선 패턴을 간단하게 정의할 수 있습니다. 그 때문에(위해)는,<code class="cCode">BasicStroke</code> 객체를 만들 때, 파선 패턴을 제어하는 2 개의 파라미터를 지정합니다.
+</p>
+<ul class="pBullet1"><a name="wp64469"> </a> <div class="pBullet1"><li><code class="cCode">dash</code> &#8212; 파선 패턴을 나타내는 배열. 배열의 요소는, 교대로, 데쉬 부분의 사이즈와 데쉬간의 공백 부분의 사이즈를 나타낸다. 요소 0 은 최초의 데쉬 부분을 나타내, 요소 1 은 최초의 공백 부분을 나타낸다</li></div>
+<a name="wp66367"> </a> <div class="pBullet1Last"><li><code class="cCode">dash_phase</code> &#8212; 파선 패턴이 시작되는 위치를 정의하는 오프셋(offset). </li></div>
+</ul>
+<a name="wp69382"> </a> <p class="pBody">
+다음의 예에서는, 2 종류의 파선 패턴이 선에 적용되고 있습니다. 제 1 의 패턴에서는, 데쉬의 사이즈와 데쉬간의 공백부의 사이즈는 일정입니다. 제 2 의 파선 패턴은 한층 더 복잡해, 6 개의 요소를 가지는 배열을 사용해, 파선 패턴이 정의되고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+float dash1[] = {10.0f};<a name="wp69387"> </a> 
+BasicStroke bs = new BasicStroke(5.0f, BasicStroke.CAP_BUTT, <a name="wp64541"> </a> 
+                 BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);<a name="wp64493"> </a> 
+g2.setStroke(bs);<a name="wp64494"> </a> 
+Line2D line = new Line2D.Float(20.0f, 10.0f, 100.0f, 10.0f);<a name="wp64654"> </a> 
+g2.draw(line);<a name="wp64655"> </a> 
+<a name="wp66383"> </a> 
+float[] dash2 = {6.0f, 4.0f, 2.0f, 4.0f, 2.0f, 4.0f};<a name="wp66410"> </a> 
+bs = new BasicStroke(5.0f, BasicStroke.CAP_BUTT, <a name="wp66385"> </a> 
+     BasicStroke.JOIN_MITER, 10.0f, dash2, 0.0f);<a name="wp64501"> </a> 
+g2.setStroke(bs);<a name="wp64511"> </a> 
+g2.draw(line);<a name="wp64513"> </a> 
+</pre></div>
+<a name="wp69394"> </a> <p class="pBody">
+어느 쪽의 파선 패턴도 파선의 오프셋(offset)는 0 으로, 파선의 draw는 파선 패턴의 선두로부터 시작되어 있습니다. 이 2 종류의 파선 패턴을<a  href="j2d-awt.html#wp69457">그림&#160;2-7</a>  에 나타냅니다.
+</p>
+<a name="wp72014"> </a> <p class="pBody">
+. </p><div align="left"><img src="images/j2d-awt11.gif" height="42" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69457"> </a> <div class="pFigureCaption">
+그림 2-7	파선 패턴<br /><br />
+</div><a name="wp68782"> </a> <h3 class="pHeading2">
+2.3. 3	전부 칠해 속성의 지정
+</h3>
+<a name="wp69419"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 속성에 의해, 텍스트와 <code class="cCode">Shapes</code> 의 렌더링시에 사용되는 칠해의 색과 패턴이 정해집니다.
+</p>
+<a name="wp68783"> </a> <h4 class="pHeading3">
+2.3. 3.1	그라데이션을 사용한 Shape 의 전부 칠해
+</h4>
+<a name="wp68784"> </a> <p class="pBody">
+<code class="cCode">GradientPaint</code> 클래스는, 어느 색으로부터 다른 색에의 그라데이션으로 도형을 전부 칠하는 간단한 방법을 제공하고 있습니다. <code class="cCode"><code class="cCode">GradientPaint</code> 를 만들 때, 개시의 위치와 색 및 종료의 위치와 색을 지정합니다. 칠해의 색은, 2 개의 위치를 묶는 선에 따라, 1 개의 색으로부터 다른 색까지, 일정한 비율로 단계적으로 변화합니다. <a  href="j2d-awt.html#wp68790">그림 2-8</a>  은, 그라데이션을 사용한 칠해의 예입니다.  
+</p>
+<a name="wp68788"> </a> <p class="pBody">
+</p><div align="left"><img src="images/gradients10.gif" height="111" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68790"> </a> <div class="pFigureCaption">
+그림 2-8	그라데이션에 의한 칠해의 작성<br /><br />
+</div><a name="wp68794"> </a> <p class="pBody">
+<a  href="j2d-awt.html#wp68790">그림&#160;2-8</a>  의 제 3 의 성형에서는, 개시 위치와 종료 위치가 양쪽 모두 도형의 내부에 있습니다. 그라데이션의 방향을 나타내는 선을 P1 보다 먼저 연장한 부분에 있는 점은, 모두 개시 위치의 색으로 draw 되어, 그라데이션선을 P2 보다 먼저 연장한 부분에 있는 점은, 모두 종료 위치의 색으로 draw 됩니다.  
+</p>
+<a name="wp68795"> </a> <p class="pBody">
+어느 색으로부터 다른 색에의 그라데이션으로 도형을 전부 칠하는 경우는, 다음의 순서로 실시합니다.
+</p>
+<ol class="pList1"><a name="wp68796"> </a> <div class="pList1"><li><code class="cCode">GradientPaint</code> 객체를 생성한다</li></div>
+<a name="wp68797"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D.setPaint</code> 를 호출한다</li></div>
+<a name="wp68798"> </a> <div class="pList1Plus"><li><code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp68799"> </a> <div class="pList1Last"><li><code class="cCode">Graphics2D.fill(shape)</code> 를 호출한다</li></div>
+</ol>
+<a name="wp68800"> </a> <p class="pBody">
+다음의 예에서는, 파랑과 초록의 그라데이션으로 구형을 전부 칠하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+GradientPaint gp = new GradientPaint(50.0f, 50.0f, Color.blue<a name="wp68801"> </a> 
+                   50.0f, 250.0f, Color.green);<a name="wp68802"> </a> 
+g2.setPaint(gp);<a name="wp68803"> </a> 
+g2.fillRect(50, 50, 200, 200);<a name="wp68804"> </a> 
+</pre></div>
+<a name="wp68805"> </a> <h4 class="pHeading3">
+2.3. 3.2	texture를 사용한 Shape 의 전부 칠해
+</h4>
+<a name="wp68806"> </a> <p class="pBody">
+<code class="cCode">TexturePaint</code> 클래스에서는, 반복 패턴으로 도형을 전부 칠하는 간단한 방법이 제공되고 있습니다. <code class="cCode"><code class="cCode">TexturePaint</code> 을 만들 때는, 패턴으로서 사용하는 <code class="cCode">BufferedImage</code> 를 지정합니다. 생성자 에는, 패턴의 반복 단위를 정의하는 구형도 건네줍니다. <a  href="j2d-awt.html#wp68811">그림 2-9</a>  은 이 칠해의 예입니다.
+</p>
+<a name="wp68810"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fill12.gif" height="129" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68811"> </a> <div class="pFigureCaption">
+그림 2-9	texture를 사용한 칠해의 작성<br /><br />
+</div><a name="wp68812"> </a> <p class="pBody">
+texture에 의한 도형의 칠하지는, 다음의 순서로 실시합니다.
+</p>
+<ol class="pList1"><a name="wp68813"> </a> <div class="pList1"><li><code class="cCode">TexturePaint</code> 객체를 생성한다</li></div>
+<a name="wp68814"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D.setPaint</code> 를 호출한다</li></div>
+<a name="wp68815"> </a> <div class="pList1Plus"><li><code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp68816"> </a> <div class="pList1Last"><li><code class="cCode">Graphics2D.fill(shape)</code> 를 호출한다</li></div>
+</ol>
+<a name="wp68817"> </a> <p class="pBody">
+다음의 예에서는, 버퍼링 된 이미지로부터 만들어진 간단한 texture로, 구형을 전부 칠하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+// Create a buffered image texture patch of size 5x5<a name="wp68818"> </a> 
+BufferedImage bi = new BufferedImage(5, 5,   <a name="wp68819"> </a> 
+                       BufferedImage.TYPE_INT_RGB);<a name="wp68820"> </a> 
+Graphics2D big = bi.createGraphics();<a name="wp68821"> </a> 
+// Render into the BufferedImage graphics to create the texture<a name="wp68822"> </a> 
+big.setColor(Color.green);<a name="wp68823"> </a> 
+big.fillRect(0,0,5,5);<a name="wp68824"> </a> 
+big.setColor(Color.lightGray);<a name="wp68825"> </a> 
+big.fillOval(0,0,5,5);<a name="wp68826"> </a> 
+<a name="wp68827"> </a> 
+// Create a texture paint from the buffered image<a name="wp68828"> </a> 
+Rectangle r = new Rectangle(0,0,5,5);<a name="wp68829"> </a> 
+TexturePaint tp = new TexturePaint(bi, r, TexturePaint.NEAREST_NEIGHBOR);<a name="wp68830"> </a> 
+<a name="wp68831"> </a> 
+// Add the texture paint to the graphics context. <a name="wp68832"> </a> 
+g2.setPaint(tp);<a name="wp68833"> </a> 
+<a name="wp68834"> </a> 
+// Create and render a rectangle filled with the texture. <a name="wp68835"> </a> 
+g2.fillRect(0,0,200,200);<a name="wp68836"> </a> 
+}<a name="wp68837"> </a> 
+</pre></div>
+<a name="wp70241"> </a> <h3 class="pHeading2">
+2.3. 4	클리핑 패스의 설정
+</h3>
+<a name="wp70242"> </a> <p class="pBody">
+클리핑 패스의 정의는, 다음의 순서로 실시합니다.
+</p>
+<ol class="pList1"><a name="wp70243"> </a> <div class="pList1"><li>렌더링 하는 영역을 나타내는 <code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp70244"> </a> <div class="pList1Last"><li><code class="cCode">Graphics2D.setClip</code> 를 호출해, 작성한 <code class="cCode">Shape</code> 를 <code class="cCode">Graphics2D</code> 문맥의 클리핑 패스로 해서 설정한다</li></div>
+</ol>
+<a name="wp70245"> </a> <p class="pBody">
+클리핑 패스의 축소는, 다음의 순서로 실시합니다.
+</p>
+<ol class="pList1"><a name="wp70246"> </a> <div class="pList1"><li>현재의 클리핑 패스와 공통 부분을 가지는 <code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp70247"> </a> <div class="pList1Last"><li><code class="cCode">clip</code> 를 호출해, 클리핑 패스를, 현재의 클리핑 패스와 새로운 <code class="cCode">Shape</code> 의 공통 부분으로 변경한다</li></div>
+</ol>
+<a name="wp70248"> </a> <p class="pBody">
+다음의 예에서는, 우선 타원형으로 클리핑 패스를 작성해, 다음에 <code class="cCode">clip</code> 를 호출해 클리핑 패스를 변경하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void paint(Graphics g) {<a name="wp70249"> </a> 
+  Graphics2D g2 = (Graphics2D) g;<a name="wp70250"> </a> 
+<a name="wp70251"> </a> 
+// The width and height of the canvas<a name="wp70252"> </a> 
+  int w = getSize(). width;<a name="wp70253"> </a> 
+  int h = getSize(). height;<a name="wp70254"> </a> 
+  // Create an ellipse and use it as the clipping path<a name="wp70255"> </a> 
+  Ellipse2D e = new Ellipse2D.Float(w/4. 0f, h/4. 0f,<a name="wp70256"> </a> 
+                                    w/2. 0f, h/2. 0f);<a name="wp70257"> </a> 
+  g2.setClip(e);<a name="wp70258"> </a> 
+<a name="wp70259"> </a> 
+  // Fill the canvas.  Only the area within the clip is rendered<a name="wp70260"> </a> 
+  g2.setColor(Color.cyan);<a name="wp70261"> </a> 
+  g2.fillRect(0,0, w, h);<a name="wp70262"> </a> 
+<a name="wp70263"> </a> 
+  // Change the clipping path, setting it to the intersection of <a name="wp70264"> </a> 
+  // the current clip and a new rectangle. <a name="wp70265"> </a> 
+  Rectangle r = new Rectangle(w/4+10, h/4+10, w/2-20, h/2-20);<a name="wp70266"> </a> 
+  g2.clip(r);<a name="wp70267"> </a> 
+<a name="wp70268"> </a> 
+  // Fill the canvas.  Only the area within the new clip <a name="wp70269"> </a> 
+  // is rendered<a name="wp70270"> </a> 
+  g2.setColor(Color.magenta);<a name="wp70271"> </a> 
+  g2.fillRect(0,0, w, h);<a name="wp70272"> </a> 
+}<a name="wp70273"> </a> 
+</pre></div>
+<a name="wp68134"> </a> <h3 class="pHeading2">
+2.3. 5	Graphics2D 의 변환의 설정
+</h3>
+<a name="wp68135"> </a> <p class="pBody">
+<code class="cCode">Shape</code>, 텍스트 캐릭터 라인, 또는 <code class="cCode">Image</code> 를 변환하려면 , 렌더링 하기 전에,<code class="cCode">Graphics2D</code> 문맥의 변환 파이프라인에 새로운 <code class="cCode">AffineTransform</code> 를 추가합니다. 그래픽 객체를 렌더링 하면(자), 변환이 적용됩니다.
+</p>
+<a name="wp68136"> </a> <p class="pBody">
+예를 들어, 다음은, 구형을 45 번 회전시켜 draw 하는 순서입니다.
+</p>
+<ol class="pList1"><a name="wp68137"> </a> <div class="pList1"><li>변환을 실행하기 전에, 현재의 <code class="cCode">Graphics2D</code> 변환을 취득한다. 변환을 그래픽스 문맥에 추가하기 전에,<code class="cCode">Graphics2D</code> 에 대해서 <code class="cCode">getTransform</code> 를 항상 호출한다 (그래픽스 문맥이, 윈도우내에서 Swing 컴퍼넌트나 경량 컴퍼넌트의 위치 지정 등, 다른 이유로써 필요한 변환을 보관 유지하는 경우가 있기 (위해)때문에) </li></div>
+<a name="wp71871"> </a> <div class="pList1Plus"><li><code class="cCode">AffineTransform.getRotateInstance</code> 를 호출해, 회전 변환을 취득한다 </li></div>
+<a name="wp68138"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D.transform</code> 를 호출해, 변환 파이프라인에 새로운 변환을 추가한다. <code class="cCode">setTransform</code> 를 실행하면(자), 그래픽스 문맥내의 현재의 변환이 덧쓰기되어 버리기 (위해)때문에, 새로운 좌표변화를 추가하는데 <code class="cCode">setTransform</code> 는 사용하지 않는다</li></div>
+<a name="wp68139"> </a> <div class="pList1Plus"><li><code class="cCode">Rectangle2D.Float</code> 객체를 생성한다</li></div>
+<a name="wp68140"> </a> <div class="pList1Plus"><li><code class="cCode"> Graphics2D.draw</code> 를 호출해, 구형을 렌더링 한다 </li></div>
+<a name="wp71889"> </a> <div class="pList1Last"><li>변환한 구형의 draw 후에, 원의 변환을 사용해 <code class="cCode">setTransform</code> 를 호출하는 것으로,<code class="cCode">Graphics2D</code> 의 변환을 스텝 1 으로 보존한 원의 변환에 되돌린다</li></div>
+</ol>
+<a name="wp71860"> </a> <p class="pBody">
+다음의 예에서는, 구형을 렌더링 할 경우에,<code class="cCode">AffineTransform</code> 의 인스턴스를 사용해 구형을 45 번 회전시키고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+AffineTransform aT = g2.getTransform() ;Rectangle2D rect = new Rectangle2D.Float(1.0, 1.0, 2.0, 3.0);<a name="wp71861"> </a> 
+AffineTransform rotate45 =   <a name="wp71862"> </a> 
+  AffineTransform.getRotateInstance(Math.PI/4. 0,0.0, 0.0)<a name="wp68143"> </a> 
+g2.transform(rotate45);<a name="wp68144"> </a> 
+g2.draw(rect) ;g2.setTransform(aT);<a name="wp61882"> </a> 
+</pre></div>
+<a name="wp69496"> </a> <p class="pBody">
+다음의 예에서는,<code class="cCode">AffineTransform</code> 를 사용해, 중심점을 축으로 텍스트 캐릭터 라인을 회전시키고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+// Define the rendering transform<a name="wp69497"> </a> 
+AffineTransform at = new AffineTransform();<a name="wp69498"> </a> 
+// Apply a translation transform to make room for the<a name="wp69499"> </a> 
+// rotated text. <a name="wp69500"> </a> 
+at.setToTranslation(400.0, 400.0);<a name="wp69501"> </a> 
+g2.transform(at);<a name="wp69502"> </a> 
+// Create a rotation transform to rotate the text<a name="wp69503"> </a> 
+at.setToRotation(Math.PI / 2.0);<a name="wp69504"> </a> 
+// Render four copies of the string &#8220;Java&#8221; at 90 degree angles<a name="wp69505"> </a> 
+for (int i = 0; i &lt; 4; i++) {<a name="wp69506"> </a> 
+    g2.drawString(&#8220;Java&#8221;, 0.0f, 0.0f);<a name="wp69507"> </a> 
+    g2.transform(at);<a name="wp69508"> </a> 
+}<a name="wp69509"> </a> 
+</pre></div>
+<a name="wp69494"> </a> <p class="pBody">
+이미지도 같은 방법으로 변환할 수 있습니다. 렌더링 되는 그래픽 객체의 종류에 관계없이, 렌더링 시에는 <code class="cCode">Graphics2D</code> 문맥의 변환이 적용됩니다. <code class="cCode"></code> 
+</p>
+<a name="wp69540"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 문맥으로 정의되고 있는 변환을 변경하지 않고, 이미지에 변환을 적용하려면 ,<code class="cCode">drawImage</code> 메소드에 <code class="cCode">AffineTransform</code> 를 건네줍니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+AffineTransform rotate45 =   <a name="wp68159"> </a> 
+  AffineTransform.getRotateInstance(Math.PI/4. 0,0.0, 0.0)<a name="wp68160"> </a> 
+g2.drawImage(myImage, rotate45);<a name="wp68162"> </a> 
+</pre></div>
+<a name="wp69464"> </a> <p class="pBody">
+<code class="cCode">Font</code> 에 변환을 적용해, 외형이 다른 <code class="cCode">Font</code> 를 만들 수도 있습니다.  상세한 것에 대하여는,<a  href="j2d-fonts.html#wp74065">「폰트 파생의 작성」</a>을 참조해 주세요.
+</p>
+<a name="wp68155"> </a> <h3 class="pHeading2">
+2.3. 6	거듭해 맞댐의 스타일의 지정
+</h3>
+<a name="wp64024"> </a> <p class="pBody">
+<code class="cCode">AlphaComposite</code> 는, 어느 객체가 다른 객체와 겹칠 때의 색의 렌더링 방법을 결정하는, 합성 규칙을 캡슐화하고 있습니다. <code class="cCode"><code class="cCode">Graphics2D</code> 문맥에 합성 스타일을 지정하려면 ,<code class="cCode">AlphaComposite</code> 를 작성해, 그것을 <code class="cCode">setComposite</code> 메소드에 건네줍니다. 무엇보다 일반적으로 사용되는 합성 스타일은 <code class="cCode">SRC_OVER</code> 입니다.
+</p>
+<a name="wp62986"> </a> <h4 class="pHeading3">
+2.3. 6.1	합성 규칙 SRC_OVER 의 사용 방법
+</h4>
+<a name="wp64129"> </a> <p class="pBody">
+<code class="cCode">SRC_OVER</code> 의 합성 규칙은, 목적지 픽셀 위에 소스 픽셀을 합성해서 , 공유되는 픽셀은 소스 픽셀의 색이 됩니다. 예를 들어, 푸른 구형을 렌더링 하고 나서, 그것과 일부가 겹치는 붉은 구형을 렌더링 했을 경우, 서로 겹치는 부분의 색은 빨강이 됩니다. 즉, 마지막에 렌더링 된 객체가, 가장 위에 표시됩니다.
+</p>
+<a name="wp64147"> </a> <p class="pBody">
+다음은, 합성 규칙 <code class="cCode">SRC_OVER</code> 의 사용 방법입니다.
+</p>
+<ol class="pList1"><a name="wp64148"> </a> <div class="pList1"><li>규칙에 <code class="cCode">SRC_OVER</code> 를 지정해 <code class="cCode">getInstance</code> 메소드를 호출해,<code class="cCode">AlphaComposite</code> 객체를 생성한다</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);<a name="wp64162"> </a> 
+</pre></div>
+<a name="wp64163"> </a> <div class="pList1Last"><li><code class="cCode">setComposite</code> 메소드를 호출해,<code class="cCode">Graphics2D</code> 문맥에 <code class="cCode">AlphaComposite</code> 객체를 추가하는<br /><br />g2.setComposite(ac);</li></div>
+</ol>
+<a name="wp64153"> </a> <p class="pBody">
+합성 객체가 일단 설정되면(자), 겹이든지를 가지는 객체는 지정되고 있는 겹침 맞댐 규칙에 따라 렌더링 됩니다.
+</p>
+<a name="wp64058"> </a> <h4 class="pHeading3">
+2.3. 6.2	합성 객체의 투명도의 변경
+</h4>
+<a name="wp64061"> </a> <p class="pBody">
+<code class="cCode">AlphaComposite</code> 를 사용하면(자), 알파치의 정수를 추가해 지정할 수 있습니다.  이 값은, 소스 픽셀의 알파치 에 걸려, 소스 픽셀의 투명도가 높아집니다.  
+</p>
+<a name="wp64070"> </a> <p class="pBody">
+예를 들어,50% 의 투과율로 소스 객체를 렌더링 하는 <code class="cCode">AlphaComposite</code> 객체를 만들려면 , 알파에 . 5 를 지정합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, . 5f);<a name="wp67072"> </a> 
+</pre></div>
+<a name="wp67498"> </a> <p class="pBody">
+다음의 예에서는, 소스를 우에에 겹치는 알파 합성 객체를 알파치 . 5 로 작성해, 그래픽스 문맥에 추가하고 있습니다.  그 결과, 그 이후의 도형은 50% 의 투명도로 렌더링 됩니다.  
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void paint(Graphics g) {<a name="wp67499"> </a> 
+  Graphics2D g2 = (Graphics2D) g;<a name="wp67500"> </a> 
+<a name="wp67040"> </a> 
+  g2.setColor(Color.red);<a name="wp67041"> </a> 
+  g2.translate(100,50);<a name="wp67042"> </a> 
+  // radians=degree * pie / 180<a name="wp67043"> </a> 
+  g2.rotate((45*java.lang.Math.PI)/180); <a name="wp67044"> </a> 
+  g2.fillRect(0,0,100,100);<a name="wp67089"> </a> 
+  g2.setTransform(new AffineTransform());  // set to identity<a name="wp67090"> </a> 
+  // Create a new alpha composite<a name="wp67091"> </a> 
+  AlphaComposite ac =<a name="wp67048"> </a> 
+      AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);<a name="wp67049"> </a> 
+  g2.setComposite(ac);<a name="wp67050"> </a> 
+  g2.setColor(Color.green);<a name="wp67051"> </a> 
+  g2.fillRect(50,0,100,100);<a name="wp67052"> </a> 
+  g2.setColor(Color.blue);<a name="wp67053"> </a> 
+  g2.fillRect(125,75,100,100);<a name="wp67054"> </a> 
+  g2.setColor(Color.yellow);<a name="wp67055"> </a> 
+  g2.fillRect(50,125,100,100);<a name="wp67056"> </a> 
+  g2.setColor(Color.pink);<a name="wp67057"> </a> 
+  g2.fillRect(-25, 75,100,100);<a name="wp67058"> </a> 
+}<a name="wp67059"> </a> 
+</pre></div>
+<a name="wp68381"> </a> <h2 class="pHeading1">
+2.4	graphics primitive의 렌더링
+</h2>
+<a name="wp68382"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 에서는,<code class="cCode">Shape</code>,<code class="cCode">텍스트 캐릭터 라인</code>, 및 <code class="cCode">Image</code> 의 렌더링용으로, 다음의 메소드가 제공되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp68383"> </a> <div class="pBullet1"><li><code class="cCode">draw</code> &#8212; <code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Stroke</code> 객체와 <code class="cCode">Paint</code> 객체를 사용해,<code class="cCode">Shape</code> 의 패스를 draw 합니다. </li></div>
+<a name="wp68384"> </a> <div class="pBullet1Plus"><li><code class="cCode">fill</code> &#8212; <code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 객체를 사용해,<code class="cCode">Shape</code> 를 전부 칠합니다. </li></div>
+<a name="wp68385"> </a> <div class="pBullet1Plus"><li><code class="cCode">drawString</code> &#8212; <code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 객체를 사용해, 지정된 텍스트 캐릭터 라인을 렌더링 합니다. </li></div>
+<a name="wp68386"> </a> <div class="pBullet1Last"><li><code class="cCode">drawImage</code> &#8212; 지정된 이미지를 렌더링 합니다. </li></div>
+</ul>
+<a name="wp68387"> </a> <p class="pBody">
+도형의 stroke를 draw 해 전부 칠하려면 ,<code class="cCode">draw</code> 메소드와 <code class="cCode">fill</code> 메소드의 양쪽 모두를 호출할 필요가 있습니다.
+</p>
+<a name="wp68388"> </a> <p class="pBody">
+<code class="cCode">Graphics2D</code> 는,<code class="cCode">drawOval</code> 나,<code class="cCode">fillRect</code> 등, 구버젼의 JDK 로 제공되고 있던 draw용과 전부 칠해 용무의 메소드도 지원하고 있습니다.
+</p>
+<a name="wp68389"> </a> <h3 class="pHeading2">
+2.4. 1	Shape 의 draw
+</h3>
+<a name="wp68390"> </a> <p class="pBody">
+Shape 의 draw <code class="cCode">Shape</code> 의 윤곽선은,<code class="cCode">Graphics2D.draw</code> 메소드로 렌더링 할 수 있습니다. 구버젼의 JDK 로 제공되고 있던 다음의 draw 메소드도 지원되고 있습니다. drawLine</code>,<code class="cCode">drawRect</code>,<code class="cCode">drawRoundRect</code>,<code class="cCode">drawOval</code>,<code class="cCode">drawArc</code>,<code class="cCode">drawPolyline</code>,<code class="cCode">drawPolygon</code>,<code class="cCode">draw3DRect</code>.
+</p>
+<a name="wp68391"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 를 draw 하면(자),<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Stroke</code> 객체로 패스가 draw 됩니다. 상세한 것에 대하여는,<a  href="j2d-awt.html#wp61854">「stroke 속성」</a>을 참조해 주세요. <code class="cCode">Graphics2D</code> 문맥에 적절한 <code class="cCode">BasicStroke</code> 객체를 설정하는 것으로, 어떠한 폭과 패턴의 선에서도 draw 할 수 있습니다. <code class="cCode">BasicStroke</code> 객체에서는, 선의 첨단부와 접합부의 속성도 정의되고 있습니다.
+</p>
+<a name="wp68395"> </a> <p class="pBody">
+도형의 윤곽선은, 다음의 순서로 렌더링 합니다.
+</p>
+<ol class="pList1"><a name="wp68396"> </a> <div class="pList1"><li><code class="cCode">BasicStroke</code> 객체를 생성한다</li></div>
+<a name="wp68397"> </a> <div class="pList1Plus"><li><code class="cCode">Graphics2D.setStroke</code> 를 호출한다</li></div>
+<a name="wp68398"> </a> <div class="pList1Plus"><li><code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp68399"> </a> <div class="pList1Last"><li><code class="cCode">Graphics2D.draw(shape)</code> 를 호출한다</li></div>
+</ol>
+<a name="wp68400"> </a> <p class="pBody">
+다음의 예에서는,<code class="cCode">GeneralPath</code> 객체를 사용해 성형을 정의해,<code class="cCode">BasicStroke</code> 객체를 <code class="cCode">Graphics2D</code> 문맥에 추가해, 성형의 윤곽선의 폭과 접합부의 속성을 정의하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void paint(Graphics g) {<a name="wp68401"> </a> 
+  Graphics2D g2 = (Graphics2D) g;<a name="wp68402"> </a> 
+<a name="wp68403"> </a> 
+  // create and set the stroke<a name="wp68404"> </a> 
+  g2.setStroke(new BasicStroke(4.0f));<a name="wp68405"> </a> 
+<a name="wp68406"> </a> 
+  // Create a star using a general path object<a name="wp68407"> </a> 
+  GeneralPath p = new GeneralPath(GeneralPath.NON_ZERO);<a name="wp68408"> </a> 
+  p.moveTo(- 100.0f, - 25.0f);<a name="wp68409"> </a> 
+  p.lineTo(+ 100.0f, - 25.0f);<a name="wp68410"> </a> 
+  p.lineTo(- 50.0f, + 100.0f);<a name="wp68411"> </a> 
+  p.lineTo(+ 0.0f, - 100.0f);<a name="wp68412"> </a> 
+  p.lineTo(+ 50.0f, + 100.0f);<a name="wp68413"> </a> 
+  p.closePath();<a name="wp68414"> </a> 
+<a name="wp68415"> </a> 
+  // translate origin towards center of canvas<a name="wp68416"> </a> 
+  g2.translate(100.0f, 100.0f);<a name="wp68417"> </a> 
+  <a name="wp68418"> </a> 
+  // render the star&#39;s path<a name="wp68419"> </a> 
+  g2.draw(p);<a name="wp68420"> </a> 
+}<a name="wp68421"> </a> 
+</pre></div>
+<a name="wp68422"> </a> <h3 class="pHeading2">
+2.4. 2	Shape 의 전부 칠해
+</h3>
+<a name="wp68423"> </a> <p class="pBody">
+<code class="cCode">Graphics2D.fill</code> 메소드를 사용해, 임의의 <code class="cCode">Shape</code> 를 전부 칠할 수가 있습니다. <code class="cCode"><code class="cCode">Shape</code> 를 전부 칠하면(자), 그 패스의 안쪽의 영역이,<code class="cCode">Color</code>,<code class="cCode">TexturePaint</code>,<code class="cCode">GradientPaint</code> 등,<code class="cCode">Graphics2D</code> 문맥의 현재의 <code class="cCode">Paint</code> 속성으로 렌더링 됩니다.  
+</p>
+<a name="wp68424"> </a> <p class="pBody">
+구버젼의 JDK 로 제공되고 있던 다음의 전부 칠해 메소드도 지원되고 있습니다. <code class="cCode"><code class="cCode">fillRect</code>,<code class="cCode">fill3DRect</code>,<code class="cCode">fillRoundRect</code>,<code class="cCode">fillOval</code>,<code class="cCode">fillArc</code>,<code class="cCode">fillPolygon</code>,<code class="cCode">clearRect</code>.
+</p>
+<a name="wp68425"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 를 전부 칠하려면 , 다음과 같이 합니다.
+</p>
+<ol class="pList1"><a name="wp68426"> </a> <div class="pList1"><li><code class="cCode">Graphics2D.setColor</code> 또는 <code class="cCode">Graphics2D.setPaint</code> 를 사용해, 그래픽스 문맥의 칠해의 색 또는 패턴을 설정한다</li></div>
+<a name="wp68427"> </a> <div class="pList1"><li><code class="cCode">Shape</code> 를 작성한다</li></div>
+<a name="wp68428"> </a> <div class="pList1Last"><li><code class="cCode">Graphics2D.fill</code> 를 호출해,<code class="cCode">Shape</code> 를 렌더링 한다</li></div>
+</ol>
+<a name="wp68429"> </a> <p class="pBody">
+다음의 예에서는,<code class="cCode">setColor</code> 를 호출해, 녹색에서의 칠해를 <code class="cCode">Rectangle2D</code> 에 정의하고 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void paint(Graphics g) {<a name="wp68430"> </a> 
+  Graphics2D g2 = (Graphics2D) g;<a name="wp68431"> </a> 
+<a name="wp68432"> </a> 
+  g2.setPaint(Color.green);<a name="wp68433"> </a> 
+  Rectangle2D r2 = new Rectangle2D.Float(25,25,150,150);<a name="wp68434"> </a> 
+<a name="wp68435"> </a> 
+   g2.fill(r2);<a name="wp68436"> </a> 
+}<a name="wp68437"> </a> 
+</pre></div>
+<a name="wp68438"> </a> <h3 class="pHeading2">
+2.4. 3	텍스트의 렌더링
+</h3>
+<a name="wp68439"> </a> <p class="pBody">
+텍스트 캐릭터 라인을 렌더링 하려면 ,<code class="cCode">Graphics2D.drawString</code> 를 호출해, 렌더링 하는 캐릭터 라인을 건네줍니다. 텍스트의 렌더링과 폰트의 선택에 대한 자세한 것은,<a  href="j2d-fonts.html#wp73059">「폰트와 텍스트 레이아웃」</a>을 참조해 주세요.
+</p>
+<a name="wp68443"> </a> <h3 class="pHeading2">
+2.4. 4	이미지의 렌더링
+</h3>
+<a name="wp68444"> </a> <p class="pBody">
+<code class="cCode">Image</code> 를 렌더링 하려면 ,<code class="cCode">Image</code> 를 작성해,<code class="cCode">Graphics2D.drawImage</code> 를 호출합니다. 이미지의 처리와 렌더링의 상세한 것에 대하여는,<a  href="j2d-image.html#wp65661">「이미징」</a>을 참조해 주세요.
+</p>
+<a name="wp67029"> </a> <h2 class="pHeading1">
+2.5	독자적인 합성 규칙의 정의
+</h2>
+<a name="wp62000"> </a> <p class="pBody">
+<code class="cCode">Composite</code> 인터페이스와 <code class="cCode">CompositeContext</code> 인터페이스를 구현하는 것으로, 완전히 새로운 종류의 합성 조작을 작성할 수 있습니다. <code class="cCode"><code class="cCode">Composite</code> 객체에서는, 실제로 상태를 보관 유지해 합성의 작업을 실시하는 <code class="cCode">CompositeContext</code> 객체가 제공됩니다. 1 개의 <code class="cCode">Composite</code> 객체로부터 복수의 <code class="cCode">CompositeContext</code> 객체를 생성해, multi-thread 환경이 다른 상태를 유지할 수 있습니다.  
+</p>
+<a name="wp70485"> </a> <h2 class="pHeading1">
+2.6	멀티스크린 환경에서의 렌더링
+</h2>
+<a name="wp70497"> </a> <p class="pBody">
+JavaTM 2 SDK 의 버젼 1.3 의 릴리스에 의해, Java 2DTM API 는, 네이티브 플랫폼에서 구성 가능한 3 개(살)이 다른 멀티스크린 구성을 지원합니다.
+</p>
+<ul class="pBullet1"><a name="wp70498"> </a> <div class="pBullet1"><li>2 개(살) 이상의 독립한 화면</li></div>
+<a name="wp70499"> </a> <div class="pBullet1Plus"><li>2 개(살) 이상의 스크린이 있어, 1 개(살)이 메인 화면에서, 다른 화면은 메인 화면의 표시 내용의 카피를 표시한다</li></div>
+<a name="wp70500"> </a> <div class="pBullet1Last"><li>가상 데스크탑 (가상 디바이스라고도 불린다)을 구성하는 복수의 화면</li></div>
+</ul>
+<a name="wp70504"> </a> <p class="pBody">
+Java 2D API 를 이용하는 것으로써,<code class="cCode">GraphicsConfiguration</code> 를 사용해 <code class="cCode">Frame</code>,<code class="cCode">JFrame</code>,<code class="cCode">Window</code>, 또는 <code class="cCode">JWindow</code> 객체를 작성해, 렌더링용의 화면 디바이스를 타겟으로 할 수 있습니다.
+</p>
+<a name="wp70610"> </a> <p class="pBody">
+이것들 3 개의 설정으로, 각 화면 디바이스는 <code class="cCode">GraphicsDevice</code> 로 나타내집니다. <code class="cCode"><code class="cCode">GraphicsDevice</code> 는, 관련지을 수 있었던 복수의 <code class="cCode">GraphicsConfiguration </code> 객체를 보관 유지할 수 있습니다.   
+</p>
+<a name="wp71780"> </a> <p class="pBody">
+가상 디바이스의 구성에 복수의 화면이 사용되는 경우, 물리 화면외에 존재하는 가상 좌표계가, 가상 디바이스의 표현에 사용됩니다. 멀티스크린 구성에서의 각 <code class="cCode">GraphicsConfiguration</code> 의 좌표는, 가상 좌표계에 대한 상대 좌표가 됩니다. 이 환경하에서 1 개의 화면이 메인 화면으로서 인식되어 가상 좌표계의 것 (0, 0)에 배치됩니다. <a  href="j2d-awt.html#wp70601">그림2-10</a>  에 나타내도록(듯이), 메인 화면의 위치에 따라서는, 가상 디바이스가 부의 좌표가 되는 경우가 있습니다.
+</p>
+<a name="wp70840"> </a> <p class="pBody">
+</p><div align="center"><img src="images/MultiScreen14.gif" height="192" width="478" alt="가상 디바이스 환경의 예" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp70601"> </a> <div class="pFigureCaption">
+그림 2-10	가상 디바이스 환경의 예<br /><br />
+</div><a name="wp70517"> </a> <p class="pBody">
+<code class="cCode">Window</code> 또는 <code class="cCode">Frame</code> 가 복수의 물리 화면에 걸치는 현재의 환경이 가상 디바이스 환경일지 어떨지를 판별하려면 , 시스템의 <code class="cCode">GraphicsConfiguration</code> 마다 <code class="cCode">getBounds</code> 를 호출해, 원점이 (0, 0) 이외로 위치하고 있을지 어떨지를 조사합니다. <code class="cCode"><code class="cCode">GraphicsConfiguration</code> 의 <code class="cCode">getBounds</code> 메소드는, 가상 좌표계내의 <code class="cCode">Rectangle</code> 를 돌려줍니다. 이 때문에, 원점이 (0, 0) 이외의 경우에는, 가상 디바이스 환경입니다.
+</p>
+<a name="wp70845"> </a> <p class="pBody">
+가상 디바이스 환경에서는,<code class="cCode">GraphicsConfiguration</code> 객체의 좌표는 가상 좌표계에 대한 상대 좌표가 됩니다. 이 때문에,<code class="cCode">Frame</code> 또는 <code class="cCode">Window</code> 의 <code class="cCode">setLocation</code> 메소드를 호출하는 경우에는, 가상 좌표를 사용할 필요가 있습니다. 예를 들어, 이하의 코드는,<code class="cCode">GraphicsConfiguration</code> 의 경계를 취득해, 그 경계를 사용해, 대응하는 <code class="cCode">GraphicsConfiguration</code> 의 물리 화면의 원점에 대해 (10, 10)의 위치에 <code class="cCode">Frame</code> 를 배치합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+Frame f = new Frame(GraphicsConfiguration gc);<a name="wp70758"> </a> 
+Rectangle bounds = gc.getBounds();<a name="wp70797"> </a> 
+f.setLocation(10 + bounds.x, 10 + bounds.y);<a name="wp70798"> </a> 
+<a name="wp70799"> </a> 
+</pre></div>
+<a name="wp70737"> </a> <p class="pBody">
+<code class="cCode">GraphicsConfiguration</code> 의 경계가 고려되어 있지 않은 경우,<code class="cCode">Frame</code> 는 메인의 물리 화면의 것 (10, 10)에 표시됩니다.  이 정도치는, 지정된 <code class="cCode">GraphicsConfiguration</code> 의 물리 화면과는 다른 경우가 있습니다.
+</p>
+<a name="wp70802"> </a> <p class="pBody">
+가상 디바이스의 경계 판정에,<code class="cCode">getBounds</code> 메소드를 사용할 수도 있습니다. 시스템의 각 <code class="cCode">GraphicsConfiguration</code> 에 대해,<code class="cCode">getBounds</code> 를 호출합니다. 가상 디바이스의 경계를 결정하려면 , 모든 경계의 화집합을 계산합니다. 이하의 예에, 그 구체적인 방법을 나타냅니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+Rectangle virtualBounds = new Rectangle();<a name="wp70806"> </a> 
+GraphicsEnvironment ge =<a name="wp70807"> </a> 
+   GraphicsEnvironment.getLocalGraphicsEnvironment();<a name="wp70837"> </a> 
+GraphicsDevice[] gs = ge.getScreenDevices();<a name="wp70821"> </a> 
+for (int j = 0; j &lt; gs.length; j++) {<a name="wp70822"> </a> 
+   GraphicsDevice gd = gs[j];<a name="wp70823"> </a> 
+   GraphicsConfiguration[] gc = gd.getConfigurations();<a name="wp70824"> </a> 
+   for (int i = 0; i &lt; gc.length; i++) {<a name="wp70825"> </a> 
+      virtualBounds = virtualBounds.union(gc[i]. getBounds());<a name="wp70826"> </a> 
+   }<a name="wp70827"> </a> 
+}<a name="wp70828"> </a> 
+<a name="wp70809"> </a> 
+</pre></div>
+<a name="wp71727"> </a> <p class="pBody">
+다음의 애플릿은,<code class="cCode">GraphicsEnvironment</code> 의 각 <code class="cCode">GraphicsDevice</code> 의 <code class="cCode">GraphicsConfiguration</code> 를 사용해 <code class="cCode">JFrame</code> 를 작성합니다. 각 <code class="cCode">JFrame</code> 는, 적, 록, 청의 스트라이프 세트, 화면 번호,<code class="cCode">GraphicsConfiguration</code> 의 <code class="cCode">GraphicsConfiguration</code> 번호 및 경계를 표시합니다. </code>이 코드예는, Java<sup class="cSuperscript">TM </sup>2  SDK 버젼 1.3 이후에 동작합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp71728"> </a> 
+import java.applet.Applet;<a name="wp71623"> </a> 
+import java.awt. *;<a name="wp71624"> </a> 
+import javax.swing. *;<a name="wp71625"> </a> 
+<a name="wp71626"> </a> 
+public class MultiFrameApplet extends Applet {<a name="wp71627"> </a> 
+    <a name="wp71628"> </a> 
+    public MultiFrameApplet() {<a name="wp71629"> </a> 
+        main(null);<a name="wp71630"> </a> 
+    }<a name="wp71631"> </a> 
+<a name="wp71632"> </a> 
+    public static void main(String[] argv) {<a name="wp71633"> </a> 
+        GraphicsEnvironment ge = <a name="wp71634"> </a> 
+           GraphicsEnvironment.getLocalGraphicsEnvironment();<a name="wp71635"> </a> 
+        GraphicsDevice[] gs = ge.getScreenDevices();<a name="wp71636"> </a> 
+        for (int j = 0; j &lt; gs.length; j++) {<a name="wp71637"> </a> 
+          GraphicsDevice gd = gs[j];<a name="wp71638"> </a> 
+          GraphicsConfiguration[] gc = <a name="wp71639"> </a> 
+             gd.getConfigurations();<a name="wp71640"> </a> 
+             for (int i=0; i &lt; gc.length; i++) {<a name="wp71641"> </a> 
+               JFrame f = <a name="wp71642"> </a> 
+                  new JFrame(gs[j]. getDefaultConfiguration());<a name="wp71643"> </a> 
+               GCCanvas c = new GCCanvas(gc[i]);<a name="wp71644"> </a> 
+               Rectangle gcBounds = gc[i]. getBounds();<a name="wp71645"> </a> 
+               int xoffs = gcBounds.x;<a name="wp71646"> </a> 
+               int yoffs = gcBounds.y;<a name="wp71647"> </a> 
+               f.getContentPane(). add(c);<a name="wp71648"> </a> 
+               f.setTitle(&quot;Screen# &quot;+Integer.toString(j) +&quot;, <a name="wp71649"> </a> 
+                  GC# &quot;+Integer.toString(i));<a name="wp71650"> </a> 
+               f.setSize(300, 150);<a name="wp71651"> </a> 
+               f.setLocation((i*50) +xoffs, (i*60) +yoffs);<a name="wp71652"> </a> 
+               f.show();<a name="wp71653"> </a> 
+             }<a name="wp71654"> </a> 
+        }<a name="wp71655"> </a> 
+    }<a name="wp71656"> </a> 
+}<a name="wp71657"> </a> 
+<a name="wp71658"> </a> 
+class GCCanvas extends Canvas {<a name="wp71659"> </a> 
+<a name="wp71660"> </a> 
+    GraphicsConfiguration gc;<a name="wp71661"> </a> 
+    Rectangle bounds;<a name="wp71662"> </a> 
+<a name="wp71663"> </a> 
+    public GCCanvas(GraphicsConfiguration gc) {<a name="wp71664"> </a> 
+        super(gc);<a name="wp71665"> </a> 
+        this.gc = gc;<a name="wp71666"> </a> 
+        bounds = gc.getBounds();<a name="wp71667"> </a> 
+    }<a name="wp71668"> </a> 
+<a name="wp71669"> </a> 
+    public Dimension getPreferredSize() {<a name="wp71670"> </a> 
+        return new Dimension(300, 150);<a name="wp71671"> </a> 
+    }<a name="wp71672"> </a> 
+<a name="wp71673"> </a> 
+    public void paint(Graphics g) {<a name="wp71674"> </a> 
+        g.setColor(Color.red);<a name="wp71675"> </a> 
+        g.fillRect(0, 0, 100, 150);<a name="wp71676"> </a> 
+        g.setColor(Color.green);<a name="wp71677"> </a> 
+        g.fillRect(100, 0, 100, 150);<a name="wp71678"> </a> 
+        g.setColor(Color.blue);<a name="wp71679"> </a> 
+        g.fillRect(200, 0, 100, 150);<a name="wp71680"> </a> 
+        g.setColor(Color.black);<a name="wp71681"> </a> 
+        g.drawString(&quot;ScreenSize=&quot;+<a name="wp71703"> </a> 
+           Integer.toString(bounds.width)+<a name="wp71704"> </a> 
+           &quot;X&quot;+ Integer.toString(bounds.height), 10, 15);<a name="wp71701"> </a> 
+        g.drawString(gc.toString(), 10, 30);<a name="wp71682"> </a> 
+    }<a name="wp71685"> </a> 
+}<a name="wp71686"> </a> 
+<a name="wp71696"> </a> 
+</pre></div>
+<a name="wp70854"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-intro.html">전의 항목</a>  | <a accesskey="n" href="j2d-geom.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

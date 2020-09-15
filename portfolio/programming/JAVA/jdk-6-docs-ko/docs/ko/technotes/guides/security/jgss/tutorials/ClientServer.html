@@ -1,0 +1,743 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JAAS Login 유틸리티 및 JavaTM GSS-API 를 사용한 안전한 메시지 교환 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="LoginSample.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="MoreToDo.html" target="_top"><img src="images/NextArrow.gif" width="26"  height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+<hr>
+
+
+<center>
+<H1>JAAS Login 유틸리티 및 Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한 안전한 메시지 교환</H1>
+</center>
+
+<br> <br>
+
+
+<p>이 튜토리얼에서는, 2 개의 샘플 어플리케이션을 사용해, Java GSS-API 의 사용 방법을 설명합니다. 이 API 는, 어플리케이션간의 안전한 메시지 교환을 가능하게 합니다. 이 튜토리얼로 사용하는 샘플의 클라이언트 어플리케이션 및 서버 어플리케이션은 다음의 2 개입니다.
+<UL>
+<LI><a href = "SampleClient.java"><code>SampleClient</code></a>  </LI> 
+<LI><a href = "SampleServer.java"><code>SampleServer</code></a>  </LI>
+</UL>
+<blockquote>
+<HR>
+<B>주:</B> 이 튜토리얼에서는,<a href="BasicClientServer.html">「Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환」</a>튜토리얼과 같은 클라이언트 및 서버 어플리케이션을 사용합니다. 다만, 「Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환」튜토리얼에서는, JAAS (Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Authentication and Authorization Service) 프로그래밍은 불필요합니다. 그 대신해, 기반이 되는 기구에 의해 쿠레덴샤르의 취득 방법이 결정됩니다.
+<HR>
+</blockquote>
+
+이 튜토리얼에서는, 정책 파일과 보다 복잡한 로그인 구성 파일을 사용합니다. 프로그램의 실행에는 시큐리티 매니저를 사용하므로, 시큐리티 보호의 필요한 조작을 실시하려면 , 필요한 액세스권이 명시적으로 부여되어 있지 않으면 안됩니다. 이 튜토리얼은, JAAS 승인에 의해 「사용자 중심의」액세스 제어를 추가하는 방법을 나타냅니다. 이 때문에 제어는, 실행중의 코드의 종류와 코드를 실행하는 사용자에 근거해 적용됩니다.
+
+
+<H4>내용:</H4>
+<ul>
+
+<li><a href="#Before">작업을 개시하기 전에:관련 튜토리얼의 소개</a>  <p>
+
+<li><a href="#Overview">클라이언트 및 서버 어플리케이션의 개요</a>  <p>
+
+<li><a href="#KerbNames">Kerberos 사용자명 및 서비스 법칙명</a>  <p>
+
+<li><a href="#TheLCF">로그인 구성 파일</a>  <p>
+
+<li><a href="#ThePFs">정책 파일</a>  <p>
+
+<li><a href="#RunProgs">SampleClient 및 <code>SampleServer</code> 프로그램의 실행</a>  
+
+</ul>
+
+
+
+<br> <br> <br>
+
+
+<A NAME="Before"></A> 
+<H1>작업을 개시하기 전에:관련 튜토리얼의 소개</H1>
+
+<blockquote>
+이 Java GSS-API 튜토리얼은, JAAS 인증의 최초의 스텝입니다. 전의 튜토리얼에서는, JAAS 를 사용해 사용자의 인증이나 승인을 실시하는 방법이나, JAAS 에 필요한 정책 파일과 로그인 구성 파일 (사용하는 기반기술을 지정한다)의 내용 및 샘플을 나타냈습니다. JAAS 입문용의 튜토리얼인 <a href="AcnOnly.html">「JAAS 인증」 </a>및<a href="AcnAndAzn.html">「JAAS 승인」</a>에서는, 어플리케이션은,JAAS 메소드를 직접 호출했습니다. <a href="LoginSample.html">「JAAS Login 유틸리티의 사용」</a>튜토리얼에서는, 어플리케이션을 이 조작으로부터 개방하는 유틸리티프로그램의 사용 방법을 나타냈습니다. 이 튜토리얼의 클라이언트 및 서버 어플리케이션에서도 같은 유틸리티프로그램을 사용하기 때문에,<B>미리 Login 유틸리티의 튜토리얼의 내용을 확인하고 나서 이 튜토리얼에 진행되는 것을 추천합니다</B>.  
+
+<p>이 일련의 튜토리얼에서는, Kerberos 를 인증 및 어플리케이션의 안전한 통신을 지원하는 기간 기술로서 사용하고 있습니다. 자세한 것은,<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+</blockquote>
+<P>
+
+
+
+<a name="Overview"></a> 
+<H1>클라이언트 및 서버 어플리케이션의 개요</H1>
+
+<blockquote>
+
+<p>이 튜토리얼로 사용하는 어플리케이션의 이름은,<code>SampleClient</code> 및 <code>SampleServer</code> 입니다.
+
+<p>각 어플리케이션은, 이 튜토리얼로 제공하는 Login 유틸리티를 실행해 호출합니다. 인수에는, 어플리케이션의 이름 (<code>SampleClient</code> 또는 <code>SampleServer</code>)과 어플리케이션이 필요로 하는 인수를 지정합니다. Login 유틸리티는, JAAS LoginContext 를 사용해, Kerberos 를 사용하는 사용자를 인증합니다. 마지막으로, Login 유틸리티는 어플리케이션 클래스 (여기에서는 <code>SampleClient</code> 또는 <code>SampleServer</code>)의 <code>main</code> 메소드를 호출해, 어플리케이션에 인수를 건네줍니다.
+
+<p>다음에,<code>SampleClient</code> 및 <code>SampleServer</code> 어플리케이션의 실행 방법의 개요를 나타냅니다.
+
+<ol>
+
+<li>인수에 <code>SampleServer</code>, 계속되어 <code>SampleServer</code> 프로그램용의 인수를 지정해 Login 유틸리티를 실행하는 것으로써,<code>SampleServer</code> 어플리케이션을 실행합니다. Login 유틸리티에 의해,<code>SampleServer</code> 를 실행하는 법칙의 패스워드 입력이 요구됩니다(<A HREF="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조). 인증 완료 후에,<code>SampleServer</code> 가 실행됩니다.  
+
+<ol>
+
+<li>인수에 주목해, 클라이언트로부터의 접속을 대기하는 포트 번호를 확인합니다.  <p>
+
+<li>지정된 포트상에서 클라이언트 접속을 대기하는 ServerSocket 를 작성합니다.  <p>
+
+<li>접속을 대기합니다.  
+
+</ol>
+<p>
+
+<li>인수에 <code>SampleClient</code>, 계속되어 <code>SampleClient</code> 프로그램용의 인수를 지정해 Login 유틸리티를 실행하는 것으로써,<code>SampleClient</code> 어플리케이션을 실행합니다. Login 유틸리티에 의해, Kerberos 명 및 패스워드의 입력이 요구됩니다. 인증 완료 후에,<code>SampleClient</code> 가 실행됩니다. It <p>
+
+
+<ol>
+
+<li>인수에 주목해, (1) <code>SampleServer</code>를 나타내는 Kerberos 법칙의 이름(<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조), (2) <code>SampleServer</code> 를 실행중의 호스트 (머신)의 이름, (3) <code>SampleServer</code> 가 클라이언트 접속을 대기하는 포트 번호를 확인합니다.  <p>
+
+<li>인수로서 건네받은 호스트 및 포트를 사용해,<code>SampleServer</code> 에의 소켓 접속을 시도합니다.  
+
+</ol>
+<p>
+
+<li>소켓 접속이 <code>SampleServer</code> 에 의해 받아들여집니다. 양쪽 모두의 어플리케이션이, 소켓 입력 및 출력 스트림로부터의 DataInputStream 및 DataOutputStream 를 초기화해, 장래의 데이터 교환에 사용합니다.  <p>
+
+<li><code>SampleClient</code> 및 <code>SampleServer</code> 는, 각각 GSSContext 를 인스턴스화해, 이후의 안전한 데이터 교환을 가능하게 하는 공유 문맥을 확립합니다.  <p>
+
+<li>이것으로,<code>SampleClient</code> 및 <code>SampleServer</code> 는, 메세지를 안전하게 교환할 수 있습니다.
+<p>
+
+<li><code>SampleClient</code> 및 <code>SampleServer</code> 는, 메시지 교환의 완료시에 클린 업 조작을 실행합니다.
+
+</ol>
+
+<blockquote>
+<HR>
+<B>주:</B> 이 튜토리얼로 사용하는 코드에 대해서는,<a href="BasicClientServer.html">「Java<SUP><FONT SIZE=-2>TM</FONT></SUP> GSS-API 를 사용한, JAAS 프로그래밍 없음의 안전한 메시지 교환」</a>튜토리얼의 「<code>SampleClient</code> 및 <code>SampleServer</code> 코드」의 섹션으로 자세하게 해설합니다.
+<HR>
+</Blockquote>
+
+<a name="KerbNames"></a> 
+<H1>Kerberos 사용자명 및 서비스 법칙명</H1>
+
+<blockquote>
+
+<p>이 튜토리얼에서는, 기반이 되는 인증 및 안전한 통신기술로서 Kerberos V5 가 사용되고 있기 (위해)때문에, 사용자 또는 서비스가 요구되는 경우, 항상 Kerberos 스타일의 <a href="glossary.html">법칙</a>명이 사용됩니다.  
+
+<p>예를 들어,<code>SampleClient</code> 를 실행하는 경우, 「<b>사용자명</b>」의 지정이 요구됩니다. Kerberos 스타일의 사용자명은, Kerberos 인증용인 만큼 할당할 수 있었던 사용자명입니다. 이 사용자명은, 베이스 사용자명 (예, mjones), 「@」, 및 영역의 순서로 구성됩니다 (예, mjones@KRBNT-OPERATIONS.ABC.COM).
+
+<p>일반적으로,<code>SampleServer</code> 등의 서버 프로그램은, 「서비스」를 제공해, 특정의 「<b>서비스 법칙</b>」에 대신해 실행되는 프로그램이라고 보여집니다. <code>SampleServer</code> 의 서비스 법칙명이 필요하게 되는 것은, 다음의 경우입니다.  
+
+<ul>
+
+<li><code>SampleServer</code> 의 실행시에, 적절한 서비스 법칙으로서 로그인할 필요가 있습니다. 이 튜토리얼의 로그인 구성 파일은, 실제로 서비스 법칙명을 지정합니다 (Krb5LoginModule 의 옵션으로서). 이 때문에, JAAS 인증 (Login 유틸리티에 의해 실행된다)은, 서비스 법칙의 패스워드의 지정을 사용자에게 요구합니다. 적절한 패스워드를 지정하면(자), 인증에 성공해, 서비스 법칙명으로부터 법칙을 포함한 주제가 작성되어 새로운 액세스 제어 문맥을 주제에 관련지을 수 있습니다. 그 후에 실행되는 코드 (<code>SampleServer</code> 코드)는, 지정된 법칙에 대신해 실행되었다고 보여집니다.  <p>
+
+<li><code>SampleClient</code> 의 실행시에, 인수의 1 개에 서비스 법칙명을 지정합니다. 이것은,<code>SampleClient</code> 가 적절한 서비스를 사용해 시큐리티 문맥의 확립을 개시하기 위해서 빠뜨릴 수 없는 처리입니다.  <p>
+
+<li>클라이언트 및 서버 정책 파일은 각각, 서비스 법칙명과 등가인 이름 및 「initiate」나 「accept」(시큐리티 문맥 확립의 개시 또는 받아들이고)과 등가인 조작을 보관 유지하는 ServicePermission 를 필요로 합니다.
+</ul>
+
+<p>이 문서 및 관련하는 로그인 구성 파일이나 정책 파일을 통해서,
+
+<blockquote>
+<pre>
+service_principal@your_realm
+</pre>
+</blockquote>
+
+그렇다고 하는 형식에서 기술된 부분은, 자신의 환경에서 사용하는 실제의 이름으로 옮겨놓아 주세요. 서비스 법칙명으로서 「임의의」Kerberos 법칙을 실제로 사용할 수 있습니다. 이 때문에,<b>이 튜토리얼을 실행해 보는 경우, 클라이언트 사용자명과 서비스 법칙명의 양쪽 모두에 자신의 사용자명을 사용할 수 있습니다. </b>
+
+<p>일반적으로, 실전 가동 환경에서는, 시스템 관리 책임자는, 서버를 특정의 법칙만으로 실행해, 특정의 이름을 할당해 사용합니다. 대체로, 할당하는 Kerberos 형식의 서비스 법칙명은, 다음과 같이 됩니다.  
+
+<blockquote>
+<pre>
+service_name/machine_name@realm; 
+</pre>
+</blockquote>
+
+<p>예를 들어, 「KRBNT-OPERATIONS.ABC.COM」라고 하는 영역내의 「raven」라고 하는 이름의 머신으로 nfs 서비스를 실행하는 경우, 서비스 법칙명은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+nfs/raven@KRBNT-OPERATIONS.ABC.COM
+</pre>
+</blockquote>
+
+<p>다만, 이러한 멀티 컴퍼넌트명은 필수가 아닙니다. 사용자 법칙명과 같은, 싱글 컴퍼넌트명도 사용할 수 있습니다. 예를 들어, 인스톨에 의해, 영역내의 모든 ftp 서버로 같은 ftp 서비스 법칙 <code>ftp@realm</code> 를 사용하는 경우와 ftp 서버 마다 다른 ftp 법칙을 사용하는 (예를 들어, 머신 <code>host1</code>,<code>host2</code> 의 ftp 법칙이 각각 <code>ftp/host1@realm</code>,<code>ftp/host2@realm</code> 가 된다) 경우가 있습니다.
+
+
+<H2>법칙명에 영역을 지정할 필요가 있는 경우</H2>
+
+<blockquote>
+
+<p>사용자 또는 서비스 법칙명의 영역이 디폴트 영역의 경우는 (<a href="KerberosReq.html">「Kerberos 요건」</a>을 참조),Kerberos 에 로그인할 때, 사용자명을 요구하는 prompt가 표시된 시점에서, 반드시 영역을 지정할 필요는 없습니다. 예를 들어 사용자명이 「mjones@KRBNT-OPERATIONS.ABC.COM」로,<code>SampleClient</code> 를 실행하는 경우, 사용자명이 요구되면(자), 영역을 생략 해 「mjones」라고만 입력할 수 있습니다. 이름은 Kerberos 법칙명의 문맥으로 해석되어 필요에 따라서 디폴트의 영역을 붙일 수 있습니다.
+
+<p>GSSManager 의 <code>createName</code> 메소드에 의해, 법칙명이 GSSName 에 변환되는 경우에도, 영역의 지정을 생략 할 수 있습니다. 예를 들어,<code>SampleClient</code> 의 실행시에, 인수의 1 개에 서비스 법칙명을 지정합니다. 이 경우,<code>SampleClient</code> 가 이름을 <code>createName</code> 메소드에 건네주어, 이 메소드가 필요에 따라서 디폴트 영역을 추가하기 위해(때문에), 이름을 지정할 때에 영역을 생략 할 수 있습니다.
+
+<p>법칙명을 로그인 구성 파일 및 정책 파일로 사용하는 경우는, 항상 영역을 포함해 이름을 지정하는 것을 추천합니다. 이유는, 이러한 파일의 퍼서의 동작이 구현에 의존하지 않기 때문에, 법칙명의 사용전에 디폴트 영역이 추가되는 경우와 추가되지 않는 경우가 있기 (위해)때문에입니다. 이름에 영역이 지정되어 있지 않은 경우, 이후의 조작은 실패합니다.  
+
+</blockquote>
+
+
+</blockquote>
+
+
+<a name="TheLCF"></a> 
+<H1>로그인 구성 파일</H1>
+
+<blockquote>
+
+<p>JAAS 를 사용하는 경우는 항상, 사용하는 인증 테크놀러지를 로그인 구성 파일로 지정할 필요가 있습니다. 로그인 구성 파일의 자세한 것은,<a href="LoginConfigFile.html">「JAAS 로그인 구성 파일」</a>을 참조해 주세요. 로그인 구성 파일에, 클라이언트측이 사용하는 엔트리와 서버측이 사용하는 엔트리의 2 개가 포함되는 경우,<code>SampleClient</code> 와 <code>SampleServer</code> 의 양쪽 모두로 같은 로그인 구성 파일을 사용할 수 있습니다.
+
+<p>이 튜토리얼로 사용하는 로그인 구성 파일 <a href = "csLogin.conf">csLogin.conf</a>  를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+<b>SampleClient</b> {
+  com.sun.security.auth.module.Krb5LoginModule required;
+};
+
+<b>SampleServer</b> {
+  com.sun.security.auth.module.Krb5LoginModule required storeKey=true 
+    principal="service_principal@your_realm";
+};
+</pre>
+</blockquote>
+
+<p>각 엔트리의 이름은, 2 개의 톱 레벨 어플리케이션 <code>SampleClient</code> 및 <code>SampleServer</code> 의 클래스명에 각각 일치합니다. 이것은, 어플리케이션용의 JAAS 조작을 실행하는 Login 유틸리티에게 건네지는 이름이기도 한 것에 유의해 주세요. Login 유틸리티가 로그인 구성 파일내에서 검색하는 엔트리명은, 건네받은 엔트리명과 같게 됩니다.
+ 
+<p>양쪽 모두의 엔트리에서는, 사용자 인증의 성공을 위해, Sun 의 Kerberos V5 로그인 모듈을 사용할 필요가 있는 것이 지정되고 있습니다. Krb5LoginModule 가 성공하는 것은, 지정된 엔티티에서의 Kerberos KDC 에의 로그인이 성공했을 경우만입니다. <code>SampleClient</code> 의 경우, 사용자는 이름과 패스워드의 입력이 요구됩니다. <code>SampleServer</code> 의 경우, 로그인 구성 파일에 이름 (지정된 법칙, 자세한 것은 후술)이 지정되고 있기 (위해)때문에,<code>SampleServer</code> 를 실행하는 사용자에게는 그 이름으로 지정된 엔티티의 패스워드의 입력만이 요구됩니다. 인증이 성공하려면 , 정확한 패스워드를 지정할 필요가 있습니다.
+
+<p><code>SampleServer</code> 의 엔트리 <b><code>storeKey=true</code></b> 에 의해, 로그인시로 지정된 패스워드로부터 비밀열쇠를 계산하는 것, 및 로그인에 의해 작성된 주제의 비공개 쿠레덴샤르에 비밀열쇠를 포함하는 것이 지정됩니다. 이 열쇠는,<code>SampleClient</code> 와 code>SampleServer</code> 의 사이에 시큐리티 문맥을 확립할 때, 상호 인증에 이용됩니다.
+
+<p>Krb5LoginModule 에는 <b><code>principal</code></b> 옵션을 지정할 수 있습니다. 이 옵션을 사용하면(자), 지정된 법칙 (엔티티/사용자)만이 결정할 수 있던 프로그램에 로그인하도록(듯이) 지정할 수 있습니다. 여기에서는,<code>SampleClient</code> 엔트리에 법칙이 지정되어 있지 않은 (필요에 따라서 지정 가능) 모아 두어 사용자는 사용자명 및 패스워드의 입력이 요구됩니다. 유효한 사용자명 및 패스워드를 보관 유지하는 사용자라면 누구라도 <code>SampleClient</code> 를 실행할 수 있습니다. 한편,<code>SampleServer</code> 에는 특정의 법칙이 지정되고 있습니다. 일반적으로, 시스템 관리 책임자는, 서버를 특정의 법칙으로서 실행하는 것을 좋아합니다. 이 경우,<code>SampleServer</code> 를 실행하는 사용자는, 법칙의 패스워드의 입력이 요구됩니다. 인증이 성공하려면 , 적정한 패스워드를 지정할 필요가 있습니다.
+
+<p>「service_principal@your_realm」를,<code>SampleServer</code> 를 나타내는 서비스 법칙의 이름으로 옮겨놓을 필요가 있습니다(<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조).
+
+<p>Krb5LoginModule 에 인도해 가능한 모든 옵션의 자세한 것은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule 문서</a>를 참조해 주세요.
+
+</blockquote>
+
+
+<a name="ThePFs"></a> 
+<H1>정책 파일</H1>
+
+<blockquote>
+
+<p><code>SampleClient</code> 의 실행시에 사용되는 정책 파일은 <a href = "client.policy">client.policy</a> ,<code>SampleServer</code> 의 실행시에 사용되는 정책 파일은 <a href = "server.policy">server.policy</a>  입니다. 각 파일의 내용을, 이하로 설명합니다.
+
+
+<H2>클라이언트의 정책 파일</H2>
+
+<blockquote>
+
+<p>
+
+<a name="LoginPerms"></a> 
+<H3>Login 유틸리티 클래스에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p><code>Login.java</code> (Login 및 MyAction) 내의 클래스에서는, 다수의 액세스권이 필요합니다. Login 의 사용에 관한 <a href="LoginSample.html">전의 튜토리얼</a>로 추천 한 것처럼,<code>Login.class</code> 및 <code>MyAction.class</code> 파일을 포함한 JAR 파일 <code>Login.jar</code> 를 작성해, 정책 파일 <code>client.policy</code> 로 <code>Login.jar AllPermission</code> 를 부여합니다.
+
+<blockquote>
+<pre>
+grant codebase "file:. /Login.jar" {
+   permission java.security.AllPermission;
+};
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3><code>SampleClient</code> 에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p><p><code>SampleClient</code> 코드는, 액세스권의 필요한 2 개의 타입의 조작을 실행합니다. It
+
+<ul>
+
+<li><code>SampleServer</code> 어플리케이션을 실행하는 호스트 머신과의 소켓 접속을 확립합니다.  <p>
+
+<li><code>SampleServer</code> 와의 시큐리티 문맥을 확립합니다.
+
+</ul>
+
+<p>소켓 접속을 여는데 필요한 액세스권을, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+permission java.net.SocketPermission "*", "connect";
+</pre>
+</blockquote>
+
+<p>"*" (은)는,<code>SampleServer</code> 를 실행하는 머신의 호스트명 또는 IP 주소로 옮겨놓을 수가 있습니다.
+
+<p>시큐리티 문맥의 확립을 개시하기 위해서 필요한 액세스권은, 기반이 되는 기구에 의해 다릅니다. 이 튜토리얼에서는, 기반이 되는 기구로서 Kerberos 를 사용합니다. 이 때문에, 액세스권 <code>javax.security.auth.kerberos.ServicePermission</code> 가 2 개 필요하게 됩니다. ServicePermission 에는, 서비스 법칙명 및 조작 (또는 조작의 리스트)이 필요합니다. 시큐리티 문맥의 확립을 개시하려면 , 조작 "initiate" 를 지정해 2 개의 ServicePermission 를 사용할 필요가 있습니다. ServicePermission 의 이름에 의해, 이하가 지정됩니다.
+
+<ul>
+
+<li> 사용하는 영역의 티켓 교부 서비스용의 서비스 법칙명. 이 액세스권을 부여하는 것으로써, 클라이언트로 Kerberos 를 사용할 수 있게 됩니다.  <p>
+
+<li> <code>SampleServer</code> 를 나타내는 서비스 법칙명(<a href="#KerbNames">「Kerberos 사용자명 및 서비스 법칙명」</a>을 참조). 이 액세스권을 부여하는 것으로써, Kerberos 를 사용해 서비스 <code>SampleServer</code> 라고 대화할 수 있게 됩니다.
+
+</ul>
+
+<p><code>SampleClient</code> 를 실행하는, 인증 끝난 특정 사용자에게 액세스권을 부여합니다. 이 때문에,<code>SampleClient</code> 의 코드 위치 (<code>SampleClient.jar</code> 내), 및 사용자명과 사용자 (<code>SampleClient</code> 를 실행하는 사용자)의 영역을 나타내는 법칙 지시부의 양쪽 모두를 지정합니다. 법칙 지시부를 포함한 정책 파일 <code>grant</code> 문의 자세한 것은, 이 시리즈의 2 번째의 튜토리얼의<a href="AcnAndAzn.html#UserPFStmts">「법칙 베이스의 정책 파일문의 작성 방법」</a>을 참조해 주세요.
+
+<p><code>grant</code> 문의 기본적인 서식을, 다음에 나타냅니다.
+
+<pre>
+  grant CodeBase "file:. /SampleClient.jar", 
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "your_user_name@your_realm" {
+
+    permission java.net.SocketPermission "*", "connect";
+
+    permission javax.security.auth.kerberos.ServicePermission
+        "krbtgt/your_realm@your_realm", 
+        "initiate";
+
+    permission javax.security.auth.kerberos.ServicePermission
+        "service_principal@your_realm", 
+        "initiate";
+};
+</pre>
+
+<p>"<code>your_user_name@your_realm</code>" 에는, 사용하는 Kerberos 사용자명, 「@」, 및 영역을 지정할 필요가 있습니다. 예를 들어, 사용자명이 「mjones」, 영역이 「KRBNT-OPERATIONS.ABC.COM」의 경우,"mjones@KRBNT-OPERATIONS.ABC.COM" (인용부호도 붙인다)를 지정합니다 
+
+<p>또,"<code>service_principal@your_realm</code>" 을,"krbtgt/your_realm@your_realm" 내의 영역 및<a href="#KerbNames">서버를 나타내는 서비스 법칙의 이름</a>으로 옮겨놓을 필요도 있습니다. 전자가 "krbtgt/KRBNT-OPERATIONS.ABC.COM@KRBNT-OPERATIONS.ABC.COM", 후자가 "sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM", 사용자명이 전의 단락으로 지정한 것과 같은 경우를 생각합니다. 이 경우,<code>grant</code> 문은 다음과 같이 됩니다.
+
+<blockquote>
+<pre>
+grant CodeBase "file:. /SampleClient.jar", 
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "mjones@KRBNT-OPERATIONS.ABC.COM" {
+
+    permission java.net.SocketPermission "*", "connect";
+
+    permission javax.security.auth.kerberos.ServicePermission
+        "krbtgt/KRBNT-OPERATIONS.ABC.COM@KRBNT-OPERATIONS.ABC.COM", 
+        "initiate";
+
+    permission javax.security.auth.kerberos.ServicePermission
+        "sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM", 
+        "initiate";
+};
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+</blockquote>
+
+
+
+<H2>서버의 정책 파일</H2>
+
+<blockquote>
+
+<p>
+
+<H3>Login 유틸리티 클래스에 필요한 액세스권 </H3>
+
+<blockquote>
+
+<p>서버 정책 파일내의 Login 클래스용 <code>grant</code> 문은, 클라이언트 정책 파일내의 <code>grant</code> 문과 완전히 같습니다 (<a href="#LoginPerms">「Login 유틸리티 클래스에 필요한 액세스권」</a>을 참조).
+
+<blockquote>
+<pre>
+grant codebase "file:. /Login.jar" {
+   permission java.security.AllPermission;
+};
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<H3><code>SampleServer</code> 에 필요한 액세스권</H3>
+
+<blockquote>
+
+<p><p><code>SampleServer</code> 코드는, 액세스권의 필요한 2 개의 타입의 조작을 실행합니다. It
+
+<ul>
+
+<li>소켓 접속의 수락.  <p>
+
+<li>시큐리티 문맥의 확립의 수락. 시큐리티 문맥 확립용의 「억셉터」로서 기능합니다.
+
+</ul>
+
+<p>소켓 접속의 수락에 필요한 액세스권을, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+permission java.net.SocketPermission "*", "accept";
+</pre>
+</blockquote>
+
+
+<p>"*" (은)는,<code>SampleClient</code> 를 실행하는 머신의 호스트명 또는 IP 주소로 옮겨놓을 수가 있습니다.
+
+<p>시큐리티 문맥의 확립을 받아들이는데 필요한 액세스권을, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+permission javax.security.auth.kerberos.ServicePermission
+    "service_principal@your_realm", 
+    "accept";
+</pre>
+</blockquote>
+
+여기서,"service_principal@your_realm" 는,<a href="#KerbNames"><code>SampleServer</code> 를 나타내는 서비스 법칙의 Kerberos 명</a>입니다.
+
+<p><code>SampleServer</code> 를 실행하는 특정의 인증이 끝난 사용자 (<code>SampleServer</code> 를 나타낸다고 보여지는 서비스 법칙)에게 액세스권을 부여하기 위해(때문에),<code>SampleServer</code> 의 코드 위치 (<code>SampleServer.jar</code> 내) 및 서비스 법칙을 나타내는 법칙 지시부의 양쪽 모두를 지정합니다. 이 이름이,"sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM" 인 경우를 생각합시다. 이 경우,<code>grant</code> 문은 다음과 같이 됩니다.
+
+<pre>
+  grant CodeBase "file:. /SampleServer.jar" 
+    Principal javax.security.auth.kerberos.KerberosPrincipal 
+        "sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM" {
+
+    permission java.net.SocketPermission "*", "accept";
+
+    permission javax.security.auth.kerberos.ServicePermission
+        "sample/raven.abc.com@KRBNT-OPERATIONS.ABC.COM", "accept";
+};
+</pre>
+
+
+</blockquote>
+
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="RunProgs"></a> 
+<H1><code>SampleClient</code> 및 <code>SampleServer</code> 프로그램의 실행</H1>
+
+<blockquote>
+
+<p><code>SampleClient</code> 및 <code>SampleServer</code> 프로그램을 실행하려면 , 다음의 조작을 실시합니다.
+
+<ul>
+
+<li><a href="#PrepSS"><code>SampleServer</code> 의 실행 준비</a>  <p>
+
+<li><a href="#PrepSC"><code>SampleClient</code> 의 실행 준비</a>  <p>
+
+<li><a href="#ExecSS"><code>SampleServer</code> 의 실행</a>  <p>
+
+<li><a href="#ExecSC"><code>SampleClient</code> 의 실행</a>  <p>
+
+</ul>
+
+
+<a name="PrepSS"></a> 
+<H2><code>SampleServer</code> 의 실행 준비</H2>
+
+<blockquote>
+
+<p><code>SampleServer</code> 의 실행 준비에서는, 이하의 조작을 실시합니다.
+
+<ol>
+
+<li>다음의 파일을,<code>SampleServer</code> 를 실행하는 머신으로부터 액세스 가능한 디렉토리에 카피합니다.  <p>
+
+<ul>
+<li><a href = "Login.java">Login.java</a>  원시 파일
+<li><a href = "SampleServer.java">SampleServer.java</a>  원시 파일
+<li><a href = "csLogin.conf">csLogin.conf</a>  로그인 구성 파일
+<li><a href = "server.policy">server.policy</a>  정책 파일
+</ul>
+
+<p>
+
+<li><code>csLogin.conf</code> 의 "service_principal@your_realm" 를,<a href="#KerbNames"><code>SampleServer</code> 를 나타내는 서비스 법칙의 이름</a>으로 옮겨놓습니다.  <p>
+
+<li>표시되는 양쪽 모두의 장소에서,<code>server.policy</code> 의 "service_principal@your_realm" 를,<code>SampleServer</code> 를 나타내는 서비스 법칙의 Kerberos 명으로 옮겨놓아 주세요. 이것은, 로그인 구성 파일로 사용하는 이름과 같은 이름입니다.
+<p>
+
+<li><code>Login.java</code> 및 <code>SampleServer.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac Login.java SampleServer.java
+</pre>
+</blockquote>
+
+<p><code>Login.java</code> 에는 2 개의 클래스가 포함되기 (위해)때문에,<code>Login.java</code> 를 컴파일 하면(자) <code>Login.class</code> 및 <code>MyAction.class</code> 가 생성됩니다.  <p>
+
+<li><code>Login.class 및 MyAction.class</code> 를 포함한 <code>Login.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf Login.jar Login.class MyAction.class
+</pre>
+</blockquote>
+
+<li><code>SampleServer.class</code> 를 포함한 <code>SampleServer.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf SampleServer.jar SampleServer.class
+</pre>
+</blockquote>
+
+</ol>
+
+</blockquote>
+
+
+<a name="PrepSC"></a> 
+<H2><code>SampleClient</code> 의 실행 준비</H2>
+
+<blockquote>
+
+<p><code>SampleClient</code> 의 실행 준비에서는, 이하의 조작을 실시합니다.
+
+<ol>
+
+<li>다음의 파일을,<code>SampleClient</code> 를 실행하는 머신으로부터 액세스 가능한 디렉토리에 카피합니다.  <p>
+
+<ul>
+<li><a href = "Login.java">Login.java</a>  원시 파일
+<li><a href = "SampleClient.java">SampleClient.java</a>  원시 파일
+<li><a href = "csLogin.conf">csLogin.conf</a>  로그인 구성 파일
+<li><a href = "client.policy">client.policy</a>  정책 파일
+</ul>
+
+<p>
+
+<li><code>client.policy</code> 의 각부를 옮겨놓습니다. <p>
+
+<ul>
+
+<li>"your_user_name@your_realm" 을, 실제의 사용자명 및 영역에서 옮겨놓습니다.  <p>
+
+<li>"krbtgt/your_realm@your_realm" 의 <code>your_realm</code> 를, 실제의 영역에서 옮겨놓습니다.  <p>
+
+<li>"service_principal@your_realm" 를,<a href="#KerbNames"><code>SampleServer</code> 를 나타내는 서비스 법칙의 Kerberos 명</a>으로 옮겨놓습니다.
+
+</ul>
+<p>
+
+
+<li><code>Login.java</code> 및 <code>SampleClient.java</code> 를 컴파일 합니다.
+
+<blockquote>
+<pre>
+javac Login.java SampleClient.java
+</pre>
+</blockquote>
+
+<li><code>Login.class 및 MyAction.class</code> 를 포함한 <code>Login.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf Login.jar Login.class MyAction.class
+</pre>
+</blockquote>
+
+<li><code>SampleClient.class</code> 를 포함한 <code>SampleClient.jar</code> 라는 이름의 JAR 파일을 작성합니다.
+
+<blockquote>
+<pre>
+jar -cvf SampleClient.jar SampleClient.class
+</pre>
+</blockquote>
+
+</ol>
+
+</blockquote>
+
+
+<a name="ExecSS"></a> 
+<H2><code>SampleServer</code> 의 실행</H2>
+
+<blockquote>
+
+<p><code>SampleClient</code> 를 실행하기 전에, 반드시 <code>SampleServer</code> 를 실행해 주세요. <code>SampleClient</code> 는 <code>SampleServer</code> 에의 소켓 접속을 시도하기 (위해)때문에,<code>SampleServer</code> 가 가동하고 있지 않으면 소켓 접속을 받아들일 수 있는 두, 실패합니다.
+
+<p><code>SampleServer</code> 를 실행하는 경우,<code>SampleServer</code> 를 가동할 예정의 머신으로 실행해 주세요. 이 머신명 (호스트명)은,<code>SampleClient</code> 의 인수로서 지정합니다. 서비스 법칙명은, 로그인 구성 파일이나 정책 파일 등, 몇개의 장소에 표시됩니다.
+
+<p><code>SampleServer</code> 의 실행용으로 준비한 디렉토리로 이동합니다. 이하를 지정해,<code>Login</code> 클래스를 실행합니다.  <p>
+
+<ul>
+
+<li>적절한 <code>-classpath</code> 절 (<code>Login.jar</code> 및 <code>SampleServer.jar</code> JAR 파일내에서 클래스를 검색하기 위해(때문에)) <p>
+
+<li><code>-Djava.security.manager</code>. 시큐리티 매니저의 인스톨을 지정합니다.  <p>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) 예를 들어, 영역이 "KRBNT-OPERATIONS.ABC.COM" 의 경우,<code>-Djava.security.krb5.realm=KRBNT-OPERATIONS.ABC.COM</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) 예를 들어, KDC 가 "samplekdc.abc.com" 의 경우,<code>-Djava.security.krb5.kdc=samplekdc.abc.com</code> 와 같이 지정합니다. <p>
+
+<li><code>-Djava.security.policy=server.policy</code> (정책 파일 <code>server.policy</code> 를 사용) <p>
+
+<li><code>-Djava.security.auth.login.config=csLogin.conf</code> (로그인 구성 파일 <code>csLogin.conf</code> 를 사용)
+
+</ul>
+
+<p>Login 의 인수로서 어플리케이션의 이름 (여기에서는 "<code>SampleServer</code>")을 건네줍니다. 다음에, 어플리케이션에 필요한 모든 인수를 추가합니다. <code>SampleServer</code> 의 경우, 클라이언트 접속의 대기에 사용하는 포트 번호를 인수로서 지정합니다. 일반적으로은 사용하지 않는 큰 포트 번호이면, 어느 번호에서도 선택할 수 있습니다(예, 4444).
+
+<p>다음에, Microsoft Windows 및 Unix 시스템의 양쪽 모두로 사용 가능한 모든 커멘드를 나타냅니다. classpath 항목의 단락으로서 UNIX 시스템에서는 구두점을 사용하는데 대해, Microsoft Windows 시스템에서는 세미콜론을 사용하는 점만이 다릅니다.  
+
+<p><b>중요:이러한 커멘드의,<code>&lt;port_number&gt;</code> 를 적절한 포트 번호에,<code>&lt;your_realm&gt;</code> 를 사용하는 Kerberos 영역에,<code>&lt;your_kdc&gt;</code> 를 사용하는 Kerberos KDC</b> 에 각각 옮겨놓아 주세요.
+
+<p>다음에, Microsoft Windows 시스템의 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar;SampleServer.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=server.policy 
+ -Djava.security.auth.login.config=csLogin.conf 
+ Login SampleServer &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>다음에, UNIX 시스템의 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar:SampleServer.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=server.policy 
+ -Djava.security.auth.login.config=csLogin.conf 
+ Login SampleServer &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>커멘드 전체를 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. 커멘드가 너무 긴 경우는,. bat 파일 (Microsoft Windows) 또는 . sh 파일 (UNIX)에 기술합니다.  이 파일을 실행하는 것으로, 커멘드를 실행할 수 있습니다.
+
+<p>서비스 법칙의 Kerberos 패스워드의 입력이 요구됩니다. 로그인 구성 파일로 지정된 기반이 되는 Kerberos 인증 기구에 의해, 서비스 법칙의 Kerberos 에의 로그인을 합니다. 인증이 성공하면(자),<code>SampleServer</code> 의 코드가 서비스 법칙으로서 실행됩니다. 이 코드는, 지정된 포트상에서 소켓 접속을 대기합니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+
+<a name="ExecSC"></a> 
+<H2><code>SampleClient</code> 의 실행</H2>
+
+<blockquote>
+
+<p><code>SampleClient</code> 를 실행하기 위해(때문에),<code>SampleClient</code> 의 실행 준비를 실시한 디렉토리로 이동합니다. 다음에, 이하를 지정해,<code>Login</code> 클래스를 실행합니다.  <p>
+
+<ul>
+
+<li>적절한 <code>-classpath</code> 절 (<code>Login.jar</code> 및 <code>SampleClient.jar</code> JAR 파일내에서 클래스를 검색하기 위해(때문에)) <p>
+
+<li><code>-Djava.security.manager</code>. 시큐리티 매니저의 인스톨을 지정합니다.  <p>
+
+<li><code>-Djava.security.krb5.realm=&lt;your_realm&gt;</code> (사용하는 Kerberos 영역) <p> 
+
+<li><code>-Djava.security.krb5.kdc=&lt;your_kdc&gt;</code> (사용하는 Kerberos KDC) <p> 
+
+<li><code>-Djava.security.policy=client.policy</code> (정책 파일 <code>client.policy</code> 를 사용) <p>
+
+<li><code>-Djava.security.auth.login.config=csLogin.conf</code> (로그인 구성 파일 <code>csLogin.conf</code> 를 사용)
+
+</ul>
+
+<p>Login 에, 어플리케이션의 이름 ("<code>SampleClient</code>"), 그 후 <code>SampleClient</code> 에 필요한 인수를 건네줍니다. <code>SampleClient</code> 의 인수는, (1) <a href="#KerbNames"><code>SampleServer</code> 를 나타내는 서비스 법칙의 Kerberos 명</a>, (2) <code>SampleServer</code> 를 실행하는 호스트 (머신)의 이름, (3) <code>SampleServer</code> 가 클라이언트 접속을 대기하는 포트 번호입니다.
+
+<p>다음에, Microsoft Windows 및 Unix 시스템의 양쪽 모두로 사용 가능한 모든 커멘드를 나타냅니다.
+
+<p><b>중요:이러한 커멘드의 <code>&lt;service_principal&gt;</code>,<code>&lt;host&gt;</code>,<code>&lt;port_number&gt;</code>,<code>&lt;your_realm&gt;</code>, 및 <code>&lt;your_kdc&gt;</code> 의 위치에는, 적절한 값을 지정해 주세요</b> (포트 번호는, SampleServer 의 인수로서 건네준 포트 번호와 같게 한다). 값을 인용부호로 둘러쌀 필요는 없습니다.
+
+<p>다음에, Microsoft Windows 시스템의 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar;SampleClient.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=client.policy 
+ -Djava.security.auth.login.config=csLogin.conf 
+ Login SampleClient &lt;service_principal&gt; &lt;host&gt; &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>다음에, UNIX 시스템의 커멘드를 나타냅니다.
+
+<blockquote>
+<pre>
+java -classpath Login.jar:SampleClient.jar 
+ -Djava.security.manager 
+ -Djava.security.krb5.realm=&lt;your_realm&gt; 
+ -Djava.security.krb5.kdc=&lt;your_kdc&gt; 
+ -Djava.security.policy=client.policy 
+ -Djava.security.auth.login.config=csLogin.conf 
+ Login SampleClient &lt;service_principal&gt; &lt;host&gt; &lt;port_number&gt;
+</pre>
+</blockquote>
+
+<p>커멘드 전체를 1 행으로 입력해 주세요. 여기에서는, 읽기 쉽게 하기 위해서 복수행으로 나누어 표시되어 있습니다. SampleServer</code> 를 실행하는 커멘드와 같이, 커멘드 윈도우에 직접 입력하려면  커멘드가 너무 긴 경우,. bat 파일 (Microsoft Windows) 또는 . sh 파일 (UNIX)에 기술해, 그 파일을 실행해 주세요.
+
+<p>입력이 요구되면(자), Kerberos 사용자명 및 패스워드를 입력합니다. 로그인 구성 파일로 지정된 기반이 되는 Kerberos 인증 기구에 의해, Kerberos 에의 로그인을 합니다. 인증이 성공하면(자),<code>SampleClient</code> 의 코드가 사용자의 입장에서 실행됩니다. 이 코드는,<code>SampleServer</code> 와의 소켓 접속을 요구합니다. <code>SampleServer</code> 가 접속을 받아들이면(자),<code>SampleClient</code> 및 <code>SampleServer</code> 에 의해, 이 튜토리얼로 해설한 방법으로, 공유 문맥의 확립 및 메세지의 교환을 합니다.
+
+<p>로그인시의 트러블 슈팅에 대해서는,<a href = "Troubleshooting.html">「트러블 슈팅」</a>을 참조해 주세요.
+
+
+</blockquote>
+
+
+
+</blockquote>
+
+<br>
+
+<hr>
+
+<table summary="layout" width="550">
+<tr>
+<td align="left" valign="center">
+<a href="LoginSample.html" target="_top"><img src="images/PreviousArrow.gif"  width="26" height="26" align="center" border="0" alt="전의 튜토리얼"></a>  <a href="index.html" target="_top"><img src="images/TOCIcon.gif" width="26"  height="26" align="center" border="0" alt="튜토리얼의 소개 및 목차"></a>  <a href="MoreToDo.html" target="_top"><img src="images/NextArrow.gif" width="26"  height="26" align="center" border="0" alt="다음의 튜토리얼"></a> </td>
+
+
+<td align="right" valign="center">
+<font size="-1"><a href="Feedback.html">피드백</a> </font>
+</td>
+
+</tr>
+</table>
+
+
+</blockquote></body>
+
+</html>

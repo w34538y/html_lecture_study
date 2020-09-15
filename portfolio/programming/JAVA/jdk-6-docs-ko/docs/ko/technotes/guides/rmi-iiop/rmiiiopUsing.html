@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>어떤 풀어에 RMI-IIOP 를 사용해야할 것인가 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="50%">
+
+
+<TR>
+<TD ALIGN=LEFT VALIGN=TOP>
+<a href="../../../index.html"><FONT SIZE=-1 COLOR="BLUE">문서의 목차</FONT></a>  <BR>
+
+
+<a href="http://java.sun.com/products/rmi-iiop/"><FONT SIZE=-1 COLOR="BLUE">Java RMI over IIOP 홈 페이지</FONT></a>  <BR><BR>
+
+ 
+</TD>
+</TR>
+
+</TABLE>
+
+<A NAME="when"></A> 
+<H1 ALIGN=CENTER>어떤 풀어에 RMI-IIOP 를 사용해야할 것인가</H1>
+
+
+
+<P>RMI-IIOP 는, Java 프로그램 언어를 사용하고 있어, IIOP 를 배후의 트랜스폴트로서 사용해 RMI 인터페이스로 프로그램을 작성하고 싶은 개발자전용입니다. RMI-IIOP 는 다양한 언어로 구현되는 CORBA 객체와의 상호 운용성을 제공합니다만, 원격 인터페이스를 미리 Java RMI 인터페이스로서 정의해 둘 필요가 있습니다. EJB 컴퍼넌트의 원격 객체 모델은 RMI API 베이스이므로, Enterprise JavaBeans<SUP><FONT SIZE="-2">TM</FONT></SUP> (EJB<SUP><FONT SIZE="-2">TM</FONT></SUP>)를 사용하는 프로그래머에게는 특히 유용합니다.
+
+<P>RMI-IIOP 는, Java 원격 메소드 호출 (RMI)이 뛰어난 기능을, ORBA 가 뛰어난 기능과 연결시킵니다. RMI-IIOP 는, 개발자가 완전하게 Java 프로그램 언어안만으로 작업할 수 있도록(듯이) 하는 것으로써, 분산 어플리케이션의 개발을 스피드업 합니다. 개발자는, 원격 인터페이스를 Java 프로그램 언어로 쓸 수가 있어 Java 테크놀러지와 Java RMI API 를 사용하는 것만으로 원격 인터페이스를 구현할 수 있습니다.   
+
+<P>RMI-IIOP 를 사용해 Java 프로그램 언어로 쓰여진 테크놀러지 베이스의 분산 어플리케이션을 작성하는 경우, Interface Definition Language (IDL)나 매핑에 대해 개별적으로 학습할 필요는 없습니다. 인터페이스는 OMG 매핑이 지원하는 다른 언어나, 벤더가 제공하는 그 언어의 ORB 로 구현할 수가 있습니다. 또 클라이언트는, 원격의 Java 기술 베이스의 인터페이스로부터 파생한 IDL 를 사용해 다른 언어로 쓸 수도 있습니다.    
+
+<P>RMI-IIOP 에서는, 개발자는, 임의의 Java 객체를 어플리케이션 컴퍼넌트간을 참조에 의해도 값에 의해도 수수할 수 있다고 하는 유연성을 얻을 수 있습니다.
+
+<P>CORBA 같이, RMI-IIOP 는, Object Management Group 의 다수의 벤더나 사용자의 참가에 의해 정의된 오픈 표준에 근거하고 있습니다. CORBA 와 같이, RMI-IIOP 는, 통신 프로토콜로서 Internet Inter-ORB Protocol (IIOP)를 사용합니다. IIOP 에 의해, C++, Smalltalk, 그 외의 CORBA 대응 언어로 기술된 어플리케이션 컴퍼넌트가 Java 플랫폼에서 실행하는 컴퍼넌트와 통신할 수 있기 (위해)때문에, 종래의 어플리케이션과 Java 플랫폼의 통합이 용이하게 됩니다.
+
+  <a name="other"></a> 
+<H1 ALIGN=CENTER>분산 어플리케이션을 개발하기 위한별의 선택사항으로서 무엇이 있을까</H1>
+
+<P>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> 프로그램 언어를 사용해 프로그램을 작성하는 개발자는, 분산 응용 프로그램의 작성 방법을 선택할 수 있습니다.   
+
+<P>
+<UL>
+<LI><STRONG>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> RMI</STRONG> 테크놀러지 - 어플리케이션이 모두 Java 프로그램 언어로 쓰여져 있는 경우는,<a href="../rmi/index.html">Java RMI 테크놀러지</a>를 사용하는 것으로, 다른 가상 머신상 및 다른 물리 머신상의 Java 객체간에서의 통신이 가능하게 됩니다. IIOP 옵션을 지정하지 않고 Java RMI 테크놀러지를 사용하면(자), 코드 이식성의 강함이나, 시큐리티, 및 가베지 컬렉션을 활용할 수가 있습니다.  
+<P>
+<LI><STRONG>Java<SUP><FONT SIZE="-2">TM</FONT></SUP> IDL</STRONG> 테크놀러지 - <a  target="AuxWindow" href="../idl/index.html">Java IDL 테크놀러지</a>는,CORBA Interface Definition Language (IDL)로 정의된 인터페이스에 근거해 Java 프로그램 언어로 프로그램을 기술하고 싶은 CORBA 프로그래머전용입니다. 이것은 「일반적으로 대로의」CORBA 프로그래밍으로, C++ 나 COBOL 와 같은 다른 언어와 완전히 같은 방법으로 Java 플랫폼을 지원하고 있습니다.
+<P>
+<LI><STRONG>Enterprise JavaBeans<SUP><FONT SIZE="-2">TM</FONT></SUP> 테크놀러지</STRONG> - <a  target="AuxWindow" href="http://java.sun.com/products/ejb/index.jsp">Enterprise JavaBeans<SUP><FONT SIZE="-2">TM</FONT></SUP></a>  (EJB<SUP><FONT SIZE="-2">TM</FONT></SUP>) 테크놀러지는, Java 2 Platform, Enterprise Edition 에 포함되어 있는 기능입니다. EJB 컴퍼넌트는, 분산 객체 모델로서 Java RMI 테크놀러지 및 IDL 테크놀러지를 사용해, 분산 트랜잭션(transaction) 모델로서 Java Transaction Service (JTS)를 사용합니다. 이기종 서버 환경과의 EJB 컴퍼넌트의 상호 운용을 위해서(때문에) RMI-IIOP 프로토콜을 사용해 Enterprise JavaBeans 컴퍼넌트를 구현했을 경우는, EJB 아키텍쳐(architecture)로부터 CORBA 에의 표준 매핑에 의해, 멀티 벤더의 ORB, 다른 EJB 서버, 및 Java 프로그램 언어 이외의 프로그램 언어로 쓰여진 CORBA 클라이언트와의 상호 운용이 가능하게 됩니다. EJB 서버와 CORBA 클라이언트를 사용하는 샘플 어플리케이션에 대해서는,<a target="AuxWindow" href="interop.html">「Enterprise JavaBeans 컴퍼넌트 및 CORBA 클라이언트」</a>를 참조해 주세요. <em></em>
+</UL>
+
+
+
+
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001-2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT>
+
+   <P>
+  </TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Image I/O API 가이드:4 - Image I/O 플러그 인의 작성
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="extending.fm2.html">전의 항목</a>  | <a href="extending.fm4.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> Image I/O API 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="996884"><i>4.3	</i> read 플러그 인의 작성</a> </h2>
+
+<blockquote>
+<a name="997096"><!-- --></a>  최소 구성의 read 플러그 인은,<code>ImageReaderSpi</code> 의 서브 클래스와<code>ImageReader</code> 의 서브 클래스로 구성됩니다. 한층 더 옵션으로서 스트림메타데이타 및 이메이지메타데이타를 표현하는 <code>IIOMetadata</code> 인터페이스의 구현이나, 메타데이타의 구조를 기술하는 <code>IIOMetadataFormat</code> 객체를 포함할 수도 있습니다. <p>
+<a name="997127"><!-- --></a>  이 후의 설명에서는, 「MyFormat」라고 하는 가공의 파일 형식용의 단순한 read 플러그 인을 구현하는 과정을 개관 합니다. 이 플러그 인은,<code>MyFormatImageReaderSpi</code>,<code>MyFormatImageReader</code>, 및 <code>MyFormatMetadata</code> 의 각 클래스로 구성됩니다. <p>
+<a name="997678"><!-- --></a>  이 가공의 파일 형식은, 「myformat\n」라고 하는 캐릭터 라인으로 시작되어, 그 후, 이미지의 폭과 높이를 나타내는 4 바이트의 정수가 2 개, 이미지의 칼라 타입 (흑백 또는 RGB)을 나타내는 1 바이트가 1 개 계속됩니다. 다음에, 개행 문자의 뒤, 메타데이타의 값이, 키워드가 들어간 행으로 값이 들어온 행이 교대로 계속되어, 마지막에 특수한 키워드 「END」가 놓여집니다. 캐릭터 라인치는, UTF8 encode를 사용해 포함되어 말미에 개행이 놓여집니다. 마지막으로, 이미지 데이터가, 왼쪽에서 오른쪽, 위에서 아래의 순서에, 1 바이트의 그레이 스케일치인가, 적/록/청을 나타내는 3 바이트의 값으로 해서 포함됩니다. <p>
+</blockquote>
+
+<blockquote>
+<a name="997365"><!-- --></a>  <i><b> <code>MyFormatImageReaderSpi</code></b></i>
+</blockquote>
+<blockquote>
+<a name="996982"><!-- --></a>  <code>MyFormatImageReaderSpi</code> 클래스는, 플러그 인에 대한 정보를 제공합니다. 그 정보에는, 벤더명, 플러그 인의 버젼 캐릭터 라인과 설명, 파일 형식의 이름, 그 형식에 대응하는 파일 확장자(extension), 그 형식에 대응하는 MIME 타입, 플러그 인을 처리할 수 있는 입력 소스의 클래스, 및 특히 이 read 플러그 인과 함께 문제 없게 이용할 수 있는 <code>ImageWriterSpi</code> 가 포함됩니다. 게다가 이 클래스는,<code>canDecodeInput</code> 메소드의 구현도 제공하지 않으면 안됩니다. 이 메소드는, 소스 이미지 파일의 내용에 근거해 플러그 인을 검색하기 위해서 사용됩니다. <p>
+<a name="996983"><!-- --></a>  <code>ImageReaderSpi</code> 클래스는, 자신의 메소드의 대부분에 임해서 구현을 제공하고 있습니다. 그러한 메소드는, 주로, 각종의 protected 인스턴스 변수의 값을 돌려줍니다. <code>MyFormatImageReaderSpi</code> 는, 그 인스턴스 변수의 값을, 직접, 또는 슈퍼 클래스 생성자 을 개입시켜 설정할 수가 있습니다. 다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+package com.mycompany.imageio;
+
+import java.io.IOException;
+import java.util.Locale;
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.stream.ImageInputStream;
+
+public class MyFormatImageReaderSpi extends ImageReaderSpi {
+
+	static final String vendorName = &#34;My Company&#34;;
+	static final String version = &#34;1. 0_beta33_build9467&#34;;
+	static final String readerClassName =
+		&#34;com.mycompany.imageio.MyFormatImageReader&#34;;
+	static final String[] names = { &#34;myformat&#34; };
+	static final String[] suffixes = { &#34;myf&#34; };
+	static final String[] MIMETypes = {
+		&#34;image/x-myformat&#34; };
+	static final String[] writerSpiNames = {
+		&#34;com.mycompany.imageio.MyFormatImageWriterSpi&#34; };
+
+	// Metadata formats, more information below
+	static final boolean supportsStandardStreamMetadataFormat = false;
+	static final String nativeStreamMetadataFormatName = null
+	static final String nativeStreamMetadataFormatClassName = null;
+	static final String[] extraStreamMetadataFormatNames = null;
+	static final String[] extraStreamMetadataFormatClassNames = null;
+	static final boolean supportsStandardImageMetadataFormat = false;
+	static final String nativeImageMetadataFormatName =
+		"com.mycompany.imageio.MyFormatMetadata_1. 0";
+	static final String nativeImageMetadataFormatClassName =
+		"com.mycompany.imageio.MyFormatMetadata";
+	static final String[] extraImageMetadataFormatNames = null;
+	static final String[] extraImageMetadataFormatClassNames = null;
+
+	public MyFormatImageReaderSpi() {
+		super(vendorName, version,
+		      names, suffixes, MIMETypes,
+		      readerClassName,
+		      STANDARD_INPUT_TYPE, // Accept ImageInputStreams
+		      writerSpiNames,
+		      supportsStandardStreamMetadataFormat,
+		      nativeStreamMetadataFormatName,
+		      nativeStreamMetadataFormatClassName,
+		      extraStreamMetadataFormatNames,
+		      extraStreamMetadataFormatClassNames,
+		      supportsStandardImageMetadataFormat,
+		      nativeImageMetadataFormatName,
+		      extraImageMetadataFormatNames,
+		      extraImageMetadataFormatClassNames);
+		}
+
+		public String getDescription(Locale locale) {
+			// Localize as appropriate
+			return &#34;Description goes here&#34;;
+		}
+
+		public boolean canDecodeInput(Object input)
+			throws IOException {
+			// see below
+		}
+
+            public ImageReader createReaderInstance(Object extension) {
+                return new MyFormatImageReader(this);
+            }
+	}
+
+</pre></blockquote><blockquote>
+<a name="997269"><!-- --></a>  대부분의 플러그 인은,<code>ImageInputStream</code> 소스로부터만 읽어들일 수 있으면 충분합니다.  그 외의 종류의 입력은 거의, 적절한 <code>ImageInputStream</code> 로 「랩 한다」일이 가능하기 때문에입니다. 그러나, 플러그 인이 다른 <code>Object</code> (예를 들어, 디지탈카메라 또는 스캐너에의 인터페이스를 제공하는 <code>Object</code>)를 직접 처리할 수도 있습니다. 이 인터페이스는, 디바이스의 「스트림」뷰를 제공할 필요는 전혀 없습니다. 그렇지 않고, 이 인터페이스를 인식하고 있는 플러그 인은, 대상의 디바이스를 직접 구동하기 위해서 그 인터페이스를 사용할 수 있습니다. <p>
+<a name="997281"><!-- --></a>  플러그 인을 처리할 수 있는 입력 클래스는,<code>getInputTypes</code> 메소드를 개입시켜 공개합니다. 이 메소드로부터는,<code>Class</code> 객체의 배열을 돌려줍니다. <code>getInputTypes</code> 의 구현은 슈퍼 클래스안에 제공되고 있습니다. 슈퍼 클래스로부터는 <code>inputTypes</code> 인스턴스 변수의 값이 돌려주어져 그 값이 슈퍼 클래스 생성자 의 7 번째의 인수에 의해 설정됩니다. 위의 예로 사용되고 있는 값 <code>STANDARD_INPUT_TYPE</code> 는, 단일의<code>javax.imageio.stream.ImageInputStream.class</code> 요소가 들어가 있는 배열의 생략 표기로, 이 플러그 인이 <code>ImageInputStream</code> 만을 받아들이는 것을 나타내고 있습니다. <p>
+<a name="997095"><!-- --></a>  <code>canDecodeInput</code> 메소드는, 2 개의 일을 판별하는 역할을 완수합니다. 제 1 에, 입력 파라미터가, 그 플러그 인을 이해할 수 있는 클래스의 인스턴스일지 어떨지를 판별합니다.  제 2 에, 파일의 내용이, 그 플러그 인에 의해 처리되는 형식이 되어 있는지 어떤지를 판별합니다.  입력 소스 상태는, 입력 파라미터가 메소드에게 건네졌을 때와 같은 상태로 해 두지 않으면 안됩니다. <code> ImageInputStream</code> 입력 소스의 경우는, mark 및 reset 메소드를 이용할 수 있습니다. 예를 들어, 「MyFormat」형식의 파일은 모두 「myformat」라고 하는 캐릭터 라인으로 시작되어 있으므로,<code>canDecodeInput</code> 메소드는 다음과 같이 구현할 수 있습니다. <p>
+</blockquote><blockquote><pre>
+public boolean canDecodeInput(Object input) {
+	if (! (input instanceof ImageInputStream)) {
+		return false;
+	}
+
+	ImageInputStream stream = (ImageInputStream) input;
+	byte[] b = new byte[8];
+	try {
+		stream.mark();
+		stream.readFully(b);
+		stream.reset();
+	} catch (IOException e) {
+		return false;
+	}
+
+	// Cast unsigned character constants prior to comparison
+	return (b[0] == (byte) &#39;m&#39; &amp;&amp; b[1] == (byte) &#39;y&#39; &amp;&amp;
+	        b[2] == (byte) &#39;f&#39; &amp;&amp; b[3] == (byte) &#39;o&#39; &amp;&amp;
+	        b[4] == (byte) &#39;r&#39; &amp;&amp; b[5] == (byte) &#39;m&#39; &amp;&amp;		
+	        b[6] == (byte) &#39;a&#39; &amp;&amp; b[7] == (byte) &#39;t&#39;);
+}
+</pre></blockquote>
+
+<blockquote>
+<a name="997310"><!-- --></a>  <i><b> <code>MyFormatImageReader</code></b></i>
+</blockquote>
+<blockquote>
+<a name="998556"><!-- --></a>  read 플러그 인을 작성할 때에 중심이 되는 것은,<code>ImageReader</code> 클래스를 확장하는 작업입니다. 이 클래스는, 입력 파일 또는 입력 스트림에 포함되고 있는 이미지에 대한 조회에 응답해, 이미지, 썸네일, 및 메타데이타를 실제로 읽어들이는 역할을 완수합니다. 설명을 간결하게 하기 위한(해), 이 예에서는 썸네일 이미지를 생략 합니다. <p>
+<a name="997445"><!-- --></a>  가공의 MyFormatImageReader 클래스의 메소드를 몇개인가 소개하면(자), 다음과 같이 됩니다. <p>
+</blockquote><blockquote><pre>
+package com.mycompany.imageio;
+
+public class MyFormatImageReader extends ImageReader {
+
+	ImageInputStream stream = null;
+	int width, height;
+	int colorType;
+	
+	// Constants enumerating the values of colorType
+	static final int COLOR_TYPE_GRAY = 0;
+	static final int COLOR_TYPE_RGB = 1;
+
+	boolean gotHeader = false;
+
+	public MyFormatImageReader(ImageReaderSpi originatingProvider) {
+		super(originatingProvider);
+	}
+
+	public void setInput(Object input, boolean isStreamable) {
+		super.setInput(input, isStreamable);
+		if (input == null) {
+			this.stream = null;
+			return;
+		}
+		if (input instanceof ImageInputStream) {
+			this.stream = (ImageInputStream) input;
+		} else {
+			throw new IllegalArgumentException("bad input");
+		}
+	}
+
+	public int getNumImages(boolean allowSearch)
+		throws IIOException {
+		return 1; // format can only encode a single image
+	}
+
+	private void checkIndex(int imageIndex) {
+		if (imageIndex ! = 0) {
+			throw new IndexOutOfBoundsException("bad index");
+		}
+	}
+
+	public int getWidth(int imageIndex)
+		throws IIOException {
+		checkIndex(imageIndex); // must throw an exception if ! = 0
+		readHeader();
+		return width;
+	}
+
+	public int getHeight(int imageIndex)
+		throws IIOException {
+		checkIndex(imageIndex);
+		readHeader();
+		return height;
+	}
+</pre></blockquote>
+
+<blockquote>
+<a name="998040"><!-- --></a>  <i><b> getImageTypes 메소드</b></i>
+</blockquote>
+<blockquote>
+<a name="1001117"><!-- --></a>  read 플러그 인은, 복호화 된 출력을 보관 유지하기 위해서 어떤 종류의 이미지를 사용할 수 있는지를 나타내지 않으면 안됩니다. 그 때문에(위해),<code>ImageTypeSpecifier</code> 클래스를 사용해, 유효한 이미지 레이아웃을 나타내는 <code>SampleModel</code> 및 <code>ColorModel</code> 를 보관 유지합니다. <code>getImageTypes</code> 메소드는,<code>ImageTypeSpecifier</code> 의 <code>Iterator</code> 를 돌려줍니다. 다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+	public Iterator getImageTypes(int imageIndex)
+		throws IIOException {
+		checkIndex(imageIndex);
+		readHeader();
+
+		ImageTypeSpecifier imageType = null;
+		int datatype = DataBuffer.TYPE_BYTE;
+		java.util.List l = new ArrayList();
+		switch (colorType) {
+		case COLOR_TYPE_GRAY:
+			imageType = ImageTypeSpecifier.createGrayscale(8,
+			                                               datatype,
+			                                               false);
+			break;
+
+		case COLOR_TYPE_RGB:
+			ColorSpace rgb =
+				ColorSpace.getInstance(ColorSpace.CS_sRGB);
+			int[] bandOffsets = new int[3];
+			bandOffsets[0] = 0;
+			bandOffsets[1] = 1;
+			bandOffsets[2] = 2;
+			imageType =
+				ImageTypeSpecifier.createInterleaved(rgb,
+				                                     bandOffsets,
+				                                     datatype,
+				                                     false,
+				                                     false);
+			break;				
+		}
+		l.add(imageType);
+		return l.iterator();
+	}
+
+</pre></blockquote>
+
+<blockquote>
+<a name="1001120"><!-- --></a>  <i><b> 이미지 헤더의 해석</b></i>
+</blockquote>
+<blockquote>
+<a name="997490"><!-- --></a>  지금까지 소개한 메소드의 몇개인가에서는,<code>readHeader</code> 메소드를 이용하고 있었습니다.  이러한 메소드는, 이미지의 폭, 높이, 및 레이아웃을 판별하는데 필요한 만큼의 정보를 입력 스트림로부터 읽어들이는 역할을 이루어 있습니다. <code> readHeader</code> 는, 몇번이나 호출해도 안전한 것 같게 정의되고 있습니다 (다만, multi-thread의 액세스는 고려에 넣지 않았다). <p>
+</blockquote><blockquote><pre>
+	public void readHeader() {
+		if (gotHeader) {
+			return;
+		}
+		gotHeader = true;
+
+		if (stream == null) {
+			throw new IllegalStateException("No input stream");
+		}
+
+		// Read `myformat\n&#39; from the stream
+		byte[] signature = new byte[9];
+		try {
+			stream.readFully(signature);
+		} catch (IOException e) {
+			throw new IIOException(&#34;Error reading signature&#34;, e);
+		}
+		if (signature[0] ! = (byte) &#39;m&#39; || ...) { // etc.
+			throw new IIOException("Bad file signature! &#34;);
+		}
+		// Read width, height, color type, newline
+		try {
+			this.width = stream.readInt();
+			this.height = stream.readInt();
+			this.colorType = stream.readUnsignedByte();
+			stream.readUnsignedByte(); // skip newline character
+		} catch (IOException e) {
+			throw new IIOException("Error reading header", e)
+		}
+	}
+</pre></blockquote><blockquote>
+<a name="997661"><!-- --></a>  이미지의 실제의 read는, 다음과 같은 <code>read</code> 메소드에 의해 처리됩니다. <p>
+</blockquote><blockquote><pre>
+	public BufferedImage read(int imageIndex, ImageReadParam param)
+		throws IIOException {
+		readMetadata(); // Stream is positioned at start of image data
+
+</pre></blockquote>
+
+<blockquote>
+<a name="1001114"><!-- --></a>  <i><b> ImageReadParam 의 처리</b></i>
+</blockquote>
+<blockquote>
+<a name="997890"><!-- --></a>  read 메소드의 최초의 섹션에서는, 제공된 ImageReadParam 객체를 사용해, 소스 이미지의 어느 영역을 읽어들이는지, 어떤 종류의 서브 샘플링을 적용하는지, 밴드의 선택과 재배치, 및 목적지에서의 오프셋(offset)를 판별합니다. <p>
+</blockquote><blockquote><pre>		
+	// Compute initial source region, clip against destination later
+	Rectangle sourceRegion = getSourceRegion(param, width, height);
+		
+	// Set everything to default values
+	int sourceXSubsampling = 1;
+	int sourceYSubsampling = 1;
+	int[] sourceBands = null;
+	int[] destinationBands = null;
+	Point destinationOffset = new Point(0, 0);
+
+	// Get values from the ImageReadParam, if any
+	if (param ! = null) {
+		sourceXSubsampling = param.getSourceXSubsampling();
+		sourceYSubsampling = param.getSourceYSubsampling();
+		sourceBands = param.getSourceBands();
+		destinationBands = param.getDestinationBands();
+		destinationOffset = param.getDestinationOffset();
+	}
+
+</pre></blockquote><blockquote>
+<a name="997982"><!-- --></a>  이 시점까지, 읽어들이는 대상의 영역, 서브 샘플링, 밴드의 선택, 및 목적지의 오프셋(offset)가 초기화됩니다. 다음의 스텝은, 적절한 목적지 이미지를 작성합니다. <code>ImageReader.getDestination</code> 메소드는,<code>ImageReadParam.setDestination</code> 를 사용해 이전으로 지정된 이미지가 있으면 그 이미지를 돌려주어, 그렇지 않은 경우는, 제공되는 <code>ImageTypeSpecifier</code> (이 경우는 <code>getImageTypes(0)</code> 를 호출하는 것으로 취득된다)를 사용해 적절한 목적지 이미지를 작성합니다. 다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+	// Get the specified detination image or create a new one
+	BufferedImage dst = getDestination(param,
+	                                   getImageTypes(0),
+	                                   width, height);
+	// Enure band settings from param are compatible with images
+	int inputBands = (colorType == COLOR_TYPE_RGB) ?  3 : 1;
+	checkReadParamBandSettings(param, inputBands,
+	                           dst.getSampleModel(). getNumBands());
+
+</pre></blockquote><blockquote>
+<a name="998232"><!-- --></a>  기술해야 하는 코드의 양을 줄이기 (위해)때문에, 1 행 분의 데이터를 보관 유지하는 <code>Raster</code> 를 작성해, 픽셀은 그 <code>Raster</code> 로부터 실제의 이미지에 카피합니다. 이 방법에 의해, 밴드의 선택이나 픽셀의 포맷 설정의 자세한 것은, 그 추가의 카피 조작 시에 처리됩니다. <p>
+</blockquote><blockquote><pre>
+	int[] bandOffsets = new int[inputBands];
+	for (int i = 0; i &lt; inputBands; i++) {
+		bandOffsets[i] = i;
+	}
+	int bytesPerRow = width*inputBands;
+	DataBufferByte rowDB = new DataBufferByte(bytesPerRow);
+	WritableRaster rowRas =
+		Raster.createInterleavedRaster(rowDB,
+		                               width, 1, bytesPerRow,
+		                               inputBands, bandOffsets,
+		                               new Point(0, 0));
+	byte[] rowBuf = rowDB.getData();
+
+	// Create an int[] that can a single pixel
+	int[] pixel = rowRas.getPixel(0, 0, (int[]) null);
+
+</pre></blockquote><blockquote>
+<a name="998285"><!-- --></a>  여기서, 바이트 배열 <code>rowBuf</code> 를 준비했습니다. 이 배열은, 입력 데이터로부터 정보를 넣을 수가 있어<code>Raster</code> 객체 <code>rowRaster</code> 에 넣는 픽셀 데이터의 소스로도 됩니다. 목적지 이미지의 타일을 (1 개(살)) 추출해, 그 범위를 결정합니다. 그 후, 소스와 목적지의 양쪽 모두에 대해 아이 라스터를 작성합니다. 아이 라스터에서는, 이전에 <code>ImageReadParam</code> 로부터 추출한 설정에 근거해 밴드를 선택해, 늘어놓습니다. 다음의 예를 참조해 주세요. 	                               <p>
+</blockquote><blockquote><pre>		
+	WritableRaster imRas = dst.getWritableTile(0, 0);
+	int dstMinX = imRas.getMinX();
+	int dstMaxX = dstMinX + imRas.getWidth() - 1;
+	int dstMinY = imRas.getMinY();
+	int dstMaxY = dstMinY + imRas.getHeight() - 1;
+
+	// Create a child raster exposing only the desired source bands
+	if (sourceBands ! = null) {
+		rowRas = rowRas.createWritableChild(0, 0,
+		                                    width, 1,
+		                                    0, 0,
+		                                    sourceBands);
+	}
+
+	// Create a child raster exposing only the desired dest bands
+	if (destinationBands ! = null) {
+		imRas = imRas.createWritableChild(0, 0,
+		                                  imRas.getWidth(),
+		                                  imRas.getHeight(),
+		                                  0, 0,
+		                                  destinationBands);
+	}
+</pre></blockquote>
+
+<blockquote>
+<a name="1001111"><!-- --></a>  <i><b> 픽셀 데이터의 read</b></i>
+</blockquote>
+<blockquote>
+<a name="997817"><!-- --></a>  이것으로, 이미지로부터의 픽셀 데이터의 read를 개시할 준비가 갖추어졌습니다. 이후에의 처리에서는, 행 전체를 읽어들여, 서브 샘플링과 목적지의 클리핑을 실행합니다. 수평 방향의 클리핑은, 서브 샘플링을 고려에 넣을 필요가 있기 (위해)때문에, 복잡하게 됩니다. 여기에서는, 픽셀마다의 클리핑을 실행합니다만, 보다 고도의 read 플러그 인이라면, 수평 방향의 클리핑을 1 회에 실행할 수 있는 것도 있습니다. <p>
+</blockquote><blockquote><pre>
+	for (int srcY = 0; srcY &lt; height; srcY++) {
+		// Read the row
+		try {
+			stream.readFully(rowBuf);
+		} catch (IOException e) {
+			throw new IIOException("Error reading line " + srcY, e);
+		}
+			
+		// Reject rows that lie outside the source region,
+		// or which aren&#39;t part of the subsampling
+		if ((srcY &lt; sourceRegion.y) ||
+		    (srcY &gt;= sourceRegion.y + sourceRegion.height) ||
+		    (((srcY - sourceRegion.y) %
+		      sourceYSubsampling) ! = 0)) {
+			continue;
+		}
+
+		// Determine where the row will go in the destination
+		int dstY = destinationOffset.y +
+			(srcY - sourceRegion.y) /sourceYSubsampling;
+		if (dstY &lt; dstMinY) {
+			continue; // The row is above imRas
+		}
+		if (dstY &gt; dstMaxY) {
+			break; // We&#39;re done with the image
+		}
+
+		// Copy each (subsampled) source pixel into imRas
+		for (int srcX = sourceRegion.x;
+		     srcX &lt; sourceRegion.x + sourceRegion.width;
+		     srcX++) {
+			if (((srcX - sourceRegion.x) % sourceXSubsampling) ! = 0) {
+				continue;
+			}
+			int dstX = destinationOffset.x +
+				(srcX - sourceRegion.x) /sourceXSubsampling;
+			if (dstX &lt; dstMinX) {
+				continue;  // The pixel is to the left of imRas
+			}
+			if (dstX &gt; dstMaxX) {
+				break; // We&#39;re done with the row
+			}
+
+			// Copy the pixel, sub-banding is done automatically
+			rowRas.getPixel(srcX, 0, pixel);
+			imRas.setPixel(dstX, dstY, pixel);
+		}
+	}
+	return dst;
+</pre></blockquote><blockquote>
+<a name="998552"><!-- --></a>  퍼포먼스를 향상시키기 (위해)때문에,<code>sourceXSubsampling</code> 가 1 의 케이스는을 따로 따로 떼어낼 수가 있습니다. 복수의 픽셀을 한 번에 카피하는 것이 가능하기 때문에입니다. 다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+	// Create an int[] that can hold a row&#39;s worth of pixels
+	int[] pixels = rowRas.getPixels(0, 0, width, 1, (int[]) null);
+
+	// Clip against the left and right edges of the destination image
+	int srcMinX =
+		Math.max(sourceRegion.x,
+                     dstMinX - destinationOffset.x + sourceRegion.x);
+      int srcMaxX =
+		Math.min(sourceRegion.x + sourceRegion.width - 1,
+		         dstMaxX - destinationOffset.x + sourceRegion.x);
+	int dstX = destinationOffset.x + (srcMinX - sourceRegion.x);
+	int w = srcMaxX - srcMinX + 1;
+	rowRas.getPixels(srcMinX, 0, w, 1, pixels);
+	imRas.setPixels(dstX, dstY, w, 1, pixels);
+                    
+</pre></blockquote><blockquote>
+<a name="998652"><!-- --></a>  read 플러그 인이 구현할 필요가 있는 기능은, 그 밖에도 몇개인가 있습니다. 청취자에게 읽을 진척을 통지하는 기능이나, read 프로세스를 다른 thread로부터 중지시키는 기능 등입니다. <p>
+</blockquote>
+
+<blockquote>
+<a name="1001104"><!-- --></a>  <i><b> 청취자</b></i>
+</blockquote>
+<blockquote>
+<a name="1001103"><!-- --></a>  read 플러그 인에 부가할 수 있는 청취자는, IIOReadProgressListener, IIOReadUpdateListener, 및 IIOReadWarningListener 의 3 종류입니다. ImageReader 슈퍼 클래스에 구현되고 있는 각종의 add 메소드 및 remove 메소드를 이용해, 각각의 종류의 청취자를 임의의 수만큼 읽어들여 플러그 인에 부가할 수 있습니다. ImageReader 에는, 부가된 특정의 종류의 청취자 모두에게 정보를 통지하는, 각종의 process 메소드도 포함되어 있습니다. 예를 들어, 이미지의 read를 개시하면(자), processImageStarted(imageIndex) 메소드를 호출해, 부가된 모든 IIOReadProgressListener 에 그 이벤트를 통지할 필요가 있습니다. <p>
+<a name="1001230"><!-- --></a>  read 플러그 인은, 일반적으로, 플러그 인의 read 메소드의 최초와 최후로, processImageStarted 및 processImageComplete 메소드를 각각 호출하지 않으면 안됩니다.  processImageProgress 메소드는, 적어도 2 ?  3 행의 주사선을 읽어들일 때마다, 추정의 read 완료율과 함께 호출할 필요가 있습니다. 이 완료율은, 1 개의 이미지의 read중에 감소하는 일이 있어 되지 않습니다. read 플러그 인이 썸네일를 지원하고 있는 경우는, 썸네일에 대한 대응하는 progress 메소드도 호출할 필요가 있습니다. IIOReadProgressListener 의 processSequenceStarted 및 processSequenceComplete 의 각 메소드를 호출할 필요가 있는 것은, 그 플러그 인으로, 슈퍼 클래스의 readAll 의 구현을 오버라이드(override) 했을 경우만입니다. <p>
+<a name="1001240"><!-- --></a>  입력 데이터를 복수 패스로 처리하는 것 같은, 한층 더 고도의 read 플러그 인에서는, 어느 픽셀이 그때까지 읽혔는지를 붙어 좀 더 상세한 정보를 받아들이는 IIOReadUpdateListeners 를 지원할 수도 있습니다. 어플리케이션은 그 정보를 이용해, 예를 들어, 화면상의 이미지를 선택적으로 갱신하거나 이미지 데이터를 스트림 방식에서 encode 다시 하거나 할 수 있습니다. <p>
+</blockquote>
+
+<blockquote>
+<a name="1001159"><!-- --></a>  <i><b> read 프로세스의 중지</b></i>
+</blockquote>
+<blockquote>
+<a name="1001251"><!-- --></a>  1 개의 thread가 이미지의 read를 실행하고 있을 때, 그 read 플러그 인의 abort 메소드를 다른 메소드로부터 비동기에게 호출할 수가 있습니다. read를 실행하고 있는 thread는, read 플러그 인의 상황을 abortRequested 메소드를 사용해 정기적으로 폴링 해, 복호화의 중지를 도중에 시도할 필요가 있습니다. 부분적으로 복호화 된 이미지가 돌려주어져 옵니다만, read 플러그 인은, 그 이미지의 내용에 대해 보증할 필요는 없습니다. 예를 들어, 시각적으로 무슨 의미도 없는 압축된 데이터 또는 암호화된 데이터가 DataBuffer 에 들어가 있어도 괜찮습니다. <p>
+</blockquote>
+
+<blockquote>
+<a name="1001252"><!-- --></a>  <i><b> IIOReadProgressListener 의 예</b></i>
+</blockquote>
+<blockquote>
+<a name="1001142"><!-- --></a>  IIOReadProgressListener 의 전형적인 호출은, 예를 들어 다음과 같이 됩니다. <p>
+<a name="1001143"><!-- --></a> 
+<p>
+</blockquote><blockquote><pre>public BufferedImage read(int imageIndex, ImageReadParam param)
+	throws IOException {
+	// Clear any previous abort request
+	boolean aborted = false;
+	clearAbortRequested();
+
+	// Inform IIOReadProgressListeners of the start of the image
+	processImageStarted(imageIndex);
+
+	// Compute xMin, yMin, xSkip, ySkip from the ImageReadParam
+	// ...
+
+	// Create a suitable image
+	BufferedImage theImage = new BufferedImage(...);
+
+	// Compute factors for use in reporting percentages
+	int pixelsPerRow = (width - xMin + xSkip - 1) /xSkip;
+	int rows = (height - yMin + ySkip - 1) /ySkip;
+	long pixelsDecoded = 0L;
+	long totalPixels = rows*pixelsPerRow;
+
+	for (int y = yMin; y &lt; height; y += yskip) {
+		// Decode a (subsampled) scanline of the image
+		// ...
+
+		// Update the percentage estimate
+		// This may be done only every few rows if desired
+		pixelsDecoded += pixelsPerRow;
+		processImageProgress(100.0F*pixelsDecoded/totalPixels);
+
+		// Check for an asynchronous abort request
+		if (abortRequested()) {
+			aborted = true;
+			break;
+		}
+	}
+
+	// Handle the end of decoding
+	if (aborted) {
+		processImageAborted();
+	} else {
+		processImageComplete(imageIndex);
+	}
+
+	// If the read was aborted, we still return a partially decoded image
+	return theImage;
+}
+</pre></blockquote>
+
+<blockquote>
+<a name="1001105"><!-- --></a>  <i><b> 메타데이타</b></i>
+</blockquote>
+<blockquote>
+<a name="1001097"><!-- --></a>  다음에 생각하는 <code>MyFormatImageReader</code> 의 메소드군은, 메타데이타를 처리하는 것입니다. 지금 생각하고 있는 가공의 파일 형식에서 encode 할 수 있는 것은 단일의 이미지 뿐이므로, 「스트림메타데이타」의 개념은 무시해, 「이메이지메타데이타」만을 사용할 수가 있습니다.  다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+	MyFormatMetadata metadata = null; // class defined below
+
+	public IIOMetadata getStreamMetadata()
+		throws IIOException {
+		return null;
+	}
+
+	public IIOMetadata getImageMetadata(int imageIndex)
+		throws IIOException {
+		if (imageIndex ! = 0) {
+			throw new IndexOutOfBoundsException(&#34;imageIndex ! = 0! &#34;);
+		}
+		readMetadata();
+		return metadata;
+	}
+
+</pre></blockquote><blockquote>
+<a name="997606"><!-- --></a>  실제의 처리는, 파일 형식에 고유의 메소드 <code>readMetadata</code> 에 의해 실행됩니다. 이 예의 파일 형식의 경우는, 이 메소드에 의해, 메타데이타객체의 키워드/치의 페어가 설정됩니다. <p>
+</blockquote><blockquote><pre>
+	public void readMetadata() throws IIOException {
+		if (metadata ! = null) {
+			return;
+		}
+		readHeader();
+		this.metadata = new MyFormatMetadata();
+		try {
+			while (true) {
+				String keyword = stream.readUTF();
+				stream.readUnsignedByte();
+				if (keyword.equals(&#34;END&#34;)) {
+					break;
+				}
+				String value = stream.readUTF();
+				stream.readUnsignedByte();
+
+				metadata.keywords.add(keyword);
+				metadata.values.add(value);
+			} catch (IIOException e) {
+				throw new IIOException(&#34;Exception reading metadata&#34;,
+				                       e);
+			}
+		}
+	}<code>
+</code></pre></blockquote>
+
+<blockquote>
+<a name="1001093"><!-- --></a>  <i><b> <code>MyFormatMetadata</code></b></i>
+</blockquote>
+<blockquote>
+<a name="997208"><!-- --></a>  마지막으로, 메타데이타를 추출하거나 편집하거나하기 위한 각종 인터페이스를 정의하지 않으면 안됩니다. 이 예에서는,<code>IIOMetadata</code> 클래스를 확장해, 이 예의 파일 형식에서 메타데이타로서 설정할 수 있는 키워드/치의 페어를 포함할 수 있도록(듯이) 한,<code>MyFormatMetadata</code> 라고 하는 클래스를 정의합니다. <p>
+</blockquote><blockquote><pre>
+package com.mycompany.imageio;
+
+import org.w3c.dom. *;
+import javax.xml.parsers. *; // Package name may change in J2SDK 1.4
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import javax.imageio.metadata.IIOInvalidTreeException;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataFormat;
+import javax.imageio.metadata.IIOMetadataNode;
+
+public class MyFormatMetadata extends IIOMetadata {
+
+	static final boolean standardMetadataFormatSupported = false;
+	static final String nativeMetadataFormatName =
+		"com.mycompany.imageio.MyFormatMetadata_1. 0";
+	static final String nativeMetadataFormatClassName =
+		"com.mycompany.imageio.MyFormatMetadata";
+	static final String[] extraMetadataFormatNames = null;
+	static final String[] extraMetadataFormatClassNames = null;
+    
+	// Keyword/value pairs
+	List keywords = new ArrayList();
+	List values = new ArrayList();
+</pre></blockquote><blockquote>
+<a name="998826"><!-- --></a>  아래와 같은 최초의 메소드군은, IIOMetadata 의 대부분의 구현에 공통입니다. <p>
+</blockquote><blockquote><pre>
+	public MyFormatMetadata() {
+		super(standardMetadataFormatSupported,
+		      nativeMetadataFormatName,
+		      nativeMetadataFormatClassName,
+		      extraMetadataFormatNames,
+		      extraMetadataFormatClassNames);
+	}
+
+	public IIOMetadataFormat getMetadataFormat(String formatName) {
+		if (! formatName.equals(nativeMetadataFormatName)) {
+			throw new IllegalArgumentException("Bad format name! ");
+		}
+		return MyFormatMetadataFormat.getDefaultInstance();
+	}
+
+</pre></blockquote><blockquote>
+<a name="998828"><!-- --></a>  read 플러그 인의 경우에 가장 중요한 메소드는, 다음에 예를 나타내는 <code>getAsTree</code> 입니다. <p>
+</blockquote><blockquote><pre>
+	public Node getAsTree(String formatName) {
+		if (! formatName.equals(nativeMetadataFormatName)) {
+			throw new IllegalArgumentException("Bad format name! ");
+		}
+
+		// Create a root node
+		IIOMetadataNode root =
+			new IIOMetadataNode(nativeMetadataFormatName);
+
+		// Add a child to the root node for each keyword/value pair
+		Iterator keywordIter = keywords.iterator();
+		Iterator valueIter = values.iterator();
+		while (keywordIter.hasNext()) {
+			IIOMetadataNode node =
+				new IIOMetadataNode(&#34;KeywordValuePair&#34;);
+			node.setAttribute(&#34;keyword&#34;, (String) keywordIter.next());
+			node.setAttribute(&#34;value&#34;, (String) valueIter.next());
+			root.appendChild(node);
+		}
+
+		return root;
+	}
+</pre></blockquote><blockquote>
+<a name="998830"><!-- --></a>  기입 플러그 인의 경우, 메타데이타의 값을 편집하는 기능을 실현하려면 , 아래와 같은 <code>isReadOnly</code>,<code>reset</code>, 및 <code>mergeTree</code> 의 각 메소드를 구현합니다. <p>
+</blockquote><blockquote><pre>
+	public boolean isReadOnly() {
+	    return false;
+	}
+
+	public void reset() {
+	    this.keywords = new ArrayList();
+	    this.values = new ArrayList();
+	}
+
+	public void mergeTree(String formatName, Node root)
+		throws IIOInvalidTreeException {
+		if (! formatName.equals(nativeMetadataFormatName)) {
+			throw new IllegalArgumentException("Bad format name! ");
+		}
+
+		Node node = root;
+		if (! node.getNodeName(). equals(nativeMetadataFormatName)) {
+			fatal(node, &#34;Root must be &#34; + nativeMetadataFormatName);
+		}
+		node = node.getFirstChild();
+		while (node ! = null) {
+			if (! node.getNodeName(). equals(&#34;KeywordValuePair&#34;)) {
+				fatal(node, &#34;Node name not KeywordValuePair! &#34;);
+			}
+			NamedNodeMap attributes = node.getAttributes();
+			Node keywordNode = attributes.getNamedItem(&#34;keyword&#34;);
+			Node valueNode = attributes.getNamedItem(&#34;value&#34;);
+			if (keywordNode == null || valueNode == null) {
+				fatal(node, &#34;Keyword or value missing! &#34;);
+			}
+
+			// Store keyword and value
+			keywords.add((String) keywordNode.getNodeValue());
+			values.add((String) valueNode.getNodeValue());
+
+			// Move to the next sibling
+			node = node.getNextSibling();
+		}
+	}
+
+	private void fatal(Node node, String reason)
+		throws IIOInvalidTreeException {
+		throw new IIOInvalidTreeException(reason, node);
+	}
+}
+</pre></blockquote>
+
+<blockquote>
+<a name="996881"><!-- --></a>  <i><b> <code>MyFormatMetadataFormat</code></b></i>
+</blockquote>
+<blockquote>
+<a name="999065"><!-- --></a>  메타데이타의 트리 구조는, IIOMetadataFormat 인터페이스를 사용해 기술할 수 있습니다. 구현 클래스인 IIOMetadataFormatImpl 는, 요소, 요소의 속성, 및 요소간의 부모와 자식 관계에 대한 정보의 「데이타베이스」를 유지 관리합니다.  다음의 예를 참조해 주세요. <p>
+</blockquote><blockquote><pre>
+package com.mycompany.imageio;
+
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.metadata.IIOMetadataFormatImpl;
+
+public class MyFormatMetadataFormat extends IIOMetadataFormatImpl {
+
+	// Create a single instance of this class (singleton pattern)
+	private static MyFormatMetadataFormat defaultInstance =
+		new MyFormatMetadataFormat();
+
+	// Make constructor private to enforce the singleton pattern
+	private MyFormatMetadataFormat() {
+		// Set the name of the root node
+		// The root node has a single child node type that may repeat
+		super(&#34;com.mycompany.imageio.MyFormatMetadata_1. 0&#34;,
+		      CHILD_POLICY_REPEAT);
+
+		// Set up the &#34;KeywordValuePair&#34; node, which has no children
+		addElement(&#34;KeywordValuePair&#34;,
+		           &#34;com.mycompany.imageio.MyFormatMetadata_1. 0&#34;,
+		           CHILD_POLICY_EMPTY);
+
+		// Set up attribute &#34;keyword&#34; which is a String that is required
+		// and has no default value
+		addAttribute(&#34;KeywordValuePair&#34;, &#34;keyword&#34;, DATATYPE_STRING,
+		             true, null);
+		// Set up attribute &#34;value&#34; which is a String that is required
+		// and has no default value
+		addAttribute(&#34;KeywordValuePair&#34;, &#34;value&#34;, DATATYPE_STRING,
+		             true, null);
+	}
+
+	// Check for legal element name
+	public boolean canNodeAppear(String elementName,
+	                             ImageTypeSpecifier imageType) {
+		return elementName.equals(&#34;KeywordValuePair&#34;);
+	}
+
+	// Return the singleton instance
+	public static MyFormatMetadataFormat getDefaultInstance() {
+		return defaultInstance;
+	}
+}
+</pre></blockquote><blockquote>
+<a name="999124"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="imageio_guideTOC.fm.html">목차</a>  | <a href="extending.fm2.html">전의 항목</a>  | <a href="extending.fm4.html">다음의 항목</a>  <!-- | <a href="copyright.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="copyright.fm.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher 3.5.0 --> <!-- by Suzette Pelouch --> <!-- Last updated: Fri Apr 27 11:23:03 2001 -->
+ 
+
+
+</body>
+</html>

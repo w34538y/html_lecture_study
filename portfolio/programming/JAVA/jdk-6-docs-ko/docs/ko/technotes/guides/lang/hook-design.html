@@ -1,0 +1,186 @@
+<!doctype html public "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>종료 훅 API 의 설계 - xrath.com 에서 번역됨</title>
+
+</head>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>종료 훅 API 의 설계</h1>
+
+</center>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+<blockquote>
+다음에 나타내는 질문과 회답에, 종료 훅 API 의 설계상의 문제점을 나타냅니다.
+<p>
+<b>종료시의 처리에는, <tt>runFinalizersOnExit</tt> 는 사용할 수 없습니까. </b>
+<p>
+<blockquote>
+<a href="../../../api/java/lang/Runtime.html#runFinalizersOnExit(boolean)"><tt>Runtime.runFinalizersOnExit</tt></a>  메소드, 또는 <a href="../../../api/java/lang/System.html#runFinalizersOnExit(boolean)"><tt>System</tt></a>  클래스내의 동등한 메소드를 사용해, 종료에 의해 VM 가 종료 했을 때에 액션이 실행되도록(듯이) 스케줄 할 수가 있습니다. 다만, 이 방법은, 강제 종료에 의한 종료이 기동되었을 경우에는 잘 기능하지 않습니다. 또, 본질적으로 안전하지 않기 때문에, Java<sup><font size=-2>TM</font></sup>2 플랫폼의 버젼 1.2 에서는<a href="../concurrency/threadPrimitiveDeprecation.html">추천 되고 있지 않습니다</a> .
+</blockquote>
+<p>
+
+<b>왜 VM 의 종료의 원인에 대한 정보를 통지하지 않습니까. </b>
+<p>
+<blockquote>
+일부의 플랫폼의 네이티브 프로세스에서는, 종료에 의한 종료과 강제 종료에 의한 종료은 구별되지 않습니다. 또, 풍부한 기능을 제공하고 있는 플랫폼도 있습니다.  예를 들어, 시스템의 일시정지나 재기동, 또는 전원 장해가 발생할 가능성에 대해 통지하는 기능이 제공되고 있는 플랫폼이 있습니다. 즉, 이러한 정보를 이식 가능한 방법으로 일반화할 수 없습니다.
+</blockquote>
+<p>
+
+<b>VM 가 크래쉬 했을 경우에, 종료 훅은 실행됩니까. </b>
+<p>
+<blockquote>
+native code의 에러가 원인으로 VM 가 크래쉬 했을 경우는, 훅의 실행은 보증되지 않습니다.
+</blockquote>
+
+<p><b>왜 종료 훅은 병렬에 실행됩니까. 등록의 역방향으로 실행하는 (분)편이 적절하지는 않습니까. </b>
+<p>
+<blockquote>
+종료 훅을 등록의 역방향으로 호출하는 (분)편이 알기 쉽고, 실제, C 실행시 라이브러리의 <tt>atexit</tt> 수속은, 등록의 역방향으로 불려 갑니다. 그러나, 이 방법은, 싱글스 레드 시스템 이외에서는 정상적으로 기능하지 않습니다. Java 플랫폼등의 multi-thread 시스템의 경우는, 훅이 등록된 차례는 일반적으로 정의되지 않기 때문에, 훅의 실행순서를 결정하기 위한 정보는 존재하지 않습니다. 또, 훅을 특정의 순서대로 순서로 호출했을 경우, 데드락이 발생할 가능성이 높아집니다. 다만, 특정의 하부조직내에서, 특정의 순서로 종료 액션을 호출할 필요가 있는 경우에는, 내부적으로 액션을 동기화할 수가 있습니다.
+</blockquote>
+
+<p><b>왜 훅은, 기동되어 있지 않은 thread인 것입니다인가. <tt>Runnable</tt> 객체, 또는 Beans 스타일의 이벤트 및 청취자 패턴을 사용하는 (분)편이 간단하지는 않습니까. </b>
+<p>
+<blockquote>
+<tt>Runnable</tt> 객체 또는 Beans 스타일의 이벤트 청취자에 근거해 설계된 콜백 지향의 방법은, 알기 쉽고 일반적으로 자주(잘) 사용되고 있습니다.  그러나, 여기서 설명하고 있는 방법에는, 다음의 2 개의 이점이 있습니다.
+
+<p> 1 번째의 이점은, 종료 액션이 실행되는 thread를, 사용자가 완전하게 제어할 수 있는 것입니다. 사용자는, 적절한 thread 그룹에 thread를 작성해, thread에 대해서 적절한 우선 순위, 문맥, 특권등을 할당할 수가 있습니다.
+
+<p> 2 번째의 이점은, VM 를 훅으로부터 독립시키는 것에 의해, 스펙 및 구현이 간략화됩니다. 종료 액션을 콜백으로서 실행하는 경우는, 구현을 안정시키기 위해서(때문에), 훅 마다 독립한 thread를 작성해, 액션을 병렬에 실행할 필요가 있습니다. 또, 콜백을 실행하는 thread의 작성 방법을, 스펙에 명시적으로 기술할 필요가 있습니다.
+</blockquote>
+
+<p><b>thread를 보관 유지하면(자), 특히 종료 할 때까지 VM 가 기동하지 않는 경우는, 부하가 커지지 않습니까. </b>
+<p>
+<blockquote>
+많은 경우, Java 플랫폼의 구현에서는, 기동시까지 자원은 thread에 할당할 수 없습니다.  이 때문에, 기동되어 있지 않은 thread를 보관 유지해도, 실제로는 부하는 크지는 않습니다. <tt>java.lang.Thread</tt> 의 내부를 확인하면(자), 각 생성자 에서는, 시큐리티 체크 및 private 필드의 초기화 이외 하행 깨지지 않은 것을 압니다. 네이티브의 <tt>start()</tt> 메소드에서는, thread 스택의 할당등이 행해지고 나서 처리가 개시됩니다.
+</blockquote>
+
+<p><b>PersonalJava<sup><font size=-2>TM</font></sup> 및 EmbeddedJava<sup><font size=-2>TM</font></sup> 는 어떻게 됩니까. 종료중에 thread를 기동하면(자), 이러한 플랫폼의 경우, 부하가 너무 크지 않습니까. </b>
+<p>
+<blockquote>
+이 API 는, 소규모의 Java 플랫폼에는 적절하지 않은 것이 있습니다. Java 2 플랫폼의 thread에는, JDK 1.1, PersonalJava, 및 EmbeddedJava 의 thread보다 많은 정보가 보관 유지되고 있습니다. thread에는, 클래스 로더가 짜넣어지고 있습니다.  또, thread 로컬 변수가 상속되는 일도 있습니다.  GUI 어플리케이션의 경우에는, 특정의 어플리케이션의 문맥과 관련지을 수 있고 있는 일도 있습니다. 플랫폼의 확장과 함께, thread에는 보다 많은 정보가 보관 유지됩니다.  예를 들어, 시큐리티 팀은, 다음의 버젼의 인증 시스템에서는, thread마다의 사용자 식별 정보라고 하는 개념을 도입할 예정입니다.
+
+<p> 이러한 문맥 정보를 고려하면(자), 종료 훅이 <tt>Runnable</tt> 객체 또는 Beans 스타일의 이벤트 청취자의 경우는, 종료 훅의 작성 및 보수는 곤란합니다. 예를 들어,<tt>Runnable</tt> 종료 훅 또는 동등의 이벤트 청취자에서는, 조작을 실행할 경우에, thread의 문맥 정보를 보관 유지하기 위한 비트가 필요하다라고 가정합니다. 이러한 정보는, 훅이 등록되기 전에 공용 위치에 보존됩니다. 이 방법은 복잡한데다가, 향후의 릴리스로, 새로운 종류의 문맥 정보가 thread에 보관 유지되는 일도 고려할 필요가 있습니다. 훅으로부터 불려 가는 조작이 확장되어, 그 정보를 필요로 하는 경우는, 그 정보를 보존하기 위해서, 훅을 등록한 코드도 변경하지 않으면 안됩니다. 훅을 <tt>Runnable</tt> 객체 또는 이벤트 청취자는 아니고 thread로서 구현하는 것에 의해, 이러한 향후의 변경으로부터 훅을 해제할 수가 있습니다.
+</blockquote>
+
+<p><b>간단한 종료 훅을 등록할 경우에도, 많은 코드를 기술할 필요가 있습니까. </b>
+<p>
+<blockquote>
+아니오. 다음의 예의 같게, 많은 경우, 간단한 종료 훅은 익명의 내부 클래스로서 기술할 수 있습니다.
+
+<blockquote><pre>
+Runtime.getRuntime(). addShutdownHook(new Thread() {
+    public void run() { database.close(); }
+});
+</pre></blockquote>
+
+훅을 캔슬할 필요가 없는 경우는, 이 코드를 사용할 수 있습니다.  캔슬할 필요가 있는 경우는, 작성시에 훅에의 참조를 보존하지 않으면 안됩니다.
+</blockquote>
+
+<p><b>시큐리티는 확보되고 있습니까. 신뢰되어 있지 않은 애플릿에 의해 종료 훅이 등록될 가능성은 있습니까. </b>
+<p>
+<blockquote>
+시큐리티 매니저가 인스톨 되고 있는 경우는,<tt>addShutdownHook</tt> 메소드 및<tt> removeShutdownHook</tt> 메소드에 의해, 호출측의 시큐리티 문맥으로부터 <tt>RuntimePermission("shutdownHooks")</tt> 가 주어지고 있는지 어떤지가 검사됩니다. 신뢰되어 있지 않은 애플릿에는, 이 액세스권이 주어지고 있지 않습니다.  이 때문에, 이 애플릿으로부터, 종료 훅의 등록 또는 등록 해제를 실시할 수 없습니다.
+</blockquote>
+
+<p><b>종료 훅으로부터 예외가 throw 되어 그 예외가 캐치 되지 않는 경우는 어떻게 됩니까. </b>
+<p>
+<blockquote>
+캐치 되지 않았던 예외는, 종료 훅에서는, 다른 thread의 경우와 같게 처리됩니다.  즉, thread의 <tt>ThreadGroup</tt> 객체의 <tt>uncaughtException</tt> 메소드가 불려 갑니다. 이 메소드의 디폴트의 구현에 의해, 예외의 스택 트레이스가 <tt>System.err</tt> 에 출력되어 thread가 종료합니다. 예외가 캐치 되지 않았던 경우에서도, VM 는 종료하지 않습니다.  모든 비demon thread가 종료했을 때, 또는 <tt>Runtime.exit</tt> 메소드가 불려 갔을 때에는, VM 가 종료됩니다.
+</blockquote>
+
+<p><b>왜 <tt>Runtime.halt</tt> 메소드를 추가했습니까. 사용해도 문제는 없습니까. </b>
+<p>
+<blockquote>
+이 새로운 <tt>halt</tt> 메소드는 강력해서, 사용할 경우에는 세심의 주의가 필요합니다. 이 메소드는, 종료 훅이 데드락 상태인가, 예기치 않은 시간 실행되고 있는 경우에, 어플리케이션으로부터 떼어낼 때 사용합니다. 또, 필요에 따라서, 어플리케이션을 즉시 종료시킬 수도 있습니다.
+</blockquote>
+
+<p><b>finalization-on-exit 가 유효한 경우는 어떻게 됩니까. 파이나라이자는, 종료 훅의 실행전, 실행중, 실행 후의 어느 타이밍에 실행됩니까. </b>
+<p>
+<blockquote>
+finalization-on-exit 처리는, 종료 훅이 모두 종료한 뒤에 실행됩니다. 그렇지 않은 경우, 일부의 라이브 객체가 의도적으로 finalize 되면(자), 훅에 실패하는 일이 있습니다.
+</blockquote>
+
+</blockquote>
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1999
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+</body>
+</html>

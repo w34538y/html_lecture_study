@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>java.lang.ClassCastException 가 throw 된다... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote>
+<h2> <span class="bg2">마우스가 애플릿의 프레임상을 이동하면(자) <code>java.lang.ClassCastException</code> 가 AWT 이벤트발송쓰레드로부터 throw 된다</span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote>
+<p> 애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있을 때, 마우스가 애플릿의 프레임상을 이동하면(자),<code>ClassCastException</code> 가 AWT 이벤트발송쓰레드로부터 throw 됩니다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있습니다. </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>java.lang.ClassCastException:sun.plugin....<br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at MyApplet.mouseExit(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.Component.handleEvent(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.Component.postEvent(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.Component.dispatchEventImpl(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.Container.dispatchEventImpl(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.Component.dispatchEvent(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.EventQueue.dispatchEvent(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.EventDispatchThread.pumpOneEventForHierarchy(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.EventDispatchThread.pumpEvents(Unknown Source)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.awt.EventDispatchThread.run(Unknown Source)</code></p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote>
+<p> 이 예외에는, 생각되는 원인이 2 개 있습니다. </p>
+    <ol>
+<li>프레임상의 마우스 이벤트를 추적하기 위해서, 애플릿에서는 프레임에 <code>MouseListener</code> 를 등록하려고 합니다. Microsoft VM 의 구현에서는, AWT 계층 컴퍼넌트 트리 애플릿에 있어서의 애플릿의 직접적인 부모는 프레임입니다. 이것은 구현 고유하고, 변경될 가능성이 있는 것에도 불구하고, 코드로 의존하고 있는 애플릿이 있습니다. <br><br><br> <code>public void foo()<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Frame f = (Frame) getParent();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br> } </code><br> &nbsp;<br> Sun JRE 에서는 애플릿과 프레임의 사이에 다른 컨테이너가 있기 (위해)때문에,<code>getParent()</code> 는 <code>Frame</code> 객체를 돌려주지 않고, 상기의 코드에서는 <code>ClassCastException</code> 가 throw 됩니다. <br> &nbsp;</li>
+<li>Microsoft VM 의 구현에서는,<code>java.applet.AppletContext</code> 는 애플릿의 프레임으로 구현되고 있습니다. 이것은 구현 고유하고, 변경될 가능성이 있는 것에도 불구하고, 코드로 의존하고 있는 애플릿이 있습니다. <br><br><br> <code>public void foo()<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Frame f = (Frame) getParent();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AppletContext ac = (AppletContext) f;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<br> }</code>
+<p>Sun JRE 에서는 다른 객체를 사용해 <code>AppletContext</code> 를 구현하고 있기 (위해)때문에, 상기의 코드에서는 <code>ClassCastException</code> 가 throw 됩니다. </p>
+      </li>
+    </ol>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote>
+<p> 최초의 예를 회피하려면 , 포함 관계의 특정의 레벨에 있어서의 프레임에 의존하는 것이 아니라, AWT 계층 컴퍼넌트 트리 전체를 애플릿으로부터 이동해 프레임의 위치를 특정합니다. </p>
+    <blockquote>
+<p> <code>public void foo()<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Navigate component tree<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Container c = getParent();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (c ! = null &amp;&amp; (c instanceof Frame) == false)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c = c.getParent();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Cast Container to Frame<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (c instanceof Frame)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Frame f = (Frame) c;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> }</code></p>
+    </blockquote>
+<p> 2 번째의 예를 회피하려면 ,<code>Applet.getAppletContext()</code> 메소드를 사용해 <code>AppletContext</code> 에 액세스 합니다. <br><br><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>public void foo()<br> &nbsp;&nbsp;&nbsp; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;....<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AppletContext ac = (AppletContext) getAppletContext();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;...<br> &nbsp;&nbsp;&nbsp; }</code><br> &nbsp;</p>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 없음</p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

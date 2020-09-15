@@ -1,0 +1,121 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>이전의 릴리스에서의 JNDI 확장 기능 - xrath.com 에서 번역됨</title>
+</head>
+<body>
+
+<p align="right"><a href="index.html">JNDI</a> 
+
+<center>
+<h2>이전의 릴리스에서의 JNDI 확장 기능</h2>
+</center>
+
+<p>
+<a name=15changes></a> 
+<h3>버젼 5.0 에서의 확장 기능</h3>
+<blockquote>
+
+<dl>
+<dt><b>NameClassPair 클래스의 절대 나토리 이득의 지원</b><br> 이 기능에 의해, SearchResult 로부터 LDAP 식별명을 취득할 수 있습니다. 이 기능을 지원하기 위해서, javax.naming.NameClassPair 메소드에 다음의 2 개의 새로운 메소드가 추가되고 있습니다.
+       <ul>    
+<li>&nbsp;<a href="../../../api/javax/naming/NameClassPair.html#getNameInNamespace()">getNameInNamespace()</a> 
+         </li>
+<li>&nbsp;<a href="../../../api/javax/naming/NameClassPair.html#setNameInNamespace(java.lang.String)">setNameInNamespace()</a> 
+       </li>
+       </ul>
+<p>    
+<dt><b>표준 LDAP 컨트롤의 지원</b><br>필요한 LDAP 컨트롤은, 벌써, JNDI/LDAP 서비스 프로바이더가 이용 가능한 LDAP Booster Pack 확장 기능 패키지내에서 지원되고 있습니다. LDAP 컨트롤은, 최근 RFC 로 표준화 되었습니다. 이것들은 J2SE 의 javax.naming.ldap 패키지의 다음의 클래스를 통해서 이용할 수 있습니다.
+     <ul>
+<li>ManageReferralControl (<a href="http://www.ietf.org/rfc/rfc3296.txt">RFC 3296</a> )
+<li>PagedResultsControl   (<a href="http://www.ietf.org/rfc/rfc2696">RFC 2696</a> )   
+<li>PagedResultsResponseControl
+<li>SortControl           (<a href="http://www.ietf.org/rfc/rfc2891.txt">RFC 2891</a> )  
+<li>SortKey
+<li>SortResponseControl
+<li>BasicControl
+     </ul>
+<p>    
+<dt><b> LDAP 명 조작의 지원</b><br> 이 기능에 의해, 식별명 또는 상대 식별명을 메소드를 사용해 구축하는 경우의 LDAP 명의 조작이 간단하게 됩니다.  또, RFC 2253 의 정의에 따른 캐릭터 라인에 의한 표현에, 이러한 식별명을 포맷 하는 것이 가능하게 됩니다.
+     <ul>    
+<li><a href="../../../api/javax/naming/ldap/LdapName.html">이 기능을 지원하기 위해서, javax.naming.ldap 패키지에 다음의 2 개의 새로운 클래스가 추가되고 있습니다. </a> 
+<li><a href="../../../api/javax/naming/ldap/Rdn.html">LdapName Rdn</a> 
+     </ul>
+
+</dl>
+</blockquote>
+
+<a name=141changes></a> 
+<h3>버젼 1.4. 1 에서의 확장 기능 </h3>
+<blockquote>
+<dl>
+<dt><b>LDAP 서비스 프로바이더</b>
+<ul>
+<li><a href=jndi-ldap.html#URLs>LDAPS URL</a>  의 지원
+</ul>
+</dl>
+</blockquote>
+
+<p>
+<a name=14changes></a> 
+<h3>버젼 1.4. 0 에서의 확장 기능</h3>
+<blockquote>
+
+<dl>
+<dt><b>DNS 서비스 프로바이더</b>
+<ul>
+<li>UDP 쿼리발행시의<a href=jndi-dns.html#TIMEOUT>타임 아웃 제어</a>의 지원
+<li><a href=jndi-dns.html#URL>DNS 서비스의 자동 검출</a>의 지원
+</ul>
+<p>
+<dt><b>LDAP 서비스 프로바이더</b>
+<ul>
+<li><a href=jndi-ldap.html#POOL>접속 풀</a>의 지원
+<li><a href=jndi-ldap.html#URLs>DNS 를 사용한 LDAP 서비스의 자동 검출</a>의 지원
+<li><a href=jndi-ldap-gl.html#url>복수 URL 를 사용</a>한 설정의 지원
+</ul>
+</dl>
+</blockquote>
+
+
+<p>
+<a name=13changes></a> 
+<h3>버젼 1.3 에서의 확장 기능</h3>
+<blockquote>
+
+<dl>
+<dt><b>DNS 서비스 프로바이더</b>
+<dd>
+<a href="jndi-dns.html">Internet Domain Naming System (DNS) 서비스 프로바이더</a>가 추가되었습니다. 이 컴퍼넌트에 의해, DNS 에 포함된 데이터를 어플리케이션으로 읽어낼 수가 있게 됩니다.
+</dd>
+<p>
+<dt><b>LDAP 서비스 프로바이더의 시큐리티 기능의 확장</b>
+<dd>이 기능확장에 의해, LDAP 서비스 프로바이더가 LDAP 의 표준적인 시큐리티 요건 (<a href="http://www.ietf.org/rfc/rfc2829.txt">RFC 2829</a> )에 적합하게 되어, 넓게 배치되고 있는 LDAP 서버와의 제휴가 촉진됩니다.
+<p>
+<ul>
+<li>「Start TLS (트랜스폴트층 시큐리티)」의 확장 기능 (<a href="http://www.ietf.org/rfc/rfc2830.txt">RFC 2830</a> ) 및 외부 SASL 인증 기구의 지원. 기존의 LDAP 접속 경유로 어플리케이션이 안전한 세션을 확립할 수 있게 됩니다. 이 기능을 위해서(때문에), 다음의 새로운 클래스가 도입되었습니다.
+<ul>
+<li><a href=../../../api/javax/naming/ldap/StartTlsRequest.html>javax.naming.ldap.StartTlsRequest</a> 
+<li><a href=../../../api/javax/naming/ldap/StartTlsResponse.html>javax.naming.ldap.StartTlsResponse</a> 
+</ul>
+
+<li>GSS-API/Kerberos v5 SASL 인증 기구 (<a href="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</a> )의 지원. 이 기능에 의해, Windows 2000 및 XP Active Directory 서버에의, 안전해 인증된 액세스가 생기게 됩니다.
+<li>Digest-MD5 SASL 인증 기구 (<a href="http://www.ietf.org/rfc/rfc2831.txt">RFC 2831</a> )의 지원.
+</ul>
+
+<p>
+상세 및 예에 대해서는,<a href="jndi-ldap.html">「LDAP 서비스 프로바이더」 </a>및<a href="http://java.sun.com/products/jndi/tutorial/ldap/security/">「JNDI 튜토리얼」</a>을 참조해 주세요.
+
+</dd>
+
+<p>
+<dt><b>corbaname 및 corbaloc URL 의 지원</b>
+<dd>
+<a href=jndi-cos.html>COS 네임 서비스 프로바이더</a>에서는,<a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">Interoperable Naming Service (INS) 스펙 (99-12-03)</a>  이 지원되고 있습니다. 이 기능을 사용하면(자), 어플리케이션으로, 초기 문맥으로부터 「corbaname」의 URL 를 사용하거나 「corbaname」 및 「corbaloc」의 URL 를 사용해 프로바이더를 구성하거나 할 수 있게 됩니다.
+</dd>
+
+</dl>
+</blockquote>
+</body>
+</html>

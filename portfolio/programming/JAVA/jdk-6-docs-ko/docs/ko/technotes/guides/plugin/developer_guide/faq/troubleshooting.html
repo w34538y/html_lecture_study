@@ -1,0 +1,164 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>트러블 슈팅 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>트러블 슈팅</h1>
+<hr>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#general">일반적인 트러블 슈팅</a> </li>
+<li><a href="#installation">인스톨에 관한 트러블 슈팅</a> </li>
+<li><a href="#security">시큐리티에 관한 트러블 슈팅</a> </li>
+</ul>
+<h2><b><font size=+1><a name="general"></a> </font></b>일반적인 트러블 슈팅</h2>
+<p><b>Q.  HTTPS 사이트로부터 애플릿에 액세스 하려고 하면(자),<code>javax.net.ssl.SSLException</code> (또는, 행업이나 접속의 절단)가 발생합니다.  왜입니까. </b></p>
+<p> 일부의 SSL/TLS 서버에서는, 수신한 클라이언트 메세지의 형식을 판단할 수  없는 경우나, 이 메세지의 프로토콜의 버젼이 지원 대상외인 경우에, 이 문제가 발생합니다. 문제는 서버 측에 있습니다. SSL/TLS 의 기능의 몇개인가가 올바르게 구현되어 있지 않을 가능성이 있습니다. SSLv3 만을 인식하는 서버는, 클라이언트로부터 TLSv1 (aka SSLv3. 1) hello 를 수신하면(자), SSLv3 server hello (aka SSLv3. 0)으로 응답하게 되어 있습니다. 다만, 여기에서는 서버가 그처럼 동작하고 있지 않았기 때문에,<code>SSLException</code> 예외가 발생합니다. </p>
+<p> Java Plug-in 1.3.x 에서는, SSL 의 브라우저 구현이 사용되고 있었습니다. Netscape 4. x 와 Internet Explorer 에서는, SSLv3. 0 구현만이 제공되고 있습니다. Plug-in 의 이 버젼에서는, SSLv3. 0 만이 사용되므로, 이 문제는 발생하지 않습니다. </p>
+<p> Java Plug-in 1.4. 0 에서는, TLS/SSL 의 JSSE 구현이 사용되고 있었습니다. 디폴트에서는, JSSE 에서는 TLSv1, SSLv3, 및 SSLv2Hello 프로토콜이 유효하게 됩니다. Plug-in 의 이 버젼에서는, TLSv1 가 사용되므로, 프로토콜이 올바르게 구현되어 있지 않은 서버로 이 문제가 발생할 가능성이 있습니다.  </p>
+<p> 다음에, 이 문제의 회피 방법을 몇개인가 가리킵니다. TLSv1 프로토콜을 무효로 해, SSLv3 만을 사용해 주세요. </p>
+<p> 1.  Java Plug-in 컨트롤 패널 (<b>[상세]</b> 탭)로, 다음과 같이 지정합니다. </p>
+<blockquote>
+<p><code>-Dhttps.protocols=&quot;SSLv3, SSLv2Hello&quot;</code></p>
+</blockquote>
+<p> 2.  시스템 프로퍼티을 다음과 같이 지정합니다.  </p>
+<blockquote>
+<p><code>System.setProperty(&quot;https.protocols&quot;, &quot;SSLv3&quot;);</code> 
+  </p>
+</blockquote>
+<p> 3.  소켓에의 액세스권을 가지고 있으면, 다음의 조작이 가능합니다. </p>
+<blockquote>
+<p><code>socket.setEnabledProtocols(&quot;SSLv3&quot;);</code></p>
+</blockquote>
+<p> Java Plug-in 1.4. 1 에서는, SSLv3 와 SSLv2Hello 프로토콜이 디폴트로 사용됩니다. SSLv3 는 대부분의 브라우저로 디폴트로서 사용되어 대부분의 Web 서버로도 지원되고 있습니다.  이것으로부터, 또 상기의 문제를 막기 위해서(때문에)도, Plug-in 의 이 버젼에는 변경이 더해졌습니다.  TLSv1 를 사용할 필요가 있는 경우, 사용자는 <code>https.protocols</code> 의 설정을 실시할 필요가 있습니다. </p>
+<p><b>Q:애플릿이 포함되어 있는 페이지에 관해서, 변경된 JAR 파일이 서버에 있을지 어떨지를 JVM 로 강제적으로 체크하려면 , 브라우저를 재기동하는 것 외에 방법이 있습니까. </b></p>
+<p><b>A:</b>미리 Java 콘솔에 「x」라고 입력해, 클래스 로더 캐쉬를 클리어 해 두면(자), 애플릿이 포함되어 있는 페이지를 재표시하는지, 그 페이지에 다시 돌아왔을 때에, 변경된 JAR 파일이 서버로부터 다운로드됩니다. <br>
+</p>
+<p><b>Q:<code>http://games.yahoo.com</code> 로 게임을 하려고 하면(자),<code>ControlAccessException</code> 가 발생합니다. 무엇이 문제인 것입니다인가.  회피책은 있습니까. </b>
+<p>A:게임 애플릿에는, 1 개(살) 이상의 서버에 접속하기 위한 액세스권이 필요합니다만, 시큐리티상의 이유에 의해 액세스권이 거부되고 있습니다. 회피책으로서는,<code>java.policy</code> 파일에 다음과 같이 추가해 주세요.
+<blockquote> 
+<p><code>grant codeBase &quot;http://download.yahoo.com/games/clients/&quot; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;permission java.net.SocketPermission &quot;*&quot;, &quot;connect&quot;;};</code></p>
+</blockquote>
+<p><code>java.policy</code> 는 <code>&lt;JRE installation directory&gt;/Java/j2re1. 4.0/lib/security/</code> 에 있습니다. </p>
+<p><b>Q:Java Plug-in 가 포함되어 있는 Java SE 를 다운로드해 인스톨 했을 경우, Netscape 로 그 플러그 인을 찾으려면  어떻게 하면 좋습니까. </b> 
+<p><b>A:</b>환경 변수 <tt>NPX_PLUGIN_PATH</tt> 를 Java Plug-in 의 위치 (<tt>javaplugin.so</tt> 파일의 포함처 디렉토리)로 설정합니다.  
+<blockquote> 
+<p>Netscape 4 의 경우는,<tt>NPX_PLUGIN_PATH=$JAVAHOME/jre/plugin/sparc</tt><code>/ns4</code> <br> Netscape 6 의 경우는,<tt>NPX_PLUGIN_PATH=$JAVAHOME/jre/plugin/sparc</tt><code>/ns6</code> </p>
+</blockquote>
+<p><b>Q:Java Plug-in 소프트웨어를 Netscape Enterprise 3.0 SuiteSpot Web 서버상에 배치했습니다만, 인트라넷 환경에서의 인스톨을 실행할 수 없습니다. 왜입니까. </b> 
+<p><b>A:</b>Netscape Enterprise 3.0 SuiteSpot Web 서버는, 적어도 있는 상황하에서는 . exe 파일을 처리할 수 없다고 하는 보고가 도착해 있습니다. 밝혀진 1 개의 회피책은, Visigenic Orb Gatekeeper (Web 서버로서 기능한다)에 의해 Java Plug-in 제품이 인스톨 되도록, HTML 를 구성하는 것입니다.  
+<p><b>Q:Java Plug-in 소프트웨어의 디버그로 문제에 조우하고 있습니다. 무엇인가 힌트는 없습니까. </b> 
+<p><b>A:</b>있는 상황하에서는, Java Plug-in 소프트웨어가, 예기치 않은 디버그 접속 주소를 사용하는 경우가 있습니다. 이것은, Java Plug-in 소프트웨어가, 다음의 몇개의 구성으로 가동하는 <code>Explorer.exe</code> 의 프로세스내에 로드 되었을 경우에 발생합니다.  
+<ul>
+<li>Windows 95/NT 로 IE4 이후의 액티브 데스크톱이 가동하고 있다 
+<li>Windows 98/ME/2000
+</ul>
+<p> <tt>OBJECT</tt> 태그를 포함한 HTML 페이지를 다음의 방법으로 표시하는 경우, Java Plug-in 가 <code>Explorer.exe</code> 프로세스내에 로드 됩니다.  
+<ul>
+<li>데스크탑의 설정으로 폴더내에서의 Web 컨텐츠를 표시 가능하게 되어 있는 (즉[표시] -> [Web 페이지] 메뉴 옵션을 체크한) 상태로, 익스플로러 폴더의 프리뷰로 표시하는 경우 
+<li>Microsoft Internet 설정으로 [다른 프로세스로 브라우저를 기동하는] 또는 [새로운 프로세스로 브라우저를 개시] 를 설정하고 있지 않는 상태로, Internet Explorer 로 표시하는 경우 
+<li>액티브 데스크톱에 Web 페이지를 표시하는 경우 
+</ul>
+<p> 이 경우, 2 개의 프로세스가 같은 디버그 접속 주소를 사용하기 위해(때문에), Java 애플릿의 디버그로 문제가 발생할 가능성이 있습니다. (접속 주소의 설정에 대해서는,<a href="../debugger.html">「디버그의 지원」</a>의<a href="../debugger.html#how">「Java Plug-in 에서의 애플릿의 디버그 방법」</a>을 참조해 주세요. )<code>Explorer.exe</code> 프로세스가 디버그 접속 주소를 요구 끝난 상태로,<code>Netscape.exe</code> 또는 <code>Iexplorer.exe</code> 가 그 사용을 시도하면(자), 디버그로 문제가 발생합니다.  
+<p> Java Plug-in 소프트웨어는,<code>Explorer.exe</code> 프로세스에의 로드시에,[컨트롤 패널] 로 지정된 디버그 접속 주소의 전에 <code>Explorer</code> 캐릭터 라인을 추가하는 것으로, 이 문제를 회피합니다.  
+<p> 예를 들어, Java Plug-in 소프트웨어의 인스톨시로 설정된 디폴트 접속 주소가 <code>2502</code> 의 경우,<code>Explorer.exe</code> 내에서의 실제의 접속 주소는 <code>Explorer:2502</code> 가 됩니다.  
+<p> Java SDK 로부터 JDB 를 실행하는 경우, 다음과 같이 지정할 필요가 있습니다.
+<blockquote>
+<p> <code>jdb -attach Explorer:2502</code> </p>
+</blockquote>
+<p> 이 경우, 접속은 <code>Explorer.exe</code> 프로세스내에 로드 된 JVM 에 대해서 행해집니다.  
+<p><b>Q:Internet Explorer 로 Java Plug-in 를 사용하면(자) 애플릿이 스크립트 가능하지 않게 되었습니다.  왜입니까. </b> 
+<p><b>A:</b>Java Plug-in 소프트웨어 1.3 으로 애플릿의 스크립트를 가능하게 하려면 ,<tt>scriptable</tt> 태그를 추가해, 거기에 true 의 값을 설정할 필요가 있습니다. 자세한 것은,<a href="../using_tags.html">「Java Plug-in 에 있어서의 <code>OBJECT</code>,<code>EMBED</code> 및 <code>APPLET</code> 태그의 사용」</a>  을 참조해 주세요.  
+<p><b>Q:표준 확장 기능이나 옵션 패키지의 사용으로 문제가 발생합니다. 왜입니까. </b> 
+<p><b>A:</b><code>&lt;jre&gt;\lib\ext</code> 디렉토리에 인스톨 된 확장 기능만이 클래스 패스에 추가됩니다. <code>java.ext.dirs</code> 시스템 프로퍼티이 지시하는 디렉토리에 인스톨 한 확장 기능은, 추가되지 않습니다.  
+<p><b>Q:Java Plug-in 는, Navigator 4.0.x 브라우저에서는 동작하고 있었습니다. 그 후, Navigator 4.5 에 업그레이드 해 Java Plug-in 를 재인스톨 했는데, Navigator 4.5 로 동작하지 않게 되었습니다. 왜입니까. </b> 
+<p><b>A:</b>Navigator 4.5 의 인스톨시에, 사용자 프로필이 적정하게 인스톨 되지 않는 경우가 있는 것이 보고되고 있습니다. 그 경우, Java Plug-in 소프트웨어는 적절한 사용자 프로필 설정을 읽어낼 수가 없습니다. 사용자 프로필 설정이 적정인 것을 확인하기 위해서, 이하를 체크해 주세요.  
+<ul>
+<li><code>HKEY_LOCAL_MACHINE\Software\Netscape\Netscape Navigator\Users\CurrentUser</code>
+<li><code>HKEY_LOCAL_MACHINE\Software\Netscape\Netscape Navigator\Users\&lt;UserName&gt;\DirRoot </code>
+</ul>
+이것들 2 개의 레지스트리 키가 존재하는 것, 및 <code>&lt;DirRoot&gt;</code> 가 기존의 사용자 프로필을 지정하고 있는 것을 확인해 주세요. 몇개의 레지스트리 키가 존재하지 않는가 불완전한 경우, User Profile Manager 툴을 사용해 프로파일을 재작성해 주세요.  
+<p><b>Q:Java Plug-in 로 Java 3D 의 사용을 시도하고 있습니다만, 동작하지 않습니다. 왜입니까. </b> 
+<p><b>A:</b>Java 3D 에는 다양한 패키지가 부속되어 있습니다. 부정한 방법으로 인스톨 하면(자), 의도하지 않고 Java Plug-in 를 무효로 해 버리거나 장해를 발생시킬 가능성이 있습니다. Java 3D 로 Java Plug-in 소프트웨어를 사용하는 경우, 다음의 일반적인 순서에 따라 주세요.  
+<ol>
+<li>최초로 Java Plug-in 를 인스톨 
+<li>Java 3D 를 신규 디렉토리에 인스톨. 기존의 Java SDK, Standard Edition/JRE 에 덧쓰기 인스톨 하지 않는다. 인스톨 방법의 자세한 것은,<a href="https://java3d.dev.java.net/binary-builds.html">이 페이지</a>를 참조
+<li>Java 3D 에 적절한 SDK/JRE 의 버젼이 아직 컴퓨터에 인스톨되어 있지 않으면, 인스톨
+<li>Java Plug-in 컨트롤 패널로, 적절한 버젼의 SDK/JRE 를 선택
+</ol>
+이것으로, Java Plug-in 내에서 Java 3D 데모가 동작할 것입니다.  
+<p><b>Q:Web/프록시 서버-의 안에는, 인증용으로 사용자의 로그인을 요구하는 것이 있습니다. Java Plug-in 를 사용하는 이 서버에 브라우저로부터 액세스 하면(자), 로그인 다이알로그 박스가 2 개 표시됩니다. 왜입니까. </b> 
+<p><b>A:</b>일반적으로 Java Plug-in 는 독자적인 접속을 사용해 애플릿을 다운로드합니다. Web/프록시 서버-가 로그인을 요구하는 경우, 브라우저는 요구에 조우하면(자), 로그인 다이알로그 박스를 표시합니다. HTML 페이지의 다운로드 후에, Java Plug-in 는 애플릿의 클래스 또는 jar 파일의 다운로드를 시도합니다. 다만, Java Plug-in 는, 브라우저가 전에 취득한 로그인 정보에 액세스 할 수 없는 경우, 독자적인 로그인 다이알로그 박스를 표시합니다.  
+<p><b>Q:Java Plug-in 를 인트라넷내에 배치해, 내부의 Web 서버에 바이너리를 배치하려고 하고 있습니다.  그러나, IE 가 변환 끝난 페이지에 조우해도, Java Plug-in 소프트웨어의 다운로드 및 인스톨은 실행되지 않습니다. 어떻게 되어 있습니까. &nbsp;</b> 
+<p><b>A:</b><tt>OBJECT</tt> 태그의 <tt>CODEBASE</tt> 에 Java Plug-in 의 올바른 URL 가 지정되고 있는지 어떤지를 체크해 주세요.  게다가 Java Plug-in 소프트웨어의 실행 가능 파일을 배치한 디렉토리의 실행 특권을 무효로 하면(자) 문제가 해결되는 일이 있습니다.  
+<p><b>Q:Java Plug-in 소프트웨어를 사용해 애플릿의 렌더링을 실시하려 하고 있습니다만, 잘되지 않습니다. 원인은 무엇입니까.  </b> 
+<p><b>A:</b>사용하는 오퍼레이팅(operating) 환경에 독특한 다양한 상황이 생각됩니다만, 자주 이 문제를 일으키는 원인의 1 개에 시큐리티 예외가 있습니다.  
+<ul>
+<p><b>문제:</b> 사용하는 네트워크가 DNS (Domain Name Service)를 지원하고 있습니다. 특정의 시큐리티 체크를 실행하려면 , 애플릿의 <code>SecurityManager</code> 가 애플릿의 다운로드원으로부터 IP 주소를 검색할 수 없으면 안됩니다. DNS 가 이용 불가능한 경우, 이러한 시큐리티 체크는 실패합니다.  
+<p><b>회피책:</b> 타겟의 Web 페이지를 표시할 때, URL 에 호스트명은 아니고 IP 주소를 지정합니다(http://123. 45.35. 128/fred.html 등).  
+</ul>
+<p>&nbsp; <b>Q:Java Plug-in 소프트웨어의 실행중에 브라우저 설정을 변경했습니다만, 변경 후도 이전의 설정이 사용되고 있습니다. 왜입니까. </b> 
+<p><b>A:</b>브라우저의 설정은, Java Plug-in 의 기동시에 읽힙니다. 이러한 설정은, 브라우저 세션의 유효기간중, 훨씬 유효하게 됩니다. Java Plug-in 에 새로운 설정을 읽어들이게 하려면 , 브라우저를 재기동해 주세요. Java Plug-in 와 함께 액티브 데스크톱을 실행하고 있는 경우, 컴퓨터를 재기동할 필요가 있습니다.  
+<p><b>Q:애플릿을 로드하면(자), 브라우저의 상태 바에 「noninit」또는 「applet not initialized」라고 하는 메세지가 표시됩니다. 문제의 원인을 식별하는 방법을 가르쳐 주세요. </b> 
+<p><b>A:</b>다음의 순서를 실행합니다.  
+<ol>
+<li> Java 콘솔에 표시되는 에러 메세지를 확인</li>
+<li> 네트워크 경유로 애플릿에 액세스 하고 있는 경우, Java 콘솔에 표시된 프록시 정보가 정확한 것을 확인</li>
+<li> 모든 클래스나 JAR 파일이, 적절한 디렉토리내에 있는 것을 확인</li>
+<li> 변환된 HTML 페이지가 적정인 것을 확인</li>
+<li> 미변환의 페이지를, 같은 머신의 애플릿 viewer로 실행. 정상적으로 동작하는 경우, 순서 3, 4, 및 5 를 확인 </li>
+</ol>
+<p><b>Q:Java Plug-in 소프트웨어로 <code>AppletClassLoader</code> 를 사용하는 경우, IE4 에서는 null 포인터 예외로 크래쉬 합니다만, Netscape 에서는 정상적으로 동작합니다. 왜입니까. IE4 로 정상적으로 동작시키는 방법이 있습니까. </b> 
+<p><b>A:</b>IE4 의 Java Plug-in 소프트웨어는, 애플릿이 Bean 가 아닌 경우에서도, &lt;<i>YourAppletName</i>&gt;<code>BeanInfo.class</code> 를 로드하려고 합니다. Java SDK, Standard Edition v 1.3 의 <code>AppletClassLoader</code> 에는 버그가 있어, 존재하지 않는 클래스를 로드하려고 하는 경우에 표면화합니다. 이 문제의 발생을 막으려면 , 빈 상태(empty)의 &lt;<i>YourAppletName</i>&gt;BeanInfo.class 를 작성해 주세요.  
+<p><b>Q:Java Plug-in 소프트웨어는, Internet Explorer 에서는 가끔 크래쉬 합니다만, Netscape Navigator 에서는 크래쉬 하지 않습니다. 왜입니까. </b> 
+<p><b>A:</b>특정의 상황하에서는, 부정한 HTML 를 위해서(때문에) 브라우저가 크래쉬 하는 일이 있습니다. 1 개의 예는, &lt;/XMP> 태그가 존재하지 않는 경우입니다. HTML 가 적정인 것을 확인해 주세요.  
+<p> 다른 가능성은, 플러그 인에 대응한 페이지에 액세스 하기 전에, 컨트롤 패널로 플러그 인이 무효로 설정되어 있는 경우입니다. 플러그 인이 유효한가 어떤가 설정을 확인해 주세요.  
+<p><b>Q:이전에는, 애플릿에 의해, 페이지를 바꾸어도 쭉 표시되는 톱 레벨의 프레임이 작성되고 있었습니다. Java Plug-in 에 업그레이드 하고 나서는, 톱 레벨의 프레임이 작성되지 않게 되었습니다. 왜입니까. </b> 
+<p><b>A:</b>Java Plug-in 소프트웨어에서는, 페이지의 변환시에 애플릿이 정지 및 파기됩니다. 모든 가시 컴퍼넌트도, 똑같이 파기됩니다. Java SDK에서는 기능의 확장에 의해, 톱 레벨의 프레임을 포함한, 애플릿의 자원 모든 것이 적정하게 해제되는 것이 보증되게 되었습니다.  &nbsp; 
+<h2><b><font size=+1><a name="installation"></a> </font></b>인스톨에 관한 트러블 슈팅 </h2>
+<p><b>Q:네트워크 드라이브에 Java Plug-in 의 인스톨을 시도하고 있습니다만, 인스톨 할 수 없습니다. 왜입니까. &nbsp;</b> 
+<p><b>A:</b>네트워크 드라이브가 프로텍트 되고 있는지, 읽기 전용의 경우, Java Plug-in 소프트웨어는 인스톨 할 수 없습니다. 자세한 것은 시스템 관리 책임자에 확인해 주세요.  
+<p><b>Q:Java Plug-in 를 인스톨 하려고 하고 있습니다만, 인스톨 프로그램이 Netscape Navigator 용의 Java Plug-in 를 인스톨 하려고 할 때마다 에러가 표시됩니다. 사용하고 있는 네비게이터는, 네트워크 드라이브상에 있습니다. 이 문제를 해결하는 방법은 있습니까. &nbsp;</b> 
+<p><b>A:</b>사용하는 Navigator 가 네트워크 드라이브에 인스톨 되고 있는 경우, 플러그 인 DLL 를 Navigator Plugins 디렉토리에 인스톨 하는 권한이 없습니다. 자세한 것은 시스템 관리 책임자에 확인해 주세요.  
+<p><b>Q:Microsoft Windows 머신에 Java Plug-in 를 인스톨 할 수 없습니다. 「An application error has occurred and an application error log is being generated.  Exception: access violation ...」라고 하는 에러가 표시되어 버립니다. 무엇이 문제인 것입니다인가. &nbsp;</b> 
+<p><b>A:</b>백그라운드에서 Quarterdeck 의 Cleansweep 제품이 동작하고 있으면(자), Microsoft Windows 인스톨 (Installshield 의 인스톨 프로그램)은 정상적으로 기능하지 않습니다.  
+<p><b>Q:Java Plug-in 소프트웨어의 재기동 후에,</b><code><b>. cpl</b></code><b> 파일이 삭제된 것을 경고하는 다이알로그 박스가 표시됩니다. 이것은 어떤 의미입니까. </b> 
+<p><b>A:</b>Java Plug-in 컨트롤 패널을 연 상태로 언인스톨을 실행해도,<tt>plugincpl.cpl</tt> 는 락 되고 있기 (위해)때문에, 삭제할 수 없습니다.  
+<p><b>Q:Java Plug-in 를 언인스톨했습니다만, Netscape 용의 Microsoft Windows 플러그 인이 머신에 남아 있는 것 같습니다. 어떻게 하면 삭제할 수 있습니까. &nbsp; </b> 
+<p><b>A:</b>Netscape 의 <code>Plugins</code> 디렉토리로부터 <tt>NPJPI&lt;<i>modified version number</i>&gt;.dll</tt> 를 삭제합니다. 예를 들어, Java Plug-in 1.4. 0 에서는,<code>Plugins</code> 디렉토리로부터 <code>NPJPI140.dll</code> 를 삭제합니다.
+<h2><b><font size=+1><a name="security"></a> </font></b>시큐리티에 관한 트러블 슈팅 </h2>
+<p><b>Q:사용하고 있는 애플릿으로 시큐리티 관련의 문제가 발생합니다. 디버그 방법을 가르쳐 주세요. </b> 
+<p><b>A:</b><code>java.security.debug</code> 프로퍼티을 유효하게 하는 것으로, 시큐리티 시스템으로부터의 트레이스 메세지를 유효하게 할 수 있습니다. 자세한 것은, 「디버그의 지원」라고 하는 장의 <a href="../debugger.html#jsdp">「java.security.debug 프로퍼티」</a>  을 참조해 주세요.  
+<p><b>Q:인터넷으로부터 애플릿을 다운로드하고 있을 때 <code>AccessControlExcpetion</code> 가 throw 됩니다. 다만, 애플릿이 인트라넷에 존재하는 경우는, 정상적으로 동작합니다. 왜입니까. </b> 
+<p><b>A:</b> DNS 의 부정행위를 막기 위해, 애플릿으로부터의 접속을 확립하기 전에, Java Plug-in 의 시큐리티 체크로 호스트명을 IP 주소에 해결하는 것이 요구됩니다. 다만, 이 시큐리티 체크에는 부작용이 있어, 인트라넷의 DNS 서버에 대해, 인터넷으로부터의 외부 호스트명 모든 해결이 요구됩니다. 커스터머의 기업내 DNS 서버가 이것에 대응하는 방법으로 설정되어 있지 않은 경우, Java Plug-in 는 실패합니다. 이 문제를 해결하는 방법으로서 다음의 선택사항이 있습니다.  
+<ol>
+<li> 애플릿의 HTML 페이지를 변경해, 애플릿의 코드 베이스 및 문서 베이스에, 호스트명은 아니고 IP 주소를 포함하도록(듯이) 합니다. 이것에 의해, Java Plug-in 에 의한 호스트명의 DNS 룩 업 실행을 막습니다.  
+<li> Java Plug-in 로,<tt>trustProxy</tt> 를 true 로 설정합니다. 이 프로퍼티을 설정하는 것으로써, Java Plug-in 는, 프록시가 적절한 DNS 룩 업을 실행해, 신뢰되는 호스트로부터 Java Plug-in 에 정보를 돌려주는 것을 신뢰합니다. 인트라넷 커스터머의 프록시 서버-가 내부에서 설정되어 있어 신뢰할 수 있는 경우, 이 프로퍼티을 사용할 수 있습니다. 이 프로퍼티은, Java Plug-in 컨트롤 패널로 <code>-DtrustProxy=true</code> 와 지정합니다.  
+<p> 이 프로퍼티은, 관리자로 설정할 필요가 있습니다. 신뢰되지 않는 프록시 서버-를 사용해, 이 프로퍼티을 올바르지 않은 방법으로 설정하면(자), 클라이언트 머신이 DNS 의 부정행위에 노출될 가능성이 있습니다. 이 프로퍼티은, Netscape Navigator 의 JVM 가 지원하는 <code>security.lower_java_network_security_by_trusting_proxies</code> 프로퍼티에 유사하고 있습니다.  
+  </ol>
+<p><b>Q:Web 페이지가, HTTPS 를 사용해 Netscape Navigator 에 로드 되면(자),<code>ClassFormatError </code> 예외가 throw 됩니다. 왜입니까. </b> 
+<p><b>A:</b>이것은, 애플릿의 <tt>EMBED</tt> 태그에, 존재하지 않는다 <code>. jar</code> 또는 <code>. class</code> 파일이 지정되고 있는 경우에 발생합니다. Navigator 에서는, HTTPS 경유로 돌려줄 수 있는 정보에 제한이 존재하기 위해(때문에), 적절한 상태 대신에 Web 서버의 「파일이 발견되지 않습니다」라고 하는 HTML 페이지가 돌려주어집니다. 이 HTML 페이지는, 예외를 발생시킨다 <code>. class</code> 파일로서 처리됩니다.  
+<p><b>Q:Java Plug-in 로 RSA 서명 첨부 애플릿을 실행하려고 했습니다만, 신뢰되지 않는 애플릿으로서 처리되어 버립니다. 무엇이 문제인 것입니다인가. </b> 
+<p><b>A:</b>몇개의 가능성이 생각됩니다.  
+<ul>
+<li>애플릿의 서명이 적정하게 행해지고 있지 않습니다. Netscape 의 <code>signtool</code> 또는 Sun 의 <code>jarsigner</code> 를 사용해 확인해 주세요.  
+<li>RSA 증명서 및 그 증명서 체인의 기한이 지나고 있을 가능성이 있습니다.  
+</ul>
+자세한 것은,<a href="../rsa_signing.html">「RSA 서명 첨부 증명서를 사용한 애플릿의 서명 방법」</a>  을 참조해 주세요.  
+<p><b>Q:Java Plug-in 를 사용하면(자), 애플릿의 프레임상에 노란 배너가 표시됩니다.  왜입니까. </b> 
+<p><b>A:</b>애플릿이 독립한 프레임을 작성하는 경우, Java Plug-in 는 노란 경고 배너를 추가해, 신뢰되지 않는 애플릿 윈도우가 사용되고 있는 것을 통지합니다.  
+<p><b>Q:프레임상에 표시되는 노란 경고 배너를 무효로 할 수 있습니까.  &nbsp; </b> 
+<p><b>A:</b>노란 경고 배너는 중요한 시큐리티 기능이기 (위해)때문에, 신뢰되지 않는 애플릿으로부터 무효로 할 수 없습니다.  
+<p>서명 첨부 애플릿을 사용하고 있는 경우는, 서명 키가 최종 사용자에 의해 신뢰되고 있다면, 경고 배너는 표시되지 않습니다.  
+<p><b>Q:경고 배너가 GUI 상을 가려 버리는 것을 막기에는  어떻게 하면 좋습니까.  &nbsp;</b> 
+<p><b>A:</b><a href="developer.html#banner">개발자전용 FAQ</a>  에 같은 질문이 있으므로, 그 쪽을 참조해 주세요.
+<p><b>Q:InetAddress.getLocalHost(). getHostName()가 「localhost」를 돌려줍니다.  왜입니까. </b> 
+<p><b>A:</b><a href="developer.html#localhost">개발자전용 FAQ</a>  에 같은 질문이 있으므로, 그 쪽을 참조해 주세요.
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=UTF-8"
+ http-equiv="content-type">
+<title>리플렉션의 확장 기능 - xrath.com 에서 번역됨</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+<TD>
+
+<center>
+<h1><code>java.lang.Class</code> 및 <code>java.lang.reflect</code> 의 확장 기능</h1>
+</center>
+
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">리플렉션</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<UL>
+<LI><a href="#6">Java SE 6 의 확장 기능 </a> 
+<LI><a href="#5.0">J2SE 5.0 의 확장 기능 </a> 
+<LI><a href="#1.4">J2SDK 1.4 의 확장 기능 </a> 
+</UL>
+<hr>
+
+<a name="6"></a> <h2>Java SE 6 의 확장 기능 </h2>
+
+<ul>
+<li> <a href="../../../api/java/lang/Class.html"><code>java.lang.Class</code></a>  의 다음의 메소드가 범용화 되었던:<a href="../../../api/java/lang/Class.html#getInterfaces()"><code>getInterfaces()</code></a> ,<a href="../../../api/java/lang/Class.html#getClasses()"><code>getClasses()</code></a> ,<a href="../../../api/java/lang/Class.html#getConstructors()"><code>getConstructors()</code></a> ,<a href="../../../api/java/lang/Class.html#getMethod(java.lang.String, java.lang.Class...)"><code>getMethod(String, Class...)</code></a> ,<a href="../../../api/java/lang/Class.html#getConstructor(java.lang.Class...)"><code>getConstructor(Class...)</code></a> ,<a href="../../../api/java/lang/Class.html#getDeclaredClasses()"><code>getDeclaredClasses()</code></a> ,<a href="../../../api/java/lang/Class.html#getDeclaredConstructors()"><code>getDeclaredConstructors()</code></a> ,<a href="../../../api/java/lang/Class.html#getDeclaredMethod(java.lang.String, java.lang.Class...)"><code>getDeclaredMethod(String, Class...)</code></a> , 및 <a href="../../../api/java/lang/Class.html#getDeclaredConstructor(java.lang.Class...)"><code>getDeclaredConstructor(Class...)</code></a> .   
+  
+그 결과, 이러한 메소드를 사용하는 코드는, 컴파일중에 경고를 생성합니다.   
+
+<p> 예를 들어, 다음의 코드는 <code>getDeclaredMethod()</code> 를 호출합니다.
+
+<blockquote><pre>
+import java.lang.reflect.Method;
+
+public class Warning {
+    void m() {
+	try {
+ 	    Warning warn = new Warning();
+ 	    Class c = warn.getClass();
+	    Method m = c.getDeclaredMethod("m");
+	} catch (NoSuchMethodException x) {
+	    x.printStackTrace();
+	}
+    }
+}
+
+$ <em>javac Warning.java</em>
+Note: Warning.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+$ <em>javac -Xlint:unchecked Warning.java</em> 
+Warning.java:8: warning: [unchecked] unchecked call to getDeclaredMethod(java.lang.String, java.lang.Class&lt;? &gt;...) as a member of the raw type java.lang.Class
+            Method m = c.getDeclaredMethod("m");
+                                          ^
+1 warning
+</pre></blockquote>
+
+<p> 경고를 삭제하려면 , 적절한 범용형을 포함하도록(듯이) <code>c</code> 의 선언을 변경하도록 해 주세요. 이 경우, 선언은 다음과 같이 하면(자) 좋을 것입니다.
+
+<blockquote><pre>
+Class&lt;? &gt; c = warn.getClass();
+</pre></blockquote>
+
+<li> 
+<a href="../../../api/java/lang/reflect/Method.html#toString()"><code>Method.toString()</code></a>  및 <a href="../../../api/java/lang/reflect/Constructor.html#toString()"><code>Constructor.toString()</code></a>  가, 수식자세트를 올바르게 표시하게 되었습니다.   
+ 
+<li> <a href="../../../api/java/lang/reflect/Array.html#newInstance(java.lang.Class, int...)"><code>Array.newInstance(Class, int...)</code></a>  의 마지막 파라미터가, 가변 인수에 대응합니다.   
+
+</ul>
+
+<a name="5.0"><h2>J2SE 5.0 의 확장 기능 </h2></a> 
+
+java.lang.Class 및 java.lang.reflect 에 더해진 변경은 다음과 같습니다. <br>
+
+<ul>
+<li><b>범용형의 지원</b> - 범용형의 정보로, 구조화 프로그램의 리플렉션을 지원했습니다. 즉, 형태, 메소드, 생성자 , 또는 필드의 선언을 검사해, 범용형의 정보를 취득하는 것이 가능하게 되었습니다. 특히, 형태, 메소드, 또는 생성자 이 임의의 형태의 변수를 선언하고 있을지 어떨지를 판단해, 그 형태의 변수를 응용 프로그램에 반영시킬 수가 있습니다. 이것에 의해, 예를 들어 변수의 이름이나 경계를 조사하는 것이 가능합니다. 또, 필드, 메소드나 생성자 의 파라미터의 형태, 메소드의 반환값의 형태, 또는 메소드나 생성자 의 throws 절로, 그 형태의 비소거 형식을 취득할 수도 있습니다. 형명의 범용화 형식은, toGenericString()를 개입시켜 이용할 수 있습니다. 다만, 인스턴스가 속하는 범용 호출을 판단하는 것은 지원되어 있지 않기 때문에 주의해 주세요. <br>
+  </li>
+<li><b>주석의 지원</b> - 형, 메소드, 필드, 생성자 , 및 실행시에 이용 가능과 마크 끝난 메소드나 생성자 의 가파라미터로, getAnnotation() 메소드를 사용해 주석을 취득할 수가 있습니다. 또, 인터페이스가 주석형인가 어떤가를 조사할 수도 있습니다. <br>
+  </li>
+<li><b>열거형의 지원</b> - 클래스가 열거형일지 어떨지, 또 필드가 열거형 정수를 나타내고 있는지 어떤지를 판단할 수 있습니다. </li>
+<li><b>가변 인수의 지원</b> - 메소드나 생성자 이 가변 인수에 대응하고 있을지 어떨지를 조사할 수가 있습니다. </li>
+<li><b>편리한 메소드</b> - 클래스가 로컬, 익명, 또는 멤버 클래스일지 어떨지, 및 형태의 단순명과 정규명을 확인합니다. 또, 멤버가 합성 (구현으로 작성한 것) 화도인지를 조사할 수가 있습니다. <br>
+  </li>
+<li><b>클래스 java.lang.Class 의 범용화</b> - java.lang.Class 의 인스턴스를 형태 토큰으로서 사용할 수 있습니다. 예에 대해서는,<a href="http://java.sun.com/j2se/1.5/pdf/generics-tutorial.pdf">「generics tutorial」</a>의 섹션 8 을 참조해 주세요.  </li>
+</ul>
+
+<a name="1.4"><h2>J2SDK 1.4 의 확장 기능 </h2>
+
+<ul>
+<li><b>퍼포먼스의 확장</b> - 일부의 리플렉트 처리, 특히 <a href="../../../api/java/lang/reflect/Field.html">Field</a> ,<a href="../../../api/java/lang/reflect/Method.html#invoke(java.lang.Object,%20java.lang.Object...)">Method.invoke()</a>,<a href="../../../api/java/lang/reflect/Constructor.html#newInstance(java.lang.Object...)">Constructor.newInstance()</a>, 및 <a href="../../../api/java/lang/Class.html#newInstance()">Class.newInstance()</a>  가 고쳐 써져, 퍼포먼스가 향상했습니다. 리플렉트에 의한 호출이나 인스턴스화는, 이전의 릴리스에 비해 수배속구 되었습니다.  
+</ul>
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><p></P>
+   <br> <!-- <FONT SIZE="-1"> Please send comments to: </FONT> -->
+
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+<pre>
+
+</pre>
+  </body>
+</html>

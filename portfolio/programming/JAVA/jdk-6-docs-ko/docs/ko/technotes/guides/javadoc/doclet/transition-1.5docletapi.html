@@ -1,0 +1,288 @@
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>5.0 도크 렛 API 에의 이행 - xrath.com 에서 번역됨</title>
+</head>
+
+<body>
+<center>
+<h1>5.0 도크 렛 API 에의 이행</h1>
+</center>
+
+
+<h2>처음에</h2> 
+
+이 문서는, 도크 렛의 개발자가 신기능의 지원에 필요한 도크 렛의 변경점에 관한 문서를 읽어 이해하고 있는 것을 전제로 하고 있습니다. <a href="../../language/index.html"new 1.5 language features></a> 이 문서의 목적은, 이러한 변경을 실시하는 개발자의 지원으로 한정되고 있어 5.0 으로 정의 떠날 수 있어 모든 새로운 언어 기능을 채택하고 있는 것은 아닙니다.
+
+
+<h2>도크 렛이 5.0 소스를 지원하고 있는 것을 나타낸다</h2>
+
+클래스 com.sun.javadoc.Doclet 에는, 도크 렛이 지원하고 있는 Java 프로그램 언어의 버젼을 나타내기 위한, 다음의 새로운 메소드가 추가되고 있습니다.
+<p>
+
+<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/Doclet.html#languageVersion()">Doclet.languageVersion()</a> 
+<p>
+
+디폴트에서는, 이 메소드는 LanguageVersion.JAVA_1_1 를 돌려줍니다.
+<p>
+
+
+<h2>도크 렛이 원시형을 적절히 처리하도록(듯이) 보증한다</h2>
+
+Type 의 경우, 대부분의 도크 렛에서는, 클래스와 원시형을 구별하기 위해서 다음과 같은 체크를 사용하고 있습니다.
+
+<pre>
+   // If true, Type must be a primitive
+   Type.asClassDoc() == null
+</pre>
+
+
+버젼 5.0 에서는, 이 코드는 적절히 동작하지 않습니다.  원시형 이외에도, ClassDoc 형이 아닌 형태가 존재하게 되었기 때문에입니다. 예를 들어, 주석형에 대해서도 asClassDoc 메소드는 null 를 돌려줍니다. 따라서, 「Type.asClassDoc() == null」라고 하는 코드를 모두, 「Type.isPrimitive()」에 옮겨놓을 필요가 있습니다.
+
+
+<h2>ClassDoc.superclass()는 아니고 ClassDoc.superclassType()를 사용</h2>
+
+ClassDoc.superclass()는, 어떤 종류의 총칭의 구조에 대응할 수 없습니다. 그 때문에, 대신에 superclassType() 메소드를 사용할 필요가 있습니다.
+
+
+<h2>ClassDoc.interfaces()는 아니고 ClassDoc.interfaceTypes()를 사용</h2>
+
+ClassDoc.interfaces()는, 어떤 종류의 총칭의 구조에 대응할 수 없습니다. 그 때문에, 대신에 interfaceTypes() 메소드를 사용할 필요가 있습니다.
+
+
+<h2>형태 파라미터</h2>
+
+ClassDocs 및 ExecutableMemberDocs 를 처리할 경우에는, 메소드 typeParameters()를 호출해 형태의 가파라미터를 가져옵니다. 각 파라미터는, 일반적으로의 형태나 프로세스와 같은 방법으로 처리할 수 있습니다. 유일한 차이는, 형태 파라미터에는, 문서화의 필요한 경계가 있다고 하는 것입니다. 경계를 가져오려면 , TypeVariable.bounds()를 호출합니다.
+<p>
+
+다음의 인터페이스가, 형태 변수를 나타내고 있습니다.  
+<p>
+
+<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/TypeVariable.html">com.sun.javadoc.TypeVariable</a> 
+<p>
+
+다음에 나타내는 것은, 형태 파라미터를 처리하기 위해서 표준 도크 렛이 사용하는 알고리즘입니다.
+<p>
+
+<pre>
+if (type.asTypeVariable()! = null) {
+    Doc owner = type.asTypeVariable(). owner();
+    if (owner instanceof ClassDoc) {
+        // Generate Link to type Parameter
+    } else {
+        // No need to link method type parameters.
+        // Append the name of the type parameter
+    }
+           
+    Type[] bounds = type.asTypeVariable(). bounds();
+    if (!  linkInfo.excludeTypeBounds) {
+        for (int i = 0; i &lt; bounds.length; i++) {
+            // If i greater than 0, append " & ".   Otherwise, append " extends "
+            // Generate a link to the bound
+        }
+    }
+}
+</pre>
+
+<h2>형태 파라미터의 Param 태그</h2>
+
+도크 렛은, 생성자 이나 메소드로부터 @param 태그를 취득하기 위해서 ExecutableMemberDoc.paramTags()를 호출합니다. 클래스, 생성자 , 및 메소드는 형태 파라미터를 가질 수 있기 (위해)때문에, @param 태그는 그러한 형태 파라미터를 문서화하기 위해서(때문에) 사용되는 일도 있습니다. 그러한 파라미터는, 이름이 산괄호로 둘러싸여 있는 것으로 구별됩니다. 예를 나타냅니다.
+
+<pre>
+/**
+ * @param &lt;E&gt; the type parameter for this class.
+ */
+public class Foo&lt;E&gt;
+</pre>
+
+이러한 형태 파라미터의 @param 태그를 가져오려면 , ClassDoc.typeParamTags() 또는 ExecutableMemberDoc.typeParamTags()를 호출합니다.
+<p>
+
+형태 파라미터의 태그를 일반적으로의 파라미터의 태그와 구별하려면 , ParamTag.isTypeParameter()를 호출합니다.
+<p>
+
+
+<h2>주석 타입</h2>
+
+주석형을 클래스나 인터페이스와 구별하려면 , isAnnotationType() 메소드를 호출합니다. 다음의 인터페이스가, 주석형을 나타내고 있습니다.
+<p>
+
+<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/AnnotationTypeDoc.html">com.sun.javadoc.AnnotationTypeDoc</a> 
+<p>
+
+주석형의 요소를 가져오려면 , 메소드 elements()를 호출합니다. 요소에는 다음의 2 종류가 있습니다.
+
+<ul>
+<li>생략 가능한 요소. 사용자가 이 요소에 값을 지정하지 않는 경우, 지정된 디폴트 값가 이 요소로 설정됩니다.
+
+<li>필수의 요소. 주석을 사용할 때, 사용자는 이 요소에 반드시 값을 지정하지 않으면 안됩니다.
+</ul>
+
+생략 가능한 요소와 필수의 요소의 완전한 리스트를 도크 렛 API 로부터 취득하는 수단은 없습니다. 도크 렛에서는, 요소의 배열로 반복 처리를 수동으로 실행해, 디폴트 값가 null 화도인지를 체크할 필요가 있습니다. 만약 null 이면, 그 요소는 필수입니다.
+
+
+<h2>주석형의 사용</h2>
+
+ProgramElementDoc 를 처리할 경우에는, annotation() 메소드를 호출해, 사용되고 있는 주석을 취득할 필요가 있습니다. 다음의 인터페이스가, 주석의 사용 상황의 정보를 캡슐화하고 있습니다.
+<p>
+
+<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/AnnotationDesc.html">com.sun.javadoc.AnnotationDesc</a> 
+<p>
+
+AnnotationDesc 객체의 리스트를 반복 처리 해, 각 객체를 처리합니다. 다음에 나타내는 것은, AnnotationDesc 객체를 처리하기 위해서 표준 도크 렛이 사용하는 알고리즘입니다.
+
+<pre>
+for (int i = 0; i &lt; descList.length; i++) {
+    AnnotationTypeDoc annotationDoc = descList[i]. annotationType();
+    if (/**annotationDoc does not have @documented annotation**/){
+        // ONLY document annotations if they have @documented.
+        continue;
+    }
+    // Generate a link to the annotation.   Start with the ? @?  character>
+    AnnotationDesc.ElementValuePair[] pairs =  
+        descList[i]. elementValues();           
+    if (pairs.length > 0) {
+        // Append '(' to indicate start of element list>
+        for (int j = 0; j &lt; pairs.length; j++) {
+              if (j > 0) {
+                // Append ', ' to separate previous element from the next>
+            }
+            // Generate a link to the annotation element>
+            // Append '=' to separate element name from value>
+            AnnotationValue annotationValue = pairs[j]. value();
+            List annotationTypeValues = new ArrayList();
+            if (annotationValue.value() instanceof 
+                     AnnotationValue[]) {
+                 AnnotationValue[] annotationArray =
+                 (AnnotationValue[]) annotationValue.value();
+                 for (int k = 0; k &lt; annotationArray.length; k++) {                             
+                    annotationTypeValues.add(annotationArray[k]);
+                 }
+           } else {
+               annotationTypeValues.add(annotationValue);
+           }
+           // Append '{' if this is an array of values
+           for (Iterator iter = 
+               annotationTypeValues.iterator();
+               iter.hasNext(); ) {
+               // Append string representation of value
+               // Append ?,? if there there is more to append
+           }
+           // Append '}' if this is an array of values
+       }
+       // Append ')' if this is an array of values
+    }
+}
+</pre>
+
+
+다음에 나타내는 것은, 출력의 예입니다.
+<p>
+
+<a href="../../../../api/java/lang/annotation/Target.html">java.lang.annotation.Target</a> 
+<p>
+
+주석의 값은, 다음의 어느 쪽인가에 됩니다.
+<ul>
+<li>형
+<li>배열형
+<li>Primitive
+<li>상자의 주석
+<li>MemberDoc
+<li>String
+</ul>
+
+다음에 나타내는 것은, 주석을 캐릭터 라인으로 변환하기 위해서(때문에) 표준 도크 렛이 사용하는 알고리즘입니다.
+
+<pre>
+if (annotationValue.value() instanceof Type) {
+    Type type = (Type) annotationValue.value();
+    if (type.asClassDoc() ! = null) {
+        LinkInfoImpl linkInfo = new LinkInfoImpl(
+           LinkInfoImpl.CONTEXT_ANNOTATION, type);
+        linkInfo.label = (type.asClassDoc(). isIncluded() ?
+            type.typeName() :
+            type.qualifiedTypeName()) + type.dimension() + ". class ";
+        return getLink(linkInfo);
+    } else {
+        return type.typeName() + type.dimension() + ". class";
+    }
+} else if (annotationValue.value() instanceof AnnotationDesc) {
+    // Handle nested annotations using recursion.
+    List list = getAnnotations(
+        new AnnotationDesc[]{(AnnotationDesc) annotationValue.value()},
+            false);
+    StringBuffer buf = new StringBuffer();
+    for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+        buf.append(iter.next());  
+    }
+    return buf.toString();
+} else if (annotationValue.value() instanceof MemberDoc) {
+    // Simply link to the member being references in the annotation.
+    return getDocLink(LinkInfoImpl.CONTEXT_ANNOTATION,
+        (MemberDoc) annotationValue.value(),
+        ((MemberDoc) annotationValue.value()). name(), false);
+} else {
+    return annotationValue.toString();
+}   
+</pre> 
+
+
+<h2>열거형</h2>
+
+열거형을 클래스나 인터페이스와 구별하려면 , isEnum() 메소드를 호출합니다. 문서화하는 열거형의 정수의 리스트를 가져오려면 , enumConstants() 메소드를 호출합니다. 열거형의 정수는, FieldDoc 객체의 배열로서 돌려주어집니다. 열거형의 정수를 일반적으로의 필드와 구별하려면 , isEnumConstant()를 호출합니다.
+<p>
+
+다음에 나타내는 것은, 열거형의 문서의 예입니다.
+<p> 
+
+<a href="../../../../api/java/lang/management/MemoryType.html">java.lang.management.MemoryType.html</a> 
+<p>
+
+
+<h2>가변수의 인수</h2>
+
+ExecutableMemberDoc 를 처리할 경우에는, VarArg()를 호출해, 생성자 이나 메소드의 마지막 파라미터가 var arg 화도인지를 판단합니다. 만약 그렇다면, 마지막 파라미터에는 특별한 처리가 필요하게 됩니다. 다음에 나타내는 것은, var arg 에 대해서 표준 도크 렛이 실행하는 추가 코드입니다.
+
+<pre>
+if (isVarArg) {
+    if (type.dimension(). length() > 2) {
+        // Doclet API returns var args as array.
+        // Strip out the first [] from the var arg.
+        // Append type.dimension(). substring(2)
+    }
+    // Append "..."
+} else {
+    // Append type.dimension()
+}
+</pre>
+
+이 코드는, 배열의 크기를 일반적으로대로 문서화하는 개소에 삽입할 필요가 있는 코드입니다. 코멘트에, var arg 가 배열로서 도크 렛 API 로부터 반환된다고 쓰여져 있는 것에 주목해 주세요. 최초의 「[]」을 제거하고 있는 것은, 그것이 var arg 의 내부 표현의 일부에 지나지 않고, 문서에 포함할 필요가 없기 때문입니다.
+
+
+<h2>와일드 카드</h2>
+
+다음의 인터페이스가, 와일드 카드형을 나타내고 있습니다.
+<p>
+
+<a href="../../../../jdk/api/javadoc/doclet/com/sun/javadoc/WildcardType.html">com.sun.javadoc.WildcardType</a> 
+<p>
+
+와일드 카드에 조우했을 때는, 확장 클래스와 슈퍼 클래스의 경계의 리스트를 반복 처리 합니다. 각 경계는, 일반적으로의 형태를 처리하는 것과 같은 방법으로 처리합니다. 다음에 나타내는 것은, 와일드 카드를 처리하기 위해서 표준 도크 렛이 사용하는 알고리즘입니다.
+
+<pre>
+if (type.asWildcardType() ! = null) {
+    WildcardType wildcardType = type.asWildcardType();
+    Type[] extendsBounds = wildcardType.extendsBounds();
+    for (int i = 0; i &lt; extendsBounds.length; i++) {
+        // If i greater than 0, append " , ".   Otherwise, append " extends "
+        // Generate link to extendsBounds[i])
+    }
+    Type[] superBounds = wildcardType.superBounds();
+    for (int i = 0; i &lt; superBounds.length; i++) {
+        // If i greater than 0, append " , ".   Otherwise, append " super "
+        // Generate link to superBounds[i])
+    } 
+}
+</pre>
+

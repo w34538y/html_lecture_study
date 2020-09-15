@@ -1,0 +1,2373 @@
+<html>
+<head>
+<title>JNLP 파일의 구문 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../deployment/css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>JNLP 파일의 구문</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br> 이 장에서는 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a> </li>
+<li><a href="#example">례</a> </li>
+<li><a href="#jnlp_elements">JNLP 의 요소</a>  
+    <ul>
+<li><a href="#jnlp"><code>jnlp</code> 요소</a> </li>
+<li><a href="#information"><code>information</code> 요소</a> </li>
+<li><a href="#security"><code>security</code> 요소</a> </li>
+<li><a href="#update"><code>update</code> 요소</a> </li>
+<li><a href="#resources"><code>resources</code> 요소</a> </li>
+<li><a href="#application_desc"><code>application-desc</code> 요소</a> </li>
+<li><a href="#applet_desc"><code>applet-desc</code> 요소</a> </li>
+<li><a href="#comp_desc"><code>component-desc</code> 요소</a> </li>
+<li><a href="#install_desc"><code>installer-desc</code> 요소</a> </li>
+    </ul>
+  </li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p>이 릴리스로 사용하고 있는 형식은,<a href="http://java.sun.com/products/javawebstart/download-spec.html">「Java Network Launching Protocol &amp; API Specification (JSR-56) version 6.0」</a>으로 지정되고 있는 형식과 같습니다. 이 가이드에서는, JNLP 파일에서 가장 자주(잘) 사용되는 요소에 대해 설명하고 있습니다. 이 형식의 완전한 설명에 대해서는, 스펙을 참조해 주세요. </p>
+
+<hr>
+<p><center>JNLP 파일의 내용</center></p>
+</hr>
+<dl>
+  <dd>
+    <table border="1" cellpadding="4" cellspacing="3" width="1111"><center>
+      <col width="126"> <col width="140"> <col width="646"> <col
+ width="73"> <col width="66"> <tbody>
+        <tr>
+
+          <th width="126">
+<p>요소</p>
+          </th>
+          <th width="140">
+<p>속성</p>
+          </th>
+          <th width="646">
+<p>설명</p>
+
+          </th>
+          <th width="73">
+<p>도입된 버젼</p>
+          </th>
+          <th width="66">
+<p>필수</p>
+          </th>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>jnlp</p>
+          </td>
+          <th width="140">
+          <p><br>
+          </p>
+          </th>
+
+          <td width="646">
+<p>jnlp 파일로 메인이 되는 XML 요소. 모두 jnlp 요소에 포함되어 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0<br>
+          </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>spec</p>
+          </td>
+          <td width="646">
+<p>spec 속성에는 1.0, 1.5. 0, 6.0 을 선택할 수 있습니다. 또는, 1.0+ 와 같은 와일드 카드도 사용할 수 있습니다. 그 jnlp 파일을 적절히 동작할 수 있는, JNLP Specification 의 최소 버젼을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>codebase</p>
+          </td>
+          <td width="646">
+<p>codebase 속성에는, JNLP 파일의 href 속성으로 지정 떠날 수 있어 모든 상대 URL 의 기본이 되는 장소가 지정되고 있습니다.  </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>href</p>
+          </td>
+
+          <td width="646">
+<p>href 는 JNLP 파일의 URL 를 지정합니다.  </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>version</p>
+          </td>
+          <td width="646">
+<p>JNLP 파일의 버젼과 기동된 어플리케이션의 버젼. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>information</p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>information 요소에는 대상의 어플리케이션과 그 소스를 설명한 다른 요소가 포함되어 있습니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>os</p>
+          </td>
+          <td width="646">
+
+<p>이 information 요소에 대해서 적절한  operating system를 지정합니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0<br> <br>
+          </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>arch</p>
+          </td>
+          <td width="646">
+<p>이 information 요소에 대해서 적절한 아키텍쳐(architecture)를 지정합니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>platform</p>
+          </td>
+          <td width="646">
+<p>이 information 요소에 대해서 적절한 플랫폼을 지정합니다. </p>
+          </td>
+
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>locale</p>
+          </td>
+
+          <td width="646">
+<p>이 information 요소에 대해서 적절한 로케일을 지정합니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>title</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>title 요소는 어플리케이션의 타이틀을 지정합니다.  </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>vendor </p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>vendor 요소는 어플리케이션의 프로바이더를 지정합니다.  </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+<p>homepage</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+
+<p>어플리케이션의 홈 페이지. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>href</p>
+
+          </td>
+          <td width="646">
+<p>이 어플리케이션의 상세 정보를 얻을 수 있는 장소를 나타내는 URL. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>description</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>어플리케이션을 설명하는 짧은 문장. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>kind</p>
+          </td>
+          <td width="646">
+<p>설명 타입을 나타냅니다. 유효한 값은 one-line, short, tooltip 입니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>icon</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>사용자가 어플리케이션을 식별할 수 있도록(듯이) 아이콘을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>href</p>
+          </td>
+          <td width="646">
+<p>아이콘 파일을 지정하는 URL. 아이콘 파일의 형식에는 gif, jpg, png, ico 가 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>kind</p>
+          </td>
+          <td width="646">
+<p>추천 하는 아이콘의 사용 방법 (default, selected, disabled, rollover, splash, shortcut)을 나타냅니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>width</p>
+          </td>
+
+          <td width="646">
+<p>이미지의 해상도를 지정하기 위해서 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>height</p>
+          </td>
+          <td width="646">
+<p>이미지의 해상도를 지정하기 위해서 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>depth</p>
+          </td>
+          <td width="646">
+<p>이미지의 해상도를 지정하기 위해서 사용할 수 있습니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>offline-allowed</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>클라이언트 시스템이 네트워크로부터 절단 되어도 이 어플리케이션을 가동할 수 있는 것을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>shortcut</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>shortcut 요소를 사용하면(자), 어플리케이션의 데스크탑의 통합에 대한 설정 방법법을 나타낼 수가 있습니다.  </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>online</p>
+          </td>
+          <td width="646">
+<p>사용하면(자), 어플리케이션의 설정으로, 작성하는 쇼트 컷을 온라인으로 실행하는지, 오프 라인으로 실행하는지를 나타낼 수가 있습니다. </p>
+          </td>
+
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>desktop</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>사용하면(자), 어플리케이션의 설정으로, 쇼트 컷을 사용자의 데스크탑에 배치할지 어떨지를 나타낼 수가 있습니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>menu</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>사용하면(자), 어플리케이션의 설정으로, 메뉴 항목을 사용자의 스타트 메뉴에 배치할지 어떨지를 나타낼 수가 있습니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>sub-menu</p>
+          </td>
+          <td width="646">
+<p>사용하면(자), 어플리케이션의 설정으로, 메뉴 항목을 배치하는 장소를 나타낼 수가 있습니다. </p>
+          </td>
+
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>association</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p> operating system에 특정의 확장자(extension)의 primary 핸들러로서 또 특정의 MIME 타입으로서의 등록을 행하기를 원하는지 어떤지를 JNLP 클라이언트에게 전하기 위해서(때문에) 사용할 수 있습니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>extensions</p>
+          </td>
+          <td width="646">
+<p>어플리케이션이 처리하기 위해서 등록이 필요한 파일 확장자(extension)의 리스트 (스페이스 단락)를 포함하고 있습니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>mime-type</p>
+          </td>
+          <td width="646">
+<p>어플리케이션이 처리하기 위해서 등록이 필요한 MIME 타입을 포함하고 있습니다. </p>
+          </td>
+
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>related-content</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>어플리케이션에 통합될 가능성이 있는 관련 컨텐츠의 추가 부분을 나타냅니다. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>href</p>
+          </td>
+          <td width="646">
+<p>관련 컨텐츠를 가리키는 URL. </p>
+          </td>
+          <td sdval="36530" sdnum="1033;0;MM/DD/YY" width="73">
+          <p>1.5. 0</p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+          <p><br>
+          </p>
+
+          </td>
+          <td sdnum="1033;0;MM/DD/YY" width="73">
+          <p><br>
+          </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+
+        </tr>
+        <tr>
+          <td width="126">
+<p>update</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+
+          </td>
+          <td width="646">
+<p>update 요소는, JNLP 클라이언트가 어플리케이션의 갱신을 처리하는 방법에 대해 가리킵니다. </p>
+          </td>
+          <td sdval="6" sdnum="1033;" width="73">
+          <p>6.0</p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>check</p>
+          </td>
+          <td width="646">
+<p>JNLP 클라이언트가 갱신을 확인할 필요가 있는 시기에 대한 설정을 나타냅니다. 설정에는, always, timeout, background 를 선택할 수 있습니다. </p>
+          </td>
+          <td sdval="6" sdnum="1033;" width="73">
+          <p>6.0</p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>policy</p>
+          </td>
+          <td width="646">
+<p>어플리케이션의 기동전에 갱신이 가능하다라고 판단되었을 때, JNLP 클라이언트가 어플리케이션 갱신에 실시하는 처리 방법의 설정을 나타냅니다. 설정에는, always, prompt-update, prompt-run 를 선택할 수 있습니다. </p>
+          </td>
+
+          <td sdval="6" sdnum="1033;" width="73">
+          <p>6.0</p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+          <p><br>
+          </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>security</p>
+          </td>
+
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>이 요소는 확장 권한을 요구할 때에 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+<p>all-permissions</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+
+<p>모든 액세스권을 사용할 수 있는 상태로 어플리케이션을 실행할 수 있도록(듯이) 요구합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>j2ee-application-client-permissions</p>
+          </td>
+          <td width="140">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="646">
+<p>J2EE 어플리케이션 클라이언트의 시큐리티 환경의 스펙에 대응한 액세스권을 갖게해 어플리케이션을 가동시키도록(듯이) 요구합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>resources</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>어플리케이션에 필요한 모든 자원을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>os</p>
+
+          </td>
+          <td width="646">
+<p>이 resources 요소에 대해서 적절한  operating system를 지정합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>arch</p>
+          </td>
+          <td width="646">
+<p>이 resources 요소에 대해서 적절한 아키텍쳐(architecture)를 지정합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>locale</p>
+          </td>
+          <td width="646">
+<p>이 resources 요소에 대해서 적절한 로케일을 지정합니다. </p>
+          </td>
+
+          <td width="73">
+          <p><br>
+          </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>java (또는 j2se)</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>어플리케이션과 함께 가동시키는 Java 의 버젼을 지정합니다. </p>
+          </td>
+          <td width="73">
+<p>6.0 (java)<br>
+          </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>version</p>
+          </td>
+          <td width="646">
+<p>사용하는 버젼의 범위를 차례로 정리한 리스트를 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>href</p>
+          </td>
+          <td width="646">
+<p>이 Java 의 버젼의 공급자와 다운로드될 장소를 나타내는 URL. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>java-vm-args</p>
+          </td>
+
+          <td width="646">
+<p>Java 기동시에 어플리케이션이 JNLP 클라이언트에 사용시킬 표준의 가상 머신의 인수와 비표준의 가상 머신의 인수의 추가 세트를 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>initial-heap-size</p>
+          </td>
+          <td width="646">
+<p>Java heap의 초기 사이즈를 지정합니다.  </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>max-heap-size</p>
+          </td>
+          <td width="646">
+<p>Java heap의 최대 사이즈를 지정합니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>jar</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>어플리케이션의 클래스 패스에 포함하는 JAR 파일을 지정합니다.  </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>href</p>
+
+          </td>
+          <td width="646">
+<p>jar 파일의 URL. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>version</p>
+          </td>
+          <td width="646">
+<p>요구된 jar 파일의 버젼. 버젼 베이스의 다운로드 프로토콜을 사용할 필요가 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>main</p>
+          </td>
+          <td width="646">
+<p>이 jar 파일에 어플리케이션의 main 메소드를 포함한 클래스가 포함되어 있는지 어떤지를 나타냅니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>download</p>
+          </td>
+
+          <td width="646">
+<p>이 jar 파일의 다운로드를 부정기에 실시하는지, 필요한 때에 실시하는지를 나타내기 위해서(때문에) 사용됩니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>size</p>
+          </td>
+          <td width="646">
+<p>jar 파일의 다운로드 가능한 사이즈를 바이트로 지정합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>part</p>
+          </td>
+          <td width="646">
+<p>사용하면(자), 자원을 함께 그룹화 해 동시에 다운로드할 수 있습니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>nativelib</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>루트 디렉토리에 네이티브 라이브러리를 포함한 JAR 파일을 지정합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>href</p>
+          </td>
+          <td width="646">
+<p>jar 파일의 URL. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>version</p>
+          </td>
+          <td width="646">
+<p>요구된 jar 파일의 버젼. 버젼 베이스의 다운로드 프로토콜을 사용할 필요가 있습니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>download</p>
+          </td>
+
+          <td width="646">
+<p>이 jar 파일을 부정기에 다운로드할 가능성이 있는 것을 나타내는 경우에 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>size</p>
+          </td>
+          <td width="646">
+<p>jar 파일의 다운로드 가능한 사이즈를 바이트로 지정합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>part</p>
+          </td>
+          <td width="646">
+<p>사용하면(자), 자원을 함께 그룹화 해 동시에 다운로드할 수 있습니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+<p>extension</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="646">
+<p>이 어플리케이션으로 사용하는 추가의 component-desc 또는 installer-desc 에 대한 포인터를 포함합니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+
+<p>href</p>
+          </td>
+          <td width="646">
+<p>추가의 확장 jnlp 파일의 URL. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>version</p>
+          </td>
+          <td width="646">
+<p>추가의 확장 jnlp 파일의 버젼. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>name</p>
+          </td>
+
+          <td width="646">
+<p>추가의 확장 jnlp 파일의 이름. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>ext-download</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>확장 요소로 사용해, 컴퍼넌트 확장 기능의 일부를 나타낼 수가 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>ext-part</p>
+          </td>
+          <td width="646">
+<p>확장 기능으로 찾아낼 수가 있을 것이다, 그 포함되는 부분의 이름을 나타냅니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>download</p>
+          </td>
+          <td width="646">
+
+<p>이 확장 기능을 정기적, 또는 부정기에 다운로드할 가능성이 있는 것을 나타내는 경우에 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>part</p>
+
+          </td>
+          <td width="646">
+<p>확장 기능을 안에 포함하기 위한, 이 jnlp 파일의 일부의 이름을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>package</p>
+          </td>
+
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>JNLP 클라이언트에, JAR 파일에 구현되는 패키지를 나타내는 경우에 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>name</p>
+          </td>
+          <td width="646">
+
+<p>지정 부분의 jar 파일에 포함되는 패키지명. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>part</p>
+
+          </td>
+          <td width="646">
+<p>지정의 패키지명을 포함한 jar 파일에 포함되는 부분명. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>recursive</p>
+          </td>
+          <td width="646">
+<p>지정의 부분에서 찾아낼 수가 있는, 지정의 이름으로 시작되는 모든 패키지명을 지정하는 경우에 사용할 수 있습니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>property</p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>System.getProperty 와 System.getProperties 메소드로 사용할 수 있는 시스템 프로퍼티을 정의합니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>name</p>
+          </td>
+
+          <td width="646">
+<p>시스템 프로퍼티의 이름. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>value</p>
+
+          </td>
+          <td width="646">
+<p>설정되는 값. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+          <p><br>
+          </p>
+          </td>
+          <td width="73">
+
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+
+<p>주:jnlp 파일에는 application-desc, applet-desc, component-desc, installer-desc  가운데 어느쪽이든을 포함할 필요가 있습니다</p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>applicaation-desc</p>
+          </td>
+          <td width="140">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="646">
+<p>어플리케이션의 jnlp 파일인 것을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+
+          </td>
+          <td width="140">
+<p>main-class</p>
+          </td>
+          <td width="646">
+<p>어플리케이션의 public static void main(String[]) 메소드를 포함한 클래스명. </p>
+          </td>
+          <td width="73">
+
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+
+<p>argument</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>각 argument 에는, main 메소드에게 건네지는 추가의 인수가 차례로 포함되어 있습니다. </p>
+
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+
+        </tr>
+        <tr>
+          <td width="126">
+<p>applet-desc</p>
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+
+          </td>
+          <td width="646">
+<p>애플릿의 jnlp 파일인 것을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>main-class</p>
+          </td>
+          <td width="646">
+<p>메인이 되는 Applet 클래스의 이름입니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+
+          </p>
+          </td>
+          <td width="140">
+<p>documentbase</p>
+          </td>
+          <td width="646">
+<p>URL 로서의 Applet 의 문서 베이스. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>name</p>
+          </td>
+
+          <td width="646">
+<p>Applet 의 이름. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>width</p>
+
+          </td>
+          <td width="646">
+<p>애플릿의 폭 (픽셀). </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+
+          <td width="140">
+<p>height</p>
+          </td>
+          <td width="646">
+<p>애플릿의 높이 (픽셀). </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>param</p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>애플릿에 건네줄 수가 있는 파라미터세트. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>name</p>
+          </td>
+
+          <td width="646">
+<p>이 파라미터의 이름</p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>value</p>
+
+          </td>
+          <td width="646">
+<p>이 파라미터의 값</p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+
+<p>네</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>component-desc</p>
+          </td>
+          <td width="140">
+
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>컴퍼넌트 확장 기능의 jnlp 파일인 것을 나타냅니다. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="126">
+<p>installer-desc</p>
+
+          </td>
+          <td width="140">
+          <p><br>
+          </p>
+          </td>
+          <td width="646">
+<p>인스톨 된 확장 기능의 jnlp 파일인 것을 나타냅니다. </p>
+          </td>
+
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+          <p><br>
+          </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126">
+          <p><br>
+          </p>
+          </td>
+          <td width="140">
+<p>main-class</p>
+          </td>
+
+          <td width="646">
+<p>인스톨러의 public static void main(String[]) 메소드를 포함한 클래스명. </p>
+          </td>
+          <td width="73">
+          <p>1.0 </p>
+          </td>
+          <td width="66">
+<p>네</p>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </dd>
+</dl>
+<br>
+
+<p>JNLP 파일은 XML 문서입니다. 다음에, JNLP 파일의 완전한 기술예를 나타냅니다. </p>
+<h2><a name="example" id="example"></a> 례</h2>
+<pre>&lt;<strong>? xml</strong> <strong>version</strong>=&quot;1. 0&quot; <strong>encoding</strong>=&quot;utf-8&quot;? &gt;<br>&lt;! -- JNLP File for SwingSet2 Demo Application --&gt;<br>&lt;<strong>jnlp</strong><br>  <strong>spec</strong>=&quot;6. 0+&quot;<br>  <strong>codebase</strong>=&quot;http://my_company.com/jaws/apps&quot;<br>  <strong>href</strong>=&quot;swingset2.jnlp&quot;&gt;<br>  &lt;<strong>information</strong>&gt;<br>    <strong>&lt;title</strong>&gt;SwingSet2 Demo Application&lt;<strong>/title</strong>&gt;<br>    &lt;<strong>vendor</strong>&gt;Sun Microsystems, Inc. &lt;<strong>/vendor</strong>&gt;<br>    &lt;<strong>homepage</strong> <strong>href</strong>=&quot;docs/help.html&quot;/&gt;<br>    &lt;<strong>description</strong>&gt;SwingSet2 Demo Application&lt;<strong>/description</strong>&gt;<br>    &lt;<strong>description</strong> <strong>kind</strong>=&quot;short&quot;&gt;A demo of the capabilities 
+    of the Swing Graphical User Interface. &lt;<strong>/description</strong>&gt;<br>    &lt;<strong>icon</strong> <strong>href</strong>=&quot;images/swingset2.jpg&quot;/&gt;<br>    &lt;<strong>icon</strong> <strong>kind</strong>=&quot;splash&quot; href=&quot;images/splash.gif&quot;/&gt;<br>    &lt;<strong>offline-allowed/</strong>&gt; <br>    &lt;<strong>association</strong>&gt;<br>      &lt;<strong>mime-type</strong>=&quot;application-x/swingset2-file&quot;/&gt;<br>      &lt;<strong>extensions</strong>=&quot;swingset2&quot;/&gt; <br>    &lt;<strong>/association</strong>&gt;<br>    &lt;<strong>shortcut</strong> <strong>online</strong>=&quot;false&quot;&gt;<br>      &lt;<strong>desktop/</strong>&gt;<br>      &lt;<strong>menu</strong> <strong>submenu</strong>=&quot;My Corporation Apps&quot;/&gt;<br>    &lt;<strong>/shortcut</strong>&gt;<br>  &lt;<strong>/information</strong>&gt;<br>  &lt;<strong>information</strong> <strong>os</strong>=&quot;linux&quot;&gt;   <br>    &lt;<strong>title</strong>&gt; SwingSet2 Demo on Linux &lt;<strong>/title</strong>&gt;<br>    &lt;<strong>homepage</strong> href=&quot;docs/linuxhelp.html&quot;&gt;<br>  &lt;<strong>/information</strong>&gt;<br>  &lt;<strong>security</strong>&gt;<br>      &lt;<strong>all-permissions/</strong>&gt;<br>  &lt;<strong>/security</strong>&gt;<br>  &lt;<strong>resources</strong>&gt;<br>    &lt;<strong>j2se</strong> <strong>version</strong>=&quot;1. 6+&quot; <strong>java-vm-args</strong>=&quot;-esa -Xnoclassgc&quot;/&gt;<br>    &lt;jar href=&quot;lib/SwingSet2.jar&quot;/&gt;<br>  &lt;<strong>/resources</strong>&gt;<br>  &lt;<strong>application-desc</strong> <strong>main-class</strong>=&quot;SwingSet2&quot;/&gt;<br>&lt;<strong>/jnlp</strong>&gt; </pre>
+<p>이 예는, 문서의 기본 구조를 나타낸 것입니다. 루트 요소는 <tt>jnlp</tt> 입니다만, 이 요소에는, 4 개의 서브 요소 <tt>information</tt>,<tt>security</tt>,<tt>resources</tt>,<tt>application-desc</tt> 를 정의할 수 있습니다. 게다가 Java Web Start 는 <tt>applet-desc</tt> 요소를 사용하는 것으로, 애플릿의 기동도 지원합니다. 요소의 자세한 것은 다음과 같습니다.  </p>
+<h2><a name="jnlp_elements"></a> JNLP 의 요소</h2>
+<h3> <a name="jnlp"></a> <code>jnlp</code> 요소</h3>
+<blockquote>
+<p><b><code>spec</code> 속성</b>:이 속성이 1.0 이상이 아니면 이 릴리스로 올바르게 동작하지 않습니다. 디폴트 값는 「1.0+」입니다. 따라서, 일반적으로은 이 속성을 생략 해도 괜찮습니다.  
+
+이 버젼은, 버젼 1.0, 1.5, 및 6.0 의 스펙을 지원하고 있습니다만, 이전의 버젼에서는 1.0 으로 1.5 밖에 지원되고 있지 않습니다. &nbsp;<code>spec="6.0+"</code> 를 지정하는 jnlp 파일은, 이 버젼으로 동작합니다만, 이전의 버젼의 Java Web Start 에서는 동작하지 않습니다.  </p>
+<p><b><code>codebase</code> 속성</b>:JNLP 파일의 <tt>href</tt> 속성으로 지정된 상대 URL 는 모두, 이 URL 를 기준으로서 처리됩니다.  </p>
+<p><b><code>href</code> 속성:</b>이것은, JNLP 파일 자체의 포함 장소를 나타내는 URL 입니다.  </p>
+</blockquote>
+<h3> <a name="information"></a> <code>information</code> 요소</h3>
+<blockquote>
+<p><b><code>title</code> 요소:</b>어플리케이션의 이름.  </p>
+<p><b><code>vendor</code> 요소:</b>어플리케이션 벤더의 이름.  
+  </p>
+<p><b><code>homepage</code> 요소:</b>단일의 속성 <tt>href</tt> 를 포함합니다.  이것은, 어플리케이션의 홈 페이지를 나타내는 URL 입니다. 이 요소는, Java 어플리케이션 캐쉬 viewer가, 어플리케이션의 상세 정보를 포함한 Web 페이지에 사용자를 리다이렉트(redirect) 할 때에 사용됩니다.  </p>
+<p><b><code>description</code> 요소:</b>어플리케이션에 관한 짧은 문장. description 요소는 생략 가능합니다. <tt>kind</tt> 속성은, description 의 용도를 정의합니다. 지정 가능한 값은, 다음의 머지않아인가입니다.  </p>
+  <ul>
+<li><i>one-line</i>:어플리케이션에의 참조를 리스트 또는 겉(표)의 1 행에 표시하는 경우에, 이 description 가 사용됩니다. </li>
+<li><i>short</i>:어플리케이션에의 참조를 표시할 때에 1 단락 분의 스페이스가 잡히는 경우에, 이 description 가 사용됩니다. </li>
+<li><i>tooltip</i>:어플리케이션에의 참조를 툴팁내에 표시하는 경우에, 이 description 가 사용됩니다. </li>
+  </ul>
+<p>개개의 종류에 대해서 지정 가능한 description 요소는, 1 개(살) 뿐입니다. kind 속성을 포함하지 않는 description 요소는, 디폴트 값로서 사용됩니다. 따라서, Java Web Start 가 <code>short</code> 의 종류의 description 요소를 필요로 하고 있지만, 그것이 JNLP 파일내로 지정되어 있지 않았던 경우, 속성을 포함하지 않는 description 요소의 텍스트가 사용됩니다.  </p>
+<p>description 요소에 포함되는 텍스트는, plaintext가 아니면 안됩니다. HTML 태그등을 포함한 형식은 지원되고 있지 않습니다.  </p>
+<p><b><code>icon</code> 요소:</b>GIF 형식 또는 JPEG 형식의 이미지 파일에의 HTTP URL 를 포함합니다. 이러한 아이콘은, 다음의 경우에 어플리케이션을 표현하기 위해서 사용됩니다.  
+  </p>
+  <ul>
+<li>어플리케이션 기동시에 Java Web Start 가 어플리케이션을 사용자에게 표시할 때</li>
+<li>Java 어플리케이션 캐쉬 viewer내</li>
+<li>데스크탑 쇼트 컷내 </li>
+  </ul>
+<p>다운로드중은 64x64 의 아이콘이 표시되어 Java 어플리케이션 캐쉬 viewer내와 데스크탑 쇼트 컷내에서는 32x32 의 아이콘이 사용됩니다. Java Web Start 는, 아이콘의 사이즈 변경을 필요에 따라서 자동적으로 실시합니다.  </p>
+<p>생략 가능한 속성 <tt>width</tt> 와 <tt>height</tt> 를 사용하면, 이미지의 사이즈를 지정할 수 있습니다.  </p>
+<p>생략 가능한 속성 <tt>kind="splash"</tt> 를 icon 요소내로 지정하면, 그 이미지가 어플리케이션 기동시의 「스플래쉬」화면용이라고 가리킬 수가 있습니다.   
+
+
+JNLP 파일에 <code>kind="splash"</code> 속성을 가지는 아이콘 요소가 포함되지 않은 경우, Java Web Start 는 <code>information</code> 요소의 다른 항목을 사용해 스플래쉬 화면을 구축합니다.  </p>
+<p> JNLP 파일내에 <tt>icon</tt> 이미지가 1 개나 존재하지 않았던 경우, 스플래쉬 이미지는, JNLP 파일로부터 취득된 어플리케이션의 타이틀과 벤더로 구성됩니다.  </p>
+<p> JNLP 파일의 <tt>icon</tt> 요소를 추가 또는 변경한 뒤 처음으로 어플리케이션을 기동하려면 , 이전의 스플래쉬 이미지가 표시됩니다. 2 번째 이후의 어플리케이션 기동에서는, 새로운 스플래쉬 이미지가 표시됩니다.  </p>
+<p><b><code>offline-allowed</code> 요소:</b>생략 가능한 <tt>offline-allowed</tt> 요소는, 오프 라인에서의 어플리케이션 기동을 허가할지 어떨지를 나타냅니다.  </p>
+<p> offline-allowed 가 지정되고 있는 경우, Java 어플리케이션 캐쉬 viewer로 어플리케이션을 오프 라인으로 기동할 수 있습니다.  또 어플리케이션을 오프 라인으로 기동하는 쇼트 컷을 작성할 수 있습니다. </p>
+<p> 어플리케이션을 오프 라인으로 기동했을 경우, 갱신의 체크는 행해지지 않습니다.  또, API 호출 <code>BasicService.isOffline()</code> 는 <code>true</code> 를 돌려줍니다.   </p>
+<p> 또,<tt>offline-allowed</tt> 요소는, Java Web Start 가 어플리케이션의 갱신을 체크하는 방법도 제어합니다. <strong>이 요소가 지정되어 있지 않은 경우</strong> (즉, 어플리케이션을 온라인으로 실행할 필요가 있는 경우), Java Web Start 는 항상, 갱신판이 있을지 어떨지를 체크한 후에 어플리케이션을 기동합니다. 갱신판이 발견되었을 경우는, 그 새로운 어플리케이션을 다운로드 및 기동합니다. 따라서, 사용자가 실행하는 어플리케이션이 항상 최신판인 것이 보증됩니다. 다만, 오프 라인의 경우, 어플리케이션을 실행할 수 없습니다. </p>
+<p> <strong><tt>offline-allowed</tt> 가 지정되고 있는 경우</strong>도, Java Web Start 는 갱신판이 있을지 어떨지를 체크합니다. 다만, 어플리케이션이 다운로드가 끝난 상태였을 경우, 그 체크 처리는 몇 초로 타임 아웃이 됩니다.  타임 아웃이 되었을 경우, 캐쉬 끝난 어플리케이션이 대신에 기동됩니다. 서버와의 접속이 어느 정도 고속으로  있으면, 대부분은 최신판의 어플리케이션이 실행될 것입니다만, 보증은 없습니다. 다만, 어플리케이션은 오프 라인으로 실행할 수 있습니다. </p>
+<p><code><strong>shortcut</strong></code><strong> 요소:</strong>생략 가능한 shortcut 요소를 사용하면(자), 어플리케이션의 데스크탑의 통합에 대한 설정 방법법을 나타낼 수가 있습니다. shortcut 요소와 그 서브 요소는, JNLP Client 가 사용할 가능성이 있는 힌트를 제공합니다. shortcut 요소에는 생략 가능한 <code>online</code> 속성과 2 개의 서브 요소 <code>desktop</code>,<code>menu</code> 가 포함됩니다. </p>
+<p><code><strong>association</strong></code><strong> 요소:</strong>생략 가능한 association 요소는,  operating system에 특정의 확장자(extension)의 primary 핸들러로서 또 특정의 MIME 타입으로서의 등록을 실시하고 싶은 JNLP 클라이언트에의 힌트입니다. association 요소에는 반드시 확장자(extension)와 MIME 타입 속성을 할당할 수 있습니다. </p>
+</blockquote>
+<blockquote>
+<p><code><strong><a name="related_content">related-content</a> </strong></code> <strong>요소:</strong>생략 가능한 related-content 요소는, README 파일, 헬프 페이지, 등록 페이지로의 링크등의 관련 컨텐츠의 추가 요소를, JNLP Client 에의 힌트로서 설명합니다. 어플리케이션은, 이 컨텐츠를 데스크탑 통합에 포함하도록(듯이) 요구합니다. related-content 요소에는, href 와 title 의 필수 속성을 할당할 수 있고 있습니다. 다음의 2 개의 서브 요소의 어느쪽이든을 할당할 수도 있습니다.
+<ul>
+<li><b><code>description</code> 요소</b>:관련 컨텐츠의 간단한 설명
+<li><b><code>icon</code> 요소</b>:JNLP Client 가 사용자에게로의 관련 컨텐츠를 식별하기 위해서 사용하는 아이콘 
+</ul>
+</blockquote>
+<h3> <a name="security"></a> <code>security</code> 요소</h3>
+<blockquote>
+<p>각 어플리케이션은 디폴트로, 애플릿의 샌드 박스에 유사한, 제한된 런타임내에서 실행됩니다. &nbsp;security 요소를 사용하는 것으로, 무제한의 액세스권을 요구할 수 있습니다.  </p>
+<p><tt><strong>all-permissions</strong></tt><strong> 요소</strong>가 지정되었을 경우, 어플리케이션은 클라이언트 머신과 로컬 네트워크에 대한 완전한 액세스권을 가집니다. 완전한 액세스권을 요구하는 어플리케이션에서는, 모든 JAR 파일에 서명할 필요가 있습니다. 어플리케이션의 첫회 기동시에, 사용자는 증명서에의 동의가 요구됩니다.  </p>
+</blockquote>
+
+<h3> <a name="update"></a> <code>update</code> 요소</h3>
+<blockquote>
+<p>update 요소는, Java Web Start 가 어플리케이션의 갱신을 어떻게 처리하는지를 지정하는데 사용됩니다. </p>
+<p>update 요소에는, 다음에 나타내는 2 개의 속성을 옵션으로 포함할 수가 있습니다.  </p>
+<p><b><code>check 속성:</code></b>check 속성은, JNLP 클라이언트가 갱신을 확인할 필요가 있는 시기에 대한 설정을 나타냅니다. 값에는, 「always」, 「timeout」, 「background」의 3 개 가운데, 어느쪽이든을 사용할 수 있습니다. </p>
+<p> 「always」의 값은, 어플리케이션을 기동하기 전에 항상 갱신 확인을 실시하는 것을 의미합니다. </p>
+<p>「timeout」의 값 (디폴트)은, 어플리케이션을 기동하기 전에, 타임 아웃이 될 때까지 갱신 확인을 실시하는 것을 의미합니다. 갱신 확인이 완료하지 않고 타임 아웃 했을 경우, 어플리케이션의 기동 후에, 갱신 확인이 그대로 백그라운드에서 계속해 행해집니다. </p>
+<p>「background」의 값은, 백그라운드에서의 갱신 확인의 실행중에 어플리케이션을 기동하는 것을 의미합니다. </p>
+
+<p><b><code>policy 속성:</code></b>policy 속성은, 어플리케이션의 기동전에 갱신이 가능하다라고 판단되었을 때, JNLP 클라이언트가 어플리케이션 갱신에 실시하는 처리 방법의 설정을 나타냅니다. 값에는, 「always」, 「prompt-update」, 「prompt-run」의 3 개 가운데, 어느쪽이든을 사용할 수 있습니다. </p>
+<p>「always」의 값 (디폴트)은, 사용자에게 통지하는 일 없이, 항상 갱신을 다운로드하는 것을 의미합니다. </p>
+<p>「prompt-update」의 값을 사용하면(자), 사용자에게 갱신 버젼을 다운로드해 실행할지 어떨지, 또는 캐쉬된 버젼을 기동할지 어떨지를 묻습니다. </p>
+<p>「prompt-run」의 값을 사용하면(자), 사용자에게 갱신 버젼을 다운로드해 실행할지 어떨지, 또는 캔슬해 어플리케이션의 실행을 중지할지 어떨지를 묻습니다. </p>
+<p> 예를 나타냅니다.  
+	<blockquote>
+		&lt;update check="always" policy="prompt-update"&gt;
+		</p>
+	</blockquote>
+</blockquote>
+
+<h3> <a name="resources"></a> <code>resources</code> 요소</h3>
+<blockquote> 
+<p><tt><strong>resources</strong></tt><strong> 요소</strong>는, 어플리케이션에 포함되는 Java 클래스 파일, 네이티브 라이브러리, 시스템 프로퍼티 등, 모든 자원을 지정하기 위해서 사용합니다. 자원의 정의는, 특정의 페레-팅 시스템 (<tt>os</tt> 속성), 아키텍쳐(architecture) (<tt>arch</tt> 속성), 로케일 (<tt>locale</tt> 속성)로 한정하는 것이 가능합니다.  
+  </p>
+<p>거기에는,<tt>os</tt>,<tt>arch</tt>,<tt>locale</tt> 의 각 속성을 사용합니다. resources 요소로 지정 가능한 서브 요소는,<tt>jar</tt>,<tt>nativelib</tt>,<tt>j2se</tt>,<tt>property</tt>,<tt>package</tt>,<tt>extension</tt> 의 6 개입니다. 이 개발자 가이드에서는,<tt>package</tt> 요소와 <tt>extension</tt> 요소에 대해서는 설명하지 않습니다. 상세한 것에 대하여는,<a href="http://java.sun.com/products/javawebstart/download-spec.html">「Java Network Launching Protocol &amp; API Specification (JSR-56) version 6.0」</a>을 참조해 주세요.  
+  </p>
+<p><tt><strong>jar</strong></tt><strong> 요소</strong>에는, 어플리케이션의 클래스 패스에 포함하는 JAR 파일을 지정합니다. &nbsp;예를 나타냅니다.  </p>
+<p><tt>&nbsp; &lt;<b>jar href</b>="myjar.jar"/></tt></p>
+<p><tt>ClassLoader</tt> 객체를 사용하면(자),<tt>jar</tt> 파일이 JVM 에 로드 됩니다. &nbsp;일반적으로,<tt>jar</tt> 파일에는, 특정의 어플리케이션의 코드를 포함한 Java 클래스가 포함됩니다만,<tt>getResource</tt> 기구로 사용할 수 있는 아이콘이나 구성 파일과 같은 다른 자원도 포함되어 있습니다.  </p>
+<p><tt><strong>nativelib</strong></tt><strong> 요소</strong>는, 네이티브 라이브러리를 포함한 JAR 파일을 지정합니다. &nbsp;예를 나타냅니다.  </p>
+<p>&nbsp;&nbsp;&nbsp; <tt>&lt;<b>nativelib href</b>="lib/windows/corelib.jar"/></tt>
+  </p>
+<p>JNLP 클라이언트는,<tt>System.loadLibrary</tt> 메소드를 사용해, JAR 파일의 루트 디렉토리 (<code>/</code>)에 있는 각 파일 엔트리가 실행중의 프로세스에 확실히 로드할 수 있도록(듯이) 할 필요가 있습니다. &nbsp; 각 엔트리에는, 플랫폼 고유의 공유 라이브러리를 올바른 명명 규약을 사용해 포함할 필요가 있습니다 (Windows 의 <code>*. dll</code>, Solaris 나 Linux 의 <code>lib*.so</code> 등). <tt>System.loadLibrary</tt> 에의 호출을 실제로 실시하는 것은, 어플리케이션의 역할입니다.  
+  </p>
+<p>일반적으로, 네이티브 라이브러리는, 특정의  operating system과 아키텍쳐(architecture)에 대응한 <tt>resources</tt> 요소에 포함됩니다. &nbsp;예를 나타냅니다.  </p>
+<p><tt>&nbsp;&nbsp;&nbsp; &lt;<b>resources os</b>="SunOS" <b>arch=</b>"sparc"></tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>nativelib href</b>="lib/solaris/corelibs.jar"/></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;/<b>resource</b>></tt> </p>
+<p>디폴트에서는,<tt>jar</tt> 와 <tt>nativelib</tt> 자원이 정기적으로 다운로드됩니다. 이 2 개(살)은 다운로드된 뒤, 어플리케이션이 기동되기 전에, 어플리케이션을 실행하고 있는 JVM 가 로컬에 사용합니다. &nbsp;<tt>jar</tt> 와 <tt>nativelib</tt> 요소에서는, 자원을 <tt>lazy</tt> 와 지정할 수도 있습니다. &nbsp;이 설정으로 하면(자), 어플리케이션의 기동전에 자원을 클라이언트 시스템에 다운로드할 필요가 없어집니다.  </p>
+<p><tt><strong>download</strong></tt><strong> 요소</strong>는, 자원을 정기적으로 다운로드하는지, 부정기에 다운로드할까의 제어에 사용합니다. &nbsp;예를 나타냅니다.  
+  </p>
+<p><tt>&nbsp;&nbsp;&nbsp; &lt;<b>jar</b> <b>href</b>="sound.jar" <b>download</b>="lazy"/></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;<b>nativelib</b> <b>href</b>="native-sound.jar" <b>download</b>="eager"/></tt> </p>
+
+<p><tt><strong>j2se</strong></tt><strong> 요소</strong>는, Java 가상 머신의 표준 파라미터와 어플리케이션이 지원되는 Java(TM) Platform Standard Edition Runtime Environment (JRE) 버젼을 지정합니다. &nbsp;복수의 JRE 를 지정하는 경우, 지원 대상의 JRE 를 우선순서에 리스트에 나타냅니다. 무엇보다 바람직한 버젼을 최초로 선택합니다. &nbsp;예를 나타냅니다.  </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>&lt;<b>j2se version</b>="1.3" <b>initial-heap-size</b>="64m" max-heap-size="128m"/></tt> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&lt;<b>j2se version</b>="1.4. 2+" <b>href</b>="http://java.sun.com/products/autodl/j2se" <b>java-vm-args</b>="-esa -Xnoclassgc"/&gt;</code> </p>
+<p><code><strong>version</strong></code><strong> 속성</strong>은, 디폴트로 Java(TM) Platform Standard Edition 플랫폼의 플랫폼 버젼 (스펙 버젼)을 참조합니다. 현시점에서 정의되고 있는 플랫폼 버젼은, 1.2, 1.3, 1.4, 1.5 및 1.6 입니다 (일반적으로, 플랫폼 버젼에는, 마이크로 버젼 번호(1.4. 2 등)은 포함되지 않는다). </p>
+<p>정확한 제품 버젼 (구현 버젼)을,<code>href</code> 속성을 사용해 지정할 수도 있습니다. 예를 들어, 1.3. 1_07, 1.4. 2, 또는 1.5. 0-beta2 와 같이 됩니다. 다음과 같이 지정합니다.  </p>
+  <blockquote> 
+<p>&lt;<tt><b>j2se version</b>="1.4. 2" <b>href</b>="http://java.sun.com/products/autodl/j2se"/</tt></p>
+<p>또는</p>
+<p>&lt;<tt><b>j2se version</b>="1.4. 2_04" <b>href</b>="http://java.sun.com/products/autodl/j2se"/></tt> 
+    </p>
+  </blockquote>
+<p>플랫폼 버젼이 지정되었을 경우 (즉,<code>href</code> 속성이 지정되지 않았던 경우), Java Web Start 는, 인스톨 끝난 비 FCS (마일 스톤)의 JRE 를, 요구에 일치하는 것으로 간주하지 않습니다. 다음에 예를 나타냅니다.  </p>
+  <blockquote> 
+<p><tt>&lt;<b>j2se version=</b>"1.4+"/&gt;</tt></p>
+  </blockquote>
+<p>이 경우, 1.4. 1-ea 나 1.4. 2-beta 의 JRE 가 인스톨 되고 있어도, 그것들은 요구에 일치하는 JRE 라고는 보이지 않습니다. Sun Microsystems, Inc.  하지만 제공하는 JRE 에서는, 1.3. 0 이후, 비 FCS (마일 스톤)의 버젼 캐릭터 라인에는 데쉬 (<code>-</code>)를 포함하게 되어 있습니다. </p>
+<p>j2se 요소의 <code><strong>java-vm-args</strong></code><strong> 속성</strong>은, Java 의 기동시에 우선적으로 사용되는 가상 머신의 일련의 인수를 지정합니다. </p>
+  <blockquote> 
+<tt>&lt;<b>j2se version</b>="1.4+" <b>java-vm-args</b>="-ea -Xincgc"/&gt;</tt>
+  </blockquote> 
+<p>이 버젼에서는, 다음의 java-vm-args 가 지원됩니다.
+<blockquote>
+<pre>
+ -d32,							        /* use a 32-bit data model if available */
+ -client,                      				        /* to select the client VM */
+ -server,						        /* to select the server VM */
+ -verbose,                    				        /* enable verbose output */
+ -version,         		        		        /* print product version and exit */
+ -showversion,					                /* print product version and continue */       					      
+ -help,                        					/* print this help message */
+ -X,                           					/* print help on non-standard options */
+ -ea,                          					/* enable assertions */
+ -enableassertions,            					/* enable assertions */
+ -da,                          					/* disable assertions */
+ -disableassertions,           					/* disable assertions */
+ -esa,                         					/* enable system assertions */
+ -enablesystemassertions,      					/* enable system assertions */
+ -dsa,                         					/* disable system assertione */
+ -disablesystemassertions,     					/* disable system assertione */
+ -Xmixed,                      					/* mixed mode execution (default) */
+ -Xint,                        					/* interpreted mode execution only */
+ -Xnoclassgc,                  					/* disable class garbage collection */
+ -Xincgc,                      					/* enable incremental garbage collection */
+ -Xbatch,                      					/* disable background compilation */
+ -Xprof,                       					/* output cpu profiling data */
+ -Xdebug,                      					/* enable remote debugging */
+ -Xfuture,                     					/* enable strictest checks, anticipating future default */
+ -Xrs,                         					/* reduce use of OS signals by Java/VM (see documentation) */
+ -XX:+ForceTimeHighResolution, 					/* use high resolution timer */
+ -XX:-ForceTimeHighResolution, 					/* use low resolution (default) */
+</pre>
+</blockquote>
+
+<p>이하의 인수도 더할 수가 있습니다.
+<blockquote>
+<pre>
+-ea,                          /* enable assertions for classes */
+-enableassertions,            /* enable assertions for classes */
+-da,                          /* disable assertions for classes */
+-disableassertions,           /* disable assertions for classes */
+-verbose,                     /* enable verbose output */
+-Xms,                         /* set initial Java heap size */
+-Xmx,                         /* set maximum Java heap size */
+-Xss,                         /* set java thread stack size */
+-XX:NewRatio,                 /* set Ratio of new/old gen sizes */
+-XX:NewSize,                  /* set initial size of new generation */
+-XX:MaxNewSize,               /* set max size of new generation */
+-XX:PermSize,                 /* set initial size of permanent gen */
+-XX:MaxPermSize,              /* set max size of permanent gen */
+-XX:MaxHeapFreeRatio,         /* heap free percentage (default 70) */
+-XX:MinHeapFreeRatio,         /* heap free percentage (default 40) */
+-XX:UseSerialGC,              /* use serial garbage collection */
+-XX:ThreadStackSize,          /* thread stack size (in KB) */
+-XX:MaxInlineSize,            /* set max num of bytecodes to inline */
+-XX:ReservedCodeCacheSize,    /* Reserved code cache size (bytes) */
+-XX:MaxDirectMemorySize,
+</pre>
+</blockquote>
+
+<p>property 요소는 시스템 프롭퍼티를 정의합니다. 이러한 프롭퍼티는, System.getProperty, System.setProperties 의 양메소드를 사용해 취득할 수 있습니다. 이 요소에서는, 2 개의 속성 name 와 value 를 반드시 지정할 필요가 있습니다. 다음에 예를 나타냅니다.
+  <blockquote> 
+<b>&lt;property name=</b>"key" <b>value=</b>"overwritten"/&gt;
+  </blockquote> 
+
+<p>jnlp 파일로 설정되는 프롭퍼티는, 일반적으로은 VM 가 기동하고 나서 어플리케이션이 불려 갈 때까지 에, Java Web Start 에 의해 설정됩니다. 일부의 프로퍼티은 「안전」이라고 보여 Java 호출 커멘드행으로 인수 「-Dkey=값」이라고 지정해 건네줄 수가 있습니다.
+
+<p>다음의 프로퍼티은 「안전」이라고 보여 이 방법으로 VM 에게 건네집니다.
+<blockquote>
+<pre>
+    sun.java2d.noddraw,
+    javax.swing.defaultlf,
+    javaws.cfg.jauthenticator,
+    swing.useSystemFontSettings,
+    swing.metalTheme,
+    http.agent,
+    http.keepAlive,
+    sun.awt.noerasebackground,
+    sun.java2d.opengl,
+    sun.java2d.d3d,
+    java.awt.syncLWRequests,
+    java.awt.Window.locationByPlatform,
+    sun.awt.erasebackgroundonresize,
+    swing.noxp,
+    swing.boldMetal,
+    awt.useSystemAAFontSettings,
+    sun.java2d.dpiaware,
+</pre>
+</blockquote>
+
+<p>신뢰되어 있지 않은 어플리케이션의 경우, JNLP 파일로 설정되는 시스템 프로퍼티은, 이것들이 안전으로 간주해지는 경우, 또는 프로퍼티명이 「<code>jnlp. </code>」또는 「<code>javaws. </code>」(으)로 시작되는 경우에게만 Java Web Start 로 설정됩니다.
+</blockquote>
+<h3> <a name="application_desc"></a> <code>application-desc</code> 요소</h3>
+<blockquote>
+<p><tt><strong>application</strong></tt><strong> 요소</strong>는, JNLP 파일의 기동 대상이, 애플릿은 아니고 어플리케이션인 것을 나타냅니다. application-desc 요소에는 <tt>main-class</tt> 속성을 지정할 수 있습니다.  생략 가능한 이 속성을 사용하면, 어플리케이션의 메인 클래스 (최초로 실행해야 할 <tt>public static void main(String argv[])</tt> 메소드를 포함하고 있는 클래스)의 이름을 지정할 수 있습니다.  </p>
+<p><code><strong>main-class</strong></code><strong> 속성</strong>을 생략 할 수 있는 것은, JNLP 파일내로 지정된 최초의 JAR 파일에 <code>main</code> 클래스를 포함한 Manifest 파일이 포함되고 있는 경우입니다.  </p>
+<p>어플리케이션에의 인수를 지정하려면 , 1 개(살) 또는 복수의 상자로 된 <tt>argument</tt> 요소를 포함합니다. 예를 나타냅니다.  </p>
+<p><tt>&nbsp; &lt;<b>application-desc main-class</b>="Main"></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;<b>argument</b>>arg1&lt;/<b>argument</b>></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;<b>argument</b>>arg2&lt;/<b>argument</b>></tt> <br> <tt>&nbsp; &lt;/<b>application-desc</b>></tt> </p>
+</blockquote>
+<h3> <a name="applet_desc"></a> <code>applet-desc</code> 요소</h3>
+<blockquote> 
+<p>Java Web Start 는, Java 애플릿의 기동을 지원합니다. 이 지원에 의해, 기존 코드의 Java Web Start 에의 이행이 용이하게 됩니다.  </p>
+<p>애플릿을 기동하려면 ,<tt>application-desc</tt> 요소 대신에 <tt><strong>applet-desc</strong></tt><strong> 요소</strong>를 사용합니다. 예를 나타냅니다.  
+  </p>
+<p><tt>&nbsp; &lt;<b>applet-desc</b></tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>documentBase</b>="http://..."</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>name</b>="TimePilot"</tt> <br> <tt><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main-class</b>="TimePilot.TimePilotApp"</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>width</b>="527"</tt> <br> <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>height</b>="428"></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;<b>param name=</b>"key1" <b>value=</b>"value1"/></tt> <br> <tt>&nbsp;&nbsp;&nbsp; &lt;<b>param name=</b>"key2" <b>value=</b>"value2"/></tt> <br> <tt>&nbsp; &lt;<b>/applet-desc</b>></tt> </p>
+<p>애플릿을 구성하는 JAR 파일은, 어플리케이션의 경우와 같이,<tt>resources</tt> 요소를 사용해 기술합니다. <tt>documentBase</tt> 를 명시적으로 지정할 필요가 있는 것은, JNLP 파일이 HTML 페이지에 파묻히지 않기 때문입니다.  그 외의 속성은 각각, 특정의 HTML 애플릿 태그 요소에 대응합니다. <tt>code</tt> 속성 대신에 <tt><strong>main-class</strong></tt><strong> 속성</strong>이 사용됩니다. &nbsp;<tt> </p>
+<p><tt><strong>main-class</strong></tt><strong> 속성</strong>은,<tt>code</tt> 속성 대신에 사용합니다. &nbsp;<tt>main-class</tt> 속성에는 <tt>Applet</tt> 클래스의 이름 (<tt>. class</tt> 의 확장자(extension)는 제외하다)를 지정합니다. &nbsp;메인의 JAR 파일내의 <tt>Main-Class</tt> Manifest 엔트리로부터 <tt>Applet</tt> 클래스가 검색 가능한 경우, 이 속성을 생략 해도 괜찮습니다.  
+  </p>
+<p>주:애플릿은, JAR 파일내에 패키지화하지 않으면 Java Web Start 로 올바르게 동작하지 않습니다.  </p>
+</blockquote>
+
+<h3> <a name="comp_desc"></a> <code>component-desc</code> 요소</h3>
+<blockquote> 
+<p>component-desc 요소는, jnlp 파일이 어플리케이션 또는 애플릿은 아니고, 어플리케이션이나 애플릿, 다른 확장 기능의 자원으로서 사용할 수 있는 확장 기능인 것을 의미합니다. </p>
+<p>일반적으로, 컴퍼넌트 확장 기능은, 복수의 어플리케이션간에 공유된다, 또는 개별의 시큐리티가 필요한 자원 세트를 없애기 위해서(때문에) 사용됩니다. </p>
+</blockquote>
+
+<h3> <a name="install_desc"></a> <code>installer-desc</code> 요소</h3>
+<blockquote> 
+<p>installer-desc 요소는, jnlp 파일이 어플리케이션을 정의하는 인스톨러의 확장 기능인 것을 의미합니다. 이 확장 기능의 jnlp 파일은, 어플리케이션이나 애플릿, 다른 확장 기능으로 최초로 한 번 사용되면(자), 그 후는 실행되지 않습니다.
+<p>일반적으로, 인스톨러의 확장 기능은, 네이티브 라이브러리를 VM 에 단순하게 로드하는 이상으로 복잡한 설정을 필요로 하는, 플랫폼 고유의 native code를 인스톨 하기 위해서 사용됩니다. </p>
+</blockquote>
+
+</body>
+</html>

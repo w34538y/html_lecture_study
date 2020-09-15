@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>HTTP URL 와 HTTPS URL 의 사이의 리다이렉트(redirect)가 추적되지 않는다 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2><span class="bg2">HTTP URL 와 HTTPS URL 의 사이의 리다이렉트(redirect)를 하지 않는다</span></h2>
+<h3><font color="#CC0033">증상</font> </h3>
+  <blockquote> 
+<p>애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우, HTTP URL 에 리다이렉트(redirect) 하는 서버에 대해서 애플릿이 HTTP 요구를 실시하면, 리다이렉트(redirect)에 실패합니다. 또, HTTP URL 에 리다이렉트(redirect) 하는 서버에 대해서 HTTPS 요구를 실시하는 경우도 실패한다. 같은 애플릿이 Microsoft VM 에서는 에러없이 실행할 수 있습니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p>Sun JRE 에 구현된 HTTP/HTTPS 리다이렉트(redirect) 정책가 원인입니다.  시큐리티상 심각한 결과를 부를 우려가 있기 (위해)때문에, HTTP 와 HTTPS 의 사이의 리다이렉트(redirect)는 자동적으로 행해지지 않습니다. </p>
+<p>Microsoft VM 에서는, 리다이렉트(redirect)에 대한 동의를 시큐리티의 경고 다이얼로그로 사용자에게 요구합니다. 사용자가 동의 했을 경우만, 리다이렉트(redirect)를 합니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote> 
+<p>문제를 회피하려면 , 어플리케이션으로, 응답 코드를 체크해 리다이렉트(redirect)인 것을 식별하지 않으면 안됩니다. Location 헤더 필드치는 리다이렉트(redirect) 정보로서 체크 가능하기 때문에, 어플리케이션은 새로운 프로토콜을 사용해 리다이렉트(redirect)를 실시할지 어떨지를 결정할 필요가 있습니다. 다음에 예를 나타냅니다. </p>
+    <blockquote> 
+<p><code>public void makeConnection(URL url)<br> {<br> URLConnection conn = url.openConnection();<br> InputStream is = conn.getInputStream();<br> .... <br> is.close();<br> }</code></p>
+    </blockquote>
+<p>이 코드를 다음과 같이 변경합니다. </p>
+    <blockquote> 
+<p><code> private InputStream openConnectionCheckRedirects(URLConnection c) throws IOException <br> {</code><br> <code>&nbsp;&nbsp;&nbsp;boolean redir;<br> &nbsp;&nbsp;&nbsp;int redirects = 0;<br> &nbsp;&nbsp;&nbsp;InputStream in = null;<br></code><code>&nbsp;&nbsp;&nbsp;do <br> &nbsp;&nbsp;&nbsp;{<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (c instanceof HttpURLConnection)</code><code><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((HttpURLConnection) c). setInstanceFollowRedirects(false);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br></code><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We want to open the input stream before getting headers<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// because getHeaderField() et al swallow IOExceptions. <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in = c.getInputStream(); <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redir = false; <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (c instanceof HttpURLConnection) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpURLConnection http = (HttpURLConnection) c;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int stat = http.getResponseCode();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (stat &gt;= 300 &amp;&amp; stat &lt;= 307 &amp;&amp; stat ! = 306 &amp;&amp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stat ! = HttpURLConnection.HTTP_NOT_MODIFIED) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL base = http.getURL();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String loc = http.getHeaderField(&quot;Location&quot;);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL target = null;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (loc ! = null) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target = new URL(base, loc);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http.disconnect();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </code><code>&nbsp;&nbsp;&nbsp;// Redirection should be allowed only for HTTP and HTTPS<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// and should be limited to 5 redirections at most. <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (target == null || ! (target.getProtocol(). equals(&quot;http&quot;)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| target.getProtocol(). equals(&quot;https&quot;))<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| redirects &gt;= 5)<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code><br> <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new SecurityException(&quot;illegal URL redirect&quot;);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code><br> <code> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redir = true;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c = target.openConnection();<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redirects++;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> &nbsp;&nbsp;&nbsp;} <br> &nbsp;&nbsp;&nbsp;while (redir);<br> &nbsp;&nbsp;&nbsp;return in;<br> }</code></p>
+<p><code>public void makeConnection(URL url){<br> &nbsp;&nbsp;&nbsp;URLConnection conn = url.openConnection();<br> &nbsp;&nbsp;&nbsp;InputStream is = openConnectionCheckRedirects(conn);<br> &nbsp;&nbsp;&nbsp;.... <br> &nbsp;&nbsp;&nbsp;is.close();<br> }</code></p>
+    </blockquote>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+  <blockquote> 
+<p>없음</p>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>
+</body>
+</html>

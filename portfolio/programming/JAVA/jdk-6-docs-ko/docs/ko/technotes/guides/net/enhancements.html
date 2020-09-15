@@ -1,0 +1,189 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>네트워크 기능 - xrath.com 에서 번역됨</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH=60>
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<td>
+<center>
+<h1>네트워크 기능</h1>
+</center>
+</td>
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size=-1><a href="../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+<font size=+1><b>Java<sup><font size=-2>TM</font></sup> 2 SDK, Standard Edition, v 1.3 에서의 네트워크 확장 기능</b></font><b>
+
+<h3>새로운 클래스와 인터페이스</h3>
+<ul>
+<li><b><tt>java.net.DatagramSocketImplFactory</tt></b>
+<P>
+새롭게 추가된 인터페이스 <a href="../../../api/java/net/DatagramSocketImplFactory.html">java.net.DatagramSocketImplFactory</a>  는,<a href="../../../api/java/net/DatagramSocket.html">DatagramSocket</a>  에 의해 실효 소켓의 구현이 작성될 때 사용된다. 이 추가에 의해, 사용자는 public API 를 개입시켜 DatagramSocketImplFactory 를 설정할 수 있기 (위해)때문에, DatagramSocket 와 다른 소켓 타입과의 일관성이 유지된다
+</ul>
+
+<h3>변경된 클래스와 인터페이스</h3>
+<ul>
+<li><b><tt>java.net.HttpURLConnection</tt></b><P>
+
+
+
+다음의 정수가 <a href="../../../api/java/net/HttpURLConnection.html">java.net.HttpURLConnection</a>  에 추가된 것에 의해, HTTP 상태 코드가 HTTP 1.1 RFC 와 일치한다
+<P>
+<ul>
+<li>public static final int HTTP_INTERNAL_ERROR = 500;
+<li>public static final int HTTP_NOT_IMPLEMENTED = 501;
+</ul>
+<P>
+후속의 HTTP 리다이렉트(redirect) (응답 코드가 3xx 로 요구된다)가 인스턴스 베이스로 지원되도록(듯이), 다음의 2 개의 메소드가 추가되었다. 디폴트에서는, 클래스의 설정이 사용된다
+<P>
+<ul>
+<li><a href="../../../api/java/net/HttpURLConnection.html#getInstanceFollowRedirects()">public boolean getInstanceFollowRedirects()</a> 
+<li><a href="../../../api/java/net/HttpURLConnection.html#setInstanceFollowRedirects(boolean)">public void setInstanceFollowRedirects(boolean followRedirects)</a> 
+</ul>
+
+<P>
+<li><b><tt>java.net.Socket</tt></b> 와 <b><tt>java.net.SocketImpl</tt></b><P>
+
+다음의 2 개의 메소드가 <a href="../../../api/java/net/Socket.html">java.net.Socket</a>  에 추가되었다. 이 때문에, Java 소켓에서는 킵얼라이브 옵션이 지원되게 되었다
+<P>
+<ul>
+<li><a href="../../../api/java/net/Socket.html#getKeepAlive()">public boolean getKeepAlive(boolean)</a> 
+<li><a href="../../../api/java/net/Socket.html#setKeepAlive(boolean)">public void setKeepAlive(boolean on)</a> 
+</ul>
+<P>
+다음의 2 개의 메소드가 <a href="../../../api/java/net/Socket.html">java.net.Socket</a>  와 <a href="../../../api/java/net/SocketImpl.html">java.net.SocketImpl</a>  에 추가되었다. 이 결과, TCP half-close 소켓이 지원되게 되었다
+<P>
+<ul>
+<li> public void shutdownInput()
+<li>public void shutdownOutput()
+</ul>
+
+
+
+<P>
+<li><b><tt>java.net.URL, java.net.URLConnection</tt></b>, 및 <b><tt>java.net.ContentHandler</tt></b>
+<P>
+최신의 IETF 스펙 RFC2396 의 기술에 따라 <a href="../../../api/java/net/URL.html">java.net.URL</a>  에 URL 의 필드와의 일관성을 갖게하기 위해서(때문에), 액세스 메소드가 몇개인가 추가되었다
+<P>
+<ul>
+
+<li><a href="../../../api/java/net/URL.html#getAuthority()"> public String getAuthority()</a> 
+<li><a href="../../../api/java/net/URL.html#getPath()">public String getPath()</a> 
+<li><a href="../../../api/java/net/URL.html#getQuery()"> public String getQuery()</a> 
+<li> <a href="../../../api/java/net/URL.html#getUserInfo()">public String getUserInfo()</a> 
+<li><a href="../../../api/java/net/URL.html#set(java.lang.String,%20java.lang.String,%20int,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String)">public set(String protocol, String host, int port, String authority, String userInfo, String path, String query, String ref)</a> 
+
+</ul>
+<P>
+overload 한 <a href="../../../api/java/net/URL.html">getContent()</a>  메소드가,<a href="../../../api/java/net/URLConnection.html">java.net.URL</a> ,<a href="../../../api/java/net/ContentHandler.html">java.net.URLConnection</a> , 및 <a href="../../../api/java/net/ContentHandler.html">java.net.ContentHandler</a>  에 추가된 것에 의해, 반환되는 컨텐츠 객체가, 순서 붙이고 된 Java 의 데이터형 리스트의 하나를 지원하도록(듯이) 요구할 수가 있다. 이것에 의해, MIME 타입을 복수의 Java 데이터형에 매핑 하는 것이 가능하게 되기 (위해)때문에, 시스템의 플렉시빌리티가 향상한다
+<ul>
+<P><li> 각 구현에 대해서는, 각 클래스의 javadoc 를 참조<P>
+</ul>
+static 메소드 <a href="../../../api/java/net/URLConnection.html#setDefaultRequestProperty(java.lang.String,%20java.lang.String)">java.net.URLConnection.setDefaultRequestProperty()</a>  및 <a href="../../../api/java/net/URLConnection.html#getDefaultRequestProperty(java.lang.String)">java.net.URLConnection.getDefaultRequestProperty()</a>  는 추천되어 있지 않다
+
+<P>
+<li><tt><b>java.net.URLDecoder</b></tt><P>
+
+메소드 <a href="../../../api/java/net/URLDecoder.html#decode(java.lang.String)">java.net.URLDecoder.decode(String)</a>  는 예외를 throw 하지 않는다
+
+<P>
+<li><tt><b>java.net.URLStreamHandler</b></tt><P>
+<a href="../../../api/java/net/URLStreamHandler.html">java.net.URLStreamHandler</a>  에 새로운 메소드가 몇개인가 추가되었다
+<P>
+이 결과, 핸들러의 디폴트 포트 번호의 개념이 개시되어 URL 핸들러는 URL 의 동일성과 해시 코드 비교를 URL 의 프로토콜에 고유의 방법으로 오버라이드(override) 할 수 있다. 이러한 변경에 의해, 해석된 URL 의 컴퍼넌트 파츠에의 액세스 정밀도가 향상해, 여러 가지의 URL 핸들러가 일반적인 해석 코드를 공유하는 능력이 강화된다
+<P>
+<ul>
+<li> <a href="../../../api/java/net/URLStreamHandler.html#equals(java.net.URL,%20java.net.URL)">protected boolean equals(URL u1, URL u2)</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#getDefaultPort()">protected int getDefaultPort()</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#getHostAddress(java.net.URL)">protected InetAddress getHostAddress(URL u)</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#hashCode(java.net.URL)">protected int hashCode(URL u)</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#hostsEqual(java.net.URL,%20java.net.URL)">protected boolean hostsEqual(URL u1, URL u2)</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#sameFile(java.net.URL,%20java.net.URL)">protected boolean sameFile(URL u1, URL u2)</a> 
+<li> <a href="../../../api/java/net/URLStreamHandler.html#setURL(java.net.URL,%20java.lang.String,%20java.lang.String,%20int,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String)">protected void setURL(URL u, String protocol, String host, int port, String authority, String userInfo, String path, String query, String ref)</a> 
+</ul>
+<P>
+<li><tt><b>java.util.jar.JarFile</b></tt> 과 <tt><b>java.util.zip.ZipFile</b></tt>
+<P>
+<a href="../../../api/java/util/zip/ZipFile.html">java.util.zip.ZipFile</a>  및 <a href="../../../api/java/util/jar/JarFile.html">java.util.jar.JarFile</a>  용의 새로운 오픈 모드. 이 모드로 열린 Zip/Jar 파일을 닫을 때, 각 <tt>JarURLConnection</tt> 에 관련지을 수 있었던 일시 (캐쉬) 파일을 자동적으로 삭제해, 처리를 종료한다. 일시 Jar 파일을 로컬 디스크에 다운로드할 경우에 사용한다
+</ul>
+
+
+<h3>그 외의 정보</h3>
+<ul>
+<li>HTTP 킵얼라이브 등, 클라이언트측에서 HTTP 1.1 의 지원와 확장 기능이 추가되었다
+
+<li> SDK 로 URL 가 해석될 때, 보다 엄밀하게 RFC 2396 에 준거하게 되었다
+</ul>
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH=100%>
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1996-99
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT=" Sun Microsystems, Inc " BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+</b></BODY>
+</HTML>

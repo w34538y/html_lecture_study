@@ -1,0 +1,105 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>static 의 임포트 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>static 의 임포트</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Language 의 목차</a> </font>
+<p>
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+<hr size=3 noshade>
+
+static 멤버에게 액세스 하려면 , 그 멤버의 클래스에서 참조를 수식할 필요가 있습니다. 예를 들어 다음과 같이 하지 않으면 안됩니다.
+<blockquote>
+<pre>double r = <font color="#cc0000">Math. </font>cos(<font color="#cc0000">Math. </font>PI * theta);
+</pre>
+</blockquote>
+이 상황을 회피하기 위해(때문에), static 멤버를 인터페이스에 두어, 그 인터페이스로부터 상속시키는 일이 있습니다. 그러나, 이것은 좋은 방법이 아닙니다. 실제, 「Constant Interface Antipattern (불변의 인터페이스 안티 패턴)」이라고 이전부터 계속 지적받고 있습니다. <A HREF="http://java.sun.com/docs/books/effective/">「Effective Java」</a>의 제 17 항을 참조해 주세요. 문제는, 클래스가 다른 클래스의 static 멤버를 사용하는 것은, 구현의 그저 몇 안 되는 부분이라고 하는 것입니다. 클래스가 인터페이스를 구현하면(자), 그 인터페이스는 그 클래스의 공개 API 의 일부가 됩니다. 구현의 자세한 것은, 공개 API 로서 공개해야 하는 것이 아닙니다.
+<p>
+static 의 임포트 구조에 의해, static 멤버를 포함한 형태로부터 상속하지 않아도, static 멤버에 대한 비수식의 액세스가 가능하게 됩니다. 대신에, 프로그램이 멤버를 개별적으로, 또는 정리해 임포트 합니다.  개별의 예를 다음에 나타냅니다.
+
+<blockquote>
+<pre>import static java.lang.Math.PI;
+</pre>
+</blockquote>
+정리해 임포트의 예를 다음에 나타냅니다.
+<blockquote>
+<pre>import static java.lang.Math. *;
+</blockquote>
+</pre>
+static 멤버를 임포트 하면(자), 수식없이 사용할 수 있습니다.
+<blockquote>
+<pre>double r = cos(PI * theta);
+</pre>
+</blockquote>
+static 의 임포트 선언은, 일반적으로의 임포트 선언과 닮아 있습니다. 일반적으로의 임포트 선언에서는, 패키지로부터 클래스를 임포트 하는 것으로, 패키지 수식없이 클래스를 사용할 수 있도록(듯이) 합니다.  한편, static 의 임포트 선언에서는, 클래스로부터 static 멤버를 임포트 하는 것으로, 클래스 수식없이 static 멤버를 사용할 수 있도록(듯이) 합니다.
+
+<p>static 임포트를 사용해야 하는 케이스는,<b>거의 없습니다. </b>static 임포트를 사용하는 것은, 그렇게 하지 않으면 정수의 로컬 카피를 선언해 버리는 경우나, 상속을 부정하게 사용해 버리는 경우 (Constant Interface Antipattern)만입니다. 즉, 1 개(살) 또는 2 개의 클래스로부터 static 멤버에게 빈번하게 액세스 할 필요가 있는 경우에 사용해 주세요. static 의 임포트를 너무 사용하면(자) , 임포트 한 모든 static 멤버로 프로그램의 이름 공간이 번잡하게 되기 (위해)때문에, 프로그램이 판독 불가능하게 되어, 보수 불가능하게 될 가능성이 있습니다. 프로그램의 코드를 읽은 사람은 (프로그램의 작성자가 수개월 후에 읽었을 경우에서도), static 멤버가 어느 클래스에 속하고 있었는지 이해할 수 없을 것입니다. 모든 static 멤버를 클래스로부터 임포트 하면(자), 가독성에 분명한 영향이 있습니다.  1 개(살)이나 2 개 밖에 멤버를 필요로 하지 않는 경우는, 개별적으로 임포트 해 주세요. static 의 임포트를 적절히 사용하면, 클래스명을 반복하는 정형구를 생략할 수가 있어 프로그램을 보다 읽기 쉽게 하는 일도 가능합니다.
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+   <FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved.
+
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>

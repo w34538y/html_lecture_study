@@ -1,0 +1,117 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 디버거의 지원 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>디버그의 지원</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#how">Java Plug-in 에서의 애플릿의 디버그 방법</a> </li>
+<li><a href="#jpic"><font size="+1">Java 콘솔</a> </li>
+<li><a href="#jpitf">Java Plug-in 의 트레이스 파일</a> </li>
+<li><a href="#jpitp">javaplugin.trace 프로퍼티</a> </li>
+<li><a href="#jsdp">java.security.debug 프로퍼티</a> </li>
+<li><a href="#online">문서</a> </li>
+<li><a href="#isolating">버그의 분리</a> </li>
+<li><a href="#submitting-br">버그 리포트의 송신</a> </li>
+<li><a href="#submitting-fr">기능 요구의 송신</a> </li>
+<li><a href="#jpifa">Java Plug-in 피드백 앨리어스(alias)</a> </li>
+</ul>
+<p>이 문서의 목적은, 애플릿의 디버그를 간략화하는 것입니다. 여기에서는, Java Plug-in 로 애플릿을 개발하는데 있어서 도움이 되는 기술이나 제안을 제공합니다. 또, 애플릿 개발로 발생하기 십상인 에러에 대해서도 설명합니다. </p>
+<h2><a name="how"></a> Java Plug-in 에서의 애플릿의 디버그 방법</h2>
+<p>애플릿은, Java 디버거 유틸리티 <A href="../../jpda/jdb.html">jdb</A>  를 사용해 디버그 하도록 해 주세요. javac 로 . java 파일을 컴파일 할 때, 반드시 -g 옵션을 붙이는 일도 필요합니다. 애플릿의 디버그를 개시하려면 , 다음의 조작을 실행합니다.  </p>
+<OL>
+<LI>「Java 컨트롤 패널」을 엽니다. <strong>「Java」&gt; 「표시」</strong>를 클릭합니다. <strong>「Java 런타임 파라미터」</strong>로, 다음의 파라미터를 지정합니다. 다음에 나타내도록(듯이), 각 파라미터를 콤마로 단락짓습니다.
+<PRE>-agentlib:jdwp=transport=dt_shmem, address=jdbconn, server=y, suspend=n  </PRE>
+<p>디버그에 사용 가능한 실행시 파라미터의 자세한 것은,<A href="../../jpda/conninv.html">「JPDA 의 접속 및 호출해」</a>를 참조해 주세요.  </p>
+<LI>Internet Explorer 또는 Mozilla 브라우저를 기동해, 디버그 대상의 애플릿을 포함한 페이지를 로드합니다. 애플릿 코드가, javac 의 -g 옵션을 붙여 컴파일 되고 있는 것을 확인해 주세요.      
+<LI>DOS 커멘드 prompt로, 커멘드 jdb -attach &lt;<em>address</em>&gt; 를 실행합니다. &lt;<em>address</em>&gt; 에는, 스텝에서 설명한 이름을 지정해 주세요.  예를 들어, &lt;<em>address</em>&gt; 가 jdbconn 의 경우, 실행하는 커멘드는 다음과 같이 됩니다.
+<PRE>		  jdb -attach jdbconn </PRE>
+Java 디버거 (jdb)의 자세한 것은,<A href="../../../tools/windows/jdb.html">「Java 디버거」</a>를 참조해 주세요.      
+<LI>jdb 로부터 VM 에의 접속이 확립되면(자), 애플릿내에 breakpoint를 설정할 수 있습니다.      
+<LI>브라우저내의 애플릿이 breakpoint에 이르면(자), 실행은 정지해, 디버거는 대기 상태에 들어갑니다. 사용자가 입력할 때까지 디버그는 재개되지 않습니다.  </LI>
+</OL>
+<p>Java Plug-in 로 애플릿의 디버그를 실시하는 경우, 한 번에 1 개의 접속 주소를 사용해 디버그를 실시하는 것은, 브라우저의 1 개의 인스턴스 뿐인 것을 확인해 주세요. 이와 같이 하지 않는 경우, 브라우저의 각 인스턴스의 Java Runtime 가 접속 주소에의 배타적인 액세스를 시도하기 (위해)때문에, 경합이 발생합니다. Internet Explorer 와 지원되고 있는 Mozilla 브라우저의 양쪽 모두로 애플릿을 디버그 하는 경우, Java Plug-in 와 함께 Internet Explorer 또는 지원되고 있는 Mozilla 브라우저의 어느 쪽인지를 실행하도록(듯이) 합니다. 다만, 한 번에 양쪽 모두를 실행하지 말아 주세요. </p>
+<p>액티브 데스크톱 환경에서 Java Plug-in 의 애플릿을 디버그 하는 것은 추천 되고 있지 않습니다. 이것은, 사용자 세션의 기간중, Internet Explorer 의 인스턴스가 항상 데스크탑 프로세스로 실행되고 있기 (위해)때문에입니다. </p>
+<p>jdb 대신에, Borland 사의 JBuilder 나 Symantec 사의 VisualCafe 등, IDE 로부터 다른 디버거를 사용할 수 있습니다. 디버거를 사용하려면 , 이러한 IDE 의 프로젝트 옵션을 변경해, 같은 머신 또는 원격 머신의 브라우저 프로세스내의 Java Plug-in 를 추가할 필요가 있습니다. Java 컨트롤 패널에, 다른 Java 실행시의 파라미터를 설정하는 것이 필요한 경우도 있습니다. 자세한 것은, Java 디버거 또는 IDE 메뉴얼을 참조해 주세요. </p>
+<h2><a name="jpic"></a> Java 콘솔</h2>
+<p>Java 콘솔은,<code>System.out</code><i></i> 및 <code>System.err</code> 메세지를 모두 리다이렉트(redirect) 하는 단순한 콘솔 윈도우입니다. 콘솔 윈도우는, 디폴트로 무효가 되어 있습니다. Java 컨트롤 패널 또는 태스크바로 유효하게 할 수가 있습니다. 콘솔을 유효하게 하면(자), 브라우저내에서 Java Plug-in 를 사용할 때에 콘솔 윈도우가 표시됩니다. Java 콘솔의 자세한 것은, Java 콘솔의 문서를 참조해 주세요.
+<p>Java 콘솔의 자세한 것은,<a href="../../deployment/index.html">「배치 가이드」</a>의<a href="console.html">「Java 콘솔」</a>섹션을 참조해 주세요.
+
+<h2><a name="jpitf"></a> Java Plug-in 의 트레이스 파일</h2>
+<p>Java Plug-in 의 트레이스 파일은, 모든 디버그, System.out, 및 System.err 메세지를 기록합니다. 트레이스 파일은 디폴트에서는 무효로 설정되어 있습니다만, Java 콘솔이 유효하게 되면(자), 자동적으로 트레이스 파일도 유효하게 됩니다. 트레이스 파일은, 디폴트로,<code>C:\Documents and   Settings\&lt;<em>username</em>&gt;\Application Data\Sun\Java\Deployment\log </code>의 <code>user.dir</code> 에 포함됩니다. 트레이스 파일의 명명 규칙은,<code>. plugin&lt;<em>version</em>&gt;.trace </code>입니다. &lt;version&gt; 는, 시스템에 인스톨 되고 있는 Java 의 버젼입니다. </p>
+<p><code>user.dir</code> 디렉토리에는, 다양한 로그 파일 및 트레이스 파일이 있습니다. Windows 2000 및 Windows XP 에서는, 이 파일은 다음의 장소에 있습니다. <BR><code>C:\Documents and   Settings\&lt;<em>username</em>&gt;\Application Data\Sun\Java\Deployment</code></p>
+<p> Application Data 폴더와 그 내용은, Windows 에서는 디폴트로 비표시가 되어 있습니다.  </p>
+<h2><a name="jpitp"></a> <code>javaplugin.trace</code> 프로퍼티</h2>
+<p> 이 프로퍼티은, Java Plug-in 가 실행시에 트레이스 메세지를 출력할지 어떨지를 제어합니다. 이것은, 애플릿의 개발자가 Java Plug-in 내에서 일어나고 있는 것을 아는데 도움이 됩니다. 트레이스를 유효하게 하려면 , 다음의 순서에 따릅니다. </p>
+<ul>
+<li><strong>「Java 컨트롤 패널」</strong>을 엽니다. </li>
+<li><strong>「상세」</strong><strong>&gt; 「디버그」</strong>를 클릭합니다. </li>
+<li><strong>「트레이스를 유효하게 한다」</strong>체크 박스를 선택합니다. </li>
+</ul>
+<h2><a name="jsdp"></a> <code>java.security.debug</code> 프로퍼티</h2>
+<p>이 프로퍼티은, Java Runtime Environment 의 시큐리티 시스템이, 실행시에 트레이스 메세지를 출력할지 어떨지를 제어합니다. 이것은, 애플릿내에서 시큐리티 예외가 throw 되었을 경우, 또는 서명 첨부 애플릿이 동작하지 않는 경우에 유용합니다. 지원되는 옵션은 다음과 같습니다.  
+<ul>
+<li><code>access</code> &nbsp;&nbsp;&#151; <code>checkPermission</code> 의 결과를 모두 출력한다</li>
+<li><code>jar</code><i> </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#151; jar 의 검증 정보를 출력한다</li>
+<li><code>policy</code><i> </i>&nbsp;&nbsp;&#151; 정책 정보를 출력한다</li>
+<li><code>scl</code><i> </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#151; <code>SecureClassLoader</code> 가 할당한 액세스권을 출력한다</li>
+</ul>
+<p> <i><code>access</code></i> 에는, 다음의 옵션을 지정할 수 있습니다. </p>
+<ul>
+<li><code>stack</code> &nbsp;&nbsp;&nbsp;&nbsp;&#151; 스택 트레이스를 포함한다</li>
+<li><code>domain</code> &nbsp;&nbsp;&#151; 문맥내의 모든 도메인을 덤프 한다</li>
+<li><code>failure</code> &#151; 예외를 throw 하기 전에, 액세스권을 보관 유지하지 않는 스택 및 도메인을 덤프 한다</li>
+</ul>
+<p> 예를 들어,<code>checkPermission</code> 의 결과를 모두 출력해, 문맥내의 모든 도메인을 덤프 하려면 , 다음의 순서를 실행합니다. </p>
+<ul>
+<li><strong>「Java 컨트롤 패널」</strong>을 엽니다. </li>
+<li><strong>「Java」&gt; 「표시」</strong>를 클릭합니다. <strong>「Java 런타임 설정」</strong>다이알로그 박스가 표시됩니다. </li>
+<li><strong>「Java 런타임 파라미터」</strong>필드에,<code>-Djava.security.debug=access:stack</code> 라고 입력합니다.  </li>
+</ul>
+<h2><a name="online"></a> 문서</h2>
+<p> Java Plug-in 의 제공하는 문서는, 개발자가 Java Plug-in 의 다양한 기능을 사용하는데 있어서 도움이 됩니다. 문서내의 <a href="faq/index.html">FAQ</a>  에는, 개발자가 자주 묻는 질문이 게재되고 있습니다. 애플릿을 개발하기 전에, 이러한 문서를 읽어 이해해 두면(자), 디버그에 소비하는 시간을 큰폭으로 절약할 수 있는 경우가 있습니다.  </p>
+<h2><a name="isolating"></a> 버그의 분리</h2>
+<p> Java Plug-in 는 Internet Explorer 및 지원되고 있는 Mozilla 브라우저내에서 Java 2 Runtime Environment 를 제공한다고는 해도, 기능의 대부분은 Java Plug-in 는 아니고, Java 2 Runtime 자체에 의해 제공됩니다. 이 때문에, Java Plug-in 내에서 문제가 발생했을 경우, 원인은 Java Plug-in, Java 2 Runtime 자체, 또는 사용자 에러의 어느 쪽인가에 있습니다. 버그의 원인이 어디에 있는지를 식별하는 것은, 버그의 평가 및 수정의 속도에 영향을 주기 (위해)때문에, 매우 중요합니다. 다음에, 버그를 분리하는데 도움이 되는 제안을 제시합니다.  
+<ol>
+<li>Internet Explorer 와 지원되고 있는 Mozilla 브라우저의 양쪽 모두로 Java Plug-in 를 사용해 애플릿을 실행합니다. &nbsp;</li>
+<li><code>appletviewer</code> 로 애플릿을 실행합니다. Java Plug-in 는 주로 <code>appletviewer</code> 로부터 파생한 것이므로,<code>appletviewer</code> 로부터의 문제점도 상속하고 있습니다. 이 순서는, Java Plug-in 의 제공하는 특정의 브라우저 기능 (HTTPS 나 RSA 서명등)을 애플릿이 필요로 하지 않는 경우에만 실행해 주세요. </li>
+<li>애플릿이 <code>appletviewer</code> 로 실패하는 경우, 문제는 대체로 Java Plug-in 에 있는 것이 아니라 Java 2 Runtime Environment 에 있을 가능성이 있습니다. &nbsp;</li>
+<li>애플릿이 IE 또는 지원되고 있는 Mozilla 브라우저의 한편에서만 실패하는 경우, 문제는 대체로 Java Plug-in 에 있습니다. </li>
+<li>애플릿이 IE 와 Netscape 의 양쪽 모두의 브라우저로 실패하지만 <code>appletviewer</code> 에서는 실패하지 않는 경우, Java Plug-in 의 문제나 사용자 에러의 어느 쪽인가의 가능성이 있습니다. 애플릿의 코드를 표시해, 실행 환경에 관해서 어떠한 전제 조건이 존재할지 어떨지를 확인해 주세요. 예를 들어,<code>appletviewer</code> 에서는, 커런트 디렉토리가,<code>appletviewer</code> 기동시의 쉘내의 커런트 디렉토리로 설정되는데 대해, Java Plug-in 의 커런트 디렉토리는 브라우저의 디렉토리로 설정하는 것이 가능합니다. 따라서, 커런트 디렉토리로부터의 자원의 로드는 <code>appletviewer</code> 에서는 실행할 수 있습니다만, Java Plug-in 에서는 할 수 없습니다. </li>
+<li>다른 머신 또는 플랫폼에서 문제의 재현을 시도합니다. 때로는, 문제의 원인이 머신의 구성에 있는 경우 (올바르지 않은 DNS 설정 등)가 있습니다. </li>
+<li>Java 2 Runtime Environment 또는 Java Plug-in 로 문제를 식별할 수 있었을 경우는, 다음의 섹션의 지시에 따라 버그 리포트를 적절한 제품 카테고리에 송신해 주세요. </li>
+</ol>
+<h2><a name="submitting-br"></a> 버그 리포트의 송신</h2>
+<p> 버그 리포트를 송신할 때는, Java Development Connection 의 <a href="http://bugs.sun.com/bugdatabase/index.jsp">Bug Database</a>  로 이동해 주세요. 버그 리포트를 송신하기 전에 BugParade 를 검색해, 같은 버그가 벌써 보고되고 있는지 어떤지를 확인해 주세요. 경우에 따라서는, 회피 방법이 나타나고 있는 일도 있습니다. 버그 리포트가 미제출인 것을 확인하면(자), 신규 버그 리포트를 Java Plug-in 팀에 송신해 주세요. 버그 리포트에는, 다음의 정보를 포함해 주세요.  
+<ul>
+<li>버그의 상세한 설명, 및 버그를 재현하기 위한 구체적인 순서</li>
+<li>Java 콘솔 또는 트레이스 파일에 표시된 에러 메세지
+<li>프록시 구성 정보 (자동 프록시 구성의 경우, 프록시 구성 파일의 첨부 등)</li>
+<li>브라우저 및 플랫폼 정보 (Win 2000 상의 지원되고 있는 Mozilla 브라우저 등)</li>
+<li>문제를 분명히 하는 시험대</li>
+<li>다른 브라우저 및 <code>appletviewer</code> 로 문제가 발생할지 어떨지</li>
+<li>회피 방법이 있는 경우에는, 그 회피 방법</li>
+<li>보완적인 정보가 필요한 경우에 연락을 하기 위한 개인정보 (이름 및 전자메일 주소)</li>
+</ul>
+<h2><a name="submitting-fr"></a> 기능 요구의 송신</h2>
+<p> 기능 요구를 송신하는 경우는,<a href="http://bugs.sun.com/services/bugreport/index.jsp">「Report A Bug or Request a Feature」</a>의 페이지로부터 실시합니다. 송신에 즈음해서는, 다음의 정보가 포함되어 있는 것을 확인해 주세요.  
+<ul>
+<li>요구하는 기능의 상세한 설명</li>
+<li>이 기능에 의해, 제품 또는 Java Plug-in 의 품질이 전체적으로 어떻게 개선될까</li>
+</ul>
+<h2><a name="jpifa"></a> Java Plug-in 피드백 앨리어스(alias)</h2>
+<p> Java Plug-in 피드백 앨리어스(alias) <a href="mailto:java-plugin-feedback@sun.com">java-plugin-feedback@sun.com</a>  의 목적은, 커스터머가 제품 기능 및 제품 전반에 관한 피드백을 제출하는 것입니다. 이 앨리어스(alias)는, 버그 리포트를 송신하기 위한의 것이 아닙니다. 버그 리포트의 송신은, 전술의 순서에 따라 실행해 주세요.  
+<p>
+</body>
+</html>

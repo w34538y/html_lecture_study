@@ -1,0 +1,267 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:12:33 오후 2002" />
+<title>Color - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-image.html" />
+    <link rel="Next" href="j2d-print.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-image.html">전의 항목</a>  | <a accesskey="n" href="j2d-print.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp60754"> </a> <h2 class="pChapNum">
+제 6 장&#160;&#160;
+</h2>
+<a name="wp61757"> </a> <h2 class="pChapTitle">
+Color
+</h2>
+<a name="wp61777"> </a> <p class="pBody">
+칼라 이미징은 모든 그래픽스 시스템의 기본 요소의 1 개로, 자주 이미징 모델을 복잡하게 하는 원인이 되어 있습니다. Java 2D&#8482; API 는, 사용하기 쉬운 고품질의 칼라 출력을 지원해, 세련된 색채를 가능하게 합니다.  
+</p>
+<a name="wp62572"> </a> <p class="pBody">
+Java 2D API 의 주된 칼라 관리 클래스에는,<code class="cCode">ColorSpace</code>,<code class="cCode">Color</code>, 및 <code class="cCode">ColorModel</code> 가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp62615"> </a> <div class="pBullet1"><li><code class="cCode">ColorSpace</code> 는, 주로 3 개의 독립한 수치 (성분)를 사용한 색을 평가하기 위한 시스템을 나타냅니다. <code class="cCode"><code class="cCode">ColorSpace</code> 클래스에는, 색공간(color space)와 2 개의 표준 색공간(color space)인 <code class="cCode">CIEXYZ</code> 및 RGB 와의 사이의 변환을 행하기 위한 메소드가 포함되어 있습니다. </li></div>
+<a name="wp62573"> </a> <div class="pBullet1Plus"><li><code class="cCode">Color</code> 는, 특정의 <code class="cCode">ColorSpace</code> 내에서 성분에 의해 정의되고 있는 고정 칼라입니다. 빨강등의 색으로 <code class="cCode">Shape</code> 를 draw 하려면 , 목적의 색을 나타내는 <code class="cCode">Color</code> 객체를 <code class="cCode">Graphics2D</code> 문맥에 건네줍니다. <code class="cCode">Color</code> 는 <code class="cCode">java.awt</code> 패키지로 정의되고 있습니다.  </li></div>
+<a name="wp62602"> </a> <div class="pBullet1Last"><li><code class="cCode">ColorModel</code> 는, 픽셀치를 색에 매핑 하는 방법을 기술합니다. <code class="cCode"><code class="cCode">ColorModel</code> 은, 일반적으로,<code class="cCode">Image</code> 또는 <code class="cCode">BufferedImage</code> 와 관련지을 수 있어 픽셀치를 올바르게 해석하는데 필요한 정보를 제공합니다. <code class="cCode">ColorModel</code> 는 <code class="cCode">java.awt.image</code> 패키지로 정의되고 있습니다.  </li></div>
+</ul>
+<a name="wp62604"> </a> <h2 class="pHeading1">
+6.1	클래스
+</h2>
+<a name="wp62467"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp62471">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62471"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp62473"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62475"> </a> <div class="pCellBody">
+<code class="cCode">ColorSpace</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62527"> </a> <div class="pCellBody">
+<code class="cCode">Color</code> 객체,<code class="cCode">Image</code>,<code class="cCode">BufferedImage</code>, 또는 <code class="cCode">GraphicsDevice</code> 의 색공간(color space)를 특정합니다. RGB 색공간(color space)와 CIEXYZ 색공간(color space)의 변환을 행하기 위한 메소드가 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62479"> </a> <div class="pCellBody">
+<code class="cCode">ICC_ColorSpace</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62531"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ColorSpace</code>
+</div>
+<a name="wp62532"> </a> <div class="pCellBody">
+ICC 프로파일 형식 스펙에 근거하는, 디바이스에 의존하지 않는 색공간(color space)와 디바이스에 의존하는 색공간(color space)를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62483"> </a> <div class="pCellBody">
+<code class="cCode">ICC_Profile</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62536"> </a> <div class="pCellBody">
+ICC 프로파일 형식 스펙에 근거하는, 디바이스에 의존하지 않는 색공간(color space)와 디바이스에 의존하는 색공간(color space)의 칼라 프로파일 데이터를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62487"> </a> <div class="pCellBody">
+<code class="cCode">ICC_ProfileGray</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62542"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ICC_Profile</code>
+</div>
+<a name="wp62543"> </a> <div class="pCellBody">
+색공간(color space) 타입 회색을 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62491"> </a> <div class="pCellBody">
+<code class="cCode">ICC_ProfileRGB</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62547"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ICC_Profile</code>
+</div>
+<a name="wp62548"> </a> <div class="pCellBody">
+색공간(color space) 타입 RGB 를 나타냅니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62583"> </a> <h2 class="pHeading1">
+6.2	색의 컨셉
+</h2>
+<a name="wp62586"> </a> <p class="pBody">
+<code class="cCode">ColorModel</code> 는, 이미지내의 픽셀 데이터를 해석하는데 사용됩니다. 픽셀 데이터의 해석에는, 이미지의 각 밴드의 성분을 특정의 색공간(color space)의 성분에 매핑 하는 작업이 포함됩니다. 또, 팩 된 픽셀 데이터로부터의 픽셀 성분의 추출, 마스크를 사용한 1 개의 밴드로부터의 복수의 성분의 꺼내, 룩업테이블을 개입시킨 픽셀 데이터의 변환도 이 처리에 포함되는 일이 있습니다.  
+</p>
+<a name="wp62297"> </a> <p class="pBody">
+이미지내의 특정의 픽셀의 칼라치를 결정하려면 , 각 픽셀에 칼라 정보가 어떻게 캡슐화되고 있을까를 알 필요가 있습니다. 이미지에 관련지을 수 있었던 <code class="cCode">ColorModel</code> 는, 픽셀치를 칼라 성분에, 또 칼라 성분으로부터 픽셀치로 변환하는데 필요한 데이터와 메소드를 캡슐화합니다.  
+</p>
+<a name="wp62298"> </a> <p class="pBody">
+Java 2D&#8482; API 는, JDK 1.1 소프트웨어 릴리스로 정의되고 있는 <code class="cCode">DirectColorModel</code> 와 <code class="cCode">IndexColorModel</code> 에 가세해 다음의 2 개의 칼라 모델을 제공합니다.  
+</p>
+<ul class="pBullet1"><a name="wp62299"> </a> <div class="pBullet1"><li><code class="cCode">ComponentColorModel</code> 는, 임의의 <code class="cCode">ColorSpace</code> 와 칼라 성분의 배열을 처리해,<code class="cCode">ColorSpace</code> 에 일치하도록(듯이) 합니다. 이 모델을 사용하면(자), 대부분의 종류의 <code class="cCode">GraphicsDevices</code> 상에서 대부분의 칼라 모델을 나타낼 수가 있습니다.  </li></div>
+<a name="wp62300"> </a> <div class="pBullet1Last"><li><code class="cCode">PackedColorModel</code> 는, 칼라 성분이 int 픽셀의 비트에 직접 파묻힌 픽셀치를 나타내는 모델의 base class입니다. <code class="cCode">PackedColorModel</code> 는, 칼라 성분과 알파 성분을 채널로부터 어떻게 추출하는지를 기술한 팩 정보를 포함합니다. JDK 1.1 소프트웨어 릴리스의 <code class="cCode">DirectColorModel</code> 은,<code class="cCode">PackedColorModel</code> 입니다.  </li></div>
+</ul>
+<a name="wp62302"> </a> <h4 class="pHeading3">
+6.2. 0.1	ColorSpace
+</h4>
+<a name="wp62303"> </a> <p class="pBody">
+<code class="cCode">ColorSpace</code> 객체는, 주로 3 개의 독립한 수치를 사용한 색을 평가하기 위한 시스템을 나타냅니다. 예를 들어, RGB 와 CMYK 는 색공간(color space)입니다. <code class="cCode">ColorSpace</code> 객체는,<code class="cCode">Color</code> 객체의 칼라 영역을 특정하거나<code class="cCode">ColorModel</code> 객체를 개입시켜 <code class="cCode">Image</code>,<code class="cCode">BufferedImage</code>, 또는 <code class="cCode">GraphicsConfiguration</code> 의 칼라 영역을 특정하거나하기 위한 칼라 영역 태그로서 기능합니다. <code class="cCode">ColorSpace</code> 는, 특정의 칼라 영역의 <code class="cCode">Color</code> 를 <code class="cCode">sRGB</code> 와의 사이로, 또 명확하게 정의된 <code class="cCode">CIEXYZ</code> 칼라 영역과의 사이에 변환하기 위한 메소드를 제공합니다.
+</p>
+<a name="wp62304"> </a> <p class="pBody">
+모든 <code class="cCode">ColorSpace</code> 객체는, 그 객체가 나타내는 칼라 영역의 색을 <code class="cCode">sRGB</code> 에 매핑함과 함께,<code class="cCode">sRGB</code> 칼라를, 그 객체가 나타내는 칼라 영역으로 변환할 수 없으면 안됩니다. 어느 <code class="cCode">Color</code> 에도, 명시적으로 또는 디폴트로 설정된 <code class="cCode">ColorSpace</code> 객체가 있으므로, 어떠한 <code class="cCode">Color</code> 도 <code class="cCode">sRGB</code> 로 변환할 수 있습니다. 각 <code class="cCode">GraphicsConfiguration</code> 는 <code class="cCode">ColorSpace</code> 객체에 관련지을 수 있고 있어 이 <code class="cCode">ColorSpace</code> 객체에는, 대응하는 <code class="cCode">ColorSpace</code> 가 있습니다. 칼라 영역에서 지정된 색은,<code class="cCode">sRGB</code> 를 개입시켜 중간 칼라 영역으로서 매핑 하는 것으로, 임의의 디바이스로 표시할 수 있습니다.
+</p>
+<a name="wp62305"> </a> <p class="pBody">
+이 처리에 사용되는 메소드는,<code class="cCode">toRGB</code> 와 <code class="cCode">fromRGB</code> 입니다.
+</p>
+<ul class="pBullet1"><a name="wp62306"> </a> <div class="pBullet1"><li><code class="cCode">toRGB</code> 는, 표현된 색공간(color space)의 <code class="cCode">Color</code> 를 <code class="cCode">sRGB</code> 의 <code class="cCode">Color</code> 로 변환한다 </li></div>
+<a name="wp62307"> </a> <div class="pBullet1Last"><li><code class="cCode">fromRGB</code> 는,<code class="cCode">sRGB</code> 의 <code class="cCode">Color</code> 를 받아, 표현된 색공간(color space)로 변환한다</li></div>
+</ul>
+<a name="wp62308"> </a> <p class="pBody">
+<code class="cCode">sRGB</code> 를 개입시킨 매핑은 항상 기능합니다만, 반드시 최선의 해결책이 아닙니다. 그 1 개의 이유는,<code class="cCode">sRGB</code> 에서는,<code class="cCode">CIEXYZ</code> 칼라의 전역에 건너 모든 색을 표현할 수 있는 것은 아닌 것입니다. <code class="cCode">sRGB</code> 와는 다른 색역 (표현 가능한 색의 스펙트럼)의 칼라 영역에서 색이 지정되고 있는 경우, 중간 영역으로서 <code class="cCode">sRGB</code> 를 사용하면(자) 정보가 없어집니다. 이 문제에 대처하기 위해(때문에),<code class="cCode">ColorSpace</code> 클래스는, 이제(벌써) 1 개의 칼라 영역인 「변환 영역」 <code class="cCode">CIEXYZ</code> 와의 사이에 색을 매핑 할 수 있게 되어 있습니다.
+</p>
+<a name="wp62309"> </a> <p class="pBody">
+<code class="cCode">toCIEXYZ</code> 메소드와 <code class="cCode">fromCIEXYZ</code> 메소드는, 표현된 칼라 영역으로부터 변환 영역에 칼라치를 매핑 합니다. 이러한 메소드는, 임의의 2 개의 색공간(color space)간으로, 한 번에 1 개의 <code class="cCode">Color</code> 를 충분히 높은 정밀도로 변환할 수 있습니다. 다만, Java 2D API 의 구현에서는, 기본이 되는 플랫폼의 칼라 관리 시스템을 이용해 이미지 전체를 대상으로 처리를 실시하는, 퍼포먼스가 뛰어난 변환이 지원될 예정입니다. <a  href="j2d-image.html#wp65661">「이미징」</a>의 <code class="cCode">ColorConvertOp</code> 를 참조해 주세요.
+</p>
+<a name="wp62319"> </a> <p class="pBody">
+<a  href="j2d-color.html#wp62371">그림 6-1</a>  과<a  href="j2d-color.html#wp62421">그림 6-2</a>  은, RGB 칼라 모니터상에서 표시하기 위해서, CMYK 칼라 영역에서 지정된 색을 변환하는 처리를 나타내고 있습니다. <a  href="j2d-color.html#wp62371">그림 6-1</a>  은,<code class="cCode">sRGB</code> 를 개입시킨 매핑입니다. 도화 가리키도록(듯이), CMYK 칼라로부터 RGB 칼라에의 변환은, 색역이 일치하지 않기 위해(때문에) 부정확하게 되어 있습니다.  <a href="#wp62325"><span class="Footnote">1</span></a> 
+</p>
+<a name="wp62369"> </a> <p class="pBody">
+</p><div align="right"><img src="images/j2d-color2.gif" height="120" width="468" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp62371"> </a> <div class="pFigureCaption">
+그림 6-1	sRGB 를 개입시킨 매핑<br /><br />
+</div><a name="wp62375"> </a> <p class="pBody">
+<a  href="j2d-color.html#wp62421">그림 6-2</a>  은, 변환 공간으로서 <code class="cCode">CIEXYZ</code> 를 사용했을 경우의 처리입니다. <code class="cCode">CIEXYZ</code> 가 사용되고 있는 경우는, 색은 정확하게 건네받습니다.
+</p>
+<a name="wp62419"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-color3.gif" height="118" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp62421"> </a> <div class="pFigureCaption">
+그림 6-2	CIEXYZ 를 개입시킨 매핑<br /><br />
+</div><a name="wp62422"> </a> <h4 class="pHeading3">
+6.2. 0.2	ICC_Profile 와 ICC_ColorSpace
+</h4>
+<a name="wp62423"> </a> <p class="pBody">
+<code class="cCode">ColorSpace</code> 는, 실제로는 abstract 클래스입니다. Java 2D API 는, 그 1 개의 구현인 <code class="cCode">ICC_ColorSpace</code> 를 제공하고 있습니다. <code class="cCode"> ICC_ColorSpace</code> 는,<code class="cCode">ICC_Profile</code> 클래스에 의해 나타내지는 것 같은 ICC 프로파일 데이터에 근거하고 있습니다. 벌써 설명한 2 개의 메소드를 구현하면, 독자적인 서브 클래스를 정의해 임의의 칼라 영역을 나타낼 수가 있습니다. 다만, 대부분의 경우는, 디폴트의 <code class="cCode">sRGB</code> 의 <code class="cCode">ColorSpace</code>, 혹은, 모니터나 프린터용의 일반적으로 입수 가능한 ICC 프로파일, 또는 이미지 데이터에 파묻힌 프로파일에 의해 표현된 칼라 영역을 사용할 수 있습니다.
+</p>
+<a name="wp62427"> </a> <p class="pBody">
+<a  href="j2d-color.html#wp62302">「ColorSpace」</a>에서는,<code class="cCode">ColorSpace</code> 객체가 칼라 영역을 어떻게 표현하고 있는지, 및 표현된 색을 변환 영역과의 사이에 어떻게 매핑 할 수 있을까에 임해서 설명하고 있습니다. 색공간(color space)간의 매핑의 처리에서는, 자주 칼라 관리 시스템이 사용됩니다. 전형적인 칼라 관리 시스템 (CMS)에서는,<code class="cCode">ColorSpace</code> 객체를 닮은 ICC 프로파일을 관리합니다.  ICC 프로파일에서는, 입력 공간과 접속 공간에 도착해 기술되고 있어 이러한 공간간에서의 매핑의 방법이 정의되고 있습니다. 칼라 관리 시스템은, 어느 프로파일의 태그가 붙은 색을 다른 프로파일의 색공간(color space)에 어떻게 매핑 하면 좋은가를 이해하는데 있어서, 많이 도움이 됩니다.
+</p>
+<a name="wp62428"> </a> <p class="pBody">
+Java 2D API 에서는,<code class="cCode">ICC_Profile</code> 로 불리는 클래스가 정의되고 있어 이 클래스가 임의의 ICC 프로파일의 데이터를 보관 유지합니다. <code class="cCode"><code class="cCode">ICC_ColorSpace</code> 는, abstract <code class="cCode">ColorSpace</code> 클래스의 구현입니다. <code class="cCode">ICC_ColorSpace</code> 객체는,<code class="cCode">ICC_Profiles</code> 로부터 구축할 수 있습니다. 다만, 모든 ICC 프로파일이 <code class="cCode">ICC_ColorSpace</code> 의 정의에 적절하고 있는 것은 아닌 것 등, 몇개의 제한이 있습니다.  
+</p>
+<a name="wp62429"> </a> <p class="pBody">
+<code class="cCode">ICC_Profile</code> 에는,<code class="cCode">ICC_ProfileRGB</code>,<code class="cCode">ICC_ProfileGray</code> 등, 특정의 색공간(color space) 타입에 대응하는 몇개의 서브 클래스가 있습니다. <code class="cCode">ICC_Profile</code> 의 각 서브 클래스는, 명확하게 정의된 입력 영역 (RGB 영역등)과 명확하게 정의된 (<code class="cCode">CIEXYZ</code> 와 같은) 접속 영역을 가지고 있습니다. Java 2D API 에서는, 플랫폼의 CMS 를 사용해, 스캐너, 프린터, 모니터등이 다양한 칼라 프로파일에 액세스 할 수 있습니다. 또, 플랫폼의 CMS 를 사용해, 프로파일간에서의 최적인 매핑을 찾아낼 수도 있습니다.
+</p>
+<a name="wp62455"> </a> <h3 class="pHeading2">
+6.2. 1	색의 기술
+</h3>
+<a name="wp62437"> </a> <p class="pBody">
+<code class="cCode">Color</code> 클래스는, 특정의 칼라 영역의 색을 기술합니다. <code class="cCode"><code class="cCode">Color</code> 의 인스턴스에는, 칼라 성분의 값과 <code class="cCode">ColorSpace</code> 객체가 포함되어 있습니다. <code class="cCode">Color</code> 의 새로운 인스턴스를 생성할 때는, 칼라 성분에 가세해 <code class="cCode">ColorSpace</code> 객체를 지정할 수 있으므로,<code class="cCode">Color</code> 클래스는 임의의 칼라 영역의 색을 처리할 수 있습니다.
+</p>
+<a name="wp62438"> </a> <p class="pBody">
+<code class="cCode">Color</code> 클래스에는, 현재 제안되고 있는 <code class="cCode">sRGB</code> 로 불리는 표준 RGB 칼라 영역을 지원하는 몇개의 메소드가 있습니다 (<code class="cCode">http://www.w3.org/pub/WWW/Graphics/Color/sRGB.html</code> 를 참조). <code class="cCode"> sRGB</code> 는, Java 2D API 의 디폴트 칼라 영역입니다. Color 클래스에서 정의되고 있는 몇개의 생성자 에서는,<code class="cCode">ColorSpace</code> 파라미터가 생략 되고 있습니다. 이러한 생성자 은, 색의 RGB 치가 <code class="cCode">sRGB</code> 로 정의되고 있는 것과 가정해,<code class="cCode">ColorSpace</code> 의 디폴트 인스턴스를 사용해 색공간(color space)를 나타냅니다.
+</p>
+<a name="wp62439"> </a> <p class="pBody">
+Java 2D API 에서는, 칼라 변환을 위한 레퍼런스 칼라 영역으로서가 아니고, 어플리케이션 프로그래머의 편의를 생각해 <code class="cCode">sRGB</code> 를 사용하고 있습니다. 많은 어플리케이션은 주로 RGB 이미지와 모니터를 대상으로 하고 있으므로, 표준 RGB 칼라 영역을 정의하면, 이러한 어플리케이션을 보다 간단하게 작성할 수 있게 됩니다. <code class="cCode">ColorSpace</code> 클래스에서는 <code class="cCode">toRGB</code> 메소드와 <code class="cCode">fromRGB</code> 메소드가 정의되므로, 개발자는 표준 공간의 색을 용이하게 꺼낼 수가 있습니다. 이러한 메소드는, 고정밀도의 칼라 보정이나 변환으로 사용하는 것을 의도한 것이 아닙니다. 자세한 것은,<a  href="j2d-color.html#wp62302">「ColorSpace」</a>를 참조해 주세요.
+</p>
+<a name="wp62443"> </a> <p class="pBody">
+<code class="cCode">sRGB</code> 이외의 칼라 영역에서 색을 작성하려면 <code class="cCode">Color</code> 의 생성자 을 사용합니다. <code class="cCode"> Color</code> 의 생성자 은,<code class="cCode">ColorSpace</code> 객체와 이 칼라 영역에 적절한 칼라 성분을 나타내는 float 의 배열을 인수에 취합니다. <code class="cCode"><code class="cCode">ColorSpace</code> 객체는 색공간(color space)를 특정합니다.
+</p>
+<a name="wp61780"> </a> <p class="pBody">
+인쇄용 시안과 같은 어느 특정의 색으로 구형을 표시하려면 , 시스템에 대해서 이 색을 기술할 방법이 필요합니다. 색을 기술하려면 , 다양한 방법이 있습니다.  예를 들어, 적, 록, 청 (RGB)의 성분의 편성에 의해 색을 기술하거나 시안, 마젠타, 황색, 흑 (CMYK)의 성분의 편성에 의해 색을 기술하거나 할 수 있습니다. 이러한 색을 지정하기 위한 다양한 수법은, 「색공간(color space)」라고 불립니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp61781"> </a> <p class="pBody">
+잘 알려져 있도록(듯이), 컴퓨터의 화면상의 색은, 적, 록, 청의 빛을 분량을 바꾸어 혼합하는 것으로 생성됩니다. 따라서, RGB 색공간(color space)의 사용은, 컴퓨터 모니터상에서의 이미징에서는 표준입니다. 같이 4 색인쇄법에서는, 시안, 마젠타, 황색, 흑의 잉크를 사용해 인쇄 페이지상에 색을 작성합니다.  이 경우, 인쇄하는 색은, CMYK 칼라 영역의 퍼센티지로서 지정되고 있습니다.  
+</p>
+<a name="wp61782"> </a> <p class="pBody">
+RGB 칼라 영역과 CMYK 칼라 영역은, 컴퓨터 모니터와 칼라 인쇄의 보급에 의해, 어느쪽이나 색을 기술하는데 넓게 사용되고 있습니다. 다만, 어느 쪽의 타입의 칼라 영역에도, 디바이스에 의존한다고 하는 기본적인 결점이 있습니다. 어느 프린터로 사용되는 시안 잉크는, 다른 프린터로 사용되는 시안 잉크와 같지 않는 것이 있습니다. 같이 RGB 칼라로서 기술된 색이, 어느 모니터에서는 파랑으로 보여 다른 모니터에서는 보라색이 사 보이는 일도 있습니다.  
+</p>
+<a name="wp61783"> </a> <h3 class="pHeading2">
+6.2. 2	sRGB 및 CIEXYZ 를 개입시킨 색의 매핑
+</h3>
+<a name="wp62282"> </a> <p class="pBody">
+Java 2D API 에서는, RGB 와 CMYK 를 칼라 영역 타입이라고 부릅니다. 특정의 형광관을 가지는 특정 모델의 모니터에서는, 그 모니터 독자적인 RGB 색공간(color space)가 정의되고 있습니다. 같이 특정의 모델의 프린터에는, 그 프린터 독자적인 CMYK 색공간(color space)가 있습니다. 다른 RGB 칼라 영역이나 CMYK 칼라 영역은, 디바이스에 의존하지 않는 칼라 영역을 개입시켜 서로 관련지을 수가 있습니다.
+</p>
+<a name="wp61784"> </a> <p class="pBody">
+디바이스에 의존하지 않는 칼라 지정의 표준은, International Commission on Illumination (CIE)에 달려 있고 구두나 정의되고 있습니다. 이 중, 가장 잘 사용되고 있는 색공간(color space)는, CIE 에 의해 개발된 3 성분 XYZ 색공간(color space)입니다. <code class="cCode">CIEXYZ</code> 를 사용해 색을 지정했을 경우는, 디바이스에는 의존하지 않게 됩니다.
+</p>
+<a name="wp61785"> </a> <p class="pBody">
+다만,<code class="cCode">CIEXYZ</code> 칼라 영역에서의 색의 기술은, 반드시 실제적이지 않은 것이 있습니다. 다른 칼라 영역에서 색을 나타낸 (분)편이, 적절한 경우도 있습니다. 특정의 RGB 영역 등, 디바이스에 의존하는 칼라 영역을 사용해 색을 나타내는 경우에, 일관성이 있는 결과를 얻을 수 있도록(듯이) 하려면 , 그 RGB 영역이,<code class="cCode">CIEXYZ</code> 와 같은 디바이스에 의존하지 않는 영역과 어떠한 관계에 있는지를 나타낼 필요가 있습니다.
+</p>
+<a name="wp61786"> </a> <p class="pBody">
+칼라 영역간에서의 매핑을 실시하는 1 개의 방법으로서 디바이스에 의존하는 영역이 디바이스에 의존하지 않는 영역과 어떠한 관계에 있는지를 나타내는 정보를, 어느 쪽의 영역에도 첨부하는 방법이 있습니다. 이 추가 정보는, 「프로파일」이라고 불립니다. <em class="cEmphasis"></em>칼라 프로파일의 타입 가운데, 일반적으로 사용되고 있는 것으로서 International Color Consortium 가 정의한 ICC 칼라 프로파일이 있습니다. 자세한 것은,<code class="cCode">http://www.color.org</code> 로부터 입수 가능한 「ICC Profile Format Specification, version 3.4」를 참조해 주세요.
+</p>
+<a name="wp61790"> </a> <p class="pBody">
+<a  href="j2d-color.html#wp61912">그림 6-3</a>  은, 전부 칠한 색과 스캔 한 이미지가 Java 2D API 에 어떻게 건네받아 다양한 출력 디바이스로 어떻게 표시되는지를 나타내고 있습니다. <a  href="j2d-color.html#wp61912">그림 6-3</a>  으로부터 알도록(듯이), 입력 칼라와 이미지의 양쪽 모두에 프로파일이 첨부되고 있습니다.
+</p>
+<a name="wp61910"> </a> <p class="pBody">
+</p><div><img src="images/j2d-colora.gif" height="300" width="465" alt="칼라 영역간을 매핑 하는 프로파일의 이용" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp61912"> </a> <div class="pFigureCaption">
+그림 6-3	칼라 영역간을 매핑 하는 프로파일의 이용<br /><br />
+</div><a name="wp61913"> </a> <h4 class="pHeading3">
+6.2. 2.1	칼라 매칭 
+</h4>
+<a name="wp62270"> </a> <p class="pBody">
+API 는, 정확하게 지정된 색을 취득하면(자), 지정된 색을 모니터나 프린터등의 출력 디바이스상에 재현 하지 않으면 안됩니다. 이러한 디바이스에는 각각 독자적인 이미징 특성이 있으므로, 적절한 결과를 얻으려면 , 이 이미징 특성을 고려하지 않으면 안됩니다. 이 때문에, 각 출력 디바이스에는 프로파일을 관련지어 정확한 결과를 얻으려면  색을 어떠한 방법으로 변환할 필요가 있는지를 기술합니다.
+</p>
+<a name="wp62724"> </a> <p class="pBody">
+일관성이 있는 정확한 색을 출력하려면 , 표준 칼라 영역을 기준으로서 입력 칼라와 출력 디바이스의 양쪽 모두의 프로파일을 설정할 필요가 있습니다. 예를 들어, 입력 칼라를, 원의 칼라 영역으로부터 디바이스에 의존하지 않는 표준의 칼라 영역에 매핑 해, 다음에 표준의 칼라 영역으로부터 출력 디바이스의 칼라 영역에 매핑 합니다. 색의 변환은, 많은 점으로써, 그래피컬 객체의 (<em class="cEmphasis">x</em>, &#160;<em class="cEmphasis">y</em>) 좌표 공간에의 변환을 닮아 있습니다. 어느 쪽의 경우도, 변환을 사용해 「표준」공간에서의 좌표를 지정해, 다음에 이 좌표를 디바이스에 고유의 공간에 매핑 해 출력합니다.
+</p>
+<a name="wp62729"> </a> <p class="pBody">
+
+</p>
+
+  <a name="wp62325"> </a> <div class="pFootNote">
+<a href="#wp62319"><span class="Footnote">1</span></a> 이러한 그림으로 사용되고 있는 색은, 알기 쉬움을 우선시키고 있기 (위해)때문에, 정확하지는 않습니다. 즉, 적절한 변환 영역이 사용되지 않는 이상 색은 칼라 영역간에서 정확하게 매핑 되지 않습니다.  
+
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-image.html">전의 항목</a>  | <a accesskey="n" href="j2d-print.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

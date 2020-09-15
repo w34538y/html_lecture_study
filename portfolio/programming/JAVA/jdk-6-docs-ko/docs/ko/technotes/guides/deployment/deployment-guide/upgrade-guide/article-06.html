@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>java.lang.ClassNotFoundException 가 throw 된다... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2> <span class="bg2">애플릿을 실행하면(자) <code>java.lang.ClassNotFoundException</code> 가 <code>com.ms. *</code> 패키지로 throw 된다</span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote> 
+<p> 애플릿을 Sun JRE 를 사용한 브라우저로 실행하고 있는 경우,<code>ClassNotFoundException</code> 가 <code>com.ms. *</code> 패키지의 <code>ClassLoader</code> 로 throw 됩니다. 같은 애플릿이 Microsoft VM 에서는 실행할 수 있습니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p> Microsoft VM 에서는, J/Direct, AFC, WFC 등 많은 독자적인 클래스 라이브러리가 제공되고 있습니다. 이러한 패키지는 Sun JRE 에서는 이용할 수 없기 때문에, 애플릿을 실행하면(자) <code>ClassNotFoundException</code> 가 throw 됩니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote> 
+<p> 애플릿의 원시 코드를 Microsoft 독자적인 클래스 라이브러리를 사용한 것으로부터, Java 플랫폼에 있어서의 같은 클래스를 사용한 것으로 이행합니다.  </p>
+  </blockquote>
+  <table width="80%" border="1" align="center" cellpadding="3" cellspacing="0" bordercolor="#000000" id="AutoNumber2">
+    <tr bgcolor="#CCCCCC"> 
+<td width="50%" align="center"><b>Microsoft VM</b></td>
+<td width="50%" align="center"><b>Java 플랫폼</b></td>
+    </tr>
+    <tr> 
+<td width="50%" align="center">J/Direct</td>
+<td width="50%" align="center">Java Native Interface</td>
+    </tr>
+    <tr> 
+<td width="50%" align="center">Application Foundation Classes</td>
+<td width="50%" align="center">Swing, Java 2D API</td>
+    </tr>
+    <tr> 
+<td width="50%" align="center">Windows Foundation Classes</td>
+<td width="50%" align="center">Swing, Java 2D API</td>
+    </tr>
+  </table>
+<h3><font color="#CC0033">상세 정보</font></h3>
+  <blockquote> 
+<p><a href="http://www.javaworld.com/javaworld/jw-10-1997/jw-10-sdk.html">「How to avoid potential pitfalls of Microsoft's non-standard SDK for Java」<br></a> <a href="http://java.sun.com/docs/books/tutorial/uiswing/mini/index.html">「Lesson:User Interfaces that Swing:A Quick Start Guide」<br></a> <a href="http://java.sun.com/docs/books/tutorial/uiswing/index.html">「Trail:Creating a GUI with JFC/Swing」<br></a> <a href="http://java.sun.com/docs/books/tutorial/native1.1/index.html">「Trail:Java Native Interface」</a>  </p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

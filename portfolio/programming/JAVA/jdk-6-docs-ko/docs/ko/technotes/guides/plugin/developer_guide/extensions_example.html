@@ -1,0 +1,132 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>완전한 예:Java 확장 기능으로서의 Java Media Framework - xrath.com 에서 번역됨</title>
+
+<script language="JavaScript">
+<!--
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>부록 C:완전한 예 &#151; Java 확장 기능으로서의 Java Media Framework 의 배치</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <script src="menu_script.js" language="JavaScript"></script>
+  </select>
+</form>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a> </li>
+<li><a href="#creating_jar">인스톨 하는 JAR 파일을 작성한다</a> <br>
+  </li>
+<li><a href="#creating_applet_jar">애플릿 JAR 파일을 작성한다</a> </li>
+<li><a href="#creating_html">애플릿의 HTML 를 작성한다</a> </li>
+<li><a href="#testing">예를 테스트한다</a> </li>
+</ul>
+<h3><a name="intro"></a>  	처음에</h3>
+<p>여기에서는, Java Media Framework (JMF)의 단일의 JAR 파일을 Java 확장 기능으로서 배치하는 경우의, 실제로 동작하는 완전한 예를 나타냅니다. 이 예에서는,<code>SimplePlayerApplet.java</code> 와 <code>jmf.jar</code> 를 사용해 <code>. avi</code> 미디어 파일을 재생합니다. 이 예에서는, raw 인스톨 방법을 사용해 <code>s_my_jmf.jar</code> 라고 하는 파일을 인스톨 합니다.  이것은,<code>jmf.jar</code> 를 재패키지화해 서명한 것입니다. 일반적으로, 다른 JAR 파일도 JMF 와 함께 인스톨 됩니다만,<code>SimplePlayerApplet.java</code> 에 필요한 것은 <code>jmf.jar</code> 의 기능 뿐입니다.  </p>
+<p>간단하게 하기 위해서, 이 예에서는 다음과 같이 가정하고 있습니다. </p>
+<ul>
+<li>Microsoft Windows 시스템으로 작업하고 있다 </li>
+<li>컴퓨터의 <code>C:\&quot;Program Files&quot;\Java\jdk1. 6.0</code> 에 1.6 JDK 가 인스톨 되고 있다</li>
+<li>서명용의 키스토어가 <code>C:\plugin\keystores</code> 디렉토리로 설정되어 있다</li>
+<li>키스토어의 이름은 <code>thawte.p12</code></li>
+<li><code>storepass</code> 와 <code>keypass</code> 는 어느쪽이나 <code>mypass</code></li>
+<li>키스토어의 별명은 「<code>Sun Microsystems Inc. 's Thawte Consulting cc ID</code>」<br>
+  </li>
+</ul>
+<h3><a name="creating_jar"></a> 인스톨 하는 JAR 파일을 작성한다</h3>
+<p>이 경우, 인스톨 프로그램은 없습니다. 필요한 JAR 파일 <code>jmf.jar</code> 를 다운로드해,<code>&lt;jre_location&gt;/lib/ext</code> 에 카피하는 것만으로 끝납니다. Plug-in 와 JRE 의 확장 기능 기구의 제휴에 의해, 인스톨 처리 (파일의 다운로드와 카피)를 합니다.  </p>
+<p><code>jmf.jar</code> 를 가져오려면 , 크로스 플랫폼 인스톨용의 zip 파일 <code>jmf-2_1_1e-alljava.zip</code> 를 <code><a href="http://java.sun.com/products/java-media/jmf/2.1.1/download.html">http://java.sun.com/products/java-media/jmf/2. 1.1/download.html</a> </code> 로부터 다운로드합니다. <code>jmf.jar</code> 는, 다른 JAR 파일과 함께 이 zip 파일에 포함되어 있으므로, 거기로부터 추출할 수 있습니다. </p>
+<p><code>jmf.jar</code> 를 취득할 수 있으면(자),<code>jmf.jar</code> 자체를 <code>C:\plugin\extensions\workspace1</code> 등의 디렉토리에 추출합니다. 여기서,<code>manifest.mf</code> 파일에는 불필요한 서명 정보가 포함되어 있으므로,<code>META-INF</code> 디렉토리가 존재하는 경우는 이 디렉토리를 삭제합니다. </p>
+<p>다음에,<code>jmf.jar</code> 에 근거해 새로운 JAR 파일을 작성해, 독자적인 Manifest 파일을 작성합니다. 작성한 Manifest 파일에 jmf_manifest 라는 이름을 붙입니다. 이 파일을,<code>jar</code> 툴에의 입력으로서 지정합니다. 이 예로 사용되고 있는 내용은 다음과 같습니다. </p>
+<blockquote> 
+<p><code>Extension-Name:javax.media.s_my_jmf<br> Specification-Vendor:Sun Microsystems, Inc <br> Specification-Version:2. 1 <br>Implementation-Vendor-Id:com.sun<br>Implementation-Vendor:Sun Microsystems, Inc<br>Implementation-Version: 2.1. 1</code></p>
+</blockquote>
+<p>우선,<code>jmf.jar</code> 에 포함되어 있던 파일을 새로운 JAR 파일에 정리해<code>my_jmf.jar</code> 라는 이름을 붙입니다. 이 파일에 서명해, 거기에 <code>s_my_jmf.jar</code> 라는 이름을 붙입니다.  </p>
+<p><code>workspace1</code> 에 있는 파일과 새로운 Manifest 파일 <code>jmf_manifest</code> 를 JAR 파일에 정리하기 위해서(때문에),<code>cd</code> 를 사용해 <code>workspace1</code> 디렉토리로 이동해, JDK 의 <code>jar</code> 툴을 다음과 같이 사용합니다. </p>
+<blockquote> 
+<p><code>C:\plugin\extensions\workspace1&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jar cmf jmf_manifest my_jmf.jar *. class codecLib com javax jmapps</code></p>
+</blockquote>
+<p><code>codecLib</code>,<code>com</code>,<code>javax</code>, 및 <code>jmapps</code> 는,<code>*. class</code> 와 같게 JAR 파일에 정리할 필요가 있는 서브 디렉토리입니다. </p>
+
+<p><code>thawte.p12</code> 라고 하는 Thawte 키스토어가 <code>C:\plugin\keystores</code> 에 있어,<code>storepass</code> 와 <code>keypass</code> 의 패스워드는 어느쪽이나 <code>mypass</code> 이다고 합니다. 또,<code>storetype</code> 는 「<code>pkcs12</code>」, 키스토어의 별명은 「<code>Sun Microsystems Inc. 's Thawte Consulting cc ID</code>」입니다. 이 경우, 다음의 스텝을 스킵 해,<code>my_jmf.jar</code> 의 서명하러 진행되어, 서명 첨부 JAR 파일 <code>s_my_jmf.jar</code> 를 작성할 수 있습니다. </p>
+
+<p>다음의 커멘드를 실행해,<code>thawte.p12</code> 라고 하는 키스토어를,<code>storepass</code> 와 <code>keypass</code> 의 패스워드는 어느쪽이나 <code>mypass</code>, 키스토어의 별명은 「<code>Sun Microsystems Inc. 's Thawte Consulting cc ID</code>」로 작성할 수 있습니다.
+
+<blockquote>
+<p><code>C:\plugin\keystores&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\keytool -genkey -alias "Sun Microsystems Inc. 's Thawte Consulting cc ID" -keypass mypass -keystore thawte.p12 -storetype pkcs12 -storepass mypass</code></blockquote><code>
+<p></p>
+
+<p>이 예에서는,<code>jarsigner</code> 툴을 사용해 새로운 JAR 파일에 서명합니다. 다음과 같이 사용합니다. </p>
+
+<blockquote>
+<p><code>C:\plugin\extensions\workspace1&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jarsigner -keystore C:\plugin\keystores\thawte.p12 -storepass mypass -keypass mypass -storetype &quot;pkcs12&quot; -signedjar s_my_jmf.jar my_jmf.jar &quot;Sun Microsystems Inc. 's Thawte Consulting cc ID&quot;</code></p>
+</blockquote>
+
+<p>이 새로운 서명 첨부 JAR 파일을 다음과 같이 검증할 수 있습니다. </p>
+<blockquote> 
+<p><code>C:\plugin\extensions\workspace1&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jarsigner -verify s_my_jmf.jar</code></p>
+</blockquote>
+<p>이것으로, raw 인스톨용의 올바른 <code>manifest.mf</code> 파일을 가지는 서명 첨부 JAR 파일이 완성했습니다. </p>
+<p>다음에, 애플릿의 JAR 파일을 작성할 필요가 있습니다. </p>
+<h3><br> <a name="creating_applet_jar"></a> 애플릿 JAR 파일을 작성한다</h3>
+<p>이 애플릿은 단일의 파일 <code>SimplePlayerApplet.class</code> 로 구성되어 있어 미디어 파일의 재생에 사용됩니다. 애플릿의 원시 코드를 보려면 ,<a href="SimplePlayerApplet.java.html">여기</a>를 클릭해 주세요. 여기에서는, 애플릿의 Manifest 파일을 작성해 <code>applet_manifest</code> 라는 이름을 붙여 애플릿과 Manifest를 JAR 파일에 정리하고 나서, 거기에 서명합니다. </p>
+<p>애플릿 <code>applet_manifest</code> 는 다음과 같습니다. </p>
+<blockquote> 
+<pre>Extension-List: s_my_jmf <br>s_my_jmf-Extension-Name: javax.media.s_my_jmf <br>s_my_jmf-Specification-Version: 2.1 <br>s_my_jmf-Implementation-Version: 2.1. 1<br>s_my_jmf-Implementation-Vendor-Id: com.sun <br>s_my_jmf-Implementation-URL: http://java.sun.com/products/plugin/extensions/examples/jmf/s_my_jmf.jar
+</pre>
+</blockquote>
+<p>상기의 Manifest는, 확장 기능 JAR 파일 <code>s_my_jmf.jar</code> 가 <code>java.sun.com</code> Web 서버의 <code>http://java.sun.com/products/plugin/extensions/examples/jmf</code> 로부터 다운로드할 수 있는 것을 나타내고 있습니다. </p>
+<p><code>SimplePlayerApplet.class</code> 와 <code>applet_manifest</code> 가 <code>C:\plugin\extensions\workspace2</code> 에 있는 경우는, 다음의 커멘드를 사용해 애플릿과 Manifest를 JAR 파일에 정리할 수가 있습니다. </p>
+<blockquote> 
+<p><code>C:\plugin\extensions\workspace2&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jar cmf applet_manifest my_SimplePlayerApplet.jar *. class</code></p>
+</blockquote>
+<p>여기에서도,<code>jarsigner</code> 를 사용해 JAR 파일에 서명합니다. </p>
+<blockquote> 
+<p><code>C:\plugin\extensions\workspace2&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jarsigner -keystore C:\plugin\keystores\thawte.p12 -storepass mypass -keypass mypass -storetype &quot;pkcs12&quot; -signedjar s_my_SimplePlayerApplet.jar my_SimplePlayerApplet.jar &quot;Sun Microsystems Inc. 's Thawte Consulting cc ID&quot;</code></p>
+</blockquote>
+<p>이 파일을 다음과 같이 검증합니다. </p>
+<blockquote> 
+<p><code>C:\plugin\extensions\workspace2&gt;C:\"Program Files"\Java\jdk1. 6.0\bin\jarsigner -verify s_my_SimplePlayerApplet.jar</code></p>
+</blockquote>
+<p>이것으로, 서명 첨부의 애플릿 JAR 파일 <code>s_my_SimplePlayerApplet.jar</code> 가 완성되었습니다. 그 Manifest에 포함되어 있는 정보에 의해, 필요한 확장 기능 JAR 파일 <code>s_my_jmf.jar</code> 가 <code>&lt;jre_location&gt;/lib/ext</code> 에 존재하지 않는가 낡은 버젼인 경우는, 인스톨이 트리거됩니다. </p>
+<p> 다음에, 애플릿의 HTML 를 작성할 필요가 있습니다. </p>
+<h3><a name="creating_html"></a> 애플릿의 HTML 를 작성한다</h3>
+<p>몇개의 방법을 선택할 수 있습니다. 이 페이지에 액세스 하는 사용자의 시스템에 버젼 1.3. 1_01 이후의 Java Plug-in 가 인스톨 되고 있는 것을 전제로서 종래의 <code>APPLET</code> 태그를 사용할 수 있습니다 (종래의 <code>APPLET</code> 태그로 애플릿을 기동하려면 , 버젼 1.3. 1_01 이후의 Java Plug-in 가 필요합니다). JDK 의 <code>bin</code> 디렉토리에 있는 HTML 컨버터 (<code>&lt;sdk_location&gt;/bin/HtmlConverter.exe</code>)를 사용해, 애플릿을 다양한 형식으로 변환할 수도 있습니다. 여기에서는, 다음에 나타내는 종래의 애플릿 형식을 사용합니다. </p>
+<h4><code>SimplePlayerApplet-1.html</code></h4>
+<blockquote>
+<pre>&lt;html&gt;<br>&lt;head&gt;<br>&lt;title&gt;SimplePlayerApplet&lt;/title&gt;<br>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-8859-1&quot;&gt;<br>&lt;/head&gt;<br>&lt;body bgcolor=&quot;#FFFFFF&quot; text=&quot;#000000&quot;&gt;<br>&lt;applet code=&quot;SimplePlayerApplet.class&quot; archive=&quot;s_my_SimplePlayerApplet.jar&quot; width=320 height=300&gt;<br>&lt;param name=&quot;file&quot; value=&quot;0720crt1.avi&quot;&gt;<br>&lt;/applet&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;
+</pre>
+</blockquote>
+
+<p><br> 미디어 파일은 <code>0720crt1.avi</code> 입니다. </p>
+<p>이 예에서는,<code>java.sun.com</code> Web 서버의 <code>http://java.sun.com/products/plugin/extensions/examples/jmf</code> 에, 다음의 파일이 놓여져 있습니다. </p>
+<ul>
+<li><code>0720crt1.avi</code></li>
+<li><code>s_my_jmf.jar</code></li>
+<li><code>s_mySiplePlayerApplet.jar</code></li>
+<li><code>SimplePlayerApplet-1.html</code></li>
+  
+</ul>
+<h3>
+<a name="testing"></a> 예를 테스트한다 </h3>
+<p>다음의 버튼을 눌러 설정을 테스트할 수 있습니다. </p>
+<blockquote> 
+  <form name="form2" method="post" action="">
+<input type="button" name="Button" value="SimplePlayerApplet-1.html" onClick="MM_openBrWindow('file:///J|/eric/products/plugin/extensions/examples/jmf/SimplePlayerApplet-1.html','SimplePlayerApplet','status=yes,menubar=yes,resizable=yes,width=500,height=250')">
+  </form>
+</blockquote>
+<p>브라우저에 URL 를 지정하면(자), 우선 애플릿 JAR 파일이 다운로드되어 캐쉬됩니다. 확장 기능이 인스톨되어 있지 않은 경우는, 다음의 「Java Request Download」다이얼로그가 표시됩니다:「The applet requires installation of optional package.   Do you want to continue?」. 속행 또는 캔슬하는 옵션이 있습니다. <b>「OK」</b>버튼을 눌러 인스톨을 속행하는 경우는, 확장 기능 JAR 파일의 「시큐리티 경고」다이얼로그가 표시됩니다. <b>「실행」</b>버튼을 눌러, 패키지의 인스톨을 속행할 수 있습니다. 확장 기능이 <code>&lt;jre_location&gt;/lib/ext</code> 에 인스톨 되어 애플릿이 실행됩니다.  
+</p>
+<p>&nbsp;</p>
+</code></body>
+</html>

@@ -1,0 +1,574 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>
+JNDI/COS 네임 서비스 프로바이더
+ - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077
+ALINK=#ff0000>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<center>
+
+<h1>
+COS 네임 서비스 프로바이더<br> Java Naming and Directory Interface<font size=4><sup>TM</sup></font> (JNDI)
+</h1>
+</center>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<P><FONT SIZE=-1>코멘트의 송부처: <a href="mailto:jndi@java.sun.com">jndi@java.sun.com</a> </FONT>
+
+<P>
+<P><I>목차</I>
+<UL>
+<LI>
+<A HREF="#INTRO">처음에</A> </LI>
+
+<LI>  
+<A HREF="#CONF">적합성</A> </LI>
+   
+<LI>
+<A HREF="#PROP">환경 프로퍼티</A> </LI>
+
+<LI>
+<A HREF="#ORB">ORB 의 초기화</A> </LI>
+
+<LI>
+<A HREF="#ROOT">루트 네이밍 문맥의 초기화</A> </LI>
+
+<LI>
+<A HREF="#URL">이름과 URL</A> </LI>
+
+<LI>
+<A HREF="#API">API 매핑</A> </LI>
+
+<LI>
+<A HREF="#CORBA">JNDI 를 사용하기 위한 CORBA 프로그램의 변환</A> </LI>
+
+<LI>
+<A HREF="#SEC">시큐리티에 대해</A> </LI>
+
+</UL>
+<P>
+<HR>
+<P>
+
+<A NAME="INTRO"></a> 
+<H2>처음에</H2>
+<p>
+
+Common Object Services (COS) 네임서버-는, Common Object Request Broker Architecture (CORBA) 객체 참조를 포함하기 위한 네임서버-입니다. COS 네임서버-에는, COS 네이밍 패키지 (org.omg.CORBA.CosNaming)를 사용해 CORBA 어플리케이션으로부터 액세스 할 수 있습니다.
+
+<p>
+
+JNDI/COS 네임 서비스 프로바이더에 의해, COS 네이밍 패키지의 최상정도에 <tt>javax.naming.Context</tt> 인터페이스가 구현됩니다. 이 결과, 어플리케이션으로부터 JNDI 를 사용해 COS 네임서버-에 액세스 할 수 있습니다. 이 결과, CORBA 어플리케이션에, 다른 네임 및 디렉토리 서비스에 액세스하기 위한 인터페이스가 제공됩니다.
+<p>
+이 문서에서는, COS 네임 서비스 프로바이더의 기능, 및 JNDI 와 COS 네이밍 패키지의 매핑의 상세한 것에 대하여 설명합니다.
+<hr>
+<p>
+<A NAME="CONF"></a> 
+<H2>적합성</H2>
+<p>
+
+JNDI 의 COS 네임 서비스 프로바이더에서는,<a href=../idl/index.html>Java<font size="-2"><sup>TM</sup></font> IDL</a>  가 사용됩니다. Java 프로그램 언어는 업계표준의 Object Management Group Interface Definition Language (OMG IDL)에 매핑 됩니다. 네임 서비스에는,<a href="../idl/jidlNaming.html">COS 네임 서비스</a>가 사용됩니다.
+
+<p>
+
+COS 네임 서비스의 스펙은, 모두 <a href="http://www.omg.org/">OMG</a>  로부터 취득할 수 있습니다.
+
+<p>
+
+이름의 구문은,<a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">Interoperable Naming Server (INS)의 스펙 (99-12-03)</a>에 준거하고 있어,INS 의 이전의 버젼 (<a href="ftp://ftp.omg.org/pub/docs/orbos/98-10-11.pdf">OMG TC 문서 orbos/98-10-11</a> )에 대한 하위 호환성을 지원하고 있습니다. <a href="#URL">「이름과 URL」</a>를 참조해 주세요.
+<hr>
+<p>
+<A NAME="PROP"></a> 
+<H2>환경 프로퍼티</H2>
+<p>
+
+COS 네임 서비스 프로바이더에서는, 다음의 JNDI 환경 프로퍼티을 사용합니다. 환경 프로퍼티, 시스템 프로퍼티, 애플릿 파라미터, 및 resource file를 사용했을 때의 프로퍼티의 초기치에 대해서는,<a href=../../../api/javax/naming/InitialContext.html#ENVIRONMENT>JNDI 의 문서</a>를 참조해 주세요.
+
+<p>
+
+<b><pre>java.naming.factory.initial</pre></b>
+
+<blockquote>
+
+COS 네임 서비스 프로바이더를 선택할 경우에 사용합니다.  프로바이더 자체에서는 사용되지 않습니다. 프로바이더의 초기 문맥 팩토리의 클래스명을 지정합니다.
+<p>
+예를 나타냅니다.
+<p>
+<blockquote>
+<pre>
+env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.cosnaming.CNCtxFactory");
+</pre>
+</blockquote>
+<p>
+COS 네임 서비스를 초기 문맥으로서 사용하고 있는 경우는, 이 프로퍼티을 설정할 필요가 있습니다. 다만, 초기 문맥에 URL 만을 건네주었을 경우는, 이 프로퍼티을 지정할 필요는 없습니다. 자세한 것은,<a href="#URL">「이름과 URL」</a>를 참조해 주세요.
+
+</blockquote>
+
+<a name=URLPROP><b><pre>java.naming.provider.url</pre></b></a> 
+
+<blockquote>
+
+루트 네이밍 문맥 또는 Object Request Broker (ORB), 혹은 그 양쪽 모두를 구성할 경우에 사용합니다. 값은, URL 의 캐릭터 라인 표현입니다.
+<p>
+이 프로퍼티이 지정되어 있지 않은 경우, ORB 는,<a href=#ORBPROP><tt>java.naming.corba.orb</tt></a>  프로퍼티,<a href=#APPPROP><tt>java.naming.applet</tt></a>  프로퍼티, 또는<a href=#OTHERPROP>그 외의 ORB 초기화 프로퍼티</a>에 의해 초기화됩니다. 루트 네이밍 문맥은, 다음의 호출로 가져옵니다.
+<p>
+<blockquote>
+<pre>
+orb.resolve_initial_references("NameService");
+</pre>
+</blockquote>
+<p>
+URL schema가 <a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">INS 스펙 (99-12-03)</a>  으로 지정되고 있는 「IOR」, 「corbaname」, 또는 「corbaloc」의 1 개이라고, 루트 네이밍 문맥은, URL 에 명명된 문맥이 됩니다. ORB 는,<a href=#ORBPROP><tt>java.naming.corba.orb</tt></a>  프로퍼티,<a href=#APPPROP><tt>java.naming.applet</tt></a>  프로퍼티, 또는<a href=#OTHERPROP>그 외의 ORB 초기화 프로퍼티</a>에 의해 초기화됩니다.
+<p>
+URL schema가 「iiop」또는 「iiopname」의 경우는, ORB 를 초기화할 경우에 URL 의 호스트 및 포트 필드를 사용합니다. 「iiopname」의 URL 의 경우는, URL 가 현재는 사용되어 있지 않은 <a href="ftp://ftp.omg.org/pub/docs/orbos/98-10-11.pdf">INS 스펙 (98-10-11)</a>  에 준거하고 있지 않으면 안됩니다. 다음의 형식을 사용합니다.
+<p>
+<blockquote>
+<pre>
+iiopname://[&lt;addr_list>][/&lt;cosnaming_name>]
+</pre>
+</blockquote>
+<p>
+
+「iiop」URL 의 경우는, 이전의 버젼의 INS 스펙과의 하위 호환성이 지원됩니다. 다음의 형식을 사용합니다.
+<p>
+<blockquote>
+<pre>
+iiop://[&lt;host>[:&lt;port>]][/&lt;cosnaming_name>]
+</pre>
+</blockquote>
+<p>
+
+「iiop」 및 「iiopname」의 URL 의 경우,<tt>&lt;host&gt;</tt> 가 지정되어 있지 않을 때는, 어플리케이션에서는 「localhost」, 애플릿에서는 애플릿의 호스트가 디폴트 값가 됩니다. <tt>&lt;port&gt;</tt> 가 지정되어 있지 않은 경우는, 「iiopname」에서는 9999, 「iiop」에서는 900 이 디폴트 값가 됩니다. 루트 네이밍 문맥은, ORB 상에서다음의 메소드를 호출해 가져옵니다.
+<blockquote>
+<pre>
+orb.resolve_initial_references("NameService");
+</pre>
+</blockquote>
+    <p>
+<tt>&lt;cosnaming_name&gt;</tt> 가 빈 상태(empty)이 아닌 경우, 루트 네이밍 문맥은,<tt>cosnaming_name</tt> 에 명명된 네이밍 문맥입니다.
+<p>
+URL schema가 「iiop」, 「iiopname」, 「IOR」, 「corbaname」, 또는 「corbaloc」이외의 경우는, 캐릭터 라인화한 루트 네이밍 문맥의 IOR 가 포함되는 위치를, URL 로 지정할 필요가 있습니다. 예를 들어, 프로퍼티에 <tt>file:/nsdir/ior</tt> 가 지정되고 있는 경우는,<tt>/nsdir/ior</tt> 파일에 캐릭터 라인화한 IOR 를 포함할 필요가 있습니다. URL schema는, 대응하는 URL 프로토콜 핸들러 (<a href=     "../../../api/java/net/URLStreamHandler.html"><tt>java.net.URLStreamHandler</tt></a> )가 있으면 어떤 것에서도 괜찮습니다. 자세한 것은,<tt><a href="../../../api/java/net/URL.html">java.net.URL</a> </tt> 클래스를 참조해 주세요. 캐릭터 라인화 된 IOR 는, ISO Latin-1 의 문자 인코딩을 사용해, URL 에 대응하는 데이터 스트림으로부터 읽힙니다. 스트림의 최초의 행은, 접두사 「IOR:」를 포함한 캐릭터 라인화 된 IOR 입니다. 예를 들어, URL schema가 「http」의 경우는, 스트림의 헤더는 스킵 되어 접두사 「IOR:」를 포함한 최초의 행이 IOR 로서 돌려주어집니다.
+<p>
+캐릭터 라인화한 IOR 또는 그 위치가 프로퍼티으로 지정되고 있을 때는, 루트 네이밍 문맥은, 캐릭터 라인화한 IOR 로 지정되고 있는 것이 됩니다. ORB 는,<a href=#ORBPROP><tt>java.naming.corba.orb</tt></a>  프로퍼티,<a href=#APPPROP><tt>java.naming.applet</tt></a>  프로퍼티, 또는<a href=#OTHERPROP>그 외의 ORB 초기화 프로퍼티</a>에 의해 초기화됩니다.
+</blockquote>
+
+<a name=ORBPROP><b><pre>java.naming.corba.orb</pre></b></a> 
+
+<blockquote>
+
+이 프로퍼티에는, 프로그램으로 사용중의 ORB 를 지정합니다. 「NameService」초기 참조를 조사할 때, 또는 캐릭터 라인화 된 IOR 를 객체 참조로 변환할 때 등, JNDI COS 네임 서비스 프로바이더로 ORB 가 사용될 때는, 이 ORB 가 사용됩니다.
+    <p>
+어플리케이션에 이 프로퍼티을 설정하는 경우는, 다음과 같은 코드를 실행합니다.
+
+<blockquote>
+    <pre>
+ORB orb = ORB.init(args, null);
+Hashtable env = new Hashtable(5, 0.75f);
+env.put("java.naming.corba.orb", orb);
+...
+    </pre>
+</blockquote>
+
+애플릿으로 설정하는 경우는, 다음과 같은 코드를 실행합니다.
+
+<blockquote>
+     <pre>
+public class MyApplet extends Applet {
+
+    public someInitMethod() {
+        ORB orb = ORB.init(this, null);
+        Hashtable env = new Hashtable(5, 0.75f);
+        env.put("java.naming.corba.orb", orb);
+        ...
+    }
+...
+}
+    </pre>
+</blockquote>
+
+이 프로퍼티이 설정되어 있지 않은 경우는,<a href=#URLPROP><tt>java.naming.provider.url</tt></a>  프로퍼티,<a href=#APPPROP><tt>java.naming.applet</tt></a>  프로퍼티, 또는 <a href=#OTHERPROP>ORB 초기화 프로퍼티</a>에 의해 ORB 가 초기화됩니다.
+
+</blockquote>
+
+<a name=APPPROP><b><pre>java.naming.applet</pre></b></a> 
+
+<blockquote>
+이 프로퍼티에는, 프로그램으로 사용중의 애플릿을 지정합니다. COS 네임 서비스 프로바이더에 의해 사용되는 ORB 를 초기화할 경우에 사용합니다. 이 프로퍼티의 파라미터는, JNDI 관련의 프로퍼티을 설정할 경우에 사용합니다.  자세한 것은,<a href=../../../api/javax/naming/InitialContext.html#ENVIRONMENT>JNDI 의 문서</a>를 참조해 주세요.
+
+<blockquote>
+    <pre>
+public class MyApplet extends Applet {
+
+    public someInitMethod() {
+        Hashtable env = new Hashtable(5, 0.75f);
+        env.put("java.naming.applet", this);
+        ...
+    }
+...
+}
+    </pre>
+</blockquote>
+</blockquote> 
+
+
+<b><pre>java.naming.factory.state</pre></b>
+
+<blockquote>
+
+상태 팩토리 클래스의 완전 수식명의 리스트입니다. 구두점으로 단락지어지고 있습니다. 건네받은 객체가 포함될 때, 객체 상태를 취득하기 위해서 사용됩니다. 이 기구를 사용해, 객체를 COS 네임서버-에 포함할 수 있는 형식으로 변환할 수가 있습니다. COS 네임서버-에는, CORBA 객체를 포함할 수 있습니다.  
+    <p>
+<tt>java.rmi.Remote</tt> 를 CORBA 객체로 변환하는 상태 팩토리가, 디폴트로 제공됩니다. 이 팩토리는,<a href=http://java.sun.com/products/rmi-iiop>RMI-IIOP</a>  를 사용하는 어플리케이션으로 사용합니다. 그 외의 객체를 CORBA 객체로 변환해 포함할 경우에, 다른 팩토리를 사용할 수도 있습니다. 자세한 것은,<a href="../../../api/javax/naming/spi/NamingManager.html#getStateToBind(java.lang.Object,%20javax.naming.Name,%20javax.naming.Context,%20java.util.Hashtable)"><tt>javax.naming.spi.NamingManager.getStateToBind()</tt></a>  를 참조해 주세요.
+</blockquote>
+
+<b><pre>java.naming.factory.object</pre></b>
+
+<blockquote>
+
+객체 팩토리 클래스의 완전 수식명의 리스트입니다. 구두점으로 단락지어지고 있습니다. CORBA 객체가 변환됩니다. 이 기구를 사용해, 객체를 어플리케이션에 적절한 형식으로 변환할 수가 있습니다. 예를 들어, 특정의 객체 팩토리를 사용해, 목적의 형태의 객체를 돌려줄 때 적절한 네로우 변환을 실시할 수가 있습니다. 이 기구를 사용해, 객체를 어플리케이션에 적절한 형식으로 변환할 수가 있습니다.  자세한 것은<a href="../../../api/javax/naming/spi/NamingManager.html#getObjectInstance(java.lang.Object,%20javax.naming.Name,%20javax.naming.Context,%20java.util.Hashtable)"><tt>javax.naming.spi.NamingManager.getObject.Instance()</tt></a>  를 참조해 주세요.
+</blockquote>
+    
+<b><pre>java.naming.batchsize</pre></b>
+<blockquote>
+<tt>list()</tt>/<tt>listBindings()</tt> 의 결과를 취득할 경우에,<tt>CosNaming::BindingIterator.next_n</tt> 로 사용하는 배치 사이즈를 지정합니다. 디폴트는, 100 입니다.
+<p>
+예를 들어, 다음의 경우는, 배치 사이즈가 24 로 설정됩니다.
+<blockquote>
+<pre>    
+env.put(Context.BATCHSIZE, "24");
+</pre>
+</blockquote>
+</blockquote>    
+
+<a name=OTHERPROP><b>ORB 초기화 프로퍼티</b></a> 
+
+<blockquote>
+접두사가 <tt>org.omg.CORBA</tt> 의 프로퍼티 등, CORBA 관련의 프로퍼티을 지정합니다. <tt>String</tt> 형의 프로퍼티은, ORB 를 지정할 경우에 사용됩니다.
+</blockquote>
+
+
+<hr>
+<p>
+<A NAME="ORB"></a> 
+<H2>ORB 의 초기화</H2>
+<p>
+
+사용하는 ORB 및 ORB 의 초기화 방법을 지정할 때는, 다음의 프로퍼티을 사용합니다.
+
+<ul>
+<li><pre>java.naming.corba.orb</pre>
+<li><pre>java.naming.applet</pre>
+<li><pre>java.naming.provider.url</pre>
+<li><tt>org.omg.CORBA. *</tt> 및 그 외의 <tt>String</tt> 형의 ORB 고유의 프로퍼티
+</ul>
+
+사용하는 ORB 를 결정할 때는, 다음의 알고리즘이 사용됩니다.
+
+<ol>
+<li> <tt>java.naming.corba.orb</tt> 가 설정되어 있는 경우는, 그 값 (ORB)이 사용됩니다.
+<p>
+<li> 그 이외의 경우, 프로바이더는, 다음과 같이 ORB 를 내부에서 초기화해 사용합니다.
+<p>
+   <dl>
+<dd>a) <tt>org.omg.CORBA. *</tt> 프로퍼티 및 <tt>String</tt> 형의 프로퍼티이 추출되어<tt>ORB.init()</tt> 메소드의 <tt>Properties</tt> 인수로서 사용됩니다. 이 기구는, 사용하는 ORB 구현 또는 호스트를 지정할 때 등에 사용합니다. </dd>
+      <p>
+<dd>b) <tt>java.naming.provider.url</tt> 가 설정되어 schema가 「iiop」또는 「iiopname」의 URL 가 지정되고 있는 경우는, URL 로 지정되고 있는 호스트 및 포트 번호는,<tt>ORB.init()</tt> 메소드의 <tt>Properties</tt> 인수로서 사용됩니다. 이 경우, (a)그리고 설정한 <tt>org.omg.CORBA.ORBInitialHost</tt> 및 <tt>org.omg.CORBA.ORBInitialPort</tt> 프로퍼티보다 우선 지정됩니다.
+      <p>
+<dd>c) (a) 및 (b)으로 구축된 <tt>Properties</tt> 인스턴스는,<tt>java.naming.applet</tt> 프로퍼티의 <tt>Applet</tt> 인스턴스와 함께 <tt>ORB.init()</tt> 에게 건네집니다. <tt>java.naming.applet</tt> 가 건네받지 않았던 경우는, 빈 상태(empty)의 <tt>String[]</tt> 가 건네받습니다.
+
+   </dl>
+</ol>
+   <p>
+
+(a), (b), 및 (c)으로 사용되고 있는 프로퍼티에, ORB 의 초기화에 관련하는 정보가 포함되지 않은 경우는, Java IDL 의 구현의 디폴트 값가 사용됩니다. 표준에서는, 어플리케이션의 경우는 로컬 호스트의 포트 900, 애플릿의 경우는 애플릿 호스트의 포트 900 이 사용됩니다.
+
+<tt>ORB.init()</tt> 에 의해 ORB 가 초기화될 때는, 그 인수는<tt>org.omg.CORBA.ORB</tt> 의 javadoc 로부터, 다음의 순서에 검사됩니다.
+
+<ol>
+<li> <tt>Applet</tt> 파라미터 또는 어플리케이션의 캐릭터 라인 배열을 조사한다 (존재하는 경우) 
+<li> 프로퍼티의 파라미터를 조사한다 (존재하는 경우) 
+<li> <tt>System</tt> 프로퍼티을 조사한다 (현재는 어플리케이션만) 
+<li> 하드 코드 되고 있는 디폴트의 동작을 조사한다 (Java IDL 의 구현을 사용) 
+</ol>
+<hr>
+<p>
+<A NAME="ROOT"></a> 
+<H2>루트 네이밍 문맥의 초기화</H2>
+<p>
+루트 네이밍 문맥은,<a href=#URLPROP><tt>java.naming.provider.url</tt></a>  프로퍼티을 사용하는지, ORB 상에서 <tt>resolve_initial_references()</tt> 를 호출해 초기화합니다. <tt>java.naming.provider.url</tt> 프로퍼티이 설정되어 있을 때, schema가 「iiop」또는 「iiopname」의 URL 가 지정되어 있지 않은 경우는, 캐릭터 라인화 된 IOR, 「corbaname」또는 「corbaloc」의 URL, 또는 캐릭터 라인화 된 IOR 의 위치가 포함되는 URL 가 지정되고 있다고 보입니다. IOR 는, 루트 네이밍 문맥을 취득하기 위해서 사용되어<tt>CosNaming::NamingContext</tt> 형의 CORBA 객체의 IOR 가 아니면 안됩니다.
+<p>
+<tt>java.naming.provider.url</tt> 가 설정되어 있지 않으면 루트 네이밍 문맥은, ORB 로 다음의 메소드를 호출해 취득됩니다.
+<p>
+<pre>
+        orb.resolve_initial_references("NameService");
+</pre>
+
+<hr>
+<p>
+<A NAME="URL"></a> 
+<H2>이름과 URL</H2>
+<p>
+
+
+<b><tt>String</tt> 명</b>
+
+<p>
+<tt>java.naming.Context</tt> 메소드가 받는 <tt>String</tt> 명은,<a href="../../../api/javax/naming/CompositeName.html">JNDI 복합명</a>으로, 그 각 컴퍼넌트는 캐릭터 라인화 된 형식의 <tt>CosNaming::NameComponent</tt> 입니다.  
+
+<p>
+<tt>CosNaming::Name</tt> 에는,<tt>CosNaming::NameComponent</tt> 의 순서가 포함됩니다. 캐릭터 라인화 된 형식의 컴퍼넌트는, 컴퍼넌트의 ID, 단락 문자 ( 「.」), 및 컴퍼넌트의 종류가 연결되고 있습니다. 컴퍼넌트의 ID 또는 종류에 메타캐라크타 ( 「.」, 「/」, 또는 「\」)이 사용되고 있는 경우는, 이스케이프 문자 (\)를 사용해 이스케이프 되고 있습니다. 캐릭터 라인화 된 형식의 <tt>CosNaming::Name</tt> 는,<a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">INS 스펙 (99-12-03)</a>의 3.5 절에 정의되고 있습니다.
+<p>
+<a href="../../../api/javax/naming/CompositeName.html">JNDI 복합명의 구문</a>은,INS 의 구문을 닮아 있습니다만, 같지는 않습니다. 이스케이프 및 인용부호의 취급이 다소 차이가 납니다. INS 구문에 완전하게 준거한 이름을 사용하는 경우는,<tt>String</tt> 인수 대신에 <tt>Name</tt> 인수를 받는 overload를 사용해 주세요. <tt>Name</tt> 인수는 <tt>nameParser.parse()</tt> 로부터 반환된 값이 아니면 안됩니다. <tt>nameParser</tt> 는, COS 네임 서비스 프로바이더로부터 취득한 값입니다. <a href="#PARSE">「이름의 해석」</a>을 참조해 주세요.
+<p>
+
+<b>URL 캐릭터 라인명</b>
+
+<p>
+
+URL 형식의 <tt>CosNaming::Name</tt> 는, INS 스펙에 정의되고 있습니다.
+<p>
+<blockquote>
+<tt> corbaname:&lt;corbaloc_obj&gt;["#" &lt;cosnaming_name&gt;] </tt>
+</blockquote>
+이 경우의 <tt>&lt;corbaloc_obj&gt;</tt> 는, 다음의 형식입니다.  
+<blockquote>
+<tt>&lt;corbaloc_obj&gt; = &lt;obj_addr_list&gt; ["/"&lt;key_string&gt;] </tt>
+</blockquote>
+또,<tt>&lt;obj_addr_list></tt> 는 「corbaloc」 URL 로 정의된 주소의 리스트,<tt>&lt;key_string></tt> 는 「corbaloc」 URL 로 정의된 주요 캐릭터 라인,<tt>&lt;cosnaming_name></tt> 는 캐릭터 라인화 된 INS 명입니다 (<a href="#PARSE">「이름의 해석」</a>을 참조).
+<p>
+이전의 INS 스펙과의 하위 호환성을 보관 유지하기 위해서, 다음의 URL schema도 지원됩니다.
+<blockquote>
+<tt> iiopname://[&lt;addr_list&gt;][/&lt;cosnaming_name&gt;] </tt>
+</blockquote>
+<p>
+<tt>&lt;addr_list&gt;</tt> 는, 호스트와 포트의 편성입니다. <tt>&lt;port&gt;</tt> 가 지정되어 있지 않은 경우는, 디폴트 값의 9999 가 사용됩니다. <tt> &lt;cosnaming_name></tt> 는, 캐릭터 라인화 된 INS 명입니다.
+<p>
+<blockquote>
+<tt> iiop://&lt;host&gt;[:&lt;port&gt;][/&lt;cosnaming_name&gt;] </tt>
+</blockquote>
+<p>
+<tt>&lt;port&gt;</tt> 가 지정되어 있지 않은 경우는, 디폴트 값의 900 이 사용됩니다. <tt> &lt;cosnaming_name&gt;</tt> 는, 캐릭터 라인화 된 형식의 INS 명입니다.
+<p>
+「iiop」또는 「iiopname」의 URL 를 이 방법으로 초기 문맥으로 지정하면(자),<tt>string_to_object()</tt> 메소드로 <a href="ftp://ftp.omg.org/pub/docs/ptc/99-12-03.pdf">99-12-03 INS 스펙</a>이 지원되고 있는 경우는, 초기 문맥에 공급되는 ORB 가 사용됩니다. 그렇지 않은 경우는 ORB 가 무시되어 URL 로 지정된 서버와 포트가 ORB 를 작성하기 위해서 사용됩니다. <tt>java.naming.factory.initial</tt> 프로퍼티의 값은, URL 를 해석하기 위해서 무시됩니다.
+<p>
+이 규칙은, 초기 문맥에 「corbaname」의 URL 를 지정했을 경우는 사용되지 않습니다. 「corbaname」의 URL 의 경우는, URL 의 해석에 ORB 가 필요하기 때문에, 초기 문맥에 공급된 ORB 가 사용됩니다.
+
+<b>이름 객체</b>
+<p>
+
+<tt>Context</tt> 메소드로 지정된 <tt>Name</tt> 인수는, 캐릭터 라인의 순서로 간주해집니다. 각 캐릭터 라인은,<tt>CosNaming::NameComponent</tt> 가 캐릭터 라인화 된 것입니다.
+<p>
+
+<b><a name="PARSE">이름의 해석</a> </b>
+<p>
+COS 네임 서비스 프로바이더에서는, INS 스펙에 규정되고 있는 구문의 이름이 지원됩니다. 즉, 구문은 왼쪽에서 오른쪽에의 slash (/)로 단락지어져 대문자 소문자가 구별되는 컴퍼넌트입니다. 각 컴퍼넌트의 ID 및 종류는, 피리어드 (. )(으)로 단락지어집니다.
+<p>
+다음의 코드에서는, COS 네임 서비스 프로바이더의 이름 퍼서를 사용해, INS 명을 사용해 참조합니다.
+<p>
+<blockquote>
+<pre>
+String insName = ...;
+InitialContext ctx = new InitialContext(env);   // env contains init properties
+NameParser parser = ctx.getNameParser("");      // parser for INS names
+Name name = parser.parse(insName);              // get parsed INS name
+Object obj = ctx.lookup(name);                  // do lookup
+</pre>
+</blockquote>
+
+<hr>
+<p>
+
+
+<A NAME="API"></a> 
+<H2>API 매핑</H2>
+<p>
+
+COS 네임서버-에서는, 네이밍 조작만을 실시합니다. 적절한 COS 네이밍 호출을 사용하기 위해서, COS 네임 서비스 프로바이더는,<tt>javax.naming.Context</tt> 메소드를 매핑 합니다.
+
+
+<b><pre>addToEnvironment()</pre></b>
+
+    <blockquote>
+환경 프로퍼티으로 변경을 기록합니다만, ORB 는 다시 초기화하지 않습니다.
+    </blockquote>
+
+<b><pre>bind()</pre></b>
+
+    <blockquote>
+객체를 지정한 이름에 바인드 합니다.  
+<p>
+바인드 되고 있는 객체가 <tt>org.omg.CosNaming.NamingContext</tt> 의 경우는,<tt>CosNaming::NamingContext.bind_context</tt> 가 사용됩니다. 바인드 되고 있는 객체가 <tt>org.omg.CORBA.Object</tt> 의 경우는,<tt>CosNaming::NamingContext.bind</tt> 가 사용됩니다. 다음에 설명하는 상태 팩토리 기구를 사용해 객체를 <tt>org.omg.CORBA.Object</tt> 로 변환하지 않는 한, 다른 형태의 객체의 바인드는 지원되지 않습니다.
+<p>
+바인딩이 네임서버-위에서 실행되기 전에, COS 네임 서비스 프로바이더로 <tt>javax.naming.spi.NamingManager.getStateToBind()</tt> 를 사용해, 객체를 <tt>org.omg.CORBA.Object</tt> 로 변환할 수가 있습니다. <tt>getStateToBind()</tt> 메소드에서는, COS 네임 서비스 프로바이더로 이용 가능한 상태 팩토리가 사용됩니다. 상태 팩토리가 <tt>java.rmi.Remote</tt> 객체를 받아들이는 경우는, 이 팩토리는, 객체의 RMI-IIOP Stub의 취득 및 문맥에 관련한 ORB 에의 접속에 대해 책임이 있습니다. 접속된 Stub는, 네임서버-에 바인드 되는 객체입니다.
+<p>
+디폴트에서는, COS 네임 서비스 프로바이더는,<tt>java.rmi.Remote</tt> 인터페이스를 구현한 객체를, 상기의 요건에 따라 <tt>org.omg.CORBA.Object</tt> 로 변환하는 상태 팩토리를 공급해 사용합니다. 이 팩토리는,<tt>javax.rmi.CORBA</tt> 패키지내의 유틸리티를 사용합니다. 객체를 CORBA 객체로 변환하기 위해서(때문에), 다른 상태 팩토리를 지정할 수도 있습니다.
+    </blockquote>
+    
+<b><pre>close()</pre></b>
+
+    <blockquote>
+사용중의 내부 데이터 구조를 해제합니다.
+    </blockquote>
+
+<b><pre>composeName()</pre></b>
+    <blockquote>
+건네받은 이름에 접두사를 연결합니다.
+    </blockquote>
+
+<b><pre>createSubcontext()</pre></b>
+    <blockquote>
+<tt>CosNaming::NamingContext.bind_new_context</tt> 를 사용해, 새로운 문맥의 작성 및 바인딩을 실시합니다.
+    </blockquote>
+
+<b><pre>destroySubcontext()</pre></b>
+    <blockquote>
+<tt>CosNaming::NamingContext.destroy</tt> 를 사용해 이름 첨부 문맥을 파기합니다. 다음에,<tt>CosNaming::NamingContext.unbind</tt> 를 사용해 바인딩을 삭제합니다.
+    </blockquote>
+
+<b><pre>getEnvironment()</pre></b>
+    <blockquote>
+이 문맥의 환경을 돌려줍니다.
+    </blockquote>
+
+<b><pre>getNameInNamespace()</pre></b>
+    <blockquote>
+COS 네이밍 이름 공간의 루트와 상대적인 이 문맥의 INS 명을 돌려줍니다.
+    </blockquote>
+
+<b><pre>getNameParser()</pre></b>
+    <blockquote>
+INS 명을 해석하기 위해서, 이름 퍼서를 돌려줍니다.
+    </blockquote>
+
+<b><pre>lookup()
+lookupLink()</pre></b>
+    <blockquote>
+<tt>CosNaming::NamingContext.resolve</tt> 를 사용해 이름을 참조해, CORBA 객체 참조를 돌려줍니다. 다만,<tt>CosNaming::NamingContext</tt> 의 참조의 경우는,<tt>Context</tt> 객체를 대신에 돌려줍니다. 어플리케이션 또는 사용자로부터 객체 팩토리가 돌려주어지고 있는 경우는,<tt>NamingManager.getObjectInstance()</tt> 를 호출하고 나서 객체를 돌려줍니다.
+    </blockquote>
+
+<b><pre>
+list()
+listBindings()</pre></b>
+    <blockquote>
+<tt>CosNaming::NamingContext.resolve</tt> 를 사용해, 그 문맥의 객체 참조를 가져옵니다. 다음에,<tt>CosNaming::BindingIterator</tt> 및 헬퍼 클래스를 사용해, 문맥에 대해서 반복 처리를 실시합니다. 이름에 바인드 되고 있는 객체는,<tt>CosNaming::NamingContext.resolve</tt> 를 호출해 가져옵니다. 어플리케이션 또는 사용자로부터 객체 팩토리가 돌려주어지고 있는 경우는,<tt>NamingManager.getObjectInstance()</tt> 를 호출하고 나서 객체를 돌려줍니다.
+    </blockquote>
+
+<b><pre>removeFromEnvironment()</pre></b>
+    <blockquote>
+지정된 프로퍼티을 환경으로부터 삭제합니다. 삭제하지 않는 경우는, 문맥은 갱신하지 않습니다.
+    </blockquote>
+
+<b><pre>rebind()</pre></b>
+    <blockquote>
+바인드 되고 있는 객체가 <tt>org.omg.CosNaming.NamingContext</tt> 의 경우는,<tt>CosNaming::NamingContext.rebind_context</tt> 가 사용됩니다. 바인드 되고 있는 객체가 <tt>org.omg.CORBA.Object</tt> 의 경우는,<tt>CosNaming::NamingContext.rebind</tt> 가 사용됩니다. 상태 팩토리를 사용해 인수를 <tt>org.omg.CORBA.Object</tt> 로 변환하는 방법에 대한 자세한 것은,<tt>bind()</tt> 를 참조해 주세요.
+    </blockquote>
+
+<b><pre>rename()</pre></b>
+    <blockquote>
+이 메소드를 구현하려면 ,<tt>unbind()</tt> 를 사용하고 나서 <tt>bind()</tt> 를 사용합니다. 이 메소드는 불가분이 아닙니다.
+    </blockquote>
+
+<b><pre>unbind()</pre></b>
+    <blockquote>
+<tt>CosNaming::NamingContext.resolve</tt> 를 사용해 객체를 언바인드(unbind) 합니다.
+    </blockquote>
+
+<hr>
+<p>
+<A NAME="CORBA"></a> 
+<H2>JNDI 를 사용하기 위한 CORBA 프로그램의 변환</H2>
+<p>
+
+여기에서는, JNDI 를 사용하기 위해서, Java IDL 프로그램을 변경하는 방법에 대해 설명합니다. 설명을 위해서(때문에), Java IDL 샘플 프로그램 <tt>helloClient.java</tt> 및 <tt>helloServer.java</tt> 를 사용합니다.
+
+<ol>
+<li>IDL 파일로부터 Stub를 생성합니다.
+<p>
+<blockquote>
+<pre>
+# idltojava -fclient -fserver hello.idl
+</pre>
+</blockquote>
+<p>
+클라이언트 (<tt>helloClient.java</tt>)와 서버 (<tt>helloServer.java</tt>)의 스켈리턴, 및 공통 코드 (<tt>HelloApp/*.java</tt> 등)가 포함되는 디렉토리가 작성됩니다.
+<p>
+<li>클라이언트와 서버의 프로그램에 코드를 기술합니다.
+<p>
+<li>COS 네이밍 디렉토리 대신에 JNDI 를 사용하도록(듯이), 변경 (또는 클라이언트와 서버의 파일을 카피)합니다.
+<p>
+<ul>
+<li><tt>javax.naming. *;</tt> (을)를 사용하도록(듯이), import 를 옮겨놓습니다.
+<blockquote>
+삭제:
+<pre>
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+</pre>
+추가:
+<pre>
+import javax.naming. *;
+</pre>
+</blockquote>
+
+<li><tt>InitialContext</tt> 를 사용해 「NameService」에의 초기 참조를 취득하는 방법을 옮겨놓습니다. 초기 문맥에, 현재의 어플리케이션으로 사용되고 있는 ORB 를 건네줍니다.
+
+<blockquote>
+삭제:
+<pre>
+org.omg.CORBA.Object objRef = 
+   orb.resolve_initial_references("NameService");
+NamingContext ncRef = NamingContextHelper.narrow(objRef);
+</pre>
+추가:
+<pre>
+Hashtable env = new Hashtable(5, 0.75f);
+env.put("java.naming.corba.orb", orb);
+Context ic = new InitialContext(env);
+</pre>
+</blockquote>
+
+<li><tt>resolve()</tt> 에의 호출을 <tt>lookup()</tt> 에 옮겨놓습니다.
+
+<blockquote> 
+삭제:
+<pre>
+// resolve the Object Reference in Naming
+NameComponent nc = new NameComponent("Hello", "");
+NameComponent path[] = {nc};
+hello helloRef = helloHelper.narrow(ncRef.resolve(path));
+</pre>
+
+추가:
+<pre>
+// resolve the Object Reference using JNDI
+hello helloRef = 
+helloHelper.narrow((org.omg.CORBA.Object) ic.lookup("Hello"));
+</pre>
+</blockquote>
+
+</ol>
+
+<hr>
+<p>
+<A NAME="SEC"></a> 
+<h2>시큐리티에 대해</H2>
+<p>
+
+시큐리티 매니저가 인스톨 되고 있을 때는, JNDI 를 사용하는 어플리케이션 및 COS 네임 서비스 프로바이더에 대해서, 다음의 액세스권을 할당할 필요가 있습니다.
+
+<p>
+<pre>permission java.net.SocketPermission "host[:port]", "connect";</pre>
+<blockquote>
+	<tt>java.naming.factory.initial</tt> 프로퍼티, 문맥 메소드에게 건네진 URL 캐릭터 라인명, ORB 초기화 파라미터와 프로퍼티, 및 객체 참조로 지정되고 있는, 각 호스트 또는 포트에 대해서 할당할 수 있습니다.
+</blockquote>
+
+<HR SIZE=3 NOSHADE WIDTH=100%>
+<br><i>Copyright &copy; 1999-2001 Sun Microsystems, Inc., All Rights Reserved. </i> 
+
+   
+</body>
+</html>
+

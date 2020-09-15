@@ -1,0 +1,237 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[선두의 항목]</a>  <a href="mapping.html">[전의 항목]</a>  [다음의 항목] [마지막 항목]
+<hr><br>
+ 
+<a name="1006294"> </a> 
+<h2> 부록 A - 새로운 특징의 요약</h2>
+<p><a name="1006353"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><p><a name="1006356"> </a> 
+
+</p><p><a name="999758"> </a>  이 부록은, JDBC 2.1 코어 API 의 새로운 특징을 요약하고 있습니다.
+</p><a name="1006300"> </a> 
+<h3>A. 1	 JDBC 2.1 코어 API 의 변경점의 개요</h3>
+<p><a name="1005997"> </a>  JDBC 2.1 코어 API 는, JDBC 1.0 API 를 포함해, 한층 더 확장 기능 및 새로운 기능을 추가하고 있습니다. 이러한 추가된 기능에 의해, 범용적인 데이터 액세스와 향상한 퍼포먼스의 제공에 의해, 데이타베이스 컴퓨팅의 최전선에 Java 프로그램 언어를 자리 매김을 합니다.
+</p><p><a name="1001420"> </a>  「하위 호환성의 목표」에 따르고 있으므로, 구버젼의 JDBC API 를 사용하는 어플리케이션은, Java 2 플랫폼을 사용해 문제 없게 실행할 수 있습니다. 그러나, 2.0 의 새로운 특징을 이용하는 어플리케이션은, 그러한 특징을 구현하고 있는 드라이버와 함께 실행하지 않으면 안됩니다. </a> </p><a backward compatibility of Java 2 platform><p><a name="1002119"> </a> 
+
+</p></a> <p><a backward compatibility of Java 2 platform><a name="1001421"> </a> JDBC 2.1 코어 API 의 새로운 특징은, 새로운 기능의 지원와 SQL3 데이터형의 지원의 2 개에 크게 분류됩니다.
+</p><ol>
+<a name="1001850"> </a> 
+<li>새로운 기능의 지원
+<ul>
+<a name="1001851"> </a> 
+<li>스크롤 가능한 결과 세트 <a name="1001853"> </a> 
+<li>배치 갱신 <a name="1001854"> </a> 
+<li>프로그램 가능한 삽입, 삭제, 갱신 <a name="1002080"> </a> 
+<li>그 외
+<ul>
+<a name="1002668"> </a> 
+<li>퍼포먼스 힌트 <a name="1005156"> </a> 
+<li>국제화 된 Unicode 문자의 스트림을 위한 문자 스트림 <a name="1002670"> </a> 
+<li><code>java.math.BigDecimal</code> 치의 완전한 정밀도 <a name="1002671"> </a> 
+<li><code>Date</code>,<code>Time</code>,<code>Timestamp</code> 치에서의 타임 존의 지원
+<p><a name="1002682"> </a> 
+
+</p></ul>
+</ul>
+<a name="1001422"> </a> 
+<li>진보한 데이터형의 지원
+<ul>
+<a name="1001423"> </a> 
+<li>새로운 SQL 데이터형 (SQL3 형) <a name="1001424"> </a> 
+<li>Java 프로그램 언어에서의 영속 객체 보존의 강화한 지원
+<p><a name="1002687"> </a> 
+</ul></ol>
+<p></p><p><a name="1002688"> </a>  데이터의 검색, 보존, 조작이 편리하게 되어, 게다가 새로운 특징에 의해 JDBC 어플리케이션의 효율이 보다 좋아집니다. 예를 들어, 배치 갱신에 의해 성능이 큰폭으로 향상합니다. 새로운 <code>Blob</code>,<code>Clob</code>,<code>Array</code> 인터페이스에 의해, 어플리케이션은 클라이언트상에 데이터를 실체화할 필요없고, 대량의 데이터를 조작할 수가 있으므로, 전송 시간으로 필요한 메모리 용량의 큰 절약으로 연결됩니다. 또, 페치 사이즈와 페치 방향의 설정을 위한 새로운 메소드에 의해, 프로그래머는 어플리케이션을 미조정해, 보다 효율적인 데이터 검색과 처리를 달성할 수 있습니다.
+</p>
+
+<a name="1002684"> </a> 
+<h3>A. 2	 새로운 기능의 개요</h3>
+<p><a name="1001834"> </a>  JDBC 2.1 코어 API 는, 중요한 신기능을 추가하고 있습니다. 여기에서는, 각각의 새로운 기능 범위에 대해 간단하게 설명해, 지원하고 있는 API 를 정리합니다.
+</p><a name="1001835"> </a> 
+<h4>A. 2.1	 스크롤 가능한 결과 세트</h4>
+<p><a name="1004166"> </a>  스크롤 가능한 결과 세트는, 현재의 커서 위치로부터의 상대 위치 또는 지정의 위치에, 커서를 진행시키거나 되돌리거나 할 수 있습니다. 다음의 인터페이스에는, 스크롤 가능한 결과 세트를 지원하는 새로운 메소드가 있습니다.
+</p><ul><a name="1001879"> </a> 
+<li>ResultSet 
+<ul><a name="1001889"> </a> 
+<li>커서를 특정의 행 또는 상대 위치로 이동하는 메소드 (전방 또는 후방 이동) <a name="1002298"> </a> 
+<li>커서의 현재 위치를 확인하는 메소드 <a name="1001890"> </a> 
+<li>결과 세트가 스크롤 가능한가 어떤가를 나타내는 정수
+</ul><a name="1001893"> </a> 
+<li>Connection
+<ul><a name="1001901"> </a> 
+<li><code>Statement</code>,<code>PreparedStatement</code>,<code>CallableStatement</code> 객체를 생성하는 메소드의, 스크롤 가능한 결과 세트를 작성하는 새로운 버젼
+</ul><a name="1001994"> </a> 
+<li>DatabaseMetaData
+<ul><a name="1001995"> </a> 
+<li>DBMS 와 드라이버가 스크롤 가능한 결과 세트를 지원할지 어떨지를 나타내는 메소드
+</ul></ul><a name="1004175"> </a> 
+<h4>A. 2.2	 배치 갱신</h4>
+<p><a name="1004181"> </a>  새로운 배치 갱신 기능에 의해, 갱신을 개별적으로 송신하지 않고 , 데이타베이스에 복수의 갱신을 한 번에 송신해 배치 실행할 수가 있습니다. 다음의 인터페이스에는, 배치 갱신을 지원하는 메소드가 추가되고 있습니다. <code> BatchUpdateException</code> 예외는 신규입니다.
+</p><ul><a name="1002113"> </a> 
+<li>Statement, PreparedStatement, 및 CallableStatement
+<ul><a name="1002114"> </a> 
+<li>배치에 갱신의 문장을 추가하는 메소드, 모든 갱신의 문장을 클리어 하는 메소드, 배치를 실행하는 메소드
+</ul><a name="1004185"> </a> 
+<li>DatabaseMetaData
+<ul><a name="1004186"> </a> 
+<li>DBMS 와 드라이버가 배치 갱신을 지원할지 어떨지를 나타내는 메소드
+</ul><a name="1002262"> </a> 
+<li>BatchUpdateException
+<ul><a name="1002263"> </a> 
+<li>배치 갱신으로 에러가 발생했을 때에 발행되는 예외
+</ul></ul><a name="1001839"> </a> 
+<h4>A. 2.3	 프로그램적인 갱신</h4>
+<p><a name="1004194"> </a>  프로그램적인 갱신에 의해, SQL 문은 아니고 JDBC API 를 사용해 갱신을 실시할 수가 있습니다. 다음의 인터페이스에는, 프로그램적인 갱신을 지원하는 새로운 메소드와 정수가 있습니다.
+</p><ul><a name="1001919"> </a> 
+<li>ResultSet
+<ul><a name="1001934"> </a> 
+<li>각 데이터형을 갱신하기 위한 <code>updateXXX</code> 메소드 <a name="1001939"> </a> 
+<li>행의 삽입, 삭제, 갱신을 위한 메소드 <a name="1002047"> </a> 
+<li>어느 행이 삽입, 삭제, 갱신되었는지의 여부를 나타내는 메소드 <a name="1002051"> </a> 
+<li>행의 갱신을 캔슬하기 위한 메소드 <a name="1001941"> </a> 
+<li>결과 세트가 갱신 가능한가 어떤가를 나타내는 정수
+</ul><a name="1001927"> </a> 
+<li>DatabaseMetaData
+<ul><a name="1001965"> </a> 
+<li>결과 세트에의 변경이 가시인가 어떤가를 나타내는 정수 <a name="1001968"> </a> 
+<li>결과 세트가 삽입, 삭제, 갱신을 검출할지 어떨지를 나타내는 메소드 <a name="1002002"> </a> 
+<li>DBMS 와 드라이버가 갱신 가능한 결과 세트를 지원할지 어떨지를 나타내는 메소드
+</ul></ul><a name="1005056"> </a> 
+<h4>A. 2.4	 그 외의 새로운 특징</h4>
+<p><a name="1004199"> </a>  JDBC 2.1 코어 API 에는, 상기 외에, 다양한 새로운 특징이 있습니다.  이 특징을 다음에 정리합니다.
+</p><ul><a name="1005117"> </a> 
+<li>성능의 향상 - 새로운 메소드에 의해, 데이타베이스로부터의 행의 검색을 프로그래머가 미조정할 수가 있습니다. 이러한 메소드에는, (1) 한층 더 많은 행이 필요한 때에 데이타베이스로부터 페치 하는 결과 세트행의 수를 지정해, (2) 데이타베이스로부터 행을 페치 할 방향을 지정하는 기능이 있습니다.
+<ul><a name="1005121"> </a> 
+<li>현재의 페치 사이즈와 페치 방향의 취득과 설정에 사용하는 <code>ResultSet</code> 메소드 <a name="1005123"> </a> 
+<li>결과 세트의 디폴트의 페치 사이즈와 페치 방향을 취득해 설정하는 <code>Statement</code>,<code>PreparedStatement</code>, 및 <code>CallableStatement</code> 메소드.  이 디폴트의 설정은, 쿼리의 실행에 의해 결과 세트가 최초로 작성될 때 그 결과 세트로 설정됩니다.
+</ul><a name="1002712"> </a> 
+<li>문자 스트림 - 문자 데이터를, 국제화 된 Unicode 문자의 스트림로서 데이타베이스로부터 검색하거나 데이타베이스에 보내거나 할 수가 있는 메소드. 새로운 메소드는, 추천되어 있지 않은 <code>getUnicodeStream</code> 와 <code>setUnicodeStream</code> 의 2 개의 메소드를 옮겨놓고 있습니다.
+<ul><a name="1002722"> </a> 
+<li><code>ResultSet.getCharacterStream</code> <a name="1002732"> </a> 
+<li><code>CallableStatement.getCharacterStream</code> <a name="1002739"> </a> 
+<li><code>PreparedStatement.setCharacterStream</code>
+</ul><a name="1002713"> </a> 
+<li><code>java.math.BigDecimal</code> 치의 완전한 정밀도 - <code> java.math.BigDecimal</code> 치를 완전한 정밀도로 취급하는, 새로운 버젼의 메소드. 추천되어 있지 않은 버젼과는 달라, 새로운 버젼에서는 정밀도의 지정을 받지 않습니다.
+<ul><a name="1002782"> </a> 
+<li><code>ResultSet.getBigDecimal</code> <a name="1002740"> </a> 
+<li><code>CallableStatement.getBigDecimal</code>
+</ul><a name="1002748"> </a> 
+<li>타임 존의 지원 - 파라미터로서 <code>Calendar</code> 객체를 받는 새로운 버젼의 메소드. 드라이버에 대해, 일자, 시간, 타임 스탬프의 값을 계산할 때, 디폴트는 아니고 지정된 타임 존을 사용할 수 있습니다.
+<ul><a name="1002747"> </a> 
+<li><code>ResultSet.getDate</code> <a name="1002749"> </a> 
+<li><code>ResultSet.getTime</code> <a name="1002750"> </a> 
+<li><code>ResultSet.getTimestamp</code> <a name="1002768"> </a> 
+<li><code>CallableStatement.getDate</code> <a name="1002769"> </a> 
+<li><code>CallableStatement.getTime</code> <a name="1002770"> </a> 
+<li><code>CallableStatement.getTimestamp</code> <a name="1002751"> </a> 
+<li><code>PreparedStatement.setDate</code> <a name="1002754"> </a> 
+<li><code>PreparedStatement.setTime</code> <a name="1002755"> </a> 
+<li><code>PreparedStatement.setTimestamp</code>
+</ul></ul><a name="1001702"> </a> 
+<h3>A. 3	 진화한 데이터형의 지원</h3>
+<p><a name="1002459"> </a>  JDBC 2.1 코어 API 에는 진화한 데이터형의 지원가 추가되어 단순한 데이터형과 같게 간단하게 진화한 데이터형을 사용할 수 있습니다. 이 지원에는, 본질적으로는 객체인 새로운 SQL 데이터형의 보존, 검색, 갱신의 기능도 포함되므로, 객체 데이타베이스와 RDB의 명확한 구별을 없앨 수가 있습니다. 다음의 4 개의 마디 (<a href="appendixA.html#1002458">「A. 3.1 SQL3 데이터형이란 무엇인가」</a>,<a href="appendixA.html#1001430">「A. 3.2 SQL3 데이터형의 지원의 개요」</a>,<a href="appendixA.html#1001475">「A. 3.3 새로운 SQL3 데이터형의 매핑」</a>,<a href="appendixA.html#1001484">「A. 3.4 SQL locator」</a>)로,JDBC 2.0 코어 API 의 진화한 데이터형의 지원에 대해 설명합니다.
+</p><p><a name="1002464"> </a>  SQL 로 정의되고 있는 객체를 데이타베이스 테이블내의 값으로 해서 보존 가능한 한은 아니고, Java 어플리케이션을 작성하는 프로그래머는, Java 프로그램 언어로 정의되고 있는 객체를 데이타베이스 테이블내의 값으로 해서 보존할 수가 있습니다. <a href="appendixA.html#1002502">「A. 3.5 Java 객체 보존의 지원」</a>  로, 이 기능에 대해 설명합니다.
+</p><p><a name="1002550"> </a>  드라이버는, 그 드라이버의 DBMS 가 지원하고 있지 않는 기능을 구현하도록(듯이)는, 요구되고 있지 않습니다.  그 때문에, 모든 드라이버가, 여기서 설명하고 있는 기능을 구현할 필요는 없습니다. <code>getTypeInfo</code>,<code>getColumns</code>,<code>getUDTs</code> 등의 <code>DatabaseMetaData</code> 메소드를 호출해, 드라이버가 지원하고 있는 데이터형의 정보를 취득할 수가 있습니다.
+</p><a name="1002458"> </a> 
+<h4>A. 3.1	 SQL3 데이터형이란 무엇인가 </a> <a href="appendixA.html#1001430"></h4>
+<p><a name="1001703"> </a>  여기에서는 새로운 SQL3 데이터형에 대해 설명합니다. Java 프로그램 언어의 데이터형에의 이러한 데이터형의 매핑에 대해서는,<a href="appendixA.html#1001475">「A. 3.3 새로운 SQL3 데이터형의 매핑」</a>으로 설명합니다.
+</p><p><a name="1001769"> </a> 
+
+</p><p><a name="1002534"> </a>  SQL3 데이터형은, 다음과 같이 분류됩니다.
+</p><a name="1006131"> </a> 
+<blockquote></blockquote>
+<ul><a name="1001704"> </a> 
+<li>새로운 편입형 - 큰 객체를 보존하기 위한 데이터형. <code>CHAR</code>,<code>FLOAT</code>,<code>DATE</code> 등의 표준의 편입 데이터형에 추가됩니다.
+<ul><a name="1001705"> </a> 
+<li><code>BLOB</code> (바이너리 라지 객체) <a name="1001706"> </a> 
+<li><code>CLOB</code> (캐릭터 라지 객체)
+</ul><a name="1001707"> </a> 
+<li>구축형 - 주어진 기본형을 기본으로 한 데이터형
+<ul><a name="1001708"> </a> 
+<li><code>REF(</code>구조화형<code>)</code> - 지정된 SQL 구조화형에의 참조 <a name="1001709"> </a> 
+<li><code>ARRAY[n]</code>: 모두 같은 데이터형의 <code>n</code> 개의 요소의 배열
+</ul><a name="1001710"> </a> 
+<li>사용자 정의형 (UDT) - SQL 커멘드 &thorn;<code>CREATE TYPE</code> 에 의해 작성되는 새로운 데이터형
+<ul><a name="1001711"> </a> 
+<li>개별형 - 단일의 편입형의 표현에 근거하는 새로운 데이터형 <a name="1001712"> </a> 
+<li>구조화형 - 편입형이나 사용자 정의형등의 복수의 속성을 가지는, 새로운 데이터형
+</ul><a name="1001713"> </a> 
+<li>locator형 - 데이터 베이스 서버-에 속하는 데이터에의 논리 포인터인 데이터형
+<ul><a name="1001714"> </a> 
+<li><code>LOCATOR(구조화형)</code> <a name="1001715"> </a> 
+<li><code>LOCATOR(배열)</code> <a name="1001716"> </a> 
+<li><code>LOCATOR(바이너리 라지 객체)</code> <a name="1001717"> </a> 
+<li><code>LOCATOR(캐릭터 라지 객체)</code>
+</ul></ul><a name="1001430"> </a> 
+<h4>A. 3.2	 SQL3 데이터형의 지원의 개요</h4>
+<p><a name="1001431"> </a>  JDBC 2.1 코어 API 는, 다음의 새로운 인터페이스, 메소드, 필드에 의해, 새로운 SQL3 데이터형을 지원합니다.
+</p><ul><a name="1001432"> </a> 
+<li>새로운 데이터형을 위한 새로운 인터페이스. SQL3 데이터형은, 다음의 새로운 JDBC 2.1 코어 API 인터페이스에 의해 매핑 된다
+<ul><a name="1001433"> </a> 
+<li><code>java.sql.Array</code> <a name="1001434"> </a> 
+<li><code>java.sql.Blob</code> <a name="1001435"> </a> 
+<li><code>java.sql.Clob</code> <a name="1001436"> </a> 
+<li><code>java.sql.Ref</code> <a name="1001437"> </a> 
+<li><code>java.sql.Struct</code>
+</ul><a name="1001438"> </a> 
+<li>Java 프로그램 언어의 클래스에의 UDT (SQL 구조화형과 개별형)의 매핑의 커스터마이즈를 지원하는, 새로운 인터페이스
+<ul><a name="1001439"> </a> 
+<li><code>SQLData</code> <a name="1001440"> </a> 
+<li><code>SQLInput</code> <a name="1001441"> </a> 
+<li><code>SQLOutput</code>
+</ul><a name="1001442"> </a> 
+<li>새로운 SQL3 데이터형을 취득, 보존, 갱신하기 위해서 기존의 인터페이스에 추가된, 새로운 메소드
+<ul><a name="1001443"> </a> 
+<li><code>ResultSet</code> 인터페이스의 새로운 <code>getXXX</code> 메소드.  결과 세트로부터 SQL3 형의 렬치를 취득한다 <a name="1001444"> </a> 
+<li><code>CallableStatement</code> 인터페이스의 새로운 <code>getXXX</code> 메소드.  출력 파라미터내의 SQL3 형의 값을 취득한다 <a name="1001445"> </a> 
+<li><code>PreparedStatement</code> 인터페이스의 새로운 <code>setXXX</code> 메소드.  SQL3 형의 렬치를 설정한다 <a name="1006026"> </a> 
+<li><code>ResultSet</code> 인터페이스의 새로운 <code>updateXXX</code> 메소드.  프로그램에 의해 값을 갱신한다
+</ul><a name="1006027"> </a> 
+<li><code>DatabaseMetaData</code> 와 <code>ResultSetMetaData</code> 인터페이스의 새로운 메소드.  새로운 데이터형에 관한 메타데이타를 취득한다 <a name="1001448"> </a> 
+<li><code>java.sql.Types</code> 클래스에 추가된 새로운 필드 (정수).  새로운 데이터형과 영속적인 보존을 지원한다
+<ul><a name="1001449"> </a> 
+<li><code>DISTINCT</code> <a name="1001450"> </a> 
+<li><code>STRUCT</code> <a name="1001451"> </a> 
+<li><code>ARRAY</code> <a name="1001452"> </a> 
+<li><code>BLOB</code> <a name="1001453"> </a> 
+<li><code>CLOB</code> <a name="1001454"> </a> 
+<li><code>REF</code> <a name="1001455"> </a> 
+<li><code>JAVA_OBJECT</code>
+</ul></ul><a name="1001475"> </a> 
+<h4>A. 3.3	 새로운 SQL3 데이터형의 매핑</h4>
+<p><a name="1001660"> </a>  JDBC 2.1 코어 API 에서는, SQL3 데이터형의 정확한 복제를 시도하는 것이 아니라, 그러한 데이터형을 Java 프로그램 언어의 형태에 매핑 하는 것으로써, 그러한 데이터형의 기능성을 유지해, 사용의 편의를 도모하는 것을 목표로 합니다. 예를 들어, SQL3 에는 「locator형」이라고 불리는 데이터형이 있어, 데이터 베이스 서버-에 보존되고 있는 데이터를 가리키기 위해서(때문에) 클라이언트상에서 사용됩니다. locator에서는 클라이언트 머신상에 데이터를 실체화하지 않아도 데이터를 조작할 수 있으므로, 큰 데이터를 취급하는 경우에 도움이 됩니다. SQL3 에는,<code>ARRAY</code>,<code>BLOB</code>,<code>CLOB</code> 형과 구조화형을 위한 locator가 포함되어 있습니다. JDBC 2.1 코어 API 에는, 이러한 데이터형을 위한 locator가 직접 포함되고는 있지 않습니다 (구조화형을 위한 locator는 전혀 없습니다)가, 드라이버와 DBMS 가 상황에 맞추어 적절한 locator를 사용하도록(듯이) 구현된 인터페이스가 있습니다. 그 결과, JDBC API 를 사용해 SQL 의 <code>ARRAY</code>,<code>BLOB</code>,<code>CLOB</code> 형의 값에 액세스 하는 경우, 개발자는 locator에 대해 생각할 필요는 없습니다. locator의 상세한 것에 대하여는,<a href="appendixA.html#1001484">「A. 3.4  SQL locator」</a>  를 참조해 주세요.
+</p><p><a name="1001664"> </a>  JDBC 2.1 코어 API 에서는, 다음의 SQL3 데이터형은 Java 프로그램 언어의 인터페이스에 매핑 됩니다.
+</p><ul><a name="1001478"> </a> 
+<li><code>ARRAY</code> - <code>java.sql.Array</code> 에 매핑 된다 <a name="1001479"> </a> 
+<li><code>BLOB</code> - <code>java.sql.Blob</code> 에 매핑 된다 <a name="1001480"> </a> 
+<li><code>CLOB</code> - <code>java.sql.Clob</code> 에 매핑 된다 <a name="1001481"> </a> 
+<li><code>REF</code> - <code>java.sql.Ref</code> 에 매핑 된다
+</ul><ul><a name="1001482"> </a> 
+<li>SQL 구조화형 - <code>java.sql.Struct</code> 에 매핑 된다
+</ul><p><a name="1001483"> </a>  개별형은 단일의 편입형을 기본으로 하고 있기 (위해)때문에, 단순하게 그 편입형에의 표준적인 매핑에 매핑 되어 인터페이스에는 매핑 되지 않습니다. 예를 들어, 다음의 SQL 문은 새로운 데이터형 <code>MONEY</code> 를 작성합니다.
+</p><blockquote><pre>
+CREATE TYPE MONEY AS NUMERIC(10, 2)
+</pre></blockquote><p><a name="1002576"> </a> 이 새로운 UDT 는 <code>java.math.BigDecimal</code> 에 매핑 되는 데이터형 <code>NUMERIC</code> 를 기본으로 하고 있습니다. 그 때문에, 데이터형 <code>MONEY</code> 는 <code>java.math.BigDecimal</code> 에 매핑 됩니다. 따라서,<code>MONEY</code> 형의 값은 <code>getBigDecimal</code> 메소드로 취득되어<code>setBigDecimal</code> 메소드로 보존되어<code>updateBigDecimal</code> 메소드로 갱신됩니다.  
+</p><a name="1001484"> </a> 
+<h4>A. 3.4	 SQL locator</h4>
+<p><a name="1001485"> </a>  SQL <code>LOCATOR</code> 는, 데이터 베이스 서버-위의 데이터에의 논리 포인터입니다. 일반적으로, 화상이나 오디오 등, 클라이언트상에 생성하기에는  너무 큰 데이터를 참조합니다. locator는 클라이언트 환경에게만 존재해, 일시적인 존재입니다. JDBC 2.1 코어 API 의 표준적인 구현에서는 <code>Blob</code>,<code>Clob</code>,<code>Array </code> 의 각 인터페이스의 인스턴스용으로 내부적으로 locator를 사용합니다. 즉,<code>Blob</code>,<code>Clob</code>,<code>Array</code> 객체에는 데이터 그 자체가 포함되어 있는 것이 아니라, 서버상의 데이터를 가리키는 locator가 포함되어 있습니다. <code>Blob</code>,<code>Clob</code>,<code>Array</code> 인스턴스를 조작한다고 하는 것은, 실제로는, 그것들이 나타내는 데이타베이스 객체를 조작하고 있게 됩니다. 클라이언트에 데이터를 반입하지 않고 큰 데이타베이스 객체를 조작하는 이 기능은, 성능에 크게 공헌합니다.
+</p><p><a name="1001747"> </a>  JDBC 2.1 코어 API 에서는 SQL <code>LOCATOR(</code>구조화형<code>)</code> 의 사용은 필요하지는 않습니다. 표준적인 구현에서는,<code>Struct</code> 객체에는, 그것이 매핑 되는 구조화형의 데이터가 포함되어 있어,<code>Blob</code>,<code>Clob</code>,<code>Array</code> 객체와 같은 내부적인 locator로서는 구현되고 있지 않습니다.
+</p><a name="1002502"> </a> 
+<h4>A. 3.5	 Java 객체 보존의 지원</h4>
+<p><a name="1002503"> </a>  JDBC API 에서는, Java 프로그램 언어 정의되고 있는 영속적인 보존을, <code>getObject</code>,<code>setObject</code> 메소드를 통해서, 항상 지원 사계라고 있습니다. 물론, Java 객체의 영속적인 보존은, DBMS 가 그것을 지원하고 있지 않는 한 실제로는 일어날 수 없습니다. 이 때문에 지원에는 제한이 있습니다만, Java 객체를 데이터형으로서 인식하는 신세대의 DBMS 가 출현하고 있습니다. Java 릴레이셔널 DBMS 로 불리는 이러한 DBMS 에서는, Java 클래스의 인스턴스를 데이타베이스 테이블내의 열의 값으로 해서 보존할 수 있습니다.
+</p>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[선두의 항목]</a>  <a href="mapping.html">[전의 항목]</a>  [다음의 항목] [마지막 항목]
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Management Extensions API 의 확장 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor=white>
+
+<!-- document header is table row with 3 cells-->
+<table summary="layout" border=0 width=100%>
+<tr>
+    <!-- Left cell: Java logo -->
+    <td width=60>
+<img src="../../../images/javalogo52x88.gif" alt="Java (TM)" width=52 height=88>
+
+    </td>
+
+
+    <!-- Center cell: Title -->
+    <td align=center>
+<h1>JMX API 의 확장</h1>
+    </td>
+
+    <!-- Right cell: Up references -->
+    <td align=right valign=top width=60>
+<font size=-1><a href="../../../index.html">문서의 목차</a> </font>
+    </td>
+</tr>
+</table>
+
+<!-- ====================== Body text begins here ====================== -->
+
+<blockquote>
+
+<p>Java Management Extensions (JMX) 테크놀러지가, Java 2 Platform, Standard Edition (J2SE) 5.0 의 Java 플랫폼에 추가되었습니다. 이번, Java Platform, Standard Edition (Java SE) 6 의 JMX API 에 있어서의, 가장 큰 확장 내용을 다음에 나타냅니다.
+
+<ul>
+<li>JMX API 로 총칭이 완전하게 지원되게 되었습니다. </li>
+<li>MXBean 가 추가되었습니다. MXBean 는, 관련하는 값을 함께 번들 할 수 있는 편리한 방법을 제공하는 MBean 입니다. 이것에 의해, 특별히 번들을 처리하도록(듯이) 구성된 클라이언트를 준비할 필요가 없어졌습니다. J2SE 5.0 의 플랫폼에는, 벌써 MXBean 의 정의가 끝난 세트가 준비되어 있습니다만, Java SE 6 으로, 사용자 정의의 MXBean 를 프로그램 할 수 있도록(듯이) API 가 도입되었습니다. 상세한 것에 대하여는, 「JMX 테크놀러지의 튜토리얼」의 「<a href="tutorial/essential.html#wp1054551">MXBean 의 도입</a>」을 참조해 주세요. </li>
+<li>MXBean 의 기술자가 추가되었습니다. 기술자를 사용하는 것으로, MBean 의 추가 정보를 관리 클라이언트에 제공할 수 있습니다. 상세한 것에 대하여는, 「JMX 테크놀러지의 튜토리얼」의 「<a href="tutorial/essential.html#wp1055639">MBean 기술자</a>」를 참조해 주세요.
+<li>새로운 클래스,<a href="../../../api/javax/management/JMX.html">javax.management.JMX</a>  가, 정수 및 정적 메소드를 포함하기 위해서 추가되었습니다. </li>
+<li><a href="../../../api/javax/management/monitor/package-summary.html">JMX Monitor API</a>  로 복합형이 지원되도록(듯이) 개선되었습니다. 이전에는, 단순형의 속성만의 감시였지만, 이 경우, 감시해야 할 치가 많은 복합형에 파묻혀 버립니다. 감시의 상세한 것에 대하여는, 「<a href="JMX_1_4_specification.pdf">JMX Specification, version 1.4</a> 」를 참조해 주세요. </li>
+<li><a href="../../../api/javax/management/ObjectName.html">ObjectName</a>  로,<code>key=*</code> 의 와일드 카드가 지원되게 되었습니다. 이전에는, 이름에 <code>key1=value1</code> 를 가지는 MBean 와 일치시키기 위해서(때문에) <code>"domain:key1=value1,*"</code> 가 사용되었습니다만, 이름에 <code>key1</code> 를 가지는 MBean 와 일치시키기 위해서(때문에) <code>"domain:key1=*"</code> 를 사용할 수 없었습니다. 이번 릴리스에서는, 그것이 가능해졌습니다. </li>
+</ul>
+
+<p>다음의 리스트에는, Java SE 6 플랫폼에 있어서의 JMX API 의 변경점이 모두 기재되어 있습니다. 관련 사항이 있는 경우는, 거기에 대응한 버그 리포트나 RFE (기능확장 요구)에의 링크를 준비해 있습니다.
+
+    <ul>
+<li><a href="#Generic">총칭화</a> 
+
+<li><a href="#MXBeans">MXBean</a> 
+<li><a href="#Descriptors">기술자</a> 
+<li><a href="#JMX">새로운 클래스 javax.management.JMX</a> 
+<li><a href="#Notification">NotificationBroadcaster 와 NotificationBroadcasterSupport</a> 
+<li><a href="#ObjectName">ObjectName</a> 
+<li><a href="#Standard">표준 MBean</a> 
+
+<li><a href="#Dynamic">동적인 MBean</a> 
+<li><a href="#Model">Model MBean</a> 
+<li><a href="#Open">Open MBean</a> 
+<li><a href="#Monitor">감시 서비스</a> 
+<li><a href="#Timer">타이머 서비스</a> 
+<li><a href="#MLet">MLet 서비스</a> 
+
+<li><a href="#Relation">관계 서비스</a> 
+<li><a href="#Query">쿼리</a> 
+<li><a href="#MBSIH">MBeanServerInvocationHandler</a> 
+<li><a href="#Serial">직렬화 형식</a> </li>
+<li><a href="#Permissions">액세스권의 체크</a> </li>
+<li><a href="#Exceptions">MBean RuntimeException 처리</a> </li>
+<li><a href="#remote">JMX Remote API 의 확장</a> </li>
+    </ul>
+
+<h3 id="Generic">총칭화</h3>
+
+<p>J2EE 1.4 로 J2SE 5.0 의 양쪽 모두로 버젼 1.2 의 JMX API 가 통합된 것에 의한 제약은, J2SE 5.0 으로 총칭화할 수 없었던 것이었습니다. 이번 릴리스에서는, 이 점이 수정되었습니다 (<a       href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4847959">4847959</a> ). 총칭화의 상당수는 총칭화 된 컬렉션 API (<code>java.util.List</code> 등)의 어플리케이션으로 구성되어 있습니다. 따라서, 예를 들어,<code>MBeanServer.queryNames</code> 가 단지 <code>Set</code> 돌려주고 있던 상황에서도, 이번 변경에 의해,<code>Set&lt;ObjectName&gt;</code> 가 돌려주어지게 되었습니다. 또,<a       href="../../../api/javax/management/openmbean/OpenType.html"><code>javax.management.openmbean.OpenType</code></a> 
+
+클래스와 그 서브 클래스도 총칭화 되었기 때문에, 형태의 제약을 표현할 수 있게 되었습니다. <a       href="../../../api/javax/management/openmbean/OpenMBeanAttributeInfoSupport.html"><code>OpenMBeanAttributeInfoSupport</code></a>  와 <a       href="../../../api/javax/management/openmbean/OpenMBeanParameterInfoSupport.html"><code>OpenMBeanParameterInfoSupport</code></a>  는, 자신의 생성자 내에서 형태의 제약을 취득해, 디폴트 값나 유효한 값을 올바른 형태로 하는 요구를 채웁니다. <a 	href="../../../api/javax/management/StandardMBean.html#StandardMBean(T,%20java.lang.Class)"><code>StandardMBean</code> 생성자</a>  도 이와 같이 형태의 제약을 취득하기 위해(때문에), 자원 파라미터로 인터페이스 파라미터에 의해 지정된 인터페이스가 확실히 구현됩니다.
+    </p>
+
+<p>다음의 클래스와 메소드가 갱신되었습니다. </p>
+
+    <UL>
+<LI><A HREF="../../../api/javax/management/MBeanServer.html#queryMBeans(javax.management.ObjectName,%20javax.management.QueryExp)">MBeanServer[Connection]. queryMBeans</A>  는 Set&lt;ObjectInstance&gt; 를 돌려줍니다</li>
+<LI><A HREF="../../../api/javax/management/MBeanServer.html#queryNames(javax.management.ObjectName,%20javax.management.QueryExp)">MBeanServer[Connection]. queryNames</A>  는 Set&lt;ObjectName&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/AttributeChangeNotificationFilter.html#getEnabledAttributes()">AttributeChangeNotificationFilter.getEnabledAttributes</A>  는 Vector&lt;String&gt; 를 돌려줍니다</li>
+<LI><A HREF="../../../api/javax/management/AttributeList.html#">AttributeList</A>  는 ArrayList&lt;Object&gt; 를 확장합니다</li>
+<LI><A HREF="../../../api/javax/management/MBeanServerFactory.html#findMBeanServer(java.lang.String)">MBeanServerFactory.findMBeanServer</A>  는 ArrayList&lt;MBeanServer&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/NotificationFilterSupport.html#getEnabledTypes()">NotificationFilterSupport.getEnabledTypes</A>  는 Vector&lt;String&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/ObjectName.html#">ObjectName</A>  클래스의 생성자 과 getInstance 메소드는, 종래, Hashtable 를 보유했습니다만, 이번으로부터 Hashtable&lt;String, String&gt; 로 변경됩니다</li>
+<LI><A HREF="../../../api/javax/management/ObjectName.html#getKeyPropertyList()">ObjectName.getKeyPropertyList</A>  는 Hashtable&lt;String, String&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/openmbean/CompositeType.html#keySet()">openmbean.CompositeType.keySet</A>  는 Set&lt;String&gt; 를 돌려줍니다</li>
+<LI><A HREF="../../../api/javax/management/openmbean/TabularType.html#getIndexNames()">TabularType.getIndexNames</A>  는 List&lt;String&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/Relation.html#getReferencedMBeans()">Relation.getReferencedMBeans</A>  는 Map&lt;ObjectName, ArrayList&lt;String&gt;&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#">RelationServiceMBean</A>  의 경우:
+	<ul>
+	  <li><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#findAssociatedMBeans(javax.management.ObjectName,%20java.lang.String,%20java.lang.String)">findAssociatedMBeans</A>  는 Map&lt;ObjectName, ArrayList&lt;String&gt;&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#findRelationsOfType(java.lang.String)">findRelationsOfType</A>  는 List&lt;String&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#getRole(java.lang.String,%20java.lang.String)">getRole</A>  는 List&lt;ObjectName&gt; 를 돌려줍니다</li>
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#findReferencingRelations(javax.management.ObjectName,%20java.lang.String,%20java.lang.String)">findReferencingRelations</A>  는 Map&lt;String, ArrayList&lt;String&gt;&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#getAllRelationIds()">getAllRelationIds</A>  는 List&lt;String&gt; 을 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#getAllRelationTypeNames()">getAllRelationTypeNames</A>  는 List&lt;String&gt; 를 돌려줍니다</li>
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#getRoleInfos(java.lang.String)">getRoleInfos</A>  은 List&lt;RoleInfo&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#getReferencedMBeans(java.lang.String)">getReferencedMBeans</A>  는 Map&lt;ObjectName, ArrayList&lt;String&gt;&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#sendRelationRemovalNotification(java.lang.String,%20java.util.List)">sendRelationRemovalNotification</A>  는 List&lt;ObjectName&gt; 를 보유합니다</li>
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#updateRoleMap(java.lang.String,%20javax.management.relation.Role,%20java.util.List)">updateRoleMap</A>  은 List&lt;ObjectName&gt; 를 보유합니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#sendRoleUpdateNotification(java.lang.String,%20javax.management.relation.Role,%20java.util.List)">sendRoleUpdateNotification</A>  는 List&lt;ObjectName&gt; 를 보유합니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#sendRoleUpdateNotification(java.lang.String,%20javax.management.relation.Role,%20java.util.List)">sendRoleUpdateNotification</A>  는 List&lt;ArrayList&gt; 를 보유합니다</li>
+	</ul></li>
+<LI><A HREF="../../../api/javax/management/relation/RelationType.html#getRoleInfos()">RelationType.getRoleInfos</A>  는 List&lt;RoleInfo&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/MBeanServerNotificationFilter.html#getEnabledObjectNames()">MBeanServerNotificationFilter.get{Enabled|Disabled}ObjectNames</A>  는 Vector&lt;ObjectName&gt; 를 돌려줍니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/RelationNotification.html#">RelationNotification</A>  의 경우:
+	<ul>
+	  <LI>constructor arg theUnregMBeanList 는 List&lt;ObjectName&gt; 로 변경됩니다</li>
+	  <LI>constructor args the{New|Old}RoleValue 는 List&lt;ObjectName&gt; 로 변경됩니다</li>
+	  <LI><A HREF="../../../api/javax/management/relation/RelationNotification.html#getMBeansToUnregister()">getMBeansToUnregister</A>  는 List&lt;ObjectName&gt; 를 돌려줍니다</li>
+
+	  <LI><A HREF="../../../api/javax/management/relation/RelationNotification.html#getNewRoleValue()">get{Old|New}RoleValue</A>  는 List&lt;ObjectName&gt; 를 돌려줍니다</li>
+	</ul></li>
+<LI>RelationServiceMBean 로 지정된 <A HREF="../../../api/javax/management/relation/RelationService.html#">RelationService</A>  메소드도<A HREF="../../../api/javax/management/relation/RelationServiceMBean.html#">RelationServiceMBean</A>  의 변경점을 상속합니다</li>
+<LI>Relation 로 지정된 <A HREF="../../../api/javax/management/relation/RelationSupport.html#">RelationSupport</A>  메소드도 Relation 의 변경점을 상속합니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/RelationTypeSupport.html#getRoleInfos()">RelationTypeSupport.getRoleInfos</A>  는 List&lt;RoleInfo&gt; 를 돌려줍니다</li>
+<LI><A HREF="../../../api/javax/management/relation/Role.html#">Role</A>  생성자 과 <A HREF="../../../api/javax/management/relation/Role.html#getRoleValue()">getRoleValue</A>  는 List&lt;ObjectName&gt; 를 사용합니다</li>
+<LI><A HREF="../../../api/javax/management/relation/RoleList.html#">RoleList</A>  는 ArrayList&lt;Object&gt; 를 확장합니다</li>
+
+<LI><A HREF="../../../api/javax/management/relation/RoleUnresolved.html#">RoleUnresolved</A>  는 List&lt;ObjectName&gt; 를 사용합니다</li>
+<LI><A HREF="../../../api/javax/management/relation/RoleUnresolvedList.html#">RoleUnresolvedList</A>  은 ArrayList&lt;Object&gt; 를 확장합니다</li>
+<LI><A HREF="../../../api/javax/management/timer/Timer.html#">Timer[MBean]. get[All]NotificationIDs</A>  는 Vector&lt;Integer&gt; 를 돌려줍니다</li>
+
+    </UL>
+
+<p>MLetMBean 와 MLet's getMBeansFromURL 메소드는, 반환값의 Set 요소가 ObjectInstance 또는 Throwable 의 어딘가에 될 가능성이 있기 (위해)때문에, 총칭을 사용할 수 없습니다. AttributeList, RoleList, RoleUnresolvedList 는, 보다 자연스러운 표현인 ArrayList&lt;Attribute&gt; 등에서는 없고, ArrayList&lt;Object&gt; 를 확장합니다. ArrayList&lt;Attribute&gt; 등은, 기존의 add 메소드와 set 메소드가 각각 boolean 나 Object 는 아니고 void 를 돌려주기 (위해)때문에, 부정합이 발생할 가능성이 있기 (위해)때문에입니다. </p>
+
+<p>새로운 메소드 <a 	href="../../../api/javax/management/AttributeList.html#asList()">AttributeList.asList()</a>,<a     href="../../../api/javax/management/relation/RoleList.html#asList()">RoleList.asList()</a>,<a     href="../../../api/javax/management/relation/RoleUnresolvedList.html#asList()">RoleUnresolvedList.asList()</a>  는, 올바른 형태의 파라미터를 가지는 기본 객체의 <code>List</code> 뷰를 생성합니다. 새로운 생성자 <a     href="../../../api/javax/management/AttributeList.html#AttributeList(java.util.List)">AttributeList(List&lt;Attribute&gt;)</a>  는, 역의 방향으로 전환합니다 (RoleList 와 RoleUnresolvedList 에는 벌써 이러한 생성자 이 있습니다).
+
+<p><a     href="http://weblogs.java.net/blog/emcmanus/archive/generification.txt">총칭화의 원리</a>의 상세하게는,API 생성시에 작성된 선택사항이 기재되어 있습니다. </p>
+
+<h3 id="MXBeans">MXBean</h3>
+
+<P>종래, 복합형의 휴대용 모델링에는 Open MBean 를 사용해 실행할 필요가 있었습니다만, 이것은 취급하기 어려운 것입니다. 그 때문에, J2SE 5 에는 복합형을 보다 간단하게 모델링 할 수 있도록(듯이) MXBean 가 추가되었습니다. 이번, 이 릴리스로부터, 이 <b>MXBean 가 일반화되었습니다</b> (<a       href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6175517">6175517</a> ). MXBean 는, Java 인터페이스의 형태와 관리 인터페이스의 형태의 사이에 비일치 매핑을 제공하는 표준 MBean 의 특별한 종류입니다. 표준 MBean 와 같은 방법으로, MXBean 에는 getX 메소드나 setX 메소드로 정의되는 속성이 포함됩니다. 다른 메소드는 조작 내용을 나타냅니다. 다만, MXBean 를 사용하면(자), 실제로 MBean 서버에 등록된 MBean 에서는, 그 속성, 조작 파라미터, 및 반환값에 대응하는 전혀 같은 형태가 포함되지 않게 됩니다. 그 대신해, MXBean 인터페이스로 발생하는 각각의 형태는,<code>javax.management.openmbean</code> 에 정의되고 있는 고정 세트로 구축된 형태에 변환됩니다. MBean 서버에 실제로 등록되어 있는 MBean 는, 이러한 변환된 형태를 참조하는 Open MBean 입니다. MBean 는 액세스 되면(자), 원의 MXBean 인터페이스형과 변환 후의 Open MBean 형의 사이에 값을 변환합니다.
+
+<p>이 방법을 사용하는 것으로, 클라이언트는, MXBean 인터페이스로 참조될 가능성이 있는 모델 고유의 형태를 식별할 필요없게 MXBean 에 액세스 할 수 있습니다. 클라이언트는 표준의 Open MBean 형을 식별할 뿐입니다 봅니다.
+
+<p>MXBean 의 완전한 스펙은, 주석 <a 	href="../../../api/javax/management/MXBean.html"><code>@MXBean</code></a>  의 문서에 기술되고 있습니다.
+
+<p>MXBean 의 도입에 의해, 다음의 클래스와 인터페이스가 추가 또는 영향을 받았습니다.
+
+    <UL>
+
+<LI><A HREF="../../../api/javax/management/StandardMBean.html#">javax.management.StandardMBean</A> : 표준 MBean 와 같게 MXBean 로 사용 가능. </li>
+<LI><A HREF="../../../api/javax/management/MBeanServerInvocationHandler.html#">javax.management.MBeanServerInvocationHandler</A> : 표준 MBean 프록시와 같게 MXBean 프록시로 사용 가능. </li>
+<LI><A HREF="../../../api/javax/management/JMX.html">javax.management.JMX</A> :4 살의 신메소드를 가지는 새로운 클래스. </li>
+<LI><A HREF="../../../api/javax/management/MXBean.html">javax.management.MXBean</A> :새로운 주석. </li>
+
+<LI><A HREF="../../../api/javax/management/openmbean/CompositeDataInvocationHandler.html">javax.management.openmbean.CompositeDataInvocationHandler	</A> : 2 살의 신메소드를 가지는 새로운 클래스. </li>
+<LI><A HREF="../../../api/javax/management/openmbean/CompositeDataView.html">javax.management.openmbean.CompositeDataView</A> :1 살의 신메소드를 가지는 새로운 인터페이스. </li>
+<li>클래스 <a       href="../../../api/javax/management/StandardMBean.html"><code>StandardMBean</code></a>  가 MXBean 의 작성에 사용 가능. 또, 이 클래스는 <a 	  href="../../../api/javax/management/MBeanRegistration.html"><code>MBeanRegistration</code></a>  를 구현하게 되었습니다. 이것에 의해, MXBean 가 등록된 이름을 추적해, 내부 MXBean 의 참조 내용을 정확하게 처리할 수 있습니다.
+	 
+    </UL>
+
+<h3 id="Descriptors">기술자</h3>
+
+<p>기술자를 사용해, MBean 의 추가의 메타데이타를 제공할 수 있습니다. 종래는, Model MBean 만이 기술자를 지원하고 있었습니다. 이번 릴리스에서는,<b>모든 MBean 형으로 기술자가 지원되게 되었습니다</b> (<a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6204469">6204469</a> ). 또, 이 릴리스에서는, 모든 MBean 형의 메타데이타의 범용성에 가세해 다양한 MBean 간에 있는 불필요한 차이를 없애고 있습니다. 특히, Open MBean 와 Model MBean 의 양쪽 모두에 속하는 MBean 를 가질 수가 있게 됩니다.
+
+<p>클래스 MBean*Info (MBeanInfo, MBeanAttributeInfo 등)의 대부분의 생성자 의 경우, 같은 파라미터에 가세해 추가의 <a 	href="../../../api/javax/management/Descriptor.html">Descriptor</a>  파라미터를 가지는 병렬의 생성자 이 추가되었습니다. 또, OpenMBean*InfoSupport 도 같습니다. </p>
+
+<p>Open MBean 는,<a href="../../../api/javax/management/openmbean/OpenMBeanParameterInfo.html"><code>OpenMBeanParameterInfo</code></a>  및 <a 	href="../../../api/javax/management/openmbean/OpenMBeanAttributeInfo.html"><code>OpenMBeanAttributeInfo</code></a>  의 메소드 <code>getDefaultValue()</code>,<code>getLegalValues()</code>,<code>getMaxValue()</code>,<code>getMinValue()</code> 로부터, 디폴트 값와 유효한 값에 관한 정보를 돌려줍니다. <b>이번, 이 정보가 대응하는 기술자에게도 포함되게 되었습니다. 또, 다른 MBean 형도 자신의 기술자의 정보를 돌려줄 수가 있습니다. </b>
+
+<p><b><A 	    HREF="../../../api/javax/management/DescriptorRead.html">javax.management.DescriptorRead</A>  로 불리는 DescriptorAccess 의 친인터페이스가 추가되었습니다. </b>이것에는, getDescriptor 메소드가 포함됩니다만, setDescriptor 메소드는 포함되지 않습니다. MBean*Info 클래스는 DescriptorRead 를 구현합니다.
+    
+<p><b>다음에,<A HREF="../../../api/javax/management/ImmutableDescriptor.html">javax.management.ImmutableDescriptor</A>  로 불리는 기술자 인터페이스의 불변 구현도 추가되었습니다. </b>이것을 사용하면(자), 불변의 메타데이타를 가지는 모든 MBean (Model MBean 이외)의 프로퍼티이 보존됩니다.
+
+<p><b>새로운 형태의 기술자 항목 (필드)이 <a 	href="../../../api/javax/management/Descriptor.html"><code>Descriptor</code></a>  스펙에 기술되었습니다</b> (<a       href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6254721">6254721</a> ). 이러한 항목의 일부는, 구현 (스펙에서는 이탤릭체)에 의해 식별됩니다만, 그 밖에 관계해 식별되지 않고 남습니다. <b>미리 정의된 필드명은, 새로운 <a       href="../../../api/javax/management/JMX.html"><code>JMX</code></a>  클래스에 대응하는 캐릭터 라인 정수를 가지고 있습니다</b> (<a       href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6282502">6282502</a> ).
+
+<p><b>새로운 주석 <a 	    href="../../../api/javax/management/DescriptorKey.html"><code>DescriptorKey</code></a>  를 사용하면(자), 표준 MBean (또는 MXBean) 인터페이스의 주석으로부터 표준 MBean (또는 MXBean)의 기술자에게 정보를 추가할 수 있습니다</b> (<a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6221321">6221321</a> ). 이것에 의해, 툴이 기존의 관리 모델로부터 표준 MBeans 를 생성해, 그 모델로부터의 정보를 다른 파일은 아니고 생성된 MBean 인터페이스에 갖게할 수가 있습니다.
+
+<p><b>메소드 <a href="../../../api/javax/management/Descriptor.html#getFieldValues(java.lang.String...)"><code>Descriptor.getFieldValues(String...)</code></a>  (와)과 생성자 <a href="../../../api/javax/management/modelmbean/DescriptorSupport.html#DescriptorSupport(java.lang.String...)"><code>DescriptorSupport(String...)</code></a>  (은)는, 종래는 <code>String[]</code> 파라미터를 가지고 있었습니다. </b>varargs 의 구문에 의해, 이것들이 사용하기 쉽게 되었습니다.
+
+<p>그 밖에도, 다음과 같이 기술자에게 관련한 변경점이 많이 있습니다. </p>
+
+    <ul>
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6255956">6255956</a> : <b>기술자는 <code>equals</code> 메소드를 정의해, 배열치의 비교 방법을 지정합니다</b>. <code>Descriptor</code> 의 인터페이스는,<a href="../../../api/javax/management/Descriptor.html#equals(java.lang.Object)"><code>equals</code></a>  메소드와 거기에 구현하는 2 개의 고정 구현을 지정합니다. 이것은, 기술자를 평등하게 고려하기 위해서,<code>MBeanInfo</code> 등의 비교가 계속해 행해지는 것을 의미합니다. 또, 다른 <code>Descriptor</code> 의 구현을 혼재할 수 있도록(듯이),<a href="../../../api/javax/management/Descriptor.html#hashCode()"><code>hashCode()</code></a>  메소드도 지정되어, 구현됩니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6267824">6267824</a> : <b><a href="../../../api/javax/management/Descriptor.html#getFieldValues(java.lang.String...)"><code>Descriptor.getFieldValues(null)</code></a> 를 호출하면(자), 반환값의 배열이 소트 된 차례의 방법이 명확하게 됩니다. </b>종래는, 반환값의 차례의 방법을 지정하지 않았습니다.
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6273765">6273765</a> : <b>빈 상태(empty)의 기술자에게 있는 Descriptor.getFieldValues (빈 상태(empty)의 배열은 아니다)는 특히 동작하지 않습니다. </b>이 메소드의 반환값의 배열에는, 파라미터의 수만큼 요소가 있습니다. 각 요소는, 대응하는 파라미터에 관련지을 수 있었던 값입니다. 값이 존재하지 않는 경우, null 가 사용됩니다. </p>
+ 
+	<p>종래, 간과나 편집상의 에러가 있었을 경우, 이 메소드의 @returns 절은,<em>If the descriptor is empty, you will get an empty array. </em> 그렇다고 하는 메세지를 표시하고 있었습니다. 우선 틀림없고, 이 메세지의 의미하는 곳(중)은, 이름의 리스트가 빈 상태(empty)의 경우, 빈 상태(empty)의 배열을 취득한다, 라고 하는 것입니다. 여기에서는, 지정되고 있는 대로, 1 점의 유해한 특수 케이스가 있었습니다. 리스트의 이름의 일부, 또는 모든 것이 기술자로부터 사라지고 있는 경우, 반환값의 배열에 있는 대응하는 요소가 null 가 된다고 하는 것입니다. 다만, 기술자가 빈 상태(empty)의 경우, 배열에는 요소가 아무것도 들어가지 않습니다. </p>
+
+ 
+	<p>이 특수한 케이스는, 기존의 Model MBean 의 기술자를 사용하는 분에는, 빈 상태(empty)의 기술자가 사용되는 어느 장소에서도 유효하게 안 되기 때문에, 발생하지 않았습니다 (모든 기술자는, 최악이어도 「이름」과「기술자의 형태」의 엔트리를 가지고 있는 것이 필수). 다만, 기술자의 사용법이 보다 일반화되었기 때문에, 현재 이 사례는 들어맞지 않습니다. 그 때문에, 종래 지정되고 있던 동작 내용으로, 버그가 발생하는 것은 우선 없었습니다. </p>
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6273613">6273613</a> : <b><code>Descriptor.setField</code> 와 <code>Descriptor.setFields</code> 의 랩 된 예외를 지정합니다. </b>종래, 이러한 메소드는,<a href="../../../api/javax/management/RuntimeOperationsException.html"><code>RuntimeOperationsException</code></a>  를 throw 하도록(듯이) 선언되고 있었습니다만, 스펙으로 랩 된 예외가 어떠한 것인가는 지정하지 않았습니다.
+	    
+<li><p><a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6289244">6289244</a> : <b>MBeanInfo 등의 null 기술자 파라미터의 경우의 동작을 명확하게 합니다. </b>종래는,<a    href="../../../api/javax/management/MBeanInfo.html#MBeanInfo(java.lang.String,%20java.lang.String,%20javax.management.MBeanAttributeInfo[],%20javax.management.MBeanConstructorInfo[],%20javax.management.MBeanOperationInfo[],%20javax.management.MBeanNotificationInfo[],%20javax.management.Descriptor)">MBeanInfo</a>  의 생성자  및 관련하는 클래스의 스펙에서는,<a href="../../../api/javax/management/Descriptor.html">기술자 </a>파라미터에 null 를 입력하면(자) 빈 상태(empty)의 기술자가 생성된다고 말해지고 있었습니다. 실제, 이것은, 구현에 의해 특정의 표준 필드를 추가할 수 있는, 빈 상태(empty)의 기술자의 입력치와 동등합니다.
+    
+    </ul>
+
+<h3 id="JMX">새로운 클래스 javax.management.JMX</h3>
+
+<p><b>새로운 클래스,<a href="../../../api/javax/management/JMX.html"><code>javax.management.JMX</code></a>  가, 정수 및 정적 메소드를 포함하기 위해서 추가되었습니다. </b>
+
+<h3 id="Notification">NotificationBroadcaster 와 NotificationBroadcasterSupport</h3>
+
+<p>인터페이스 <a 	href="../../../api/javax/management/NotificationBroadcaster.html"><code>NotificationBroadcaster</code></a>  와 그 디폴트 구현의 <a 	href="../../../api/javax/management/NotificationBroadcasterSupport.html"><code>NotificationBroadcasterSupport</code></a> 에는, 많은 변경점이 있습니다. </p>
+
+    <ul>
+<li><p><a 	  href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4506105">4506105</a> : 종래는, 송신할 수 있는 통지의 형태를 지정하기 위해서 <code>NotificationBroadcasterSupport</code> 를 서브 클래스화해 <code>getNotificationInfo()</code> 메소드를 덧쓰기할 필요가 있었습니다. 이 릴리스에서는,<b>입력시에 <code>MBeanNotificationInfo...</code> (을)를 가지도록(듯이), 새로운 생성자 이 추가되었습니다. </b></p>
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4661545">4661545</a> : 종래는, 통지 발송모델에 동기 시킬까 비동기에게 시킬까에 대한 스펙이 매우 애매했습니다. thread가 <a href="../../../api/javax/management/NotificationBroadcasterSupport.html#sendNotification(javax.management.Notification)"><code>sendNotification</code></a>  를 부르면(자), 구현 클래스에 의해, 각 청취자의 <a href="../../../api/javax/management/NotificationListener.html#handleNotification(javax.management.Notification,%20java.lang.Object)"><code>NotificationListener.handleNotification</code></a>  메소드가 그 thread (동기 모델) 내, 또는 다른 thread (비동기 모델) 내에 불려 갔습니다. J2SE 5 에서는, 동기 모델이 구현되었습니다. 즉,<code>NotificationBroadcasterSupport</code> 가 송신측의 thread를 사용해, 모든 청취자에게 통지를 송신하고 있었습니다. 비동기 모델이 필요한 경우, 사용자는, 서브 클래스를 작성해, 메소드 <code>handleNotification</code> 를 덧쓰기할 필요가 있었습니다. </p>
+
+	<p>Java SE 6 에서도, 디폴트 설정에는 동기 모델이 채용되고 있습니다. <b>클래스 <code>NotificationBroadcasterSupport</code> 에 생성자 이 추가되어<a href="../../../api/java/util/concurrent/Executor.html"><code>java.util.concurrent.Executor</code></a>  를 파라미터로서 가지게 되었습니다. </b><code>Executor</code> 는, 청취자에게로의 통지를 발송 하기 위해서 사용됩니다. 이것에 의해, 비동기 모델이 필요한 경우에서도, 서브 클래스의 작성을 회피할 수 있습니다. </p>
+
+<li><p><b>3 번째의 생성자 이, 전술한 2 개의 기능을 통합해</b>,<code>Executor</code> 와 <code>MBeanNotificationInfo...</code> 의 양쪽 모두를 파라미터로서 가지게 되었습니다. </p>
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6244863">6244863</a> : <b>필터 또는 청취자가 예외를 throw 했을 경우의, NotificationBroadcasterSupport 의 동작을 지정합니다</b>. 종래, JMX 스펙에서는, 통지 브로드 캐스터가 관리하는 청취자나 필터가 예외를 throw 할 때의 동작을 정의하지 않았습니다. 이번, 이 동작을 지정할 수 있게 되었습니다. <a 	    href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Exception.html"><code>Exception</code></a>  가 다른 청취자의 호출을 방해할 것은 없습니다. 다만,<a 	    href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Error.html"><code>Error</code></a>  는 <code>sendNotification</code> 의 호출 측에 전파 됩니다. </p>
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6252526">6252526</a> : <b>새로운 클래스,<a 	    href="../../../api/javax/management/StandardEmitterMBean.html"><code>javax.management.StandardEmitterMBean</code></a>  가 추가되었습니다. </b><code>StandardEmitterMBean</code> 는 <code>NotificationEmitter</code> 인 <code>javax.management.StandardMBean</code> 의 서브 클래스입니다. </p>
+
+    </ul>
+
+<h3 id="ObjectName">ObjectName</h3>
+
+<p><a 	href="../../../api/javax/management/ObjectName.html"><code>ObjectName</code></a>  에는, 많은 변경점이 있습니다. </p>
+
+    <ul>
+
+      <li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4716807">
+
+	    4716807</a> : <b>ObjectName 로,<code>key=*</code> 의 와일드 카드가 지원됩니다</b>. 이전에는, 이름에 <code>key1=value1</code> 를 가지는 MBean 와 일치시키기 위해서(때문에) <code>domain:key1=value1,*</code> 를 사용할 수 있었습니다만, 이름에 <code>key1</code> 를 가지는 MBean 와 일치시키기 위해서(때문에) <code>domain:key1=*</code> 를 사용할 수 없었습니다. ObjectName 의 기능이 이 릴리스로 확장되어 값의 어디에라도 와일드 카드 (<code>*</code> 및/또는 <code>? </code>)(을)를 둘 수가 있게 되었습니다. </p>
+
+	<p><b>2 개(살)의 새로운 메소드,<a 	    href="../../../api/javax/management/ObjectName.html#isPropertyValuePattern()"><code>isPropertyValuePattern()</code></a>  과 <a 	    href="../../../api/javax/management/ObjectName.html#isPropertyValuePattern(java.lang.String)"><code>isPropertyValuePattern(String property)</code></a> </b> 를 사용하면(자), ObjectName 가 특정의 프로퍼티의 값에 와일드 카드를 가지고 있을지 어떨지, 또, 가지고 있는 경우, 어느 프로퍼티인지를 검출할 수 있습니다. </p>
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4780400">4780400</a> : <b>새롭고 2 개의 ObjectName 정수가 추가되었습니다</b>. JMX API 의 사용자는, 2 개의 ObjectName 정수를 빈번하게 참조할 필요가 있습니다. </p>
+
+	<pre>
+    new ObjectName("JMImplementation:type=MBeanServerDelegate")
+    new ObjectName("*:*")
+</pre>
+
+	<p>이 중의 1 번째는, 기억하기 어려운 데다가, 잘못하면(자), 코드가 컴파일 되어도 기능하지 않습니다. 이것들은 양쪽 모두, ObjectName 생성자 이 확인 끝난 예외 <code>MalformedObjectNameException</code> 를 throw 한다고 하는 문제의 영향을 받습니다. 결과적으로는, try 블록이나 catch 블록으로 정수를 랩 하지 않으면 안됩니다. </p>
+
+	<p>이 상태를 개선할 수 있도록, 이 릴리스에 새롭고 2 개의 정수가 추가되었습니다. </p>
+
+	<ul>
+	  <li><a 	      href="../../../api/javax/management/MBeanServerDelegate.html#DELEGATE_NAME"><code>javax.management.MBeanServerDelegate.DELEGATE_NAME</code></a> 
+	  <li><a href="../../../api/javax/management/ObjectName.html#WILDCARD"><code>javax.management.ObjectName.WILDCARD</code></a> 
+	</ul>
+
+	<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5036680">
+
+	    5036680</a> : <b><code>ObjectName</code> 가 <code>Comparable&lt;ObjectName&gt;</code> 를 구현합니다</b>. Comparable 를 구현하는 것으로, 사용자 정의의 Comparator 를 작성할 필요도 없고, 적절한 차례로 SortedSet<ObjectName> 의 컨텐츠를 표시시킬 수가 있습니다. 상세한 것에 대하여는,<a 	    href="../../../api/javax/management/ObjectName.html#compareTo(javax.management.ObjectName)"><code>ObjectName.compareTo(ObjectName)</code></a>  를 참조해 주세요.
+	      
+	<li><p><a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6392494">6392494</a> : <b>ObjectName 의 도메인에 // 가 예약되도록(듯이) 지정합니다. </b>캐릭터 라인 // 은, JMX API 의 다음의 버젼의 카스케이딘그 기능의 일부로서 <a href="../../../api/javax/management/ObjectName.html">ObjectName</a>  도메인으로 사용할 예정입니다. 이 캐릭터 라인이 구현에 대해서 아직 특히 의미를 가지지 않는 경우에서도 이 캐릭터 라인을 회피할 수 있도록(듯이), 스펙에 경고가 추가되었습니다.
+         </ul>
+
+<h3 id="Standard">표준 MBean</h3>
+
+<p>표준 MBean 의 스펙으로 다음의 변경이 더해졌습니다. </p>
+
+    <ul>
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4949203">4949203</a> : <b>취득 메소드와 설정 메소드의 호출해에 관한 올바른 텍스트. </b>JMX 1.2 스펙 문서에서는, Maintenance Review 변경 리스트 마다, 표준 MBean 에서의 취득 메소드와 설정 메소드는 <code>MBeanServer.invoke</code> 에서는 호출할 수 없다고 하는 것을 명확하게 하고 있을 것이었습니다. 그러나, 이 의미에서의 텍스트가, 동적 MBean 에 관한 섹션에 잘못해 표시되고 있었습니다. 이것은, 표준 MBean 에 관한 섹션에 명확하게 둘 필요가 있습니다. </p>
+
+	<p>또, 이 텍스트는 프로퍼티 <code>"jmx.invoke.getters"</code> 에도 언급하고 있었습니다. 스펙에 기술되고 있기 (위해)때문에, 구현에 이 프로퍼티을 고려할 필요가 있다고 판단하는 사용자가 있었을지도 모릅니다. 그러나, 그것은 Maintenance Review 중에서 진술되고 있는 것은 아니고, 의도하고 있는 내용과도 다릅니다. 어느 쪽인가 하면, 이 프로퍼티은, 레퍼런스 구현의 기능의 1 개로, 이전이라면, 취득 메소드를 호출할 수 있는 것에 잘못해 의지하고 있었을지도 모르는 코드의 이행을 간단하게 하는 것입니다. 그 때문에, 스펙은 아니고, 레퍼런스 구현의 릴리스 노트에 기술할 필요가 있습니다.
+
+      <li>
+	<p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6190628">6190628</a> : <b>표준 MBean 가 MBean 인터페이스로 공변의 반환값형을 지원합니다. </b>J2SE 5 에서는, 클래스와 인터페이스에 공변의 반환값형이 도입되었습니다. 다만, MBean 서버는, 무결성이 없는 경우, 공변형으로 작성된 표준 MBean 를 거부했습니다. 이 릴리스에서는, 조작 (취득 메소드와 설정 메소드 이외의 메소드)과 읽기 전용의 속성 (대응 설정 메소드가 없는 취득 메소드)에 대해서, 공변형을 사용할 수 있습니다.
+    </ul>
+
+<h3 id="Dynamic">동적인 MBean</h3>
+
+<p>동적인 MBean 로 다음의 변경이 더해졌습니다. </p>
+
+    <ul>
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6306219">6306219</a> : <b>동적인 MBean 의 <a 	    href="../../../api/javax/management/MBeanServer.html#isInstanceOf(javax.management.ObjectName,%20java.lang.String)"><code>MBeanServer.isInstanceOf</code></a>  시멘틱스를 명확하게 합니다. </b>이 메소드의 스펙은, true 를 돌려주어야할 중요한 케이스 (구체적으로는, MBean 의 ClassLoader 가 지정한 클래스를 로드 할 수 있어 MBean 가 그 클래스의 인스턴스의 경우)를 빠뜨리고 있었습니다. 레퍼런스 구현은, 실제, 이 경우 true 를 돌려주었습니다. 이것은, DynamicMBean 가 자신의 MBeanInfo 에, 인스턴스가 아닌 클래스명을 돌려주는 경우와는 다릅니다. 예를 들어,<code>javax.management.StandardMBean</code> (DynamicMBean)의 인스턴스는, MBeanInfo (<code>getClassName()</code> 가 <code>"javax.management.timer.TimerMBean"</code> 를 돌려준다)를 돌려줄 수가 있었습니다. 현재의 스펙에서는, 호출의 <code>mbeanServer.isInstanceOf(objectName, &nbsp;"javax.management.StandardMBean")</code> 가 
+
+	  false 를 돌려줄 예정입니다. <code>TimerMBean</code> 은,<code>StandardMBean</code> 의 인스턴스는 아니기 때문입니다. 실제는, true 를 돌려줍니다만, 실제의 MBean 객체는 <code>StandardMBean</code> 의 인스턴스입니다. <em></em>
+
+	<p>클래스 <code>StandardEmitterMBean</code> 와 MBean 가 <code>NotificationBroadcaster</code> 일지 어떨지를 판단하기 위한 <code>isInstanceOf</code> 를 사용한 기존의 예가 추가된 것으로, 스펙을 변경해, 구현에 반영시키는 것이 중요하게 되었습니다. <code>StandardEmitterMBean</code> 는, 일반적으로,<code>NotificationBroadcaster</code> 가 아닌 클래스명을 가진 MBeanInfo 를 돌려줍니다. 다만,<code>isInstanceOf(...,&nbsp;"javax.management.NotificationBroadcaster")</code> 에 true 를 돌려주게 할 필요가 있습니다.
+    </ul>
+
+<h3 id="Model">Model MBean</h3>
+
+<p>Model MBean 의 스펙에는, 세세한 변경점이 많이 적용되고 있습니다. </p>
+
+    <ul>
+<li><p><a 	  href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4883709">4883709</a> : <b>Model MBean 기술자의 「value」와「displayName」필드는 이탤릭체로 할 필요가 있습니다</b>. 이것은, PDF 스펙에서의 버그입니다. 옵션의 필드는 이탤릭체로 할 필요가 있습니다 (종래는 달랐습니다).
+
+      <li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4997033">
+
+	  4997033</a> : <b>setMethod 와 currencyTimeLimit 가 없는 경우, RequiredModelMBean.setAttribute 는 예외를 throw 할 필요가 있습니다. </b>이 변경에 의해, PDF 와 Javadoc 텍스트간의 모순이 해결되었습니다. setMethod 와 캐쉬가 없는 경우에게만 예외가 throw 된다고 하는 스펙이 명확하기 때문에,<code>setAttribute</code> 의 조작에 영향은 우선 없을 것입니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5043245">5043245</a> : <b>RequiredModelMBean.getAttribute()로, 속성형의 체크가 너무 한니다. </b>반환값이 속성에 선언되고 있는 것과 완전히 같은 형태로 할 필요가 있는지, 그렇지 않으면 subtype도 가능한가에 대한 스펙이 애매했습니다. 이번 변경으로, subtype은 명시적으로 허가되었습니다.
+	
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5046781">5046781</a> : <b>ModelMBeanOperationInfo 기술자의 role 필드가 옵션인 것을 스펙에 기술할 필요가 있습니다. </b>PDF 스펙에는 이 필드가 삭제 가능하다라고 하는 것이 명기되어 있기 (위해)때문에, 레퍼런스 구현의 동작에 영향을 줍니다.
+
+      <li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5046784">
+
+	  5046784</a> : <b>Model MBean 기술자의 targetType 의 값은 대문자와 소문자가 구별되지 않습니다. </b>스펙에서는, 자신의 예로, 이 필드는 대문자와 소문자가 구별되지 않는 것을 시사하고 있습니다만, 대문자 소문자가 구별되지 않는 필드의 명시적인 리스트에는 기술되고 있지 않았습니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5104947">5104947</a> : <b>ModelMBeanInfoSupport.clone 가 deep 또는 shallow 일지 어떨지를 명확하게 합니다. </b>스펙이 수정되어 클론을 shallow 로 하는 이유에 대해 기존의 동작이 기술됩니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6175387">6175387</a> : <b>새로운 <code>OnUnregister</code> persistPolicy 의 값을 Model MBean 기술자에게 추가합니다. </b>지속성이 Model MBean 데이터로 지원되었을 경우, MBean 속성의 기술자에게 있는 persistPolicy 치를 사용해, 동작 방법을 정의할 수 있습니다. 종래, 이러한 값은 Never, OnUpdate, OnTimer, NoMoreOftenThan, Always 였습니다. 이 릴리스에서는, 속성치가 영속적이 되는 것을 의미하는 새로운 값, OnUnregister 가 추가되었습니다. 이것에 의해, OnUnregister 를 포함한 MBean 가 서버에 등록되지 않은 경우, 그 속성의 값이 영속적이 됩니다. 이 필드를 참고로 하는 메소드의 스펙도 이것에 응해 갱신되어<a 	  href="../../../api/javax/management/modelmbean/RequiredModelMBean.html#store()">  <code>RequiredModelMBean.store()</code></a>  와 <a 	  href="../../../api/javax/management/modelmbean/RequiredModelMBean.html#setAttribute(javax.management.Attribute)"><code>RequiredModelMBean.setAttribute</code></a>  에 보존되지 않는 persistPolicy 의 값의 리스트를 가지게 되었습니다.
+	  
+<li><p><a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6236765">6236765</a> : <b>ModelMBeanConstructorInfo 에 특정의 필드가 무효라고 표시됩니다만, 체크하지 않습니다. </b>종래의 <a     href="../../../api/javax/management/modelmbean/ModelMBeanConstructorInfo.html">ModelMBeanConstructorInfo</a>  의 스펙에서는, persistPolicy 과 currencyTimeLimit 필드가 무효였지만, 레퍼런스 구현은 이것을 체크하지 않았습니다. 이러한 필드를 가진 가능성이 있는 기존의 코드의 파괴를 피하기 (위해)때문에, 필드의 의미는 없지만 무효라고 판단되지 않게, 이번 스펙을 변경했습니다.   
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6241620">6241620</a> : <b>null 파라미터에 관한 DescriptorSupport(String[], Object[]) 문서의 모순. </b>스펙의 모순이 해결되었습니다. 레퍼런스 구현의 동작에 반영됩니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6332962">6332962</a> : <b>targetObject 필드를 포함한 DescriptorSupport 의 직렬화에 문제가 있습니다. </b>Model MBean 에 있어서의 속성 또는 조작의 기술자에게는, 그 속성이나, Model MBean 전체로 정의된 것으로부터 다른 자원으로 향하는 조작에 대한 직접적인 액세스가 되는 <code>targetObject</code> 필드가 포함되는 경우가 있습니다. 그러한 경우, 그 값은 직렬화가 불가능한 객체가 될 가능성이 있습니다. 모두에 있어, 직렬화 불가능한 객체를 직렬화하는 의미는 없습니다. 그 때문에, DescriptorSupport 의 직렬화로부터 그것을 제외하도록(듯이) 스펙을 갱신해, RequiredModelMBean.getMBeanInfo()가 직렬화 가능한 객체를 돌려주도록(듯이) 했습니다.
+     
+		  
+	  
+    </ul>
+
+<h3 id="Open">Open MBean</h3>
+
+<p>Open MBean 에 대한 변경의 상당수는, 사용자 정의의 MXBean 가 더해지는 것이 전제에 생각되었습니다. 여기에, 모든 변경점을 나타냅니다. </p>
+
+    <ul>
+      <li><p>
+	  <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5045358">5045358</a> : <b>Open MBean 가 원시형의 배열을 참조할 수 있습니다. </b>종래, Open Bean 를 참조할 수 있던 형태세트에는,<code>java.lang.Integer</code> 나 <code>java.lang.Boolean</code> 와 같이 프리미티브(primitive)인 래퍼형만 포함되었습니다. 다만,<code>int</code> 나 <code>boolean</code> 와 같은 원시형은 포함되지 않았습니다. 이번, 이러한 원시형의 배열이 포함되게 되었습니다. ArrayType 클래스를 확장했기 때문에,<code>int[]</code> 와 같은 원시형을 OpenType 로서 표현할 수 있습니다. 이 새로운 기능을 사용하는 것으로, MXBean 에 MXBean 인터페이스내의 원시형의 배열을, 대응하는 OpenType 에 매핑 시킬 수가 있습니다. </p>
+
+	<p>다음의 메소드가 ArrayType 클래스에 추가되었습니다.
+<UL>
+<LI><A HREF="../../../api/javax/management/openmbean/ArrayType.html#getArrayType(javax.management.openmbean.OpenType)">javax.management.openmbean.ArrayType.getArrayType(OpenType)</A> </li>
+<LI><A HREF="../../../api/javax/management/openmbean/ArrayType.html#getPrimitiveArrayType(java.lang.Class)">javax.management.openmbean.ArrayType.getPrimitiveArrayType(Class)</A> </li>
+<LI><A HREF="../../../api/javax/management/openmbean/ArrayType.html#isPrimitiveArray()">javax.management.openmbean.ArrayType.isPrimitiveArray()</A> </li>
+<LI><A HREF="../../../api/javax/management/openmbean/ArrayType.html#ArrayType(javax.management.openmbean.SimpleType,%20boolean)">javax.management.openmbean.ArrayType(SimpleType, boolean)</A> </li>
+</UL>
+	<p><b>이번으로부터, 생성자 <A HREF="../../../api/javax/management/openmbean/ArrayType.html#ArrayType(int,%20javax.management.openmbean.OpenType)">ArrayType(int dimension, OpenType&lt;? &gt; elementType)</A>  로, elementType 파라미터가 ArrayType 의 인스턴스가 될 수가 있습니다 </b> (<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6252649">6252649</a> ). <A HREF="../../../api/javax/management/openmbean/ArrayType.html#equals(java.lang.Object)">ArrayType.equals</a>  와 <A HREF="../../../api/javax/management/openmbean/ArrayType.html#hashCode()">ArrayType.hashcode</a>  메소드는, 이번으로부터 새로운 primitiveArray 플래그를 고려할 수 있게 되었습니다.
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5095277">  5095277</a> : <b><code>CompositeDataSupport.equals</code> 가 요소 마다 배열을 비교합니다</b>. 종래는, 2 개의 <code>CompositeDataSupport</code> 요소가 각각 최저 1 개의 <code>ArrayType</code> 항목을 포함한 같은 <code>CompositeType</code> 를 가지고 있었을 경우,<code>CompositeDataSupport.equals</code> 의 호출로, 이 배열의 ID 만이 비교되었습니다. 그 결과, 객체가 같은 배열을 참조하고 있었을 경우에서도,<code>CompositeDataSupport.equals</code> 는 true 밖에 돌려주지 않았습니다. 이번으로부터,<a 	href="../../../api/javax/management/openmbean/CompositeDataSupport.html#equals(java.lang.Object)"><code>CompositeDataSupport.equals</code></a>  를 호출하면(자), 배열의 요소를 1 개씩 비교하게 되었습니다. 그 때문에, 2 개의 객체가 같은 컨텐츠가 다른 배열을 참조하고 있는 경우에, true 가 돌려주어집니다. <a 	href="../../../api/javax/management/openmbean/CompositeDataSupport.html#hashCode()"><code>CompositeDataSupport.hashCode</code></a>  에도 이것에 응한 변경이 이루어지고 있습니다. </p>
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6228130">6228130</a> : <b><a 	  href="../../../api/javax/management/openmbean/TabularDataSupport.html#entrySet()"><code>TabularDataSupport.entrySet()</code></a>  로 반환값의 <code>Set</code> 의 키가 <code>List</code> 에 랩 되도록(듯이) 지정합니다. </b>종래, 반환값의 Set 의 컨텐츠에 대해 문서의 정의가 애매했습니다. 이번으로부터,<code>Set&lt;Map.Entry&lt;Object, Object&gt;&gt;</code> 로서 명확하게 하고 있습니다만, 실제로는 <code>Set&lt;Map.Entry&lt;List&lt;? &gt;, CompositeData&gt;&gt;</code> 입니다. 호환성의 이유로부터, 후자의 선언을 직접 행할 수 없습니다.
+
+      <li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6320104">
+
+	    6320104</a> : <b>Open MBean 의 OperationInfo 의 impact 에, UNKNOWN 를 설정할 수 있는 기능이 추가됩니다</b>. <a href="../../../api/javax/management/MBeanOperationInfo.html"><code>MBeanOperationInfo</code></a>  의 <code>impact</code> 로서 허가되고 있던 값은,<code>ACTION</code>,<code>INFO</code>,<code>ACTION_INFO</code>,<code>UNKNOWN</code> 입니다. 종래는, 이 마지막 값이 <a 	    href="../../../api/javax/management/openmbean/OpenMBeanOperationInfoSupport.html"><code>OpenMBeanOperationInfoSupport</code></a>  로 허가되지 않았습니다.
+    
+	<li><p><a 	      href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5072004">5072004</a> : <b>CompositeData 와 CompositeType 에 있어서의 schema의 전개의 지원가 좋아졌습니다. </b>종래,<a 	      href="../../../api/javax/management/openmbean/CompositeType.html">CompositeType</a>  ct 가 지정된 상태로, 메소드 <a 	      href="../../../api/javax/management/openmbean/CompositeType.html#isValue(java.lang.Object)">javax.management.openmbean.CompositeType.isValue</a> (x)의 x 가 <a 	      href="../../../api/javax/management/openmbean/CompositeData.html">CompositeData</a>  의 경우, 한층 더 x. <a 	      href="../../../api/javax/management/openmbean/CompositeData.html#getCompositeType()">getCompositeType()</a>  가 ct 와 동일했던 경우만, javax.management.openmbean.CompositeType.isValue(x)는 true 를 돌려주고 있었습니다. 그러나, 이번으로부터 이 룰이 완화되었습니다. x.getCompositeType()에 반환되는 형태는, 이번도 ct 와 같은 이름일 필요가 있습니다. 또, ct 와 같은 항목을 모두 가지고 있을 필요가 있습니다만, 항목을 추가할 수 있습니다. 이 변경은, TabularData 나 배열에 포함되는 CompositeData 항목에 관한 <a 	      href="../../../api/javax/management/openmbean/TabularType.html#isValue(java.lang.Object)">TabularType.isValue</a>  와 <a 	      href="../../../api/javax/management/openmbean/ArrayType.html#isValue(java.lang.Object)">ArrayType.isValue</a>  의 룰에도 영향을 줍니다.
+
+	<li><p><a 	      href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333582">6333582</a> : <b>OpenType 는, public static 의 배열 ALLOWED_CLASSNAMES 를 선언해야 하는 것이 아닙니다. </b>이 필드는, 새로운 필드 <a 	      href="../../../api/javax/management/openmbean/OpenType.html#ALLOWED_CLASSNAMES_LIST">ALLOWED_CLASSNAMES_LIST</a>  와 바뀝니다.
+
+    </ul>
+
+<h3 id="Monitor">감시 서비스</h3>
+
+<p>다음의 변경점이 감시 서비스 (패키지 <a 	href="../../../api/javax/management/monitor/package-summary.html"><code>javax.management.monitor</code></a> )의 스펙에 참가했습니다.
+
+    <ul>
+      <li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6222961">
+
+	    6222961</a> : <b>감시 서비스가 복합형을 지원합니다. </b>종래의 감시 서비스에서는, 단순형의 속성 밖에 감시할 수 없었습니다. 그 때문에, 감시가 필요한 값이, 많은 복합형에 파묻혀 버리는 일이 있습니다. 예를 들어, JSR 77 으로 정의된 J2EE Instrumentation을 처리한 뒤, 서브 렛의 서비스 시간에 감시를 설정하는 경우, 그 서브 렛의 <code>ServiceTime</code> 속성을 취득해,<code>serviceTime.getMaxTime()</code> 를 감시할 필요가 있습니다. 그 때문에,<code>ServiceTime.maxTime</code> 를 감시해 이 효과를 취득할 수 있도록(듯이) 스펙이 변경되었습니다. 상세한 스펙에 대해서는,<a 	    href="../../../api/javax/management/monitor/package-summary.html"><code>javax.management.monitor</code></a>  를 참조해 주세요.
+
+      <li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6239455">
+
+	    6239455</a> : <b>감시 태스크가 호출해 옆의 <code>monitor.start()</code> 의 액세스 제어 문맥내에서 실행되도록(듯이) 지정합니다</b>. 시큐리티가 유효한 경우, 호출측이 대상의 속성에 액세스 되어 있을지 어떨지, 또는 그 속성의 구현이 실행할 가능성이 있는, 시큐리티로 보호된 조작에 액세스 되어 있을지 어떨지를 확인하기 위해서 실행된 시큐리티 체크는, 호출측의 <code>monitor.start()</code> 의 액세스 제어 문맥에 근거합니다. 감시를 생성한 옆의 액세스 제어 문맥이 아닙니다. 이것은,<a 	    href="../../../api/javax/management/monitor/package-summary.html"><code>javax.management.monitor</code></a>  의 패키지 다큐멘테이션에 기술되고 있습니다.
+
+    </ul>
+
+<h3 id="Timer">타이머 서비스</h3>
+
+<p>다음의 변경점이 타이머 서비스 (패키지 <a 	href="../../../api/javax/management/timer/package-summary.html"><code>javax.management.timer</code></a> )의 스펙에 참가했습니다.
+
+    <ul>
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6235077">6235077</a> : <b>javax.management.timer.Timer doc 가, 과거의 일자로 발생한 내용과 무결성이 잡히지 않았습니다. </b>JMX Specification 의 버젼 1.2 보다 전은, 통지가 과거의 시간에 스케줄 되고 있었을 경우, 타이머 서비스가 예외를 throw 하도록(듯이) 정의되고 있었습니다. 버젼 1.2 로부터는, 이러한 경우, 즉석에서 통지를 송신할 수 있는 것 같은, 보다 논리적인 동작이 도입되었습니다. 그렇지만, javax.management.timer.Timer 의 문서에 따라서는, 아직 낡은 동작이 반영되고 있었습니다. 특히, 클래스 문서의 주기에는, 과거의 시간에 대한 통지는 무시된다고 기술되고 있던 것에 대해, IllegalArgumentException 의 @throws 문서에는, 과거의 일자에 throw 되었다고 기술이 있었습니다.
+	<li><p><a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6387340">6387340</a> : <b>javax.management.timer.TimerAlarmClockNotification 를 삭제합니다. </b>
+
+표시되는 생성자 만이 비 public 클래스의 형태의 파라미터를 가지고 있기 (위해)때문에, 이 클래스는, 정의된 패키지 이외의 코드에서는 사용할 수 없습니다. 이 생성자 을 null 파라미터로 호출했을 경우, 즉석에서 예외를 받습니다. 그 때문에, 예외적으로, 이 public 클래스를 그 밖에 영향이 나오지 않게 Java SE API 로부터 삭제할 수 있도록(듯이) 했습니다.
+	    
+    </ul>
+
+<h3 id="MLet">MLet 서비스</h3>
+
+<p>다음의 변경점이 MLet 서비스 (패키지 <a 	href="../../../api/javax/management/loading/package-summary.html"><code>javax.management.loading</code></a> )의 스펙에 참가했습니다.
+
+    <ul>
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4796780">4796780</a> : <b>MLetContent 클래스는 public 로 할 필요가 있습니다. </b>최근의 릴리스에서는,<a 	    href="../../../api/javax/management/loading/MLet.html#check(java.lang.String,%20java.net.URL,%20java.lang.String,%20javax.management.loading.MLetContent)"><code>MLet.check</code></a>  메소드가 public 로 작성되었습니다만, 그 파라미터의 1 개가 <a href="../../../api/javax/management/loading/MLetContent.html"><code>javax.management.loading.MLetContent</code></a>  형으로, 그 클래스가 private 인 채였습니다. 그 때문에, 비표시의 클래스를 참조한 공공적으로 표시할 수 있는 메소드로 부정합이 발생했습니다. 이번, MLetContent 를 public 로 하는 것으로 이 문제를 수정했습니다.
+	    
+<li><p><a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6223396">6223396</a> : <b>네이티브 라이브러리의 MLet 지원가 애매하기 때문에, 옵션으로 할 필요가 있습니다. </b><a     href="../../../api/javax/management/loading/MLet.html#findLibrary(java.lang.String)">MLet.findLibrary</a>  의 스펙이 갱신되어 jar 파일내의 네이티브 라이브러리의 검색에 사용되는 알고리즘이 기술되게 되었습니다. 또, 이 기능을 지원하지 않는 구현의 @throws 절도 추가했습니다. PDF 의 스펙도 이와 같이 갱신되었습니다 (섹션 8.3. 2).  	    
+    </ul>
+
+
+<h3 id="Relation">관계 서비스</h3>
+
+<p>다음의 변경점이 관계 서비스 (패키지 <a 	href="../../../api/javax/management/relation/package-summary.html"><code>javax.management.relation</code></a> )의 스펙에 참가했습니다.
+
+    <ul>
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4892674">4892674</a> : <b>RelationNotification 의 직렬화의 문제. </b><a 	    href="../../../api/javax/management/relation/RelationNotification.html"><code>RelationNotification</code></a>  생성자 은, 자신의 소스 파라미터가 <code>RelationService</code> 의 인스턴스일 필요가 있어, 그것들은 사용자에게 통지를 전송 하기 전의, RelationService 의 ObjectName 에 대한 재기입에 대해, MBean 서버에 의지하고 있습니다. 이 설정은 불안정해, 특히 RelationNotification 인스턴스의 재구축이 어려워집니다 (예: 직렬화 된 XML 형식으로부터의 재구축). 생성자 을 수정하는 것으로, 소스를 <code>ObjectName</code> 로 하는 일도 가능으로 했습니다.
+
+      <li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5053367">
+
+	    5053367</a> : <b>RelationService.addRelationType 스펙이 null 관련형의 이름을 거부합니다</b>. RelationService.addRelationType ( 및 RelationServiceMBean.addRelationType)는, RelationType 속성이 getRelationTypeName()로부터 null 를 돌려주었을 경우, IllegalArgumentException 를 throw 하도록(듯이) 명시적으로 지정되고 있습니다. RelationService.addRelationType ( 및 RelationServiceMBean.addRelationType)는, RelationType 의 속성이 getRelationTypeName()로부터 null 를 돌려주었을 경우, IllegalArgumentException 를 throw 하도록(듯이) 명시적으로 지정되고 있습니다. 관련형의 이름을 가지는 다른 RelationService 메소드는, 모두 null 명을 거부하도록(듯이) 지정되고 있습니다. 그 때문에, addRelationType 가 1 개에서도 null 명을 허가하면(자), RelationType 로 아무것도 할 수 없게 되어 버릴 가능성이 있습니다. 특히, 재차 삭제하는 일도 할 수 없게 되겠지요.
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6229880">6229880</a> : <b>RelationSupport javadoc 가 애매합니다. </b>. <code>RelationSupport.setRole</code> 는, 롤에 기입할 수 없는 경우, RoleNotFoundException 를 throw 하도록(듯이) 지정하고 있었습니다. 실제, 지정의 이름에 정의된 롤이 없는 경우도, RoleNotFoundException 가 throw 됩니다 (getRole 메소드와 같은 상태). </p>
+
+	<p><code>RelationSupport.setRoles</code> 는, 롤 「이름」이 null 의 경우, IllegalArgumentException 를 throw 하도록(듯이) 지정하고 있었습니다. <em></em><b>이것은, 롤 「리스트」로 할 필요가 있습니다. </b><em></em>
+    </ul>
+
+<h3 id="Query">쿼리</h3>
+
+<p><b>새로운 <A 	HREF="file:///home/emcmanus/jmx/jmx1.3/javadoc/javax/management/Query.html#isInstanceOf(javax.management.StringValueExp)"><code>javax.managent.Query.isInstanceOf(StringValueExp className)</code></A>  메소드</b> 를 사용하는 것으로, 특정의 클래스의 인스턴스인 모든 MBean 를 취득할 수 있습니다 (<a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5072174">5072174</a> ).
+
+<h3 id="MBSIH">MBeanServerInvocationHandler</h3>
+
+<p>다음의 변경점이 <a     href="../../../api/javax/management/MBeanServerInvocationHandler.html">MBeanServerInvocationHandler</a>  의 스펙에 참가했습니다.
+
+    <ul>
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6177524">6177524</a> : <b>MBeanServerInvocationHandler 가 Object 메소드를 프록시 한 MBean 에 전송 하지 않게 되었습니다. </b>종래, MBeanServerInvocationHandler 는 hashCode(), toString(), equals(Object) 메소드를, 프록시 한 MBean 에 전송 하고 있었습니다. 즉, MBean 프록시를 HashMap 의 키로서 사용할 수 없었습니다 (예를 들어, 프록시에 캐쉬된 MBeanInfo 의 검색). 이번으로부터, 핸들러의 대상이 되는 MBean 인터페이스로 명시적으로 기술되고 있는 경우에게만, MBeanServerInvocationHandler 는 이러한 메소드를 전송 합니다. javax.management.MBeanServerInvocationHandler.invoke 메소드는 갱신되어 문의중의 메소드가 있을지 어떨지를 확인하기 위해서, MBean 인터페이스를 검증하게 되었습니다. </p>
+
+      <li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6278707">
+
+	    6278707</a> : <b>MBeanServerInvocationHandler 는, 자신의 생성자  파라미터의 취득 시에, 취득 메소드가 필요합니다. </b><code>getMBeanServerConnection()</code>,<code>getObjectName()</code>,<code>isMXBean()</code> 는 새로운 메소드입니다.
+    </ul>
+
+<p>새로운 메소드 <a href="../../../api/javax/management/JMX.html#newMBeanProxy(javax.management.MBeanServerConnection,%20javax.management.ObjectName,%20java.lang.Class)"><code>JMX.newMBeanProxy</code></a>  는,<a href="../../../api/javax/management/MBeanServerInvocationHandler.html#newProxyInstance(javax.management.MBeanServerConnection,%20javax.management.ObjectName,%20java.lang.Class,%20boolean)"><code>MBeanServerInvocationHandler.newProxyInstance</code></a>  의 대신으로, 보다 기억하기 쉬워졌습니다.
+
+<h3 id="Serial">직렬화 형식</h3>
+
+<p>JMX API 에 있어서의 클래스의 직렬화 형식의 스펙이, 다음과 같이 명확하게 되었습니다. </p>
+
+    <ul>
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6253903">6253903</a> : JMX API 의 스펙에, 직렬화 가능한 모든 클래스의 serialVersionUID 가 리스트 됩니다. 구현상의 이유로부터,<a 	    href="../../../api/serialized-form.html">
+
+	    Serialized Form</a>  페이지 (Javadoc 생성의 스펙)는, 특정의 클래스의 <code>serialVersionUID</code> 를 삭제합니다. 독립한 구현에서는 준거 정보로서 이 정보가 필요하게 되기 (위해)때문에, 필요한 경우, 자신의 클래스의 스펙내에서 제공되었습니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6344759">6344759</a> : 12 의 <code>javax.management. *Exp</code> private 클래스를 보다 명확하게 할 필요가 있습니다. 구현간에 상호 운용하는 경우, 다양한 정적 <code>Query. *</code> 메소드 (<a href="../../../api/javax/management/Query.html#and(javax.management.QueryExp,%20javax.management.QueryExp)"><code>Query.and</code></a>  등)에 반환된 값은, 지정의 비 public 클래스일 필요가 있습니다. 또는, 적어도 적당 직렬화 될 필요가 있습니다. 이것에 응해, 이러한 메소드의 스펙이 갱신되고 있습니다.
+    </ul>
+
+<h3 id="Permissions">액세스권의 체크</h3>
+
+종래, JMX 의 스펙에는, null 가 아닌 <a     href="../../../api/java/lang/SecurityManager.html">SecurityManager</a>  가 있는 경우 (또는 있는 경우만), 액세스권의 체크가 실행되도록(듯이) 기술되고 있었습니다. 이것이 변경되어 SecurityManager 의 유무를 확인할 필요가 없는 기술로 변경되었습니다. 즉, 이번으로부터, 구현은 SecurityManager 가 존재하지 않는 경우에서도, 체크를 실행할지 어떨지를 선택할 수 있습니다.  (<a 	href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6419572">6419572</a> )
+
+<h3 id="Exceptions">MBean RuntimeException 처리</h3>
+
+    <p>
+JMX 의 스펙은, MBean 의 속성이나 조작을 구현하고 있는 메소드가 RuntimeException 를 throw 했을 경우, 무엇이 발생할까에 임해서 기술이 애매했습니다 (<a         href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5043152">5043152</a> ). 면밀하게 해석하면(자) RuntimeMBeanException 의 예외를 랩 할 필요가 있는 것을 알 수 있었습니다만, RuntimeOperationsException 로 그것을 랩 할 수 없는가는 명확하지는 않았습니다. 이번, RuntimeMBeanException 에 대해 스펙에 명시적으로 기술되어 또, RuntimeOperationsException 가 MBean 메소드가 불려 가기 전에 (null 속성을 가지는 getAttribute 등) 발생하는 예외를 랩 하는 일도 명시적으로 기술되었습니다.
+    </p><p>
+
+Model MBeans 는, RuntimeMBeanException 는 아니고, RuntimeOperationsException 의 ManagedResource 로 불려 간 메소드로부터 오는 예외를 랩 합니다. <br>이것은 명확하게 지정되고 있지 않았습니다만, 변경했을 경우, 기존의 코드가 망가질 가능성이 있었습니다. 그 때문에, 기존의 동작 뿐만이 아니라, MBean 가 이후는 랩 되지 않는 RuntimeOperationsException 를 throw 하는 조건도 명확하게 지정했습니다.
+    </p>
+    
+<h3 id="remote">JMX Remote API</h3>
+<p>다음의 변경점이 JMX Remote API 의 스펙에 참가했습니다. </p>
+
+    <ul>
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6343209">6343209</a> : <b>SubjectDelegationPermission 가 ConnectorServer 작성 측에 대해, 어떻게 기능하는지를 지정합니다. </b><a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnectorServer.html">JMXConnectorServer</a>  의 작성측은, 연결기 서버에 작성된 접속이 사용하는 모든 액세스권을 가질 필요가 없어졌습니다. 그 대신해, 각각 원격로 인증된 ID 의 <a 	  href="http://download.java.net/jdk6/doc/api/javax/management/remote/SubjectDelegationPermission.html">SubjectDelegationPermission</a>  를 가질 수가 있습니다. 이것에 의해, 시큐리티를 중시한 환경에서의 배치가 간단하게 됩니다. </p>
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5021246">5021246</a> : <b>RMI 연결기의 스펙에, 해당하는 경우 코드의 다운로드를 사용하도록(듯이) 기술합니다. </b>RMI 연결기는, 해당하는 경우, 「<a 	    href="http://java.sun.com/javase/6/docs/guide/rmi/codebase.html"><em>Java RMI 의 사용에 의한 동적인 코드의 다운로드</em></a> 」의 기사로 지정되고 있는 대로 코드의 다운로드를 사용합니다. 레퍼런스 구현이 항상 이 방법으로 동작해 왔기 때문에, 그것을 반영할 수 있도록(듯이), 스펙이 갱신되었습니다. </p>
+
+	<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6375696">6375696</a> : <b>JMX Remote API 의 CORBA Tie 클래스는, javax.management.remote.rmi 에 포함할 필요가 있습니다. </b>OMG 의 「IDL to Java Language Mapping Specification」에 준거하는 경우,<a 	  href="http://download.java.net/jdk6/doc/api/javax/management/remote/rmi/RMIServerImpl.html">javax.management.remote.rmi.RMIServerImpl</a>  나 <a 	  href="http://download.java.net/jdk6/doc/api/javax/management/remote/rmi/RMIConnectionImpl.html">javax.management.remote.rmi.RMIConnectionImpl</a>  의 원격 객체의 CORBA 의 「Tie 클래스」가 <a 	  href="http://download.java.net/jdk6/doc/api/javax/management/remote/rmi/package-summary.html">javax.management.remote.rmi</a>  패키지에 포함될 필요가 있습니다. </p>
+	  
+	      <li><p><a       href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231888">
+
+	    6231888</a> : <b>JMXConnector 는, Closeable 를 구현합니다. </b> 인터페이스 <a 	href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/Closeable.html"><code>java.io.Closeable</code></a>  는, IOException 을 throw 하는 단일의<br> <code>public void close()</code> 메소드를 정의합니다. <a href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnector.html"><code>JMXConnector</code></a>  에는, 동일한 서명을 가지는 메소드가 포함되기 (위해)때문에,<code>JMXConnector</code> 인터페이스는 <code>Closeable</code> 인터페이스를 확장할 수 있습니다.
+
+<li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6234398">6234398</a> : <b>JMX 접속 프로바이더의 API 예외 처리가 애매합니다. </b>인터페이스 <a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnectorProvider.html"><code>JMXConnectorProvider</code></a>  와 <a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnectorServerProvider.html">    <code>JMXConnectorServerProvider</code></a>  가 명확하게 되었습니다. URL 의 프로토콜이 프로바이더에 인식되지 않는 경우, 이러한 메소드가 <code>MalformedURLException</code> 를 throw 합니다. 또, 그 URL 에 대해서 적절한 프로바이더가 어떠한 이유로써 사용할 수 없는 경우는,<a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXProviderException.html"><code>JMXProviderException</code></a>  를 throw 합니다. 다른 경우는, 다른 <code>IOException</code> 을 throw 합니다.
+
+      <li><p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6238076">
+
+	    6238076</a> : <b><a href="http://download.java.net/jdk6/doc/api/javax/management/remote/rmi/RMIConnector.html"><code>javax.management.remote.rmi.RMIConnector</code></a>  의 직렬화 형식에 <code>clientNotifID</code> 필드가 포함되어 있습니다. </b>이 필드는, 우연히, 직렬화 형식에 포함되었습니다. 이 필드의 목적은,<code>RMIConnector</code> 로부터의 <a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnectionNotification.html"><code>JMXConnectionNotification</code></a>  의 통지 순서 번호를 추적하는 것입니다. 일반적으로,<code>RMIConnector</code> 는, RMIConnectorServer.toJMXConnector 의 반환값인 경우에게만, 직렬화 됩니다<a href="http://download.java.net/jdk6/doc/api/javax/management/remote/rmi/RMIConnectorServer.html#toJMXConnector(java.util.Map)">
+
+	    <code></code></a> (접속되지 않기도 하고, 순서 번호가 0 의 경우). <code>RMIConnector</code> 가 다른 조건으로 직렬화 되었을 경우에서도, 그 후 직렬화가 복원되면, 통지 순서 번호가 계속되는 것은 우선 없습니다.
+
+<li><p><a 	    href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6238815">6238815</a> : <b>연결기 클라이언트가 접속되고 있는 주소를 취득하는 방법을 추가합니다. </b>새로운 인터페이스 <a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXAddressable.html"><code>JMXAddressable</code></a>  를 지정의 연결기 클라이언트에 구현시킬 수가 있습니다. 구현시켰을 경우,<a href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnector.html"><code>JMXConnector</code></a>  인스턴스를 <code>JMXAddressable</code> 에 캐스트 해 <code>getAddress()</code> 를 호출해, 클라이언트가 접속되고 있는 주소를 검출할 수 있습니다. RMI 클라이언트의 접속이 지정되어 이 인터페이스가 구현됩니다. <a 	    href="http://download.java.net/jdk6/doc/api/javax/management/remote/JMXConnectorServer.html"><code>JMXConnectorServer</code></a>  클래스도 기존의 <code>getAddress()</code> 메소드를 사용해, 이 인터페이스를 구현합니다.   
+    </ul>
+
+
+</blockquote>
+<!-- Body text ends here --> <!-- ============================================================== -->
+
+<hr SIZE=3 NOSHADE>
+
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+
+<td>
+<font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> 
+
+All Rights Reserved. </font> <br> <br>
+
+<font SIZE="-1"><A   HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/1.5.0/docs/guide/jmx/index.html&category=j2se&mailsubject=Java%20Management%20Extensions">피드백</A> </font>
+</td>
+
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <br>
+   </td>
+
+</tr>
+
+</table>
+
+
+
+
+
+</font></body>
+</html>

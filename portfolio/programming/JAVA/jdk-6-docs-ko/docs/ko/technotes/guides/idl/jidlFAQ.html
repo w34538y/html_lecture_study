@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html">
+	<TITLE>Java(TM) IDL FAQ - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+<BODY>
+<TABLE WIDTH=50% BORDER=0 CELLPADDING=2 CELLSPACING=2 STYLE="page-break-before:
+always">
+	<TR>
+		<TD WIDTH=10>
+			<P><IMG SRC="../../../images/javalogo52x88.gif"  NAME="Graphic1" ALT="Java" ALIGN=BOTTOM WIDTH=52 HEIGHT=88 BORDER=0>
+						</P>
+		</TD>
+	</TR>
+</TABLE>
+<H1 ALIGN=CENTER>Java<FONT SIZE=1><SUP>TM</SUP></FONT> IDL FAQ</H1>
+<P>이 문서는 Java <FONT  SIZE=1><SUP>TM</SUP></FONT> IDL 테크놀러지의 사용에 관한 질문에 대답하기 위한의 것입니다. 이 문서는, 닿은 질문을 기초로 향후도 갱신해 갑니다. 찾고 있는 질문의 대답이 이 문서내에 발견되지 않는 경우는, 사용자에 의해 지원되고 있는 Java IDL 테크놀러지의 포럼을 참조해 주세요.  포럼은,<a  href="http://forums.java.sun.com">http://forums.java.sun.com</a>  로 참조할 수 있습니다.   
+
+
+</P>
+
+
+<P><A HREF="#errors">에러</A> </P>
+<UL>
+	<LI><A HREF="#servermain">HelloServer 를 실행하려고 하면(자) 다음과 같은 메세지가 표시됩니다. 왜입니까. Exception in thread "main" java.lang.NoClassDefFoundError:HelloServer/java</a> 
+	 <LI><a href="#newidlj">이번 릴리스로 기존의 프로그램을 실행할 수 없습니다. 호환성에 문제가 있습니까. </a> 
+	 <LI><A HREF="#linuxior">IOR 에 127.0. 0.0 의 호스트 주소가 포함되어 있으면(자), Linux 서버로부터 IOR 를 사용해 접속할 수 없습니다. 왜입니까. </A> 
+	 <LI><A HREF="#minorcodes">마이너 코드의 의미는 어떻게 하면 압니까. </A> 
+	 <LI><A HREF="#servertool"><code>servertool</code> 를 사용해 서버를 기동할 때, 복수의 클래스 패스를 추가할 수 있습니까. </A> 
+	  <LI><A HREF="#linux_naming_service">Linux 플랫폼에서 네임 서비스 (<code>tnameserv</code>,<code>orbd</code>)를 실행할 수 없는 경우에는, 어떻게 하면 좋을까요. </A> <p></P>
+	 
+</UL>
+<P><A HREF="#features">기능</A> </P>
+<UL>
+	<LI><A HREF="#threading">이번 릴리스로, CORBA 의 구현은 어떠한 thread 모델을 지원하고 있습니까. </A> 
+	<LI><A HREF="#notificationevent"><a href="#notificationevent">Java IDL 에는 통지 서비스나 이벤트 서비스가 있습니까.  인터페이스 리포지터리(repository)는 어떻습니까. </a> </A> 
+	<LI><A HREF="#two machines">2 대의 머신으로 Hello World 의 예를 실행하는 방법을 가르쳐 주세요. </A> 
+	<LI><A HREF="#corbacompliant">Java IDL 는 OMG CORBA 스펙에 준거하고 있습니까. </A> 
+</UL>
+
+<P><a href="#compatibility">호환성과 상호 운용성</a> 
+<UL>
+	<LI><A HREF="#CORBA-J2SE5.0">J2SE 5.0 의 CORBA 스펙에의 대응</A> 
+	<LI><A href="#differentORB">다른 ORB 를 지정하려면  어떻게 하면 좋을까요. </A> 
+	<LI><a href="#testcompat">사용하고 있는 JDK ORB 클라이언트가, 다른 벤더의 ORB 구현과 통신할 수 있을지 어떨지를 테스트하는 방법을 가르쳐 주세요. </a> 
+	<LI><a href="#interopdoc">CORBA 클라이언트와 Java 서버 어플리케이션의 사용예는 제공되고 있습니까. </a> 
+	<LI><a href="#nameserver">Sun 의 ORB 로부터 서드 파티제의 네임 서비스에 접속하는 방법을 가르쳐 주세요. </a> 
+	<LI><A HREF="#ORBinterop">C++ 의 CORBA 서버와 함께 Java IDL ORB 를 사용할 수 있습니까. (상호 운용성이 있습니까)</A> 
+</UL>
+<P><A HREF="#general">전반</A> </P>
+<UL>
+	<LI><A HREF="#IDL-or-IIOP">Java IDL 와 Java RIM-IIOP 테크놀러지의 어느 쪽을 사용해야할 것인가</A> 
+	<LI><A HREF="#where can I download">idltojava 컴파일러는 어디서 다운로드할 수 있습니까. </A> 
+	<LI><A HREF="#what are my options">Java 테크놀러지를 사용해 CORBA 어플리케이션을 개발하는 경우에 어떠한 옵션이 있습니까. </A> 
+	<LI><A HREF="#java idl vs rmi-iiop">Java IDL 와 Java RMI-IIOP 는 어떻게 다릅니까. </A> 
+	<LI><A HREF="#limitations">이번 릴리스의 Java IDL 나 Java RMI-IIOP 에 무엇인가 제한 사항은 있습니까. </A> 
+	<LI><A HREF="#standardtags">각종의 표준 태그에 대해 알고 싶습니다만. </A> 
+
+	
+	
+</UL>
+
+
+
+<A NAME="errors"></A> 
+<HR><BR>
+<H1 ALIGN=CENTER>에러</H1>
+
+<A NAME="servermain">
+<H3>HelloServer 를 실행하려고 하면(자) 다음과 같은 메세지가 표시됩니다. 왜입니까. "Exception in thread "main" java.lang.NoClassDefFoundError:HelloServer/java"</H3></a> 
+	 
+<BLOCKQUOTE>
+많은 경우, Java IDL 튜토리얼의 HelloServer (HelloClient 의 경우도 마찬가지)를 실행하면(자), 이 에러가 발생하는 것은,<tt>HelloServer</tt> 가 클래스 패스에 포함되지 않기 때문입니다. 클래스 패스 변수의 설정 방법법의 자세한 것은,<a href="../../tools/solaris/classpath.html"><em>「클래스 패스의 설정」</em></a> 을 참조해 주세요.
+
+<P>2 번째로 많은 원인은, 다음의 코드행의 인용부호와 인용부호의 사이에 공백이 추가되고 있는 것입니다.
+<P>
+<pre>
+NameComponent nc = new NameComponent("Hello", "");
+</pre>
+
+<P>인용부호의 사이에는 공백을 들어갈 수 있지 말아 주세요. 공백이 없으면, 이 값은 Null 로서 건네받습니다. 인용부호의 사이에 공백이 있으면(자), 공백 문자가 건네받습니다.
+</BLOCKQUOTE>
+
+<A NAME="newidlj"></a> 
+<H3>이번 릴리스로 기존의 프로그램을 실행할 수 없습니다. 호환성에 문제가 있습니까. </H3>
+
+<BLOCKQUOTE>
+<P>J2SE 1.4.x 로 J2SE 5.0 의 사이의 호환성에 관한 정보는,<a  href="compatibility-CORBA.html">호환성의 문서</a>를 참조해 주세요.
+</BLOCKQUOTE>
+
+<A NAME="linuxior"></a> 
+<H3>IOR 에 127.0. 0.0 의 호스트 주소가 포함되어 있으면(자), Linux 서버로부터 IOR 를 사용해 접속할 수 없습니다. 왜입니까. </H3>	
+<BLOCKQUOTE>
+Red Hat Linux 를 인스톨 했을 경우,<tt>InetAddress.getLocalHost()</tt> 가, 루프백 주소 (127.0. 0.1)에 대응하는 <tt>InetAddress</tt> 를 돌려주는 일이 있습니다. 이 문제가 발생하는 것은, 디폴트의 인스톨에 의해, 머신의 호스트명과 루프백 주소와의 관련짓고가 <tt>/etc/hosts</tt> 내에 작성되기 (위해)때문에입니다. <tt>InetAddress.getLocalHost()</tt> 에 의해 확실히 실제의 호스트 주소가 돌려주어지도록(듯이) 하려면 ,<tt>/etc/hosts</tt> 파일 또는 네임 서비스의 구성 파일 (<tt>/etc/nsswitch.conf</tt>)을 갱신해, 호스트를 검색하기 전에, dns 또는 nis 에 문의하도록(듯이) 합니다.
+</BLOCKQUOTE>
+
+<H3><A NAME="minorcodes">마이너 코드의 의미는 어떻게 하면 압니까. </A> </H3>
+<BLOCKQUOTE>
+최신 버젼의 표준 (OMG) 마이너 코드 예외에 대해서는, OMG 의 Web 사이트 (<a  href="http://www.omg.org/">http://www.omg.org/</a> )를 참조해 주세요.  
+
+<P>자주(잘) 조우하는 Sun 의 마이너 코드 예외에는, 다음과 같은 것이 있습니다.
+	<p><UL>
+	<LI><strong>COMM_FAILURE/201</strong>.  「vmcid: SUN 마이너 코드: 201」은, 「CONNECT_FAILURE」를 의미합니다. <em></em>이것은,<code>java.net.SocketException</code> 가 원인으로 생기는 일이 있어, 일반적으로은 <code>BindException</code>,<code>ConnectException</code>, 또는 <code>NoRouteToHostException</code> 의 머지않아인가입니다.
+	
+	<P>다음과 같은 점을 확인할 필요가 있습니다.
+	<P>
+		<UL>
+		<LI>네임 서비스는 실행되고 있을까. 실행되어 있지 않은 경우는,<a href="../../tools/share/orbd.html#starting">「네임 서비스의 기동과 정지」</a>의 설명에 따라,ORDB 네임 서비스를 개시합니다.
+		<LI>네임 서비스에 대해서 <code>-ORBInitialHost</code> 및 <code>-ORBInitialPort</code> 의 값이 올바르게 설정되어 있을까. 어떻게 설정하면(자) 좋은가 모르는 경우는,<a href="../../tools/share/orbd.html#starting">「네임 서비스의 기동과 정지」</a>를 참조해 주세요.
+		<LI>클라이언트 어플리케이션과 서버 어플리케이션은, 네임 서비스가 실행되고 있는 포트 번호 (필요한 경우는, 한층 더 머신명)를 인식하고 있을까. 이것을 실시하는 방법에 대해서는,<a href="../../tools/share/orbd.html#starting">「네임 서비스의 기동과 정지」</a>를 참조해 주세요.
+		</UL>
+		<P>
+		
+
+	<LI><strong>COMM_FAILURE/208</strong>.  「vmcid: SUN 마이너 코드: 208」은, 「CONNECTION ABORT」를 의미합니다.  이것은 일반적으로, 접속이 끊어진 것을 나타냅니다. <em></em><P>
+	
+	<LI><strong>COMM_FAILURE/209</strong>.  「vmcid: SUN 마이너 코드: 209」는, 「CREATE_LISTENER_FAILED: <code>Unable to create the listener thread on the specific port.  Either the post is taken or there was an error creating the daemon thread</code>」를 의미합니다. <em></em>이것은 일반적으로, 네임 서비스를 실행하려고 한 포트가 다른 프로세스에 의해 사용중인 것을 나타내고 있습니다. Solaris 상에서 실행하고 있는 경우에는, 이 포트로 다른 프로세스가 실행중인가 어떤가를 조사하기 위해서(때문에), 단말 prompt로 다음의 커멘드를 실행합니다. <P>
+	<pre>netstat | grep <em>port_number</em></pre>
+
+	 <P>
+	 <LI><strong>COMM_FAILURE/204</strong>. 「vmcid: SUN 마이너 코드: 204」는, 「SERVANT_NOT_FOUND」를 의미합니다. <em></em>이것이 throw 되는 유일한 장소는,<code>corba.INSSubcontract.getINSReference</code> 입니다.
+	 <P>
+	 <LI><strong>MARSHAL/217</strong>.  vmcid: SUN 마이너 코드: 217」은, 클라이언트가 GIOP 1.0 으로 <code>wchar</code> 나 <code>wstring</code> 의 어느쪽이든을 송신하려고 한 것을 의미합니다.  이것은, 스펙으로 허가되고 있지 않습니다. <em></em>
+	 <P>
+	 <LI><strong>MARSHAL/202</strong>. 「vmcid: SUN 마이너 코드: 202」는, <code>org.omg.CORBA.Object</code> 로부터 파생한 객체를 정렬화하려고 했지만, 그 특정의 인스턴스가 ORB 에 접속되어 있지 않은 것을 의미합니다. <em></em>POA 를 사용하는 경우는, 우선 객체를 POA 에 등록할 필요가 있습니다. 객체를 POA 에 등록하는 방법의 상세한 것에 대하여는,<a  href="POA.html">POA</a>  의 문서 또는<a href="GShome.html">튜토리얼</a>을 참조해 주세요.
+	 <P>
+	 <LI><strong>BAD_PARAM/201</strong>. 「vmcid: SUN 마이너 코드: 201」은, 「NULL_PARAM」를 의미합니다. <em></em>이 예외는, 많은 경우,<code>write_string</code> 나 <code>write_octet_array</code> 등의 <code>write</code> 메소드에 대해서 Java 의 <code>null</code> 를 건네주었을 때에 발생합니다.  Java 메소드의 결과로서 Java 의 <code>null</code> 를 돌려줄 수 없습니다.
+	 
+	 <P>
+	 <LI><strong>org.omg.CORBA.INTERNAL</strong>. 「vmcid: SUN 마이너 코드: 208」은, 「<code>Unable to determine local hostname using InetAddress.getLocalHost(). getHostName()</code>」를 의미합니다. <em></em>
+	 
+	 <P>ORB 는,<code>InetAddress.getLocalHost(). getHostName()</code> 를 사용해, 참조의 검색이나 바인드를 위해서(때문에) 네임 서비스에의 참조를 작성합니다. 또, 서버측에서 <code>InetAddress.getLocalHost(). getHostName()</code> 를 사용해, 닷 단락 10 진수와 포트의 편성은 아니고, 서버의 이름과 포트를 포함한 원격 객체 참조 (즉 IOR)를 작성합니다.
+	 
+	 <P><code>getHostName</code> 의 호출을 회피하려면 , 다음과 같은 프로퍼티을 설정합니다 (설정 방법법에 대해서는,<a href="../../tools/share/orbd.html#starting">「네임 서비스의 기동과 정지」</a>를 참조).
+	 
+	 <P><UL>
+	 <LI>ORB 가 서버로서 기능하고 있는 경우는,<code>com.sun.CORBA.ORBServerHost</code> 에 서버의 DNS 명 또는 닷 단락 10 진수 주소를 설정
+	 <LI><code>com.sun.CORBA.ORBInitialHost</code> 에, 네임서버-의 DNS 명 또는 닷 단락 10 진수 주소를 설정
+	 </UL>
+	 <P>
+	 <STRONG>주: 이러한 프로퍼티은 독자적인 것으로, 삭제 또는 변경되는 일이 있습니다. </STRONG>
+
+
+
+	</UL>
+
+<P>이러한 설명으로는 불충분한 경우, 또는 상기 이외의 Sun 마이너 코드에 조우했을 경우에는, 사용자에 의해 지원되고 있는 Java IDL 테크놀러지의 포럼 (<a href="http://forums.java.sun.com">http://forum.java.sun.com</a> )을 이용해 보세요. 마이너 코드의 의미에 대해 포럼에 정보를 요구하는 경우는, 다음의 정보를 알려주세요.
+<P>
+<UL>
+<LI>클라이언트 및 서버를 실행하고 있는 플랫폼 (Solaris, Linux, Win32 등)
+<LI>사용하고 있는 Java SE 의 버젼 (1.5. 0_01 등)
+<LI>스택 트레이스 전체
+<LI>다른 벤더의 네임 서비스 또는 ORB 를 사용하고 있는 경우는, 그 제품에 관한 정보
+</UL> 
+
+</BLOCKQUOTE>
+
+<H3><a name="servertool"><code>servertool</code> 를 사용해 서버를 기동할 때, 복수의 클래스 패스를 추가할 수 있습니까. </a> </H3>
+<BLOCKQUOTE>
+이 질문은, 원래 다음과 같은 내용이었습니다. <P>
+
+	<blockquote>나의 서버 코드에서는, 클래스 패스에 복수의 JAR 파일이 필요합니다. 거기서,<code>servertool</code> 를 사용해 서버를 등록할 경우에 클래스 패스를 지정하려고 했습니다만, <code>register</code> 커멘드로 구문 에러가 일어납니다. 사용한 커멘드행의 길이가 제한을 넘고 있는 것처럼 생각됩니다. <P>
+	  <code>servertool</code> 로 서버를 등록할 때, 매우 긴 클래스 패스를 지정하기에는  어떻게 하면 좋은 것일까요.  
+</blockquote> 
+
+<P><code>servertool</code> 그 자체는 복수의 JAR 파일을 받아들입니다만, 현재로서는,<code>servertool</code> 의 커멘드행 버퍼의 길이에 관해서 버그가 있습니다. <code>servertool</code> 래퍼의 버그 (버그 4482166)의 상세한 것에 대하여는,<a  href="http://developer.java.sun.com/developer/bugParade/bugs/4482166.html">http://developer.java.sun.com/developer/bugParade/bugs/4482166.html</a>  를 참조해 주세요.  
+ 
+
+<P>회피책으로서 <code>servertool</code> 내로부터 서버를 기동하는 대신에,<code>ServerTool</code> 클래스를 호출해 서버를 기동할 수가 있습니다.  예를 들어, 다음과 같이 합니다.
+
+<P><pre>
+${JAVA_HOME}/bin/java com.sun.corba.se.internal.Activation.ServerTool 
+-ORBInitialPort ${ORB_INITIAL_PORT} -cmd register -server 
+sample.MyServer -classpath jar1:jar2:jar3 -applicationName sample
+</pre>
+
+<P><strong><code>servertool</code> 클래스의 이름은, 장래의 릴리스로 변경이 될 가능성이 있는</strong>일로 주의해 주세요.
+</BLOCKQUOTE>
+
+<H3><a name="linux_naming_service">Linux 플랫폼에서 네임 서비스 (<code>tnameserv</code>,<code>orbd</code>)를 실행할 수 없는 경우에는, 어떻게 하면 좋을까요. </a> </H3>
+<BLOCKQUOTE>
+Linux 상에서 네임 서비스의 기동이 실패하는 경우는,<code>/etc/hosts</code> 파일에 다음의 행을 짜넣습니다.
+<P>
+<UL><pre>
+<em>&lt;Local Host IP Address&gt;</em>   localhost
+<em>&lt;Local Host IP Address&gt;   &lt;HostName&gt;</em>
+</pre></UL>
+
+<P>여기서 <em>&lt;Local Host IP Address&gt;</em> 는, 네임 서비스 (<code>tnameserv</code>,<code>orbd</code>)를 기동하는 호스트의 IP 주소입니다.
+</BLOCKQUOTE>
+
+
+<!-- ************* F E A T U R E S  ************** --> <A NAME="features">
+<HR><BR>
+
+<H1 ALIGN=CENTER>기능</H1></A> 
+
+<H3><a name="threading"></a> 이번 릴리스로, CORBA 의 구현은 어떠한 thread 모델을 지원하고 있습니까. </H3>
+<BLOCKQUOTE>
+Java SE 에 동고 되고 있는 Java CORBA ORB 는 multi-thread화 되고 있습니다. 서버 측에 준비되어 있는 thread 풀에서는, 각 착신 요구가 독립한 thread에 의해 처리됩니다. 풀의 thread가 모두 사용중 때에 새로운 요청를 받으면(자), 새로운 thread가 작성되어 풀에 추가됩니다. 이 thread는, 요구가 완료하면(자), 풀에 되돌려집니다.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Java CORBA ORB 는, 스케이라비리티와 요청의 동시 처리를 실현하기 위해서(때문에), thread화 되고 있습니다. POA thread 정책용의 SINGLE_THREAD 옵션은 지원되고 있지 않습니다.
+ 
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Java CORBA ORB 의 thread 모델은 다음과 같이 암묵적입니다. 즉, 사용자는, ORB 의 thread 정책를 설정하지 않습니다. 또, thread 모델이나 thread수를 제어하기 위한 , 공개된 외부의 사용자 레벨 API 는 없습니다.   
+</BLOCKQUOTE>
+
+
+<H3><a name="notificationevent"></a> Java IDL 에는 통지 서비스나 이벤트 서비스가 있습니까.  인터페이스 리포지터리(repository)는 어떻습니까. </H3>
+<BLOCKQUOTE>아니오, 없습니다. 이러한 서비스가 필요한 경우는, 스스로 구현하는지, 기성품을 구입하는지, 자유롭게 이용할 수 있는 서비스를 찾을 수가 있습니다. 그러한 서드 파티의 서비스는, INS 테크놀러지를 사용해 ORB 에 플러그 인 할 수 있습니다.
+</BLOCKQUOTE>
+
+
+<H3><A NAME="two machines"></A> 2 대의 머신으로 Hellow World 의 예를 실행하는 방법을 가르쳐 주세요. </H3>
+<BLOCKQUOTE>네임서버-와 동일한 머신상에서 실행되어 있지 않은 클라이언트나 서버를 기동하는 경우,<tt>-ORBInitialHost &lt;네임 서비스가 기동되는 호스트의 이름 &gt;</tt> 옵션을 사용합니다. 이렇게 하면(자), 클라이언트와 서버는 네임 서비스의 장소를 알 수 있습니다. Web 사이트 <A  HREF="tutorial/jidl2machines.html">http://java.sun.com/j2se/1. 5.0/docs/technotes/guides/idl/tutorial/jidl2machines.html</A>  에 예가 있으므로 참조해 주세요.
+</BLOCKQUOTE>
+<H3><A NAME="corbacompliant"></A> Java IDL 테크놀러지는 CORBA 스펙에 준거하고 있습니까. </H3>
+<BLOCKQUOTE>J2SE 5.0 에 동고 되고 있는 CORBA 테크놀러지의 준거에 관한 정보는,<A  HREF="compliance.html">http://java.sun.com/j2se/1. 5.0/docs/technotes/guides/idl/compliance.html</A>  에 있는 CORBA 의 준거에 대한 설명을 참조해 주세요.
+
+</BLOCKQUOTE>
+
+
+
+<a name="compatibility"></a>  <!--   **************** COMPATIBILITY/INTEROPERABILITY ********* -->
+<HR><BR>
+<H1 ALIGN=CENTER>호환성과 상호 운용성</H1>
+
+<H3><A NAME="CORBA-J2SE5.0"></A> J2SE 5.0 의 CORBA 스펙에의 대응</H3>
+<BLOCKQUOTE>
+<p><a href="compliance.html">Official Specifications for CORBA support in J2SE 5.0</a>  을 참조해 주세요.
+</BLOCKQUOTE>
+
+
+<H3><A NAME="differentORB"></A> 다른 ORB 를 지정하려면  어떻게 하면 좋을까요. </H3>
+<BLOCKQUOTE>
+
+어플리케이션내에서 Java CORBA ORB 이외의 ORB 를 사용하려면 ,<tt>org.omg.CORBA.ORBClass</tt> 프로퍼티을, 선택한 ORB 로 설정합니다. 예를 들어, 사용하고 싶은 ORB 구현을 ORB 로 설정하려면 , 다음의 예의 같은 코드를 사용합니다.
+
+<P>
+<pre>
+public class MyApp {
+
+    public static void main( String args[] ) {
+        Properties properties = System.getProperties();
+        <strong>properties.put( "org.omg.CORBA.ORBClass",
+            "&lt;com.other_company.package.ORB&gt;" );</strong>
+        
+        try {
+             ORB orb = ORB.init( args, properties);
+             
+             ...
+</pre>
+
+<P>사용하는 ORB 구현에 고유의 프로퍼티 설정에 대해서는, 벤더의 문서를 참조해 주세요.
+
+</BLOCKQUOTE>
+
+
+<H3>사용하고 있는 JDK ORB 클라이언트가, 다른 회사의 ORB 구현과 통신할 수 있을지 어떨지를 테스트하는 방법을 가르쳐 주세요. </H3>
+<BLOCKQUOTE>
+<P>이 JDK ORB 에 대해서는, J2EE 의 검증 프로세스의 일환으로서 테스트를 실시필입니다.  다만, 모든 벤더의 스탠드얼론 CORBA ORB 와의 상호 운용성에 대해 테스트를 실시한 것이 아닙니다.
+
+<P>사용하는 것 외 벤더의 서비스로 INS 가 지원되고 있는 경우는, 그것을 시험해 보세요. INS 를 이용해,<tt>ORB.object_to_string()</tt> 메소드를 사용해, 타벤더의 ORB 서버상의 Interoperable Object References (<a  href="INStutorial.html">INS 튜토리얼의 IOR 에 관한 설명</a>을 참조)를 캐릭터 라인으로 변환합니다. 그 캐릭터 라인을 파일에 기입합니다.
+
+</BLOCKQUOTE>
+
+
+<a name="interopdoc"></a> 
+<H3>CORBA 클라이언트와 EJB 서버 어플리케이션의 사용예는 제공되고 있습니까. </H3>
+<BLOCKQUOTE>
+<P>C++ 클라이언트와 Enterprise JavaBeans 컴퍼넌트를 사용한 샘플 어플리케이션을 포함한 개발자 가이드가, Web 사이트 <a href="../rmi-iiop/interop.html">http://java.sun.com/j2se/1. 5.0/docs/technotes/guides/rmi-iiop/interop.html</a>  에 준비되어 있습니다.
+</BLOCKQUOTE>	
+	
+
+
+<A name="nameserver"></a> 
+<H3>Sun 의 ORB 로부터 서드 파티제의 네임 서비스에 접속하는 방법을 가르쳐 주세요. </H3>
+
+<BLOCKQUOTE>
+서드 파티제의 네임 서비스가 <a href="INStutorial.html">Interoperable Naming Service (INS)</a>  를 지원하고 있는 경우는, INS 옵션을 사용하는 방법을 추천합니다.
+<P>
+Sun ORB 를 다른 벤더의 네임 서비스와 함께 사용하려면
+   <OL>
+<LI>호스트 및 포트상에서 서드 파티제의 네임서버-를 기동합니다.  <P>
+<LI>다음의 인수를 <tt>ORB.init()</tt> 에 건네줍니다.
+   <pre>
+        -ORBInitRef NameService=corbaloc:iiop:1. 2@:/NameService
+   </pre>
+      
+   </OL>
+<P><tt>orb.resolve_initial_references( "NameService" )</tt> 를 실행하면(자), 서드 파티제의 네임 서비스에 접속할 수 있게 됩니다. 접속할 수 없는 경우는, 이하의 트러블 슈팅에 관한 힌트를 시험해 주세요.
+      <UL>
+<LI>서드 파티제의 네임 서비스가 INS 를 지원하고 있는 것을 확인한다
+<LI>호스트와 포트의 정보가 올바른 것을 확인한다
+<LI>서드 파티제의 네임 서비스가 올바르게 기동되고 있는 것을 확인한다
+<LI>서드 파티제의 네임 서비스가 GIOP 1.2 를 지원하고 있는 것을 확인하는 지원하고 있지 않는 경우는, 네임서버-의 문서를 참조해, 적절한 GIOP 의 버젼을 확인해, 그 버젼에 맞추어 <tt>corbaloc:</tt>URL 를 수정한다
+<LI>서드 파티제의 네임 서비스가 다른 객체 키를 사용해 <tt>NameService</tt> 와 통신하고 있을지 어떨지를 조사한다. 그 경우는, 네임서버-의 문서를 참조한다
+         </UL>
+    
+</BLOCKQUOTE>
+
+<H3><A NAME="ORBinterop"></A> C++ 의 CORBA 서버와 함께 Java IDL ORB 를 사용할 수 있습니까. (상호 운용성이 있습니까)</A> </H3>
+<BLOCKQUOTE>
+Java IDL ORB 는 완전하게 Java 테크놀러지를 사용해 기술된 ORB 입니다. <tt>idlj</tt> 컴파일러는, 「IIDL to Java 언어 매핑 스펙」으로 정의된 규약에 따르는 코드를 생성합니다. Java ORB 는, Java 플랫폼 이외의 언어로 코드를 생성하는 컴파일러를 제공하지 않습니다. Java ORB 와 그 이외의 언어 (C++ 등)로 기술한 ORB 와의 상호 운용성을 테스트하는 경우, 그 언어로 기술한 ORB 와 그 언어 매핑에 일치하는 컴파일러를 찾을 필요가 있습니다. 언어 매핑 스펙은, Object Management Group 의 Web 사이트 (<a href="http://www.omg.org/">http://www.omg.org/</a> )로부터 입수할 수 있습니다. 한편으로 Java 플랫폼을 사용해, 이제(벌써) 한편으로 C++ 를 사용하려면 , IDL 를 공유하는 것만으로 충분합니다. C++ ORB 의 툴을 사용해 C++ ORB 로 사용하는 Stub와 스켈리턴을 생성할 필요가 있습니다만, IDL 는 변경할 필요가 없습니다. CORBA ORB 와 사용하는 언어의 언어 매핑 컴파일러를 제공하는 벤더는, 「C++ CORBA ORB」등의 키워드로 Web 를 검색합니다.  
+
+<P>C++ 클라이언트와 Enterprise JavaBeans 컴퍼넌트를 사용한 샘플 어플리케이션을 포함한 개발자 가이드가, Web 사이트 <a href="../rmi-iiop/interop.html">http://java.sun.com/j2se/1. 5.0/docs/technotes/guides/rmi-iiop/interop.html</a>  에 준비되어 있습니다.
+
+<P><strong>다른 언어로 쓰여진 ORB 간에서의 통신이 가능할 것입니다가, Java ORB 와 다른 벤더의 ORB 와의 상호 운용성은 아직 테스트되고 있지 않습니다. </strong>
+</BLOCKQUOTE>
+<A NAME="general"></A> 
+<HR><BR>
+<H1 ALIGN=CENTER>전반</H1>
+
+<H3><A NAME="IDL-or-IIOP"></a> Java IDL 와 Java RIM-IIOP 테크놀러지의 어느 쪽을 사용해야할 것인가</H3>
+	<BLOCKQUOTE>
+	<P>이것은 기본적인 문제이며, Java 프로그램 언어와 CORBA 를 통합하는 2 개의 방식의 차이를 이해하는 것이 중요합니다.
+	                                                                                                            
+	<P>Java IDL 테크놀러지는, CORBA 인터페이스 정의 언어 (Interface Definition Language, IDL)로 정의된 인터페이스에 근거해 Java 프로그램 언어로 프로그램을 기술하고 싶은 CORBA 프로그래머전용입니다. 이것은 「일반적으로 대로의」CORBA 프로그래밍으로, C++ 나 COBOL 와 같은 다른 언어와 완전히 같은 방법으로 Java 를 지원하고 있습니다.
+	                                                                                                            
+	<P><a href="../rmi-iiop/index.html">Java RMI-IIOP (Remote Method Invocation over Internet Inter-ORB Protocol)</a>  테크놀러지는, IIOP 를 배후의 트랜스폴트로서 사용해 Java Remote Method Invocation (Java RMI) 인터페이스로 프로그램을 작성하고 싶은, Java 프로그래머전용입니다. RMI-IIOP 는 다양한 언어로 구현되는 CORBA 객체와의 상호 운용성을 제공합니다만, 원격 인터페이스를 미리 Java RMI 인터페이스로서 정의해 둘 필요가 있습니다. EJB 의 원격 객체 모델은 Java RMI 테크놀러지 베이스이므로, Enterprise JavaBeans<SUP><FONT SIZE="-2">TM</FONT></SUP> (EJB<SUP><FONT SIZE="-2">TM</FONT></SUP>) 테크놀러지를 사용하는 프로그래머에게는 특히 중요합니다.
+	 </BLOCKQUOTE>
+
+<H3><A NAME="where can I download"></A> idltojava 컴파일러는 어디서 다운로드할 수 있습니까. </H3>
+<BLOCKQUOTE>idltojava 컴파일러를 다운로드할 수 없게 되었습니다. IDL-to-Java 컴파일러 idlj 의 최신 버젼을 사용하는 것을 강하게 추천합니다.
+
+<P>최신 버젼의 IDL-to-Java 컴파일러를 입수하려면 , 최신 버젼의 <A  HREF="http://java.sun.com/j2se/index.html"> Java <FONT  SIZE=1><SUP>TM</SUP></FONT> 2 Platform, Standard Edition (J2SE <FONT  SIZE=1><SUP>TM</SUP></FONT>)</A>  를 다운로드해 주세요. Java SE 를 인스톨 하면(자),<TT>idlj</TT> 는 <TT>bin</TT> 디렉토리에 포함됩니다.  
+
+<P>J2SE v1. 3 의 <tt>idltojava</tt> 에 관한 그 외의 트러블 슈팅 정보에 대해서는,<a href="http://java/sun.com/j2se/1.3/docs/technotes/guides/idl/jidlFAQ.html">「Java IDL FAQ」</a>를 참조해 주세요.
+</BLOCKQUOTE>
+
+
+
+<H3><A NAME="what are my options"></A> Java 테크놀러지를 사용해 CORBA 어플리케이션을 개발하는 경우에 어떠한 옵션이 있습니까. </H3>
+<BLOCKQUOTE>Java 2 플랫폼의 일부인 CORBA 기술은, Java 언어로 쓰여진 <A HREF="corba.html#orb">Object Request Broker (ORB)</A>  (일부는 native code로 쓰여져 있다),<A  HREF="corba.html#rmi">RMI 프로그래밍 모델</a>, 및 <A HREF="corba.html#idl">IDL 프로그래밍 모델</a>로 구성되어 있습니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>다른 언어간, 다른 벤더간의 상호 운용성은 Internet InterORB Protocol (IIOP)라고 하는 「마법」을 사용해 실현되었습니다. IIOP 는 IDL 또는 Java RMI 의 어느 쪽인지로 쓰여진 만큼 산어플리케이션용의 전송 프로토콜로 할 수 있습니다. IIOP 를 사용하면, 분산 객체를 OMG 의 CORBA 스펙에 적합시킬 수가 있습니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>IDL 프로그래밍을 사용하는 경우는, 인터페이스가 방법이라고입니다. IDL 에서는, 원격 접근으로부터 불러 출일이 생기는 엔트리 포인트 (불려 간 수속이 받아들이는 인수의 형태등)나, 반환된 정보의 값이나 출력 파라미터등을 정의합니다. IDL 를 사용하면(자), 프로그래머는 통신 프로세스간을 이동하는 엔트리 포인트나 데이터형을 표준 언어인것 같이 취급할 수가 있습니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>CORBA 는 언어로부터 중립의 시스템으로, 인수의 값이나 반환값은 사용하는 구현 언어로 나타낼 수가 있는 것에 제한됩니다. CORBA 에서는, 객체의 방향은 참조용으로 건네줄 수가 있는 객체에 제한되는지, 또는 전체의 시스템로 미리 정의되고 있습니다. 객체 코드 자체를 머신간에 건네줄 수가 없습니다. 건네주는 형태도 되돌리는 형태도 인터페이스로 선언되고 있을 필요가 있습니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>RMI 에서는, IDL 와 구현 언어는 동일한 것이며, 서로를 매핑하기 위한 걱정은 없습니다. 언어 레벨의 객체 (코드)를 있는 프로세스로부터 다음의 프로세스에 건네줄 수가 있습니다. 값은, 선언된 형태는 아니고 실제의 형태로 돌려주어집니다. 또는, 인터페이스를 컴파일 해 IIOP 대응의 Stub와 스켈리턴을 생성해, 다른 CORBA 대응 언어로 쓰여져 있는 다른 머신의 객체와 통신할 수가 있습니다.  
+</BLOCKQUOTE>
+<H3><a name="java idl vs rmi-iiop"></a> Java IDL 와 Java RMI-IIOP 는 어떻게 다릅니까. </H3>
+<BLOCKQUOTE>이것은 기본적인 문제이며, Java 프로그램 언어와 CORBA 를 통합하는 2 개의 방식의 차이를 이해하는 것이 중요합니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>Java IDL 는, CORBA 인터페이스 정의 언어 (IDL)로 정의된 인터페이스에 근거해 Java 프로그램 언어로 프로그램을 기술하고 싶은 CORBA 프로그래머전용입니다. 이것은 「일반적으로 대로의」CORBA 프로그래밍으로, C++ 나 COBOL 와 같은 다른 언어와 완전히 같은 방법으로 Java 언어를 지원하고 있습니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>Java RMI-IIOP (Remote Method Invocation over Internet Inter-ORB Protocol)는, IIOP 를 배후의 트랜스폴트로서 사용해, Java 프로그램 언어를 사용해 Java RMI 인터페이스를 프로그래밍 하고 싶은 개발자전용입니다. Java RMI-IIOP 는 다양한 언어로 구현되는 CORBA 객체와의 상호 운용성을 제공합니다만, 모든 원격 인터페이스를 미리 Java RMI 인터페이스로서 정의해 둘 필요가 있습니다. EJB 의 원격 객체 모델은 RMI 베이스이므로, Enterprise JavaBeans (EJB)를 사용하는 프로그래머에게는 특히 중요합니다.  
+</BLOCKQUOTE>
+<BLOCKQUOTE>분산형 CORBA 어플리케이션의 작성에는 몇개의 정의 방법이 있습니다. 다음에 일반적인 방법을 나타냅니다.
+</BLOCKQUOTE>
+<UL>
+	<LI><BLOCKQUOTE>Java IDL.  당분간의 사이 IDL 를 사용해 CORBA 어플리케이션을 개발해 온 경험이 있는 경우는, 그 환경을 그대로 사용할 수가 있습니다. IDL 를 사용해 인터페이스를 작성해, Java 프로그램 언어를 사용해 클라이언트와 서버 어플리케이션을 정의합니다. 이것에 의해, Java 의 「Write Once, Run Anywhere<FONT  SIZE=1><SUP>TM</SUP></FONT>」이식성 기능, 생산성의 높은 실행 환경, 및 매우 견뢰한 플랫폼등의 이점을 활용할 수가 있습니다.  
+	</BLOCKQUOTE>
+	<LI><BLOCKQUOTE>RMI-JRMP. 어플리케이션이 모두 Java 프로그램 언어로 쓰여져 있는 경우는, Java RMI 테크놀러지를 사용해, 다른 가상 머신 및 다른 물리 머신상의 Java 객체간에서의 통신을 가능하게 할 수 있습니다. IIOP 옵션을 가지지 않는 Java RMI 를 사용하면(자), 코드 이식성의 강함이나, 시큐리티, garbage collection를 활용할 수가 있습니다.  
+	</BLOCKQUOTE>
+	<LI><BLOCKQUOTE>Java RMI-IIOP.  신규 어플리케이션의 대부분은 Java 프로그램 언어로 쓰고 있지만, 다른 언어로 기술되고 있는 종래의 어플리케이션도 보수할 필요가 있다고 하는 경우에는, Java RMI 를 IIOP 컴파일러 옵션과 병용 할 수가 있습니다.  
+	</BLOCKQUOTE>
+</UL>
+
+
+<H3><A NAME="limitations">Java IDL 나 Java RMI-IIOP 를 사용할 때, 무엇인가 제한 사항은 있습니까. </A> </H3>
+
+<BLOCKQUOTE>제품의 제한의 상세한 것에 대하여는,<a href="limitations.html"><em>「제한」</em></a> 을 참조해 주세요.
+</BLOCKQUOTE>
+
+
+<H3><A NAME="standardtags">각종의 표준 태그에 대해 알고 싶습니다만. </A> </H3>
+<BLOCKQUOTE>
+
+최신 버젼의 표준 태그 할당 파일에 대해서는, OMG 의 Web 사이트 (<a href="http://www.omg.org/">http://www.omg.org/</a> )를 참조해 주세요.
+
+</BLOCKQUOTE>
+<BR><BR>
+	
+	
+	
+	
+	
+
+<!-- ----------------- END FAQ ------------------ -->
+
+
+<!-- end main page content -->
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2000-2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+</BODY>
+</HTML>

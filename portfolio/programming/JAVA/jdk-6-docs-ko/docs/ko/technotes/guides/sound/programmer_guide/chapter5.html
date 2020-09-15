@@ -1,0 +1,105 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 5 장:오디오의 혼잡</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+
+<p>&nbsp;</p>
+<p><a name="114180"> </a>  「혼잡 (Capture)」이란, 컴퓨터의 외부로부터 신호를 취득하는 처리입니다. <em></em>일반적인 어플리케이션에서의 오디오 혼잡과는 녹음입니다. 예를 들어, 마이크로폰 입력을 사운드 파일에 녹음하는 경우 등입니다. 다만, 혼잡과 녹음은 동의어가 아닙니다. 녹음이라고 하는 용어에는, 어플리케이션이 받은 사운드 데이터를 항상 보존한다고 하는 의미가 있기 (위해)때문에입니다. 오디오를 수중에 넣는 어플리케이션의 경우는, 반드시 오디오를 보존한다고는 할 수 없습니다. 데이터가 들어 오면(자) 그 데이터에 하등의 처리 (발화를 텍스트로 변환해 복사하는 등)를 실시합니다만, 버퍼의 처리가 끝나면(자) 즉시 버퍼내의 데이터를 파기하는 경우도 있습니다.  
+</p>
+<p><a name="114181"> </a> 제 2 장<a href="chapter2.html">「Sampled 패키지의 개요」</a>로 설명한 것처럼,Java<font size="-1"><sup>TM</sup></font> Sound API 의 구현의 일반적인 오디오 입력 시스템은, 다음의 요소로 구성되어 있습니다.  </p>
+<ol>
+<a name="113952"> </a> 
+<li>입력 포트 (마이크로폰 포트, 라인 입력 포트 등). 받은 오디오 데이터를 믹서에 보냅니다.  <a name="115691"> </a> 
+<li>믹서. 입력 데이터를 타겟 데이터 라인에 보냅니다.  <a name="115692"> </a> 
+<li>타겟 데이터 라인 (적어도 1 개(살)). 어플리케이션이 데이터를 취득하는 장소입니다.
+<p><a name="113956"> </a> 
+
+일반적으로, 동시에 오픈할 수 있는 입력 포트는 1 개입니다만, 오디오 입력 믹서로 복수 포트로부터의 오디오를 믹싱 할 수도 있습니다. 또, 포트를 가지지 않는 대신에, 네트워크상에서 오디오 입력을 취득하는 믹서에 의한 시스템 구성도 생각할 수 있습니다.  
+</p>
+<p><a name="113958"> </a> 제 2 장<a href="chapter2.html">「Sampled 패키지의 개요」</a>의<a href="chapter2.html#112445"> 「Line 인터페이스의 계층」</a>에서,<code>TargetDataLine</code> 인터페이스에 대해 간단하게 설명했습니다. <code>TargetDataLine</code> 는, 제 4 장<a href="chapter4.html">「오디오의 재생」</a>으로 상세하게 설명한 <code>SourceDataLine</code> 인터페이스에 직접 유사하고 있습니다. 벌써 설명한 것처럼,<code>SourceDataLine</code> 는, 다음의 요소로 구성되어 있습니다.  </p>
+  </ol>
+<ul><a name="113960"> </a> 
+<li>오디오를 믹서에 보내기 위한 <code>write</code> 메소드<a name="113961"> </a> 
+<li>블록 되지 않고 버퍼에 기입할 수 있는 데이터의 양을 조사하기 위한 <code>available</code> 메소드
+<p><a name="113963"> </a> 
+</ul>
+같이<code>TargetDataLine</code> 도 다음의 요소로 구성됩니다.  
+<ul>
+<p></p><a name="113965"> </a> 
+<li>믹서로부터 오디오를 취득하기 위한 <code>read</code> 메소드 <a name="113966"> </a> 
+<li>블록 되지 않고 버퍼로부터 읽어낼 수 있는 데이터의 양을 조사하기 위한 <code>available</code> 메소드 
+</ul><a name="113969"> </a> 
+<h3> TargetDataLine 의 셋업</h3>
+<p><a name="113971"> </a> 타겟 데이터 라인을 취득하는 순서에 대해서는, 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>로 설명했습니다만, 한번 더 여기에 나타냅니다.  </p>
+<blockquote><pre><code>TargetDataLine line;
+</code><code>DataLine.Info info = new DataLine.Info(TargetDataLine.class, <br>
+    format); // format is an AudioFormat object
+</code><code>if (! AudioSystem.isLineSupported(info)) {
+</code><code>    // Handle the error ... 
+</code><code>}
+</code><code>// Obtain and open the line.
+</code><code>try {<br>
+    line = (TargetDataLine) AudioSystem.getLine(info);
+</code><code>    line.open(format);
+</code><code>} catch (LineUnavailableException ex) {
+</code><code>    // Handle the error ... 
+</code><code>}
+</code><p><a name="113992"> </a> 
+</pre></blockquote>
+<code>AudioSystem</code> 는 아니고 <code>Mixer</code> 의 <code>getLine</code> 메소드를 호출할 수도 있습니다.
+<p></p>
+<p><a name="113994"> </a> 이 예로 가리키도록(듯이), 타겟 데이터 라인을 취득한 뒤는, 제 4 장<a href="chapter4.html">「오디오의 재생」</a>으로 설명한 소스 데이터 라인의 경우와 완전히 같이<code>DataLine</code> 의 <code>open</code> 메소드를 호출해 그 라인을 예약합니다. 단일 파라미터의 <code>open</code> 메소드에서는, 그 라인의 버퍼는 디폴트 사이즈가 됩니다. 파라미터가 2 개의 <code>open</code> 메소드를 호출해, 어플리케이션의 필요하게 응한 사이즈에 버퍼를 설정할 수도 있습니다.  
+<pre>    void open(AudioFormat format, int bufferSize) 
+</pre>
+버퍼 사이즈가 크면 지연이 생겨 버퍼 사이즈가 작으면 데이터를 필요한 속도로 취득할 수 없는 경우에 오디오에 불연속부가 발생할 우려가 있습니다. 이 때문에, 버퍼 사이즈를 결정할 때는, 양쪽 모두의 균형을 고려할 필요가 있습니다. 오디오를 수중에 넣는 경우, 버퍼가 가득 되면(자) 일정시간내에 데이타를 뽑기 시작하지 않으면, 데이터가 오버플로우 할 가능성이 있습니다. 오버플로우가 일어나면(자), 받아들여진 데이터의 일부가 파기되므로, 클릭 노이즈나 소리 나는 일의 원인이 됩니다. 이것은, 언더 플로우(underflow)가 원인으로 소리가 중단될 가능성이 있는 재생의 경우와 역의 상황입니다(버퍼 사이즈의 결정 방법의 자세한 것은, 제 4 장<a href="chapter4.html">「오디오의 재생」</a>을 참조).  
+<p></p><a name="115741"> </a> 
+<h3> TargetDataLine 로부터의 데이터의 read</h3>
+<p><a name="114004"> </a> 라인이 오픈되면(자) 데이타를 뽑아 넣을 준비가 갖추어집니다만, 그 라인은 아직 액티브하지는 않습니다. 오디오의 혼잡을 실제로 개시하려면 ,<code>DataLine</code> 의 <code>start</code> 메소드를 사용합니다. 이 메소드는, 어플리케이션을 읽어낼 수 있도록(듯이), 그 라인의 버퍼에 입력 오디오 데이터를 보내기 시작합니다. 어플리케이션은, 라인으로부터의 읽을 준비가 갖추어지지 않을 때에 start 를 호출하지 말아 주세요. 혼잡 버퍼에의 기입을 위해서(때문에) 쓸데없는 처리가 발생해, 오버플로우가 생겨, 데이터는 파기됩니다.
+</p><p><a name="114006"> </a> 버퍼로부터의 데이터의 취득을 개시하려면 ,<code>TargetDataLine</code> 의 read 메소드를 호출합니다.
+</p><blockquote><pre>int read(byte[] b, int offset, int length) 
+</pre></blockquote>
+이 메소드는, 배열 <code>b</code> 에,<code>length</code> 로 지정한 바이트수의 데이터를 <code>offset</code> 로 지정한 오프셋(offset) 위치로부터 읽어들이려고 합니다. 이 메소드는, 실제로 읽힌 바이트수를 돌려줍니다.  
+<p></p><p><a name="114011"> </a> <code>SourceDataLine</code> 의 write 메소드와 같게, 이 메소드는 버퍼의 몇배의 데이터가 요구되었을 경우는 요구된 양의 데이터가 전달될 때까지 블록 되므로, 버퍼에 들어가 싫은 있고 양의 데이터를 요구할 수가 있습니다.  
+</p><p><a name="115205"> </a> 녹음시에 어플리케이션이 행업 하는 것을 막기 위해서(때문에), 다음의 예의 같게, 모든 오디오 입력을 다 취득할 때까지 루프내에서 반복해 read 메소드를 사용할 수 있습니다.
+</p><blockquote><pre>
+// Assume that the TargetDataLine, line, has already
+// been obtained and opened.
+ByteArrayOutputStream out  = new ByteArrayOutputStream();
+int numBytesRead;
+byte[] data = new byte[line.getBufferSize() / 5];
+
+// Begin audio capture.
+line.start();
+
+// Here, stopped is a global boolean set by another thread.
+while (! stopped) {
+   // Read the next chunk of data from the TargetDataLine.
+   numBytesRead =  line.read(data, 0, data.length);
+   // Save this chunk of data.
+   out.write(data, 0, numBytesRead);
+}     
+</pre></blockquote>
+이 예에서는, 데이터를 읽어들이기 위한 바이트 배열의 사이즈는 라인의 버퍼의 것 1/5 으로 설정되어 있습니다. 이 배열을 라인의 버퍼와 같은 크기로 해 버퍼 전체를 읽어들이고 싶은 경우는, 타이밍을 정확하게 계측 하지 않으면 안됩니다. 이것은, 데이터를 읽어들이고 있는 동안에 믹서가 라인에 데이터를 보낼 필요가 생기면(자) 데이터가 덤프 되기 때문입니다. 이 예의 같게, 라인의 버퍼 사이즈의 수할정도를 사용하는 것으로, 어플리케이션은 라인의 버퍼에의 액세스를 믹서와 잘 공유할 수가 있습니다.  
+<p></p><p><a name="114034"> </a> <code>TargetDataLine</code> 의 <code>read</code> 메소드는, 바이트 배열, 그 배열내의 오프셋(offset), 읽어들이는 입력 데이터의 바이트수의 3 개의 인수를 취합니다. 이 예에서는, 3 번째의 인수는 단지 바이트 배열의 길이입니다. <code>read</code> 메소드는, 실제로 배열에 읽힌 바이트수를 돌려줍니다.  
+</p>
+<p><a name="114036"> </a> 일반적으로, 데이터는 이 예의 같게 루프내에서 라인으로부터 읽어들입니다. <code>while</code> 루프 중(안)에서, 취득한 데이터의 체크가 어플리케이션에 적절한 방법으로 처리됩니다.  이 예에서는,<code>ByteArrayOutputStream</code> 에 기입해집니다. 여기에는 나타나고 있지 않습니다만, 독립한 thread를 사용해 불 변수 <code>stopped</code> 를 설정해, 루프를 종료하는 방법도 있습니다. 이 불 변수의 값은, 사용자가 [정지] 버튼을 클릭했을 때, 및 청취자가 라인으로부터 <code>CLOSE</code> 또는 <code>STOP</code> 이벤트를 받았을 때에 <code>true</code> 로 설정됩니다. <code>CLOSE</code> 이벤트에는 청취자가 필수이며,<code>STOP</code> 이벤트에도 청취자를 등록하는 것을 추천합니다. <code>STOP</code> 이벤트에 청취자가 없으면 라인이 하등의 원인으로 정지했을 때에 stopped 가 <code>true</code> 로 설정되지 않고,<code>while</code> 루프가 반복할 것에 읽히는 바이트수가 0 바이트가 되어, 실행 속도가 빨라져 CPU 사이클이 낭비됩니다. 게다가 이 예에서는, 혼잡이 다시 액티브하게 되었을 때에 한번 더 루프에 들어갑니다.  </p>
+<p><a name="114039"> </a> 소스 데이터 라인의 경우와 같게, 타겟 데이터 라인도 드레인 또는 플래시 할 수가 있습니다. 예를 들어, 입력을 파일에 녹음하는 경우는, 사용자가 [정지] 버튼을 클릭하면(자) <code>drain</code> 메소드를 호출합니다. <code>drain</code> 메소드를 호출하면(자), 믹서의 나머지의 데이터가 타겟 데이터 라인의 버퍼에 보내집니다. 데이터를 드레인 하지 않는 경우는, 받아들여진 사운드는 최후로 중지된 것처럼 보입니다.
+</p><p><a name="114041"> </a> 데이터를 플래시 하고 싶은 경우도 있습니다. 데이터의 플래시 또는 드레인을 실시하지 않으면 믹서에 데이터가 남습니다. 믹서에 데이터가 남아 있으면(자), 혼잡이 재개되었을 때에, 새로운 녹음의 선두에 그 사운드가 들어가 버립니다. 따라서, 혼잡을 재개하기 전에 타겟 데이터 라인을 플래시 하는 것은 유용합니다.
+</p><a name="114432"> </a> 
+<h3> 라인의 상태의 감시</h3>
+<p><a name="114046"> </a> <code>TargetDataLine</code> 인터페이스는 <code>DataLine</code> 를 상속하고 있으므로, 타겟 데이터 라인은 소스 데이터 라인과 같게 이벤트를 생성합니다. 타겟 데이터 라인의 오픈시, 클로즈시, 개시시, 및 정지시에 반드시 이벤트를 받도록(듯이) 객체를 등록할 수가 있습니다. 자세한 것은, 제 4 장<a href="chapter4.html">「오디오의 재생」</a>의<a href="chapter4.html#113711">「라인의 상태의 감시」</a>를 참조해 주세요.  
+</p>
+<a name="114049"> </a> 
+<h3> 입력 오디오의 처리</h3>
+<p><a name="114051"> </a> 다른 몇개의 소스 데이터 라인과 같게, 일부의 믹서의 타겟 데이터 라인은, 게인, 빵, 리바브, 또는 샘플링 레이트의 컨트롤과 같은 신호 처리 컨트롤을 갖추고 있습니다. 입력 포트에는 같은 컨트롤, 특히 게인 컨트롤이 있는 경우가 있습니다. 라인이 그러한 컨트롤을 갖추고 있는지 어떤지를 조사하는 방법, 및 그러한 사용 방법의 자세한 것은, 제 6 장<a href="chapter6.html">「컨트롤을 사용한 오디오 처리」</a>를 참조해 주세요.  </p>
+<p>&nbsp;</p></body>
+</html>

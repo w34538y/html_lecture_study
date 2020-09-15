@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--<?xml version="1.0" encoding="UTF-8"?>v --><!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> --><!-- $Id: ReleaseNotes.html,v 1.41 2003/09/25 23:04:30 ericarms Exp $ -->
+<title>JAXP 1.3 릴리스 노트 - xrath.com 에서 번역됨</title>
+<!-- <link rel="stylesheet" type="text/css" href="../dist/docs/style/default.css" /> -->
+  <style type="text/css" media="all">
+  <!--
+     a:link    { color:blue; }
+     a:hover   { color:red;text-decoration:none;}
+     a:visited { color:purple; }
+     .TBD {
+	     font-style: italic;
+       font-weight: bold;
+	     color: #FF0000;
+     }
+     .Fixed {
+	     font-family: "Courier New", Courier, mono;
+	     font-size: smaller;
+     }
+    .def {
+		  font-style: italic;
+		 }
+     -->
+  </style>
+</head>
+<body style="background-color: rgb(255, 255, 255);">
+<center>
+<h2><font color="#000099">XML 처리용의 Java<sup><font size="-2">TM</font></sup> API 릴리스 노트</font></h2>
+</center>
+<center> <b>스펙 버젼:</b> 1.3<br> <b>레퍼런스 구현 (RI) 버젼:</b> 1.3. 0
+</center>
+<p>이 문서에서는, 인스톨 순서와 이 소프트웨어 라이브러리를 보다 효과적으로 사용하기 위한 주의가 설명되고 있습니다. 자세한 것은,<a href="http://java.sun.com/xml/jaxp/faq.html">JAXP FAQ</a>  를 참조해 주세요. </p>
+<blockquote>
+<p><b>주:</b><br>이 페이지를 온라인으로 표시하고 있는 경우는, 릴리스 노트의 최신판을 보시고 있습니다. 이 페이지를 릴리스 번들의 일부로서 다운로드했을 경우는, 최신판의 릴리스 노트에 대해,<a href="http://java.sun.com/xml/jaxp/docs.html">JAXP Documentation</a>  페이지를 참조해 주세요.  </p>
+</blockquote>
+<h4>목차</h4>
+<ul>
+<li><a href="#versions">컴퍼넌트의 버젼</a> </li>
+<li><a href="#identifying">JAR 파일의 특정</a> </li>
+<li><a href="#parsing">XML 의 구문 분석</a> 
+    <ul>
+<li><a href="#schema-limitations">schema 처리의 기존의 제한</a> </li>
+<li><a href="#migration">이행의 기존의 문제</a> 
+        <ul>
+<li><a href="#migrationFrom11"> JAXP 1.1 으로부터의 이행</a> </li>
+<li><a href="#migrationFrom12">JAXP 1.2 로부터의 이행 </a> </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+<li><a href="#xsltc">콘파이링 XSLT 프로세서 (XSLTC)</a> 
+    <ul>
+<li><a href="#loader">커스텀 클래스 로더의 문제</a> </li>
+    </ul>
+  </li>
+<li><a href="#security">JWSDP 시큐리티에 대해</a> </li>
+<li><a href="#changes">JAXP RI 버젼의 변경점</a> </li>
+</ul>
+<h2><a name="versions"></a> <span class="style2">컴퍼넌트의 버젼</span></h2>
+이하의 버젼의 관련 테크놀러지가 레퍼런스 구현에 짜넣어지고 있습니다.
+<ul>
+<li><b>Xerces 버젼 2.6. 2 + </b>(Xerces 버젼 2.6. 2 와 해결 지음 버그 수정)</li>
+<li><b>XSLTC 버젼 2.6. 0 +</b> (XSLTC 버젼 2.6. 0 과 해결 지음 버그 수정.  Xalan 2.6. 0 릴리스 베이스)</li>
+</ul>
+<h2><a name="identifying" id="identifying">JAR 파일의 특정</a> </h2>
+<p>이 릴리스에는, 6 개의 JAR 파일이 포함되어 있습니다. </p>
+<dl>
+<dt><b>jaxp-api.jar</b></dt>
+<dd>JAXP 의 <span class="Fixed">javax.xml.parsers</span>,<span  class="Fixed">javax.xml.transform</span>,<code>javax.xml.xpath</code>,<code>javax.xml.validation</code>,<code>javax.xml.datatype</code> 및 <code>javax.xml.namespace</code> 컴퍼넌트. XML 처리 구현의 인스턴스를 어플리케이션이 일관한 방법으로 취득하기 위한 API 가 포함되어 있습니다. &nbsp;<code>javax.xml.xpath</code> 패키지에서는, 표준 XPath API 를 지원하고 있습니다. </dd>
+<dt><b>sax.jar</b></dt>
+<dd>Simple API for XML (SAX)의 API 와 헬퍼 클래스. XML 데이터에의 직렬 액세스에 사용합니다. &nbsp;API 에서는 SAX 버젼 2.0. 2 를 지원하고 있습니다. </dd>
+<dt><b>dom.jar</b></dt>
+<dd>Document Object Model (DOM)의 API 와 헬퍼 클래스. 메모리내의 트리 구조를 XML 데이터로부터 작성하기 위해서 사용합니다. &nbsp;API 에서는 DOM Level 3 을 지원하고 있습니다. </dd>
+<dt><b>xercesImpl.jar</b></dt>
+<dd>SAX 퍼서와 DOM 퍼서, 및 JAXP API 의 Xerces 고유 구현의 구현 클래스. </dd>
+  <dt>&nbsp;</dt>
+<dt><b>xalan.jar</b></dt>
+<dd>Xalan 프로젝트에 의한 콘파이링 XSLT 프로세서인 XSLTC 가 포함됩니다. </dd>
+</dl>
+<h2><a name="parsing" id="parsing">XML 의 구문 분석</a> </h2>
+<p>이 섹션내의 정보는, Xerces 테크놀러지에 관계합니다. 최신의 업데이트는, 항상 <a href="http://jaxp.dev.java.net">http://jaxp.dev.java.net</a>  로부터 입수할 수 있습니다. &nbsp;최신의 Apache 버젼에 있어서의 기존의 버그와 최신의 버그 수정에 대해서는,<a href="http://xml.apache.org/xerces2-j/releases.html">http://xml.apache.org/xerces2-j/releases.html</a>  를 참조해 주세요. &nbsp;
+</p>
+<h3><a name="schema-limitations"></a> schema 처리의 기존의 제한</h3>
+<p>이 섹션에서는, schema 처리의 기존의 버그, 제한, 및 구현 의존의 조작에 대해 설명합니다. </p>
+<h4>제한</h4>
+다음의 제한에서는, 상한치를 지정합니다.
+<ul>
+<li>Length, minLength, 및 maxLength 의 각 파셋트는, 2147483647 에 제한된다. <br> 이 제한보다 큰 항목은 올바르게 검증되지 않는다<br> &nbsp; &nbsp; </li>
+<li>일자/시각의 데이터형에 있어서의 해와 초의 값은, 2147483647 에 제한된다. <br> 이 제한보다 큰 값은 올바르게 검증되지 않는다</li>
+</ul>
+<h4>구현 의존의 조작</h4>
+다음의 구현 의존의 조작은, W3C XML schema 스펙 (<a href="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</a> )에서도 완전하게 정의되고 있지 않습니다. 그 결과, 다양한 구현이 존재하고 있습니다.
+<ul>
+<li>JAXP 1.2 레퍼런스 구현 퍼서 (Xerces 2.0. 1) <tt>&lt;keyref&gt;</tt> 일의성 제한에서는, 「XML Schema Part 1: Structures」로 정의되고 있도록(듯이),<tt>&lt;keyref&gt;</tt> 가 접속된 요소의 범위내의 <tt>&lt;key&gt;</tt> 또는 <tt>&lt;unique&gt;</tt> 일의성 제한을 참조하고 있습니다. 한편, XML schema의 도입 섹션 ( 「XML Schema Part 0:Primer」)에는, 대응하는 <tt>&lt;key&gt;</tt> 의 요소내에서 사용되고 있는 요소로 선언된 <tt>&lt;keyref&gt;</tt> 의 예가 실려 있습니다. 혼란을 피하기 위해서(때문에), 이와 같이 일관성이 없는 점을 여기서 지적해 둡니다. </li>
+</ul>
+<h3><a name="migration"></a> 이행의 기존의 문제</h3>
+<p>이 섹션에서는, 이전의 버젼의 JAXP 로부터 이행 할 경우에 발생하는 기존의 문제를 취급합니다. <br>
+</p>
+<h4><a name="migrationFrom12" id="migrationFrom12"></a> JAXP 1.2 로부터의 이행</h4>
+<p>JAXP 1.2 는 JWSDP 와 J2EE 1.4 에 짜넣어지고 있습니다. 「JAXP 호환성 가이드」의 다음의 섹션에서는, 관련하는 이행의 문제를 취급하고 있습니다. </p>
+<ul>
+<li><a  href="file:///C:/personal/JAXP-Compatibility_150.html#entityResolver">IOException added to SAX EntityResolver API</a> <br> SAX 2.0. 1 API 에 더해진 변경점</li>
+<li><a  href="file:///C:/personal/JAXP-Compatibility_150.html#addedMethods">Methods added to DOM interfaces</a> <br> DOM Level 3 API 에 더해진 변경점</li>
+<li><a  href="file:///C:/personal/JAXP-Compatibility_150.html#packageNames">Package Name Changes</a> <br> 구현 고유의 기능에 액세스 하는 어플리케이션으로 영향이 있는 변경에 대해 </li>
+</ul>
+<p> </p>
+<h4><a name="migrationFrom11" id="migrationFrom11"></a> JAXP 1.1 으로부터의 이행</h4>
+<p>JAXP 1.1 은 J2EE 1.3 으로 J2SE 1.4 에 짜넣어지고 있습니다. JAXP 1.1 과의 기능상의 차이에 대해서는,<a href="JAXP-Compatibility_150.html">「JAXP 호환성 가이드」</a>를 참조해 주세요. </p>
+<h2 class="style2">DOM Level 3 구현에 대해</h2>
+<p>이 섹션에서는, DOM Level 3 Core, DOM Level 3 Load, 및 Save 에 관한 구현에 대해 설명합니다. </p>
+<h3>DOM Level 3 Core</h3>
+<p>다음은 구현되고 있지 않습니다. </p>
+<ul>
+<li>DOMConfiguration 의 「infoset」파라미터 - 치 「true」는 지원하지 않는다</li>
+</ul>
+<p>지원하는 파라미터는 다음과 같습니다. </p>
+<ul>
+<li>error-handler [DOMErrorHandler ] </li>
+<li>resource-resolver [DOMResourceResolver ] </li>
+<li>schema-type [String ] </li>
+<li>schema-location [String ] </li>
+<li>canonical-form [false ] </li>
+<li>cdata-sections [true/false ] </li>
+<li>comments [true/false ] </li>
+<li>namespaces [true/false ] </li>
+<li>entities [true/false ] </li>
+<li>infoset [ <em>false </em> ] </li>
+<li>namespace-declarations [true ] </li>
+<li>normalize-characters [false ] </li>
+<li>split-cdata-sections [true/false ] </li>
+<li>validate-if-schema [true/false ] </li>
+<li>whitespace-in-element-content [true ] </li>
+<li>datatype-normalization [true/false ] </li>
+<li>validate [true/false ] -- XML schema 에 대해서만, 재검사를 지원한다. 자세한 것은,<a  href="http://xml.apache.org/xerces2-j/faq-dom.html">How to revalidate DOM in memory?  (을)를 참조 </a>  .  </li>
+<li>validate-if-schema [true/false ] </li>
+<li>check-character-normalization [false ] </li>
+<li>well-formed [true/false ] </li>
+<li>psvi [true/false ] -- (비 DOM) 이 파라미터의 값을 true 로 설정하면(자), DOM 트리내의 PSVI 정보를 포함한다. 정보에 액세스 하려면 , dom.Element 를 org.apache.xerces.xs.ElementPSVI 에, dom.Attr 를 org.apache.xerces.xs.AttributePSVI 에 캐스트 한다</li>
+</ul>
+<h3>DOM Level 3 Load 및 Save </h3>
+<p>다음은 지원하고 있습니다. </p>
+<ul>
+<li>LSParser <a href="http://www.w3.org/TR/2003/CR-DOM-Level-3-LS-20031107/load-save.html#LS-LSParser-parseWithContext"> parserWithContext</a> </li>
+<li>DOMImplementationLS <a href="http://www.w3.org/TR/2003/CR-DOM-Level-3-LS-20031107/load-save.html#LS-DOMIMplementationLS-MODE_ASYNCH"> MODE_ASYNCHRONOUS</a> </li>
+<li>LSSerializer - 다음의 파라미터는 지원하지 않는다 </li>
+  <ul>
+<li>ignore-unknown-character-denormalizations [true ] </li>
+<li>normalize-characters [true ] </li>
+<li>well-formed [true ]</li>
+  </ul>
+</ul>
+<h2><a name="xsltc"></a> <span class="style2">콘파이링 XSLT 프로세서 (XSLTC)</span></h2>
+<p>XSLTC 트랜스 포머는, 변환 엔진인 「translet」를 XSL 스타일 시트로부터 생성합니다. <em></em>이렇게 하는 것으로, 실행시 어플리케이션으로부터 XML 데이터에의 스타일 시트 지시의 해석을 분리할 수 있습니다.  </p>
+<p>XSLTC 는, 스타일 시트를 Java 바이트 코드 (translet)에 컴파일 하는 것으로 기능합니다.  translet 는, XSLT 변환을 실행하기 위해서 사용됩니다. 이 방법에서는, 지정된 스타일 시트가 1 회 컴파일 되어 여러 차례 사용되기 (위해)때문에, XSLT 변환의 퍼포먼스가 크게 향상합니다. 또, 실제로 스타일 시트로 사용되고 있는 XSLT 지시만이 포함되기 (위해)때문에, 매우 경량인 translet 도 생성됩니다. </p>
+<blockquote>
+<p><b>주:</b><br> XSLT 는 JAXP transform 패키지로 지원하고 있습니다. 구현에 의존하지 않는 방법으로 XSLT 의 기본적인 기능에 액세스 하는 자세한 것은,<a  href="http://java.sun.com/j2se/1.5/docs/api/javax/xml/transform/package-summary.html"><code>javax.xml.transform</code></a>  를 참조해 주세요.  </p>
+</blockquote>
+<h3><a name="loader"></a> 커스텀 클래스 로더의 문제</h3>
+<p>커스텀 클래스 로더를 변환 팩토리와 함께 사용하면(자), 문제가 발생하는 경우가 있습니다. </p>
+<p>JAXP 에 있어서의 변환 팩토리에서는, 시스템 클래스 로더보다 문맥 클래스 로더가 항상 우선해 사용됩니다. 그 때문에, 어플리케이션으로 커스텀 클래스 로더를 사용하고 있을 때는, 커스텀 클래스 로더를 문맥 클래스 로더로서 변환 팩토리가 사용하도록(듯이) 설정할 필요가 있는 경우가 있습니다. 커스텀 클래스 로더를 현재의 thread로 설정하려면 , 다음과 같이 합니다. </p>
+<blockquote>
+<pre>try {<br>  Thread currentThread = Thread.currentThread();<br>  currentThread.setContextClassLoader(customClassLoader);<br>}<br>catch (SecurityException e) {<br>  // ...<br>}</pre>
+</blockquote>
+<p>어플리케이션이 multi-thread화 되고 있는 경우는, 새로운 thread가 작성될 때마다, 커스텀 클래스 로더를 모든 thread로 설정할 필요가 있는 경우가 있습니다. 어플리케이션에 문맥 클래스 로더를 설정하는 권한이 없는 경우는, 시큐리티 예외가 throw 됩니다. </p>
+<hr>
+<h2><a name="security" id="changes"></a> <span class="style2">JWSDP 시큐리티에 대해</span></h2>
+<p>어플리케이션을 Java Web Services Developer Pack (JWSDP)등의 Web 서버상에서 실행하고 있어, 시큐리티를 유효하게 하고 있는 경우는, 다음의 권한을 설정할 필요가 있습니다. </p>
+<blockquote>
+<pre>permission java.io.FilePermission<br><br>    "/${webserver.home}/common/endorsed/xercesImpl.jar", "read";<br>permission java.io.FilePermission<br>    "/${webserver.home}/common/endorsed/xalan.jar", "read";<br><br>permission java.util.PropertyPermission<br>    "javax.xml.parser.SAXParserFactory", "read, write";<br>permission java.util.PropertyPermission<br>    "javax.xml.transform.TransformerFactory", "read, write";<br><br>permission java.util.PropertyPermission "user.dir",        "read";<br>permission java.util.PropertyPermission "file.separator",  "read";<br>permission java.util.PropertyPermission "line.separator",  "read";<br>permission java.util.PropertyPermission "JavaClass.debug", "read";<br><br>permission java.lang.RuntimePermission "createClassLoader";<br>permission java.lang.RuntimePermission "accessDeclaredMembers";<br></pre>
+<p><b>주:</b><br> 읽기 권한을 <tt>xercesImpl.jar</tt> 로 설정하지 않으면 다음과 같은 <tt>FactoryConfigurationError</tt> 가 throw 됩니다. <br>&nbsp;&nbsp;&nbsp;<span class="Fixed">&nbsp;&nbsp;&nbsp;<span class="Fixed">Provider org.apache.xerces.jaxp.SAXParserFactoryImpl not found</span></span></p>
+</blockquote>
+<hr>
+<h2><a name="changes" id="changes">JAXP RI 버젼의 변경점</a> </h2>
+<h3><a name="1.2.4" id="1.2.4"></a> JAXP RI 버젼 1.3 의 변경점</h3>
+<ul>
+<li>Xerces 버젼이 2.3. 0 으로부터 &nbsp;<span  style="color: rgb(51, 0, 51); font-weight: normal;" class="TBD"></span>2.6. 2 로 변경되었다 (+ 해결 지음 버그 수정)</li>
+<li>JAXP 1.3 의 스탠드얼론 버젼으로 입수 가능한 XSL 변환 엔진은, Xalan 해석과 XSLTC 의 2 개 (Xalan 2.6. 0 베이스 (+ 해결 지음 버그 수정)). &nbsp;J2SE 5 에 포함되는 JAXP 1.3 버젼에는, XSLTC 트란포마만이 포함되는 &nbsp; (Xalan 2.6. 0 베이스 (+ 해결 지음 버그 수정)). <br>
+  </li>
+<li>「호환성 가이드」의<a href="JAXP-Compatibility_150.html#new">「 신기능」</a>으로 설명한 신기능이나 특징이 추가되었다 </li>
+<li>시스템 프로퍼티 <span class="Fixed">elementAttributeLimit</span> 를 추가하는 것으로, 서비스 방해 (DoS) 취약성을 수정했다.  이 프로퍼티은 요소내의 속성수를 제한하기 위해서 사용한다. 1 개의 요소의 속성의 디폴트의 최대치는 10,000</li>
+</ul>
+<h3><a name="1.2.4" id="1.2.4"></a> JAXP RI 버젼 1.2. 4 의 변경점</h3>
+<ul>
+<li>Xerces 에 있어서의 J2SE 1.4. 2 의 컴파일 버그를 수정</li>
+</ul>
+<h3><a name="1.2.3"></a> JAXP RI 버젼 1.2. 3 의 변경점</h3>
+<ul>
+<li>Xerces 버젼이 2.2. 1 에서 2.3. 0 으로 변경되었다 (+ 해결 지음 버그 수정). 이 버젼에는 많은 버그 수정이 포함되어 있다</li>
+<li>schema 스펙에 의해 무효로 되어 있던 모든 10 진수값가, 퍼서로 인식할 수 있게 되었다 (1.2. 2 에서의 제한을 없앴다)</li>
+<li> JDK 1.4. 1 에서의 Xerces 컴파일의 문제를 해결했다 </li>
+<li>XML schema의 로드 퍼포먼스가 큰폭으로 향상했다 (실질적으로 반이 되었다)</li>
+</ul>
+<h3><a name="1.2.2"></a> JAXP RI 버젼 1.2. 2 의 변경점</h3>
+<ul>
+<li> 시큐리티를 향상시키기 위한 새로운 프로퍼티을 구현했다. <a href="JAXP-Compatibility_150.html#JAXP_security"> 「시큐리티의 문제」</a>를 참조</li>
+<li> 퍼서 구현이 Xerces 2.0. 1_04 (으)로부터 Xerces 2.2. 1 으로 변경되었다 (+ 해결 지음 버그 수정)</li>
+<li> XSLT 프로세서 구현이 Xalan 2.3. 1_01 (으)로부터 Xalan 2.4. 1 으로 변경되었다 (+ 해결 지음 버그 수정)</li>
+<li> XSLTC 가 이 릴리스에 포함되어 있다</li>
+</ul>
+<h3><a name="1.2.1"></a> JAXP RI 버젼 1.2. 1 의 변경점</h3>
+<p>Xerces 퍼서의 퍼포먼스가 큰폭으로 향상했습니다.  </p>
+<p>XSLTC 는 이 릴리스에는 포함되지 않습니다. 단독으로 J2EE 플랫폼에 준비되어 있었습니다. &nbsp; </p>
+<h3> <a name="fcs0"></a> JAXP RI 버젼 1.2. 0-FCS 의 변경점</h3>
+퍼서 구현이 Xerces 2.0. 0_01 (으)로부터 Xerces-J 2.0. 1_01 (으)로 변경되었습니다<br> (Xerces 2.0. 1 최종판 + 해결 지음 버그 수정). Xalan XSLT 프로세서<br>구현이 xalan-j 2.3. 1_01 (Xalan 버젼 2.3. 1 + <br>해결 지음 버그 수정)에 갱신되었습니다.
+<p>제안된 1.2 JAXP 스펙을 완전하게 지원합니다. <br> 이 스펙에서는, W3C XML schema를 사용한 문서 검증을 구현하고 있습니다.  </p>
+<h3> <a name="ea2"></a> JAXP RI 버젼 1.2. 0-EA2 의 변경점</h3>
+퍼서 구현이 Xerces 2.0. 0 beta3 로부터 Xerces-J 2.0. 0_01 (으)로 변경되었다 (Xerces 2.0. 0 최종판 + 해결 지음 버그 수정). Xalan XSLT 프로세서 구현이 xalan-j 2.3. 0_01 (Xalan 버젼 2.3. 0 + 해결 지음 버그 수정)에 갱신되었습니다.
+<p>Xalan XSLTC 프로세서도 본릴리스로 추가되었습니다. (실행 준비를 할 수 있던 변환 엔진 (translat)에 스타일 시트를 컴파일 하기 위해서 사용) </p>
+<p>제안된 1.2 JAXP 스펙을 완전하게 지원합니다.  이 스펙에서는, W3C XML schema를 사용한 문서 검증을 구현하고 있습니다.  </p>
+<h3> <a name="ea1"></a> JAXP RI 버젼 1.2. 0-EA1 의 변경점</h3>
+퍼서 구현이 Apache Crimson 로부터 Xerces 2 버젼 2.0. 0 beta3 로 변경되었습니다. XSLT 프로세서 구현이 Xalan classic 버젼 2.2.D14 에 갱신되었습니다.
+<p>퍼서에서는 W3C XML schema를 지원하고 있습니다만, 제안된 JAXP 1.2 스펙의 모든 것은 지원하고 있습니다. 특히, 인스턴스 문서가 특정의 schema에 준거하는 것을 강제하는 기능은 구현되고 있지 않습니다. 다만, 스펙중  검증의 부분은, 인스턴스 문서내에서 schema 힌트와 함께 사용할 수 있습니다.  </p>
+<p>&nbsp;</p>
+</body>
+</html>

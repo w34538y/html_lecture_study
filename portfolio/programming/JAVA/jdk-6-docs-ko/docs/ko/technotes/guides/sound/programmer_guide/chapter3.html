@@ -1,0 +1,147 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 3 장:오디오 system resource에의 액세스</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<table width="80%" border="1" align="center" cellpadding="5" cellspacing="0" bordercolor="#000000" bgcolor="#FFFFCC">
+  <tr>
+    <td>
+<h2><u>설명</u></h2>
+      <ol>
+<li> <code>Port</code> 클래스는, JDK 5.0 이전의 버젼에서는 모든 플랫폼에서 사용할 수 있는 것은 아니었습니다. </li>
+<li>버젼 5.0 에서는,<code>sound.properties</code> 파일을 사용해,<code>Clip</code>,<code>Port</code>,<code>SourceDataLine</code> 및 <code>TargetDataLine</code> 의 디폴트의 디바이스를 설정할 수 있습니다. 상세한 것에 대하여는, API 의 <code><a  href="../../../api/javax/sound/sampled/AudioSystem.html">AudioSystem</a> </code> 클래스, 예에 대해서는, 이 가이드의<a href="appendix2.html">「부록 2:<code>sound.properties</code> 파일」</a>  을 참조해 주세요. </li>
+<li>이하의 「목적의 종류의 라인의 취득」시에로 개설하는 대로, 라인을 취득하는 메소드가 여전히 5.0 으로 유효한 경우는,<code>Clip</code>,<code>SourceDataLine</code>, 및 <code>TargetDataLine</code> 의 편리한 메소드,<code>AudioSystem.getClip()</code>,<code>AudioSystem.getSourceDataLine()</code>, 및 <code>AudioSystem.getTargetDataLine()</code> 를 사용할 수 있습니다. 자세한 것은,<code><a  href="../../../api/javax/sound/sampled/AudioSystem.html">AudioSystem</a> </code> 를 참조해 주세요.  </li>
+    </ol></td>
+  </tr>
+</table>
+<p><br> <a name="113096"> </a> Java<font size="-1"><sup>TM</sup></font> Sound API 에서는 유연한 시스템 구성 수법을 채용하고 있습니다. 1 대의 컴퓨터에 다양한 종류의 오디오 디바이스 (믹서)를 인스톨 할 수 있습니다. 이 API 에서는, 인스톨 되고 있는 디바이스의 종류와 그 기능에 대한 전제 사항은 거의 없습니다. 그 대신에, 이용 가능한 오디오 컴퍼넌트, 및 그러한 컴퍼넌트에 프로그램으로부터 액세스 하는 방법을 시스템으로부터 통지시킵니다.
+</p>
+<p><a name="113098"> </a> 이 장에서는, 프로그램이 컴퓨터에 인스톨 되고 있는 샘플링 오디오 자원을 확인하는 방법, 및 이용 가능한 자원에의 액세스를 얻는 방법에 대해 설명합니다. 이 경우의 자원에는, 믹서 및 믹서에 소속하는 각종의 라인이 포함됩니다.
+</p><a name="113101"> </a> 
+<h3> AudioSystem 클래스</h3>
+<p><a name="113103"> </a> <code>AudioSystem</code> 클래스는, 편입 서비스 및 서드 파티 프로바이더가 개별적으로 인스톨 한 서비스를 포함한, 오디오 컴퍼넌트의 정보 센터의 역할을 합니다. <code>AudioSystem</code> 는, 인스톨 된 샘플링 오디오 자원에 응용 프로그램이 액세스하기 위한 엔트리 포인트가 됩니다. <code>AudioSystem</code> 에 문의해, 어떠한 자원이 인스톨 되고 있을까를 조사해 다음에 그러한 컴퍼넌트에의 액세스를 취득할 수 있습니다. 예를 들어, 응용 프로그램은 우선 특정의 구성 (전장의 라인의 설명으로 가리킨 입출력 구성등)을 가지는 믹서가 있을지 어떨지를 <code>AudioSystem</code> 에 문의할 수가 있습니다. 다음에, 프로그램은 믹서로부터 데이터 라인등을 취득할 수 있습니다.
+</p><p><a name="113105"> </a> 응용 프로그램이 <code>AudioSystem</code> 로부터 취득할 수 있는 자원에는 다음과 같은 것이 있습니다.
+</p><ul><a name="113107"> </a> 
+<li>믹서 <a name="113109"> </a> 
+<blockquote>일반적으로, 시스템에는 복수의 믹서가 인스톨 되고 있습니다. 일반적으로은, 오디오 입력용의 믹서와 오디오 출력용의 믹서가, 적어도 1 개(살)씩 있습니다. 또, 믹서에 I/O 포트가 없는 경우도 있습니다만, 그 경우는 이것들은 응용 프로그램으로부터 음성을 받아, 믹싱 한 음성을 프로그램에 돌려줍니다. <code>AudioSystem</code> 클래스에 의해, 인스톨 떠날 수 있어 모든 믹서의 리스트가 제공됩니다. </blockquote>
+<a name="113111"> </a> 
+<li>라인<a name="113113"> </a> 
+<blockquote>각 라인은 믹서에 관련지을 수 있고 있습니다만, 응용 프로그램으로 명시적으로 믹서를 취급하지 않아도 <code>AudioSystem</code> 로부터 직접 라인을 취득할 수가 있습니다. </blockquote>
+<a name="113115"> </a> 
+<li>형식 변환 <a name="113117"> </a> 
+<blockquote>응용 프로그램은, 형식 변환을 사용해 오디오 데이터의 형식을 다른 형식으로 변환할 수 있습니다. 변환에 대해서는 제 7 장<a href="chapter7.html">「파일 컨버터 및 형식 컨버터의 사용」</a>을 참조해 주세요. </blockquote>
+<a name="113119"> </a> 
+<li>파일과 스트림 <a name="113121"> </a> 
+<blockquote><code>AudioSystem</code> 클래스는, 오디오 파일과 오디오 스트림간의 변환을 행하기 위한 메소드를 제공합니다. 또,<code>AudioSystem</code> 클래스는, 사운드 파일의 파일 형식을 통지하거나 다른 형식에서 파일을 작성하거나 할 수가 있습니다. 이러한 기능에 대해서는, 제 7 장<a href="chapter7.html">「파일 컨버터 및 형식 컨버터의 사용」</a>을 참조해 주세요. </blockquote>
+</ul><a name="113123"> </a> 
+<h3> 정보 객체</h3>
+<p><a name="113125"> </a> Java Sound API 의 클래스안에는, 관련 인터페이스에 대해 유용한 정보를 제공하는 것이 있습니다. 예를 들어,<code>Mixer.Info</code> 는, 인스톨 되고 있는 믹서의 벤더, 이름, 설명, 버젼등의 상세 정보를 제공합니다. <code>Line.Info</code> 는 특정의 라인의 클래스를 가져옵니다. <code>Line.Info</code> 의 서브 클래스에는 <code>Port.Info</code> 와 <code>DataLine.Info</code> 가 있어,<code>Port.Info</code> 는 특정의 포트,<code>DataLine.Info</code> 는 특정의 데이터 라인에 관한 상세를 가져옵니다. 이러한 각 클래스에 대해서는, 이후에 각각의 마디로 설명합니다. <code>Info</code> 객체와 그 객체가 기술하는 믹서 또는 라인 객체를 혼동 하지 않게 주의해 주세요.
+</p><a name="113128"> </a> 
+<h3> 믹서의 취득</h3>
+<p><a name="113130"> </a> 일반적으로, Java Sound API 를 사용하는 프로그램은 최초의 일의 1 개로서 믹서, 또는 믹서의 라인의 적어도 1 개를 가져옵니다. 그것에 의해 컴퓨터의 내외에 사운드를 입출력할 수 있습니다. 사용하는 프로그램으로 특정의 종류의 믹서가 필요한 경우나, 이용 가능한 믹서의 리스트를 표시해 사용자가 믹서를 선택할 수 있도록(듯이) 하는 경우가 있습니다. 어느 쪽의 경우도, 인스톨 되고 있는 믹서의 종류를 알 필요가 있습니다. <code>AudioSystem</code> 에는 다음의 메소드가 있습니다.
+</p><blockquote><pre>    static Mixer.Info[] getMixerInfo() 
+</pre></blockquote>
+이 메소드로부터 반환되는 각 <code>Mixer.Info</code> 객체는, 인스톨 되고 있는 믹서의 종류를 나타냅니다. 일반적으로, 시스템에 있는 특정의 종류의 인스턴스는, 많아도 1 개(살)입니다. 만일 여러종류의 믹서가 지정되고 있어도, 반환된 배열내에는 그 종류의 <code>Mixer.Info</code> 는 1 개 밖에 없습니다. 응용 프로그램은,<code>Mixer.Info</code> 객체를 반복 처리 해, 필요한 믹서를 찾습니다. <code>Mixer.Info</code> 에는, 믹서의 종류를 나타내는 다음의 캐릭터 라인이 포함되어 있습니다.
+<p></p><ul><a name="113136"> </a> 
+<li>이름 <a name="113309"> </a> 
+<li>버젼 <a name="113312"> </a> 
+<li>벤더 <a name="113139"> </a> 
+<li>설명
+<p><a name="113141"> </a> 
+</ul>
+이것들은 임의의 캐릭터 라인이므로, 특정의 믹서를 필요로 하는 응용 프로그램은, 예기 해야 할 캐릭터 라인과 캐릭터 라인의 비교 대상을 알지 않으면 안됩니다. 믹서의 제조원은, 이 정보를 문서화 해야 합니다만, 일반적으로는 특정의 믹서를 필요로 하지 않는 경우가 많아, 이 경우는 응용 프로그램은 모든 <code>Mixer.Info</code> 객체의 캐릭터 라인을 표시해, 사용자가 믹서를 선택하도록(듯이) 합니다.
+<p></p><p><a name="113143"> </a> 적절한 믹서가 발견되면, 응용 프로그램은 다음의 <code>AudioSystem</code> 메소드를 호출해, 목적의 믹서를 가져옵니다.  
+</p>
+<blockquote><pre>    static Mixer getMixer(Mixer.Info info) 
+</pre></blockquote>
+프로그램이 특정의 기능을 가지는 믹서를 필요로 하지만, 특정의 벤더가 제조한 믹서가 아니어도 좋은 경우가 있습니다. 또, 사용자가 선택해야 할 믹서를 모를 가능성도 있습니다. 이러한 경우는,<code>Mixer.Info</code> 객체내의 정보는 그다지 도움이 되지 않습니다. 그 대신해,<code>getMixerInfo</code> 로부터 반환되는 모든 <code>Mixer.Info</code> 객체를 반복 처리 해,<code>getMixer</code> 를 반복해 호출하는 것으로 믹서를 취득해, 그 믹서의 기능을 조사할 수가 있습니다. 예를 들어, 믹싱 끝난 오디오 데이터를 특정의 갯수의 타겟 데이터 라인에 동시에 기입할 수 있는 믹서가 필요하다고 합니다. 이 경우는, 이 Mixer 메소드를 사용해 각 믹서에 문의를 실시합니다.
+<p></p>    <code>int </code>getMaxLines<code>(Line.Info info) </code><p><a name="115024"> </a> 여기서,<code>Line.Info</code> 는 <code>TargetDataLine</code> 를 지정합니다. <code>Line.Info</code> 클래스에 대해서는, 다음의 마디로 설명합니다.  
+</p><a name="113154"> </a> 
+<h3> 목적의 종류의 라인의 취득</h3>
+<p><a name="113156"> </a> 라인을 취득하는 방법에는 다음의 2 종류가 있습니다.  
+</p><ul><a name="113157"> </a> 
+<li><code>AudioSystem</code> 객체로부터 라인을 직접 취득한다<a name="113158"> </a> 
+<li><code>AudioSystem</code> 객체로부터 취득한 믹서중에서 라인을 취득한다 (이 장의<a href="chapter3.html#113128">「믹서의 취득」</a>을 참조) 
+</ul><a name="113159"> </a> 
+<h4> AudioSystem 로부터 라인을 직접 취득하는 방법</h4>
+<p><a name="113161"> </a> 여기에서는, 믹서를 아직 취득하고 있지 않고, 사용하는 프로그램이 특정의 종류의 라인만을 필요로 하는 단순한 것이다고 합니다. 믹서의 상세 정보는 중요하지는 않습니다. 이 경우는,<code>AudioSystem</code> 메소드를 사용할 수 있습니다.  
+</p>
+<blockquote><pre>    static Line getLine(Line.Info info)
+</pre></blockquote>
+이것은, 벌써 설명한 <code>getMixer</code> 메소드 와 유사합니다. <code>Mixer.Info</code> 와 달리, 인수로서 사용되는 <code>Line.Info</code> 는 목적의 라인을 지정하기 위한 텍스트 정보를 가지고 있지 않습니다. 그 대신해, 목적의 라인의 클래스에 관한 정보를 가지고 있습니다.
+<p></p><p><a name="114553"> </a>  <code>Line.Info</code> 는 추상 클래스이므로, 라인을 가져오려면 , 그 서브 클래스의 어떤 것인지 (<code>Port.Info</code> 또는 <code>DataLine.Info</code>)를 사용합니다. 다음의 코드 (발췌)에서는,<code>DataLine.Info</code> 서브 클래스를 사용해 타겟 데이터 라인을 취득해, 오픈합니다.
+</p>
+<blockquote><pre>TargetDataLine line;
+DataLine.Info info = new DataLine.Info(TargetDataLine.class, 
+    format); // format is an AudioFormat object
+if (! AudioSystem.isLineSupported(info)) {
+    // Handle the error.
+    }
+    // Obtain and open the line.
+try {
+    line = (TargetDataLine) AudioSystem.getLine(info);
+    line.open(format);
+} catch (LineUnavailableException ex) {
+   	// Handle the error.
+    //... 
+}
+</pre></blockquote>
+이 코드에서는, 클래스와 오디오 형식 이외의 속성을 지정하지 않고 <code>TargetDataLine</code> 객체를 가져옵니다. 다른 종류의 라인을 취득하는 경우에도, 이것에 유사한 코드를 사용할 수 있습니다. <code>SourceDataLine</code> 또는 <code>Clip</code> 의 경우는, 그 클래스를 line 변수의 클래스로서 <code>TargetDataLine</code> 대신에 사용해,<code>DataLine.Info</code> 생성자 의 최초의 인수에도 그 클래스를 사용합니다.  
+<p></p><p><a name="113191"> </a> <code>Port</code> 의 경우는, 다음과 같은 코드 중(안)에서 <code>Port.Info</code> 의 static 인스턴스를 사용할 수 있습니다.
+<blockquote><pre>
+if (AudioSystem.isLineSupported(Port.Info.MICROPHONE)) {
+    try {
+        line = (Port) AudioSystem.getLine(
+            Port.Info.MICROPHONE);
+    }
+}
+</pre></blockquote>
+믹서가 목적의 종류의 라인을 가지고 있을지 어떨지를 알기 위한 <code>isLineSupported</code> 메소드의 사용법에 주목해 주세요.  
+<p></p>
+<p><a name="113199"> </a>  벌써 설명한 것처럼, 소스 라인은, 믹서가 음성 입력 디바이스를 나타내고 있는 경우는 믹서에의 입력 즉 <code>Port</code> 객체이며, 믹서가 음성 출력 디바이스를 나타내고 있는 경우는 <code>SourceDataLine</code> 또는 <code>Clip</code> 객체입니다. 같이 타겟 라인은 믹서의 출력입니다. 즉, 오디오 출력 믹서의 경우는 <code>Port</code> 객체, 오디오 입력 믹서의 경우는 <code>TargetDataLine</code> 객체입니다. 믹서가 외부 하드웨어 디바이스에 전혀 접속되지 않은 경우도 있습니다. 예를 들어, 응용 프로그램으로부터 음성을 받아, 믹싱 끝난 음성을 그 프로그램에 반송하는 내부 믹서나 완전한 소프트웨어 믹서 등입니다. 이런 종류의 믹서에는, 입력 라인 대신에 <code>SourceDataLine</code> 또는 <code>Clip</code> 객체가 있어, 출력 라인 대신에 <code>TargetDataLine</code> 객체가 있습니다.  </p>
+<p><a name="113201"> </a> 인스톨 되고 있는 믹서로 지원되고 있는 소스 라인과 타겟 라인의 종류를 지정해 상세를 조사하려면 , 다음의 <code>AudioSystem</code> 메소드를 사용할 수 있습니다.
+<blockquote><pre>
+    static Line.Info[] getSourceLineInfo(Line.Info info)
+    static Line.Info[] getTargetLineInfo(Line.Info info)
+</pre></blockquote>
+이러한 각 메소드로부터 반환되는 배열내의 각 객체는, 라인의 일의의 종류를 나타냅니다만, 반드시 모든 라인이 나타난다고는 할 수 없습니다. 예를 들어, 1 개의 믹서의 라인 가운데 2 개 또는, 다른 믹서의 2 개의 라인이 동일한<code>Line.Info</code> 객체를 가지는 경우는, 그 2 개의 라인은 반환된 배열안의 1 개의 <code>Line.Info</code> 에 의해 나타내집니다.
+<p></p><a name="113208"> </a> 
+<h4> 믹서로부터 라인을 취득하는 방법</h4>
+<p><a name="113210"> </a> <code>Mixer</code> 인터페이스에는, 벌써 설명한 소스 라인과 타겟 라인을 위한 다양한 <code>AudioSystem</code> 의 액세스 메소드가 있습니다. 이러한 <code>Mixer</code> 메소드에는,<code>AudioSystem</code> 의 메소드와 같게 <code>Line.Info</code> 인수를 취하는 것도 있습니다만, 인수를 취하지 않는 형식을 포함하는 것도 있습니다.
+</p><blockquote><pre><code>    Line.Info[] getSourceLineInfo() 
+</code><code>    Line.Info[] getTargetLineInfo() 
+</code><p><a name="113215"> </a> 
+</pre></blockquote>
+이러한 메소드는, 특정의 믹서의 모든 <code>Line.Info</code> 객체의 배열을 돌려줍니다. 배열을 취득하면(자), 반복 처리 해,<code>Mixer</code> 의 <code>getLine</code> 메소드를 호출해 각 라인을 취득해, 다음에 <code>Line</code> 의 <code>open</code> 메소드를 실시해 각 라인을 프로그램으로 사용할 수 있도록(듯이) 예약합니다.
+<p></p><a name="113216"> </a> 
+<h3> 입출력 포트의 선택</h3>
+<p><a name="113217"> </a> 전절에서는 목적의 종류의 라인을 취득하는 방법을 설명했습니다만, 다른 종류의 라인과 포트에 대해서도 같은 것이 들어맞읍니다. <code>Line.Info</code> 인수를 취하는 <code>AudioSystem</code> (또는 <code>Mixer</code>) 메소드인<code>getSourceLineInfo</code> 와 <code>getTargetLineInfo</code> 에 <code>Port.Info</code> 객체를 건네주는 것으로, 모든 소스 (입력) 포트와 타겟 (출력) 포트를 취득할 수 있습니다. 다음에, 반환된 객체 배열을 반복 처리 해 <code>Mixer</code> 의 <code>getLine</code> 메소드를 호출해, 각 포트를 가져옵니다.
+</p>
+<p><a name="113219"> </a> 다음에,<code>Line</code> 의 <code>open</code> 메소드를 호출해 각 <code>Port</code> 를 오픈합니다. 포트를 연다는 것은, 그 포트를 온으로 하는 것, 즉 포트를 개입시킨 사운드의 왕래를 허가하는 것을 의미합니다. 또, 포트를 취득하기 전에 몇개의 포트가 벌써 취득되고 있는 경우는, 사운드의 이동에 사용되는 포트를 클로즈 할 수가 있습니다. 플랫폼에 따라서는 디폴트로 모든 포트가 해제되고 있습니다. 또, 사용자나 시스템 관리 책임자가 다른 응용 프로그램 또는 OS 의 소프트웨어를 사용해 특정의 포트를 온 또는 오프로 설정해 있는 경우가 있습니다.  </p>
+<p><a name="113220"> </a>  <strong>경고:</strong>여기서 설명한 방법으로 포트를 오픈하면(자), 특정의 포트를 선택해, 그 포트에 실제로 사운드가 왕래하고 있을지 어떨지를 확인할 수가 있습니다. 다만, 이것은 사용상의 편리가 아닌 인상을 주는 경우가 있습니다. 예를 들어, 동료에게 폐가 되지 않게, 사용자가 스피커의 포트를 오프로 하고 있는 일이 있습니다. 사용자의 뜻에 반해 돌연 음악이 울리면(자), 사용자는 놀라 버립니다. 다른 예로서 도청을 막기 위해서(때문에), 사용자의 모르는 동안에 컴퓨터의 마이크로폰이 온이 되지 않게 하는 경우가 있습니다. 일반적으로, 사용자 인터페이스에 의해 표현되는 사용자의 의도에 대해서 프로그램이 응답하는 경우 이외는, 프로그램으로 포트의 오픈이나 클로즈를 실시하지 않게 하는 것을 추천합니다. 사용자 또는 OS 가 벌써 선택하고 있는 설정을 존중해 주세요.
+</p><p><a name="113221"> </a> 사전에 포트의 오픈이나 클로즈를 실시하지 않아도, 그 포트가 장착되고 있는 믹서는 올바르게 기능합니다. 예를 들어, 믹서의 모든 출력 포트가 클로즈 하고 있어도, 사운드의 재생을 개시해 오디오 출력 믹서에 보낼 수가 있습니다. 데이터는 믹서에 흘러 재생은 블록 되지 않습니다. 다만, 사용자에게는 아무것도 들리지 않습니다. 사용자가 출력 포트를 오픈하면(자), 그 시점에서 포트로부터 나오는 사운드가 들리게 됩니다. 재생이 미친 미디어내의 어디에서라도 개시할 수 있습니다.
+</p><p><a name="113222"> </a> 또, 믹서에 특정의 포트가 있을지 어떨지를 알기 위해서(때문에) 포트에 액세스 할 필요는 없습니다. 예를 들어, 믹서가 실제로 오디오 출력 믹서인가 어떤가를 알기 위해서(때문에),<code>getTargetLineInfo</code> 를 호출해, 그 믹서가 출력 포트를 가지고 있을지 어떨지를 조사할 수가 있습니다. 설정 (오픈 또는 클로즈 상태, 포트에 갖춰지고 있는 컨트롤의 설정등)을 변경하는 경우를 제외해, 포트 자체에 액세스 할 필요는 없습니다.
+</p><a name="113223"> </a> 
+<h3> 오디오 자원을 사용하기 위한 액세스권</h3>
+<p><a name="115642"> </a> Java Sound API 에는,<code>AudioPermission</code> 클래스가 있습니다. 그 샘플링 오디오 시스템에 대해서 애플릿 (또는 시큐리티 매니저 첨부로 실행하고 있는 응용 프로그램)을 실행할 수 있는 액세스의 종류를 나타냅니다. 녹음의 액세스권은 따로 따로 제어됩니다. 부정한 도청등의 시큐리티상의 위험을 막기 위해, 액세스권의 허가는 주의해 가 주세요. 디폴트에서는, 애플릿과 어플리케이션에는 다음과 같은 액세스권이 허가되고 있습니다.
+</p><ul><a name="115643"> </a> 
+<li>애플릿 시큐리티 매니저 첨부로 실행하고 있는 「애플릿」은, 음성을 재생할 수 있지만, 녹음할 수 없다<em></em> <a name="115633"> </a> 
+<li>시큐리티 매니저없이 실행하고 있는 「어플리케이션」은, 음성의 재생도 녹음도 할 수 있다<em></em> <a name="115637"> </a> 
+<li>디폴트의 시큐리티 매니저 첨부로 실행하고 있는 어플리케이션은, 음성을 재생할 수 있지만, 녹음할 수 없다
+<p><a name="115653"> </a> 
+</ul>
+일반적으로, 애플릿은 시큐리티 매니저의 감시하에서 실행되고 있어 녹음은 허가되지 않습니다. 이것에 대해, 어플리케이션은 시큐리티 매니저의 자동 인스톨은 실시하지 않고, 녹음이 가능합니다. 다만, 어플리케이션에 대해서 디폴트의 시큐리티 매니저가 명시적으로 불려 갔을 경우는, 어플리케이션은 녹음이 허가되지 않습니다.  
+<p></p><p><a name="115660"> </a> 애플릿도 어플리케이션도, 녹음을 위한 명시적인 액세스권이 주어지고 있는 경우는, 시큐리티 매니저 첨부로 실행하고 있어도 녹음이 가능합니다.
+</p><p><a name="113244"> </a> 프로그램에 녹음 (또는 재생)의 액세스권이 주어지지 않은 경우는, 라인을 오픈하려고 하면(자) 예외가 throw 됩니다. 액세스권은 API 에 의해 변경할 수 없기 때문에, 이 경우는, 예외를 받아 사용자에게 문제를 보고하는 것 외에 프로그램으로 완성될 것은 없습니다. 그 이외에 무엇인가를 실시해도, 안전이 보증되어 있지 않기 때문에 무의미합니다. 일반적으로, 액세스권은 1 개 또는 복수의 정책 설정 파일로 설정되어 있습니다. 사용자 또는 시스템 관리 책임자는 텍스트 문자 편집기 또는 Policy Tool 프로그램을 사용해 이 설정 파일을 편집할 수가 있습니다.  
+</p>
+<p><a name="115710"> </a> 시큐리티와 액세스권의 자세한 것은,<a href="../../security/index.html">「시큐리티」</a>가이드의 「시큐리티 아키텍쳐(architecture)」와「Java 2 SDK 에 있어서의 액세스권」, 및<a  href="http://java.sun.com/docs/books/tutorial/">「Java 튜토리얼」</a>의 「Specialized Trails」에 있는 시큐리티에 관한 항목을 참조해 주세요.  </p>
+<p>&nbsp;</p></body>
+</html>

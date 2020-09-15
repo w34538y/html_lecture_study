@@ -1,0 +1,358 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+	<TITLE>Java 네트워크와 프록시 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<h1>Java 네트워크와 프록시</h1>
+<H2>1) 처음에</H2>
+<P>현재의 네트워크 환경, 특히 기업의 네트워크 환경에서는, 어플리케이션 개발자는 시스템 관리 책임자와 같은만큼 빈번하게 프록시를 조작할 필요가 있습니다. 어플리케이션이 시스템의 디폴트 설정을 사용해야 할 경우도 있으면, 프록시를 경유하는 정보를 엄밀하게 제어하고 싶은 경우도 있습니다. 또, 대부분의 어플리케이션은, 대부분의 브라우저와 같게, 어떤 시점에 프록시 설정용의 GUI 를 제공해 사용자로 결정을 맡깁니다. </P>
+<P>어느 쪽의 경우에서도, Java 와 같은 개발 플랫폼은, 이러한 프록시에 대응하는 강력하고 유연한 기구를 제공할 필요가 있습니다. 유감스럽게, 이 분야에 있어서의 Java 플랫폼의 유연성은, 최근까지 그만큼 높은 것으로는 없었습니다. 그러나, 이 단점을 극복하는 새로운 API 가 J2SE 5.0 으로 도입된 것에 의해, 상황은 크게 변화했습니다. 여기에서는, 계속해 유효한 것이나 새로운 것을 포함해, 그렇게 말한 모든 API 와 기구에 대해 자세하게 설명합니다. </P>
+<H2>2) 시스템 프로퍼티</H2>
+<P>J2SE 1.4 까지, 시스템 프로퍼티은 Java 네트워크 API 내부에서 프로토콜 핸들러용의 프록시 서버-를 설정하는 유일한 방법이었습니다. 게다가, 이것들 프로퍼티의 이름이 릴리스 마다 변화해 온 것, 및 일부의 프로퍼티은 호환성을 유지하는 목적으로 지원되고 있어도 구식이 되어 있기 위해서(때문에), 사태는 한층 더 복잡하게 되어 있습니다. </P>
+<P>시스템 프로퍼티을 사용하는데 있어서의 주된 제한 사항은, 변환이 「전부인가 제로인가」가 되어 있는 것입니다. 이 때문에, 특정의 프로토콜용으로 프록시가 설정되면(자), 그 프로토콜에 대응한 모든 접속이 영향을 받습니다. 이것은, VM 전체에 걸치는 동작입니다. </P>
+<P>시스템 프로퍼티의 설정 방법법은, 다음의 2 개로 크게 나눌 수 있습니다. </P>
+<UL>
+	<LI>VM 를 호출할 때의 커멘드행 옵션
+	<LI><code>System.setProperty(String, String)</code> 메소드의 사용 (이 메소드를 실행하는 액세스권을 보관 유지하는 경우)
+</UL>
+<P>여기서, 프록시의 설정에 사용할 수 있는 프롭퍼티를 프로토콜 마다 보기로 합시다. 모든 프록시는, 호스트명과 포트 번호로 정의됩니다. 후자는 옵션입니다. 지정하지 않는 경우는, 표준의 디폴트 포트가 사용됩니다. </P>
+<H3>2.1) HTTP</H3>
+<P>HTTP 프로토콜 핸들러가 사용하는 프록시를 지정하기 위해(때문에), 다음의 3 개의 프로퍼티을 설정할 수 있습니다. </P>
+<UL>
+	<LI><code>http.proxyHost</code>:프록시 서버-의 호스트명
+	<LI><code>http.proxyPort</code>:포트 번호 (디폴트 값는 80)
+	<LI><code>http.nonProxyHosts</code>:프록시를 생략 해, 직접 도달하는 호스트의 리스트. 이것은, 「|」으로 단락지어진 정규 표현의 리스트입니다. 이러한 정규 표현에 일치하는 모든 호스트에 대해서, 프록시를 경유하지 않고 접속이 직접 실행됩니다.
+</UL>
+<P>GetURL 클래스의 main 메소드의 실행을 시도하고 있는 경우의 예를 몇개인가 봅시다. </P>
+<pre>
+$ java -Dhttp.proxyHost=webcache.mydomain.com GetURL
+</pre>
+<P>모든 HTTP 접속은, 포트 80 상에서 대기하고 있는 <code>webcache.mydomain.com</code> 의 프록시 서버-를 경유해 접속됩니다 (포트의 지정은 가지 않기 때문에, 디폴트 포트가 사용된다). </P>
+<pre>
+$ java -Dhttp.proxyHost=webcache.mydomain.com -Dhttp.proxyPort=8080
+-Dhttp.noProxyHosts=&rdquo;localhost|host.mydomain.com&rdquo; GetURL
+</pre>
+<P>2 번째의 예에서도, 프록시 서버-는 계속 <code>webcache.mydomain.com</code> 상에 존재합니다만, 대기하는 포트가 8080 이 됩니다. 또,<code>localhost</code> 또는 <code>host.mydonain.com</code> 에의 접속시에는, 프록시는 사용되지 않습니다. </P>
+<P>벌써 설명한 것처럼, 이러한 옵션을 사용해 불려 간 VM 의 수명 전체로, 모든 HTTP 접속이 이러한 설정의 영향을 받습니다. 다만, System.setProperty() 메소드를 사용하면, 동작을 약간 동적으로 할 수 있습니다. </P>
+<P>다음의 코드에 그방법을 나타냅니다. </P>
+<pre>
+//Set the http proxy to webcache.mydomain.com:8080
+
+System.setProperty("http.proxyHost", "webcache.mydomain.com");
+System.setProperty("http.proxyPort", "8080");
+
+// Next connection will be through proxy.
+URL url = new URL("http://java.sun.com/");
+InputStream in = url.openStream();
+
+// Now, let's 'unset' the proxy.
+System.setProperty("http.proxyHost", null);
+
+// From now on http connections will be done directly.
+</pre>
+<p>이것은, 다소 번잡해도 거의 양호하게 동작합니다. 다만, 어플리케이션이 multi-thread에 대응하고 있는 경우는, 취급하기 어려워지는 경우가 있습니다. 시스템 프로퍼티은 「VM 전체」의 설정이기 (위해)때문에, 모든 thread가 영향을 받는 것에 유의해 주세요. 이 때문에, 어느 thread내의 코드의 부작용으로서 그 외의 thread내의 코드가 동작 불능이 될 가능성이 있습니다. </P>
+<H3>2.2) HTTPS</H3>
+<P>HTTPS (HTTP over SSL) 프로토콜 핸들러는, 독자적인 프로퍼티 세트를 보관 유지합니다. </P>
+<UL>
+	<LI>https.proxyHost
+	<LI>https.proxyPort
+</UL>
+<P>이러한 동작은 대응하는 HTTP 의 동작과 정확하게 같다라고 하는 것이 추측할 수 있기 (위해)때문에, 상세하게는 접하지 않습니다. 다만, 이 경우, 디폴트의 포트 번호는 443 이 됩니다. 또, HTTPS 프로토콜 핸들러가 사용하는 「비프록시 호스트」리스트의 디폴트 포트 번호는, HTTP 핸들러 (<code>http.nonProxyHosts</code>)와 같게 됩니다. </P>
+<H3>2.3) FTP</H3>
+<P>FTP 프로토콜 핸들러의 설정은, HTTP 의 경우와 같은 규칙에 따릅니다. 유일한 차이점은, 각 프로퍼티명의 접두사가 「<code>http. </code>」(은)는 아니고 「<code>ftp. </code>」(이)가 되는 것입니다. </P>
+<P>이 때문에, 시스템 프로퍼티은 다음과 같이 됩니다. </P>
+<UL>
+	<LI><code>ftp.proxyHost</code>
+	<LI><code>ftp.proxyPort</code>
+	<LI><code>ftp.nonProxyHosts</code>
+</UL>
+<P>여기서, 「비프록시 호스트」리스트에 대해서 별개의 프로퍼티이 존재하는 것에 유의해 주세요. 또, HTTP 의 경우와 같이, 디폴트의 포트 번호는 80 이 됩니다. 프록시를 경유하는 경우, FTP 프로토콜 핸들러는 실제로는 HTTP 를 사용해 프록시 서버-에 커멘드를 발행하는 것에 유의해 주세요. 디폴트의 포트 번호가 같은 것은, 이 때문에입니다. </P>
+<P>간결한 예를 보기로 합시다. </P>
+<pre>
+$ java -Dhttp.proxyHost=webcache.mydomain.com
+-Dhttp.proxyPort=8080 -Dftp.proxyHost=webcache.mydomain.com -Dftp.proxyPort=8080 GetURL</pre>
+<P>이 예에서는, HTTP 와 FTP 의 양쪽 모두의 프로토콜 핸들러가, webcache.mydomain.com:8080 에 있는 같은 프록시 서버-를 사용합니다. </P>
+<h3>2.4) SOCKS</H3>
+<P>RFC 1928 에 정의되고 있도록(듯이), SOCKS 프로토콜은, 클라이언트서버 어플리케이션이 TCP 와 UDP 의 양쪽 모두의 레벨로 방화벽(fire wall)를 안전하게 횡단(traverse)하기 위한 시스템를 제공합니다. 이 점에서는, 이 프로토콜은, 보다 고레벨의 프록시 (HTTP 또는 FTP 고유의 프록시)보다 높은 범용성을 가집니다. J2SE 5.0 은, 클라이언트 TCP 소켓용의 SOCKS 를 지원합니다.  
+</P>
+<P>SOCKS 관련의 시스템 프로퍼티에는, 다음의 2 개가 있습니다. </P>
+<UL>
+	<LI><code>socksProxyHost</code> ?  SOCKS 프록시 서버-의 호스트명용
+	<LI><code>socksProxyPort</code> ?  포트 번호용 (디폴트 값는 1080)
+</UL>
+<P>여기에서는, 접두사의 후에 닷 ( 「.」)을 붙이지 않는 것에 유의해 주세요. 이것에는, 역사적인 이유와 함께, 하위 호환성을 유지하는 목적이 있습니다. 이 방법으로 SOCKS 프록시가 지정되면(자), 모든 TCP 접속이 이 프록시를 개입시켜 시도됩니다. </P>
+<P>례:</P>
+<pre>
+$ java -DsocksProxyHost=socks.mydomain.com GetURL
+</pre>
+<P>이 경우, 코드의 실행중에, 외부로 향한 TCP 소켓이,<code>socks.mydomain.com:1080</code> 로 SOCKS 프록시 서버-를 경유합니다. </P>
+<P>그럼, SOCKS 프록시와 HTTP 프록시의 양쪽 모두가 정의되고 있는 경우는 어떻게 될까요. 그 경우는, HTTP 나 FTP 등, 보다 고레벨의 프로토콜의 설정이 SOCKS 설정에 우선됩니다. 이 때문에, 이 경우는, HTTP 접속이 확립되면(자) SOCKS 프록시의 설정은 무시되어 HTTP 프록시에의 연락을 합니다. 예를 봅시다. </P>
+<pre>$ java -Dhttp.proxyHost=webcache.mydomain.com -Dhttp.proxyPort=8080
+-DsocksProxyHost=socks.mydomain.com GetURL</pre>
+<P>여기에서는, HTTP 설정이 우선되기 (위해)때문에, HTTP URL 는 <code>webcache.mydomain.com:8080</code> 를 경유합니다. 그럼, FTP URL 에 대해서는 어떨까요. FTP 에는 특정의 프록시 설정을 할당할 수 있지 않고, FTP 는 TCP 의 최상정도에 위치하기 위해(때문에), SOCKS 프록시 서버- (<code>socks.mydomsain.com:1080</code>) 경유로 FTP 접속이 시도됩니다. FTP 프록시가 지정되고 있는 경우는, 그 프록시가 대신에 사용됩니다. </P>
+<H2>3) Proxy 클래스</H2>
+<P>벌써 설명했던 대로, 시스템 프로퍼티은 강력합니다만, 유연성이 부족하고 있습니다. 그 「전부인가 제로인가」라고 하는 동작은, 대부분의 개발자에게는 너무 어려운 제한으로 느껴집니다. 이 때문에, J2SE 5.0 에서는, 프록시 설정에 근거하는 접속을 가능하게 하는, 보다 유연성의 높은 신규 API 의 도입이 결정되었습니다. </P>
+<P>이 신규 API 의 코어는, 프록시 정의를 나타내는 Proxy 클래스입니다. 일반적으로, 프록시 정의에는 타입 (HTTP, SOCKS) 및 소켓 주소가 포함됩니다. J2SE 5.0 에서는, 다음의 3 개의 타입을 지정 가능합니다. </P>
+<UL>
+	<LI><code>DIRECT</code> ?  직접 접속 (프록시 없음)을 나타냅니다.
+	<LI><code>HTTP</code> ?  HTTP 프로토콜을 사용하는 프록시를 나타냅니다.
+	<LI><code>SOCKS</code> ?  SOCKS v4 또는 v5 를 사용하는 프록시를 나타냅니다.
+</UL>
+<P>이 때문에, HTTP 프록시 객체를 작성하려면 , 다음의 호출을 실행합니다. </P>
+<pre>
+SocketAddress addr = new
+InetSocketAddress("webcache.mydomain.com", 8080);
+Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+</pre>
+<P>이 신규 프록시 객체는 프록시<B>정의</B>를 나타내는 것만으로, 그 이상의 의미는 없는 것에 유의해 주세요. 이 객체를 어떻게 사용하면 좋을까요. URL 클래스에 추가된 새로운 <code>openConnection()</code> 메소드로, 인수로서 Proxy 를 지정합니다. 이 경우의 동작은, 지정한 프록시 경유로 접속을 강제적으로 확립해, 전술의 시스템 프로퍼티을 포함한, 그 외의 설정 모든 것을 무시하는 것을 제외해, 인수를 지정하지 않고 <code>openConnection()</code> 를 실행했을 경우와 같습니다. </P>
+<P>이 때문에, 다음의 코드를 추가해 전술의 예를 완료시킬 수가 있습니다. </P>
+<pre>
+URL url = new URL("http://java.sun.com/");
+URConnection conn = url.openConnection(proxy);
+</pre>
+<P>사용법은, 이와 같이 간단합니다. </P>
+<P>인트라넷상의 URL 등, 특정의 URL 에의 직접 접속을 지정하는 경우에도, 같은 기구를 사용할 수 있습니다. 이러한 경우에, DIRECT 타입이 도움이 됩니다. 다만, DIRECT 타입에서는, 프록시 인스턴스를 작성할 필요는 없습니다. 정적 멤버 NO_PROXY 를 사용할 뿐입니다. </P>
+<pre>
+URL url2 = new URL("http://infos.mydomain.com/");
+URLConnection conn2 = url2.openConnection(Proxy.NO_PROXY);
+</pre>
+<P>이것에 의해, 그 외의 프록시 설정을 무시해, 특정의 URL 를 직접 접속으로 확실히 취득할 수 있습니다. 이것은, 편리한 방법입니다. </P>
+<P>URLConnection 에 SOCKS 프록시를 강제적으로 경유시킬 수도 있습니다. </P>
+<pre>SocketAddress addr = new InetSocketAddress("socks.mydomain.com", 1080);
+Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+URL url = new URL("ftp://ftp.gnu.org/README");
+URLConnection conn = url.openConnection(proxy);</pre>
+<P>이 FTP 접속은, 지정한 SOCKS 프록시를 개입시켜 시도됩니다. 봐 이해와 같이, 이것은 지극히 직접적인 방법입니다. </P>
+<P>마지막으로, 새롭게 도입된 소켓 생성자 을 사용해, 개별의 TCP 소켓용의 프록시를 지정할 수도 있습니다. 설명하는 차례는 마지막에 됩니다만, 이것도 중요한 방법입니다. </P>
+<pre>
+SocketAddress addr = new InetSocketAddress("socks.mydomain.com", 1080);
+Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+Socket socket = new Socket(proxy);
+InetSocketAddress dest = new InetSocketAddress("server.foo.com", 1234);
+socket.connect(dest);</pre>
+<P>여기에서는, 소켓은, 지정한 SOCKS 프록시 경유로, 행선지 주소 (server.foo.com:1234)에의 접속을 시도합니다. </P>
+<P>URL 의 경우는, 글로벌인 설정의 영향을 받는 일 없이, 같은 기구를 사용해 직접 (프록시를 경유하지 않는다) 접속을 확실히 시도할 수가 있습니다. </P>
+<pre>Socket socket = new Socket(Proxy.NO_PROXY);<BR>socket.connect(new InetAddress("localhost", 1234));</pre>
+<P>J2SE 5.0 에서는, 이 신규 생성자 이 받아들이는 프록시는, SOCKS 또는 DIRECT (NO_PROXY 인스턴스)의 2 종류 뿐입니다. </P>
+<H2>4) ProxySelector</H2>
+<P>지금까지의 설명으로부터 이해와 같이, J2SE 5.0 에서는, 개발자는 프록시를 강력하고 유연하게 제어할 수 있습니다. 그런데도, 프록시간에 load sharing를 실행하거나 행선지에 응해 프록시를 변경하거나 하는 등, 지금까지 설명된 API 에서는 실현이 어려운 상황으로, 사용하는 프록시를 동적으로 결정하고 싶은 장면에 조우하는 일이 있습니다. 이러한 경우에, ProxySelector 가 도움이 됩니다. </P>
+<P>간결하게 설명하면(자), ProxySelector 는, 지정된 URL 로 사용해야 할 프록시가 존재하는 경우에, 그것을 프로토콜 핸들러에게 전하는 코드입니다. 예를 들어, 다음의 예를 생각해 봅시다. </P>
+<pre>
+URL url = new URL("http://java.sun.com/index.html");
+URLConnection conn = url.openConnection();
+InputStream in = conn.getInputStream();</pre>
+<P>이 시점에서, HTTP 프로토콜이 불려 가 proxySelector 에의 쿼리를 실행합니다. 쿼리의 내용은, 다음과 같은 것이 됩니다. </P>
+<blockquote>
+<B>핸들러</B>: 야, java.sun.com 까지 가까스로 도착하고 싶지만, 프록시를 사용해야할 것인가 ? <BR> <B>ProxySelector</B>: 어느 프로토콜을 사용할 생각이야 있고 ? <BR> <B>핸들러</B>: 물론, HTTP 야. <BR> <B>ProxySelector</B>: 포트는 디폴트 포트야 ? <BR> <B>핸들러</B>: 확인해 보기 때문에 조금 기다려....그대로, 디폴트 포트다. <BR><B>ProxySelector</B>: 알았다. 자, 프록시에는 webcache.mydomain.com 를 사용해. 포트는 8080 으로. <BR><B>핸들러</B>: 고마워요. &lt;휴지 &gt; 응, webcache.mydomain.com:8080 가 응답하지 않는 것 같지만. 다른 방법은 없는거야 ? <BR><B>ProxySelector</B>: 그것은 곤란했군요. OK, 자 webcache2.mydomain.com 를 포트 8080 으로 시험해 봐. <BR><B>핸들러</B>: 이해. 이번에는 잘되고 있는 것 같다. 고마워요. <BR><B>ProxySelector</B>: 싼 용건이야. 그럼.
+</blockquote>
+<P>물론, 이 회화는 얼마인가 각색 되어 있습니다만, 교환의 내용은 이해할 수 있겠지요. </P>
+<P>ProxySelector 의 가장 훌륭한 점은, 플러그 인이 가능한 것입니다. 이 때문에, 디폴트의 ProxySelector 에서는 소망의 기능을 얻을 수 없는 경우, 대신의 ProxySelector 를 기술해 그것을 플러그 인으로서 사용할 수 있습니다. </P>
+<P>그럼, ProxySelector 와는 어떠한 것입니까. 클래스 정의를 보기로 합시다. </P>
+<pre>
+public abstract class ProxySelector {
+	public static ProxySelector getDefault();
+	public static void setDefault(ProxySelector ps);
+	public abstract List&lt;Proxy&gt; select(URI uri);
+	public abstract void connectFailed(URI uri,
+		SocketAddress sa, IOException ioe);
+}</pre>
+<P>여기로부터 알도록(듯이), ProxySelector 는 디폴트 구현의 설정용과 취득용의 2 개의 정적 메소드를 가지는 추상 클래스입니다. 사용하는 프록시를 결정하기 (위해)때문에, 또는 프록시에의 도달이 불가능과 같은 것을 통지하기 위해(때문에), 프로토콜 핸들러에 의해 2 개의 인스턴스 메소드가 사용됩니다. 독자적인 ProxySelector 를 제공하는 경우에 실행 해야 할것은, 이 클래스를 확장해, 이것들 2 개의 인스턴스 메소드의 구현을 제공하고 나서, 신규 클래스의 인스턴스를 인수로서 ProxySelector.setDefault()를 호출하는 것입니다. 이 시점에서, 프로토콜 핸들러는, HTTP 나 FTP 와 같게, 신규 ProxySelector 에의 쿼리를 실행해 사용하는 프록시를 결정합니다. </P>
+<P>이런 종류의 ProxySelector 의 기술 방법의 상세를 설명하기 전에, 디폴트의 ProxySelector 에 대해 설명합시다. J2SE 5.0 의 제공하는 디폴트 구현에서는, 하위 호환성이 유지되고 있습니다. 즉, 디폴트의 ProxySelector 는, 전술의 시스템 프로퍼티을 체크해 사용하는 프록시를 결정합니다. 다만, 새로운 옵션 기능도 존재합니다. 최근의 Windows 시스템이나 Gnome 2. x 플랫폼에서는, 디폴트의 ProxySelector 에 대해서 시스템의 프록시 설정의 사용을 지시할 수 있습니다 (최근의 버젼의 Windows 및 Gnome 2. x 에서는, 사용자 인터페이스로부터 프록시를 글로벌로 설정하는 것이 가능). 시스템 프로퍼티 <code>java.net.useSystemProxies</code> 가 true 로 설정되어 있는 경우 (디폴트에서는 호환성 유지의 목적으로 false 로 설정되어 있다), 디폴트의 ProxySelector 는 이러한 설정의 사용을 시도합니다. 이 시스템 프로퍼티은, 커멘드행으로 설정하는 일도, JRE 인스톨 파일 <code>lib/net.properties</code> 를 편집해 설정할 수도 있습니다. 이러한 방법으로, 주어진(given) 시스템으로 시스템 프로퍼티을 한 번만 변경할 필요가 있습니다. </P>
+<P>그러면, 신규 ProxySelector 를 기술 및 인스톨 하는 방법에 대해 설명합시다. </P>
+<P>실현되고 싶은 것은, 다음과 같습니다. 디폴트의 ProxySelector 의 동작에는 꽤 만족합니다만, HTTP 및 HTTPS 에 대해서는 변경이 필요합니다. 네트워크상에는, 이러한 프로토콜에 대응한 프록시가 복수 존재하기 위해(때문에), 어플리케이션이 이러한 프록시를 차례로 시도하도록(듯이) 하고 싶다고 생각하고 있습니다. 즉, 최초의 프록시가 응답하지 않는 경우에, 2 번째의 프록시의 사용을 시도해 2 번째의 프록시가 응답하지 않는 경우에는 3 번째의 프록시의 사용을 시도한다, 라고 하는 상태입니다. <SUP></SUP>게다가 어느 프록시가 빈번하게 실패하는 것 같으면, 그것을 리스트로부터 삭제해 최적화를 실시합니다. </P>
+<P>실행하는 작업은,<code>java.net.ProxySelector</code> 를 서브 클래스화하는 것, 및 <code>select()</code> 메소드와 <code>connectFailed()</code> 메소드의 구현을 제공하는 것 뿐입니다.  
+</P>
+<P>행선지에의 접속을 시도하기 전에, 프로토콜 핸들러에 의해 <code>select()</code> 메소드가 불려 갑니다. 건네받는 인수는, 자원 (프로토콜, 호스트, 및 포트 번호)이 기술된 URI 입니다. 그 후, 이 메소드에 의해, 프록시의 리스트가 돌려주어집니다. 다음에 예를 나타냅니다. </P>
+<pre>URL url = new URL("http://java.sun.com/index.html");
+InputStream in = url.openStream();</pre>
+<P>이 코드에 의해, 다음의 의사 호출이 프로토콜 핸들러내에서 트리거됩니다. </P>
+<pre>List&lt;Proxy&gt; l = ProxySelector.getDefault(). select(new URI("http://java.sun.com/"));</pre>
+<P>이 구현으로 실시해야 할 (일)것은, URI 로부터의 프로토콜이 정말로 HTTP (또는 HTTPS)인지를 확인해, 그대로이면 프록시의 리스트를 돌려주어, 그렇지 않으면 디폴트 프록시에 위양 하는 것 뿐입니다. 이 경우, 사용하는 프로토콜이 디폴트가 되기 (위해)때문에, 생성자 내에 이전의 디폴트에의 참조를 포함할 필요가 있습니다. </P>
+<P>이 때문에, 코드의 선두 부분은 다음과 같이 됩니다. </P>
+<pre>
+public class MyProxySelector extends ProxySelector {
+	ProxySelector defsel = null;
+	MyProxySelector(ProxySelector def) {
+		defsel = def;
+	}
+	
+	public java.util.List&lt;Proxy&gt; select(URI uri) {
+		if (uri == null) {
+			throw new IllegalArgumentException("URI can't be null. ");
+		}
+		String protocol = uri.getScheme();
+		if ("http". equalsIgnoreCase(protocol) ||
+			"https". equalsIgnoreCase(protocol)) {
+			ArrayList&lt;Proxy&gt; l = new ArrayList&lt;Proxy&gt;();
+			// Populate the ArrayList with proxies
+			return l;
+		}
+		if (defsel ! = null) {
+			return defsel.select(uri);
+		} else {
+			ArrayList&lt;Proxy&gt; l = new ArrayList&lt;Proxy&gt;();
+			l.add(Proxy.NO_PROXY);
+			return l;
+		}
+	}
+}</pre>
+<P>최초로, 생성자 이 이전의 디폴트 셀렉터에의 참조를 유지하는 것에 유의해 주세요. 다음에, 스펙에 준거하기 위해서, select() 메소드내의 부정한 인수를 체크하는 것에 주목해 주세요. 마지막으로, 이전의 디폴트가 존재하는 경우, 필요에 따라서 그것을 보류하는 것에 주목합니다. ArrayList 의 생성 방법에 대해서는, 각별 흥미를 당기는 것은 아니기 때문에, 이 예에서는 자세하게 설명하지 않습니다. 관심이 있는 경우에는, 부록에 코드 전체가 기재되어 있으므로, 그것을 참조해 주세요. </P>
+<P>보고 아는 대로,<code>connectFailed()</code> 메소드의 구현이 포함되지 않기 때문에, 이 클래스는 완전한 것이 아닙니다. 다음의 순서로, 이 메소드를 구현합니다. </P>
+<P><code>select()</code> 메소드로부터 돌려주어지고 싶은 차이인가의 프록시에의 접속이 실패했을 경우는,<code>connectFailed()</code> 메소드가 프로토콜 핸들러에 의해 항상 불려 갑니다. 건네받는 인수는, 핸들러가 도달을 시도한 URI  (<code>select()</code> 의 호출시에 사용된 것), 핸들러가 액세스를 시도한 프록시의 <code>SocketAddress</code>, 프록시에의 접속을 시도했을 때에 throw 된 IOException 의 3 개입니다. 이 정보를 사용해, 다음의 조작을 실행합니다. 이 프록시가 리스트내에 존재해, 한편 3 회 이상 실패했을 경우는, 리스트로부터 삭제한 이후는 사용되지 않게 합니다. 코드는 다음과 같이 됩니다. </P>
+<pre>
+public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+	if (uri == null || sa == null || ioe == null) {
+		throw new IllegalArgumentException("Arguments can't be null. ");
+	}
+	InnerProxy p = proxies.get(sa); 
+	if (p ! = null) {
+		if (p.failed() &gt;= 3)
+			proxies.remove(sa);
+	} else {
+		if (defsel ! = null)
+			defsel.connectFailed(uri, sa, ioe);
+	}
+}</pre>
+<P>매우 간단하네요. 다시, 인수의 유효성을 확인할 필요가 있습니다 (이것도 스펙에 준거하기 위해(때문에)). 여기서 고려하는 것은 SocketAddress 만입니다. SocketAddress 가 리스트내의 프록시의 언젠가이면 그것을 처리해, 그렇지 않으면 디폴트 셀렉터로서 재차 보류합니다. </P>
+<P>이것으로 구현이 거의 완성했습니다. 어플리케이션내에서 한층 더 실행하는 것은, 등록 뿐입니다. 그것을 실시합시다. </P>
+<pre>
+public static void main(String[] args) {
+	MyProxySelector ps = new MyProxySelector(ProxySelector.getDefault());
+	ProxySelector.setDefault(ps);
+	// rest of the application
+}</pre>
+<P>알기 쉽게 하기 위해서, 얼마인가 간략화해 기술하고 있습니다. 특히, 예외의 캐치에 대해 그다지 기술하고 있지 않는 것에 기분나무지요. 스스로 코드를 기술하려면 , 생략 되어 있는 부분을 추가해 주세요. </P>
+<P>기반이 되는 플랫폼이나 컨테이너 (Web 브라우저등)와의 통합성을 개선하기 위해(때문에), Java Plugin 와 Java Webstart 의 양쪽 모두로 디폴트의 ProxySelector 를 커스텀의 ProxySelector 에 옮겨놓고 있는 것에 유의해 주세요. 이 때문에, ProxySelector 를 조작하려면 , 디폴트의 ProxySelector 는, 일반적으로, 기반이 되는 플랫폼 및 JVM 구현에 고유의 것임을 염두에 둘 필요가 있습니다. 이 때문에, 커스텀의 ProxySelector 를 제공하는 경우, 전술의 예로 가리킨 것처럼 이전의 ProxySelector 에의 참조를 보관 유지해, 필요에 따라서 사용하는 것은 좋은 방법입니다. </P>
+<H2>5) 결론</H2>
+<P>여기까지의 내용으로부터, J2SE 5.0 에서는 프록시를 조작할 방법이 매우 많이 준비되어 있는 것을 알 수 있습니다. 시스템 프록시 설정을 사용하는 매우 간단한 방법으로부터, ProxySelector 를 변경하는 매우 유연성의 높은 것 (숙련 한 개발자 전용)까지 제공되고 있습니다. Proxy 클래스를 접속 마다 선택하는 일도 가능합니다. </P>
+<H2>부록</H2>
+<P>여기에서는, 본서로 개발해 온 ProxySelector 의 소스 전체를 나타냅니다. 이것은, 교육을 목적으로 하는 것이며, 간결성을 의도해 기술되고 있는 것을 염두에 두어 주세요. </P>
+<pre>
+import java.net. *;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.io.IOException;
+
+public class MyProxySelector extends ProxySelector {
+	// Keep a reference on the previous default
+    ProxySelector defsel = null;
+	
+	/*
+	 * Inner class representing a Proxy and a few extra data
+	 */
+	class InnerProxy {
+    	Proxy proxy;
+		SocketAddress addr;
+		// How many times did we fail to reach this proxy?
+		int failedCount = 0;
+		
+		InnerProxy(InetSocketAddress a) {
+			addr = a;
+			proxy = new Proxy(Proxy.Type.HTTP, a);
+		}
+		
+		SocketAddress address() {
+			return addr;
+		}
+		
+		Proxy toProxy() {
+			return proxy;
+		}
+		
+		int failed() {
+			return ++failedCount;
+		}
+	}
+	
+	/*
+	 * A list of proxies, indexed by their address.
+	 */
+	HashMap&lt;SocketAddress, InnerProxy&gt; proxies = new HashMap&lt;SocketAddress, InnerProxy&gt;();
+
+	MyProxySelector(ProxySelector def) {
+	  // Save the previous default
+	  defsel = def;
+	  
+	  // Populate the HashMap (List of proxies)
+	  InnerProxy i = new InnerProxy(new InetSocketAddress(&quot;webcache1.mydomain.com&quot;, 8080));
+	  proxies.put(i.address(), i);
+	  i = new InnerProxy(new InetSocketAddress(&quot;webcache2.mydomain.com&quot;, 8080));
+	  proxies.put(i.address(), i);
+	  i = new InnerProxy(new InetSocketAddress(&quot;webcache3.mydomain.com&quot;, 8080));
+	  proxies.put(i.address(), i);
+	  }
+	  
+	  /*
+	   * This is the method that the handlers will call.
+	   * Returns a List of proxy.
+	   */
+	  public java.util.List&lt;Proxy&gt; select(URI uri) {
+		// Let's stick to the specs.  
+		if (uri == null) {
+			throw new IllegalArgumentException(&quot;URI can't be null. &quot;);
+		}
+		
+		/*
+		 * If it's a http (or https) URL, then we use our own
+		 * list.
+		 */
+		String protocol = uri.getScheme();
+		if ("http". equalsIgnoreCase(protocol) ||
+			"https". equalsIgnoreCase(protocol)) {
+			ArrayList&lt;Proxy&gt; l = new ArrayList&lt;Proxy&gt;();
+			for (InnerProxy p : proxies.values()) {
+			  l.add(p.toProxy());
+			}
+			return l;
+		}
+		
+		/*
+		 * Not HTTP or HTTPS (could be SOCKS or FTP)
+		 * defer to the default selector.
+		 */
+		if (defsel ! = null) {
+			return defsel.select(uri);
+		} else {
+			ArrayList&lt;Proxy&gt; l = new ArrayList&lt;Proxy&gt;();
+			l.add(Proxy.NO_PROXY);
+			return l;
+		}
+	}
+	
+	/*
+	 * Method called by the handlers when it failed to connect
+	 * to one of the proxies returned by select().
+	 */
+	public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+		// Let's stick to the specs again.
+		if (uri == null || sa == null || ioe == null) {
+			throw new IllegalArgumentException("Arguments can't be null. ");
+		}
+		
+		/*
+		 * Let's lookup for the proxy 
+		 */
+		InnerProxy p = proxies.get(sa); 
+			if (p ! = null) {
+				/*
+				 * It's one of ours, if it failed more than 3 times
+				 * let's remove it from the list.
+				 */
+				if (p.failed() &gt;= 3)
+					proxies.remove(sa);
+			} else {
+				/*
+				 * Not one of ours, let's delegate to the default.
+				 */
+				if (defsel ! = null)
+				  defsel.connectFailed(uri, sa, ioe);
+			}
+     }
+}
+</pre>
+<p>
+피드백의 송부처: <A HREF="mailto:jean-christophe.collet@sun.com">jean-christophe.collet@sun.com</A </P>
+</BODY>
+</HTML>

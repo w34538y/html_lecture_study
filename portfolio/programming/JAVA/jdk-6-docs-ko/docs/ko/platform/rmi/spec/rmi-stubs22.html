@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:8 - Stub 인터페이스와 스켈리턴 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs2a.html">전의 항목</a>  | <a href="rmi-stubs23.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4526">8.1	<code>RemoteStub</code> 클래스</a> </h2>
+
+<blockquote>
+<a name="4545"><!-- --></a> <code>java.rmi.server.RemoteStub</code> 클래스는, 원격 객체의 Stub로 공통의 슈퍼 클래스입니다. Stub 객체는 대리이며, 원격 객체의 실제의 구현이 정의하는 것과 완전히 같은 인터페이스세트를 지원합니다. <p>
+</blockquote><blockquote><pre>package java.rmi.server;
+
+public abstract class RemoteStub extends java.rmi.RemoteObject {
+	protected RemoteStub() {...}
+	protected RemoteStub(RemoteRef ref) {...}
+
+	protected static void setRef(RemoteStub stub, RemoteRef ref) {...}
+}
+
+
+</pre></blockquote><blockquote>
+<a name="6818"><!-- --></a> <code>RemoteStub</code> 의 1 번째의 생성자 은, 원격 참조로서 <code>null</code> 를 취하는 Stub를 작성합니다. 2 번째의 생성자 은, 지정된 원격 참조 <em>ref</em> 를 인수에 있는 Stub를 작성합니다. <p>
+<a name="6829"><!-- --></a>  <CODE>setRef</CODE> 메소드는, Java 2 SDK, Standard Edition, v1. 2 에서는 추천 되고 있지 않습니다 (지원도 되지 않습니다). <p>
+</blockquote>
+<br>
+<h3>
+<a name="6759"><!-- --></a>  8.1. 1	원격 객체와 Stub 클래스와의 형태의 등가성
+</h3>
+
+<blockquote>
+<a name="6761"><!-- --></a>  클라이언트는, 원격 객체의 클래스가 정의하는 것과 「엄밀하게」같은 세트의 원격 인터페이스를 가진 Stub (대리) 객체라고 대화합니다.  Stub 클래스에는, 객체의 형태 그래프를 구성하는 클래스 계층의 비원격 부분은 포함되지 않습니다. 이것은, Stub 클래스는 1 개 이상의 원격 인터페이스를 구현하는 가장 세련된 구현 클래스로부터 생성되기 (위해)때문에입니다. 예를 들어, C 가 B 를 상속해, B 가 A 를 상속했다고 해서, B 만이 원격 인터페이스를 구현하는 경우는, Stub가 생성되는 것은 B 로부터여, C 로부터가 아닙니다. <p>
+<a name="6762"><!-- --></a>  Stub는, 원격 객체 클래스와 같은 원격 인터페이스군을 구현하기 위해(때문에), Stub는 서버 객체의 형태의 원격 부분과 같은 형태를 가지게 됩니다. 이 때문에, 클라이언트는, Java 언어의 편입 연산을 이용해 원격 객체의 형태 체크나, 어느 원격 인터페이스로부터 다른 인터페이스에의 캐스트를 실시할 수가 있습니다. <p>
+<a name="6763"><!-- --></a>  Stub는 <CODE>rmic</CODE> 컴파일러에 의해 생성됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="6771"><!-- --></a>  8.1. 2	<code>final</code> 선언된 Object 메소드의 시멘틱스
+</h3>
+
+<blockquote>
+<a name="6773"><!-- --></a>  이하의 메소드는 <code>java.lang.Object</code> 클래스에서 <code>final</code> 선언되고 있기 (위해)때문에, 어느 구현에 의해도 오버라이드(override) 할 수 없습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="6774"><!-- --></a>  <code>getClass</code>
+</li>
+<li>
+<a name="6775"><!-- --></a>  <code>notify</code>
+</li>
+<li>
+<a name="6776"><!-- --></a>  <code>notifyAll</code>
+</li>
+<li>
+<a name="6777"><!-- --></a>  <code>wait</code>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="6778"><!-- --></a> <code>getClass</code> 의 디폴트 구현은, Java 언어로 기술된 모든 객체 (로컬과 원격 양쪽 모두)에 적용 가능합니다.  이 때문에, 원격 객체의 경우에서도, 특별한 구현은 필요 없습니다. 원격 Stub에 사용되었을 경우에는,<CODE>rmic</CODE> 에 의해 생성된 Stub 객체의 정확한 형태가 <code>getClass</code> 메소드에 의해 리포트됩니다. 다만, Stub의 형태는 원격 객체에 의해 구현된 원격 인터페이스만을 반영한 것으로, 그 객체의 로컬 인터페이스를 반영하지 않는 것에 주의해 주세요. <p>
+<a name="6779"><!-- --></a> <code>java.lang.Object</code> 의 <code>wait</code> 와 <code>notify</code> 메소드는 Java 언어의 thread 모델에 준거해 대기와 통지를 취급합니다. 이러한 메소드를 원격 Stub에 대해서 사용하는 것이 Java 의 thread 모델에 위반하는 것은 아닙니다만, 이러한 메소드는, 로컬인 Java 객체를 취급하는 경우와는 시멘틱스가 다릅니다. 특히, 이러한 메소드는, 클라이언트의 원격 객체 (Stub)에의 로컬 참조에 작용해, 원격에 있는 실제의 객체에는 작용하지 않습니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs2a.html">전의 항목</a>  | <a href="rmi-stubs23.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

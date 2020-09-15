@@ -1,0 +1,415 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>액티베이션의 사용 :Setup 프로그램 - xrath.com 에서 번역됨</title>
+<!-- Changed by: Susan Snyder - 10/15/05 -->
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"></td>
+
+<td>
+          <center>
+<h1>액티베이션의 사용:<code>Setup</code> 프로그램</h1>
+          </center>
+
+</td>
+
+<td width="15%" align="center">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+
+<P>이 튜토리얼에서는, 원격 객체의 기동 기술자를 Java<sup><font SIZE="-2">TM</font></sup> Remote Method Invocation (Java RMI) 기동 시스템 demon (<code>rmid</code>)에게 등록해,<code>rmiregistry</code> 로 그 원격 객체의 Stub를 바인드 해 클라이언트를 검색할 수 있도록(듯이) 하는 프로그램의 기술 방법에 대해 설명합니다.  
+</p>
+<P>이 튜토리얼에서는, 다음의 순서를 실행합니다.
+</p>
+<uL>
+<LI><A HREF="#1"><code>Setup</code> 프로그램의 구현</A> </li>
+<LI> <A HREF="#2">원시 파일의 컴파일</A> </li>
+<LI> <A HREF="#3"><code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램의 기동</a> </li>
+</uL>
+
+이 튜토리얼의 실행에 필요한 파일은, 다음과 같습니다.
+<UL>
+<LI> <A HREF="src/Setup.java"> <code>Setup.java</code></A>  - 메인 <code>Setup</code> 프로그램 </li>
+<LI> <code><A HREF="src/setup.policy">setup.policy</A> </code> - <code>Setup</code> 프로그램의 시큐리티 정책 파일 </li>
+<LI> <code><A HREF="src/rmid.policy">rmid.policy</A> </code> - <code>rmid</code> 의 시큐리티 정책 파일 </li>
+<LI><code><a href="src/group.policy">group.policy</a> </code> - 기동 그룹의 시큐리티 정책 파일 </li>
+</UL>
+
+<hr>
+<h2>
+<a name="1"></a> <code>Setup</code> 프로그램의 구현</h2>
+<blockquote> 
+<p><code>examples.activation.Setup</code> 클래스에 의해 구현되는 <code>Setup</code> 프로그램은, 기동 기술자를 <code>rmid</code> 에 등록해, 그 기동 기술자에 의해 지정되는 객체의 장래의 액티베이션을 가능하게 합니다. 이 프로그램에서는 원격 객체의 인스턴스는 생성됩니다만, 대신에 원격 객체의 Stub를 <code>rmiregistry</code> 에 등록해, 클라이언트를 검색할 수 있도록(듯이) 합니다. 이 <code>Setup</code> 프로그램은, 액티베이션에 관한 다른 튜토리얼로 설명되고 있는 어느 클라이언트를 실행하는 것보다도 전에 실행할 필요가 있습니다.  
+  </p>
+<p><code>Setup</code> 프로그램에서는, 많은 시스템 프로퍼티을 사용해,<code>rmid</code> 와 <code>rmiregistry</code> 에 등록되어 있는 정보를 커스터마이즈 합니다. 또, 이 프로그램에서는, 등록되어 있는 기동 가능한 원격 객체의 구현 클래스의 패키지 수식된 이름을 지정하는, 단일 커멘드행의 인수를 취합니다. <code>Setup</code> 프로그램은 다음과 같이 실행합니다.  
+  </p>
+  <blockquote>
+    <pre>
+java -cp <i><b>classpath</b></i> \
+     -Djava.security.policy=<i><b>setup.policy</b></i>        \
+     -Djava.rmi.server.codebase=<i><b>codebase</b></i>         \
+     -Dexamples.activation.setup.codebase=<i><b>setupCodebase</b></i>  \
+     -Dexamples.activation.impl.codebase=<i><b>implCodebase</b></i> \
+     -Dexamples.activation.name=<i><b>name</b></i>             \
+     [-Dexamples.activation.file=<i><b>filename</b></i>]       \
+     [-Dexamples.activation.policy=<i><b>group.policy</b></i>] \
+     examples.activation.Setup <i><b>implClass</b></i>
+</pre>
+</blockquote> 
+<p>설명  </p>
+<ul>
+<li><b>classpath</b> 는,<code>Setup</code> 프로그램과 구현 클래스를 포함한 클래스 패스 </li>
+<li><b>setup.policy</b> 는,<code>Setup</code> 프로그램의 시큐리티 정책 파일</li>
+<li><i><b>codebase</b></i> 는, 원격 인터페이스 클래스의 장소 (URL)</li>
+<li><i><b>setupCodebase</b></i> 는,<code>Setup</code> 프로그램의 클래스의 장소 (URL) (<b>setup.policy</b><i></i> 파일내의 <code>Setup</code> 프로그램에의 액세스권의 부여에 사용) </li>
+<li><b>implCodebase</b> 는, 구현 클래스의 장소 (URL)이며, 기동 기술자내에서, 또 그룹 정책 파일내에서 액세스권을 부여하기 위한 코드 베이스로서 사용된다</li>
+<li><b>name</b> 는, 레지스트리내에서 바인드 되는 객체의 Stub의 이름 </li>
+<li><b>file</b> (옵션)는, 객체의 기동 기술자에게 <i><b>data</b></i> 로서 등록되어 있는 객체의 지속 상태가 쓰여진 파일의 이름 (디폴트 값: 없음)</li>
+<li><b>group.policy</b> (옵션)는, 기동 그룹의 시큐리티 정책 파일 (디폴트로 <code>group.policy</code>)</li>
+<li><b>implClass</b> 는,</li>
+구현 클래스의 완전 지정의 이름
+  </ul>
+
+  <p>
+<code>Setup</code> 프로그램의 정책 파일의 예를 이하에 나타냅니다.
+  </p>
+  <blockquote>
+  <pre>
+  grant codeBase &quot;${examples.activation.setup.codebase}&quot; {
+
+    // permissions to read system properties required by setup program
+    permission java.util.PropertyPermission &quot;examples.activation.impl.codebase&quot;, &quot;read&quot;;
+    permission java.util.PropertyPermission &quot;examples.activation.policy&quot;, &quot;read&quot;;
+    permission java.util.PropertyPermission &quot;examples.activation.file&quot;, &quot;read&quot;;
+    permission java.util.PropertyPermission &quot;examples.activation.name&quot;, &quot;read&quot;;
+
+    // permission to connect to the activation system and the registry
+    permission java.net.SocketPermission &quot;*:1098-1099&quot;, &quot;connect&quot;;
+};
+</pre>
+</blockquote>
+	<p>액세스권이 부여되는 코드 베이스는,<code>Setup</code> 프로그램의 구현 클래스의 장소를 지정하는 URL 입니다. 이 URL 는,<code>examples.activation.setup.codebase</code> 시스템 프로퍼티의 값으로,<code>Setup</code> 프로그램의 실행시에 정의됩니다. <code>Setup</code> 프로그램에는, 이하의 액세스권이 필요합니다.   
+  </p>
+	<ul>
+	<li><code>java.util.PropertyPermission</code> - <code>Setup</code> 프로그램이 필요로 하는 다양한 시스템 프로퍼티을 읽어낸다</li>
+	<li><code>java.net.SocketPermission</code> - 기동 시스템 (포트 <code>1098</code>)에 접속해 기동 기술자를 등록해, 또, 레지스트리 (포트 <code>1099</code>)에 접속해 기동 가능한 객체의 Stub를 이름에 바인드 한다</li>
+	</ul>
+
+  <p>
+이 <code>Setup</code> 프로그램은, 이하와 같은 스텝에서 기술합니다.  
+  </p>
+
+  <ul>
+<li><a href="#11">기동 그룹 기술자의 구축</a> </li>
+<li><a href="#12">그룹 기술자의 등록</a> </li>
+<li><a href="#13">기동 기술자의 구축</a> </li>
+<li><a href="#14">기동 기술자의 등록</a> </li>
+<li><a href="#15"><code>rmiregistry</code>에서의 원격 객체의 Stub의 바인드</a> </li>
+</ul>
+
+
+<p><code>Setup</code> 클래스에는, 상기의 모든 스텝을 실행하는 static 메소드 <code>main</code> 가 있습니다. 스텝을 실행하기 전에,<code>main</code> 메소드는,<code>SecurityManager</code> 를 설정해, 기동 가능한 원격 객체의 구현 클래스의 패키지 수식된 이름을 지정하는 단일 커멘드행의 인수를 가져옵니다. 나머지의 스텝에 대해서는, 이하의 섹션을 참조해 주세요. 완전한 원시 코드에 대해서는,<A HREF="src/Setup.java"><code>Setup.java</code></A>  를 참조해 주세요.
+  </p>
+
+<a name="11"></a> <h3>기동 그룹 기술자의 구축</h3>
+
+<p>어플리케이션으로 특정의 기동 가능한 원격 객체의 정보를 등록하기 전에, 그 객체가 포함되게 되는 「기동 그룹」에 관한 정보를 등록할 필요가 있습니다.  기동 그룹은, 기동 가능한 객체세트의 컨테이너 가상 머신 (VM)입니다. 각 기동 그룹에서는, 1 개(살) 또는 복수의 기동 가능한 객체의 실행을 관리합니다. 기동 그룹 기술자에게는, 기동 시스템이 기동 그룹의 VM 를 기동하는데 필요한 정보가 포함됩니다. 어플리케이션에서는, 기동 그룹 기술자를 기동 시스템 <code>rmid</code> 에 등록해, 그 기동 가능한 객체에 사용하는 기동 그룹 식별자를 취득할 수 있습니다.  또는, 전의 그룹 등록으로부터 취득한 기동 그룹 식별자를 사용할 수 있습니다. </p>
+
+<p><code>java.rmi.activation.ActivationGroupDesc</code> 클래스의 인스턴스인 기동 그룹 기술자는, 몇개의 방법으로 구축할 수 있습니다. 이 튜토리얼에서는, 파라미터가 2 개의 생성자 <code>ActivationGroupDesc(Properties, CommandEnvironment)</code> 를 사용합니다. <code>Properties</code> 맵에는, 기동 그룹 VM 의 시스템 프로퍼티의 오버라이드(override)가 포함되어 있습니다. 이 튜토리얼에서는, 기동 그룹 VM 로 이하의 시스템 프로퍼티을 정의할 필요가 있습니다.  
+  </p>
+	
+	<ul>
+	<li><code>java.security.policy</code> - 그룹의 시큐리티 정책 파일</li>
+	<li><code>java.class.path</code> - 기동 그룹이 로컬의 클래스 패스로부터 구현 클래스를 로드하지 않게 하는 더미의 클래스 패스</li>
+	<li><code>examples.activation.impl.codebase</code> - 그룹의 정책 파일이 액세스권을 부여하는데 사용하는 구현 클래스의 장소</li>
+	<li><code>examples.activation.file</code> - 객체의 지속 상태가 쓰여진 파일</li>
+	</ul>
+	
+<p><code>java.security.policy</code> 프로퍼티은,<code>examples.activation.policy</code> 시스템 프로퍼티에 의해 지정되어 디폴트에서는 <code>group.policy</code> 라는 이름의 파일입니다.  이 파일은, 실제로는,<code>rmid</code> 가 실행되는 작업 디렉토리에 있습니다. <code>java.class.path</code> 프로퍼티은,<code>no_classpath</code> 로서 정의됩니다. <code>examples.activation.impl.codebase</code> 및 <code>examples.activation.file</code> 프로퍼티은, 각각 현재의 값에 의해 지정되어<code>Setup</code> 프로그램의 실행시에 정의됩니다.
+  </p>
+ 
+
+<p>그룹 기술자는 이하와 같이 구성되어 있습니다.
+  </p>
+  <blockquote>
+  <pre>
+String policy =
+    System.getProperty("examples.activation.policy", "group.policy");
+String implCodebase =
+    System.getProperty("examples.activation.impl.codebase");
+String filename =
+    System.getProperty("examples.activation.file", "");
+
+Properties props = new Properties();
+props.put("java.security.policy", policy);
+props.put("java.class.path", "no_classpath");
+props.put("examples.activation.impl.codebase", implCodebase);
+if (filename ! = null && ! filename.equals("")) {
+    props.put("examples.activation.file", filename);
+}
+
+ActivationGroupDesc groupDesc = new ActivationGroupDesc(props, null);
+</pre>
+</blockquote>
+<p>액티베이션의 예로서 적절한 액세스권을 부여하는 <code>group.policy</code> 파일의 예를 이하에 나타냅니다.
+  </p>
+<blockquote>
+    <pre>
+grant codeBase "${examples.activation.impl.codebase}" {
+    
+    // permission to read and write object's file
+    permission java.io.FilePermission "${examples.activation.file}","read, write";
+    
+    // permission to listen on an anonymous port
+    permission java.net.SocketPermission "*:1024-","accept";
+};
+</pre>
+</blockquote>
+
+	
+	<p>액세스권이 부여되는 코드 베이스는, 기동 가능한 객체의 구현 클래스의 장소를 지정하는 URL 입니다. 이 URL 는,<code>examples.activation.impl.codebase</code> 시스템 프로퍼티의 값으로, 기동 그룹의 VM 로 정의됩니다. 그룹내의 기동 가능한 객체에는, 2 개의 액세스권이 필요합니다.   
+  </p>
+	<ul>
+	<li><code>java.io.FilePermission</code> - 기동 가능한 객체의 지속 상태를 포함한 파일의 읽고 쓰기를 실시한다</li>
+	<li><code>java.net.SocketPermission</code> - 기동 가능한 객체를 export 해, 익명 포트의 접속을 받아들인다</li>
+	</ul>
+	
+<a name="12"></a> 
+<h3>그룹 기술자의 등록</h3>
+
+다음에,<code>Setup</code> 프로그램은, 기동 그룹 기술자를 기동 시스템에 등록해,<code>java.rmi.activation.ActivationGroupID</code> 클래스의 인스턴스인 그 그룹의 ID 를 취득할 필요가 있습니다. <code>java.rmi.activation.ActivationGroup</code> 클래스에는, 그 기동 시스템의 Stub를 취득하기 위한 static 메소드 <code>getSystem</code> 가 있습니다. <code>Setup</code> 프로그램은, 기동 시스템의 원격 메소드 <code>registerGroup</code> 를 호출해, 상기로 작성한 그룹 기술자를 건네주어, 기동 그룹을 등록합니다.  
+  <blockquote>
+<pre>
+ActivationGroupID groupID = 
+    ActivationGroup.getSystem(). registerGroup(groupDesc);
+</pre>
+</blockquote>
+
+<a name="13"></a> <h3>기동 기술자의 구축</h3>
+
+<p>기동 그룹 식별자가 취득되면(자),<code>Setup</code> 프로그램에서는, 기동 기술자를 등록할 수 있게 됩니다. 기동 기술자에게는, 이하의 4 개의 기본적인 정보가 포함됩니다. </p>
+  
+  <ul>
+<li>객체가 포함되게 되는 그룹의 기동 그룹 식별자</li>
+<li>구현 클래스의 이름</li>
+<li>구현 클래스의 로드원을 지정하는 장소 (URL)</li>
+<li>객체의 초기화 정보를 포함한 정렬화 된 객체</li>
+  </ul>
+  
+<p>이 예에서는, 기동 그룹 식별자는 상기로 취득한 식별자가 되어 있습니다.  구현의 클래스명은 <strong>implClass</strong> 라고 하는 클래스명으로,<code>Setup</code> 프로그램에의 커멘드행 인수로서 제공됩니다.  장소 (URL)는, 시스템 프로퍼티 <code>examples.activation.impl.codebase</code> 에 의해 지정됩니다.  초기화 데이터 (옵션)는, 시스템 프로퍼티 <code>examples.activation.file</code> 에 의해 지정되는 파일명입니다.  </p> 
+<p>기동 기술자는 이하와 같이 구성되어 있습니다.
+  </p>
+
+<blockquote>
+<pre>
+MarshalledObject data = null;
+if (filename ! = null && ! filename.equals("")) {
+    data = new MarshalledObject(filename);
+}
+
+ActivationDesc desc =
+    new ActivationDesc(groupID, implClass, implCodebase, data);
+</pre>
+</blockquote>
+
+ 
+<p>
+</p>
+<a name="14"></a> <h3>기동 기술자의 등록</h3>
+
+<p>다음에,<code>Setup</code> 프로그램에서는, 기동 기술자를 기동 시스템에 등록할 필요가 있습니다. <code>Activatable</code> 클래스에는, 간이 static 메소드 <code>register</code> 가 있습니다.  이 메소드는, 기동 기술자를 기동 시스템에 등록해, 그 기술자에 의해 지정되는 기동 가능한 객체의 Stub를 돌려줍니다.  
+  </p>
+  <blockquote>
+<pre>
+Remote stub = Activatable.register(desc);
+</pre>
+</blockquote>
+
+<p><strong>주</strong> -<code>register</code> 메소드는, Stub 인스턴스를 작성하기 위해서, 구현 클래스의 Stub 클래스를 로드하려고 합니다. 기동 가능한 객체가 5.0 보다 전의 버젼의 클라이언트를 지원할 필요가 있는 경우는,<code>rmic</code> 를 사용해, 구현 클래스의 Stub 클래스를 사전에 생성할 필요가 있습니다. 기동 가능한 객체가 5.0 보다 전의 버젼의 클라이언트를 지원할 필요가 없는 경우는, 구현 클래스의 Stub 클래스를 사전에 생성할 필요는 없습니다. <code>register</code> 메소드가 사전에 생성된 Stub 클래스를 로드할 수 없는 경우는, 구현 클래스의 모든 인스턴스를 구현하는, 동적으로 생성된 프록시 클래스의 인스턴스를 사용합니다. 후자의 경우,<code>register</code> 메소드는, 구현 클래스가 구현하는 원격 인터페이스를 결정하기 위해서(때문에), 구현 클래스를 로드할 필요가 있습니다. 그 때문에, 사전에 생성된 Stub 클래스를 사용하는지, 동적으로 생성된 Stub 클래스를 사용할까에 의해,<code>register</code> 메소드의 동작 정원않고일까 차이가 생깁니다.
+	  </p>
+
+  <a name="15"></a>  
+<h3><code>rmiregistry</code> 에서의 원격 객체의 Stub의 바인드</h3>
+
+<p>마지막으로, 원격 객체의 Stub를, 디폴트의 <code>1099</code> 포트로 실행중의 레지스트리내의 이름에 바인드 합니다. 이름은, 시스템 프로퍼티 <code>examples.activation.name</code> 에 의해 지정됩니다.
+  </p>
+
+<blockquote>
+<pre>
+String name = System.getProperty("examples.activation.name");
+LocateRegistry.getRegistry(). rebind(name, stub);
+</pre>
+</blockquote>
+</blockquote>
+
+<h2><a name="2"></a> 원시 파일의 컴파일</h2>
+<blockquote>
+
+<p>이 예의 원시 파일은, 다음과 같이 해 컴파일 할 수 있습니다.
+  </p>
+
+<blockquote>
+<pre>
+javac -d <b><i>setupDir</i></b> Setup.java
+</pre>
+</blockquote>
+<b>setupDir</b> 는, 클래스 파일을 배치하는 루트 목적지 디렉토리입니다.  
+</blockquote>
+
+<h2><a name="3"></a> <code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램의 기동</h2> 
+<blockquote>
+<p>이 <code>Setup</code> 프로그램을 실행하려면 , 다음의 조작을 실시할 필요가 있습니다.  
+  </p>
+<ul>
+<li><a href="#31"><code>rmid</code> 의 기동</a> </li>
+<li><a href="#32"><code>rmiregistry</code> 의 기동</a> </li>
+<li><a href="#33"><code>Setup</code> 프로그램의 실행</a> </li>
+</ul>
+
+<a name="31"></a> <h3><code>rmid</code> 의 기동</h3> 
+<p><code>rmid</code> 를 기동하려면 , 서버의 호스트로 <code>rmid</code> 커멘드를 실행합니다. 이 커멘드에서는, 이하와 같이 지정한 시큐리티 정책 파일을 사용해 실행했을 경우는, 아무것도 출력되지 않습니다. 자세한 것은,<code>rmid</code> 의 툴 문서 (<a href="../../../tools/solaris/rmid.html">Solaris</a>  용,<a href="../../../tools/windows/rmid.html">Windows</a>  용)를 참조해 주세요.  
+  
+<P>Solaris  operating system에서의 예: 
+  </p>
+  <blockquote> 
+    <pre>
+rmid -J-Djava.security.policy=<i><b>rmid.policy</b></i> \
+     -J-Dexamples.activation.policy=<i><b>group.policy</b></i> &amp;
+	 </pre>
+  </blockquote>
+<P>Windows 플랫폼에서는, 다음의 커멘드를 실행합니다.  </p>
+  <blockquote> 
+    <pre>
+start rmid -J-Djava.security.policy=<i><b>rmid.policy</b></i> \
+           -J-Dexamples.activation.policy=<i><b>group.policy</b></i>
+</pre>
+  </blockquote>
+<P>설명  </p>
+
+<ul>
+<li><b>rmid.policy</b> 는,<code>rmid</code> 의 시큐리티 정책 파일</li>
+<li><b>group.policy</b> 는, 그룹 정책 파일로,<code>rmid</code> 의 정책 파일로 사용된다</li>
+</ul>
+
+
+  <p>
+<code>rmid</code> 의 시큐리티 정책 파일은, 기동 그룹 VM 의 기동시에,<code>rmid</code> 가 특정의 커멘드를 실행해, 특정의 커멘드행 옵션을 사용하는 액세스권을 부여합니다. 예를 들어, 사용자는, 1 개(살) 또는 복수의 시스템 프로퍼티, 또는 다른 <code>java</code> 커멘드행 옵션을 사용해, 기동 그룹 VM 를 기동하는 특정의 액세스권을 부여할 수가 있습니다. 이 예에서는,<code>rmid</code> 가 시스템 프로퍼티 <code>java.security.policy</code>,<code>java.class.path</code>,<code>examples.activation.impl.codebase</code>, 및 <code>examples.activation.file</code> 를 정의하는 기동 그룹 VM 를 기동할 수 있게 되어 있습니다. 다음의 시큐리티 정책 파일의 예에서는, 이러한 특정의 프로퍼티을 정의해, 기동 그룹 VM 를 기동하는 액세스권을 부여하고 있습니다.  
+  </p>
+
+  <blockquote>
+    <pre>
+grant { 
+    // allow activation groups to use certain system properties
+    permission com.sun.rmi.rmid.ExecOptionPermission "-Djava.security.policy=${examples.activation.policy}";
+    permission com.sun.rmi.rmid.ExecOptionPermission "-Djava.class.path=no_classpath";
+    permission com.sun.rmi.rmid.ExecOptionPermission "-Dexamples.activation.impl.codebase=*";
+    permission com.sun.rmi.rmid.ExecOptionPermission "-Dexamples.activation.file=*";
+};
+</pre>
+</blockquote>
+
+<p>
+최초의 <code>ExecOptionPermission</code> 액세스권의 부여에서는,<code>java.security.policy</code> 시스템 프로퍼티을,<code>rmid</code> 의 실행시에 정의되는 시스템 프로퍼티 <code>examples.activation.policy</code> 에 의해 지정되는 파일로 한정하고 있습니다. 다음의 권한 부여에서는, 그룹이 시스템 프로퍼티 <code>java.class.path</code> 를, 그룹이 유효한 클래스 패스를 가지지 않게 하는 더미의 클래스 패스 <code>no_classpath</code> 로서 정의할 수 있도록(듯이) 합니다. 다음의 권한 부여에서는, 그룹이 시스템 프로퍼티 <code>examples.activation.impl.codebase</code> 를 임의의 값으로 해서 정의할 수 있도록(듯이) 합니다. 마지막 권한 부여에서는,<code>examples.activation.file</code> 시스템 프로퍼티을 임의의 값으로 할 수 있도록(듯이) 합니다.  
+  </p>
+  
+<a name="32"></a> 
+<h3><code>rmiregistry</code> 의 기동</h3> <p>레지스트리를 기동하려면 , 서버의 호스트로 <code>rmiregistry</code> 커멘드를 실행합니다. 이 커멘드로부터는 성공시에 무슨 출력도 없습니다.  일반적으로, 백그라운드에서 실행됩니다. 자세한 것은,<code>rmiregistry</code> 의 툴 문서 (<a href="../../../tools/solaris/rmiregistry.html">Solaris</a>  용,<a href="../../../tools/windows/rmiregistry.html">Windows</a>  용)를 참조해 주세요.
+
+<P>Solaris  operating system에서의 예:
+  </p>
+<blockquote>
+<pre>rmiregistry &amp;</pre>
+</blockquote>
+<P>Windows 플랫폼에서는, 다음의 커멘드를 실행합니다. </p>
+<blockquote>
+<pre>start rmiregistry </pre>
+</blockquote>
+
+<P>디폴트에서는, 레지스트리는 TCP 포트 번호 1099 로 실행됩니다.  다른 포트상에서 레지스트리를 실행하려면 , 커멘드행으로 포트 번호를 지정합니다. 예를 들어, Windows 플랫폼상의 포트 2001 으로 레지스트리를 기동하려면 , 다음과 같이 합니다.
+  </p>
+
+<blockquote>
+<pre>start rmiregistry 2001</pre>
+</blockquote>
+
+<p><b>주</b> -<code>rmiregistry</code> 의 클래스 패스에는 로컬의 클래스 패스로부터 클래스를 로드하지 않게 하는 구현 클래스가 아무것도 없는 것을 확인해 주세요.  
+</p>
+<p>
+레지스트리가 1099 이외의 포트로 실행될 예정의 경우는,<code>Setup</code> 프로그램내, 및 이 레지스트리에 액세스 하는 모든 클라이언트내의 <code>LocateRegistry.getRegistry</code> 의 호출해에, 포트 번호를 지정할 필요가 있습니다. 예를 들어, 이 예로 레지스트리를 포트 번호 2001 으로 실행하는 경우,<code>getRegistry</code> 의 호출은 다음과 같이 됩니다.
+  </p>
+<blockquote>
+<pre>Registry registry = LocateRegistry.getRegistry(2001);
+</pre>
+</blockquote>
+<p>또,<code>1099</code> 이외의 레지스트리 포트를 사용하는 경우는,<code>Setup</code> 및 클라이언트 프로그램의 정책 파일을 변경해, 그 레지스트리의 포트에의 접속 허가를 줄 필요도 있습니다.
+</p>
+
+<a name="33"></a> <h3><code>Setup</code> 프로그램의 실행</h3>
+<p><code>Setup</code> 프로그램을 기동하려면 , 다음의 <code>java</code> 커멘드를 사용해 <code>Setup</code> 클래스를 실행합니다.
+  </p>
+  <blockquote>
+    <pre>
+java -cp <i><b>setupDir</b></i>:<i><b>implDir</b></i> \
+     -Djava.security.policy=<i><b>setup.policy</b></i>        \
+     -Djava.rmi.server.codebase=<i><b>codebase</b></i>         \
+     -Dexamples.activation.setup.codebase=<i><b>setupCodebase</b></i>       \
+     -Dexamples.activation.impl.codebase=<i><b>implCodebase</b></i> \
+     -Dexamples.activation.name=<i><b>name</b></i>             \
+     [-Dexamples.activation.file=<i><b>file</b></i>]       \
+     [-Dexamples.activation.policy=<i><b>group.policy</b></i>] \
+     examples.activation.Setup <i><b>implClass</b></i>
+</pre>
+</blockquote> 
+
+
+<p>설명  </p>
+
+  <ul>
+<li><b>setupDir</b> 는,<code>Setup</code> 프로그램의 클래스의 루트 디렉토리</li>
+<li><b>implDir</b> 는, 구현의 클래스의 루트 디렉토리</li>
+<li><b>setup.policy</b> 는,<code>Setup</code> 프로그램의 시큐리티 정책 파일</li>
+<li><i><b>codebase</b></i> 는, 원격 인터페이스 클래스의 장소 (URL)</li>
+<li><i><b>setupCodebase</b></i> 는,<code>Setup</code> 프로그램의 클래스의 장소 (URL) (<b>setup.policy</b><i></i> 파일내의 <code>Setup</code> 프로그램에의 액세스권의 부여에 사용)</li>
+<li><b>implCodebase</b> 는, 구현 클래스의 장소 (URL)이며, 기동 기술자내에서, 또 그룹 정책 파일내에서 액세스권을 부여하기 위한 코드 베이스로서 사용된다</li>
+<li><b>name</b> 는, 레지스트리내에서 바인드 되는 객체의 Stub의 이름 </li>
+<li><b>file</b> (옵션)는, 객체의 기동 기술자에게 <code>data</code> 로서 등록되어 있는 객체의 지속 상태가 쓰여진 파일의 이름 (디폴트 값: 없음)</li>
+<li><b>group.policy</b> (옵션)는, 기동 그룹의 시큐리티 정책 파일 (디폴트로 <code>group.policy</code>)</li>
+<li><b>implClass</b> 는, 구현 클래스의 완전 지정의 이름</li>
+  </ul>
+  <p>
+<b>주</b> -상기의 몇개의 코드 베이스의 파일 URL 를 사용하는 경우는, 각 파일 URL 의 말미에 slash가 있는 것을 확인해 주세요.  말미에 slash가 없는 경우, 코드 베이스는 무효가 됩니다.
+  </p>
+<p><code>Setup</code> 프로그램으로부터의 출력은, 다음과 같이 됩니다.
+  </p>
+<blockquote>
+<pre>
+Activation group descriptor registered.
+Activation descriptor registered.
+Stub bound in registry.
+</pre>
+</blockquote>
+</blockquote>
+
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

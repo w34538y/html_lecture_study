@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>애플릿의 호환성 &#8212; Microsoft 와 Java 2 의 가상 머신 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<hr>
+<h1>애플릿의 호환성 문제</h1>
+<hr>
+<br>이 문서에서는, Microsoft 가상 머신 (VM)과 Sun Java VM 의 애플릿의 호환성에 관한 기존의 문제에 대해 설명합니다. 여기서 사용하는 Java SE 라고 하는 용어는, Java Platform Standard Edition 버젼 1.2 이후의 것을 가리킵니다.
+<h2><code><br> ClassFormatError</code></h2>
+<p> 이 에러는, 낡은 JDK 1.0. 2 또는 1.1 컴파일러에 의해 생성된 바이트 코드가 원인으로 발생합니다. 지금까지, 해당하는 컴파일러에 의해 많은 바이트 코드가 생성되고 있습니다만, 모두 Java VM 스펙에 준거하고 있습니다. 최근의 J2SE 릴리스 말하고 리파이아는 부정한 클래스 포맷에 관해서 매우 엄격해지고 있기 (위해)때문에, 이러한 부정한 클래스 파일이 로드 되면(자), VM 에 의해 <code>ClassFormatError</code> 가 throw 됩니다.  </p>
+<p>낡은 클래스 파일에 관한 전형적인 문제점은 이하대로입니다 (다만 모든 것을 망라한 것은 아니다).  </p>
+<ul>
+<li>클래스 파일의 마지막에 여분의 바이트가 존재한다 </li>
+<li>클래스 파일에, 문자로 시작되지 않는 메소드명이나 필드명이 포함되어 있다 
+  </li>
+<li>클래스가 다른 클래스의 private 멤버에게 액세스 하려고 한다 </li>
+<li>클래스 파일에, 부정한 정수 풀 인덱스나 부정한 UTF-8 캐릭터 라인 등, 그 외의 형식 에러가 존재한다 </li>
+<li>이전의 (서드 파티의) 바이트 코드의 오브파스케이타에 의해, 적절한 클래스 파일 형식에 위반하는 클래스 파일이 작성되고 있다</li>
+</ul>
+<p>이 종류의 문제는, 현재의 JDK 에 있는 Javac 바이트 코드 컴파일러를 사용해 클래스를 재컴파일 하면 회피할 수가 있습니다. 서드 파티의 오브파스케이타를 사용하는 경우는, 그것이 올바른 클래스 파일 형식에 준거한 클래스 파일을 작성할지 어떨지를 확인해 주세요.  </p>
+<p>부정한 클래스 파일을 가지는 몇개의 애플릿을 Java SE 로 실행할 수 있도록(듯이) 하기 위해서, Java Plug-in 에는, 부정한 클래스 파일을 올바른 것으로 변환하는 바이트 코드 변환 프로그램이 포함되어 있습니다. 현시점에서는, 이하의 <code>ClassFormatError</code> 에 의한 부정한 클래스 파일만이 변환됩니다. </p>
+<ul>
+<li>로컬의 변수명에 부정한 정수 풀 인덱스가 존재한다 </li>
+<li>클래스 파일의 마지막에 여분의 바이트가 존재한다 </li>
+<li>code segment의 길이가 잘못하고 있다 </li>
+<li>부정한 필드/메소드명 </li>
+<li>부정한 필드/메소드 수식자 </li>
+<li>로컬 var 테이블에 있어서의 부정한 start_pc/length</li>
+</ul>
+<p>그러나, 다음의 <code>ClassFormatError</code> 의 문제는, 바이트 코드 변환 프로그램에서는 해결하지 않습니다.  </p>
+<ul>
+<li>비가상 함수 호출의 부정한 사용</li>
+<li> 인수가 로컬에 적합할 수 없다</li>
+<li>룩 업 스윗치가 소트 되지 않는다</li>
+<li>클래스 파일의 잘라서 버림</li>
+</ul>
+<p> 그 때문에, 상기의 문제를 포함한 클래스 파일은, Java SE 에서는 실행할 수 없습니다.  </p>
+<h2><code>sun.audio</code> 에 의한 시큐리티 예외</h2>
+<p> JDK 1.1 의 애플릿에서는 <code>sun.audio</code> 패키지에 액세스 할 수 있었습니다. 그러나, Java SE 에서는 애플릿의 샌드 박스가 닫혀졌기 때문에,<code>sun.audio</code> 패키지의 클래스 라이브러리에 액세스 하려고 한 애플릿은 <code>SecurityException</code> 가 됩니다. </p>
+<p> 애플릿의 호환성을 최대한으로 하기 위한(해), Java Plug-in 에서는 애플릿 샌드 박스가 열려 애플릿이 다시 <code>sun.audio</code> 패키지에 액세스 할 수 있게 되었습니다. </p>
+<h2><code>AppletContext.getAudioClip()</code> 및 <code>AppletContext.getImage()</code> 의 자원을 검색할 수 없다 </h2>
+<p>Microsoft 에 의한 구현과 Sun 에 의한 구현에서는,<code>AppletContext.getImage()</code> 및 <code>AppletContext.getAudioClip()</code> 의 자원 룩 업 순서가 차이가 납니다. &nbsp;</p>
+<p> Microsoft VM 에서는, 자원은 이하의 순서로 검색됩니다. <br>
+</p>
+<ol>
+<li>HTML 의 <code>archive</code> 또는 <code>cabbase</code> 파라미터로 지정된 어카이브(archive)</li>
+<li><code>codebase</code> 의 URL</li>
+</ol>
+<p>Sun 에 의한 구현에서는, 자원은 단지 <i>codebase</i> 의 URL 로 검색됩니다. </p>
+<p>이 결과, Microsoft VM 의 자원 룩 업 순서에 의존한 애플릿안에는, Java SE 에서는 자원을 올바르게 로드할 수 없는 것이 있습니다. &nbsp;</p>
+<p> 애플릿의 호환성을 최대한으로 하기 위한(해), Java Plug-in 에서는 자원 룩 업 순서가 이하와 같이 변경되었습니다. </p>
+<ol>
+<li>HTML 의 <code>archive</code> 파라미터로 지정된 어카이브(archive)</li>
+<li><code>codebase</code> 의 URL</li>
+</ol>
+<h2><code>ClassLoader</code> 공유 정책</h2>
+<p> <code>ClassLoader</code> 공유 정책는, Microsoft 에 의한 구현과 Sun 에 의한 구현으로 차이가 납니다. &nbsp;</p>
+<p> Microsoft 에 의한 구현에서는, 이하의 경우만 <code>ClassLoader</code> 객체가 애플릿간에 공유됩니다. </p>
+<ul>
+<li><code>codebase</code> 의 값이 같고,</li>
+<li><code>archive</code> 의 값이 같고, 한편</li>
+<li><code>cabbase</code> 의 값이 같다</li>
+</ul>
+<p>Sun 에 의한 구현에서는,<code>codebase</code> 의 값이 같은 경우만 <code>ClassLoader</code> 객체가 애플릿간에 공유됩니다. </p>
+<p>Microsoft 에 의한 구현의 <code>ClassLoader</code> 공유 정책에 의존하는 애플릿안에는, 잠재적인 클래스 정의의 경합을 위해서(때문에) Java SE 에서는 올바르게 실행되지 않는 것도 있습니다. &nbsp;</p>
+<p>애플릿의 호환성을 최대한으로 하기 위한(해), Java Plug-in 에서는 <code>ClassLoader</code> 공유 정책가 변경되었습니다. 이하의 경우만 <code>ClassLoader</code> 객체가 애플릿간에 공유되게 되었습니다. </p>
+<ul>
+<li><code>codebase</code> 의 값이 같고,</li>
+<li><code>cache_archive</code> 의 값이 같고,</li>
+<li><code>java_archive</code> 의 값이 같고, 한편 </li>
+<li><code>archive</code> 의 값이 같다</li>
+</ul>
+<h2>시큐리티 모델 &#8212; Java SE 와 Microsoft</h2>
+<p> Java SE 가 갖추고 있는 새로운 시큐리티 모델은, JDK 1.1 보다 아득하게 뛰어난 기능과 유연성을 제공하고 있습니다만, Microsoft VM 시큐리티 모델은, JDK 1.1 으로 독자적인 기술에 근거하고 있습니다. &nbsp;</p>
+<p> 이 문제는 해결 불능입니다. 그 때문에, Microsoft 의 시큐리티 모델에 의존한 애플릿은 Java SE 에서는 올바르게 실행되지 않습니다. </p>
+<h2>애플릿의 패키지화</h2>
+<p> Java SE 및 JDK 1.1 에 있어서의 애플릿의 패키지화는,<code>. jar</code> 파일을 통해서 실행됩니다만, Microsoft VM 에서는,<code>. jar</code> 파일과 독자적인 <code>. cab</code> (캐비넷) 파일을 통해서 실행됩니다. &nbsp;</p>
+<p> 이 문제는 해결 불능입니다. 따라서, Microsoft 의 <code>. cab</code> 파일 형식에 패키지화된 애플릿은 Java SE 에 로드 되지 않습니다. </p>
+<h2>Java 언어 스펙의 엄밀함 (<code>null</code> 와 길이 제로의 캐릭터 라인)</h2>
+<p>JDK 1.1 에서는, 클래스 라이브러리에 있어서의 <code>null</code> 와 길이가 제로의 캐릭터 라인의 취급해에 관한 Java 언어 스펙이 완만했습니다. API 에 따라서는 <code>null</code> 를, 길이 제로의 캐릭터 라인으로서 취급하는 것도 있으면,<code>null</code> 를 <code>null</code> 로서 취급하는 것도 있었습니다. Java SE 에서는 Java 언어 스펙이 엄밀하게 되어, 정확한 동작을 지정하게 되었습니다. </p>
+<p>이 문제는 해결 불능입니다. <code>null</code> 를 길이 제로의 캐릭터 라인으로서 처리하는 API 에 의존하고 있는 애플릿은, Java SE 에서는 예외가 됩니다. </p>
+<h2>애플릿의 서명 &#8212; RSA 와 Authenticode</h2>
+<p>Java SE 에서는, 애플릿 서명을 RSA 및 <code>. jar</code> 파일을 통해서 지원하고 있습니다만, Microsoft 에서는 애플릿 서명을, 독자적인 Authenticode 및 <code>. cab</code> 파일 테크놀러지를 통해서 지원하고 있습니다. </p>
+<p> 이 문제는 해결 불능입니다. Microsoft 의 Authenticode 및 <code>. cab</code> 파일 테크놀러지에 의존하는 서명 애플릿은, Java SE 에서는 올바르고 로드 되지 않습니다. </p>
+<h2>AWT 클래스 라이브러리에 있어서의 구현의 변경</h2>
+<p>과거에는, AWT 는 thread에 대해서 안전이라고 생각하는 프로그래머가 있었습니다. 그 때문에, AWT 라이브러리를 사용해 기술된 일부의 애플릿은 복수의 thread로 GUI 와 해 취 하고 있습니다만, 클래스 라이브러리가 동기화의 문제를 처리하는 것으로 간주하고 있었습니다. 그러나, 실제는 AWT 또는 Swing 의 모두 thread에 대해서 안전하지는 않습니다. 그 때문에, GUI 또는 프로세스의 이벤트를 갱신하는 모든 코드는, 이벤트발송쓰레드로 발생하지 않으면 안됩니다. 이것에 실패하면(자), 데드락 또는 경합 상태가 될 가능성이 있습니다. 상세한 것에 대하여는,<a href="http://java.sun.com/docs/books/tutorial/uiswing">「The Swing Tutorial」</a>의<a href="http://java.sun.com/docs/books/tutorial/uiswing/misc/threads.html">「How to Use Threads」</a>를 참조해 주세요. 이 튜토리얼의 예에서는 특히 Swing 를 취급하고 있습니다만, 같은 규칙이 모든 <code>Component</code> 에 들어맞읍니다.
+<h2>Java 와 javaScript 의 사이의 통신</h2>
+<p>Microsoft 에 의한 구현에서는, HTML 페이지의 JavaScript 에서 공개되는 애플릿의 메소드와 프로퍼티은, 애플릿 객체의 메소드나 프로퍼티과 완전히 같은 것입니다. Java Plug-in 에서는, 애플릿의 메소드와 프로퍼티은, JavaBeans 의 인트로스페크션을 통해서 HTML 의 JavaScript 에서 공개됩니다.  JavaBeans 의 인트로스페크션은, 애플릿 객체의 명명 규칙에 의해 메소드와 프로퍼티의 분석을 실시합니다. 여기에 따른 영향으로서 애플릿의 필드가 각각 다른 방법으로 처리됩니다. </p>
+<p> 이 문제는 Java Plug-in 의 향후의 릴리스로 해결될 예정입니다. 현재로서는, Java SE 에서는 애플릿 객체의 필드에 액세스 하는 JavaScript 는 올바르게 동작하지 않습니다. &nbsp;&nbsp;&nbsp;</p>
+<h2>Microsoft 독자적인 Java 클래스, 메소드, 및 변수</h2>
+<p> Microsoft 에 의한 VM 의 구현에서는, J/Direct, AFC, WFC 등 많은 독자적인 클래스 라이브러리가 제공되고 있습니다.  그 외의 클래스, 메소드, 및 변수에 대해서는,<a href="http://www.javaworld.com/javaworld/jw-10-1997/jw-10-sdk.html">「How to avoid potential pitfalls of Microsoft's non-standard SDK for Java」</a>를 참조해 주세요. </p>
+<p> 이 문제는 해결 불능입니다. Microsoft 의 독자적인 Java 클래스 라이브러리에 의존한 애플릿은 Java SE 에서는 올바르게 동작하지 않습니다. </p>
+<h2><code>Applet.getParameter()</code> 로부터 반환되는 캐릭터 라인내의 공백 문자</h2>
+<p>Microsoft 에 의한 구현에서는, 캐릭터 라인이 <code>Applet.getParameter()</code> 내에서 애플릿에 돌려주어지기 전에, 공백 문자가 제거됩니다. 그러나, Sun 에 의한 구현에서는, 캐릭터 라인은 HTML 파라미터로 지정되었던 대로 돌려주어집니다. 이 결과, JDK 1.1 애플릿안에는 Java SE 로 실행할 수 없는 것이 있습니다. JDK 1.1 애플릿의 논리에서는, 공백을 상정하고 있지 않기 때문입니다. </p>
+<p> 애플릿의 호환성을 최대한으로 하기 위한(해), Java Plug-in 에서는 <code>Applet.getParameter()</code> 의 구현이 변경되어 반환값으로부터 공백 문자가 제거되고 있습니다. </p>
+<h2><code>java.util.Hashtable.hashCode()</code> 에 있어서의 설계 변경<b>&nbsp;&nbsp;&nbsp;&nbsp;</b></h2>
+<p>JDK 1.1 에서는 <code>Hashtable.hashCode()</code> 는 객체 ID 에 근거해 구현되고 있으므로,<code>hashCode()</code> 가 불려 갔을 경우,<code>Hashtable</code> 객체는 각각 일의의 값을 돌려줍니다. Java SE 에서는 <code>Hashtable.hashCode()</code> 의 구현이, Java Collection Framework 의 일부로서 값에 근거하는 것으로 변경되었습니다. <code>Hashtable</code> 객체는, 포함하고 있는 객체에 근거해 해시 코드의 값을 돌려줍니다. &nbsp;&nbsp;</p>
+<p> 이 변경에 의해, JDK 1.1 의 애플릿의 몇개인가는,<code>Hashtable</code> 객체를 그것 자신에게 추가했을 경우에 중단해 버립니다.  왜냐하면, 이 변경은 Collection Framework 의 기본 설계를 어지럽혀,<code>StackOverflowError</code> 가 발생하기 때문입니다. 같은 <code>Hashtable</code> 객체로부터 일정한 값을 돌려주기 위해서(때문에),<code>Hashtable.hashCode()</code><i> </i>에 의존하고 있는 몇개의 애플릿 코드로, 논리가 파괴되어 버립니다. </p>
+<p> 애플릿의 호환성을 최대한으로 하기 위한(해),<code>Hashtable.hashCode()</code> 의 구현이 변경되어 이러한 특별한 케이스를 체크해 스택의 오버플로우를 회피하게 되었습니다. </p>
+<h2>애플릿으로부터 프레임에의 액세스</h2>
+<p>마우스 이벤트의 추적이나 그 외의 이유에 의해, 애플릿이 그 프레임에 액세스 하려고 하는 일이 있습니다. Microsoft 에 의한 구현과 Sun 에 의한 구현에서는, 프레임과 애플릿의 사이에 컨테이너수가 다릅니다. </p>
+<p> Microsoft VM 에 있어서의 특정의 포함 레벨에 있는 프레임에 의존하는 (AWT 계층 컴퍼넌트 트리 전체를 안내하지 않는다) 애플릿은, Java SE 에서는 실패할 가능성이 있습니다. 무엇보다 자주(잘) 볼 수 있는 증상은, AWT 발송이벤트쓰레드로부터의 <code>ClassCastException</code> 입니다. </p>
+<p> 이 문제는 해결 불능입니다. 그 때문에, Java SE 에서는 이 문제를 떠안은 애플릿은 올바르게 동작하지 않습니다. </p>
+<h2><code>MAYSCRIPT</code></h2>
+<p> Netscape Navigator 와 Java Plug-in 에서는, JavaScript 에 액세스 하는 애플릿은 애플릿 요소로 <code>MAYSCRIPT</code><I></I> 속성을 지정할 필요가 있습니다. 그러나 Microsoft 에 의한 구현에서는 이 특별한 파라미터가 중시되지 않기 때문에, 애플릿은 모든 조건하에서 JavaScript 에 액세스 할 수가 있습니다. 인터넷상의 애플릿의 대부분은, Netscape 는 아니고 Microsoft VM 를 타겟으로 하고 있기 (위해)때문에,<code>MAYSCRIPT</code> 가 지정되고 있지 않습니다. </p>
+<p> 애플릿의 호환성을 최대한으로 하기 위한(해), Java Plug-in 로부터 <code>MAYSCRIPT</code> 의 체크가 삭제되었습니다. </p>
+<h2>HTTP 의 <code>User-Agent</code></h2>
+<p>Microsoft 와 Sun 에 의한 구현에서는, HTTP 접속이 요구되었을 때에, 다른 HTTP 의 <code>User-Agent</code> 의 캐릭터 라인이 서버에게 건네집니다. 많은 Web 사이트가 Sun 는 아니고 Microsoft VM 를 타겟으로 하고 있기 (위해)때문에, 이러한 Web 사이트에서는 Sun 의 HTTP 의 <code>User-Agent</code> 를 인식하지 않고, 실패가 일어납니다. </p>
+<p> 이 때문에, Java Plug-in 로 사용되고 있는 HTTP 의 <code>User-Agent</code> 캐릭터 라인은, Microsoft 의 <code>User-Agent</code> 를 닮은 것으로 하고 왔습니다. 이렇게 하는 것으로, 대부분의 Web 서버에서는, Java Plug-in 를 실행하는 애플릿으로부터의 요구를 인식합니다. </p>
+<h2>애플릿의 기동 및 정지시의 이벤트</h2>
+<p>Microsoft 와 Sun 에 의한 구현에서는, 애플릿의 기동시와 정지시에 발생하는 이벤트는 완전하게 같지는 않습니다. 예를 들어, 애플릿의 논리가 <code>Applet.start()</code> 또는 <code>Applet.stop()</code> 의 호출시에 표시되는 애플릿에 의존하는 것은, Microsoft 에 의한 구현에는 들어맞읍니다만, Sun 에 의한 구현에는 들어맞지 않습니다. </p>
+<p> Microsoft VM 에 대해 애플릿이 기동 및 정지할 때의 특정의 이벤트에 의존하고 있는 애플릿은, Java SE 에서는 올바르게 기능하지 않습니다. 무엇보다 자주(잘) 볼 수 있는 증상은, AWT 발송이벤트쓰레드로부터의 <code>NullPointerException</code> 입니다. </p>
+<p> 이 문제는 해결 불능입니다.  </p>
+<h2>Java 클래스 라이브러리의 호환성<b>&nbsp;</b></h2>
+<p>Java SE 의 Java 클래스 라이브러리에서는 많은 변경을 했습니다. API 안에는 명확하게 된 것, 인하할 수 있던 것, 다른 구현에 의해 옮겨놓을 수 있던 것이 있습니다. 다음에, Microsoft 의 VM 로 실행되는 애플릿이 Java SE 에서는 실패하는 원인이 되고 있는 것에 임해서 가리킵니다. </p>
+<ul>
+<li><code>java.awt.Graphics.drawString()</code><i><br></i><br>Microsoft VM 에서는,<code>drawString()</code> 는 <code>null</code> 를 빈 상태(empty)의 캐릭터 라인으로서 취급합니다. Java SE 에서는,<code>drawString()</code> 는 <code>null</code> 를 <code>null</code> 로서 취급하기 (위해)때문에,<code>NullPointerException</code> 가 throw 됩니다. <br>
+  </li>
+<li><code>java.awt.Graphics.drawImage()</code><i><br> <br></i>Microsoft VM 에서는,<code>drawImage()</code> 는 <code> null</code> 이미지를 무시합니다. Java SE 에서는,<code>drawImage()</code> 는 <code>null</code> 를 <code>null</code> 로서 취급하기 (위해)때문에,<code>NullPointerException</code> 가 throw 됩니다. <br>
+  </li>
+<li><code>java.awt.Color</code><i> </i>생성자<br> <br>Microsoft VM 에서는,<code>Color</code> 생성자 에 경계치를 웃돌거나 밑돌거나 하는 값이 건네받았을 경우, 콘솔로 경고 메세지가 출력됩니다만, 값은 최대치 또는 최소치에 자동적으로 리셋 됩니다. Java SE 에서는 <code>Color</code> 생성자 이 부정한 값을 체크해,<code>IllegalArgumentException</code> 를 throw 합니다. <br>
+  </li>
+<li><code>Thread.stop(), Thread.suspend(), Thread.resume()</code><i><br> <br></i>Microsoft VM 에서는, 데드 thread의 정지, 중단, 재개에 관한 호출은 무시됩니다. Java SE 에서는, 데드 thread상에서 이러한 메소드를 호출하면(자) <code>AccessControlException</code> 가 발생합니다. &nbsp;<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></li>
+</ul>
+<p> 이러한 문제의 영향하에 있는 애플릿은 예외가 되어, Java SE 에서는 올바르게 실행되지 않습니다. </p>
+<h2>Java Moniker</h2>
+<p>이것은, Java SE 에서는 지원되어 있지 않은, Microsoft 독자적인 테크놀러지입니다. </p>
+<h2><code>object</code> 속성과 <code>PARAM</code> 요소</h2>
+<p>종래의 애플릿 형식에서는,<code>PARAM</code> 요소와 <code>object</code> 속성을 동시에 사용하면(자), Sun VM 의 경우는 예외 「Either "code" or "object" should be specified, but not both.」(이)가 throw 됩니다. Microsoft VM 에서는, 예외는 throw 되지 않습니다. 이것은 호환성의 문제입니다. Sun VM 로 이 예외를 회피하려면 , 애플릿으로 <code>object</code> 라는 이름의 속성을 <code>PARAM</code> 요소에 사용하지 말아 주세요. </p>
+<hr>
+</body>
+</html>

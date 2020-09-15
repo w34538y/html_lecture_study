@@ -1,0 +1,172 @@
+
+            JDK1.8 설치, 환경 변수 설정, 이름폴더\이클립스 Neon 설치
+                JAVA.설치설정20170101.txt 참고
+
+                
+기본 HTML 페이지의 한글 인코딩 지정
+    [Preferences] 대화상자의 [Web]-[HTML Files] 항목을 선택한 후 [Encoding]에서 한글의
+    인코딩 설정을 ‘ISO 10646/Unicode(UTF-8)’로 지정하고 [OK] 버튼을 클릭한다. 
+    한글 인코딩은 모바일 페이지의 인코딩도 고려하여 UTF-8로 지정한다.
+
+외부 스타일시트인 CSS 페이지의 한글 인코딩을 지정하기 위해 [Preferences] 대화상자의 
+     [Web]-[CSS Files] 항목을 선택한 후 
+     [Encoding] 항목의 값을 ‘ISO 10646/Unicode(UTF-8)’로 지정하고 [OK] 버튼을 클릭한다.
+
+JSP 페이지의 인코딩과 템플릿 설정
+    JSP 페이지에서 한글이 제대로 표시되도록 하기 위해 인코딩을 설정하고, 기본 생성되는 템플릿의 형태도 변경한 후
+    JSP 페이지를 작성하여 실행한다.
+    작성할 JSP 페이지의 인코딩을 ‘UTF-8’로 지정하고, JSP의 html 부분도 html5 문법을 따르기 위한 환경 설정을 한다.
+    ① 이클립스를 실행한 후 [Window]-[Preferences] 메뉴를 선택한다.
+    ② [Preferences] 대화상자가 나타나면 [Web]-[JSP Files]를 선택한다. 한글 인코딩을 지정하기 위해 [Ecoding] 항목에서
+       ‘ISO 10646/Unicode(UTF-8)’을 선택한 후 나머지는 기본 값을 그대로 사용하고 [Apply] 버튼을 클릭한다.
+    ③ 템플릿을 설정하기 위해 [JSP Files]-[Editor]-[Templates] 항목을 선택하고 오른쪽에 [Templates]의 내용이 표시되면
+       [New] 버튼을 클릭한다.
+    ④ [New Template] 대화상자가 나타나면 [Name] 항목에 “New JSP File (html5)”를 입력하고 [Context] 항목에서 
+       [New JSP]를 선택한다.
+       [Pattern] 항목에 "jsptemplate.txt"의 내용을 복사하여 붙여넣기 한 후
+       [OK] 버튼을 클릭한다.
+    ⑤ [Create, edit or remove templates] 항목에 ‘New JSP File (html5)’가 추가된 것을 확인한 후 [OK] 버튼을 클릭한다.
+    
+    
+Dynamic Web Project 생성
+    [File]-[New]-[Dynamic Web Project]-[Next]
+    [Project name]에 "Myjsp"를 입력한다. 나머지 항목은 기본 값-[Next] 
+    [Java] 화면-[Next]
+    [Web Module] 화면-[Context root] 항목과 [Content Directory] 항목은 기본 값을 그대로 사용하고 
+        [Generate web.xml deployment descriptor] 항목을 체크한 후 [Finish]
+ 
+ 
+basic.html 작성
+    이클립스 프로젝트에서 html은 [프로젝트]-[WebContent] 폴더에 생성한다.
+    ① [Project  Explorer] 뷰에서 [Myjsp] 프로젝트의 [WebContent] 폴더에서 마우스 오른쪽 버튼을 클릭하여
+       [New]-[HTML File] 메뉴를 선택한다.
+    ② [New HTML File] 대화상자가 나타나면 [Myjsp] 프로젝트의 [WebContent]를 선택한 후
+       [File name]에 basic.html을 입력하고 [Next] 버튼을 클릭한다.
+    ③ [New HTML File] 대화상자의 [Select HTML Template] 화면에서‘New HTML File (5)’를 선택하고
+       [Finish] 버튼을 클릭한다.
+
+    
+톰캣설치
+    ① apache-tomcat-8.0.32-windows-x64.zip 파일을 임의의 위치(D:\apache-tomcat-8.0.32)에 압축을 해제만 하면 설치된다.
+    ② 오라클과의 포트 충돌을 피하기 위하여
+       D:\apache-tomcat-8.0.32\conf 폴더에 있는 server.xml 파일을 열어
+       <Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/>
+       이 부분의 8080포트를 사용하지 않는 8085(또는 8181)로 바꿔준다.
+       
+       포트 번호는 네트워크 통신을 하는 프로그램에서 사용하는 프로그램의 주소이다. 
+       이미 다른 프로그램이 사용 중인 포트 번호는 사용할 수 없으며, 현재 사용 중인 포트 번호를 확인 하려면
+       명령 프롬프트 창에서 ‘netstat -na’ 입력
+    ③ 톰캣의 환경 변수를 설정하기 위해 [제어판]-[시스템] 항목을 선택한 후 표시되는 화면에서
+       [고급 시스템 설정] 항목을 클릭한다.
+    ④ [시스템 속성] 대화상자의 [고급] 탭에서 [환경 변수]를 클릭하면 [환경 변수] 대화상자가 나타난다.
+    ⑤ CATALINA_HOME설정 : [시스템 변수] 항목의 [새로 만들기]를 클릭한 후 다음과 같이 작성한 후 [확인]을 클릭한다.
+       변수 이름 : CATALINA_HOME
+       변수 값   : D:\apache-tomcat-8.0.32
+    ⑥ 제대로 설치되었는지 확인하기 위해 탐색기에서 톰캣 설치 드라이브의[apache-tomcat-8.0.32]-[bin] 폴더에서 톰캣
+       서비스를 올리기 위한 startup.bat 파일을 더블클릭한다.
+    ⑦ [Tomcat] 창이 표시되면서 각종 서비스가 올라오는 것을 확인할 수 있다. 이클립스는 자체적으로 톰캣을 실행시킬 수
+       있으나 실제로 서비스를 하는 경우에는 [Tomcat] 창이 열려 있어야만 JSP 기반의 작업을 할 수 있으므로 닫지 않는다.
+    ⑧ [Tomcat] 창이 뜨다가 사라지면 ‘JAVA_HOME’ 변수가 없거나 잘못된 경우이므로, JDK 설치 디렉터리를 확인해서
+       ‘JAVA_HOME’변수 값과‘CATALINA_HOME’변수를 확인한다. Windows 플랫폼 [Tomcat] 창이 표시될 때 경고창이 표시되면
+       [차단 해제]를 클릭한다.
+    ⑧ 웹 브라우저의 주소 입력란에 ‘http://127.0.0.1:8085/’ 을 입력하여 웹 페이지가 나타나면 제대로 설치된 것이다.
+    ⑨ 톰캣 서비스를 종료하려면 탐색기에서 톰캣 설치드라이브의 [apache-tomcat-8.0.32]-[bin] 폴더에서 shutdown.bat
+       파일을 더블클릭한다.
+
+       
+이클립스에서 톰캣 서버 연동
+    ① 서버를 설정하기 위해 이클립스를 실행시킨 후 [File]-[New]-[Other] 메뉴를 선택한다.
+    ② [New] 대화상자가 나타나면 스크롤바를 내려 [Server]의 하위 항목인 [Server] 항목을 선택하고 
+       [Next] 버튼을 클릭한다. 이것은 서버 설정을 작성하기 위한 것이다.
+    ③ [New Server] 대화상자가 표시되고 [Define a New Server] 화면으로 진행하면, [Apache] 항목의 
+       [Tomcat v8.0 Server]를 선택한 후 [Next] 버튼을 클릭한다. 여기서는 작성할 서버의 종류에 대해서 설정을 실행하는
+       것으로 나머지는 기본 값을 그대로 사용한다.
+    ④ [Tomcat Server] 화면이 표시되는데, 여기서는 선택한 서버의 종류에 따른 설정이 표시된다.
+       사용하는 Tomcat 서버에 대하여 다음과 같은 항목을 설정한다. 설정한 후에는 [Next] 버튼을 클릭한다.
+       Name : 설정할 이름을 입력하는데, 기본적으로 서버명과 버전이 그대로 지정된다. 기본 값을 그대로 사용한다.
+       Tomcat installation directory : 사용하는 Tomcat 서버가 설치되어 있는 폴더의 경로를 지정한다. 
+       오른쪽의 [Browse] 버튼을 클릭하여 지정한다. 
+       [폴더 찾아보기] 대화상자에서 톰캣 홈을 선택한 후 [확인] 버튼을 클릭한다.
+       JRE : 설치된 JRE에서 어떤 JRE를 사용해서 서버를 실행할지를 지정한다. 여기서는 기본 값을 그대로 사용한다.
+       [Next] 버튼을 클릭한다.
+    ⑤ [Available] 항목의 [Myjsp] 프로젝트를 선택한 후 [Add] 버튼을 클릭하여 [Configured] 항목에 추가한다.
+    ⑥ [Myjsp] 프로젝트가 추가된 것을 확인한 후 [Finish] 버튼을 클릭한다.
+    ⑦ 이것으로 Tomcat v8.0 Server가 이클립스에 등록되는데, 이것은 [Project Explorer] 뷰에서 확인할 수 있다.
+    ⑧ 또한 하단의 [Servers] 뷰에도 표시되는 톰캣 서버에 [Myjsp] 프로젝트가 등록되어 있는 것을 확인할 수 있다.
+    ⑨ 오라클과의 포트 충돌을 피하기 위하여 server.xml 파일을 열어
+       <Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/>
+       이 부분의 8080포트를 사용하지 않는 8085로 바꿔준다.
+
+    * 이미 Server가 설치 및 설정이 되어 있는 경우에는 프로젝트를 추가만 하면 됨
+      - 하단의 [Servers] 뷰에서 톰캣 서버 우클릭 > Add and remove > [Available] 항목의 [Myjsp] 프로젝트를 
+        선택한 후 [Add] 버튼을 클릭하여 [Configured] 항목에 추가한다.
+    
+    * The superclass "javax.servlet.http.HttpServlet" was not found on the Java Build Path 에러 발생시 조치
+        1. 프로젝트 이름에서 마우스 우측 버튼을 클릭한 후 메뉴 중 Properties를 클릭한다.
+        2. 메뉴에서 Project Facets를 클릭 후 Runtimes 탭을 클릭하면 내가 설정한 웹 서버가 목록에 출력된다.
+        3. 실행할 웹 서버의 체크박스가 선택되어 있지 않으므로, 체크 박스를 선택한 후 확인을 클릭
+   
+
+basic.html를 실행해 보기
+    이클립스에서 실행 : Run As > Run on Server로 실행
+    웹브로우저 실행   : 주소창에 http://localhost:8085/Myjsp/basic.html 입력
+    
+   
+index.jsp 작성(에러 발생시 조치)
+    이클립스 프로젝트에서 JSP 페이지는 [프로젝트]-[WebContent] 폴더에 생성한다.
+    ① [Project  Explorer] 뷰에서 [Myjsp] 프로젝트의 [WebContent] 폴더에서 마우스 오른쪽 버튼을 클릭하여
+       [New]-[JSP File] 메뉴를 선택한다.
+    ② [New JSP File] 대화상자가 나타나면 [Myjsp] 프로젝트의 [WebContent]를 선택한 후
+       [File name]에 index.jsp를 입력하고 [Next] 버튼을 클릭한다.
+    ③ [New JSP File] 대화상자의 [Select JSP Template] 화면에서‘New JSP File (html5)’를 선택하고
+       [Finish] 버튼을 클릭한다.
+    ④ The superclass "javax.servlet.http.HttpServlet" was not found on the Java Build Path 에러 발생시 조치
+        1. 프로젝트 이름에서 마우스 우측 버튼을 클릭한 후 메뉴 중 Properties를 클릭한다.
+        2. 메뉴에서 Project Facets를 클릭 후 Runtimes 탭을 클릭하면 내가 설정한 웹 서버가 목록에 출력된다.
+        3. 실행할 웹 서버의 체크박스가 선택되어 있지 않으므로, 체크 박스를 선택한 후 확인을 클릭하면 오류가 사라진다.
+    ⑤ 이클립스와 웹브로우저에서 실행
+    
+    
+톰캣 기반에서의 한글 처리
+    1.서버에서 웹 브라우저로 응답되는 페이지의 화면 출력시 한글 처리
+        <%@ page contentType="text/html; charset=utf-8" %>
+        서버에서 웹 브라우저로 응답되는 페이지를 화면에 출력할 때 한글이 깨지지 않도록 한 한글 처리이다.
+        필수적으로 모든 페이지에 반드시 해주어야 한다.
+
+    2.웹 브라우저에서 서버로 보내는 파라미터 값에 한글이 있는 경우(Post방식) 한글 처리
+        <% request.setCharacterEncoding("utf-8"); %> 폼에 데이터를 입력하여 데이터 값을 파라미터로 웹 서버로 넘겨서
+        처리하는 한글 처리 코드이다. 웹 브라우저에서 서버로 넘어오는 파라미터 값에 있는 한글을 처리해 주지 않으면,
+        깨진 한글을 그대로 받아들여 처리하기 때문에 웹 브라우저에 깨진 한글이 그대로 표시된다. 입력이 깨진 한글이면
+        출력도 깨진 한글인 것이다. 폼으로부터 파라미터를 넘겨받는 페이지에는 반드시 위의 코드를 작성해야 한다.
+
+    3.웹 브라우저에서 서버로 넘어오는 파라미터 값에 한글이 있는 경우(Get 방식) 한글 처리
+        폼에 데이터를 입력하여 데이터 값을 파라미터로 웹 서버로 넘겨서 처리할 때 method가
+        get 방식으로 넘어오는 경우 <% request.setCharacterEncoding("utf-8"); %>  코드를 기입해도 한글이 깨진다.
+        이 경우 한글을 깨지지 않게 하려면 두 곳에 위치한 server.xml 파일의 한글 인코딩을 지정해야한다.
+
+    (1) [Servers]-[Tomcat v8.0 Server at localhost-config] 항목의 server.xml 파일에 한글 인코딩 지정
+        ① [Project  Explorer] 뷰에서 [Servers]-[Tomcat v8.0 Server at localhost-config] 항목에 있는 server.xml
+           파일을 더블클릭한다.
+        ② [Source] 탭을 선택한다.
+        ③ port번호가 8085인 <Connector>에 URIEncoding="UTF-8"을 추가한 후 저장한다.
+        <Connector connectionTimeout="20000" port="8085" protocol="HTTP/1.1" redirectPort="8443" URIEncoding="UTF-8"/>
+
+    (2) 실제 서비스하는 환경인 톰캣홈\conf 폴더에 있는 server.xml 파일에 한글 인코딩 지정
+        ① 탐색기를 실행하여 [톰캣홈]-[conf] 폴더에 있는 server.xml 파일을 연다
+        ② port 번호가 8085인 <Connector>에 URIEncoding="UTF-8"을 추가한 후 저장한다.
+           추가 위치는 apache-tomcat-8.0.32의 경우 [apache-tomcat-8.0.32]-[conf] 폴더에서
+           server.xml 파일의 70라인 정도(메모장 또는 EditPlus에서 수정 시)에 아래와 같이 추가하면 된다.
+           <Connector port="8085" protocol="HTTP/1.1"
+                   connectionTimeout="20000"
+                   redirectPort="8443"
+                   URIEncoding="UTF-8" />
+        한글이 안정적으로 표시되기 위해서는 이클립스의 server.xml과 [apache-tomcat-8.0.32]-[conf] 폴더의 server.xml
+        파일에 모두 URIEncoding="UTF-8"을 추가한다.
+        
+
+다음 파일을 [apache-tomcat-8.0.32]-[lib] 또는 [Myjsp]-[WebContent]-[WEB-INF]-[lib] 폴더에 복사한다.
+
+    ojdbc6.jar
+    standard.jar
+    jstl.jar
+===================================================================

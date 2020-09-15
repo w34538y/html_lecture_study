@@ -1,0 +1,304 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL 입문:인터페이스 정의의 기술 - xrath.com 에서 번역됨</TITLE>
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+
+<H1 ALIGN=CENTER>Java IDL 입문:<BR>인터페이스 정의의 기술</H1>
+<HR>
+
+
+
+<P><strong>주:</strong>  모든 커멘드와 트러블 슈팅의 지시는, Java 2 Platform, Standard Edition 버젼 1.4 및 그 버젼의 <TT>idlj</TT> 에만 적용됩니다.
+
+<P>Java IDL 를 사용하기 전에, 버젼 1.4 의 J2SE 를 인스톨 할 필요가 있습니다. J2SE v1. 4 에는,<TT>idlj</TT> 컴파일러와 같게, CORBA 베이스의 분산 객체의 개발을 가능하게 하기 위해서 필요한 Application Programming Interface (API) 및 Object Request Broker (ORB)가 있습니다. <TT>idlj</TT> 컴파일러는, IDL-to-Java 언어 매핑을 사용해 IDL 인터페이스 정의를 대응하는 Java 인터페이스, 클래스, 메소드로 변환합니다. 다음에, 이것들을 사용해 클라이언트와 서버 코드를 구현할 수가 있습니다.
+
+
+<P>여기에서는, 간단한 IDL 인터페이스 정의의 기술 방법과 IDL 인터페이스를 Java 에 번역하는 방법을 배웁니다. 또,<TT>idlj</TT> 컴파일러에 의해 생성되는 각 파일의 목적도 설명합니다.
+
+<P>여기에서는, 다음의 항목에 대해 설명합니다.
+
+<OL>
+<LI><A href="#writing"><TT>Hello.idl</TT> 의 기술</A> 
+<LI><A href="#understand">IDL 파일의 이해</A> 
+<LI><A href="#compiling"><TT>Hello.idl</TT> 의 IDL 로부터 Java 에의 매핑</A> 
+<LI><A href="#understanding">idlj 컴파일러의 출력의 이해</A> 
+</OL>
+
+
+
+<A name="writing">
+<H2><TT>Hello.idl</TT> 의 기술</H2></A> 
+
+<TT>Hello.idl</TT> 파일을 작성하려면 , 다음과 같이 합니다.  
+<OL>
+
+<LI>이 어플리케이션용으로 <TT>Hello</TT> 라는 이름의 새로운 디렉토리를 작성합니다. <P>
+<LI>임의의 텍스트 문자 편집기를 기동해, 이 디렉토리에 <TT>Hello.idl</TT> 라는 이름의 파일을 작성합니다. <P>
+
+<LI>작성한 파일 <STRONG>Hello.idl</STRONG> 에, 인터페이스의 정의를 위해서(때문에) 다음의 코드를 입력합니다.
+<P>
+<pre>
+module HelloApp
+{
+  interface Hello
+  {
+    string sayHello();
+    oneway void shutdown();
+  };
+};
+</pre>
+
+<LI>파일을 보존합니다.  
+</OL>
+
+
+
+<a name="understand"></a> 
+<h2>IDL 파일의 이해</h2>
+
+<P>OMG IDL 는, 클라이언트 객체에 의해 불려 가고 객체 구현에 의해 제공되는, 인터페이스의 기술에 사용되는 언어입니다. 인터페이스 정의를 OMG IDL 로 기술하면(자), 인터페이스를 완전하게 정의해, 각 오퍼레이션의 파라미터를 완전하게 지정할 수가 있습니다. OMG IDL 인터페이스에는, 그 인터페이스의 오퍼레이션을 사용하는 클라이언트를 개발하기 위해서 필요한 정보가 모두 준비되어 있습니다.
+
+<P>클라이언트는, OMG IDL 로부터의 매핑이 정의되고 있는 언어로 기술됩니다. OMG IDL 로부터 클라이언트의 언어 구조에의 매핑은, 클라이언트의 언어에 준비되어 있는 기능에 따라서 다릅니다. OMG 에서는 IDL 로부터 다른 언어에의 매핑을 지정하고 있습니다. 이러한 언어에는 C, C++, Smalltalk, COBOL, Ada, Lisp, Python, 및 Java 가 있습니다. OMG IDL 의 구문을 매핑 하면(자), 선택한 프로그램 언어의 대응하는 구문으로 번역됩니다.  
+
+<P>예를 들어,<TT>idlj</TT> 툴을 사용하면(자), IDL 인터페이스를 Java 에 매핑 해<A  href="../jidlGlossary.html#client">클라이언트 </a>클래스를 구현할 수 있습니다. 다음에 같은 IDL 를 C++ 에 매핑 해, C++ 로<A href="../jidlGlossary.html#server">서버</a>를 구현하면(자),Java 클라이언트 (Java <A href="../jidlGlossary.html#ORB">ORB</A>  를 개입시켜)와 C++ 서버 (C++ORB 를 개입시켜)는, 동일한 언어로 기술되었을 경우와 같게 서로 교환을 할 수 있습니다.
+
+<P>「Hello World」의 IDL 는, 1 개의 인터페이스에 오퍼레이션이 2 개만이라고 한다, 매우 간단한 것입니다. 다음의 3 스텝에서 완성합니다.
+
+<OL>
+<LI><A href="#module">모듈의 선언</A> 
+<LI><A href="#interface">인터페이스의 선언</A> 
+<LI><A href="#operations">오퍼레이션의 선언</A> 
+</OL>
+
+<A name="module">
+<H3>모듈의 선언</H3></A> 
+
+<P>CORBA 모듈은, 관련하는 인터페이스와 선언의 컨테이너의 역할을 완수하는<A  href="../jidlGlossary.html#namespace">이름 공간</a>입니다. 이 모듈은, Java 패키지와 엄밀에 대응하고 있습니다. IDL 파일내의 각 모듈문은, 각각 1 개의 Java 패키지문에 매핑 됩니다.
+
+<P>모듈문의 예를 나타냅니다.  
+<pre>
+module HelloApp
+{
+    // Subsequent lines of code here.
+};
+</pre>
+
+<P>IDL 를 컴파일 하면(자), 이 모듈문으로부터 package 문이 Java 코드로 생성됩니다.
+
+
+
+<A name="interface">
+<H3>인터페이스의 선언</H3></A> 
+
+<P>Java 인터페이스와 같게, CORBA 인터페이스는, 어느 객체가 다른 객체에 대해서 가지는 API 규약을 선언합니다. IDL 의 인터페이스문은 각각 Java 인터페이스문에 매핑 됩니다.  
+
+<P><TT>Hello.idl</TT> 파일에서는, 인터페이스문은 다음과 같이 됩니다.
+<pre>
+module HelloApp
+{
+  interface Hello  // These lines
+  {                // declare the 
+                   // interface
+  };               // statement.
+};
+</pre>
+
+<P>IDL 를 컴파일 하면(자), 이 문장으로부터 인터페이스문이 Java 코드로 생성됩니다.  
+
+
+
+<A name="operations">
+<H3>오퍼레이션의 선언</H3></A> 
+
+<P>CORBA 의<A href="../jidlGlossary.html#operation,(IDL)">오퍼레이션</a>은, 서버가, 그 서버를 호출한 클라이언트에 대신해 실행하는 동작입니다. IDL 의 각 오퍼레이션문으로부터, 대응하는 Java 인터페이스의 메소드문이 생성됩니다.
+
+<P><TT>Hello.idl</TT> 파일에서는, 오퍼레이션문은 다음과 같이 됩니다.
+<pre>
+module HelloApp
+{
+  interface Hello
+  {
+    string sayHello();        // This line is an operation statement.
+    oneway void shutdown();   // This line is another
+  };
+};
+</pre>
+
+이것으로, 작은 「Hello World」어플리케이션의 인터페이스 선언이 완성했습니다.  
+
+
+<A name="compiling">
+<H2><TT>Hello.idl</TT> 로부터 Java 에의 매핑</H2></A> 
+
+<P><code>idlj</code> 툴은 OMG IDL 파일을 읽어들여, 필요한 Java 파일을 작성합니다. <TT>idlj</TT> 컴파일러는, 디폴트로 클라이언트측의 바인딩만을 생성합니다. 클라이언트측의 바인딩과 서버측의 스켈리턴의 양쪽 모두가 필요한 경우 ( 「Hello World」프로그램과 같이),<TT>idlj</TT> 컴파일러를 실행할 경우에,<TT><strong>-fall</strong></TT> 옵션을 사용할 필요가 있습니다. <A HREF =  "../../../tools/share/idlj.html">IDL-to-Java 컴파일러의 옵션</a>의 자세한 것은, 링크를 참조해 주세요.
+
+<P><EM>J2SE v1. 4 의 신기능:</EM><tt>-fall</tt> 또는 <tt>-fserver</tt> 의 어느 쪽인가의 인수가 사용될 때 생성되는 디폴트의 서버측 매핑은, CORBA 2.3. 1 스펙의 제 11 장 「POA (Portable Object Adapter)」(<a  href="http://cgi.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )에 준거하고 있습니다. <em></em>POA 의 상세한 것에 대하여는,<a href="../POA.html">「Portable Object Adapter」</a>를 참조해 주세요.
+
+<P>POA (Portable Object Adaptor)를 사용하는 이점은, 다음과 같습니다.
+<P>
+<UL>
+<LI>프로그래머가, 다른 ORB 제품간에 이식 가능한 객체 구현을 구축할 수 있도록(듯이) 한다
+<LI>지속성이 있는 식별 정보를 가지는 객체를 지원한다
+<LI>객체가 투과적으로 기동하도록(듯이) 지원한다
+<LI>단독의 서번트가 각각 식별되는 복수의 객체를 동시에 지원할 수 있도록(듯이) 한다
+</UL>
+<OL>
+<LI><tt>jdk/bin</tt> 디렉토리 (또는 <tt>idlj</tt>,<tt>java</tt>,<tt>javac</tt>, 및 <tt>orbd</tt> 를 포함하고 있는 디렉토리)가 실행 패스에 포함되어 있는 것을 확인합니다.
+<P>
+<LI>커멘드행 prompt가 표시되고 있는 상태로 합니다. <P>
+<LI><TT>Hello.idl</TT> 파일이 있는 디렉토리로 이동합니다. <P>
+<LI>컴파일러의 커멘드를 입력합니다.  
+<pre>   
+	idlj -fall Hello.idl
+</pre>
+</OL>
+
+<P>디렉토리의 내용을 일람표 가리켜 보세요. <TT>HelloApp</TT> 라는 이름의 디렉토리가 작성되어 그 중에 6 개의 파일이 보존되고 있는 것을 알 수 있습니다. 텍스트 문자 편집기로 <TT>Hello.java</TT> 를 엽니다. <TT>Hello.java</TT> 는<em>시그니챠인타페스</em>로, 지정된 형태의 인터페이스가 다른 인터페이스로 사용되는 경우에, 메소드 선언으로 시그니챠형으로서 사용됩니다. 다음과 같이 됩니다.
+<pre>
+//<strong>Hello.java</strong>
+package HelloApp;
+
+
+/**
+* HelloApp/Hello.java
+* Generated by the IDL-to-Java compiler (portable), version "3.0"
+* from Hello.idl
+*/
+
+public interface Hello extends HelloOperations, org.omg.CORBA.Object, 
+org.omg.CORBA.portable.IDLEntity 
+{
+} // interface Hello
+
+</pre>
+
+<P>이 인터페이스는 간단해서, IDL 문이 생성된 Java 문에 어떻게 매핑 되고 있을지를 잘 압니다.  
+
+<P><TABLE summary="mapping IDL statements to Java statements" cellspacing=5 cellpadding=5>
+<Thead>
+<TH ALIGN=left>IDL 문</TH>
+<TH ALIGN=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TH>
+<TH ALIGN=left>Java 문</TH>
+
+
+<TR>
+<TD><TT>module HelloApp</TT></TD>
+<TD><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT></TD>
+<TD><TT>package HelloApp;</TT></TD>
+</TR>
+
+<TR>
+<TD><TT>interface Hello</TT></TD>
+<TD><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT></TD>
+<TD><TT>public interface Hello</TT></TD>
+</TR>
+
+
+</TABLE>
+
+<P><TT>extends</TT> 문에 주목해 주세요. 필요한 CORBA 기능을 확실히 갖추기 위해서(때문에), 모든 CORBA 객체는 <TT>org.omg.CORBA.Object</TT> 로부터 파생하고 있습니다. 필요한 코드는 <TT>idlj</TT> 에 의해 생성됩니다. 사용자가 매핑을 실시할 필요는 없습니다.
+
+<P>이전의 버젼의 <TT>idlj</TT> 컴파일러 (<TT>idltojava</TT> 라고도 불린다)에서는, IDL 인터페이스로 정의되는 오퍼레이션도 이 파일에 있습니다. J2SDK v1. 3.0 으로부터, IDL-to-Java 매핑은, CORBA 2.3. 1 스펙 (<a  href="http://cgi.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )에 따라, IDL 인터페이스로 정의되는 모든 오퍼레이션을<em>오퍼레이션 인터페이스</em>의 <TT>HelloOperations.java</TT> 에 기술하고 있습니다. 오퍼레이션 인터페이스는, 서버측 매핑으로 사용되어 같은 장소에 있는 클라이언트와 서버에 최적화된 호출을 제공하는 기구로서 사용됩니다. <TT>Hello.idl</TT> 에서는, 이 파일은 다음과 같이 됩니다.
+<pre>
+//<strong>HelloOperations.java</strong>
+package HelloApp;
+
+
+/**
+* HelloApp/HelloOperations.java
+* Generated by the IDL-to-Java compiler (portable), version "3.0"
+* from Hello.idl
+*/
+
+public interface HelloOperations 
+{
+  String sayHello ();
+  void Shutdown ();
+} // interface HelloOperations
+
+</pre>
+
+<P>이 인터페이스에 정의되고 있는 오퍼레이션은 2 개 뿐이므로, 생성된 Java 문에 어떻게 IDL 문이 매핑 되고 있는지를 간단하게 압니다.  
+<P><TABLE summary="mapping IDL statements to Java statements" cellspacing=5 cellpadding=5>
+<Thead>
+<TH ALIGN=left>IDL 문</TH>
+<TH ALIGN=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TH>
+<TH ALIGN=left>Java 문</TH>
+
+
+<TR>
+<TD><TT>string sayHello();</TT></TD>
+<TD><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT></TD>
+<TD><TT>String sayHello();</TT></TD>
+</TR>
+
+<TR>
+<TD><TT>oneway void shutdown();</TT></TD>
+<TD><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT></TD>
+<TD><TT>void Shutdown ();</TT></TD>
+</TR>
+</TABLE>
+
+
+<A name="understanding">
+<H2><tt>idlj</tt> 컴파일러의 출력의 이해</H2></A> 
+
+<P><TT>idlj</TT> 컴파일러에서는 다수의 파일이 생성됩니다. 실제로 생성되는 파일의 수는, IDL 파일의 컴파일시에 선택된 옵션에 따라서 다릅니다. 생성된 파일에는 표준의 기능이 있으므로, 프로그램을 배치해 실행할 때까지는 무시해도 괜찮습니다. J2SE v1. 4 에서는,<TT>idlj</TT> 컴파일러가 <TT><strong>-fall</strong></TT> 커멘드행 옵션을 지정했을 때에 생성하는 <TT>Hello.idl</TT> 파일은 다음과 같습니다.  
+
+<UL>
+<LI><TT>HelloPOA.java</TT>
+<P>이 추상 클래스는, 스트림 베이스의<A href="../jidlGlossary.html#server%20skeleton">서버 스켈리턴</a>으로, 서버용으로 기본적인 CORBA 기능을 제공합니다. 이것은 <a href="../../../../api/org/omg/PortableServer/Servant.html"><tt>org.omg.PortableServer.Servant</tt></A> </A>  를 상속해,<tt>InvokeHandler</tt> 인터페이스와 <tt>HelloOperations</tt> 인터페이스를 구현합니다. 서버 클래스의 <TT>HelloServant</TT> 는,<TT>HelloPOA</TT> 를 상속합니다.   
+<P>
+<LI><TT>_HelloStub.java</TT>
+<P>이 클래스는<A href="../jidlGlossary.html#client%20stub">「클라이언트 Stub」</a>로, 클라이언트용으로 기본적인 CORBA 기능을 제공합니다. 이것은 <tt>org.omg.CORBA.portable.ObjectImpl</tt> 를 상속해,<TT>Hello.java</TT> 인터페이스를 구현합니다.
+<P>
+<LI><TT>Hello.java</TT>
+<P>이 인터페이스에는 작성한 IDL 인터페이스의 Java 판이 포함됩니다. Hello.java</TT> 인터페이스는 표준적인 CORBA 객체 기능을 주는 <TT>org.omg.CORBA.Object</TT> 인터페이스를 상속합니다. 또 <tt>HelloOperations</tt> 인터페이스 및 <TT>org.omg.CORBA.portable.IDLEntity</TT> 도 상속합니다.
+<P>
+<LI><TT>HelloHelper.java</TT>
+<P>이 클래스는 보조적인 기능을 제공합니다. 특히, CORBA <A href="../jidlGlossary.html#object%20reference">객체 참조</a>를 적절한 형태로 변환하기 위한 <TT>narrow()</TT> 메소드는 중요한 역할을 완수합니다. 헬퍼 클래스는, CORBA 스트림에의 데이터형의 읽고 쓰기, 및 <tt>Any</tt> 로부터의 데이터형의 삽입 및 추출을 담당합니다.  Holder 클래스는 Helper 클래스의 메소드에 입출력을 위양 합니다.
+<P>
+<LI><TT>HelloHolder.java</TT>
+<P>이 final 클래스에는,<TT>Hello</TT> 형의 퍼블릭 인스턴스 멤버가 들어옵니다. IDL 형의 파라미터가 <tt>out</tt> 또는 <tt>inout</tt> 이면 Holder 클래스가 사용됩니다. 여기에서는,<TT>org.omg.CORBA.portable.OutputStream</TT> 및 <TT>org.omg.CORBA.portable.InputStream</TT> 인수에 대한 오퍼레이션이 규정됩니다. 이러한 인수는 CORBA 에는 존재합니다만, Java 의 시멘틱스에는 간단하게 매핑 할 수 없습니다. Holder 클래스는 Helper 클래스의 메소드에 입출력을 위양 합니다. Holder 클래스는 <tt>org.omg.CORBA.portable.Streamable</tt> 를 구현합니다.  
+<P>
+<LI><TT>HelloOperations.java</TT>
+<P>이 인터페이스에는 <TT>sayHello()</TT> 메소드 및 <tt>shutdown()</tt> 메소드가 포함됩니다. IDL-to-Java 매핑은, IDL 인터페이스로 정의된 오퍼레이션을 모두 이 파일에 짜넣어, Stub와 스켈리턴으로 공유합니다.
+</UL>
+
+<P>IDL 인터페이스를 기술할 때는, 목적의 분산형 어플리케이션에 필요한 모든 파일이 생성되도록(듯이) 프로그램을 기술합니다. 다음의 스텝에서는, 클라이언트 클래스 및 서버 클래스를 구현합니다. 그 후의 스텝에서는,<a href="GSapp.html"><TT>HelloClient.java</TT></a>  클라이언트 클래스 및 <a href="GSserver.html"><TT>HelloServer.java</TT></a>  서버 클래스를 작성합니다.
+
+<A name="trouble">
+<H2>트러블 슈팅</H2></A> 
+
+<UL>
+<LI>에러 메세지:"idlj" not found
+<P><TT>Hello.idl</TT> 에 대해서 <TT>idlj</TT> 를 실행하려고 했을 때에,<TT>idlj</TT> 가 발견되지 않았습니다. 대부분의 경우, 실행 패스에 존재하지 않는 것이 원인입니다. <TT>idlj</TT> (J2SDK v1. 4 <TT>bin</TT> 디렉토리)가 실행 패스에 포함되어 있는 것을 확인하고 나서 다시 해 주세요.
+</UL>
+
+
+<A name="info">
+<H2>상세 정보</H2></A> 
+
+<UL>
+
+<LI><A href="../mapping/jidlMapping.html#overview"">IDL 와 Java 언어의 매핑의 개요</A>  
+
+<p>IDL 의 구조를 대응하는 Java 문에 매핑 하는 처리의 기본 정보에 대해 설명하고 있습니다. <p> <LI>OMG CORBA 2.3. 1 스펙 (formal/99-10-07)의 제 3 장 <p>OMG 인터페이스 정의 언어의 완전한 스펙을 규정하고 있습니다. 이 문서의 집필 시점에서는, 스펙은 <a href="http://cgi.omg.org/cgi-bin/doc?formal/99-10-07">http://cgi.omg.org/cgi-bin/doc? formal/99-10-07</a>  로부터 다운로드할 수 있습니다.
+
+</ul>
+
+
+<P><HR> <CENTER><P><A href="GSserver.html">다음의 레슨 :Hello World 서버의 개발</A>  <BR> <A href="../GShome.html">전의 레슨 :Java IDL 입문</A>  <BR> 
+
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4> <TR> <TD ALIGN=CENTER><A href="../index.html"> Java IDL 탑에</A> </TD> </TR></TABLE></CENTER>
+
+
+<CENTER><FONT SIZE="-2"><A HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A>  2001 Sun Microsystems, Inc., 901 San Antonio Rd., Palo Alto, CA. 94303-4900, USA., All rights reserved. </FONT></CENTER> <P> </BODY> </HTML>
+
+

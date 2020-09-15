@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>트러블 슈팅 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#000077"
+ alink="#ff0000">
+<h2>트러블 슈팅</h2>
+<blockquote>
+<p>다음에, 로그인 실행시에 발생할 가능성이 있는 문제, 및 그 해결 방법에 관한 제안을 제시합니다.
+  </p>
+  <ul>
+  
+<li><b>구성 가능한 Kerberos 설정:</b><br><br>
+  
+<div style="margin-left:32pt;">
+Kerberos Key Distribution Center (KDC)의 이름과 레룸 설정은, Kerberos 구성 파일에 의해 지정되는지, 시스템 프로퍼티 <code>java.security.krb5.kdx </code> 및 <code>java.security.krb5.realm. </code> (을)를 개입시켜 지정됩니다. 전의 릴리스에서는, Kerberos 구성치에의 변경은, 어플리케이션이 재기동되었을 경우에게만 유효하게 되었습니다. <br> <br>
+
+JDK 1.4. 2 릴리스 이후에서는, JAAS 구성 파일의 <code>Krb5LoginModule</code> 에의 엔트리에, 새로운 boolean 형 옵션 <code>refreshKrb5Config</code> 를 지정할 수 있습니다. 이 옵션이 <code>true</code> 로 설정되어 있는 경우는,<code>Krb5LoginModule</code> 의 login 메소드가 불려 가기 전에, 구성치가 재표시됩니다. <br> <br>
+
+<b>주:</b>&nbsp;Kerberos 구성을 변경하는 경우,<code>refreshKrb5Config</code> 를 <code>true</code> 로 설정할 필요가 있습니다. 이 값을 설정하지 않으면 예기치 않은 결과가 발생하는 일이 있습니다.
+</div>
+</li><br>
+
+<li> <b>java.lang.SecurityException at javax.security.auth.login.Configuration.getConfiguration</b>
+      <blockquote>
+<p> <i>원인</i>:JAAS 로그인 구성 파일의 처리로 문제가 발생했습니다. 원인은, 파일내의 구문 에러라고 생각됩니다.  </p>
+<p> <i>해결법</i>:구성 파일에 잘못이 없는지, 주의 깊게 확인합니다. 로그인 구성 파일에 필요한 구문의 자세한 것은,<a href="LoginConfigFile.html">「JAAS 로그인 구성 파일」</a>을 참조해 주세요.
+        </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>javax.security.auth.login.LoginException:KrbException:Pre-authentication information was invalid (24) - Preauthentication failed</b>
+      <blockquote>
+<p> <i>원인 1</i>: 입력된 패스워드가 무효입니다.  </p>
+        <p></p>
+<p> <i>해결법 1</i>:패스워드를 확인합니다.  </p>
+<p> <i>원인 2</i>:열쇠의 취득에 키 탭을 사용하고 있는 경우 (JAAS 로그인 구성 파일의 Krb5LoginModule 엔트리로,<code>useKeyTab</code> 옵션을 <code>true</code> 로 설정하는 등), 키 탭의 갱신 후로 열쇠가 변경된 가능성이 있습니다.  </p>
+<p> <i>해결법 2</i>:Kerberos 문서를 참조해 신규 keytab 를 생성해, 그 키 탭을 사용합니다.
+        </p>
+<p> <i>원인 3</i>: clock skew - KDC 상의 시간과 클라이언트상의 시간이 크게 다른 경우 (일반적으로은 5 분 ), 에러가 반환되는 일이 있습니다.
+        </p>
+<p> <i>해결법 3</i>:클락을 동기 시킵니다 (또는 시스템 관리 책임자에 동기를 의뢰). <br><br><a name="realmname"></a> <br> <a name="realmname"></a>  <i>원인 4:</i> Kerberos 영역명이 모두 대문자가 되어 있지 않습니다.
+        <p>
+<span style="font-style: italic;">해결법 4</span>:Kerberos 영역명을 모두 대문자로 합니다. <br>
+<B>주</B> -모두 대문자의 영역명을 사용하도록(듯이) 추천 되고 있습니다. 상세한 것에 대하여는, 이 튜토리얼의<a href="KerberosReq.html#realmnamereqs">「영역명과 호스트명의 명명 규칙」</a>을 참조해 주세요.
+        </p>
+      </blockquote>
+    </li>
+<li> <b>GSSException:No valid credentials provided (Mechanism level:Attempt to obtain new INITIATE credentials failed!  (null)) .  .  .  Caused by:javax.security.auth.login.LoginException:Clock skew too great</b>
+      <blockquote>
+<p> <i>원인</i>:Kerberos 는 KDC 의 클락과 클라이언트의 클락이 거의 동기 하고 있는 것을 요구합니다. 디폴트는 5 분 이내입니다. 동기 하고 있지 않는 경우, 에러가 발생합니다.  </p>
+<p> <i>해결법</i>:클락을 동기 시킵니다 (또는 시스템 관리 책임자에 동기를 의뢰).
+        </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>javax.security.auth.login.LoginException:KrbException:Null realm name (601) - default realm not specified </b>
+      <blockquote>
+<p> <i>원인</i>:Kerberos 구성 파일 <code>krb5.conf</code> 내에서, 사용자명의 일부를 구성하는 디폴트 영역이 지정되고 있지 않습니다 (Kerberos 구성 파일을 사용하는 경우). 또는, 디폴트 영역이,<code>java.security.krb5.realm</code> 시스템 프로퍼티으로 지정되고 있지 않습니다.
+        </p>
+<p> <i>해결법</i>:Kerberos 구성 파일내 (사용하는 경우)에 디폴트 영역을 지정하는 엔트리가 포함되어 있는지 어떤지를 확인합니다. 또는,<code>java.security.krb5.realm</code> 시스템 프로퍼티치에 디폴트 영역을 직접 지정해, Kerberos 에 의한 인증시에 이것을 사용자명에 포함합니다.  </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>javax.security.auth.login.LoginException:java.net.SocketTimeoutException:Receive timed out</b>
+      <blockquote>
+<p> <i>해결법</i>:Kerberos KDC 가 기동이 끝난 상태로, 가동중인 것을 확인합니다.
+        </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>GSSException:No valid credentials provided (Mechanism level:Failed to find any Kerberos Ticket)</b>
+      <blockquote>
+<p> <i>원인</i>:유효한 Kerberos 쿠레덴샤르의 취득을 하지 않은 경우, 이 에러가 발생합니다. 특히, 기반이 되는 기구로 자격의 취득을 실시할 예정이었는데,<code>javax.security.auth.useSubjectCredsOnly</code> 시스템 프로퍼티치를 <code>false</code> 로 설정하는 것 (예를 들어, 실행 커멘드에 <code>-Djavax.security.auth.useSubjectCredsOnly=false</code> 를 포함해)를 잊어 버렸을 경우, 이 에러가 발생합니다.  </p>
+<p> <i>해결법</i>:JAAS 를 사용해 인증을 실행하는 어플리케이션이나 래퍼 프로그램 (이 시리즈의 튜토리얼로 사용한 Login 유틸리티등)은 아니고, 기반이 되는 기구로 자격의 취득을 실시하는 경우,<code>javax.security.auth.useSubjectCredsOnly</code> 시스템 프로퍼티치를 확실히 <code>false</code> 로 설정합니다.
+        </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>javax.security.auth.login.LoginException:Could not load configuration file &lt;krb5.conf&gt;  (No such file or directory)</b>
+      <blockquote>
+<p> <i>원인</i>:튜토리얼의 샘플 실행 커멘드는,<code>java.security.krb5.realm</code> 및 <code>java.security.krb5.kdc</code> 시스템 프로퍼티의 값을 설정하는 것으로써, 디폴트의 Kerberos 영역 및 KDC 를 지정합니다. 필요에 따라서, 이러한 시스템 프로퍼티 대신에, Kerberos 구성 파일 <code>krb5.conf</code> 를 사용할 수 있습니다. Kerberos 구성 파일에는, 디폴트 영역 및 KDC 의 정보가 포함됩니다. <code>krb5.conf</code> 파일을 사용하려면 , 시스템 프로퍼티 <code>java.security.krb5.conf</code> 를 (<code>realm</code> 및 <code>kdc</code> 프로퍼티 대신에) 사용해 파일의 위치를 지정합니다. 이러한 프로퍼티이 모두 설정되어 있지 않은 경우, 디폴트 위치에서 <code>krb5.conf</code> 파일의 검출이 시도됩니다. 파일이 발견되지 않는 경우, 「Could not load configuration file &lt;krb5.conf&gt;  (No such file or directory)」라고 하는 에러가 표시됩니다.
+        </p>
+<p> <i>해결법</i>:Kerberos 구성 파일 <code>krb5.conf</code> 가, 이용 가능한 동시에 읽어내 가능한 것을 확인합니다. <code>krb5.conf</code> 파일의 위치 지정 방법, 및 위치를 명시적으로 지정하지 않는 경우의 디폴트 검색 위치에 대해서는,<a  href="KerberosReq.html">「Kerberos 요건」</a>을 참조해 주세요.
+        </p>
+      </blockquote>
+      <p>
+      </p>
+    </li>
+<li> <b>javax.security.auth.login.LoginException:KrbException:KDC has no support for encryption type (14) - KDC has no support for encryption type</b>
+      <blockquote>
+<p> <i>원인 1</i>:사용하는 KDC 가, 요구된 암호화 타입을 지원하지 않습니다
+
+        </p>
+<p> <i>해결법 1</i>:Sun 의 Kerberos 구현에서는, 암호화 타입으로서<code>des-cbc-md5</code>,<code>des-cbc-crc</code>, 및 <code>des3-cbc-sha1</code> 를 지원하고 있습니다.
+<P>
+어플리케이션에서는, Kerberos 구성 파일 <code>krb5.conf</code> 로 이하의 태그를 지정하는 것으로써, 적당한 암호화 타입을 선택할 수 있습니다.
+<BLOCKQUOTE>
+  <pre>
+[libdefaults]
+default_tkt_enctypes = des-cbc-md5 des-cbc-crc des3-cbc-sha1
+default_tgs_enctypes = des-cbc-md5 des-cbc-crc des3-cbc-sha1
+permitted_enctypes = des-cbc-md5 des-cbc-crc des3-cbc-sha1
+  </pre>
+</BLOCKQUOTE>
+지정하지 않는 경우의 디폴트 값는 이하대로입니다.
+<BLOCKQUOTE>
+  <pre>
+des-cbc-md5 des-cbc-crc des3-cbc-sha1
+  </pre>
+</BLOCKQUOTE>
+        <p></p>
+      <p>
+<i>원인 2</i>:이 예외는, 몇개의 Windows 플랫폼에서 네이티브 티켓 캐쉬를 사용하면(자) throw 됩니다. Microsoft 는 신기능을 추가하고 있어, 그 기능에서는 Ticket Granting Tickets (TGT)의 세션열쇠가 export 되지 않게 되어 있습니다. 그 때문에, Windows 로 취득한 네이티브 TGT 는, 「빈 상태(empty)의」세션열쇠와 null 의 EType 를 가지게 됩니다. 이 에러가 발생하는 플랫폼은, Windows Server 2003, Windows 2000 Server Service Pack 4 (SP4), 및 Windows XP SP2 등입니다.  
+       <P>
+<i>해결법 2</i>:Windows 의 레지스트리를 업데이트 해, 이 신기능을 무효로 할 필요가 있습니다. 레지스트리 키  <code><b>allowtgtsessionkey</b></code> 를 추가해, 올바르게 설정해, Kerberos 의 Ticket Granting Ticket 로 세션열쇠가 송신되도록 해 주세요.  
+       <P>
+Windows Server 2003 으로 Windows 2000 SP4 의 경우에 필요하게 되는 레지스트리 설정을 다음에 나타냅니다.
+<blockquote>
+<pre>
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Kerberos\Parameters
+Value Name: allowtgtsessionkey
+Value Type: REG_DWORD
+Value: 0x01  ( default is 0 )
+</pre>
+</blockquote>
+디폴트에서는 값이 0 으로 설정되어 있습니다.  0x01 로 설정하는 것으로써, 세션열쇠를 TGT 에 포함할 수가 있습니다.
+      <P>
+Windows XP SP2 의 레지스트리 설정의 위치를 다음에 나타냅니다.
+<blockquote>
+<pre>
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Kerberos\
+Value Name: allowtgtsessionkey
+Value Type: REG_DWORD
+Value: 0x01
+</pre>
+</bblockquote>
+</li>
+
+
+
+
+
+</blockquote>
+<li> <b>KDC reply did not match expectations</b>
+      <blockquote>
+<p> <i>원인</i>:KDC 에 의해, 클라이언트가 인식 불가능한 응답이 돌려주어졌습니다.
+        </p>
+<p> <i>해결법</i>:<code>krb5.conf</code> 파일의 구성 파라미터 모든 것이 적정하게 설정되어 있는 것을 확인해, KDC 벤더 제공의 문서를 참조해 주세요.
+        </p>
+      </blockquote>
+    </li>
+  </ul>
+  <p>
+  <br>
+  </p>
+<HR>
+<b>주:</b> 시스템 프로퍼티 <code>sun.security.krb5.debug</code> 를 「true」로 설정하는 것으로, 디버그 모드를 유효하게 할 수 있습니다. 이 설정에 의해, 프로그램이 Kerberos V5 프로토콜을 실행하는 모습을 확인할 수 있습니다. <b><b>직면하고 있는 문제에 대한 정보를 피드백하는 경우는, 완전한 디버그 출력을 포함해주면 매우 살아납니다. </b></b> <br>
+<HR>
+</blockquote>
+</body>
+</html>

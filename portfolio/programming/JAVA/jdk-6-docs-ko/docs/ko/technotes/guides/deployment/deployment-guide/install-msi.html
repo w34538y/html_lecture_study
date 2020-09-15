@@ -1,0 +1,39 @@
+<HTML><HEAD>
+<META content="text/html; charset=UTF-8" http-equiv=Content-Type>
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+<title>Active Directory 배포용 . msi 파일의 추출 - xrath.com 에서 번역됨</title></HEAD>
+<BODY>
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">Active Directory 를 사용하는 JRE 의 배치</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<p>여기에서는 Windows 2000/Windows XP 의 Active Directory 베이스의 네트워크로 Java Runtime Environment (JRE)를 배치하는데 필요한 <code>. msi</code> 파일을 입수하는 방법에 대해, 그 순서를 설명합니다. 버젼 1.4. 2 이후의 JRE 인스톨러를 사용합니다. JRE Windows 오프 라인 인스톨러에는,<code>. msi</code> (Microsoft Installer) 파일이 번들 되고 있습니다. 지금부터 설명하는 순서로 추출했다 <code>. msi</code> 파일을 Active Directory 소프트웨어 배포 정책에 할당할 수가 있습니다.  </p>
+<OL>
+<LI>Sun <A href="http://java.sun.com/j2se/1.5.0/download.jsp">JRE Windows Offline Installion</A>  실행 가능 (<CODE>. exe</CODE>) 파일을 다운로드해, 기동합니다.  
+    <P></P>
+<LI><CODE>. msi</CODE> 파일을 <CODE>LocalAppData</CODE> 폴더 (사용자의 <CODE>Application Data</CODE> 폴더)로부터 가져옵니다. LocalAppData</CODE> 폴더의 위치는, Windows 플랫폼에 따라서 다릅니다.  
+    <P></P>
+<LI>이 폴더에는, 다음의 폴더가 있습니다.  
+<PRE>       {3248F0A6-6813-11D6-A77b-00B0D0150000}</PRE>
+최초의 2 자리수는, 버젼 1.4. 2_xx 의 경우는 「71」, 1.5. 0_xx 의 경우는 「32」가 됩니다. 이 <code>CLSID</code> 의 말미 6 자리수로<code>. msi</code> 파일의 파일명은, 릴리스 번호에 대응하고 있습니다. 「150000」으로 끝나는 <code>CLSID</code> 는, 버젼 1.5. 0_00 (을)를 의미해, 「142010」의 경우는 1.4. 2_01 (을)를 의미합니다.  
+    <P></P>
+<LI>이 폴더로부터, 필요한 대수의 Windows 플랫폼의 클라이언트에 대해서, Active Directory 를 사용해 이 <code>. msi</code> 파일을 배포할 수 있습니다.  
+    <P></P>
+<LI>Internet Explorer 나 Mozilla 의 디폴트의 VM 로서 JRE 를 등록하는 경우는,<CODE>Property.idt</CODE> 테이블로 변수 <code>IEXPLORER</code> 와 <code>MOZILLA</code> 를 <code>1</code> 으로 설정하는 변환을 작성할 필요가 있습니다. <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/transforms.asp">변환을 작성해 사용하는 방법</a>에 대해서는,Microsoft MSDN 사이트를 참조해 주세요. </LI>
+</OL>
+<hr>
+</BODY></HTML>

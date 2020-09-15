@@ -1,0 +1,266 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>Java 로부터 JavaScript 에의 통신</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<br>
+<p>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a> </li>
+<li><a href="#jsobject"><code>JSObject</code></a>  
+    <ul>
+<li><a href="java_js.html#how"><code>JSObject</code> 의 동작 방법</a> </li>
+<li><a href="#enablingjsobjectsupport">Java Plug-in 에서의 <code>JSObject</code> 지원의 유효화</a> </li>
+    </ul>
+  </li>
+<li><a href="#common_dom">공통 DOM API</a> </li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p>Java Plug-in 는, 2 개의 방법으로 DOM 에 액세스 할 수 있습니다. 1 개(살)은 <code>JSObject</code> 를, 이제(벌써) 1 개(살)은 공통 DOM API 를 개입시켜 액세스를 실시하는 방법입니다. 각각의 방법 및 시큐리티상의 고려사항에 대해, 이하로 설명합니다. <br>
+</p>
+<h2><a name="jsobject"></a> <code>JSObject</code></h2>
+<p>Java<font size="-2"></font> 애플릿은, Java 로부터 JavaScript 에의 통신을 실시해 Document Object Model (DOM)에 액세스 하는지, HTML 페이지상에서 JavaScript 함수를 호출할 필요가 있습니다. 브라우저를 사용하면(자), Java 래퍼 클래스 <code>netscape.javascript.JSObject</code> 를 개입시킨 Java 와 JavaScript 간의 통신이 가능하게 됩니다. 자세한 것은,<a href="http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Guide:LiveConnect_Overview:Java_to_JavaScript_Communication">「Java Packages for LiveConnect」</a>를 참조해 주세요.  </p>
+<p>브라우저간에 JavaScript draw 엔진의 구현이 다르기 (위해)때문에, Java Plug-in 가 제공하는 <code>JSObject</code> 지원는, Internet Explorer 와 Navigator 로 다릅니다. 이 문서에서는, 다른 브라우저 환경에서 <code>JSObject</code> 지원가 어떻게 기능하는지를 설명합니다.  
+<h3><a name="how"></a> <code>JSObject</code> 의 동작 방법</h3>
+<p> <code>JSObject</code> 를 이용하면(자), HTML 페이지의 DOM 에의 액세스가 용이하게 됩니다. 다만, 브라우저가 다르면(자) DOM 의 구현 방법도 다르기 (위해)때문에, Java 애플릿으로 <code>JSObject</code> 를 사용하면(자), Java Plug-in 의 동작이 브라우저에 따라서 다른 경우가 있습니다. 특정의 브라우저에서의 DOM 구현의 자세한 것은, 브라우저의 개발자 가이드를 참조해 주세요.  </p>
+<p>일반적으로, 애플릿은 다음의 방법으로 <code>JSObject</code> 에 액세스 합니다. </p>
+<table summary="layout" cellpadding="5" align="center" width="95%">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+<pre><font color="#000000">import netscape.javascript. *;
+import java.applet. *;
+import java.awt. *;
+class MyApplet extends Applet {
+     public void init() {
+         JSObject win = JSObject.getWindow(this);
+         JSObject doc = (JSObject) win.getMember(&quot;document&quot;);
+         JSObject loc = (JSObject) doc.getMember(&quot;location&quot;);
+
+         String s = (String) loc.getMember(&quot;href&quot;);  // document.location.href
+         win.call(&quot;f&quot;, null);                      // Call f() in HTML page
+     }
+}
+</font></pre>
+    </td>
+  </tr>
+</table>
+<p>개시 위치는,<code>static</code> 메소드입니다.  </p>
+<blockquote>
+  <pre>
+public static JSObject getWindow(Applet a) 
+</pre>
+</blockquote>
+<p>이 메소드에 의해, 지정된 애플릿을 포함한 <code>Window</code> 를 나타내는 <code>JSObject</code> 가 돌려주어집니다. 이 메소드는, 파라미터로서 <code>java.applet.Applet</code> 만을 취하기 (위해)때문에, 애플릿으로부터 <code>JSObject</code> 에 액세스 할 수 있습니다만, Bean 가 애플릿이 아닌 한, Bean 로부터 액세스 할 수 없습니다.  </p>
+<p><code>Window</code> 객체의 취득이 완료하면(자), 애플릿은 다음의 메소드를 사용해 HTML 페이지의 DOM 를 안내할 수 있습니다. </p>
+<ul>
+<li><code>public Object call(String methodName, Object args[]) </code>
+<li><code>public Object eval(String s) </code>
+<li><code>public Object getMember(String name) </code>
+<li><code>public Object getSlot(int index) </code>
+<li><code>public void removeMember(String name) </code>
+<li><code>public void setMember(String name, Object value) </code>
+<li><code>public void setSlot(int index, Object value) </code>
+<li><code>public String toString() </code> 
+<li><code>public boolean equals(Object obj) </code>  
+</ul>
+<p>Java Plug-in 에서는,<code>getWindow()</code>,<code>call()</code>,<code>eval()</code>,<code>setMember()</code>, 및 <code>getMember()</code> 만을 사용하는 것을 추천합니다. <code>getSlot()</code>,<code>setSlot()</code>,<code>removeMember()</code>, 및 <code>toString()</code> 의 구현은 브라우저에 의존하기 위해(때문에), 실행 결과는, Java Plug-in 가 가동하고 있는 브라우저의 버젼 및 플랫폼에 의해 다릅니다. </p>
+<p><code>JSObject</code> 의 사용 방법의 자세한 것은,<a href="http://developer.netscape.com/docs/manuals/communicator/jsguide4/livecon.htm">「LiveConnect」</a>페이지의 「Java to JavaScript Communication」섹션을 참조해 주세요.  </p>
+<p>Java 코드를 컴파일 해 <code>JSObject</code> 를 이용하려면 ,<code>CLASSPATH</code> 내에 <tt>netscape.javascript</tt> 패키지를 보관 유지할 필요가 있습니다. Java Plug-in 1.4. 2 이후는, JAR 파일 <code>plugin.jar</code> 내에 <tt>netscape.javascript</tt> 가 포함되어 있습니다. <code>JSObject</code> 를 사용하는 애플릿을 컴파일 하려면 , 컴파일 하기 전에, <code>CLASSPATH</code> 에 <code>plugin.jar</code> 를 추가할 필요가 있습니다. </p>
+<p><code>JSObject</code> 는, Java Plug-in 에서는 지원됩니다만, Java SE 플랫폼의 AppletViewer 에서는 지원되지 않는 것에 유의해 주세요. 이 때문에,<code>JSObject</code> 를 사용하는 애플릿은, AppletViewer 에서는 동작하지 않는지, 예외가 발생합니다. </p>
+<h3><a name="enablingjsobjectsupport"></a> Java Plug-in 에서의 <code>JSObject</code> 지원의 유효화</h3>
+<p>시큐리티상의 이유로써, Java Plug-in 의 <code>JSObject</code> 지원는, 디폴트에서는 무효로 설정되어 있습니다. Java Plug-in 의 <code>JSObject</code> 지원를 유효하게 하려면 , 다음에 나타내도록(듯이),<code>EMBED/OBJECT</code> 태그내에 신규 속성 <code>MAYSCRIPT</code> 가 존재할 필요가 있습니다. </p>
+<h4>원의 <code>APPLET</code> 태그 :&nbsp; </h4>
+<table summary="layout" cellpadding="5" align="center" width="95%">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+<pre><font color="#000000">&lt;APPLET code=&quot;XYZApp.class&quot; codebase=&quot;html/&quot; align=&quot;baseline&quot;
+     width=&quot;200&quot; height=&quot;200&quot; </font><font color="#FF0000">MAYSCRIPT</font><font color="#000000">&gt;
+&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+     No JDK 1.3 support for APPLET!!
+&lt;/APPLET&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h4>신규 <code>OBJECT</code> 태그 :&nbsp; </h4>
+<table summary="layout" cellpadding="5" align="center" width="95%">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+<pre><font color="#000000">&lt;OBJECT classid=&quot;clsid:8AD9C840-044E-11D1-B3E9-00805F499D93&quot;
+     width=&quot;200&quot; height=&quot;200&quot; align=&quot;baseline&quot;
+     codebase=&quot;http://java.sun.com/products/plugin/1. 3/jinstall-13-win32.cab#Version=1, 3,0,0&quot;&gt;
+     &lt;PARAM NAME=&quot;code&quot; VALUE=&quot;XYZApp.class&quot;&gt;
+     &lt;PARAM NAME=&quot;codebase&quot; VALUE=&quot;html/&quot;&gt;
+     &lt;PARAM NAME=&quot;type&quot; VALUE=&quot;application/x-java-applet;version=1. 3&quot;&gt;</font><font color="#0000FF">
+</font><font color="#008000">    <font color="#FF0000"> &lt;PARAM NAME=&quot;MAYSCRIPT&quot; VALUE=&quot;true&quot;&gt;</font>
+</font><font color="#0000FF">     <font color="#000000">&lt;PARAM NAME=&quot;model&quot; VALUE=&quot;models/HyaluronicAcid.xyz&quot;&gt;
+        No JDK 1.3 support for APPLET!!</font></font><font color="#000000">
+&lt;/OBJECT&gt;</font></pre>
+    </td>
+  </tr>
+</table>
+<h4>신규 <code>EMBED</code> 태그:</h4>
+<table summary="layout" cellpadding="5" align="center" width="95%">
+  <tr bgcolor="#CCCCCC"> 
+    <td> 
+<pre><font color="#000000">&lt;EMBED type=&quot;application/x-java-applet;version=1. 3&quot; width=&quot;200&quot;
+   height=&quot;200&quot; align=&quot;baseline&quot; code=&quot;XYZApp.class&quot;
+   codebase=&quot;html/&quot; model=&quot;models/HyaluronicAcid.xyz&quot; </font><font color="#FF0000">MAYSCRIPT=true</font><font color="#800000">
+   <font color="#000000">pluginspage=&quot;http://java.sun.com/products/plugin/1. 3/plugin-install.html&quot;&gt;
+&lt;NOEMBED&gt;
+   No JDK 1.3 support for APPLET!!
+&lt;/NOEMBED&gt;
+&lt;/EMBED&gt;</font>
+</font></pre>
+    </td>
+  </tr>
+</table>
+<p><code>MAYSCRIPT</code> 가 false 로 지정되고 있는지,<code>MAYSCRIPT</code> 가 존재하지 않는 경우,<code>JSObject</code> 는 무효가 됩니다. <code>EMBED/OBJECT</code> 태그내의 <code>MAYSCRIPT</code> 속성의 자세한 것은,<a href="using_tags.html">「Java Plug-in 에서의 <code>OBJECT</code>,<code>EMBED</code>, 및 <code>APPLET</code> 태그의 사용」</a>을 참조해 주세요. <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p> JavaScript 및 LiveConnect 는, Netscape Communications Corporation 의 테크놀러지입니다. Mozilla 및 Microsoft 로 구현되는 Javascript 엔진이 차이가 나기 (위해)때문에, LiveConnect 를 사용한 Java 와 JavaScript 간의 데이터 정렬화에 의해, 브라우저간에 다른 데이터형이 생성되는 일이 있습니다. 벤더간에서의 JavaScript 구현의 주된 차이점은, JavaScript 데이터형의 지원, Java 와 JavaScript 간에서의 데이터형의 매핑, 및 DOM 요소의 구현입니다. </p>
+<table summary="layout" width="100%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+    <td>
+<h2><u>주:</u></h2>
+<p>JavaScript 의 오리지날 스펙은,<a href="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.3/guide/index.html">http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1. 3/guide/index.html</a>  로부터 입수할 수 있습니다. </p>
+<p>LiveConnect 의 오리지날 스펙은,<a href="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.3/guide/lc.html#1037078">http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1. 3/guide/lc.html#1037078</a>  로부터 입수할 수 있습니다. </p>
+    </td>
+  </tr>
+</table>
+<h2><a name="common_dom"></a> 공통 DOM API </h2>
+<h3>개요</h3>
+<p>이 섹션에서는, Java Plug-in 6 의<a href="../../../../jre/api/plugin/dom/index.html">공통 DOM API</a>  에 대해 설명합니다. 이 API 는, 다양한 플랫폼에서 가동하는 다른 브라우저 벤더의 브라우저에 대해서, 브라우저내의 DOM 에 액세스하기 위한 표준 API 를 제공합니다. </p>
+<table summary="layout" width="100%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+    <td>
+<h2><u>주:</u></h2>
+<p>Internet Explorer 6 으로 지원되고 있는 Mozilla 에서는 풀 지원되고 있습니다. 다른 브라우저에서의 지원는 제한되고 있습니다. </p>
+    </td>
+  </tr>
+</table>
+<p>이 API 는, Document Object Model (DOM) Level 2 권고에 근거해 구축되고 있습니다 (다양한 w3c 권고의 자세한 것은,<a href="http://www.w3.org/DOM/">http://www.w3.org/DOM/</a>  를 참조해 주세요). Document Object Model (DOM)는, IDL (Interface Definition Language)를 사용해 정의된 인터페이스 세트로, Java 언어 바인딩이 포함됩니다. </p>
+<p>공통 DOM API 에는, w3c 로 정의된, 다음의 인터페이스 패키지가 포함됩니다. </p>
+<ul>
+<li><code>org.w3c.dom. *</code></li>
+<li><code>org.w3c.dom.css. *</code></li>
+<li><code>org.w3c.dom.events. *</code></li>
+<li><code>org.w3c.dom.html. *</code></li>
+<li><code>org.w3c.dom.stylesheets. *</code></li>
+<li><code>org.w3c.dom.views. * </code></li>
+</ul>
+<h3>DOMService</h3>
+<p>공통 DOM 클래스를 사용하면(자),<code>org.w3c.dom</code><i></i> 및 <code>org.w3c.dom.html</code><i></i> 패키지내의 API 를 개입시켜, 어플리케이션으로부터 기반이 되는 브라우저의 DOM 에 액세스 할 수 있습니다. </p>
+<p>각 DOM 는, 브라우저내의 단일의 XML/HTML 문서의 기반 표현을 나타냅니다. 각 브라우저는, 브라우저의 프레임/윈도우에 복수의 XML/HTML 문서를 표시할 수 있습니다. 이 때문에, 어플리케이션이 공통 DOM 클래스를 개입시켜 DOM 에의 액세스를 요구했을 경우, 중요한 것은 어플리케이션에 관련지을 수 있었던 DOM 를 돌려주는 것입니다. 어플리케이션에 관련지을 수 있던 적절한 DOM 를 취득하기 위해(때문에), Java 객체가 <code>DOMService.getService()</code> 에게 건네집니다. <i></i><code> DOMService</code> 는, 객체에 관련지을 수 있던 적절한 <code>DOMService</code> 구현을 돌려줍니다.  그 이외의 경우, 예외가 throw 됩니다. 일반적으로, Java 객체는, 애플릿 또는 JavaBeans 컴퍼넌트입니다. 다만, 이 스펙은,<code>DOMServiceProvider</code> 가 다른 Java 객체 타입을 처리 가능한 경우, 그 사용을 제외하는 것이 아닙니다. </p>
+<p>DOM 에 대한 조작을 실행하려면 ,<code>DOMAction</code> 를 구현하는 객체를 <code>DOMService.invokeAndWait()</code> 또는 <code>DOMService.invokeLater()</code> 에 건네줄 필요가 있습니다. 다음에,<code>DOMAction.run()</code> 가, DOM 액세스를 처리하는 thread상에서 실행됩니다. </p>
+<p>다음에, Document 객체의 타이틀을 취득하는 간단한 예를 나타냅니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" bgcolor="#CCCCCC" align="center">
+  <tr>
+    <td>
+      <blockquote>
+<pre>DOMService service = null;
+
+try
+{
+    service = DOMService.getService(MyApplet);</pre>
+<pre>    String title = (String) service.invokeAndWait(new DOMAction()
+                            {
+                                public Object run(DOMAccessor accessor)
+                                {
+                                     HTMLDocument doc = (HTMLDocument) accessor.getDocument(MyApplet);
+                                     return doc.getTitle();
+                                }
+                            });
+}
+catch (DOMUnsupportedException e1)
+{
+}
+catch (DOMAccessException e2)
+{
+}</pre>
+      </blockquote>
+      <p></p>
+</td>
+  </tr>
+</table>
+<p>
+<h3>DOMService Plugability</h3>
+<p>복수의 <code>DOMServiceProvider</code> 가 존재하기 위해(때문에),<code>DOMServiceProvider</code> 구현의 공통 DOM 클래스에의 플러그 인을 서드 파티에 허가하는 것은 중요합니다. 이것을 실현하기 (위해)때문에, 신규 Java 프로퍼티 <code>com.sun.browser.dom.DOMServiceProvider</code> 가 정의되고 있습니다. </p>
+<p>이 프로퍼티을 정의하는 경우,<code>DOMServiceProvider</code> 구현의 클래스명의 리스트를 포함할 필요가 있습니다. 각 클래스명은, 「|」문자로 단락짓습니다. </p>
+<p><code>DOMService.getService()</code> 의 호출시에,<code>com.sun.browser.dom.DOMServiceProvider</code> 에 의해 지정된 <code>DOMServiceProvider</code> 구현이 1 개씩 불려 가 프로바이더가, 프로퍼티으로 지정된 순서에 따라 객체의 DOM 에의 관련짓고를 판별 가능한가 어떤가가 확인됩니다. 2 개의 <code>DOMServiceProvider</code> 가 동일한 객체를 처리 가능한 경우, 프로퍼티내에서 최초로 지정된 프로바이더가 사용됩니다. </p>
+<h3>thread에 대한 안전성</h3>
+<p>각 브라우저의 DOM 는 구현 방법이 다르기 (위해)때문에, DOM 액세스시의 thread의 안전성은 기대되고 있지 않습니다. 이 스펙의 DOM 객체 구현에의 액세스는, thread의 안전성을 확보하기 위해(때문에), DOM 액세스를 발송 하는 thread에만 제한할 필요가 있습니다. 이것을 실현하기 (위해)때문에, DOM 객체에 액세스 하는 코드의 스코프를,<code>DOMAction.run()</code> 블록내로 한정할 필요가 있습니다. 조작을 호출하는 경우, DOM 액세스를 발송 하는 thread로 <code>DOMAction.run()</code> 가 실행되도록,<code>DOMService.invokeAndWait()</code> 또는 <code>DOMService.invokeLater()</code> 를 사용할 필요가 있습니다. <br><br> DOM 객체의 구현을 <i></i><code> DOMAction.run()</code> 블록 외부에서 호출하고는 안됩니다만, 어플리케이션은 이러한 DOM 객체를 클래스의 인스턴스 멤버로서 캐쉬하거나 thread간에 이러한 DOM 객체를 건네주는 경우가 있습니다. 다만, DOM 객체를 임의의 객체의 static 멤버로서 캐쉬하는 것은 금지되고 있습니다. 이것은, static 멤버가, 기반이 되는 DOM 객체의 라이프 사이클 이상의 기간 존재할 가능성이 있기 (위해)때문에입니다. <br><br> 임의의 thread로부터 호출해 가능한 공통 DOM 클래스내의 유일한 객체는,<code>DOMService</code> 입니다. 공통 DOM 클래스내의 다른 객체에의 액세스는,<code>DOMAction.run()</code> 블록내에 제한되고 있습니다. 그 이외의 조작을 실시하면, 예외가 throw 됩니다. </p>
+<h3>시큐리티</h3>
+<p>브라우저 DOM 는, 브라우저내의 모든 서비스에의 액세스를 제공합니다. 이 때문에, DOM 에의 각 호출시에, 시큐리티가 적정하게 체크되고 있는 것을 확인하는 것은 중요합니다. <code>DOMService.invokeAndWait()</code> 또는 <code>DOMService.invokeLater()</code> 가 불려 가면(자), 호출측의 시큐리티 문맥의 포착을 합니다. 그 후, 대응하는 <code>DOMAction.run()</code> 가 DOM 액세스를 처리하는 thread로 실행되면(자), DOM 객체 구현의 호출시에, 호출측의 시큐리티 문맥이 브라우저 DOM 에게 건네집니다. 원의 호출측이 DOM 에의 액세스에 필요한 특권을 보관 유지하고 있지 않는 경우,<code>DOMAccessException</code> 가 throw 됩니다. </p>
+<p>DOM 액세스의 시큐리티 정책는, 브라우저에 의해 다릅니다. 이 때문에, Java 어플리케이션이 서명되어 완전하게 신뢰되고 있어도, 브라우저내의 DOM 객체에의 액세스로 <code>DOMAccessException</code> 가 throw 되는 경우가 있습니다. </p>
+<h3>DOM 객체의 라이프 타임</h3>
+<p>DOM 객체의 구현은, 브라우저 DOM 내에서 실제의 기반을 이루는 객체를 나타냅니다. XML/HTML 문서는 순간에 변화하기 위해(때문에), Java 의 DOM 객체가 유효한 것은 없어져 있을 가능성이 있습니다. 무효인 DOM 객체에의 액세스를 하면(자), W3C DOM Level 2 스펙에 따라,<code>org.w3c.dom.DOMException</code> 가 throw 됩니다. <code>DOMAction.run()</code> 내의 DOM 객체에 액세스 하는 코드를 기술하는 개발자는, 언제나 DOM 객체가 유효하다라고 봐야 하는 것이 아닙니다. </p>
+<h3>적합성 요건</h3>
+<p>이 스펙을 구현하는 서드 파티는,<i></i><code>com.sun.browser.dom</code> 패키지내의 공통 DOM 클래스의 구현을 제공할 필요가 있습니다. W3C DOM Level 2 API 의 구현은, W3C DOM Level 2 스펙에도 적합하고 있을 필요가 있습니다. 다만, 브라우저에 의해, 구현하고 있는 W3C DOM API 의 부분집합이 다른 경우가 있기 (위해)때문에, 서드 파티는, 모든 <code>org.w3c.dom</code> 및 <code>org.w3c.dom.html</code> 클래스의 구현을 제공할 필요는 없습니다. </p>
+<h3>패키지 <code>com.sun.browser.dom</code></h3>
+<p>이 섹션에서는,<code>com.sun.browser.dom</code> 패키지의 API 를 정의합니다. </p>
+<h4><code>public abstract class DOMService</code><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></h4>
+<p><code>DOMService</code> 가 정의하는 서비스 API 는, 어플리케이션에 대해,<code>document</code> 객체에의 액세스를 가능하게 합니다. 이 <code>document</code> 객체는, 어플리케이션을 묻는 브라우저 <code>window</code> 의 기반이 되는 DOM 를 나타냅니다. <br>
+</p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+    <td>
+<p><code>public abstract class DOMService&nbsp;<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns new instance of a <i>DOMService</i>. The implementation<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * of the <i>DOMService</i> returns depending on the setting of the<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * <i>javax.browser.dom.DOMServiceProvider</i> property or, if the<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * property is not set, a platform-specific default. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Throws DOMUnsupportedException if the DOMService is not&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * available to the obj. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param obj Object to leverage the <i>DOMService</i><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public static DOMService getService(Object obj) throws DOMUnsupportedException;<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * An empty constructor is provided.Implementations of this<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * abstract class must provide a protected no-argument constructor<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * in order for the static <i>getService()</i> method to work correctly. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Application programmers should not be able to directly<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * construct implementation subclasses of this abstract subclass. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; protected DOMService();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Causes <i>action.run()</i> to be executed synchronously on the&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * DOM action dispatching thread.This call will block until all&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * pending DOM actions have been processed and (then) &nbsp;<i><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * action.run()</i> returns.This method should be used when an&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * application thread needs to access the browser's DOM. &nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * It should not be called from the <i>DOMActionDispatchThread</i>. &nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Note that if the <i>DOMAction.run()</i> method throws an uncaught&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * exception (on the DOM action dispatching thread), it's caught&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * and re-thrown as an <i>DOMAccessException</i> on the caller's thread. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param action DOMAction. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public abstract Object invokeAndWait(DOMAction action) throws DOMAccessException;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Causes <i>action.run()</i> to be executed asynchronously on the&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * DOM action dispatching thread.This method should be used&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * when an application thread needs to access the browser's&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * DOM.It should not be called from the <i>DOMActionDispatchThread</i>. &nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Note that if the<i>DOMAction.run()</i> method throws an uncaught&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * exception (on the DOM action dispatching thread), &nbsp; it will not be<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * caught and re-thrown on the caller's thread. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param action DOMAction. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public abstract void invokeLater(DOMAction action);<br> }</code></p>
+</td>
+  </tr>
+</table>
+<p>상기의 <code>getService(Object obj)</code> 메소드내의 <code>Object obj</code> 는, 애플릿 또는 Bean 입니다. </p>
+<h4><code>public abstract class DOMServiceProvider</code></h4>
+<p> <code>public abstract class DOMServiceProvider</code> 의 인스턴스를 구현하면(자), 지정된 Java 객체용의 기반이 되는 브라우저 DOM 에의 액세스가 가능하게 됩니다. <code>DOMServiceProvider</code> 의 인스턴스를, 어플리케이션으로부터 직접 취득하지 말아 주세요.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><code>public abstract class DOMServiceProvider<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * An empty constructor is provided.Implementations should&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * provide a protected constructor so that the <i>DOMService</i><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * can instantiate instances of the implementation class. &nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Application programmers should not be able to directly<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * construct implementation subclasses of this abstract subclass. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The only way an application should be able to obtain a&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * reference to a <i>DOMServiceProvider</i> implementation<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * instance is by using the appropriate methods of the<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * <i>DOMService</i>. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; protected DOMServiceProvider();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns true if the <i>DOMService</i> can determine the association<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * between the obj and the underlying DOM in the browser. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public abstract boolean canHandle(Object obj);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the Document object of the DOM. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public abstract org.w3c.dom.Document getDocument(Object obj) throws DOMUnsupportedException;<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the <i>DOMImplemenation</i> object of the DOM. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public abstract org.w3c.dom.DOMImplementation getDOMImplementation();<br> }</code></td>
+  </tr>
+</table>
+<p><code>canHandle(Object obj)</code> 메소드 및 <code>getDocument(Object obj)</code> 메소드의 <code>Object obj</code> 는, 애플릿 또는 Bean 입니다. </p>
+<p>
+<h4><code>public interface DOMAccessor</code></h4>
+<p><code>DOMAccessor</code> 는, 브라우저 DOM 의 엔트리 포인트에 액세스 하기 위해서,<code>DOMAction.run()</code> 내에서 사용 가능한 인터페이스를 나타냅니다.  </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><code>public interface DOMAccessor<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the Document object of the DOM. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public org.w3c.dom.Document getDocument(Object obj) throws org.w3c.dom.DOMException;<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns a <i>DOMImplementation</i> object. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public org.w3c.dom.DOMImplementation getDOMImplementation();<br> }&nbsp;</code></td>
+  </tr>
+</table>
+<p>상기의 <code>getDocument(Object obj)</code> 메소드내의 <code>Object obj</code> 는, 애플릿 또는 Bean 입니다. </p>
+<p>
+<h4><code>public interface DOMAction</code></h4>
+<p><code>DOMAction</code> 는, 브라우저의 DOM 로 실행되는 어플리케이션 조작 모든 것을 캡슐화합니다. <br>
+</p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><code>public interface DOMAction<br> {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * When an object implementing interface <i>DOMAction</i> is passed<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * to <i>DOMService.invokeAndWait()</i> or <i>DOMService.invokeLater()</i>,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the run method is called in the DOM access dispatch thread. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * accessor is used for the <i>DOMAction</i> to access the entry point of&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the browser's DOM, if necessary. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param accessor <i>DOMAccessor</i><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Object run(DOMAccessor accessor);<br> }</code></td>
+  </tr>
+</table>
+<p>
+<h4><code>public class DOMUnsupportedException</code></h4>
+<p>이 예외는, Java 객체와 DOM 간의 관련성이 발견되지 않는 경우,<code>DOMService.getService()</code> 및 <code>DOMServiceProvider.getDocument()</code> 에 의해 throw 됩니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><code>public class DOMUnsupportedException extends Exception<br> {&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMUnsupportedException</i> with no detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMUnsupportedException();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMUnsupportedException</i> with the given detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param msg Detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMUnsupportedException(String msg);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMUnsupportedException</i> with the given exception as a root clause. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param e Exception. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMUnsupportedException(Exception e);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMUnsupportedException</i> with the given exception as a root clause and the given &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param e Exception. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param msg Detail message. <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMUnsupportedException(Exception e, String msg);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the detail message of the error or null if there is no detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public String getMessage();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the root cause of the error or null if there is none. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Exception getException() ;&nbsp;&nbsp;&nbsp;<br> }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td>
+  </tr>
+</table>
+<p>
+<h4><code>public class DOMAccessException</code></h4>
+<p><code>DOMAction.run()</code> 의 내부에서 몇개의 DOM 객체에의 액세스를 했을 경우, 그 DOM 객체가 예외를 throw 하면(자),<code>DOMService.accessAndWait()</code> 에 의해 이 예외가 throw 됩니다. </p>
+<table summary="layout" width="90%" cellpadding="5" align="center" bgcolor="#CCCCCC">
+  <tr>
+<td><code>public class DOMAccessException&nbsp; extends Exception<br> {&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMAccessException</i> with no detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMAccessException();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMAccessException</i> with the given detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param msg Detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMAccessException(String msg);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMAccessException</i> with the given exception as a root clause. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param e Exception. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMAccessException(Exception e);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Constructs a new <i>DOMAccessException</i> with the given exception as a root clause and the given &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param e Exception. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * @param msg Detail message. <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public DOMAccessException(Exception e, String msg);<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the detail message of the error or null if there is no detail message. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public String getMessage();<br> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Returns the root cause of the error or null if there is none. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Exception getException() ;&nbsp;&nbsp;&nbsp;<br> }</code></td>
+  </tr>
+</table>
+<p> 
+<p>
+</body>
+</html>

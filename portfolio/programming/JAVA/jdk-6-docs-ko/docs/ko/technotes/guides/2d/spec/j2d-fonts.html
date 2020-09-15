@@ -1,0 +1,786 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:09:38 오후 2002" />
+<title>폰트와 텍스트 레이아웃 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-geom.html" />
+    <link rel="Next" href="j2d-image.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-geom.html">전의 항목</a>  | <a accesskey="n" href="j2d-image.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp73057"> </a> <h2 class="pChapNum">
+제 4 장&#160;&#160;
+</h2>
+<a name="wp73059"> </a> <h2 class="pChapTitle">
+폰트와 텍스트 레이아웃
+</h2>
+<a name="wp73060"> </a> <p class="pBody">
+텍스트 캐릭터 라인에서는, Java 2D&#8482; API 의 변형 및 draw 기구를 사용할 수 있습니다. 또, Java 2D API 는, 섬세한 폰트 제어와 세련된 텍스트 레이아웃을 지원하는 텍스트 관련 클래스를 제공합니다. 이것에는, 기능의 강화된 <code class="cCode">Font</code> 클래스와 새로운 <code class="cCode">TextLayout</code> 클래스가 포함됩니다.
+</p>
+<a name="wp72736"> </a> <p class="pBody">
+이 장에서는,<code class="cCode">java.awt</code> 및 <code class="cCode">java.awt.font</code> 의 인터페이스 및 클래스를 개입시켜 지원되는, 새로운 폰트 및 텍스트 레이아웃 펑션에 초점을 맞혀 설명합니다. <b class="cBold">이러한 기능의 사용법에 대한 자세한 것은, Java Developer Connection (http://developer.java.sun.com/developer/onlineTraining/Graphics/2DText/)로부터 입수할 수 있는 「2D Text Tutorial」를 참조해 주세요.  </b>
+</p>
+<a name="wp74367"> </a> <p class="pBody">
+ 텍스트 분석과 국제화에 대해서는,<code class="cCode">java.text</code> 의 문서와 「The Java Tutorial」의 「Writing Global Programs」를 참조해 주세요. Swing 에 구현되고 있는 텍스트 레이아웃 기구의 사용법에 대한 자세한 것은,<code class="cCode">java.awt.swing.text</code> 의 문서와 「The Java Tutorial」의 「Creating a GUI with JFC/Swing」를 참조해 주세요.
+</p>
+<a name="wp67024"> </a> <p class="pBody">
+<b class="cBold">주</b>:이 장에 포함되어 있는 국제 텍스트 레이아웃에 관한 정보는, 「International Text in JDK 1.2」 (Mark Davis, Doug Felt, John Raley 공저, copyright 1997, Taligent, Inc. )(이)라고 하는 논문에 근거하고 있습니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp62190"> </a> <h2 class="pHeading1">
+4.1	인터페이스와 클래스
+</h2>
+<a name="wp68561"> </a> <p class="pBody">
+다음의 겉(표)는, 폰트 및 텍스트 레이아웃 관련의 주된 인터페이스와 클래스입니다. 이러한 인터페이스와 클래스의 대부분은,<code class="cCode">java.awt.font</code> 패키지에 포함되어 있습니다. <code class="cCode"> Font</code> 등, 몇개의 인터페이스와 클래스는, 이전의 버젼의 JDK 와의 하위 호환성을 유지하기 위해서,<code class="cCode">java.awt</code> 패키지의 일부가 되어 있습니다.
+</p>
+<a name="wp66739"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp62425">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62425"> </a> <div class="pCellHeading">
+인터페이스
+</div>
+</th>
+    <th><a name="wp62427"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62429"> </a> <div class="pCellBody">
+<code class="cCode">MultipleMaster</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62542"> </a> <div class="pCellBody">
+Type 1 Multiple Master 폰트를 나타냅니다. 다양한 마스터 디자인 컨트롤에 액세스 할 수 있도록(듯이) 하기 위해서, 다양한 마스터 폰트인 <code class="cCode">Font</code> 객체에 의해 구현됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62433"> </a> <div class="pCellBody">
+<code class="cCode">OpenType</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62546"> </a> <div class="pCellBody">
+Open Type 폰트와 True Type 폰트를 나타냅니다. 폰트의 <code class="cCode">sfnt</code> 테이블에 액세스 할 수 있도록(듯이) 하기 위해서, Open Type 폰트 또는 True Type 폰트의 <code class="cCode">Font</code> 객체에 의해 구현됩니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp66742"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp62935">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62935"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp62937"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63043"> </a> <div class="pCellBody">
+<code class="cCode">Font</code>
+</div>
+<a name="wp74785"> </a> <div class="pCellBody">
+(<code class="cCode">java.awt)</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63045"> </a> <div class="pCellBody">
+호스트 시스템상에서 사용 가능한 폰트 페이스의 컬렉션으로부터 폰트 페이스의 인스턴스를 나타냅니다. 상세한 폰트 정보를 특정할 수 있도록(듯이) 해, 폰트와 그 Glyph에 관한 정보에 액세스 할 수 있도록(듯이) 합니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp73090"> </a> <div class="pCellBody">
+FontRenderContext
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp73092"> </a> <div class="pCellBody">
+텍스트를 정확하게 측정하는데 필요한 정보를 캡슐화합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63078"> </a> <div class="pCellBody">
+<code class="cCode">GlyphJustificationInfo</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63080"> </a> <div class="pCellBody">
+웨이트, priority, 아브소브, 리밋트 등, Glyph의 위치 가지런히 하고 프로퍼티에 관한 정보를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63430"> </a> <div class="pCellBody">
+<code class="cCode">GlyphMetrics</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63432"> </a> <div class="pCellBody">
+단일 Glyph의 메트릭스를 제공합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62968"> </a> <div class="pCellBody">
+<code class="cCode">GlyphVector</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62970"> </a> <div class="pCellBody">
+Glyph 및 그 위치의 컬렉션입니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63442"> </a> <div class="pCellBody">
+<code class="cCode">GraphicAttribute</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63444"> </a> <div class="pCellBody">
+텍스트내에 짜넣는 그래픽을 지정하는 <code class="cCode">TextLayout</code> 속성의 base class입니다. <code class="cCode">Shape</code> 와 <code class="cCode">Image</code> 를 <code class="cCode">TextLayout</code> 에 짜넣는 것을 가능하게 하는 <code class="cCode">ShapeGraphicAttribute</code> 과 <code class="cCode">ImageGraphicAttribute</code> 에 의해 구현됩니다. 서브 클래스화하면, 독자적으로 문자를 옮겨놓는 그래픽을 구현할 수 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63452"> </a> <div class="pCellBody">
+<code class="cCode">ImageGraphicAttribute</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63454"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">GraphicAttribute</code>
+</div>
+<a name="wp66689"> </a> <div class="pCellBody">
+<code class="cCode">TextLayout</code> 내에 <code class="cCode">Images</code> 를 draw 할 경우에 사용되는 <code class="cCode">GraphicsAttribute</code> 입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63456"> </a> <div class="pCellBody">
+<code class="cCode">LineBreakMeasurer</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63458"> </a> <div class="pCellBody">
+복수행에 걸치는 텍스트의 블록을, 지정된 행의 길이에 들어가도록(듯이) 복수의 <br /><code class="cCode">TextLayout</code> 객체에 분할합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp73120"> </a> <div class="pCellBody">
+LineMetrics
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp73122"> </a> <div class="pCellBody">
+1 행의 문자의 레이아웃과 일련의 행의 레이아웃에 필요한 폰트메트릭스에 액세스 할 수 있도록(듯이) 합니다. 이러한 시학에는, 아센트, 디 센트, leading, 높이, 및 baseline 정보가 포함됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63460"> </a> <div class="pCellBody">
+<code class="cCode">ShapeGraphicAttribute</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp66688"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">GraphicAttribute</code>
+</div>
+<a name="wp63462"> </a> <div class="pCellBody">
+<code class="cCode">TextLayout</code> 내에 <code class="cCode">Shapes</code> 를 draw 할 경우에 사용되는 <code class="cCode">GraphicsAttribute</code> 입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp73072"> </a> <div class="pCellBody">
+<code class="cCode">TextAttribute</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp73074"> </a> <div class="pCellBody">
+텍스트 렌더링에 사용되는 속성의 키와 값을 정의합니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62988"> </a> <div class="pCellBody">
+<code class="cCode">TextHitInfo</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62990"> </a> <div class="pCellBody">
+<code class="cCode">TextLayout</code> 내의 문자의 히트 판정 정보를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp63000"> </a> <div class="pCellBody">
+<code class="cCode">TextLayout</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp63002"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Cloneable</code>
+</div>
+<a name="wp63003"> </a> <div class="pCellBody">
+쌍방향 텍스트도 포함해 자체 첨부 문자 데이터의 불변의 그래피컬 표현을 제공합니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp62220"> </a> <h2 class="pHeading1">
+4.2	폰트의 컨셉
+</h2>
+<a name="wp72771"> </a> <p class="pBody">
+<code class="cCode">Font</code> 클래스는, 상세한 폰트 정보의 특정과 고도의 문자 체재 기능의 사용을 가능하게 하기 위해서 강화되고 있습니다.
+</p>
+<a name="wp61786"> </a> <p class="pBody">
+<code class="cCode">Font</code> 객체는, 호스트 시스템상에서 사용할 수 있는 폰트 페이스의 컬렉션으로부터 폰트 페이스의 인스턴스를 나타냅니다. 일반적인 폰트 페이스의 예로서<code class="cCode">Helvetica Bold</code>,<code class="cCode">Courier Bold Italic</code> 등이 있습니다.
+</p>
+<a name="wp68534"> </a> <p class="pBody">
+<code class="cCode">Font</code>&#8212; 에 관련지을 수 있는 이름에는, 논리명, 패밀리명, 및 폰트 페이스명의 3 개가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp68535"> </a> <div class="pBullet1"><li><code class="cCode">Font</code> 객체의 「논리명」은, 플랫폼상에서 사용 가능한 구체적인 폰트의 1 개에 맵 되는 이름입니다. <em class="cEmphasis"></em>논리 폰트명은, JDK 1.1 및 그 이전의 릴리스로 <code class="cCode">Font</code> 를 지정하기 위해서 사용되는 이름입니다. Java&#8482; 2 SDK 로 <code class="cCode">Font</code> 를 지정하는 경우, 논리명은 아니고 「폰트 페이스명」을 사용할 필요가 있습니다. <code class="cCode">getName</code> 를 호출하면(자),<code class="cCode">Font</code> 로부터 논리명을 취득할 수 있습니다. <em class="cEmphasis"></em>플랫폼상에서 사용 가능한 구체적인 폰트에 맵 된 논리명의 리스트를 가져오려면 ,<code class="cCode">java.awt.Toolkit.getFontList</code> 를 호출해 주세요.  </li></div>
+<a name="wp68533"> </a> <div class="pBullet1Plus"><li><code class="cCode">Font</code> 객체의 「패밀리명」은, Helvetica 등, 복수의 페이스에 걸쳐 문자 체재의 디자인을 결정하는 폰트 패밀리의 이름입니다. <em class="cEmphasis"></em>패밀리명은,<code class="cCode">getFamily</code> 메소드를 통해서 꺼냅니다.  </li></div>
+<a name="wp68536"> </a> <div class="pBullet1Last"><li><code class="cCode">Font</code> 객체의 「폰트 페이스명」은, 시스템에 인스톨 되고 있는 실제의 폰트를 가리킵니다. <em class="cEmphasis"></em>Java 2 SDK 로 폰트를 지정할 때는, 이 폰트 페이스명을 사용할 필요가 있습니다. 폰트 페이스명은, 단지 「폰트명」이라고 불리는 일이 있습니다. <em class="cEmphasis"></em><code class="cCode">getFontName</code> 를 호출하는 것에 의해 폰트명을 꺼낼 수가 있습니다. 시스템상에서 사용 가능한 폰트 페이스명을 조사하려면 ,<code class="cCode">GraphicsEnvironment.getAllFonts</code> 를 호출합니다.  </li></div>
+</ul>
+<a name="wp73181"> </a> <p class="pBody">
+<code class="cCode">Font</code> 에 관한 정보에는,<code class="cCode">getAttributes</code> 메소드를 통해서 액세스 할 수 있습니다. <code class="cCode"><code class="cCode">Font</code> 의 속성에는, 이름, 사이즈, 변형, 및, 웨이트나 포스체등의 폰트 기능이 있습니다.  
+</p>
+<a name="wp73239"> </a> <p class="pBody">
+<code class="cCode">LineMetrics</code> 객체는, 아센트, 디 센트, 및 leading라고 한,<code class="cCode">Font</code> 에 관련지을 수 있었던 값의 정보를 캡슐화합니다.
+</p>
+<ul class="pBullet1"><a name="wp73240"> </a> <div class="pBullet1"><li>「아센트」는, baseline로부터 윗쪽선까지의 거리입니다. 이 거리는 일반적으로 대문자의 높이를 나타냅니다만, 문자에 따라서는 윗쪽선보다 위에 돌출하는 것도 있습니다. </li></div>
+<a name="wp69526"> </a> <div class="pBullet1Plus"><li>「디 센트」는, baseline로부터 하부선까지의 거리입니다. <em class="cEmphasis"></em>대부분의 문자의 최저점은 디 센트내에 들어갑니다만, 문자에 따라서는 하부선보다 아래에 돌출하는 것도 있습니다. </li></div>
+<a name="wp69531"> </a> <div class="pBullet1Last"><li>「leading」는, 하부선의 하부로부터 다음의 행의 최상부까지의 사이의 추천 되는 거리입니다. <em class="cEmphasis"></em></li></div>
+</ul>
+<a name="wp69518"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fontmetrics6.gif" height="161" width="478" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69504"> </a> <div class="pFigureCaption">
+도 4-1	행 메트릭스<br /><br />
+</div><a name="wp73260"> </a> <p class="pBody">
+이러한 정보는, 행에 따라 문자를 적절히 배치해, 복수의 행을 서로의 위치 관계에 의해 배치하기 위해서 사용됩니다. 이러한 행 메트릭스에는,<code class="cCode">getAscent</code>,<code class="cCode">getDescent</code>, 및 <code class="cCode">getLeading</code> 메소드를 통해서 액세스 할 수 있습니다. 또,<code class="cCode">LineMetrics</code> 를 통해서,<code class="cCode">Font</code> 의 높이, baseline, 밑줄, 및 취소선에 관한 정보에 액세스 할 수도 있습니다.
+</p>
+<a name="wp73261"> </a> <h2 class="pHeading1">
+4.3	텍스트 레이아웃의 컨셉
+</h2>
+<a name="wp68804"> </a> <p class="pBody">
+텍스트를 표시하려면 , 적절한 Glyph와 합자를 사용해 텍스트의 형상을 결정해, 배치하지 않으면 안됩니다. 이 프로세스를, 「텍스트 레이아웃」이라고 부릅니다. <em class="cEmphasis"></em>텍스트 레이아웃의 프로세스에는, 다음의 것이 포함됩니다.
+</p>
+<ul class="pBullet1"><a name="wp74549"> </a> <div class="pBullet1"><li>적절한 Glyph와 합자를 사용한 텍스트의 형상 결정</li></div>
+<a name="wp74550"> </a> <div class="pBullet1Plus"><li>텍스트의 적절한 순서 붙어라</li></div>
+<a name="wp74551"> </a> <div class="pBullet1Last"><li>텍스트의 치수 결정과 배치</li></div>
+</ul>
+<a name="wp74574"> </a> <p class="pBody">
+텍스트를 레이아웃 하는데 사용되는 정보는, caret의 배치, 히트 검출, 강조 표시등의 텍스트 조작에서도 필요하게 됩니다.
+</p>
+<a name="wp74587"> </a> <p class="pBody">
+국제 시장에 전개할 수 있는 소프트웨어를 개발하려면 , 적절한 서기법의 규칙에 따라 다양한 언어로 텍스트를 레이아웃 하지 않으면 안됩니다.    
+</p>
+<a name="wp74588"> </a> <h3 class="pHeading2">
+4.3. 1	텍스트의 형상 결정
+</h3>
+<a name="wp73366"> </a> <p class="pBody">
+「Glyph」란, 1 개(살) 이상의 문자의 시각적 표현입니다. Glyph의 형상, 사이즈, 및 위치는, 그 Glyph가 놓여진 문맥에 의존합니다. 폰트와 자체에 따라서는, 단일의 문자 또는 복수의 문자의 편성을 나타내는데, 많은 다른 Glyph가 사용되는 일이 있습니다.
+</p>
+<a name="wp73367"> </a> <p class="pBody">
+예를 들어, 자필의 필기체에 의한 텍스트에서는, 인접하는 문자와 어떻게 결부될까에 의해, 1 개의 문자가 다양한 형상을 취득하는 일이 있습니다.
+</p>
+<a name="wp73368"> </a> <p class="pBody">
+일부의 서기법, 특히 아라비아어에서는, Glyph의 문맥을 항상 고려하지 않으면 안됩니다. 영어의 경우와 달리, 아라비아어에서는 필기체의 사용은 불가결하고, 필기체를 사용하지 않고 텍스트를 표시할 수 없습니다.  
+</p>
+<a name="wp73369"> </a> <p class="pBody">
+이러한 필기체는, 문맥에 의해 큰폭으로 형상이 바뀔 가능성이 있습니다. 예를 들어, 아라비아 문자의 <em class="cEmphasis">heh</em> 에는, 다음의<a  href="j2d-fonts.html#wp73395">그림 &#xA0;4-2</a>  에 나타내도록(듯이) 4 개의 필기체가 있습니다.  
+</p>
+<a name="wp73393"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-fonts3.gif" height="105" width="358" alt="비접속, 우측 접속, 양측 접속, 및 좌측 접속의, 아라비아어 필기체" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp73395"> </a> <div class="pFigureCaption">
+그림 4-2	아라비아어의 필기체<br /><br />
+</div><a name="wp73396"> </a> <p class="pBody">
+이것들 4 개의 형태는, 각각 매우 차이가 납니다.  이와 같이 형상이 변화하고 있는 것은, 영어의 필기체의 경우에서도 기본적으로 같습니다.
+</p>
+<a name="wp73449"> </a> <p class="pBody">
+문맥에 따라서는, 2 개의 Glyph가 형상을 크게 변화 그런데, 단일의 Glyph를 형성하는 일도 있습니다. 이런 종류의 융합된 Glyph는, 「합자」라고 불립니다. <em class="cEmphasis"></em>예를 들어, 대부분의 영어 폰트에는,<a  href="j2d-fonts.html#wp73408">그림 &#xA0;4-3</a>  에 나타내는 것 같은 합자 「fi」가 있습니다. <em class="cEmphasis"></em>이 융합된 Glyph에서는, 단지 2 개의 문자를 늘어놓는 것이 아니라, 문자 「f」가 뚫고 나온 부분을 고려해, 다음의 「i」라고 늘어놓았을 때에 자연스럽게 보이도록(듯이), 2 개의 문자를 결합하고 있습니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp73406"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-fonts7.gif" height="88" width="358" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp73408"> </a> <div class="pFigureCaption">
+그림 4-3	영어의 합자<br /><br />
+</div><a name="wp73409"> </a> <p class="pBody">
+합자는, 아라비아어에서도 사용되고 있어 일부의 합자의 사용은 불가결합니다. 즉, 적절한 합자를 사용하지 않고 , 특정의 문자의 편성을 표시할 수 없습니다. 아라비아 문자로부터 형성되는 합자는, 영어의 경우보다 한층 더 형상이 크게 변화하고 있습니다. 예를 들어,<a  href="j2d-fonts.html#wp73421">그림 &#xA0;4-4</a>  는, 서로 된 2 개의 아라비아 문자가 어떠한 합자를 형성하는지를 나타낸 것입니다.
+</p>
+<a name="wp73419"> </a> <p class="pBody">
+</p><div align="left"><img src="images/j2d-fonts8.gif" height="99" width="358" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp73421"> </a> <div class="pFigureCaption">
+그림 4-4	아라비아어의 합자<br /><br />
+</div><a name="wp73474"> </a> <h3 class="pHeading2">
+4.3. 2	텍스트의 순서 붙어라
+</h3>
+<a name="wp73475"> </a> <p class="pBody">
+Java&#8482; 프로그램 언어에서는, 텍스트는 Unicode 문자 인코딩을 사용해 encode 됩니다. Unicode 문자 인코딩을 사용하는 텍스트는, 「논리적 순서」에 따라 메모리에 포함됩니다. <em class="cEmphasis"></em>논리적 순서란, 문자나 단어를 읽고 쓰기하는 순서입니다. 논리적 순서는, Glyph를 표시하는 순서인 「시각적 순서」라고 반드시 같지는 않습니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp73476"> </a> <p class="pBody">
+어느 특정의 서기법 (필기)에서의 Glyph의 시각적 순서는, 「필기 순서」라고 불립니다. 예를 들어, 로마자 텍스트의 필기 순서는 왼쪽에서 오른쪽에서, 아라비아어와 헤브라이어의 필기 순서는 오른쪽에서 왼쪽입니다.  
+</p>
+<a name="wp73477"> </a> <p class="pBody">
+서기법에 따라서는, 필기 순서에 가세해, 텍스트행에 Glyph나 단어를 배열하기 위한 규칙을 가지는 것이 있습니다. 예를 들어, 아라비아어와 헤브라이어에서는, 문자는 금방 다른 곳으로늘어놓을 수 있습니다만, 숫자는 왼쪽에서 오른쪽으로 늘어놓을 수 있습니다. 따라서, 영어의 텍스트가 파묻히지 않은 경우에서도, 아라비아어와 헤브라이어는 진정한 의미로 쌍방향 언어이다고 할 수가 있습니다.
+</p>
+<a name="wp73478"> </a> <p class="pBody">
+서기법의 시각적 순서는, 복수의 언어가 혼재하는 경우에서도 유지하지 않으면 안됩니다. 이것을 나타내고 있는 것이, 영어의 문장안에 아라비아어의 어구가 파묻힌<a  href="j2d-fonts.html#wp73488">그림 &#xA0;4-5</a>  입니다.  
+</p>
+<a name="wp73482"> </a> <p class="pBody">
+<b class="cBold">주:</b> 차의 예와 그 후의 몇개의 예에서는, 아라비아어와 헤브라이어의 텍스트를 대문자로 나타내, 공백은 밑줄로 나타내고 있습니다. 각 도에는, 메모리에 포함되고 있는 문자의 표현 (논리적 순서의 문자)이라고 실제로 표시되는 문자의 표현 (시각적 순서의 문자)의 2 개의 부분이 있습니다. 각 도에는, 메모리에 포함되고 있는 문자의 표현 (논리적 순서의 문자)이라고 실제로 표시되는 문자의 표현 (시각적 순서의 문자)의 2 개의 부분이 있습니다. 문자 박스아래의 숫자는, 삽입 오프셋(offset)를 나타냅니다.
+</p>
+<a name="wp73734"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig44.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp73488"> </a> <div class="pFigureCaption">
+그림 4-5	쌍방향 텍스트<br /><br />
+</div><a name="wp73489"> </a> <p class="pBody">
+아라비아어의 단어는 영어의 문장의 일부입니다만, 아라비아어의 필기 순서인 왼쪽에서 오른쪽으로 기술되고 있습니다. 이탤릭체의 아라비아어의 단어는, plaintext의 아라비아어의 단어보다 논리적으로 나중에 있으므로, 시각적으로는 plaintext의 아라비아어의 좌측에 있습니다.
+</p>
+<a name="wp73490"> </a> <p class="pBody">
+왼쪽에서 오른쪽으로 기술하는 텍스트와 오른쪽에서 왼쪽으로 기술하는 텍스트가 혼재하는 행을 표시하는 경우는, 「기준 방향」이 중요합니다. 기준 방향이란, 주요한 서기법의 필기 순서입니다. 예를 들어, 텍스트가 주로 영어로 쓰여져 있어, 그 중에 아라비아어가 몇개인가 파묻히고 있는 경우, 기준 방향은 왼쪽에서 오른쪽이 됩니다. 한편, 텍스트가 주로 아라비아어로 쓰여져 있어, 몇개의 영어나 숫자가 파묻히고 있는 경우는, 기준 방향은 오른쪽에서 왼쪽이 됩니다.
+</p>
+<a name="wp73491"> </a> <p class="pBody">
+일반적으로의 방향의 텍스트의 일부를 표시할 때의 순서는, 기준 방향에 의해 정해집니다. <a  href="j2d-fonts.html#wp73488"><a  href="j2d-fonts.html#wp73488">그림 4-5</a>  에 나타낸 예에서는, 기준 방향은 왼쪽에서 오른쪽입니다. 이 예에는 3 개의 방향이 있어, 문두의 영어의 텍스트는 왼쪽에서 오른쪽에, 아라비아어의 텍스트는 금방 다른 곳으로, 피리어드는 왼쪽에서 오른쪽에 기술되고 있습니다.  
+</p>
+<a name="wp73495"> </a> <p class="pBody">
+텍스트의 흐름안에 그래픽이 파묻히는 일도 있습니다. 텍스트의 흐름과 행의 즉시에게 주는 영향이라고 하는 점에서는, 이러한 인 라인 그래픽은, Glyph와 같이 동작합니다. 인 라인 그래픽이 문자의 흐름 중(안)에서 적절한 장소에 표시되도록(듯이) 하려면 , Glyph와 같은 쌍방향 레이아웃 알고리즘을 사용해, 인 라인 그래픽을 배치할 필요가 있습니다.
+</p>
+<a name="wp73496"> </a> <p class="pBody">
+1 행중의 Glyph의 순서를 결정하기 위해서(때문에) 사용되는 정확한 알고리즘의 자세한 것은, 「The Unicode Standard, Version 2.0」의 항 3.11 「Bidirectional Algorithm」의 설명을 참조해 주세요.
+</p>
+<a name="wp63651"> </a> <h3 class="pHeading2">
+4.3. 3	텍스트의 치수 결정과 배치
+</h3>
+<a name="wp63656"> </a> <p class="pBody">
+물건 스페이스 폰트를 사용하고 있는 경우는 별도입니다만, 1 개의 폰트에서도 문자에 의해 폭은 다릅니다. 따라서, 텍스트의 배치와 치수 결정에서는, 사용되고 있는 문자수는 아니고, 어느 문자가 사용되고 있을까를 정확하게 파악할 필요가 있습니다. 예를 들어, proportional font로 표시되는 숫자의 열을 오른쪽맞춤 하는 경우, 공백을 몇개인가 추가하는 것에 의해 텍스트를 배치할 수 없습니다. 열을 적절히 가지런히 하려면 , 각 숫자의 정확한 폭을 조사해 그 폭에 응해 적절히 조정을 실시할 필요가 있습니다.  
+</p>
+<a name="wp63660"> </a> <p class="pBody">
+텍스트는, 복수의 폰트나, 볼드, 이탤릭등이 다양한 자체를 사용해 표시되는 일이 있습니다. 이 경우는, 어떠한 자체가 사용되고 있을까에 의해, 같은 문자에서도 형상이나 폭이 다를 가능성이 있습니다. 텍스트의 적절한 배치, 치수 측정, 및 렌더링을 실시하려면 , 각 문자와 그 문자에 적용되는 자체의 양쪽 모두를 파악할 필요가 있습니다. <em class="cEmphasis"></em><code class="cCode">TextLayout</code> 는, 이 처리를 사용자에 대신해 실시합니다.  
+</p>
+<a name="wp63663"> </a> <p class="pBody">
+헤브라이어나 아라비아어등의 언어로 텍스트를 적절히 표시하려면 , 각 문자의 치수를 측정해, 인접하는 문자의 문맥 중(안)에서 문자를 배치할 필요가 있습니다. 문자의 형상과 위치는 문맥에 의해 바뀌는 일이 있으므로, 문맥을 고려하지 않고 이러한 텍스트의 치수 결정과 배치를 실시하면, 얻을 수 있는 결과는 올바르지 않은 것이 됩니다.
+</p>
+<a name="wp68590"> </a> <h3 class="pHeading2">
+4.3. 4	텍스트 조작의 지원
+</h3>
+<a name="wp69042"> </a> <p class="pBody">
+표시되고 있는 텍스트를 편집할 수 있도록(듯이) 하려면 , 다음 일이 가능하지 않으면 안됩니다.
+</p>
+<ul class="pBullet1"><a name="wp69045"> </a> <div class="pBullet1"><li>사용자가 텍스트를 입력했을 때에, 새로운 문자가 삽입되는 장소를 나타내는 caret의 표시</li></div>
+<a name="wp69048"> </a> <div class="pBullet1Plus"><li>사용자의 입력에 응한 caret와 삽입 포인트의 이동</li></div>
+<a name="wp69058"> </a> <div class="pBullet1Plus"><li>사용자의 선택 부분의 검출 (히트 검출)</li></div>
+<a name="wp69243"> </a> <div class="pBullet1Last"><li>선택된 텍스트의 강조 표시</li></div>
+</ul>
+<a name="wp68895"> </a> <h4 class="pHeading3">
+4.3. 4.1	caret의 표시
+</h4>
+<a name="wp68896"> </a> <p class="pBody">
+편집 가능한 텍스트에서는, 현재의 삽입 포인트를 그래피컬하게 나타내기 위해서(때문에) 「caret」가 사용됩니다.  삽입 포인트란, 텍스트내에서 새로운 문자가 삽입되는 위치입니다. 일반적으로, caret는, 2 개의 Glyph의 사이가 점멸하는 종선으로 표시됩니다. 새로운 문자는, 이 caret의 장소에 삽입되어 표시됩니다.  
+</p>
+<a name="wp68897"> </a> <p class="pBody">
+caret 위치의 계산은, 특히 쌍방향 텍스트의 경우에는 복잡하게 되는 일이 있습니다. 쌍방향 텍스트에서는, 문자 오프셋(offset)에 대응하는 2 개의 Glyph가 서로 인접해 표시되는 것은 아니기 때문에, 방향의 경계상의 삽입 오프셋(offset)는, caret 위치로서 2 개의 가능성을 가집니다. 이것을 나타내고 있는 것이,<a  href="j2d-fonts.html#wp68918">그림 &#xA0;4-6</a>  입니다. 이 그림에서는, caret가 어느 Glyph에 대응하고 있는지를 나타내기 위해서(때문에), caret가 꺽쇄묶음으로 표시되고 있습니다.
+</p>
+<a name="wp68916"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig79.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68918"> </a> <div class="pFigureCaption">
+그림 4-6	듀얼 caret<br /><br />
+</div><a name="wp68919"> </a> <p class="pBody">
+문자 오프셋(offset) 8 은, 「_」의 그리고, 「A」의 전의 장소에 대응하고 있습니다. 여기서 사용자가 아라비아어의 문자를 입력하면(자), 입력한 문자의 Glyph는 「A」의 오른쪽 (전)으로 표시됩니다.  영어의 문자를 입력하면(자), 그 Glyph는 _ 의 오른쪽 ( 후 )으로 표시됩니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp73866"> </a> <p class="pBody">
+이러한 상황에 대처하기 위해서, 일부의 시스템에서는, 강한 (주) caret와 약한 (부) caret의 듀얼 caret를 표시합니다. 강한 caret는, 문자의 방향이 텍스트의 기준 방향과 같은 경우에, 삽입된 문자가 표시되는 장소를 나타냅니다. 약한 caret는, 문자의 방향이 기준 방향과 역의 경우에, 삽입된 문자가 표시되는 장소를 나타냅니다. <code class="cCode">TextLayout</code> 는 듀얼 caret를 자동적으로 지원합니다만,<code class="cCode">JTextComponent</code> 는 듀얼 caret를 지원하고 있습니다.
+</p>
+<a name="wp68922"> </a> <p class="pBody">
+쌍방향 텍스트를 대상으로 하는 경우는, 문자 오프셋(offset)의 전에 Glyph의 폭을 단순하게 더하는 것 만으로는, caret 위치를 계산할 수 없습니다. 이러한 방법을 사용했을 경우,<a  href="j2d-fonts.html#wp68932">그림 4-7</a>  에 나타내도록(듯이), caret가 잘못한 장소에 draw 되어 버립니다.  
+</p>
+<a name="wp68930"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig610.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68932"> </a> <div class="pFigureCaption">
+그림 4-7	부정한 장소에 draw 된 caret<br /><br />
+</div><a name="wp69215"> </a> <p class="pBody">
+caret를 적절히 배치하려면, 오프셋(offset)의 좌측에 있는 모든 Glyph의 폭을 추가함과 함께, 현재의 문맥을 고려할 필요가 있습니다. 문맥을 고려에 넣지 않으면 Glyph의 메트릭스가 표시와 일치하지 않게 될 가능성이 있습니다. 어느 Glyph가 사용될까는, 문맥에 의해도 좌우되기 때문입니다.
+</p>
+<a name="wp73930"> </a> <h4 class="pHeading3">
+4.3. 4.2	caret의 이동
+</h4>
+<a name="wp73931"> </a> <p class="pBody">
+어느 텍스트 문자 편집기에서도, 사용자는 커서 키를 사용해 caret를 이동할 수 있습니다. 사용자는, 자신이 누른 커서 키의 방향으로 caret가 이동하는 것을 기대하고 있습니다. 왼쪽에서 오른쪽으로 기술하는 텍스트에서는, 삽입 오프셋(offset)의 이동도 단순합니다. 오른쪽 커서 키가 밀리면(자) 삽입 오프셋(offset)를 1 개 늘려, 왼쪽 커서 키가 밀리면(자) 삽입 오프셋(offset)를 1 개 줄입니다. 쌍방향 텍스트나, 합자가 포함된 텍스트에서는, 커서 키를 누르면(자), 방향의 경계에서 caret가 몇개의 Glyph를 뛰어넘어 방향이 거꾸로 되는 부분에서는 역방향으로 caret가 이동하게 됩니다.  
+</p>
+<a name="wp68945"> </a> <p class="pBody">
+쌍방향 텍스트로 caret를 원활히 이동하려면 , 텍스트의 방향을 고려할 필요가 있습니다. 오른쪽 커서 키가 밀렸을 때에 삽입 오프셋(offset)를 1 개 늘려, 왼쪽 커서 키가 밀렸을 때에 삽입 오프셋(offset) 1 개(살) 줄이는 것 만으로는 불충분합니다. 현재의 삽입 오프셋(offset)가, 오른쪽에서 왼쪽으로 기술하는 문자안에 있는 경우는, 오른쪽 커서 키가 밀리면(자) 삽입 오프셋(offset)를 줄여, 왼쪽 커서 키가 밀리면(자) 삽입 오프셋(offset)를 늘릴 필요가 있습니다.  
+</p>
+<a name="wp68949"> </a> <p class="pBody">
+방향의 경계에 걸친 caret의 이동은, 한층 더 복잡하게 됩니다. <a  href="j2d-fonts.html#wp68955"><a  href="j2d-fonts.html#wp68955">그림 4-8</a>  은, 사용자가 커서 키를 사용해 이동중에, 방향의 경계를 넘으면(자) 어떠한 일이 일어나는지를 나타내고 있습니다. 표시되고 있는 텍스트내에서 오른쪽으로 3 개 이동하면(자), 각각 오프셋(offset) 7, 19, 및 18 의 문자로 이동하게 됩니다.
+</p>
+<a name="wp68953"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig1211.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68955"> </a> <div class="pFigureCaption">
+그림 4-8	caret의 이동<br /><br />
+</div><a name="wp68956"> </a> <p class="pBody">
+Glyph에 따라서는, 그 사이에 caret를 둘 수가 없는 것이 있습니다.  이 경우는, 이러한 Glyph가 마치 1 개의 문자를 나타내 있는 것과 같게, caret를 이동할 필요가 있습니다. 예를 들어, 「o」라고 모음 변이가 2 개의 독립한 문자에 의해 나타내지고 있는 경우, 「o」라고 모음 변이의 사이에 caret를 둘 수 없습니다 (자세한 것은, 「The Unicode Standard, Version 2.0」의 제 5 장을 참조). <em class="cEmphasis"></em>
+</p>
+<a name="wp73936"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 는, 쌍방향 텍스트에서의 caret의 원활한 이동을 간단하게 실현되기 위한 메소드 (<code class="cCode">getNextRightHit</code> 와 <code class="cCode">getNextLeftHit</code>)를 제공하고 있습니다.  
+</p>
+<a name="wp68966"> </a> <h4 class="pHeading3">
+4.3. 4.3	당 판정
+</h4>
+<a name="wp69108"> </a> <p class="pBody">
+당 판정 디바이스 공간내에서의 장소는, 자주 텍스트 오프셋(offset)로 변환하지 않으면 안됩니다. 예를 들어, 선택 가능한 텍스트상에서 사용자가 마우스를 클릭했을 경우, 마우스의 장소는 텍스트 오프셋(offset)에 변환되어 선택 범위의 한편의 구석으로서 사용됩니다. 이것은, 논리적이게는 caret의 배치와 역의 조작입니다.  
+</p>
+<a name="wp69116"> </a> <p class="pBody">
+쌍방향 텍스트를 대상으로 하는 경우, 디스플레이내의 시각적으로는 단일의 장소가, 원의 텍스트에서는 2 개가 다른 오프셋(offset)에 대응하는 일이 있습니다.  이것을 나타내고 있는 것이,<a  href="j2d-fonts.html#wp68981">그림&#160;4-9</a>  입니다.
+</p>
+<a name="wp68979"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig912.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp68981"> </a> <div class="pFigureCaption">
+그림 4-9	쌍방향 텍스트의 히트 판정<br /><br />
+</div><a name="wp69131"> </a> <p class="pBody">
+시각적으로는 단일의 장소가, 2 개(살)이 다른 오프셋(offset)에 대응하는 일이 있으므로, 쌍방향 텍스트의 히트 판정에서는, 목적의 장소의 Glyph가 발견될 때까지 Glyph의 폭을 계산해, 해당하는 Glyph가 발견되면 그 위치를 문자 오프셋(offset)에 대응 붙인다고 하는 처리만으로는 불충분합니다. 2 개의 선택사항의 쳐 적절한 것을 선택하려면 , 히트가 있던 것은 어느 쪽측인지를 검출할 필요가 있습니다.  
+</p>
+<a name="wp73769"> </a> <p class="pBody">
+<code class="cCode">TextLayout.hitTestChar</code> 를 사용하면(자), 히트 판정을 실시할 수가 있습니다. 히트 정보는 <code class="cCode">TextHitInfo</code> 객체안에 캡슐화되어 히트가 있던 것은 어느 쪽측 가에 관한 정보도 그 중에 포함되어 있습니다.  
+</p>
+<a name="wp68983"> </a> <h4 class="pHeading3">
+4.3. 4.4	선택 부분의 강조 표시
+</h4>
+<a name="wp68984"> </a> <p class="pBody">
+선택 범위의 문자는, 강조 표시 영역에 의해 그래피컬하게 표시됩니다.  강조 표시 영역에서는, Glyph는 반전 표시되는지, 또는 다른 배경색 위에 표시됩니다.  
+</p>
+<a name="wp68991"> </a> <p class="pBody">
+쌍방향 텍스트의 경우는, caret 같이, 강조 표시 영역도 단방향 텍스트의 경우보다 복잡하게 됩니다. 쌍방향 텍스트에서는, 인접하는 범위의 문자에서도, 표시되었을 때에 강조 표시 영역이 인접하지 않는 것이 있습니다. 반대로, 강조 표시 영역이, 시각적으로 인접하는 범위의 Glyph를 나타내고 있는 경우에서도, 단일의 인접하는 범위의 문자에 대응한다고는 할 수 없습니다.
+</p>
+<a name="wp68992"> </a> <p class="pBody">
+이 때문에, 쌍방향 텍스트로 선택 부분을 강조 표시하는 경우는, 다음의 2 개의 방법이 존재하게 됩니다.
+</p>
+<ul class="pBullet1"><a name="wp68993"> </a> <div class="pBullet1"><li>「논리적 강조 표시」 &#8212; 논리적 강조 표시에서는, 선택된 문자는 텍스트 모델 중(안)에서 항상 인접한다. 강조 표시 영역은 인접하고 있지 않는 경우가 있다. <em class="cEmphasis"></em>논리적 강조 표시의 예에 대해서는,<a  href="j2d-fonts.html#wp69006">그림 4-10</a>  을 참조. </li></div>
+<a name="wp68997"> </a> <div class="pBullet1Last"><li>「시각적 강조 표시」 &#8212; 시각적 강조 표시에서는, 선택된 문자의 범위가 복수 존재하는 일이 있지만, 강조 표시 영역은 항상 인접한다. <em class="cEmphasis"></em>시각적 강조 표시의 예에 대해서는,<a  href="j2d-fonts.html#wp69012">그림 &#xA0;4-11</a>  를 참조. </li></div>
+</ul>
+<a name="wp69004"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig1013.gif" alt="논리적 강조 표시 (문자가 인접)" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69006"> </a> <div class="pFigureCaption">
+그림 4-10	논리적 강조 표시 (문자가 인접)<br /><br />
+</div><a name="wp69010"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig1114.gif" alt="시각적 강조 표시 (강조 표시 영역이 인접)" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69012"> </a> <div class="pFigureCaption">
+그림 4-11	시각적 강조 표시 (강조 표시 영역이 인접) <br /><br />
+</div><a name="wp74466"> </a> <p class="pBody">
+논리적 강조 표시가 구현은 용이합니다.  이것은, 선택된 문자가 텍스트내에서 항상 인접하기 (위해)때문에입니다.  
+</p>
+<a name="wp74467"> </a> <h3 class="pHeading2">
+4.3. 5	Java&#8482; 어플리케이션에서의 텍스트 레이아웃의 실행
+</h3>
+<a name="wp74473"> </a> <p class="pBody">
+ 사용하는 Java&#8482; API 에 응해, 텍스트 레이아웃의 제어를 선택해 증감할 수가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp74474"> </a> <div class="pBullet1"><li>한묶음의 텍스트를 표시할 뿐(만큼)의 경우나, 편집 가능한 텍스트의 제어가 필요한 경우는, 사용자에 대신해 텍스트 레이아웃을 실행하는 <code class="cCode">JTextComponent</code> 를 사용할 수 있습니다. <code class="cCode"><code class="cCode">JTextComponent</code> 는, 대부분의 국제 어플리케이션의 요구에 대처할 수 있도록(듯이) 설계되고 있어 쌍방향 텍스트를 지원하고 있습니다. <code class="cCode"> JTextComponent</code> 에 대한 자세한 것은, Java 튜토리얼의 「Creating a GUI with JFC/Swing」를 참조해 주세요. </li></div>
+<a name="wp74475"> </a> <div class="pBullet1Plus"><li>간단한 텍스트 캐릭터 라인을 표시하고 싶은 경우는,<code class="cCode">Graphics2D.drawString</code> 를 호출해, 캐릭터 라인의 레이아웃을 Java 2D&#8482; 에 실시하게 할 수가 있습니다. <code class="cCode">drawString</code> 는, 자체 첨부 캐릭터 라인이나 쌍방향 텍스트를 포함한 캐릭터 라인의 렌더링에도 사용할 수 있습니다. <code class="cCode">Graphics2D</code> 에 의한 텍스트의 렌더링에 대한 자세한 것은,<a  href="j2d-awt.html#wp68381">「graphics primitive의 렌더링」</a>을 참조해 주세요. </li></div>
+<a name="wp74476"> </a> <div class="pBullet1Plus"><li>독자적인 텍스트 편집 루틴을 구현하는 경우는,<code class="cCode">TextLayout</code> 를 사용하면(자), 텍스트 레이아웃, 강조 표시, 및 히트 검출을 관리할 수 있습니다. <code class="cCode"><code class="cCode">TextLayout</code> 가 제공하는 기능을 이용하면, 다양한 폰트, 언어, 및 쌍방향 텍스트가 혼재하는 텍스트 캐릭터 라인 등, 대부분의 경우에 대처할 수 있습니다. TextLayout 의 사용법에 대한 자세한 것은,<a  href="j2d-fonts.html#wp74623">「텍스트 레이아웃의 관리」</a>를 참조해 주세요. </li></div>
+<a name="wp74477"> </a> <div class="pBullet1Last"><li>텍스트의 형상 결정과 배치를 완전하게 제어하고 싶은 경우는,<code class="cCode">Font</code> 를 사용해 독자적인 <code class="cCode">GlyphVectors</code> 를 구축해, 이것들을 <code class="cCode">Graphics2D</code> 를 통해서 렌더링 할 수가 있습니다. 독자적인 텍스트 레이아웃 기구의 구현 방법에 대한 자세한 것은,<a  href="j2d-fonts.html#wp66677">「독자적인 텍스트 레이아웃 기구의 구현」</a>을 참조해 주세요. </li></div>
+</ul>
+<a name="wp74620"> </a> <p class="pBody">
+일반적으로, 텍스트 레이아웃 조작을 사용자가 실시할 필요는 없습니다. 대부분의 어플리케이션에서는,<code class="cCode">JTextComponent</code> 가, 정적이어 편집 가능한 텍스트를 표시하기 위한 최선의 해결 방법입니다. 다만,<code class="cCode">JTextComponent</code> 는, 쌍방향 텍스트에서의 듀얼 caret나, 인접하고 있지 않는 선택 부분의 표시를 지원하고 있습니다. 어플리케이션으로 이러한 기능이 필요한 경우, 또는 독자적인 텍스트 편집 루틴을 구현하고 싶은 경우는, Java 2D 텍스트 레이아웃 API 를 사용할 수 있습니다.  
+</p>
+<a name="wp74623"> </a> <h2 class="pHeading1">
+4.4	텍스트 레이아웃의 관리
+</h2>
+<a name="wp67703"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 클래스는, 아라비아어나 헤브라이어등이 다양한 서기법의 복수의 자체와 문자를 포함한 텍스트를 지원하고 있습니다. (아라비아어와 헤브라이어의 경우, 허용 할 수 있는 정도의 표시를 실시하려면  텍스트의 형상 결정과 순서부를 다시 할 필요가 있으므로, 표시는 특히 곤란합니다. )
+</p>
+<a name="wp67659"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 를 사용하면(자), 영어만의 텍스트를 대상으로 하는 경우에서도, 텍스트의 표시와 치수 결정의 프로세스는 단순화 됩니다. <code class="cCode">TextLayout</code> 를 사용하면, 수고를 들이는 일 없이 고품질의 typography를 실현할 수 있습니다.
+</p>
+<a name="wp74904"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp67656">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp67656"> </a> <div class="pCellHeading">
+텍스트 레이아웃의 퍼포먼스
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68644"> </a> <div class="pCellBody">
+<code class="cCode">TextLayout</code> 는, 단순한 단방향 텍스트를 표시하는 경우에서도, 퍼포먼스에 큰 영향을 주는 것이 없게 설계되고 있습니다. <code class="cCode">TextLayout</code> 를 사용해 아라비아어나 헤브라이어를 표시하는 경우는, 처리의 오버헤드는 약간 증가합니다. 다만, 1 문자 맞아 대략 마이크로 세컨드 정도의 오버헤드이며, 일반적으로의 draw 코드의 실행과 비교해도 매우 작은 값에 머무르고 있습니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp65533"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 클래스는, 사용자에 대신해 Glyph의 배치와 순서부를 관리합니다. <code class="cCode"><code class="cCode">TextLayout</code> 를 사용하면(자), 다음 일이 생깁니다.
+</p>
+<ul class="pBullet1"><a name="wp65535"> </a> <div class="pBullet1"><li>단방향 및 쌍방향 텍스트의 레이아웃</li></div>
+<a name="wp73543"> </a> <div class="pBullet1Plus"><li>caret의 표시와 이동 </li></div>
+<a name="wp65524"> </a> <div class="pBullet1Plus"><li>텍스트상의 히트 판정의 실행</li></div>
+<a name="wp65525"> </a> <div class="pBullet1Last"><li>텍스트의 선택 부분의 강조 표시</li></div>
+</ul>
+<a name="wp67682"> </a> <p class="pBody">
+경우에 따라서는, 텍스트 레이아웃을 스스로 계산해, 사용하는 Glyph와 Glyph를 배치하는 장소를 정확하게 제어하고 싶은 것이 있습니다. Glyph의 사이즈, kerning 테이블, 및 합자에 관한 정보를 사용하면, 텍스트 레이아웃을 계산하기 위한 독자적인 알고리즘을 구축해, 시스템의 레이아웃 알고리즘을 생략 할 수 있습니다. 자세한 것은,<a  href="j2d-fonts.html#wp66677">「독자적인 텍스트 레이아웃 기구의 구현」</a>을 참조해 주세요.
+</p>
+<a name="wp67652"> </a> <h3 class="pHeading2">
+4.4. 1	텍스트의 레이아웃
+</h3>
+<a name="wp67708"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 는, 쌍방향 (BIDI) 텍스트도 포함해 올바른 형상과 순서로 텍스트를 자동적으로 레이아웃 합니다. 1 행의 텍스트를 나타내는 Glyph의 형상 결정과 순서부를 적절히 실시하기 위해서(때문에)는,<code class="cCode">TextLayout</code> 는 텍스트의 완전한 문맥에 대해 알 필요가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp67714"> </a> <div class="pBullet1"><li>버튼용의 1 어의 라벨, 다이알로그 박스내의 행 등, 단일의 행에 텍스트가 들어가는 경우는, 텍스트로부터 직접 <code class="cCode">TextLayout</code> 를 구축할 수 있다 </li></div>
+<a name="wp67715"> </a> <div class="pBullet1Last"><li>단일의 행에 텍스트가 들어가지 않는 경우, 또는 단일의 행을 탭으로 단락지은 복수의 부분에 분할하고 싶은 경우는, 직접 <code class="cCode">TextLayout</code> 를 구축할 수 없다. 이 경우는, 충분한 문맥을 제공하기 위해서 <code class="cCode">LineBreakMeasurer</code> 를 사용할 필요가 있다</li></div>
+</ul>
+<a name="wp67814"> </a> <p class="pBody">
+텍스트의 기준 방향은, 일반적으로, 텍스트의 속성 (스타일)에 의해 설정됩니다. 이 속성이 없는 경우,<code class="cCode">TextLayout</code> 는 Unicode 의 쌍방향 알고리즘에 따라, 단락내의 최초의 몇개의 문자로부터 기준 방향을 이끌어냅니다.
+</p>
+<a name="wp63814"> </a> <h3 class="pHeading2">
+4.4. 2	듀얼 caret의 표시
+</h3>
+<a name="wp69369"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 는, caret의 형상, 위치, 및 각도 등, caret에 관한 정보를 보관 유지하고 있습니다. <code class="cCode"></code>이 정보를 사용하면(자), 단방향 텍스트와 쌍방향 텍스트의 어디라도, caret를 간단하게 표시할 수 있습니다. 쌍방향 텍스트로 caret를 draw 하는 경우는,<code class="cCode">TextLayout</code> 를 사용하면(자), caret가 적절한 위치에 놓여지는 것이 보증됩니다.  
+</p>
+<a name="wp69399"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 는, 디폴트의 caret <code class="cCode">Shape</code> 를 제공하고 있어, 듀얼 caret를 자동적으로 지원합니다. <code class="cCode">TextLayout</code> 는, 이탤릭체와 이탤릭의 Glyph에 대해서는,<a  href="j2d-fonts.html#wp69408">그림 4-12</a>  에 나타내는 것 같은 각도 첨부의 caret를 작성합니다. 이러한 caret 위치는, 강조 표시하고 부딪혀 판정에서는 Glyph간의 경계로서도 사용되어 사용자에게 위화감을 주지 않게 되어 있습니다.
+</p>
+<a name="wp69406"> </a> <p class="pBody">
+</p><div align="left"><img src="images/fig85.gif" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp69408"> </a> <div class="pFigureCaption">
+그림 4-12	각도 첨부의 caret<br /><br />
+</div><a name="wp67933"> </a> <p class="pBody">
+삽입 포인트가 주어지면(자),<code class="cCode">getCaretShapes</code> 메소드는 2 개의 요소로부터 되는 <code class="cCode">Shapes</code> 의 배열을 돌려줍니다. 이 중 요소 0 에는 강한 caret가, 요소 1 에는 약한 caret (존재하는 경우)가 포함되어 있습니다. 듀얼 caret는, 이러한 <code class="cCode">Shape</code> 를 양쪽 모두 draw 하는 것만으로 표시할 수 있습니다.  caret는, 자동적으로 적절한 위치에 렌더링 됩니다.  
+</p>
+<a name="wp69421"> </a> <p class="pBody">
+독자적인 caret <code class="cCode">Shape</code> 를 사용하는 경우는,<code class="cCode">TextLayout</code> 로부터 caret의 위치와 각도를 꺼내 스스로 caret를 draw 할 수가 있습니다.
+</p>
+<a name="wp69356"> </a> <p class="pBody">
+다음의 예는, 디폴트의 강한 caret와 약한 caret의 <code class="cCode">Shape</code> 를, 색을 바꾸어 표시합니다. 이것은, 듀얼 caret를 구별하기 위한 일반적인 방법입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+Shape[] caretShapes = layout.getCaretShapes(hit);<a name="wp66048"> </a> 
+g2.setColor(PRIMARY_CARET_COLOR); <a name="wp66049"> </a> 
+g2.draw(caretShapes[0]);<a name="wp66050"> </a> 
+if (caretShapes[1] ! = null){  <a name="wp66051"> </a> 
+  g2.setColor(SECONDARY_CARET_COLOR); <a name="wp66052"> </a> 
+  g2.draw(caretShapes[1]); <a name="wp66053"> </a> 
+}<a name="wp67827"> </a> 
+</pre></div>
+<a name="wp74427"> </a> <h3 class="pHeading2">
+4.4. 3	caret의 이동
+</h3>
+<a name="wp74429"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 를 사용해, 사용자가 왼쪽 커서 키 또는 오른쪽 커서 키를 눌렀을 때에 삽입 오프셋(offset)를 결정할 수도 있습니다. 현재의 삽입 오프셋(offset)를 나타내는 <code class="cCode">TextHitInfo</code> 객체를 주면(자),<code class="cCode">getNextRightHit</code> 메소드는, 오른쪽 커서 키가 밀렸을 경우의 올바른 삽입 오프셋(offset)를 나타내는 <code class="cCode">TextHitInfo</code> 객체를 돌려줍니다. <code class="cCode">getNextLeftHit</code> 메소드는, 왼쪽 커서 키에 대해 같은 정보를 돌려줍니다.  
+</p>
+<a name="wp68359"> </a> <p class="pBody">
+다음의 예에서는, 오른쪽 커서 키에 반응해 현재의 삽입 오프셋(offset)가 이동합니다.  
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+TextHitInfo newInsertionOffset =             layout.getNextRightHit(insertionOffset); <a name="wp68360"> </a> 
+if (newInsertionOffset ! = null) { <a name="wp68361"> </a> 
+  Shape[] caretShapes =   <a name="wp68362"> </a> 
+          layout.getCaretShapes(newInsertionOffset);<a name="wp68363"> </a> 
+  // draw carets<a name="wp68364"> </a> 
+  ...<a name="wp74012"> </a> 
+  insertionOffset = newInsertionOffset;<a name="wp74630"> </a> 
+}<a name="wp68387"> </a> 
+</pre></div>
+<a name="wp68373"> </a> <h3 class="pHeading2">
+4.4. 4	당 판정
+</h3>
+<a name="wp68092"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 는, 텍스트의 히트 판정을 행하기 위한 간단한 기구를 제공하고 있습니다. <code class="cCode">hitTestChar</code> 메소드는, 마우스로부터의 <em class="cEmphasis">x</em> 좌표와 <em class="cEmphasis">y</em> 좌표를 인수에 취해,<code class="cCode">TextHitInfo</code> 객체를 돌려줍니다. <code class="cCode">TextHitInfo</code> 에는, 지정된 위치의 삽입 오프셋(offset)와 히트가 있던 것은 어느 쪽측인가가 포함되어 있습니다. 삽입 오프셋(offset)는, 히트에 가장 가까운 오프셋(offset)입니다. 히트가 행의 끝으로부터 초과하고 있는 경우는, 행의 끝의 오프셋(offset)가 돌려주어집니다.
+</p>
+<a name="wp69476"> </a> <p class="pBody">
+다음의 예는,<code class="cCode">TextLayout</code> 에 대해서 <code class="cCode">hitTestChar</code> 를 호출해,<code class="cCode">getInsertIndex</code> 를 사용해 오프셋(offset)를 꺼냅니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+TextHitInfo hit = layout.hitTestChar(x, y);<a name="wp68093"> </a> 
+int insertIndex = hit.getInsertIndex();<a name="wp68094"> </a> 
+</pre></div>
+<a name="wp68115"> </a> <h3 class="pHeading2">
+4.4. 5	선택 부분의 강조 표시
+</h3>
+<a name="wp68159"> </a> <p class="pBody">
+선택 부분의 강조 표시 강조 표시 영역을 나타내는 <code class="cCode">Shape</code> 는 <code class="cCode">TextLayout</code> 로부터 취득할 수 있습니다. <code class="cCode"><code class="cCode">TextLayout</code> 는, 강조 표시 영역의 크기를 계산할 경우에, 문맥을 자동적으로 고려합니다. <code class="cCode">TextLayout</code> 는, 논리적 강조 표시와 시각적 강조 표시의 양쪽 모두를 지원하고 있습니다.
+</p>
+<a name="wp68271"> </a> <p class="pBody">
+다음의 예는, 강조 표시 영역을 강조 표시색으로 전부 칠해, 전부 칠한 영역 위에 <code class="cCode">TextLayout</code> 를 draw 합니다. 이것은, 강조 표시 텍스트를 표시하기 위한 1 개(살)의 간단한 방법입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+Shape highlightRegion = layout.getLogicalHighlightShape(hit1,      hit2); <a name="wp68272"> </a> 
+graphics.setColor(HIGHLIGHT_COLOR); <a name="wp68273"> </a> 
+graphics.fill(highlightRegion); <a name="wp68274"> </a> 
+graphics.drawString(layout, 0, 0);<a name="wp68275"> </a> 
+</pre></div>
+<a name="wp63976"> </a> <h3 class="pHeading2">
+4.4. 6	레이아우트메트릭스의 문의
+</h3>
+<a name="wp63978"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 에서는, 이 객체가 나타내고 있는 텍스트의 모든 범위의 그라피카르메트릭스에 액세스 할 수 있습니다. <code class="cCode">TextLayout</code> 로부터 취득할 수 있는 메트릭스에는, 아센트, 디 센트, leading, 유효폭, 가시 유효폭, 및 경계의 구형 영역이 있습니다.
+</p>
+<a name="wp63985"> </a> <p class="pBody">
+1 개의 <code class="cCode">TextLayout</code> 에는, 복수의 <code class="cCode">Font</code> 를 관련지을 수가 있어 다른 스타일 런에는 다른 폰트를 사용할 수 있습니다. <code class="cCode">TextLayout</code> 의 아센트와 디 센트의 값은, 그 <code class="cCode">TextLayout</code> 로 사용해져 모든 폰트를 통해서의 최대치입니다. <code class="cCode">TextLayout</code> 의 leading의 계산은 보다 복잡해, 단지 leading의 최대치가 아닙니다.
+</p>
+<a name="wp63988"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 의 유효폭이란, 길이입니다. 즉, 제일왼쪽의 Glyph의 좌단으로부터 제일 오른쪽의 Glyph의 우단까지의 거리입니다. 유효폭은, 「유효폭의 합계」라고 불리는 일도 있습니다. <em class="cEmphasis"></em>「가시 유효폭」은, 후속의 공백을 포함하지 않는 <code class="cCode">TextLayout</code> 의 길이입니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp66438"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 의 바운딩 박스는, 레이아웃내의 모든 텍스트를 둘러쌉니다. 이것에는, 모든 가시 Glyph 및 caret의 경계가 포함됩니다. (이러한 중  일부의 것은, 기점 또는 기점으로 유효폭을 더한 것 에서 비어져 나오는 일이 있습니다. ) 바운딩 박스는, 화면상의 특정의 위치에 대하는 것은 아니고,<code class="cCode">TextLayout</code> 의 기점에 대한 상대적인 것입니다.  
+</p>
+<a name="wp66419"> </a> <p class="pBody">
+다음의 예는,<code class="cCode">TextLayout</code> 의 텍스트를, 레이아웃의 바운딩 박스안에 draw 합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+graphics.drawString(layout, 0, 0); <a name="wp63991"> </a> 
+Rectangle2D bounds = layout.getBounds(); <a name="wp63992"> </a> 
+graphics.drawRect(bounds.getX()-1, bounds.getY()-1, <a name="wp63993"> </a> 
+         bounds.getWidth()+2, bounds.getHeight()+2);<a name="wp63994"> </a> 
+</pre></div>
+<a name="wp64005"> </a> <h3 class="pHeading2">
+4.4. 7	복수의 행에 걸치는 텍스트의 draw
+</h3>
+<a name="wp64007"> </a> <p class="pBody">
+<code class="cCode">TextLayout</code> 를 사용해, 복수의 행에 걸치는 텍스트를 표시할 수도 있습니다. 예를 들어, 1 개의 단락을 대상으로, 어느 일정한폭으로 행을 되풀이해 복수행의 텍스트로서 표시할 수가 있습니다.  
+</p>
+<a name="wp66482"> </a> <p class="pBody">
+이 경우, 텍스트의 각 행을 나타내는 <code class="cCode">TextLayouts</code> 를 직접 작성하는 것은 하지 않습니다.  이것들은, 사용자에 대신해 <code class="cCode">LineBreakMeasurer</code> 가 생성해 줍니다. 쌍방향 텍스트에서는, 단락내의 모든 텍스트를 파악할 때까지는 순서부를 적절히 실시할 수가 없는 경우가 있습니다. <code class="cCode">LineBreakMeasurer</code> 는, 문맥에 관한 충분한 정보를 캡슐화하므로, 올바른 <code class="cCode">TextLayout</code> 를 생성할 수 있습니다.
+</p>
+<a name="wp64011"> </a> <p class="pBody">
+복수의 행에 걸쳐 텍스트를 표시하는 경우, 행의 길이는 일반적으로 표시 영역의 폭에 의해 정해집니다. 행 브레이크 (행의 즉시)는, 행을 거두지 않으면 안 되는 그래피컬한 폭에 근거해, 행의 개시 장소와 종료 장소를 결정하는 프로세스입니다.  
+</p>
+<a name="wp66480"> </a> <p class="pBody">
+무엇보다 일반적인 방법은, 각 행에 들어가는 최대수의 단어를 배치하는 방법입니다. 이 방법은,<code class="cCode">LineBreakMeasurer</code> 에 구현되고 있습니다. 이 밖에, 보다 복잡한 행 브레이크의 방법으로서 하이픈 자동 삽입을 사용하는, 단락 내부에서의 행의 길이를 가능한 한 가지런히 하는 등 방법이 있습니다. Java 2D&#8482; API 는, 이러한 방법의 구현은 제공하고 있습니다.
+</p>
+<a name="wp64020"> </a> <p class="pBody">
+텍스트의 단락을 복수의 행으로 분할하려면 , 단락 전체에 대해서 <code class="cCode">LineBreakMeasurer</code> 를 구축해, 다음에 <code class="cCode">nextLayout</code> 를 호출해 텍스트를 차례차례 처리해, 행 마다 <code class="cCode">TextLayouts</code> 를 생성합니다.  
+</p>
+<a name="wp64022"> </a> <p class="pBody">
+<code class="cCode">LineBreakMeasurer</code> 는, 이 처리를 실시하기 위해서(때문에), 텍스트내에서의 오프셋(offset)를 보관 유지하고 있습니다. 처음은, 오프셋(offset)는 텍스트의 선두에 있습니다. 이 오프셋(offset)는,<code class="cCode">nextLayout</code> 를 호출할 때마다, 생성된 <code class="cCode">TextLayout</code> 의 문자 카운트의 분만큼 이동합니다. 오프셋(offset)가 텍스트의 말미에 도달하면(자),<code class="cCode">nextLayout</code> 는 <code class="cCode">null</code> 를 돌려줍니다.
+</p>
+<a name="wp66620"> </a> <p class="pBody">
+<code class="cCode">LineBreakMeasurer</code> 가 생성하는 각 <code class="cCode">TextLayout</code> 의 가시 유효폭은, 지정된 행의 폭을 넘을 것은 없습니다. <code class="cCode">nextLayout</code> 를 호출할 때, 지정하는 폭을 바꾸면(자), 고정 위치에 이미지가 있는 HTML 페이지나, 탭으로 단락지어진 필드 등, 복잡한 영역에 텍스트를 분할해 거둘 수가 있습니다. <code class="cCode">BreakIterator</code> 를 건네주어, 유효한 분할점이 어딘가를 <code class="cCode">LineBreakMeasurer</code> 에 지시할 수도 있습니다. BreakIterator 를 건네주지 않았던 경우는, 데포르트로켈의 <code class="cCode">BreakIterator</code> 가 사용됩니다.  
+</p>
+<a name="wp66516"> </a> <p class="pBody">
+다음의 예에서는, 2 개국어의 텍스트가 1 행씩 draw 됩니다. 각 행은, 기준 방향이 왼쪽에서 오른쪽이나 오른쪽에서 왼쪽인가에 응해, 왼쪽 마진 또는 오른쪽 마진의 어딘가에 가지런히 할 수 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+Point2D pen = initialPosition; <a name="wp64025"> </a> 
+LineBreakMeasurer measurer = new LineBreakMeasurer(styledText, myBreakIterator);<a name="wp64026"> </a> 
+while (true) {<a name="wp64028"> </a> 
+  TextLayout layout = measurer.nextLayout(wrappingWidth);<a name="wp64029"> </a> 
+  if (layout == null) break;<a name="wp64030"> </a> 
+    pen.y += layout.getAscent(); <a name="wp64031"> </a> 
+    float dx = 0;<a name="wp64032"> </a> 
+    if (layout.isLeftToRight())<a name="wp64033"> </a> 
+      dx = wrappingWidth - layout.getAdvance(); <a name="wp64034"> </a> 
+    layout.draw(graphics, pen.x + dx, pen.y); <a name="wp64035"> </a> 
+    pen.y += layout.getDescent() + layout.getLeading();<a name="wp64036"> </a> 
+}<a name="wp66541"> </a> 
+</pre></div>
+<a name="wp66677"> </a> <h2 class="pHeading1">
+4.5	독자적인 텍스트 레이아웃 기구의 구현
+</h2>
+<a name="wp67334"> </a> <p class="pBody">
+<code class="cCode">GlyphVector</code> 클래스는, 독자적인 레이아웃 알고리즘의 처리 결과를 표시하는 수단을 제공합니다. <code class="cCode"><code class="cCode">GlyphVector</code> 객체는, 캐릭터 라인을 받아, 이 캐릭터 라인을 어떻게 표시할까를 정확하게 계산하는 알고리즘의 출력으로 간주할 수가 있습니다. 시스템에는 편입의 알고리즘이 1 개 있습니다만, Java 2D&#8482; API 에서는 독자적으로 알고리즘을 정의할 수 있습니다.  
+</p>
+<a name="wp72890"> </a> <p class="pBody">
+<code class="cCode">GlyphVector</code> 객체는, 기본적으로는 Glyph와 Glyph의 위치의 배열입니다. 문자 대신에 Glyph를 사용하는 것은, kerning, 합자등의 레이아웃의 특성을 완전하게 제어할 수 있도록(듯이) 하기 (위해)때문에입니다. 예를 들어, 캐릭터 라인 final 를 표시할 경우에, 선두의 fi 라고 하는 부분 캐릭터 라인을 합자의 <em class="cEmphasis">fi</em> 로 옮겨놓고 싶은 것이 있습니다. <em class="cEmphasis"></em>이 경우,<code class="cCode">GlyphVector</code> 객체는, 원의 캐릭터 라인에 포함되는 문자의 수보다 적은 수의 Glyph를 가지게 됩니다.    
+</p>
+<a name="wp72925"> </a> <p class="pBody">
+<a  href="j2d-fonts.html#wp67409">그림 4-13</a>  과 <a  href="j2d-fonts.html#wp67469">그림 4-14</a>  은, 레이아웃 기구에 의해 <code class="cCode">GlyphVector</code> 객체가 어떻게 사용되는지를 나타내고 있습니다. <a  href="j2d-fonts.html#wp67409">그림 4-13</a>  은, 디폴트의 레이아웃 기구를 나타내고 있습니다. <code class="cCode">String</code> 에 대해서 <code class="cCode">drawString</code> 가 불려 가면(자), 편입 레이아웃 기구는 다음의 처리를 실시합니다.
+</p>
+<ul class="pBullet1"><a name="wp72938"> </a> <div class="pBullet1"><li><code class="cCode">Graphics2D</code> 문맥내의 현재의 <code class="cCode">Font</code> 를 사용해, 사용하는 Glyph를 결정한다</li></div>
+<a name="wp72941"> </a> <div class="pBullet1Plus"><li>각 Glyph를 배치하는 위치를 계산한다</li></div>
+<a name="wp72944"> </a> <div class="pBullet1Plus"><li>얻을 수 있던 Glyph와 위치에 관한 정보를 <code class="cCode">GlyphVector</code> 에 포함한다</li></div>
+<a name="wp72945"> </a> <div class="pBullet1Last"><li><code class="cCode">GlyphVector</code> 를, 실제의 draw를 실시하는 Glyph렌다링르틴에 건네준다</li></div>
+</ul>
+<a name="wp74913"> </a> <p class="pBody">
+</p><div align="right"><img src="images/j2d-fontsa.gif" height="130" width="467" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp67409"> </a> <div class="pFigureCaption">
+그림 4-13	편입의 레이아웃 알고리즘<br /><br />
+</div><a name="wp67413"> </a> <p class="pBody">
+<a  href="j2d-fonts.html#wp67469">그림 4-14</a>  은, 독자적인 레이아웃 기구를 사용하는 경우의 처리를 나타내고 있습니다. 독자적인 레이아웃 알고리즘을 사용하려면 , 텍스트를 레이아웃 하는데 필요한 모든 정보를 수집하지 않으면 안됩니다. 기본적인 처리는 다음과 같습니다.
+</p>
+<ul class="pBullet1"><a name="wp72962"> </a> <div class="pBullet1"><li><code class="cCode">Font</code> 를 사용해, 사용하는 Glyph를 결정한다 </li></div>
+<a name="wp72965"> </a> <div class="pBullet1Plus"><li>Glyph를 배치하는 위치를 결정한다 </li></div>
+<a name="wp72968"> </a> <div class="pBullet1Last"><li>이 레이아웃 정보를 <code class="cCode">GlyphVector</code> 에 포함한다</li></div>
+</ul>
+<a name="wp72970"> </a> <p class="pBody">
+텍스트를 렌더링 하려면 ,<code class="cCode">GlyphVector</code> 를 <code class="cCode">drawString</code> 에 건네줍니다. <code class="cCode"> drawString</code> 는, 받은 <code class="cCode">GlyphVector</code> 를 Glyph렌다링에 건네줍니다. <a  href="j2d-fonts.html#wp67469"><a  href="j2d-fonts.html#wp67469">그림 4-14</a>  에서는, 독자적인 레이아웃 알고리즘이 fi 라고 하는 부분 캐릭터 라인을 합자의 <em class="cEmphasis">fi</em> 로 옮겨놓고 있습니다.
+</p>
+<a name="wp74918"> </a> <p class="pBody">
+</p><div align="right"><img src="images/j2d-fonts2.gif" height="136" width="466" alt="독자적인 레이아웃 알고리즘의 사용" border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp67469"> </a> <div class="pFigureCaption">
+그림 4-14	독자적인 레이아웃 알고리즘의 사용<br /><br />
+</div><a name="wp74065"> </a> <h2 class="pHeading1">
+4.6	폰트 파생의 작성
+</h2>
+<a name="wp74066"> </a> <p class="pBody">
+<code class="cCode">Font.deriveFont</code> 메소드를 사용하면(자), 기존의 <code class="cCode">Font</code> 객체로부터, 속성이 다른 새로운 <code class="cCode">Font</code> 객체를 생성할 수 있습니다. 자주(잘) 사용되는 것은, 기존의 폰트를 변형해 새로운 파생 폰트를 작성하는 방법입니다. <code class="cCode"></code><code class="cCode"></code>이 순서는 다음과 같습니다.
+</p>
+<ol class="pList1"><a name="wp74067"> </a> <div class="pList1"><li><code class="cCode">Font</code> 객체를 생성한다 </li></div>
+<a name="wp74068"> </a> <div class="pList1Plus"><li><code class="cCode">Font</code> 에 적용하는 <code class="cCode">AffineTransform</code> 를 작성한다 </li></div>
+<a name="wp74069"> </a> <div class="pList1Last"><li><code class="cCode">Font.deriveFont</code> 을 호출해,<code class="cCode">AffineTransform</code> 를 건네준다</li></div>
+</ol>
+<a name="wp74070"> </a> <p class="pBody">
+이 방법에 따라, 독자적인 사이즈의 폰트나 기존 폰트가 비뚤어진 종류를 간단하게 작성할 수 있습니다.
+</p>
+<a name="wp74071"> </a> <p class="pBody">
+다음의 코드에서는,<code class="cCode">AffineTransform</code> 를 적용해, 폰트 Helvetica 가 비뚤어진 종류를 작성합니다. 다음에, 새로운 파생 폰트를 사용해 캐릭터 라인을 렌더링 합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+	// Create a transformation for the font. <a name="wp74072"> </a> 
+AffineTransform fontAT = new AffineTransform();<a name="wp74073"> </a> 
+fontAT.setToShear(-1. 2, 0.0);<a name="wp74074"> </a> 
+// Create a Font Object. <a name="wp74075"> </a> 
+Font theFont = new Font(&quot;Helvetica&quot;, Font.PLAIN, 1);<a name="wp74076"> </a> 
+// Derive a new font using the shear transform<a name="wp74077"> </a> 
+theDerivedFont = theFont.deriveFont(fontAT);<a name="wp74078"> </a> 
+// Add the derived font to the Graphics2D context<a name="wp74079"> </a> 
+g2.setFont(theDerivedFont);<a name="wp74080"> </a> 
+// Render a string using the derived font<a name="wp74081"> </a> 
+g2.drawString(&#8220;Java&#8221;, 0.0f, 0.0f);<a name="wp74082"> </a> 
+</pre></div>
+<a name="wp74062"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-geom.html">전의 항목</a>  | <a accesskey="n" href="j2d-image.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

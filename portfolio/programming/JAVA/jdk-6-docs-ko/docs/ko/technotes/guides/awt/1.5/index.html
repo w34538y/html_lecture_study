@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>AWT 의 확장 기능 - xrath.com 에서 번역됨</title>
+  </head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF
+0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT =88>
+
+</TD>
+
+<TD>
+
+<center>
+
+<h1>Java<sup><font size=-2>TM</font></sup> 2 Platform Standard Edition 5.0 의 AWT 확장 기능 문서의 목차</h1>
+
+</center>
+
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+<blockquote>
+<blockquote>
+<a href=#awtMajor>주된 변경점</a> <br> <a href=#window>Window 의 버그의 수정과 확장</a> <br> <a href=#dnd>드래그＆드롭 및 데이터 전송의 버그의 수정과 확장</a> <br> <a href=#layout>레이아웃의 버그의 수정</a> <br> <a href=#misc>그 외의 버그의 수정</a> <br> <a href=#knownBugs>기존의 버그와 문제</a> <br>
+</blockquote>
+<hr>
+
+
+<a name=awtMajor><h2>주요한 변경점</h2></a> 
+<blockquote>
+
+<h3><b>4615479</b>: Solaris 및 Linux 상의 XToolkit</h3>
+<blockquote>
+이 릴리스에서는, AWT 가 Solaris 및 Linux 플랫폼상에 재구현되었습니다. Linux 상에서 Motif 툴 킷 , 또는 Solaris 상에서 XAWT 를 강제적으로 실행하는 것이 가능하게 됩니다. 이것은,<code>AWT_TOOLKIT</code> 변수를 설정하는지,<code>-Dawt.toolkit</code> 커멘드행 파라미터를 사용해 실시합니다. XAWT 의 값은 <code>sun.awt.X11.XToolkit</code>, Motif 의 값은 <code>sun.awt.motif.MToolkit</code> 입니다. 상세한 것에 대하여는,<a href=xawt.html>「Solaris/Linux 상의 XToolkit」</a>를 참조해 주세요.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4638443.html"><b>4638443</b></a> : XDnD 의 지원</h3>
+<blockquote>
+이 릴리스에서는, 데이터 전송 시스템의 일부로서 <a href="http://www.newplanetsoftware.com/xdnd/">XDnD 프로토콜</a>의 지원가 구현되고 있습니다. 이 릴리스 이전에는, X11 로 지원되고 있던 것은 Motif DnD 프로토콜만이었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4009555.html"><b>4009555</b></a> : 데스크탑상의 마우스 위치의 취득</h3>
+<blockquote>
+데스크탑상의 마우스 위치를 취득하기 위해서 API 가 추가되었습니다. 새로운 <a href="../../../../api/java/awt/PointerInfo.html">PointerInfo</a>  클래스는,<code>PointerInfo</code> 인스턴스의 작성시의 포인터 좌표와 그 관련 <code>GraphicsDevice</code> 객체를 기술합니다. <code>PointerInfo</code> 에는, 다음의 메소드가 있습니다.
+<ul>
+<li><a href="../../../../api/java/awt/PointerInfo.html#getDevice()">GraphicsDevice getDevice()</a> 
+<li><a href="../../../../api/java/awt/PointerInfo.html#getLocation()">Point getLocation()</a> 
+</ul>
+<p>
+새로운 <a href="../../../../api/java/awt/MouseInfo.html">MouseInfo</a>  클래스는, 마우스 포인터의 현재의 위치에 관한 정보를 가집니다. <code>MouseInfo</code> 에는, 다음의 2 개의 메소드가 있습니다.
+<ul>
+<li><a href="../../../../api/java/awt/MouseInfo.html#getPointerInfo()">PointerInfo getPointerInfo()</a> 
+<li><a href="../../../../api/java/awt/MouseInfo.html#getNumberOfButtons()">int getNumberOfButtons</a> 
+</ul>
+<p>
+그 외의 새로운 메소드:
+<ul>
+<a href="../../../../api/java/awt/Component.html#getMousePosition()">java.awt.Component.getMousePosition()</a>  <br> <a href="../../../../api/java/awt/Container.html#getMousePosition(boolean)">java.awt.Container.getMousePosition(boolean)</a>  <br> <a href="../../../../api/java/awt/Toolkit.html#getMouseInfoPeer()">java.awt.Toolkit.getMouseInfoPeer</a> 
+</blockquote>
+
+</blockquote>
+<a name=window><h2>Window 의 버그의 수정과 확장</h2></a> 
+<blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4632143.html"><b>4632143</b></a> : Window, Frame, 또는 Dialog 를 항상 앞에 표시</h3>
+<blockquote>
+특정의 <code>Window</code>,<code>Frame</code>, 또는 <code>Dialog</code> 가 데스크탑의 항상 앞에 표시되도록(듯이) 하기 위해서 새로운 API 가 추가되었습니다. 툴 박스, 통지, 또는 정보 애플릿등의 특정의 GUI 요소, 및 그 외의 데스크탑 확장 기능을 구현할 경우에 도움이 됩니다. 새로운 API 및 변경된 API 에는, 이하의 것이 포함됩니다.
+<ul>
+<li><a href="../../../../api/java/awt/Window.html#isAlwaysOnTop()">isAlwaysOnTop()</a> 
+<li><a href="../../../../api/java/awt/Window.html#setAlwaysOnTop(boolean)">setAlwaysOnTop(boolean)</a> 
+<li><a href="../../../../api/java/awt/Window.html#addPropertyChangeListener(java.beans.PropertyChangeListener)">addPropertyChangeListener(PropertyChangeListener)</a> 
+<li><a href="../../../../api/java/awt/Window.html#addPropertyChangeListener(java.lang.String,%20java.beans.PropertyChangeListener)">addPropertyChangeListener(String, PropertyChangeListener)</a> 
+<blockquote>
+윈도우의 <code>alwaysOnTop</code> 상태에 있어서의 프로퍼티 변경 청취자의 설정을 지원하기 위해서,<code>add<i>XXX</i></code> 메소드가 변경되었습니다.
+</blockquote>
+<li><a href="../../../../api/java/awt/AWTPermission.html">java.awt.Permission</a> 
+<blockquote>
+새로운 <code>setWindowAlwaysOnTop</code> 액세스권이 추가되었습니다.
+</blockquote>
+</ul>
+<p>
+시스템 설정에 따라서는, 항상 앞에 표시하는 Window, Frame, 또는 Dialog 가 지원되지 않는 경우가 있습니다. 이것들은, Microsoft Windows, GNOME2/Metacity 를 실행중의 Linux, Solaris, 및 KDE/kwin 를 실행중의 Linux 로 지원되고 있습니다. CDE/dtwm 를 실행중의 Solaris 에서는 지원되고 있지 않습니다. 항상 앞에 표시하는 윈도우가, 상기 이외의 세션 및 윈도우 매니저-를 실행중의 Linux 또는 Solaris 로 기능하지 않을 가능성이 있습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4102292.html"><b>4102292</b></a> : 플랫폼별로 윈도우의 디폴트 위치를 지정하기 위한 새로운 API</h3>
+<blockquote>
+2 개(살)의 새로운 메소드와 1 개의 새로운 프로퍼티에 의해, 사용자는 플랫폼에 적절한 새로운 <code>Window</code> 의 디폴트 위치를 지정할 수가 있습니다. 이것은, 특히 X11 에 중요합니다. 새로운 API 에는, 이하의 것이 포함됩니다.
+<ul>
+<li><a href="../../../../api/java/awt/Window.html#setLocationByPlatform(boolean)">Window.setLocationByPlatform(boolean)</a> 
+<li><a href="../../../../api/java/awt/Window.html#isLocationByPlatform()">Window.isLocationByPlatform</a> 
+<li>Window.isLocationByPlatform (프로퍼티)
+</ul>
+기반의 윈도우 매니저-가 독자적인 논리에 따라 윈도우를 타일링 하기 위해서는,<code>locationByPlatform</code> 프로퍼티을 true 로 설정할 필요가 있습니다. true 로 설정하지 않는 경우, AWT 는 윈도우가 의도적으로 0,0 에 배치되었는지, 지정되지 않았던 것 뿐인가를 인식할 수 없기 때문에, 윈도우는 화면의 좌상구석에 배치됩니다.
+</blockquote>
+
+<h3><b>4101435</b>: Window/Dialog/Frame.setLocation 가 기대 대로에 기능하지 않는 것이 있다</h3>
+<blockquote>
+Windows, Dialog, 및 Frame 의 위치와 사이즈는, 어플리케이션이나 툴 킷은 아니고, 데스크탑의 윈도우 관리 시스템에 의해 관리됩니다. 윈도우 매니저-는, 윈도우 배치 요구를 자유롭게 무시 또는 변경할 수 있습니다. 이 때문에, Window.setLocation(x, y)의 호출시에, 위치 (x, y)로 이동하는 Window 에 의존할 수 없습니다. 같은 상황이 Window.setSize 와 Window.setBounds 에 존재합니다.  이것을 설명하기 위해서 Window 의 문서가 명확하게 되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4401846.html"><b>4401846</b></a> : 새로운 _JAVA_AWT_WM_STATIC_GRAVITY 환경 변수</h3>
+<blockquote>
+윈도우 매니저-따라서는, AWT 윈도우를 틀려 배치하는 경우가 있습니다. 예를 들어, 일부의 윈도우 매니저-에서는, (0,0)로 이동하도록(듯이) 요구된 윈도우는, 윈도우의 타이틀과 왼쪽의 경계선이 오프 스크린이 되도록(듯이) 배치됩니다. 이것은, 윈도우를 배치하기 위해서 X11 프로그램이 작성하는 ConfigureRequest 요구에 대한 ICCCM 스펙의 해석에 동의 하지 않는 윈도우 매니저-의 그룹이 2 개 있기 때문에입니다.
+<p>
+이 문제에 대처하기 위해서,<code>_JAVA_AWT_VM_STATIC_GRAVITY</code> 환경 변수가 추가되었습니다.  이것에 의해, 파워 사용자는 윈도우 매니저-가 StaticGravity 의 동작을 구현하는 것을 나타낼 수가 있습니다.
+</blockquote>
+
+</blockquote>
+<a name=dnd><h2>드래그＆드롭 및 데이터 전송의 버그의 수정과 확장</h2></a> 
+<blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4378091.html"><b>4378091</b></a> : 새로운 DropTarget.getTransferable 메소드
+</h3>
+<blockquote>
+새로운 <a href="../../../../api/java/awt/dnd/DropTargetDragEvent.html#getTransferable()">java.awt.dnd.DropTargetDragEvent.getTransferable</a>  메소드에 의해, 드래그 조작중에 드롭 타겟이 전송 데이터에 액세스 할 수 있게 됩니다.
+<p>
+이것에 의해, 버그 「<a href="http://developer.java.sun.com/developer/bugParade/bugs/4248542.html"><b>4248542</b></a> :dragOver 및 dragEnter 로 DropTargetListener 가 transferable 에 액세스 할 수 없다」도 수정됩니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4259272.html"><b>4259272</b></a> : 클립보드의 내용의 변경의 통지가 지원되게 되었다</h3>
+<blockquote>
+지금까지, Java 클립보드 API 에서는, 클립보드상의 사용 가능한 DataFlavors 의 변경을 추적하거나 그러한 변경에 대해 관계하는 그룹에 통지하거나하기 위한 효과적인 방법을 사용할 수 없었습니다. 이 목적을 위해서(때문에), 다음의 API 가 추가되었습니다.
+<ul>
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#addFlavorListener(java.awt.datatransfer.FlavorListener)">addFlavorListener(FlavorListener)</a> 
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#removeFlavorListener(java.awt.datatransfer.FlavorListener)">removeFlavorListener(FlavorListener)</a> 
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#getFlavorListeners()">getFlavorListeners()</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4287795.html"><b>4287795</b></a> : 클립보드의 정보를 문의하기 위한 새로운 메소드</h3>
+<blockquote>
+다음의 3 개의 새로운 메소드가 추가되었습니다.
+<ul>
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#getAvailableDataFlavors()">DataFlavor[] getAvailableDataFlavors()</a>  는, 클립보드로 현재 사용 가능한 <code>DataFlavor</code> 를 돌려줍니다.  <br>
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#isDataFlavorAvailable(java.awt.datatransfer.DataFlavor)">boolean isDataFlavorAvailable(DataFlavor)</a>  은, 지정된 데이타후레이바가 사용 가능한 경우에 true 를 돌려줍니다.  <br>
+<li><a href="../../../../api/java/awt/datatransfer/Clipboard.html#getData(java.awt.datatransfer.DataFlavor)">Object getData(DataFlavor)</a>  는, 지정된 데이타후레이바내의 데이터를 돌려줍니다.
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4790833.html"><b>4790833</b></a> : Clipboard.getContents 를 사용해도 메모리 사용은 급상승하지 않는다</h3>
+<blockquote>
+이 릴리스 이전에는,<code>Clipboard.getContents</code> 는, 데포르트후레이바맙에 대응하는 데이타후레이바에의 매핑이 존재하는, 제공된 모든 형식의 클립보드 데이타를 뽑기 시작했습니다. 형식이 다수로, 데이터의 사이즈가 큰 경우는, 다른 형식의 꺼내 데이터에 의해 많은 메모리가 소비되었습니다. 버그의 수정 <a  href="http://developer.java.sun.com/developer/bugParade/bugs/4287795.html">4287795</a>  로 도입된 새로운 메소드에 의해, 이 문제는 해결되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4415175.html"><b>4415175</b></a> : 드래그＆드롭 제스처(gesture) 동작의 임계치를 글로벌로 변경하기 위한 새로운 API</h3>
+<blockquote>
+드래그 동작 제스처(gesture)의 임계치는, 데이터 전송 시스템이 드래그 조작을 초기화하기 전에 커서가 드래그 된 픽셀수를 나타냅니다. 이 릴리스 이전에는, 이것은 5 픽셀에 하드 코드 되고 있었습니다. 릴리스 5.0 에서는, 드래그 감도의 데스크탑 프로퍼티을 선택해, 그것을 임계치에 매핑 하도록(듯이) 지원되고 있습니다.  또, 새로운 API 에 의해 사용자는 이 임계치를 취득 및 변경할 수 있습니다. 새로운 API 에는, 이하의 것이 포함됩니다.
+<ul>
+<li><a href="../../../../api/java/awt/dnd/DragSource.html#getDragThreshold()">java.awt.dnd.DragSource.getDragThreshold()</a> 
+<li>java.awt.dnd.drag.threshold (프로퍼티)
+<li><a href="../../../../api/java/awt/dnd/MouseDragGestureRecognizer.html">java.awt.dnd.MouseDragGestureRecognizer</a>  (갱신된 클래스 스펙)
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4712068.html"><b>4712068</b></a> : 텍스트를 드래그 하는 경우의 드래그＆드롭의 조작성의 문제</h3>
+<blockquote>
+이 릴리스 이전에는, X 플랫폼에서 사용되는 드롭 아이콘의 핫 스포트는, 아이콘의 중앙에 있었습니다. 텍스트를 드래그 하면(자), 텍스트 커서가 이동해 현재의 드롭 위치가 나타납니다만, 이것은, 드롭 아이콘 자체에 의해 숨겨지고 있었습니다. 이 릴리스에서는, X 플랫폼에서 사용되는 드롭 커서는, 드롭 아이콘의 좌상구석을 나타내도록(듯이) 변경되었습니다. 거기에 따라, 대응하는 핫 스포트가 변경되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4191708.html"><b>4191708</b></a> : 몇개의 java.awt.dnd.DropTarget 메소드의 스펙의 명확화</h3>
+<blockquote>
+다음의 <code>java.awt.dnd.DropTarget</code> 메소드에 대한 null 파라미터의 인도해에 관한 문서가 명확화되었습니다.
+<ul>
+<li><a href="../../../../api/java/awt/dnd/DropTarget.html#dragEnter(java.awt.dnd.DropTargetDragEvent)">dragEnter(DropTargetDragEvent)</a>  <br>
+<li><a href="../../../../api/java/awt/dnd/DropTarget.html#dragOver(java.awt.dnd.DropTargetDragEvent)">dragOver(DropTargetDragEvent)</a>  <br>
+<li><a href="../../../../api/java/awt/dnd/DropTarget.html#dropActionChanged(java.awt.dnd.DropTargetDragEvent)">dropActionChanged(DropTargetDragEvent)</a>  <br>
+<li><a href="../../../../api/java/awt/dnd/DropTarget.html#drop(java.awt.dnd.DropTargetDropEvent)">drop(DropTargetDropEvent)</a>  <br>
+<li><a href="../../../../api/java/awt/dnd/DropTarget.html#dragExit(java.awt.dnd.DropTargetEvent)">dragExit(DropTargetDragEvent)</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4819437.html"><b>4819437</b></a> : DragSourceListener.dragExit 의 일관한 호출 방법</h3>
+<blockquote>
+<!-- Previously, <code>DragSourceListener.dragExit(DragSourceEvent)</code> was called whenever the current drop site rejected the drag.   If the drop site rejected the drag as soon as the drag entered the drop site, <code>DragSourceListener.dragExit</code> was called and no other <code>DragSourceListener</code> method was called.   For this release, the behavior was changed to call <code>dragExit</code>.  --><a href="../../../../api/java/awt/dnd/DragSourceAdapter.html">DragSourceAdapter</a>  와 <a href="../../../../api/java/awt/dnd/DragSourceAdapter.html">DragSourceAdapter</a>  클래스의 클래스 스펙, 및 <a href="../../../../api/java/awt/dnd/DragSourceAdapter.html#dragExit(java.awt.dnd.DragSourceEvent)">DragSourceAdapter.dragExit</a>  와 <a href="../../../../api/java/awt/dnd/DragSourceListener.html#dragExit(java.awt.dnd.DragSourceEvent)">DragSourceListener.dragExit</a>  메소드의 문서가 갱신되어 드롭 영역이 이전의 <code>dragEnter</code> 의 호출에 관련지을 수 있는 개념이 명확화되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4654688.html"><b>4654688</b></a> : SystemFlavorMap 메소드와 문서의 일관성</h3>
+<blockquote>
+<code>SystemFlavorMap</code> 클래스는, 네이티브와 Java 어플리케이션간의 데이터 전송을 지원하기 위해서, 네이티브 형식과 Java 데이타후레이바간의 매핑을 포함할 경우에 사용됩니다. <a href="../../../api/java/awt/datatransfer/SystemFlavorMap.html#getNativesForFlavor(java.awt.datatransfer.DataFlavor)"><a href="../../../../api/java/awt/datatransfer/SystemFlavorMap.html#getNativesForFlavor(java.awt.datatransfer.DataFlavor)">SystemFlavorMap.getNativesForFlavor(DataFlavor)</a>  메소드의 문서가 명확화되어<code>DataFlavor</code> (또는 네이티브 형식)는, 적어도 1 개의 정적 매핑을 관련지을 수 있고 있는 경우에 한정해 인식되는 것이 기술되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4123385.html"><b>4123385</b></a> : 드래그 소스 이벤트 생성자 의 문서의 명확화</h3>
+<blockquote>
+드래그 소스 이벤트의 다음의 생성자 에 대한 무효인 파라미터의 인도해에 관한 문서가 명확화되었습니다.
+<ul>
+<li><a href="../../../../api/java/awt/dnd/DragSourceDragEvent.html#DragSourceDragEvent(java.awt.dnd.DragSourceContext,%20int,%20int,%20int)">DragSourceDragEvent(DragSourceContext, int int, int)</a> 
+<li><a href="../../../../api/java/awt/dnd/DragSourceDragEvent.html#DragSourceDragEvent(java.awt.dnd.DragSourceContext,%20int,%20int,%20int,%20int,%20int)">DragSourceDragEvent(DragSourceContext, int int, int, int, int)</a> 
+<li><a href="../../../../api/java/awt/dnd/DragSourceDropEvent.html#DragSourceDropEvent(java.awt.dnd.DragSourceContext)">DragSourceDropEvent(DragSourceContext)</a> 
+<li><a href="../../../../api/java/awt/dnd/DragSourceDropEvent.html#DragSourceDropEvent(java.awt.dnd.DragSourceContext,%20int,%20boolean)">DragSourceDropEvent(DragSourceContext, int, boolean)</a> 
+<li><a href="../../../../api/java/awt/dnd/DragSourceDropEvent.html#DragSourceDropEvent(java.awt.dnd.DragSourceContext,%20int,%20boolean,%20int,%20int)">DragSourceDropEvent(DragSourceContext, int, boolean, int, int)</a> 
+</ul>
+</blockquote>
+
+</blockquote>
+<a name=layout><h2>레이아웃의 버그의 수정</h2></a> 
+<blockquote>
+
+<h3>GridBagLayout 의 버그의 수정</h3>
+<blockquote>
+<b>GridBagLayout</b>:GridBagLayout 에 대해서 몇개의 버그 수정이 구현되었습니다. 이러한 버그중 2 개(살)은 문서에 대해서만 적용됩니다. 가장 중요한 버그의 수정에는, 다음의 것이 포함됩니다.
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4254022.html"><b>4254022</b></a> : GridBagLayout 로 512 를 넘는 수평 또는 수직 컴퍼넌트가 가능</h3>
+<blockquote>
+지금까지는, GridBagLayout 는, 폭과 높이가 512 에 하드 코드 된 제한으로 구현되고 있었습니다만, 동적으로 할당할 수 있게 되어, MAXGRIDSIZE 정수는 사용되지 않게 되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4532201.html"><b>4532201</b></a> : GridBagLayout.lookupConstraints 의 문서의 명확화</h3>
+<blockquote>
+지정된 Component 가 구라두 가방 레이아웃에 없을 때에 어떻게 될까에 대한 문서가 추가되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4618355.html"><b>4618355</b></a> : GridBagLayout.gridwidth/gridheight 의 문서의 명확화</h3>
+<blockquote>
+GridBagLayout.gridwidth/gridheight 의 클래스 스펙의 REMAINDER 와 RELATIVE 의 설명을 이해하기 어려워지고 있었습니다. 이 문서는 수정되었습니다.
+</blockquote>
+</blockquote>
+
+<h3>FlowLayout 의 버그의 수정</h3>
+<blockquote>
+<b>FlowLayout</b>:FlowLayout 에 관한 몇개의 문서의 버그가 수정되었습니다.
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4586806.html"><b>4586806</b></a> : 배치에 관한 FlowLayout 스펙의 수정</h3>
+<blockquote>
+지금까지, 클래스 스펙에는, 컴퍼넌트가 행의 중앙에 배치된다고 기술되고 있었습니다. 실제로는,<code>align</code> 프로퍼티이 컴퍼넌트의 배치 방법을 결정합니다. 이 문서는 수정되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4881919.html"><b>4881919</b></a> : FlowLayout 클래스 스펙은, 컴퍼넌트가 항상 왼쪽에서 오른쪽인 것을 의미하지 않는다</h3>
+<blockquote>
+FlowLayout 클래스 스펙은, 오른쪽에서 왼쪽으로 이동하는 기능이 추가되기 전에 기술되었습니다. 이 때문에, 가능한 방향이 왼쪽에서 오른쪽 뿐인 것을 전제로 하고 있었습니다. 이 문서는 수정되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4587456.html"><b>4587456</b></a> : FlowLayout 생성자 의 스펙의 수정</h3>
+<blockquote>
+지금까지, FlowLayout 생성자 의 문서에서는, hgap 와 vap 가 컴퍼넌트와 컨테이너 보더간, 및 컴퍼넌트간의 간격에 적용되는 것에 대하여 설명하고 있었었습니다. 이 문서는 수정되었습니다.
+</blockquote>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4172932.html"><b>4172932</b></a> : BorderLayout 의 아이의 제약을 취득하기 위한 새로운 메소드</h3>
+<blockquote>
+3 개의 public 메소드가 <code>BorderLayout</code> 에 추가되었습니다.  1 개(살)은 컴퍼넌트의 제약을 취득해서 , 나머지의 2 개는 지정된 제약의 컴퍼넌트를 다른 방법으로 취득하는 것입니다 (한편은 컴퍼넌트의 방향을 고려해, 이제 한편은 고려하지 않는다). 새로운 메소드는 다음의 3 개입니다.
+<ul>
+<li><a href="../../../../api/java/awt/BorderLayout.html#getLayoutComponent(java.lang.Object)">Component getLayoutComponent(Object)</a>  <br>
+<li><a href="../../../../api/java/awt/BorderLayout.html#getLayoutComponent(java.awt.Container,%20java.lang.Object)">Component getLayoutComponent(Container, Object)</a>  <br>
+<li><a href="../../../../api/java/awt/BorderLayout.html#getConstraints(java.awt.Component)">Object getConstraints(Component)</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4515041.html"><b>4515041</b></a> : vgap 및 hgap 파라미터에 관한 GridLayout.layoutContainer 스펙의 명확화</h3>
+<blockquote>
+지금까지, layoutContainer 의 스펙에서는, vgap 와 hgap 는 각 셀간 및 최초/마지막 셀과 경계간에 추가된다고 기술되고 있었습니다. 실제로는, 컴퍼넌트간에게만 갭이 적용됩니다. 문서의 이 스펙은 수정되었습니다.
+</blockquote>
+
+</blockquote>
+<a name=misc><h2>그 외의 버그의 수정</h2></a> 
+<blockquote>
+<!---------- This got approved by CCC, but vetoed by tiger-core.  Save for next release... <h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/5006707.html">       <b>5006707</b></a> : Default Foreground and Background Colors for AWT Components</h3> <blockquote> The default foreground and background colors for AWT <code>Component</code>s are determined differently on different platforms.   On some platforms, it is standard for certain components to inherit the default foreground and background colors from the parent, while other platforms always use the same colors for specific components.  The following table describes the default behavior for AWT components on the most common platforms.  Note that the default behavior can be overridden using the <code>Component.setForeground</code> and <code>Component.setBackground</code> methods.  </p><p> <table border="1" align="center"> <tbody><tr>   <th>Component</th>   <th>Solaris</th>   <th>Linux</th>   <th>Microsoft Windows</th> </tr> <tr>   <td><code>Dialog</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td> </tr> <tr>   <td><code>Button</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Default</td> </tr> <tr>   <td><code>Choice</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Default</td> </tr> <tr>   <td><code>Frame</code></td>   <td>Default</td>   <td>Default</td>   <td>Default</td> </tr> <tr>   <td><code>Label</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td> </tr> <tr>   <td><code>List</code></td>   <td>Default<br>Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default<br>Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default</td> </tr> <tr>   <td><code>Scrollbar</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Default</td> </tr> <tr>   <td><code>TextArea</code></td>   <td>Default<br> Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default<br>Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default</td> </tr> <tr>   <td><code>TextField</code></td>   <td>Default<br>Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default<br>Foreground: <code>SystemColor.textText</code>   <br>Background: <code>SystemColor.text</code></td>   <td>Default</td> </tr> <tr>   <td><code>Window</code></td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td>   <td>Inherited from Parent</td> </tr> </tbody></table> </blockquote> ------------->
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4533021.html"><b>4533021</b></a> : 자의 Z 순서를 변경하기 위한 새로운 API</h3>
+<blockquote>
+<code>Container</code> 의 아이의 z 순서를 지정하기 위한 새로운 API 가 추가되었습니다. 새로운 <code>Container</code> 메소드는, 다음의 2 개입니다.
+<ul>
+<li><a href="../../../../api/java/awt/Container.html#getComponentZOrder(java.awt.Component)">getComponentZOrder(Component, int)</a> 
+<li><a href="../../../../api/java/awt/Container.html#setComponentZOrder(java.awt.Component,%20int)">setComponentZOrder(Component, int)</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4370733.html"><b>4370733</b></a> : AWTKeyStroke.getAWTKeyStroke(String)와 toString 가 대칭이 되었다</h3>
+<blockquote>
+지금까지는,<code>AWTKeyStroke.toString</code> 로부터 출력을 취득해,<code>getAWTKeyStroke</code> 메소드에 건네줄 수가 없었습니다. 메소드에 건네줄 수 있도록(듯이) 수정되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4341785.html"><b>4341785</b></a> : 몇개의 List 메소드의 스펙의 명확화</h3>
+<blockquote>
+다음의 <code>List</code> 메소드의 스펙이 명확화되어 범위가 경계를 넘고 있는 경우의 지정되어 있지 않은 동작의 결과에 대해 기술되었습니다.
+<ul>
+<li><a href="../../../../api/java/awt/List.html#deselect(int)">deselect(int)</a>  <br>
+<li><a href="../../../../api/java/awt/List.html#setMultipleMode(boolean)">setMultipleMode(boolean)</a>  <br>
+<li><a href="../../../../api/java/awt/List.html#select(int)">select(int)</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4368570.html"><b>4368570</b></a> : 선택한 항목의 클릭 동작에 관한 List 스펙의 명확화</h3>
+<blockquote>
+지금까지, List 의 클래스 스펙에서는, 선택되어 있지 않은 항목을 클릭하면(자) 그 항목이 선택되어 선택되고 있는 항목을 클릭하면(자) 그 항목의 선택이 해제된다고 기술되고 있었습니다. 이것은, 리스트가 복수 선택 모드의 경우에게만 들어맞읍니다. 단일 선택 모드에서는, 리스트의 어느 항목을 클릭해도 클릭한 항목이 선택됩니다. 이 스펙은 명확화되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4082708.html"><b>4082708</b></a> : ContainerEvent.getContainer 메소드의 스펙의 명확화</h3>
+<blockquote>
+<a href="../../../../api/java/awt/event/ContainerEvent.html#getContainer()">ContainerEvent.getContainer</a>  메소드는,<code>소스</code>가 <code>Container</code> 형인 것을 전제로 하고 있습니다. 지금까지, 먼저 확인하는 일 없이, 소스는 <code>Container</code> 형식에 캐스트 되고 있었습니다.  이것에 의해 ClassCastException 가 돌려주어질 가능성이 있었습니다. 소스가 <code>Container</code> 가 아닌 경우는 null 의 값을 돌려주도록(듯이) 메소드가 변경되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4620715.html"><b>4620715</b></a> : 2 개의 표준 Microsoft Windows 키용의 새로운 KeyEvent 코드</h3>
+<blockquote>
+표준 Microsoft Windows 키보드상의 2 개의 키에는, Java 키코드 (윈도우 키와 context menu 키)가 없습니다. 이것에 의해, 508 요건을 채우는 기능을 방해할 수 있습니다. 이 때문에,<code>java.awt.event.KeyEvent.VK_WINDOWS</code> 및 <code>java.awt.event.KeyEvent.VK_CONTEXT_MENU</code> 키코드가 추가되었습니다.
+</blockquote>
+
+<h3><b>4829063</b>: Scrollbar 로, 스크롤 바 샘이 표시되지 않을 가능성이 있는 것이 명기되었다</h3>
+<blockquote>
+지금까지, Scrollbar.getVisibleAmount 와 setVisibleAmount 의 문서에는, 샘이 표시되지 않을 가능성이 있는 것이 기술되지 않고, 스크롤 바의 범위가 무엇에 사용될까에 임해서 설명되고 있지 않았습니다. 이 스펙은 정리되었습니다. 이것은, 문서만의 변경입니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4840172.html"><b>4840172</b></a> : KeyEvent.getKeyChar 의 동작의 명확화</h3>
+<blockquote>
+KeyEvent.getKeyChar 의 사용법에 대해서는, KeyEvent 클래스 문서로 설명되고 있습니다만, 메소드 자체의 문서는 짧은 것이었습니다. getKeyChar 의 문서는 이 릴리스로 개선되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4233061.html"><b>4233061</b></a> : ENTER 가 ActionEvent 를 트리거하지 않는 스펙의 명확화</h3>
+<blockquote>
+포커스가 <code>Button</code> 에 있을 때, ENTER 키를 눌러도 <code>ActionEvent</code> 가 트리거되지 않는 것이, 일부의 개발자를 혼란시키고 있습니다. 이것은 올바른 동작입니다. <code>ActionEvent</code> 는, 스페이스 바에 의해 트리거됩니다. <a href="../../../api/java/awt/event/ActionEvent.html"><a href="../../../../api/java/awt/event/ActionEvent.html">ActionEvent</a>  클래스 스펙은, 이 사실을 명확하게 하기 위해서 갱신되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4221123.html"><b>4221123</b></a> : 새로운 FileDialog 생성자</h3>
+<blockquote>
+3 개의 <code>FileDialog</code> 생성자 이 새롭게 추가되었습니다.  이러한 생성자 에서는,<code>Dialog</code> 를 소유자로서 지정할 수 있습니다.
+<ul>
+<li><a href="../../../../api/java/awt/FileDialog.html#FileDialog(java.awt.Dialog)">FileDialog(Dialog)</a>  <br>
+<li><a href="../../../../api/java/awt/FileDialog.html#FileDialog(java.awt.Dialog,%20java.lang.String)">FileDialog(Dialog, String)</a>  <br>
+<li><a href="../../../../api/java/awt/FileDialog.html#FileDialog(java.awt.Dialog,%20java.lang.String,%20int)">FileDialog(Dialog, String, int)</a> 
+</ul>
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4691481.html"><b>4691481</b></a> : Robot.createScreenCapture 의 스펙의 갱신</h3>
+<blockquote>
+지금까지, Robot.createScreenCapture 의 문서로, 수중에 넣은 이미지에 마우스 커서가 포함되지 않는 것이 기술되고 있지 않았습니다. 이 동작은, Solaris, Linux, Windows, 및 Mac OS X 로 반드시 일어납니다.  이 정보를 반영하도록(듯이) 문서가 갱신되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4704042.html"><b>4704042</b></a> : Insets 를 설정하기 위한 새로운 메소드</h3>
+<blockquote>
+Insets 를 설정하기 위한 1 개의 메소드 <a href="../../../../api/java/awt/Insets.html#set(int,%20int,%20int,%20int)">set(int, int, int, int)</a>  가 추가되었습니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/4492739.html"><b>4492739</b></a> : InputEvent.ALT_MASK/BUTTON2_MASK 및 META_MASK/BUTTON3_MASK 문서의 명확화</h3>
+<blockquote>
+일부의 InputEvent 정수의 값에 중복이 있습니다. KeyEvent.getModifiersExText(int) 및 MouseEvent.getMouseEventModifiersText(int)를 호출할 때, KeyEvent.BUTTON2_MASK 에 대해서 반환되는 캐릭터 라인은 「Alt」, KeyEvent.BUTTON3_MASK 에 대해서 반환되는 캐릭터 라인은 「Meta」이기 (위해)때문에 혼란합니다. 이 릴리스에서는, 이것을 명확하게 하기 위해서, InputEvent, KeyEvent, 및 MouseEvent 클래스에 문서가 추가되었습니다.
+</blockquote>
+
+</blockquote>
+<a name=knownBugs><h2>기존의 버그와 문제</h2></a> 
+<blockquote>
+
+다음에, 릴리스 5.0 으로 발생할 가능성이 있는 기존의 문제의 리스트를 나타냅니다.
+
+<h3>Metacity 의 버젼 관리</h3>
+<blockquote>
+최신 빌드의 Metacity (현재 2.6. 2)를 사용하는 것을 추천합니다. 벌써 수정되었습니다만, 2.4. 34 보다 전의 버젼을 사용하면(자) 발생하는 버그가 몇개인가 있었습니다 (프로그램에 의한 아이콘화에 관한 문제, 사이즈 변경할 수 없는 프레임 등).
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/5051557.html">5051557</a> : 애플릿 포커스의 비호환성</h3>
+<blockquote>
+애플릿안에는, 키보드의 키를 눌러도, 기대되는 결과를 얻을 수  없다고 하는 보고가 전해지고 있습니다. 이것은 일반적으로, 애플릿에 아이 컴퍼넌트가 없는 경우에, 애플릿은 자동적으로 포커스를 실시하지 않기 때문에 발생합니다. 이러한 애플릿이, 다양한 플랫폼간에 확실히 실행되도록(듯이) 하려면 , 기동시 (<code>requestFocus</code> 를 사용) 및 마우스를 눌렀을 경우에 포커스를 요구하는 것이 추천 되고 있습니다. 포커스가 필요없는 경우,<code>setFocusable(false)</code> 를 호출합니다.
+</blockquote>
+
+<h3><a href="http://developer.java.sun.com/developer/bugParade/bugs/5050387.html">5050387</a> : drop()로부터 JOptionPane 가 불려 가면(자) JVM 가 크래쉬 할 가능성이 있다</h3>
+<blockquote>
+Solaris/Linux 상에서,<code>drop</code> 메소드가 <code>JOptionpane</code> 를 표시하고 있는 MToolKit 가 실행되고 있는 경우, JVM 가 크래쉬 할 가능성이 있습니다. 이 버그는 향후의 릴리스로 대처됩니다.
+</blockquote>
+
+
+<h3>애플릿 실행시의 포커스 버그</h3>
+<blockquote>
+릴리스 1.4. 2 이전의 Mozilla 로 애플릿을 실행할 경우에 현저한 포커스 관련의 버그가 있었습니다. 이 객체에는 다음의 것이 포함됩니다.
+<ul>
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4907493.html"><b>4907493</b></a> : 입력초점이 복수의 애플릿으로 기능하지 않는다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4902616.html"><b>4902616</b></a> : Java Plug-in 테스트의 실행시에 텍스트 필드의 문자를 삭제할 수 없다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4877530.html"><b>4877530</b></a> : 텍스트를 1.4. 1_02 의 JTextField 에 입력할 수 없다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4806274.html"><b>4806274</b></a> : requestFocus 메소드로 포커스가 Solaris 상의 Netscape 7 의 컴퍼넌트로 이동하지 않는다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4816394.html"><b>4816394</b></a> : SpreadSheet 에 아무것도 입력할 수 없다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4837794.html"><b>4837794</b></a> : Java 애플릿으로 로그인 AnswerCenter 에 문자를 입력할 수 없다
+<li><a href="http://developer.java.sun.com/developer/bugParade/bugs/4902609.html"><b>4902609</b></a> : Java 시험대의 실행시에 Tab 키가 기능하지 않는다 
+</ul>
+이 문제를 해결하기 위해서, XEmbed 프로토콜의 클라이언트측이 구현되었습니다.
+<ul>
+<li><b>4849238</b>: AWT 에의 XEmbed 지원의 추가
+<li><b>4907325</b>: Motif 툴 킷에는 XEmbed 의 구현이 필요
+</ul>
+다만, XEmbed 가 기능하기 위해서는, 브라우저가 XEmbed 의 서버측을 지원하고 있을 필요가 있습니다. 다음의 브라우저를 Java 로 사용하는 것을 추천합니다.
+<ul>
+<li>Linux 의 경우, Mozilla Community Edition 버젼 1.5 이후
+<li>Solaris 의 경우, Sun Mozilla 1.4 이후
+</ul>
+</blockquote>
+
+<h3>
+
+</blockquote>
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../../legal/SMICopyright.html">Copyright &#169;</A>  2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+   <br>
+
+
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:java-awt@java.sun.com">java-awt@java.sun.com</a> </FONT>
+
+</TD>
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+  </ul></blockquote></body>
+</html>
+
+

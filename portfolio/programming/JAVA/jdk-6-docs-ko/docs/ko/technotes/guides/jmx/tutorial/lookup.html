@@ -1,0 +1,1938 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:54:10" />
+<title>검색 서비스 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="tutorialTOC.html" />
+    <link rel="Previous" href="connectors.html" />
+    <link rel="Next" href="security.html" />
+    <link rel="Index" href="security.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="connectors.html">전의 항목</a>  | <a accesskey="n" href="security.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지의 튜토리얼</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp874"> </a> <h2 class="pChapNum">
+제 4 장
+</h2>
+<a name="wp996923"> </a> <h2 class="pChapTitle">
+검색 서비스
+</h2>
+<a name="wp996927"> </a> <p class="pBody">
+Java Management Extension (JMX) 스펙에서는, 다음의 섹션으로 설명하는 기존의 검색 테크놀러지를 사용한, 검색 서비스의 3 개의 바인딩을 정의하고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp1011999"> </a> <div class="pBullet1"><li><a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 에서는, 3 타입의 모든 검색 서비스에 적용되는 설정 정보를 제공합니다. </li></div>
+<a name="wp1012000"> </a> <div class="pBullet1Plus"><li><a  href="lookup.html#wp999728"><span style="color: #3366CC">「4.2 Service Location Protocol (SLP) 검색 서비스」</span></a> 에서는, SLP 검색의 예를 나타냅니다. </li></div>
+<a name="wp1012001"> </a> <div class="pBullet1Plus"><li><a  href="lookup.html#wp998474"><span style="color: #3366CC">「4.3 Jini 검색 서비스」</span></a> 에서는, Jini 검색의 예를 나타냅니다. </li></div>
+<a name="wp1012002"> </a> <div class="pBullet1Last"><li><a  href="lookup.html#wp996900"><span style="color: #3366CC">「4.4 Java Naming and Directory Interface (JNDI) /LDAP 검색 서비스」</span></a> 에서는, JNDI/LDAP 검색의 예를 나타냅니다. </li></div>
+</ul>
+<a name="wp999788"> </a> <p class="pBody">
+검색 서비스를 사용하면(자), JMX 테크놀러지의 클라이언트는, 검색 서비스에 등록되어 있는 연결기 서버를 검색해, 접속할 수가 있습니다.
+</p>
+<a name="wp999517"> </a> <h2 class="pHeading1">
+4.1	초기설정
+</h2>
+<a name="wp999518"> </a> <p class="pBody">
+<a  href="connectors.html#wp1056865"><span style="color: #3366CC">「3.1 RMI 연결기를 사용한 표준 및 동적 MBean 에의 액세스」</span></a> 로 간단하게 가리킨 것처럼, 원격 메소드 호출 (RMI) 연결기를 사용하고 있는 경우, 검색하는 연결기 서버 Stub의 등록에 외부 디렉토리를 사용할 수가 있습니다. RMI 연결기에 관련한 검색 서비스의 예의 안으로, 다음의 케이스를 나타냅니다.
+</p>
+<ul class="pBullet1"><a name="wp999513"> </a> <div class="pBullet1"><li>다음의 외부 디렉토리의 어느쪽이든을 사용한 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012011"> </a> <div class="pBullet2"><li>RMI 레지스트리.  디폴트의 Java Remote Method Protocol (JRMP) 트랜스폴트를 구현하는 RMI 연결기전용</li></div>
+<a name="wp1012012"> </a> <div class="pBullet2Plus"><li>CORBA 네임 서비스.  Internet Inter-ORB Protocol (IIOP) 트랜스폴트를 구현하는 RMI 연결기전용</li></div>
+<a name="wp1012013"> </a> <div class="pBullet2Last"><li>Lightweight Directory Access Protocol (LDAP).  IIOP 와 JRMP 의 양트랜스폴트전용</li></div>
+</ul>
+<a name="wp1012014"> </a> <div class="pBullet1Last"><li>외부 디렉토리를 사용하지 않는 RMI 연결기</li></div>
+</ul>
+<a name="wp999529"> </a> <p class="pBody">
+외부 디렉토리에 RMI 연결기 Stub를 등록하는 경우, RMI 레지스트리, CORBA 네임 서비스, 또는 LDAP 서버의 설정을 위한 초기설정이 필요하게 됩니다. 외부 디렉토리를 사용하지 않는 경우, RMI 연결기 Stub는 JMX 서비스 URL 에 encode 됩니다.
+</p>
+<a name="wp999609"> </a> <p class="pBody">
+다음의 섹션에서는, RMI 연결기를 사용하는 검색 서비스의 예에 사용할 수 있는 외부 디렉토리에 도착해 설명합니다. 이러한 외부 디렉토리는, 이 장의 이후의 섹션으로 가리키는 검색 서비스의 3 개의 예를 실행하는 경우에 참조됩니다.
+</p>
+<a name="wp1007724"> </a> <h3 class="pHeading2">
+4.1. 1	외부 RMI 레지스트리
+</h3>
+<a name="wp1022576"> </a> <p class="pBody">
+JRMP 트랜스폴트를 구현하는 연결기로 사용하기 위해서, 외부 RMI 레지스트리에 RMI 연결기 서버 Stub를 등록하려면 , 다음의 순서를 실행합니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1054428"> </a> <li>로컬 호스트의 포트 9999 로 RMI 레지스트리를 기동합니다. </li>
+<a name="wp999565"> </a> <p class="pBody">
+<a  href="connectors.html#wp5529"><span style="color: #3366CC">「 제 3 장 JMX 연결기」</span></a> 의 예와 같게, RMI 레지스트리는 JRMP 트랜스폴트를 구현하는 RMI 연결기용의 RMI 연결기 Stub를 포함하기 위해서 사용됩니다.
+</p>
+<a name="wp999585"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">rmiregistry 9999 &amp;</span>
+</p>
+<a name="wp1007743"> </a> <li>커멘드를 입력하는 경우, RMI 레지스트리의 주소에 환경 변수를 작성하면(자) 편리합니다. </li>
+<a name="wp1016841"> </a> <p class="pBody">
+예를 실행할 경우에 입력하는 커멘드를 짧게 하기 위해서, RMI 레지스트리의 서비스 URL 를 환경 변수 <code class="cCode">jndirmi</code> 로서 설정합니다. 다음의 예에서는, 서비스 URL 는 JNDI 형식에서 지정되고 있습니다. JNDI 형식의 자세한 것은,<code class="cCode">javax.management.remote.rmi</code> 패키지의 API 문서를 참조해 주세요. 로컬 머신 이외의 머신으로 외부 디렉토리를 실행하는 경우는, 로컬 호스트 대신에, 그 머신의 호스트명을 지정할 필요가 있습니다.  
+</p>
+<a name="wp1007770"> </a> <p class="pListEndingPara"><code class="cCode">$ </code><span class="cUserType">jndirmi=&quot;rmi://localhost:9999&quot;</span></p>
+</ol>
+<a name="wp1007800"> </a> <h3 class="pHeading2">
+4.1. 2	외부 CORBA 네임 서비스
+</h3>
+<a name="wp1007801"> </a> <p class="pBody">
+IIOP 트랜스폴트를 구현하는 연결기로 사용하기 위해서, 외부 CORBA 네임 서비스에 RMI 연결기 서버 Stub를 등록하려면 , 다음의 순서를 실행합니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1007759"> </a> <li>로컬 호스트의 포트 7777 으로, Object Request Broker (ORB) demon를 기동합니다. </li>
+<a name="wp999608"> </a> <p class="pBody">
+IIOP 트랜스폴트를 구현하는 RMI 연결기는, CORBA 네임을 사용해 RMI 연결기 Stub를 식별할 수 있습니다.
+</p>
+<a name="wp999612"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">orbd -ORBInitialPort 7777 &amp;</span>
+</p>
+<a name="wp1007812"> </a> <li>커멘드를 입력하는 경우에 대비해, CORBA 네임 서비스의 주소에 환경 변수를 작성합니다.  </li>
+<a name="wp1007821"> </a> <p class="pBody">
+예를 실행할 경우에 입력하는 커멘드를 짧게 하기 위해서, CORBA 네임 서비스의 서비스 URL 를 환경 변수 jndiiiop 로서 설정합니다. 다음의 예에서는, 서비스 URL 는 JNDI 형식에서 지정되고 있습니다. 로컬 머신 이외의 머신으로 외부 디렉토리를 실행하는 경우는, 로컬 호스트 대신에, 그 머신의 호스트명을 지정할 필요가 있습니다.
+</p>
+<a name="wp1007815"> </a> <p class="pListEndingPara"><code class="cCode">$ </code><span class="cUserType">jndiiiop=&quot;iiop://localhost:7777&quot;</span></p>
+</ol>
+<a name="wp1007836"> </a> <h3 class="pHeading2">
+4.1. 3	외부 LDAP 레지스트리
+</h3>
+<a name="wp1007837"> </a> <p class="pBody">
+JRMP 또는 IIOP 트랜스폴트의 어느쪽이든을 구현하는 연결기로 사용하기 위해서, 외부 LDAP 레지스트리에 RMI 연결기 서버 Stub를 등록하려면 , 다음의 순서를 실행합니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999649"> </a> <li>LDAP 서버를 기동합니다.  </li>
+<a name="wp1011195"> </a> <p class="pBody">
+사용하는 LDAP 서버는 선택할 수 있습니다만, LDAP 디렉토리에서 Java 객체를 나타내기 위한 schema가 서버에 인식되고 있을 필요가 있습니다. 자세한 것은, 관련하는 Request For Comments (RFC) 문서를 참조해 주세요.  
+</p>
+<a name="wp1011197"> </a> <p class="pBody">
+<code class="cCode"><a  href="http://www.ietf.org/rfc/rfc2713.txt">http://www.ietf.org/rfc/rfc2713.txt </a> </code>
+</p>
+<a name="wp1003107"> </a> <li>도메인 컴퍼넌트의 사픽스를 작성합니다. </li>
+<a name="wp1007848"> </a> <p class="pBody">
+다음의 예에서는, 다음의 도메인 컴퍼넌트의 사픽스의 작성이 필요하게 됩니다.
+</p>
+<a name="wp999657"> </a> <p class="pBody">
+<code class="cCode">dc=Test</code>
+</p>
+<a name="wp999658"> </a> <p class="pBody">
+서버의 설정 방법법과 이 사픽스의 작성 방법의 자세한 것은, 사용의 LDAP 서버에 부속의 문서를 참조해 주세요.  
+</p>
+<a name="wp999662"> </a> <li>편의상, 환경 변수에 다음의 LDAP 파라미터를 설정합니다. </li>
+<a name="wp999663"> </a> <p class="pBody">
+이러한 변수는, 외부 LDAP 서버에 RMI 연결기 Stub를 등록하는 검색 서비스의 예로, Server 클래스와 Client 클래스를 기동할 경우에, 입력하는 커멘드를 단축하기 위해서 사용합니다.
+</p>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp999668"> </a> <li type="a">LDAP 서버를 실행하는 머신의 이름 (<em style="font-style: italic" class="cEmphasis">ldap_host</em>)</li>
+<a name="wp999671"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">ldaphost=</span><em class="cEmphasis">ldap_host</em>
+</p>
+<a name="wp999670"> </a> <li type="a">LDAP 서버가 가동하는 포트 (<em style="font-style: italic" class="cEmphasis">ldap_port</em>)</li>
+<a name="wp999674"> </a> <p class="pBody">
+<code class="cCode">$ </code><span style="font-style: normal" class="cUserType">ldapport=</span>ldap_port
+</p>
+<a name="wp999667"> </a> <li type="a">LDAP 커멘드명 속성. 다음의 예에서는 「Directory Manager」</li>
+<a name="wp999675"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">principal=&#8221;cn=Directory Manager&#8221;</span>
+</p>
+<a name="wp999676"> </a> <li type="a">LDAP 서버로 요구되는 패스워드</li>
+<a name="wp999685"> </a> <p class="pBody">
+LDAP 서버의 패스워드를 지정합니다.  
+</p>
+<a name="wp999686"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">credentials=</span><em class="cEmphasis">your_ldap_password</em>
+</p>
+<a name="wp999716"> </a> <li type="a">LDAP 서버의 주소</li>
+<a name="wp1007861"> </a> <p class="pBody">
+이 예에서는, LDAP 서버의 서비스 URL 는 JNDI 형식에서 지정되어 변수 jndildap 로 식별됩니다.  
+</p>
+<a name="wp999710"> </a> <p class="pListEndingPara"><code class="cCode">$ </code><span class="cUserType">jndildap=&quot;ldap://$ldaphost:$ldapport&quot;</span></p>
+</ol>
+<a name="wp1013008"> </a> <li>이것으로, 각종의 검색 서비스의 예를 실행할 준비를 할 수 있었습니다. </li>
+</ol>
+</div>
+<a name="wp999728"> </a> <h2 class="pHeading1">
+4.2	Service Location Protocol (SLP) 검색 서비스
+</h2>
+<a name="wp999020"> </a> <p class="pBody">
+JMX 테크놀러지의 스펙에서는, SLP 검색 서비스에 RMI 연결기를 등록할 방법이 지정되고 있습니다.
+</p>
+<a name="wp999778"> </a> <p class="pBody">
+이 예의 목적은, JMX Remote API 연결기 클라이언트로, SLP 검색 서비스에 등록된 연결기 서버를 검색해, 접속하는 방법을 나타내는 것입니다. 이 예에서는, 다음의 조작을 실행합니다.
+</p>
+<ol class="pList1"><a name="wp999301"> </a> <div class="pList1"><li>에이전트측:</li></div>
+<ol type="a" class="pList2"><a name="wp999826"> </a> <div class="pList2"><li>MBean 서버를 작성</li></div>
+<a name="wp999302"> </a> <div class="pList2Plus"><li>SLP 검색 서비스의 포인터를 취득</li></div>
+<a name="wp999303"> </a> <div class="pList2Plus"><li>연결기 서버를 작성</li></div>
+<a name="wp999815"> </a> <div class="pList2Last"><li>SLP 검색 서비스에 연결기 주소를 등록</li></div>
+</ol>
+<a name="wp999820"> </a> <div class="pList1Plus"><li>클라이언트측:</li></div>
+<ol type="a" class="pList2"><a name="wp999831"> </a> <div class="pList2"><li>SLP 검색 서비스의 포인터를 취득</li></div>
+<a name="wp999832"> </a> <div class="pList2Plus"><li>SLP 검색 서비스에 등록된 모든 연결기 서버를 검색</li></div>
+<a name="wp999837"> </a> <div class="pList2Plus"><li>JMX Remote API 연결기를 작성 </li></div>
+<a name="wp999838"> </a> <div class="pList2LastEnd"><li>MBean 서버의 MBean 에 관한 정보를 취득</li></div>
+</ol></ol>
+<hr class="pHr"/><div class="note">
+<a name="wp999845"> </a>  <b>주 &#8211;</b>  이 예는, 사용자가 SLP 테크놀러지에 익숙 하고 있는 것을 전제로 기재되어 있습니다. 이 예에 나타내는 코드는, RFC 2614 (<a  href="http://www.ietf.org/rfc/rfc2614.txt">http://www.ietf.org/rfc/rfc2614.txt</a>  를 참조)로 정의되고 있는 Sun Microsystems 의 SLP 의 구현에 준거하고 있습니다. Sun Microsystems 의 SLP 의 구현은, 디렉토리 <code class="cCode">/usr/share/lib/slp</code> 의 Solaris 오퍼레이팅(operating) 환경에서 사용할 수 있습니다. Solaris 오퍼레이팅(operating) 환경을 실행하고 있지 않는 경우는, 「RFC 2614, Section 5」에 준거한 버젼의 SLP 를 입수할 필요가 있습니다.
+OpenSLP Java 구현은,<a href="http://www.openslp.org">http://www.openslp.org</a>  로부터 다운로드할 수 있습니다. <hr class="pHr"/></note> <a name="wp999300"> </a> <p class="pBody">
+SLP 검색의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Lookup/slp</code> 내에 있습니다.  
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999259"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Lookup/slp</code> 를 엽니다. </li>
+<a name="wp999260"> </a> <p class="pBody">
+이 디렉토리내에는, 다음의 파일이 있습니다.
+</p>
+<ul class="pBullet2"><a name="wp1012024"> </a> <div class="pBullet2"><li><code class="cCode">Server.java</code></li></div>
+<a name="wp1012025"> </a> <div class="pBullet2Plus"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1012026"> </a> <div class="pBullet2Last"><li><code class="cCode">README</code></li></div>
+</ul>
+<a name="wp999266"> </a> <li>텍스트 문자 편집기로 2 개의 <code class="cCode">*. java</code> 파일을 엽니다. </li>
+<a name="wp1013012"> </a> <p class="pListEndingPara">이러한 클래스에 도착해, 이후의 섹션으로 분석합니다. </p>
+</ol>
+<a name="wp999246"> </a> <h3 class="pHeading2">
+4.2. 1	예제 클래스의 분석
+</h3>
+<a name="wp999256"> </a> <p class="pBody">
+다음의 섹션에서는, SLP 검색의 예제로 사용되는 각 클래스를 분석해, 각 클래스가 상기로 설명한 조작을 어떻게 실행할까에 임해서 설명합니다.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp1000178"> </a>  <b>주 &#8211;</b>  Sun Microsystems 의 구현 이외의 SLP 의 구현을 사용하고 있는 경우는,<code class="cCode">com.sun.slp</code> 패키지 대신에 사용하시는 버젼의 SLP Java 클래스를 임포트 하기 위한(해),<code class="cCode">Server.java</code> 와 <code class="cCode">Client.java</code> 를 변경할 필요가 있습니다. RFC 2614, Section 5 를 참조해 주세요.
+<hr class="pHr"/></note> <a name="wp999306"> </a> <h4 class="pHeading3">
+4.2. 1.1	Server.java
+</h4>
+<a name="wp1010980"> </a> <p class="pBody">
+SLP 검색 서비스의 <code class="cCode">Server.java</code> 클래스는, 그 크기에 의해, 몇개의 코드 (발췌)로 나타납니다. 이 예로 사용되는 SLP 코드의 자세한 것은, RFC 2614 로 SLP 의 API 문서를 참조해 주세요.
+</p>
+<a name="wp1010981"> </a> <div class="pCodeCaption">
+코드예&#160;4-1	SLP 검색 서비스의 예제 클래스 Server.java (발췌 1)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1010989"> </a> 
+public class Server {<a name="wp1011000"> </a> 
+   public final static int <b class="cBold">JMX_DEFAULT_LEASE = 300</b>;<a name="wp1013948"> </a> 
+   public final static String JMX_SCOPE = &quot;DEFAULT&quot;;<a name="wp1013949"> </a> 
+<a name="wp1013950"> </a> 
+   private final MBeanServer mbs;<a name="wp1010994"> </a> 
+   public Server() {<a name="wp1010995"> </a> 
+       mbs = <b class="cBold">MBeanServerFactory.createMBeanServer()</b>;<a name="wp1010996"> </a> 
+   }<a name="wp1010997"> </a> 
+   <a name="wp1010998"> </a> 
+[...]<a name="wp1010999"> </a> 
+<a name="wp1011001"> </a> 
+</pre></div>
+<a name="wp1010985"> </a> <p class="pBody">
+<a  href="lookup.html#wp1010981">코드예&#160;4-1</a>  에서는, 디폴트의 SLP 리스 <code class="cCode">JMX_DEFAULT_LEASE</code> 을, URL 의 등록 기간에 대응하는 디폴트 리스 300 초로 설정해, MBean 서버 <code class="cCode">mbs</code> 의 초기 작성을 실시하고 있습니다.
+</p>
+<a name="wp1000503"> </a> <p class="pBody">
+상기의 코드에서는 가리키고 있지 않습니다만, 다음에 SLP 아드바타이자 <code class="cCode">slpAdvertiser</code> 와 SLP 서비스 URL <code class="cCode">url</code> 를 정의합니다. <code class="cCode">slpAdvertiser</code> 는, SLP 검색 서비스에 서비스 URL 를 등록하는 경우에 사용합니다. <code class="cCode">SCOPE</code> 와 <code class="cCode">agentName</code> 는, SLP 에 검색 속성으로서 등록됩니다.
+</p>
+<a name="wp1006345"> </a> <div class="pCodeCaption">
+코드예&#160;4-2	SLP 검색 서비스의 예제 클래스 Server.java (발췌 2)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011010"> </a> 
+[...]<a name="wp1011191"> </a> 
+<a name="wp1011012"> </a> 
+   public static void register(JMXServiceURL jmxUrl, String name)<a name="wp1011013"> </a> 
+     throws ServiceLocationException {<a name="wp1011014"> </a> 
+     <b class="cBold">ServiceURL serviceURL =</b><a name="wp1011015"> </a> 
+<b class="cBold">          new ServiceURL(jmxUrl.toString(),</b><a name="wp1011016"> </a> 
+<b class="cBold">                         JMX_DEFAULT_LEASE)</b>;<a name="wp1011017"> </a> 
+     debug(&quot;ServiceType is: &quot; + serviceURL.getServiceType());<a name="wp1011018"> </a> 
+     Vector attributes = new Vector();<a name="wp1011019"> </a> 
+     Vector attrValues = new Vector();<a name="wp1011020"> </a> 
+     attrValues.add(JMX_SCOPE);<a name="wp1011021"> </a> 
+     ServiceLocationAttribute attr1 =<a name="wp1011022"> </a> 
+          new ServiceLocationAttribute(&quot;SCOPE&quot;, attrValues);<a name="wp1011023"> </a> 
+     attributes.add(attr1);<a name="wp1011024"> </a> 
+     attrValues.removeAllElements();<a name="wp1011025"> </a> 
+     <b class="cBold">attrValues.add(name);</b><a name="wp1011026"> </a> 
+<b class="cBold">     ServiceLocationAttribute attr2 =</b><a name="wp1011027"> </a> 
+<b class="cBold">          new ServiceLocationAttribute(&quot;AgentName&quot;, attrValues);</b><a name="wp1011028"> </a> 
+     attributes.add(attr2);<a name="wp1011029"> </a> 
+     final <b class="cBold">Advertiser</b> slpAdvertiser =<a name="wp1011030"> </a> 
+          ServiceLocationManager.getAdvertiser(Locale.US);<a name="wp1011031"> </a> 
+     slpAdvertiser. <b class="cBold">register(serviceURL, attributes)</b>;<a name="wp1011032"> </a> 
+     <a name="wp1011033"> </a> 
+   } <a name="wp1011034"> </a> 
+<a name="wp1011035"> </a> 
+[...]<a name="wp1011036"> </a> 
+<a name="wp1011192"> </a> 
+</pre></div>
+<a name="wp1006344"> </a> <p class="pBody">
+<a  href="lookup.html#wp1006345">코드예&#160;4-2</a>  에, JMX 연결기 서버의 URL 의 SLP 검색 서비스에의 등록을 나타냅니다.  
+</p>
+<a name="wp1000656"> </a> <p class="pBody">
+JMX 서비스 URL,<code class="cCode">jmxUrl</code> 는, 연결기 서버의 주소이며, 연결기 서버의 기동시에 <code class="cCode">JMXConnectorServer</code> 의 <code class="cCode">getAddress()</code> 메소드를 호출해 가져옵니다.  
+</p>
+<a name="wp1000660"> </a> <p class="pBody">
+이 때, 스코프나 연결기 서버 주소가 등록될 때의 에이전트명 (<code class="cCode">name</code>)등의 SLP 검색의 속성은, SLP 클래스 <code class="cCode">ServiceLocationAttribute</code> 에 의해 지정됩니다. <code class="cCode">AgentName</code> 속성은 필수입니다만,<code class="cCode">ProtocolType</code>,<code class="cCode">AgentHost</code>, 및 <code class="cCode">Property</code> 등의 다른 옵션 속성도 SLP 검색 서비스에 등록할 수 있습니다.
+</p>
+<a name="wp1011042"> </a> <p class="pBody">
+마지막으로, JMX 연결기 서버 주소는 <code class="cCode">Advertiser</code> 인터페이스의 <code class="cCode">register()</code> 메소드의 호출에 의해 SLP 서비스에 등록되어 파라미터로서 <code class="cCode">serviceURL</code> 와 <code class="cCode">attributes</code> 가 건네받습니다.
+</p>
+<a name="wp1011043"> </a> <div class="pCodeCaption">
+코드예&#160;4-3	SLP 검색 서비스의 예제 클래스 Server.java (발췌 3)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011121"> </a> 
+[...]<a name="wp1014933"> </a> 
+<a name="wp1014934"> </a> 
+   public JMXConnectorServer rmi(String url) throws<a name="wp1014935"> </a> 
+     IOException,<a name="wp1014936"> </a> 
+     JMException,<a name="wp1014937"> </a> 
+     NamingException,<a name="wp1014938"> </a> 
+     ClassNotFoundException,<a name="wp1014939"> </a> 
+     ServiceLocationException {<a name="wp1014940"> </a> 
+     JMXServiceURL jurl = new JMXServiceURL(url);<a name="wp1014941"> </a> 
+     final HashMap env = new HashMap();<a name="wp1014942"> </a> 
+     // Environment map attributes<a name="wp1014943"> </a> 
+     [...]<a name="wp1014944"> </a> 
+<a name="wp1014945"> </a> 
+ <a name="wp1014946"> </a> 
+     <span class="cUserType">JMXConnectorServer rmis =</span><a name="wp1014947"> </a> 
+<span class="cUserType">        JMXConnectorServerFactory</span>. newJMXConnectorServer(jurl, env, mbs);<a name="wp1014948"> </a> 
+     final String agentName = System.getProperty(&quot;agent.name&quot;,<a name="wp1014949"> </a> 
+                                                 &quot;DefaultAgent&quot;);<a name="wp1014950"> </a> 
+     start(rmis, agentName);<a name="wp1014951"> </a> 
+<a name="wp1014952"> </a> 
+     return rmis;<a name="wp1014953"> </a> 
+  }<a name="wp1014954"> </a> 
+[...]<a name="wp1011154"> </a> 
+<a name="wp1011162"> </a> 
+</pre></div>
+<a name="wp1011126"> </a> <p class="pBody">
+<a  href="lookup.html#wp1011043">코드예&#160;4-3</a>  에, RMI 연결기 서버의 작성을 나타냅니다. JMX 서비스 URL <code class="cCode">jurl</code> 는, 커멘드행으로 <code class="cCode">Server</code> 를 기동하기 위한 커멘드에 포함되는 캐릭터 라인 <code style="font-style: normal" class="cCode">url</code> 로부터 구축됩니다. RMI 연결기 서버,<code class="cCode">rmis</code> 는, 환경<code class="cCode">맵</code>과 주소 <code class="cCode">jurl</code> 로 정의되는 시스템 프로퍼티으로부터 작성됩니다.
+</p>
+<a name="wp1000825"> </a> <p class="pBody">
+다음에 연결기 서버가 기동해, RMI 연결기 서버 주소가 <code class="cCode">agentName</code> 의 이름으로 SLP 검색 서비스에 등록됩니다.
+</p>
+<a name="wp1011163"> </a> <div class="pCodeCaption">
+코드예&#160;4-4	SLP 검색 서비스의 예제 클래스 Server.java (발췌 4)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011169"> </a> 
+[...]<a name="wp1011181"> </a> 
+<a name="wp1011171"> </a> 
+   public void start(JMXConnectorServer server, String agentName)<a name="wp1011172"> </a> 
+      throws IOException, ServiceLocationException {<a name="wp1011173"> </a> 
+      server.start();<a name="wp1011174"> </a> 
+      final JMXServiceURL address = server.getAddress();<a name="wp1011175"> </a> 
+      register(address, agentName);<a name="wp1011176"> </a> 
+   }<a name="wp1011177"> </a> 
+   <a name="wp1011178"> </a> 
+[...]<a name="wp1011179"> </a> 
+<a name="wp1011180"> </a> 
+</pre></div>
+<a name="wp1000504"> </a> <p class="pBody">
+<a  href="lookup.html#wp1011163">코드예&#160;4-4</a>  에, 연결기 서버 <code class="cCode">server</code> 의 기동과 지정된 주소 <code class="cCode">address</code> 를 사용한 <code class="cCode">server</code> 의 SLP 검색 서비스에의 등록을 나타냅니다.  
+</p>
+<a name="wp1004897"> </a> <h4 class="pHeading3">
+4.2. 1.2	Client.java
+</h4>
+<a name="wp1001444"> </a> <p class="pBody">
+SLP 검색 서비스의 <code class="cCode">Client.java</code> 클래스를,<a  href="lookup.html#wp1011285">코드예&#160;4-5</a> ,<a  href="lookup.html#wp1008681">코드예&#160;4-6</a> , 및<a  href="lookup.html#wp1008723">코드예&#160;4-7</a>  에 나타냅니다.  
+</p>
+<a name="wp1011285"> </a> <div class="pCodeCaption">
+코드예&#160;4-5	SLP 검색 서비스의 예제 클래스 Client.java (발췌 1)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011291"> </a> 
+public class Client {<a name="wp1015778"> </a> 
+<a name="wp1015779"> </a> 
+    public final static String JMX_SCOPE = &quot;DEFAULT&quot;;<a name="wp1015780"> </a> 
+<a name="wp1015781"> </a> 
+    public static Locator <span class="cUserType">getLocator()</span> throws ServiceLocationException {<a name="wp1015782"> </a> 
+      final Locator slpLocator =<a name="wp1015783"> </a> 
+          <span class="cUserType">ServiceLocationManager.getLocator(Locale.US)</span>;<a name="wp1015784"> </a> 
+      return slpLocator;<a name="wp1015785"> </a> 
+    }<a name="wp1015786"> </a> 
+    <a name="wp1015787"> </a> 
+      public static List lookup(Locator slpLocator, String name)<a name="wp1015788"> </a> 
+          throws IOException, ServiceLocationException {<a name="wp1015789"> </a> 
+<a name="wp1015790"> </a> 
+  <a name="wp1015791"> </a> 
+          final ArrayList list = new ArrayList();<a name="wp1015792"> </a> 
+          Vector scopes = new Vector();<a name="wp1015793"> </a> 
+<a name="wp1015794"> </a> 
+          scopes.add(JMX_SCOPE);<a name="wp1015795"> </a> 
+          <span class="cUserType">String query = </span><a name="wp1015796"> </a> 
+<span class="cUserType">              &quot;(&amp;(AgentName=&quot; + ((name! =null)? name:&quot;*&quot;) + &quot;)) &quot;</span>;<a name="wp1015797"> </a> 
+<a name="wp1015798"> </a> 
+          <span class="cUserType">ServiceLocationEnumeration result =</span><a name="wp1015799"> </a> 
+<span class="cUserType">              slpLocator.findServices(new ServiceType(&quot;service:jmx&quot;),</span><a name="wp1015800"> </a> 
+<span class="cUserType">                                      scopes, query)</span>;<a name="wp1015801"> </a> 
+<a name="wp1015802"> </a> 
+          while(result.hasMoreElements()) {<a name="wp1015803"> </a> 
+                <span class="cUserType">final ServiceURL surl = (ServiceURL) result.next()</span>;<a name="wp1015804"> </a> 
+                <a name="wp1015805"> </a> 
+<a name="wp1015806"> </a> 
+             <span class="cUserType">JMXServiceURL jmxUrl = new JMXServiceURL(surl.toString())</span>;<a name="wp1015807"> </a> 
+             try {<a name="wp1015808"> </a> 
+                  <span class="cUserType">JMXConnector client =</span><a name="wp1015809"> </a> 
+<span class="cUserType">                     JMXConnectorFactory.newJMXConnector(jmxUrl, null)</span>;<a name="wp1015810"> </a> 
+                  if (client ! = null) list.add(client);<a name="wp1015811"> </a> 
+             } catch (IOException x ) { <a name="wp1015812"> </a> 
+             [...]<a name="wp1015813"> </a> 
+             }<a name="wp1015814"> </a> 
+          }<a name="wp1015815"> </a> 
+      }<a name="wp1015816"> </a> 
+      return list;<a name="wp1015817"> </a> 
+    }<a name="wp1011328"> </a> 
+<a name="wp1011330"> </a> 
+</pre></div>
+<a name="wp1005321"> </a> <p class="pBody">
+<a  href="lookup.html#wp1011285">「코드예&#160;4-5」</a>에서는 우선,SLP 클래스 <code class="cCode">ServiceLocationManager</code> 의 <code class="cCode">getLocator</code> 메소드를 호출해, SLP 서비스 <code class="cCode">Locator</code> 를 가져옵니다. 다음에 <code class="cCode">Client</code> 는, 특정의 에이전트명 또는 특정의 패턴에 일치하는 에이전트명으로 SLP 서비스에 등록된, 모든 연결기 서버를 가져옵니다. <code class="cCode">Client</code> 의 기동시에 에이전트명이 지정되어 있지 않은 경우, 모든 에이전트명이 고려됩니다.  
+</p>
+<a name="wp1005502"> </a> <p class="pBody">
+JMX 테크놀러지 서비스 URL,<code class="cCode">jmxUrl</code> 는, SLP 로 취득된 에이전트 마다 생성됩니다.  각 에이전트의 SLP 서비스 URL,<code class="cCode">surl</code> 는 파라미터로서 <code class="cCode">JMXServiceURL</code> 인스턴스에게 건네집니다. URL <code class="cCode">jmxUrl</code> 는,<code class="cCode">JMXConnectorFactory</code> 의 <code class="cCode">newJMXConnector()</code> 메소드에게 건네져 SLP 서비스에 등록되는 각 에이전트에 새로운 연결기 클라이언트 <code class="cCode">client</code> 가 작성됩니다.  
+</p>
+<a name="wp1005545"> </a> <p class="pBody">
+취득된 연결기 클라이언트는, 배열 리스트 <code class="cCode">list</code> 에 보존됩니다.  
+</p>
+<a name="wp1008681"> </a> <div class="pCodeCaption">
+코드예&#160;4-6	SLP 검색 서비스의 예제 클래스 Client.java (발췌 2)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011331"> </a> 
+<b class="cBold">public static void listMBeans(MBeanServerConnection server)</b><a name="wp1011361"> </a> 
+     throws IOException {<a name="wp1011337"> </a> 
+<a name="wp1011338"> </a> 
+     final Set names = server.queryNames(null, null);<a name="wp1011339"> </a> 
+     for (final Iterator i=names.iterator(); i.hasNext(); ) {<a name="wp1011340"> </a> 
+          ObjectName name = (ObjectName) i.next();<a name="wp1011341"> </a> 
+          System.out.println(&quot;Got MBean: &quot;+name);<a name="wp1011342"> </a> 
+          try {<a name="wp1011343"> </a> 
+               MBeanInfo info =<a name="wp1011344"> </a> 
+                  server.getMBeanInfo((ObjectName) name);<a name="wp1011345"> </a> 
+               MBeanAttributeInfo[] attrs = info.getAttributes();<a name="wp1011346"> </a> 
+               if (attrs == null) continue;<a name="wp1011347"> </a> 
+               for (int j=0; j&lt;attrs.length; j++) {<a name="wp1011348"> </a> 
+                    try {<a name="wp1011349"> </a> 
+                         Object o =<a name="wp1011350"> </a> 
+                         server.getAttribute(name, attrs[j]. getName());<a name="wp1011351"> </a> 
+                         System.out.println(&quot;\t\t&quot; + attrs[j]. getName() +<a name="wp1011352"> </a> 
+                         &quot; = &quot;+o);<a name="wp1011353"> </a> 
+                    } catch (Exception x) {<a name="wp1011354"> </a> 
+                         System.err.println(&quot;JmxClient failed to get &quot; +<a name="wp1011355"> </a> 
+                                             attrs[j]. getName() + x);<a name="wp1011356"> </a> 
+                         x.printStackTrace(System.err);<a name="wp1011357"> </a> 
+                    }<a name="wp1011358"> </a> 
+     }<a name="wp1011359"> </a> 
+}<a name="wp1011360"> </a> 
+<a name="wp1011365"> </a> 
+</pre></div>
+<a name="wp1005540"> </a> <p class="pBody">
+<a  href="lookup.html#wp1008681">코드예&#160;4-6</a>  에서는, SLP 서비스에 보존된 연결기 서버 주소를 사용해 작성된 모든 연결기 클라이언트에,<code class="cCode">MBeanServerConnection</code> 의 참조가 취득되고 있습니다. 모든 MBean 와 그 속성의 리스트가 취득됩니다.  
+</p>
+<a name="wp1008723"> </a> <div class="pCodeCaption">
+코드예&#160;4-7	SLP 검색 서비스의 예제 클래스 Client.java (발췌 3)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011370"> </a> 
+public static void main(String[] args) {<a name="wp1015956"> </a> 
+      try {<a name="wp1015957"> </a> 
+           <span class="cUserType">final String agentName = System.getProperty(&quot;agent.name&quot;)</span>;<a name="wp1015958"> </a> 
+           <span class="cUserType">final Locator slpLocator = getLocator()</span>;<a name="wp1015959"> </a> 
+           List l = lookup(slpLocator, agentName);<a name="wp1015960"> </a> 
+           int j = 1;<a name="wp1015961"> </a> 
+           for (Iterator i=l.iterator() ;i.hasNext() ;j++) {<a name="wp1015962"> </a> 
+                JMXConnector c1 = (JMXConnector) i.next();<a name="wp1015963"> </a> 
+                if (c1 ! = null) {<a name="wp1015964"> </a> 
+                    try {<a name="wp1015965"> </a> 
+                         c1.connect(env);<a name="wp1015966"> </a> 
+                    } catch (IOException x) {<a name="wp1015967"> </a> 
+                         System.err.println (&quot;Connection failed: &quot; + x);<a name="wp1015968"> </a> 
+                         x.printStackTrace(System.err);<a name="wp1015969"> </a> 
+                         continue;<a name="wp1015970"> </a> 
+                    }<a name="wp1015971"> </a> 
+<a name="wp1015972"> </a> 
+                    <span class="cUserType">MBeanServerConnection conn =</span><a name="wp1015973"> </a> 
+<span class="cUserType">                         c1.getMBeanServerConnection()</span>;<a name="wp1015974"> </a> 
+<a name="wp1015975"> </a> 
+                    try {<a name="wp1015976"> </a> 
+                         listMBeans(conn);<a name="wp1015977"> </a> 
+                    } catch (IOException x) {<a name="wp1015978"> </a> 
+                         x.printStackTrace(System.err);<a name="wp1015979"> </a> 
+                    }<a name="wp1015980"> </a> 
+                    try {<a name="wp1015981"> </a> 
+                         c1.close();<a name="wp1015982"> </a> 
+                    } catch (IOException x) {<a name="wp1015983"> </a> 
+                         x.printStackTrace(System.err);<a name="wp1015984"> </a> 
+                    }<a name="wp1015985"> </a> 
+                }<a name="wp1015986"> </a> 
+           }<a name="wp1015987"> </a> 
+      } catch (Exception x) {<a name="wp1015988"> </a> 
+           x.printStackTrace(System.err);<a name="wp1015989"> </a> 
+      }<a name="wp1015990"> </a> 
+}<a name="wp1011408"> </a> 
+<a name="wp1011412"> </a> 
+</pre></div>
+<a name="wp1008783"> </a> <p class="pBody">
+<a  href="lookup.html#wp1008723">코드예&#160;4-7</a>  에서는,<code class="cCode">agent.name</code> 프로퍼티은 <code class="cCode">System</code> 클래스의 <code class="cCode">getProperty()</code> 메소드를 호출해 취득되어 SLP 검색 서비스는 <code class="cCode">Locator</code> 의 <code class="cCode">getLocator()</code> 메소드를 호출해 검색됩니다.
+</p>
+<a name="wp1024593"> </a> <p class="pBody">
+<code class="cCode">agentName</code> 의 이름을 가지는 모든 에이전트가 검색되어 검출된 에이전트에의 접속이 설정됩니다. 에이전트가 지정되어 있지 않은 경우, 모든 에이전트가 검색됩니다. <code class="cCode">Server</code> 로 작성된 MBean 에의 접속이 설정되어 접속이 절단 되기 전에, 접속내의 모든 MBean 가 리스트 됩니다.  
+</p>
+<a name="wp1024594"> </a> <h3 class="pHeading2">
+4.2. 2	SLP 검색 서비스의 예제의 실행
+</h3>
+<a name="wp1009264"> </a> <p class="pBody">
+SLP 를 사용하는 검색 서비스의 예제를 실행하려면 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 실행한 작업 외에도, 이 예제에 고유의 초기 작업을 사전에 실행할 필요가 있습니다. 이 작업 후, SLP 를 JMX 테크놀러지로 지원되는 2 개의 연결기와 함께 사용해 연결기의 검색을 개시할 수 있습니다.
+</p>
+<a name="wp1010870"> </a> <p class="pBody">
+예제를 실행하는 경우, 작성된 에이전트의 종류와 에이전트의 작성에 사용된 트랜스폴트를 추적하기 위해서, 대응하는 섹션의 캐릭터 라인에 동일한 문자 사픽스가 에이전트명에 포함되어 있습니다. 예를 들어,<a  href="lookup.html#wp1010876"><span style="color: #3366CC">「Section&#160;a.  외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기」</span></a> 의 에이전트에는,<code class="cCode">test-server-a</code> 라는 이름이 붙일 수 있고 있습니다.
+</p>
+<a name="wp1008837"> </a> <h4 class="pHeading3">
+4.2. 2.1	SLP 검색 서비스의 예제의 설정
+</h4>
+<a name="wp1008838"> </a> <p class="pBody">
+다음의 순서는, 이 예제로 실행할 수 있는 모든 트랜스폴트로 요구됩니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp996930"> </a> <li>클래스의 컴파일 및 실행이 용이하게 되도록(듯이), 추가로 환경 변수를 정의합니다. </li>
+<a name="wp996968"> </a> <p class="pBody">
+<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 설정된 공통의 환경 변수 외에, SLP 서비스의 패스를 추가할 필요가 있습니다. Solaris 오퍼레이팅(operating) 환경을 사용하고 있는 경우는, 다음의 변수를 추가합니다.
+</p>
+<a name="wp1001457"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">SLPLIB=/usr/share/lib/slp</span>
+</p>
+<a name="wp1001461"> </a> <p class="pBody">
+다른 플랫폼을 사용하고 있는 경우는, 사용하고 있는 플랫폼에 맞추어 <code class="cCode">SLPLIB</code> 를 설정합니다.
+</p>
+<a name="wp996971"> </a> <li><code class="cCode">classp</code> 환경 변수를 정의해, export 합니다. </li>
+<a name="wp1001488"> </a> <p class="pBody">
+이 예에서는, SLP 의 Java 어카이브(archive) (JAR) 파일을 포함한 클래스 패스가 필요합니다.
+</p>
+<a name="wp996972"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">classp=$SLPLIB/slp.jar</span>
+</p>
+<a name="wp997537"> </a> <li><code class="cCode">Client</code> 클래스와 <code class="cCode">Server</code> 클래스의 예제를 컴파일 합니다. </li>
+<a name="wp997538"> </a> <p class="pBody">
+다음의 커멘드를 입력합니다.
+</p>
+<a name="wp997540"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">javac -d . -classpath $classp Server.java Client.java</span>
+</p>
+<a name="wp996967"> </a> <li>SLP demon를 기동합니다. </li>
+<a name="wp997013"> </a> <p class="pBody">
+Solaris 오퍼레이팅(operating) 환경을 사용하고 있는 경우, 다음의 커멘드를 입력합니다만, 이것에는 수퍼 사용자 패스워드가 필요합니다.
+</p>
+<a name="wp997020"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">su root -c &quot;java -cp $SLPLIB/slpd.jar com.sun.slp.slpd &amp;&quot;</span>
+</p>
+<a name="wp997014"> </a> <p class="pBody">
+<code class="cCode">Password:</code><span class="cUserType">[</span><em class="cEmphasis">type superuser password</em><span class="cUserType">]</span>
+</p>
+<a name="wp1001495"> </a> <p class="pListEndingPara">Solaris 시스템을 실행하고 있지 않는 경우, 사용의 SLP 의 구현에 따라 SLP demon를 기동합니다. </p>
+</ol>
+<a name="wp1008814"> </a> <h4 class="pHeading3">
+4.2. 2.2	SLP 검색 서비스의 예제의 실행 
+</h4>
+<a name="wp1009282"> </a> <p class="pBody">
+이 예에서는, SLP 검색 서비스를 사용해, RMI 의 디폴트의 트랜스폴트인 JRMP, 및 IIOP 트랜스폴트를 사용하는 RMI 연결기 서버를 검색하는 방법을 나타냅니다. 그 외 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 설명한 것처럼, RMI 연결기 Stub의 등록에는 다른 외부 디렉토리가 사용되고 있습니다.  
+</p>
+<a name="wp1009409"> </a> <p class="pBody">
+여기에 나타내는 트랜스폴트와 외부 디렉토리의 편성은 다음과 같습니다.
+</p>
+<ul class="pBullet1"><a name="wp1012043"> </a> <div class="pBullet1"><li>다음의 것을 사용한, JRMP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012044"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012045"> </a> <div class="pBullet2Plus"><li>RMI 레지스트리 </li></div>
+<a name="wp1012046"> </a> <div class="pBullet2Last"><li>LDAP 레지스트리</li></div>
+</ul>
+<a name="wp1012047"> </a> <div class="pBullet1Plus"><li>다음의 것을 사용한, IIOP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012048"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012049"> </a> <div class="pBullet2Plus"><li>CORBA 네임 서비스 </li></div>
+<a name="wp1012050"> </a> <div class="pBullet2LastEnd"><li>LDAP 레지스트리</li></div>
+</ul>
+</ul><a name="wp1013007"> </a> <p class="pBody">
+다음의 순서에 따라 예제를 실행합니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1009386"> </a> <li><code class="cCode">Server</code> 를 기동합니다. </li>
+<a name="wp1008957"> </a> <p class="pBody">
+<code class="cCode">Server</code> 의 기동에 사용하는 커멘드는, 사용하고 있는 외부 디렉토리에 의해 다릅니다. <code class="cCode">Client</code> 를 기동하기 전에, 각종의 트랜스폴트 및 외부 레지스트리를 사용해,<code class="cCode">Server</code> 의 다음의 인스턴스의 1 개 또는 복수를 기동할 수 있습니다.  
+</p>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1010876"> </a> <li type="a">외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기</li>
+<a name="wp1011842"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011843"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1013846"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-a \</span><a name="wp1013847"> </a> 
+<span class="cUserType">  -Durl =&quot;service:jmx:rmi://&quot; \</span><a name="wp1013848"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011851"> </a> 
+<a name="wp1011852"> </a> 
+</pre></div>
+<a name="wp1011844"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012061"> </a> <div class="pBullet2"><li><code class="cCode">debug</code> 는 true 로 설정되어<code class="cCode">Server</code> 의 실행시의 화면 출력을 보다 상세한 것으로 합니다. </li></div>
+<a name="wp1012062"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-a</code> 입니다. </li></div>
+<a name="wp1012063"> </a> <div class="pBullet2Last"><li>서비스 URL 에 의해, RMI 의 디폴트 트랜스폴트 JRMP 상에서 동작하는 RMI 연결기의 선택이 지정됩니다. </li></div>
+</ul>
+<a name="wp1008896"> </a> <p class="pBody">
+서버가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 SLP 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1008897"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 RMI 레지스트리를 사용합니다. </li>
+<a name="wp1011651"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011727"> </a> 
+$ <span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1011864"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-b \</span><a name="wp1011866"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndirmi}/server&quot; \</span><a name="wp1011867"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011868"> </a> 
+<a name="wp1011869"> </a> 
+</pre></div>
+<a name="wp1011653"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012068"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-b</code> 입니다. </li></div>
+<a name="wp1012069"> </a> <div class="pBullet2Last"><li>서비스 URL 는, 선택한 연결기를 RMI over JRMP 로서 지정합니다. RMI 연결기 Stub server 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 jndirmi 와 특정한 RMI 레지스트리입니다.  </li></div>
+</ul>
+<a name="wp1009103"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 SLP 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1008906"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1009412"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011487"> </a> 
+$ <span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1011875"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-c \</span><a name="wp1011877"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1011878"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1011880"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1011881"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011882"> </a> 
+<a name="wp1011771"> </a> 
+</pre></div>
+<a name="wp1008913"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1009159"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-c</code> 입니다. </li></div>
+<a name="wp1009167"> </a> <div class="pBullet2Plus"><li>서비스 URL 는, RMI over JRMP 로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 와 특정한 LDAP 서버입니다.  </li></div>
+<a name="wp1009176"> </a> <div class="pBullet2Plus"><li>Stub는 LDAP 서버의 <code class="cCode">Test</code> 도메인 컴퍼넌트에 등록됩니다.  </li></div>
+<a name="wp1009189"> </a> <div class="pBullet2Last"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 이 지정됩니다.  </li></div>
+</ul>
+<a name="wp1008917"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-c</code> 로 SLP 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009305"> </a> <li type="a">외부 디렉토리를 사용하지 않는 IIOP 상의 RMI 연결기</li>
+<a name="wp1009419"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1009426"> </a> 
+$ <span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1011890"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-d \</span><a name="wp1011892"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop://&quot; \</span><a name="wp1011893"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011894"> </a> 
+<a name="wp1011895"> </a> 
+</pre></div>
+<a name="wp1011774"> </a> <p class="pBody">
+이 커멘드로, 
+</p>
+<ul class="pBullet2"><a name="wp1009452"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-d</code> 입니다. </li></div>
+<a name="wp1009457"> </a> <div class="pBullet2Last"><li>서비스 URL 는, IIOP 상의 RMI 연결기로서 선택되는 연결기를 지정합니다.  </li></div>
+</ul>
+<a name="wp1009310"> </a> <p class="pBody">
+&#x20AC;<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 자동적으로 생성된 URL 의 SLP 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009311"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 CORBA 를 사용합니다. </li>
+<a name="wp1009473"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1009316"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015198"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-e \</span><a name="wp1015199"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndiiiop}/server&quot; \</span><a name="wp1015200"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011910"> </a> 
+<a name="wp1011901"> </a> 
+</pre></div>
+<a name="wp1011783"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1009511"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-e</code> 입니다. </li></div>
+<a name="wp1009508"> </a> <div class="pBullet2Last"><li>서비스 URL 는, IIOP 상의 RMI 연결기로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub <code class="cCode">server</code> 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndiiiop</code> 와 특정한 CORBA 네임 서비스입니다. </li></div>
+</ul>
+<a name="wp1009320"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 <code class="cCode">test-server-e</code> 의 이름으로 SLP 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009321"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1011517"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011536"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015209"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-f \</span><a name="wp1015210"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1015211"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015212"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015213"> </a> 
+<span class="cUserType">  slp.Server &amp;</span><a name="wp1011931"> </a> 
+<a name="wp1011932"> </a> 
+</pre></div>
+<a name="wp1011525"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1009591"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-f</code> 입니다. </li></div>
+<a name="wp1009592"> </a> <div class="pBullet2Plus"><li>서비스 URL 는, 선택된 연결기를 RMI over IIOP 로서 지정합니다. RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 와 특정한 LDAP 서버입니다.  </li></div>
+<a name="wp1009596"> </a> <div class="pBullet2Plus"><li>Stub는 LDAP 서버의 <code class="cCode">Test</code> 도메인 컴퍼넌트에 등록됩니다.  </li></div>
+<a name="wp1009597"> </a> <div class="pBullet2Last"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다.  </li></div>
+</ul>
+<a name="wp1009598"> </a> <p class="pListEndingPara"><code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-f</code> 로 SLP 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다. </p>
+</ol>
+<a name="wp1009122"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<a name="wp1009123"> </a> <p class="pBody">
+선택한 트랜스폴트 및 외부 디렉토리를 사용해 <code class="cCode">Server</code> 를 기동한 후,<code class="cCode">Client</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1013866"> </a> 
+<code class="cCode">$ </code><span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1017418"> </a> 
+     <span class="cUserType">-Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1017425"> </a> 
+<span class="cUserType">     -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1017426"> </a> 
+<span class="cUserType">     slp.Client</span><a name="wp1017399"> </a> 
+<a name="wp1017430"> </a> 
+</pre></div>
+<a name="wp1009125"> </a> <p class="pBody">
+<code class="cCode">Server</code> 로 작성되고 검색 서비스에 등록된 에이전트의 검출을 확인하는 출력이 표시됩니다. 또, 에이전트로 설정된 접속의 접속명과 접속의 확인이 표시됩니다.  
+</p>
+<a name="wp1009126"> </a> <p class="pBody">
+특정의 에이전트를 검색하려면 , 다음의 커멘드를 입력합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1011949"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \&#160;</span><a name="wp1017456"> </a> 
+<span class="cUserType">     -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1017457"> </a> 
+<span class="cUserType">     -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1017458"> </a> 
+<span class="cUserType">     -Dagent.name=&quot;agentName&quot; \</span><a name="wp1017459"> </a> 
+<span class="cUserType">    slp.Client</span><a name="wp1011957"> </a> 
+<a name="wp1011951"> </a> 
+</pre></div>
+<a name="wp1009129"> </a> <p class="pListEndingPara">상기의 커멘드로, agentName 는 검색하는 에이전트의 이름입니다. <em class="cEmphasis"></em>또,<code class="cCode">*</code> 를 사용해 에이전트명을 부분적으로 지정할 수도 있습니다.  예를 들어, 문자 x 로 시작되는 모든 에이전트명을 검색하는 경우는,<code class="cCode">x*</code> 와 지정합니다. </p>
+<a name="wp1015233"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp998474"> </a> <h2 class="pHeading1">
+4.3	Jini 검색 서비스
+</h2>
+<a name="wp1001743"> </a> <p class="pBody">
+이 예의 목적은, JMX 테크놀러지의 연결기 클라이언트로, Jini 검색 서비스에 등록된 연결기 서버를 검색해, 접속하는 방법을 나타내는 것입니다. 이 예에서는, 다음의 조작을 실행합니다.
+</p>
+<ol class="pList1"><a name="wp1001744"> </a> <div class="pList1"><li>에이전트측:</li></div>
+<ol type="a" class="pList2"><a name="wp1001761"> </a> <div class="pList2"><li>MBean 서버를 작성</li></div>
+<a name="wp1001762"> </a> <div class="pList2Plus"><li>연결기 서버를 작성</li></div>
+<a name="wp1001767"> </a> <div class="pList2Last"><li>Jini 검색 서비스에 연결기 주소를 등록 </li></div>
+</ol>
+<a name="wp1001771"> </a> <div class="pList1Plus"><li>클라이언트측:</li></div>
+<ol type="a" class="pList2"><a name="wp1001772"> </a> <div class="pList2"><li>Jini 검색 서비스의 포인터를 취득</li></div>
+<a name="wp1001773"> </a> <div class="pList2Plus"><li>Jini 검색 서비스에 등록된 모든 연결기 서버를 검색</li></div>
+<a name="wp1001777"> </a> <div class="pList2Plus"><li>JMX Remote API 연결기를 작성 </li></div>
+<a name="wp1001778"> </a> <div class="pList2LastEnd"><li>MBean 서버의 MBean 에 관한 정보를 취득</li></div>
+</ol></ol>
+<a name="wp1013636"> </a> <p class="pBody">
+Jini 검색 서비스의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Lookup/jini</code> 내에 있습니다.  
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp1013642"> </a>  <b>주 &#8211;</b>  이러한 예제에서는, 사용자가 Jini 네트워크 테크놀러지에 익숙 하고 있는 것을 전제로 하고 있습니다. Jini 네트워크 테크놀러지의 문서는,<a  href="http://www.jini.org/">http://www.jini.org</a>  와 <a  href="http://jini.dev.java.net/">http://jini.dev.java.net/</a>  로 입수할 수 있습니다. Jini 네트워크 테크놀러지는 <a  href="http://starterkit.dev.java.net/downloads/index.html">http://starterkit.dev.java.net/downloads/index.html</a>  로부터 다운로드할 수 있습니다. 이 예에서는, Jini Technology Starter Kit Version 1.2. 1_002 (을)를 사용해 구현하고 있습니다.
+<hr class="pHr"/></note>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999430"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples</code><code class="cCode">/Lookup/jini</code> 디렉토리를 엽니다. </li>
+<a name="wp999431"> </a> <p class="pBody">
+이 디렉토리내에는, 다음의 파일이 있습니다.
+</p>
+<ul class="pBullet2"><a name="wp1012082"> </a> <div class="pBullet2"><li><code class="cCode">Server.java</code></li></div>
+<a name="wp1012083"> </a> <div class="pBullet2Plus"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1012084"> </a> <div class="pBullet2Plus"><li><code class="cCode">java.policy</code></li></div>
+<a name="wp1012085"> </a> <div class="pBullet2Plus"><li><code class="cCode">jini.properties.template</code></li></div>
+<a name="wp1012086"> </a> <div class="pBullet2Last"><li><code class="cCode">README</code></li></div>
+</ul>
+<a name="wp999434"> </a> <li>텍스트 문자 편집기로 각각의 파일을 엽니다. </li>
+<a name="wp1013015"> </a> <p class="pListEndingPara">이러한 클래스에 도착해, 이후의 섹션으로 분석합니다. </p>
+</ol>
+<a name="wp999481"> </a> <h3 class="pHeading2">
+4.3. 1	예제 클래스의 분석
+</h3>
+<a name="wp999486"> </a> <p class="pBody">
+다음의 섹션에서는, Jini 검색 서비스의 예제로 사용되는 각 클래스를 분석해, 각 클래스가 상기로 설명한 조작을 어떻게 실행할까에 임해서 설명합니다.
+</p>
+<a name="wp999487"> </a> <h4 class="pHeading3">
+4.3. 1.1	Server.java
+</h4>
+<a name="wp1001806"> </a> <p class="pBody">
+Jini 검색 서비스의 <code class="cCode">Server.java</code> 클래스는, 그 크기에 의해, 일련의 코드예로서 나타나고 있습니다.  
+</p>
+<a name="wp1012087"> </a> <div class="pCodeCaption">
+코드예&#160;4-8	Jini 검색 서비스의 예제 클래스 Server.java (발췌 1)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012093"> </a> 
+<a name="wp1012094"> </a> 
+public class Server {<a name="wp1012096"> </a> 
+   private final MBeanServer mbs;<a name="wp1012097"> </a> 
+   private static boolean debug = false;<a name="wp1012098"> </a> 
+   public Server() {<a name="wp1012099"> </a> 
+     mbs = <b class="cBold">MBeanServerFactory.createMBeanServer()</b>;<a name="wp1012100"> </a> 
+   }<a name="wp1012101"> </a> 
+<a name="wp1012102"> </a> 
+[...]<a name="wp1012103"> </a> 
+<a name="wp1012104"> </a> 
+</pre></div>
+<a name="wp1001824"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012087">코드예&#160;4-8</a>  에, MBean 서버 <code class="cCode">mbs</code> 의 작성을 나타냅니다. SLP 의 예제의 경우와 같게,<code class="cCode">Server</code> 를 커멘드행으로 기동하는 경우, JMX 서비스의 URL 와 에이전트명이 서버에게 건네집니다.
+</p>
+<a name="wp1012111"> </a> <div class="pCodeCaption">
+코드예&#160;4-9	Jini 검색 서비스의 예제 클래스 Server.java (발췌 2)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012117"> </a> 
+<a name="wp1012118"> </a> 
+[...]<a name="wp1015241"> </a> 
+<a name="wp1015242"> </a> 
+   public JMXConnectorServer rmi(String url)<a name="wp1015243"> </a> 
+      throws IOException, JMException, ClassNotFoundException {<a name="wp1015244"> </a> 
+      JMXServiceURL jurl = new JMXServiceURL(url);<a name="wp1015245"> </a> 
+      final HashMap env = new HashMap();<a name="wp1015246"> </a> 
+      // Environment map attributes<a name="wp1015247"> </a> 
+     [...]<a name="wp1015248"> </a> 
+     JMXConnectorServer rmis =<a name="wp1015249"> </a> 
+        JMXConnectorServerFactory.newJMXConnectorServer(jurl, env, mbs);<a name="wp1015250"> </a> 
+<a name="wp1015251"> </a> 
+     final String agentName = System.getProperty(&quot;agent.name&quot;,<a name="wp1015252"> </a> 
+                                                 &quot;DefaultAgent&quot;);<a name="wp1015253"> </a> 
+<a name="wp1015254"> </a> 
+     start(rmis, env, agentName);<a name="wp1015255"> </a> 
+<a name="wp1015256"> </a> 
+     return rmis;<a name="wp1015257"> </a> 
+   }<a name="wp1015258"> </a> 
+   <a name="wp1015259"> </a> 
+[...]<a name="wp1012142"> </a> 
+<a name="wp1012143"> </a> 
+</pre></div>
+<a name="wp1002084"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012111">코드예&#160;4-9</a>  에, 환경 맵 <code class="cCode">env</code> 와 주소 <code class="cCode">jurl</code> 로 정의되는 시스템 프로퍼티을 사용한, RMI 연결기 서버 <code class="cCode">rmis</code> 의 작성을 나타냅니다.
+</p>
+<a name="wp1002085"> </a> <p class="pBody">
+RMI 연결기 서버 <code class="cCode">rmis</code> 가 기동합니다. RMI 연결기 서버의 주소는,<code class="cCode">agentName</code> 의 이름으로 Jini 검색 서비스에 등록됩니다.
+</p>
+<a name="wp1006897"> </a> <div class="pCodeCaption">
+코드예&#160;4-10	Jini 검색 서비스의 예제 클래스 Server.java (발췌 3)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012156"> </a> 
+[...]<a name="wp1012163"> </a> 
+<a name="wp1012164"> </a> 
+   public void start(<b class="cBold">JMXConnectorServer server, Map env, String agentName</b>)<a name="wp1012165"> </a> 
+      throws IOException, ClassNotFoundException {<a name="wp1012166"> </a> 
+      server.start();<a name="wp1012167"> </a> 
+      final ServiceRegistrar registrar=getRegistrar();<a name="wp1012168"> </a> 
+      final <b class="cBold">JMXConnector proxy = server.toJMXConnector(env);</b><a name="wp1012169"> </a> 
+      <b class="cBold">register</b>(registrar, proxy, agentName);<a name="wp1012170"> </a> 
+   }<a name="wp1012171"> </a> 
+   <a name="wp1012172"> </a> 
+   public static ServiceRegistrar getRegistrar()<a name="wp1012173"> </a> 
+      throws IOException, ClassNotFoundException,<a name="wp1012174"> </a> 
+         MalformedURLException {<a name="wp1012175"> </a> 
+      final String jurl =<a name="wp1012176"> </a> 
+         System.getProperty(&quot;jini.lookup.url&quot;, &quot;jini://localhost&quot;);<a name="wp1012177"> </a> 
+      final <b class="cBold">LookupLocator lookup = new LookupLocator(jurl);</b><a name="wp1012178"> </a> 
+      final <b class="cBold">ServiceRegistrar registrar = lookup.getRegistrar();</b><a name="wp1012179"> </a> 
+      if (registrar instanceof Administrable)<a name="wp1012180"> </a> 
+          debug(&quot;Registry is administrable. &quot;);<a name="wp1012181"> </a> 
+      return registrar;<a name="wp1012182"> </a> 
+   }<a name="wp1012183"> </a> 
+   <a name="wp1012184"> </a> 
+   public static ServiceRegistration <b class="cBold">register(ServiceRegistrar registrar,</b><a name="wp1012185"> </a> 
+<b class="cBold">                                              JMXConnector proxy, String name)</b><a name="wp1012186"> </a> 
+      throws IOException {<a name="wp1012187"> </a> 
+      Entry[] serviceAttrs = new Entry[] {<a name="wp1012188"> </a> 
+              new net.jini.lookup.entry.Name(name)<a name="wp1012189"> </a> 
+                       };<a name="wp1012190"> </a> 
+		       <a name="wp1012191"> </a> 
+      System.out.println(&quot;Registering proxy: AgentName=&quot; + name );<a name="wp1012192"> </a> 
+      debug(&quot;&quot; + proxy);<a name="wp1012193"> </a> 
+      ServiceItem <b class="cBold">srvcItem</b> = new ServiceItem(null, proxy, serviceAttrs);<a name="wp1012194"> </a> 
+      ServiceRegistration srvcRegistration =<a name="wp1012195"> </a> 
+             registrar.register(srvcItem, Lease.ANY);<a name="wp1012196"> </a> 
+      debug(&quot;Registered ServiceID: &quot; +<a name="wp1012197"> </a> 
+                              srvcRegistration.getServiceID(). toString());<a name="wp1012198"> </a> 
+      return <b class="cBold">srvcRegistration</b>;<a name="wp1012199"> </a> 
+   }<a name="wp1012200"> </a> 
+   <a name="wp1012201"> </a> 
+[...]<a name="wp1012202"> </a> 
+<a name="wp1012203"> </a> 
+</pre></div>
+<a name="wp1002362"> </a> <p class="pBody">
+<a  href="lookup.html#wp1006897">코드예&#160;4-10</a>  에, 환경 맵 <code class="cCode">env</code> 와 서비스 URL <code class="cCode">jurl</code> 를 사용한, 연결기 서버 <code class="cCode">server</code> 의 작성을 나타냅니다. 연결기 서버의 인스턴스 서버는, Jini 검색 서비스 메소드 <code class="cCode">LookupLocator.getRegistrar()</code> 를 호출해 Jini 검색 서비스의 포인터를 가져옵니다.  
+</p>
+<a name="wp1002370"> </a> <p class="pBody">
+연결기 서버는, Jini 검색 서비스 locator <code class="cCode">registrar</code> 와 연결기 서버가 등록될 때의 에이전트명을 사용해, 프록시 형식에서 Jini 검색 서비스에 등록됩니다. 프록시는 실제로는, 연결기 서버의 클라이언트 Stub가 되어,<code class="cCode">JMXConnectorServer</code> 의 <code class="cCode">toJMXConnector()</code> 메소드의 호출에 의해 취득됩니다.  
+</p>
+<a name="wp1002371"> </a> <p class="pBody">
+등록 자체는, 서비스 항목의 배열을 사용해, Jini 검색 서비스 클래스 <code class="cCode">ServiceRegistrar</code> 의 <code class="cCode">register()</code> 메소드를 호출해 실행됩니다.
+</p>
+<a name="wp999488"> </a> <h4 class="pHeading3">
+4.3. 1.2	Client.java
+</h4>
+<a name="wp1002527"> </a> <p class="pBody">
+Jini 검색 서비스의 예제 클래스 <code class="cCode">Client.java</code> 를<a  href="lookup.html#wp1012207">코드예&#160;4-11</a>  에 나타냅니다.
+</p>
+<a name="wp1012207"> </a> <div class="pCodeCaption">
+코드예&#160;4-11	Jini 검색 서비스 예제 클래스 Client.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012209"> </a> 
+<a name="wp1012208"> </a> 
+public class Client {<a name="wp1015266"> </a> 
+<a name="wp1015267"> </a> 
+   private static boolean debug = false;<a name="wp1015268"> </a> 
+   public static ServiceRegistrar getRegistrar()<a name="wp1015269"> </a> 
+       throws IOException, ClassNotFoundException, MalformedURLException {<a name="wp1015270"> </a> 
+       final String jurl =<a name="wp1015271"> </a> 
+                  System.getProperty(&quot;jini.lookup.url&quot;, &quot;jini://localhost&quot;);<a name="wp1015272"> </a> 
+       final LookupLocator lookup = new LookupLocator(jurl);<a name="wp1015273"> </a> 
+       final ServiceRegistrar registrar = <span class="cUserType">lookup.getRegistrar()</span>;<a name="wp1015274"> </a> 
+       if (registrar instanceof Administrable)<a name="wp1015275"> </a> 
+               debug(&quot;Registry is administrable. &quot;);<a name="wp1015276"> </a> 
+       return registrar;<a name="wp1015277"> </a> 
+ }<a name="wp1015278"> </a> 
+<a name="wp1015279"> </a> 
+   public static List lookup(ServiceRegistrar registrar,<a name="wp1015280"> </a> 
+           String name) throws IOException {<a name="wp1015281"> </a> 
+       final ArrayList list = new ArrayList();<a name="wp1015282"> </a> 
+       final Class[] classes = new Class[] {JMXConnector.class};<a name="wp1015283"> </a> 
+       final Entry[] serviceAttrs = new Entry[] {<a name="wp1015284"> </a> 
+           new net.jini.lookup.entry.Name(name)<a name="wp1015285"> </a> 
+   };<a name="wp1015286"> </a> 
+   <a name="wp1015287"> </a> 
+   ServiceTemplate template =<a name="wp1015288"> </a> 
+        new ServiceTemplate(null, classes, serviceAttrs);<a name="wp1015289"> </a> 
+   ServiceMatches matches =<a name="wp1015290"> </a> 
+        registrar.lookup(template, Integer.MAX_VALUE);<a name="wp1015291"> </a> 
+   for(int i = 0; i &lt; matches.totalMatches; i++) {<a name="wp1015292"> </a> 
+        debug(&quot;Found Service: &quot; + matches.items[i]. serviceID);<a name="wp1015293"> </a> 
+        if (debug) {<a name="wp1015294"> </a> 
+           if (matches.items[i]. attributeSets ! = null) {<a name="wp1015295"> </a> 
+                   final Entry[] attrs = matches.items[i]. attributeSets;<a name="wp1015296"> </a> 
+                   for (int j = 0; j &lt; attrs.length ; j++) {<a name="wp1015297"> </a> 
+                       debug(&quot;Attribute[&quot;+j+&quot;]=&quot; + attrs[j]);<a name="wp1015298"> </a> 
+               }<a name="wp1015299"> </a> 
+           }<a name="wp1015300"> </a> 
+        }<a name="wp1015301"> </a> 
+<a name="wp1015302"> </a> 
+<a name="wp1015303"> </a> 
+        if(matches.items[i]. service ! = null) {<a name="wp1015304"> </a> 
+            JMXConnector c = (JMXConnector)(matches.items[i]. service);<a name="wp1015305"> </a> 
+            debug(&quot;Found a JMXConnector: &quot; + c);<a name="wp1015306"> </a> 
+            list.add(c);<a name="wp1015307"> </a> 
+        }<a name="wp1015308"> </a> 
+   }<a name="wp1015309"> </a> 
+   return list;<a name="wp1015310"> </a> 
+}<a name="wp1015311"> </a> 
+<a name="wp1015312"> </a> 
+[...]<a name="wp1012264"> </a> 
+<a name="wp1012265"> </a> 
+</pre></div>
+<a name="wp1002721"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012207">코드예&#160;4-11</a>  에, 연결기 클라이언트가 <code class="cCode">lookup.getRegistrar()</code> 의 호출에 의해 Jini 검색 서비스의 포인터를 취득하는 방법을 나타냅니다. 클라이언트는, 다음에 등록명 <code class="cCode">name</code> 를 사용해 Jini 검색 서비스에 엔트리로서 등록된 연결기의 리스트를 가져옵니다. SLP 의 예와 달리, 기동시에 사용자가 <code class="cCode">Client</code> 에 건네준 에이전트명은, 기존의 에이전트명으로 완전하게 일치하는지, Null 가 아니면 안되어, 어느 경우도, Jini 검색 서비스는 모든 에이전트를 검색합니다.
+</p>
+<a name="wp1032311"> </a> <p class="pBody">
+여기에 코드는 나타나고 있지 않습니다만, 연결기의 리스트가 취득되면(자), 클라이언트는 <code class="cCode">Server</code> 에 의해 기동한 MBean 서버에 접속해, 이 서버에 등록된 모든 MBean 를 나타낸 리스트를 가져옵니다.  
+</p>
+<a name="wp1032312"> </a> <h4 class="pHeading3">
+4.3. 1.3	java.policy
+</h4>
+<a name="wp1003023"> </a> <p class="pBody">
+<code class="cCode">java.policy</code> 파일은, 이 예의 위해(때문에) 설정된 Java 테크놀러지의 시큐리티 정책 파일입니다.  
+</p>
+<a name="wp1003019"> </a> <h4 class="pHeading3">
+4.3. 1.4	jini.properties.template
+</h4>
+<a name="wp1003022"> </a> <p class="pBody">
+이 예의 위해(때문에) 설정된, 템플릿 형식의 Jini 네트워킹 테크놀러지 프로퍼티 파일. @INSTALL_HOME_FOR_JINI@ 를 변경해, 파일명을 <code class="cCode">jini.properties</code> 로 변경합니다.
+</p>
+<a name="wp997715"> </a> <h3 class="pHeading2">
+4.3. 2	Jini 검색 서비스의 예제의 실행
+</h3>
+<a name="wp1009711"> </a> <p class="pBody">
+Jini 검색 서비스를 사용하는 검색 서비스의 예제를 실행하려면 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 실행한 작업 외에도, 이 예제에 고유의 초기 작업을 사전에 실행할 필요가 있습니다. Jini 네트워크 테크놀러지를, JMX 테크놀러지로 지원되는 연결기와 함께 사용해 연결기의 검색을 개시할 수 있습니다.
+</p>
+<a name="wp1010885"> </a> <p class="pBody">
+예제를 실행하는 경우, 작성된 에이전트의 종류와 에이전트의 작성에 사용된 트랜스폴트를 추적하기 위해서, 대응하는 섹션의 캐릭터 라인에 동일한 문자 사픽스가 에이전트명에 포함되어 있습니다. 예를 들어,<a  href="lookup.html#wp1009793"><span style="color: #3366CC">「Section&#160;a.  외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기」</span></a> 의 에이전트는 <code class="cCode">test-server-a</code> 라는 이름이 붙일 수 있습니다.
+</p>
+<a name="wp1009715"> </a> <h4 class="pHeading3">
+4.3. 2.1	Jini 검색 서비스의 예제의 설정
+</h4>
+<a name="wp1009716"> </a> <p class="pBody">
+다음의 순서는, 이 예제로 실행할 수 있는 모든 트랜스폴트로 요구됩니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997794"> </a> <li>예제 클래스의 컴파일 및 실행이 용이하게 되도록(듯이), 추가의 환경 변수를 몇개인가 정의합니다. </li>
+<a name="wp997795"> </a> <p class="pBody">
+<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 설정한 공통의 환경 변수 외에, Jini 검색 서비스의 패스를 추가할 수 있습니다. Jini 네트워킹 테크놀러지를 인스톨 한 디렉토리는, jini_dir 로서 참조됩니다. <em class="cEmphasis"></em>
+</p>
+<a name="wp997796"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">JINI_HOME=</span><em class="cEmphasis">jini_dir</em>
+</p>
+<a name="wp997817"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">JINILIB=$JINI_HOME/lib</span>
+</p>
+<a name="wp1002763"> </a> <li><code class="cCode">classp</code> 환경 변수를 정의합니다. </li>
+<a name="wp1006240"> </a> <p class="pBody">
+이 예에서는, Jini 검색 서비스의 코어와 확장 기능에 사용하는 JAR 파일이 필요하게 됩니다.
+</p>
+<a name="wp1006241"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">classp=$JINILIB/jini-core.jar:$JINILIB/jini-ext.jar</span>
+</p>
+<a name="wp1002915"> </a> <li><code class="cCode">jini.properties</code> 파일을 작성합니다. </li>
+<a name="wp1002809"> </a> <p class="pBody">
+UNIX 플랫폼용의 프로퍼티 파일은, 이 예의 클래스와 같은 디렉토리내에 있습니다. UNIX 플랫폼을 실행하고 있지 않는 경우, 사용의 플랫폼의 프로퍼티 파일은 다음의 디렉토리에서 입수할 수 있습니다.
+</p>
+<a name="wp1002814"> </a> <p class="pBody">
+<span class="cUserType">$JINI_HOME/example/launcher/jini12_&lt;</span><em class="cEmphasis">platform</em><span class="cUserType">&gt;.properties</span>
+</p>
+<a name="wp1002817"> </a> <li><code class="cCode">jini.properties</code> 파일을 갱신합니다. </li>
+<a name="wp1002818"> </a> <p class="pBody">
+갱신에 의해, 시스템에 필요한 모든 패스, 호스트명, 포트 번호가 파일로 지정되지 않으면 안됩니다. UNIX 플랫폼을 실행하고 있지 않는 경우에서도, 참조로서 첨부의 템플릿을 사용할 수 있습니다.
+</p>
+<a name="wp1002819"> </a> <li>Jini 네트워킹 테크놀러지 <code class="cCode">StartService</code> 를 기동합니다. </li>
+<a name="wp1002820"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">java -cp $JINILIB/jini-examples.jar com.sun.jini.example.launcher.StartService &amp;</span>
+</p>
+<a name="wp1002822"> </a> <p class="pBody">
+<code class="cCode">StartService</code> 그래피컬 사용자 인터페이스가 열립니다.
+</p>
+<a name="wp1002823"> </a> <li>각자의 <code class="cCode">jini.properties</code> 파일을 <code class="cCode">StartService</code> 에 로드합니다. </li>
+<a name="wp1002824"> </a> <p class="pBody">
+「File」와「Open Property File」를 순서에 클릭해, work_dir<code class="cCode">/jmx_examples</code>/Lookup/jini 로부터 프로퍼티 파일을 선택합니다.
+</p>
+<a name="wp1002825"> </a> <li>Jini 검색 서비스를 개시합니다. </li>
+<a name="wp1002826"> </a> <p class="pBody">
+필요한 Jini 검색 서비스를 개시하려면 , 「Run」탭을 클릭해, 다음의 항목의 각각 붙어 「START」버튼을 누릅니다.
+</p>
+<ul class="pBullet2"><a name="wp1012276"> </a> <div class="pBullet2"><li>RMID</li></div>
+<a name="wp1012277"> </a> <div class="pBullet2Plus"><li>WebServer</li></div>
+<a name="wp1012278"> </a> <div class="pBullet2Plus"><li>Reggie</li></div>
+<a name="wp1012279"> </a> <div class="pBullet2Last"><li>LookupBrowser</li></div>
+</ul>
+<a name="wp1013022"> </a> <p class="pBody">
+서비스의 실행을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1002798"> </a> <li><code class="cCode">Client</code> 클래스와 <code class="cCode">Server</code> 클래스를 컴파일 합니다. </li>
+<a name="wp997826"> </a> <p class="pBody">
+다음의 커멘드를 입력합니다.
+</p>
+<a name="wp997835"> </a> <p class="pListEndingPara"><code class="cCode">$ </code><span class="cUserType">javac -d . -classpath $classp Server.java Client.java</span></p>
+</ol>
+<a name="wp1009733"> </a> <h4 class="pHeading3">
+4.3. 2.2	Jini 검색 서비스의 예제의 실행
+</h4>
+<a name="wp1009740"> </a> <p class="pBody">
+이 예에서는, Jini 검색 서비스를 사용해, RMI 의 디폴트의 트랜스폴트인 JRMP, 및 IIOP 트랜스폴트를 사용하는 RMI 연결기 서버를 검색하는 방법을 나타냅니다. 그 외 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 설명한 것처럼, RMI 연결기 Stub의 등록에는 다른 외부 디렉토리가 사용되고 있습니다.  
+</p>
+<a name="wp1012298"> </a> <p class="pBody">
+여기에 나타내는 트랜스폴트와 외부 디렉토리의 편성은 다음과 같습니다.
+</p>
+<ul class="pBullet1"><a name="wp1012299"> </a> <div class="pBullet1"><li>다음의 것을 사용한, JRMP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012300"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012301"> </a> <div class="pBullet2Plus"><li>RMI 레지스트리 </li></div>
+<a name="wp1012302"> </a> <div class="pBullet2Last"><li>LDAP 레지스트리</li></div>
+</ul>
+<a name="wp1012303"> </a> <div class="pBullet1Plus"><li>다음의 것을 사용한, IIOP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012304"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012305"> </a> <div class="pBullet2Plus"><li>CORBA 네임 서비스 </li></div>
+<a name="wp1012306"> </a> <div class="pBullet2LastEnd"><li>LDAP 레지스트리</li></div>
+</ul>
+</ul><div class="pStep1">
+<ol class="pStep1"><a name="wp1009791"> </a> <li><code class="cCode">Server</code><b class="cBold"></b> 를 기동합니다. </li>
+<a name="wp1009792"> </a> <p class="pBody">
+<code class="cCode">Server</code> 의 기동에 사용하는 커멘드는, 사용하고 있는 외부 디렉토리에 의해 다릅니다. <code class="cCode">Client</code> 를 기동하기 전에, 각종의 트랜스폴트 및 외부 레지스트리를 사용해,<code class="cCode">Server</code> 의 다음의 인스턴스의 1 개 또는 복수를 기동할 수 있습니다.
+</p>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1009793"> </a> <li type="a">외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기</li>
+<a name="wp1009794"> </a> <p class="pBody">
+다음의 커멘드를 입력해 Server 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1009799"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015405"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-a \</span><a name="wp1015406"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi://&quot; \</span><a name="wp1015407"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015408"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012317"> </a> 
+<a name="wp1012322"> </a> 
+</pre></div>
+<a name="wp1012318"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012331"> </a> <div class="pBullet2"><li><code class="cCode">debug</code> 는 <code class="cCode">true</code> 로 설정되어<code class="cCode">Server</code> 의 실행시의 화면 출력을 보다 상세한 것으로 합니다. </li></div>
+<a name="wp1012332"> </a> <div class="pBullet2Plus"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012333"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-a</code> 입니다. </li></div>
+<a name="wp1012334"> </a> <div class="pBullet2Last"><li>서비스 URL 에 의해, RMI 의 디폴트 트랜스폴트 JRMP 상에서 동작하는 RMI 연결기의 선택이 지정됩니다. </li></div>
+</ul>
+<a name="wp1009803"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 Jini 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009804"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 RMI 레지스트리를 사용합니다. </li>
+<a name="wp1009805"> </a> <p class="pBody">
+다음의 커멘드를 입력해 Server 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015669"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015413"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-b \</span><a name="wp1015414"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndirmi}/server&quot; \</span><a name="wp1015415"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015416"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012342"> </a> 
+<a name="wp1012343"> </a> 
+</pre></div>
+<a name="wp1012337"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1009964"> </a> <div class="pBullet2"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012346"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-b</code> 입니다. </li></div>
+<a name="wp1009966"> </a> <div class="pBullet2Last"><li>서비스 URL 는, RMI over JRMP 로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub <code class="cCode">server</code> 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndirmi</code> 로서 특정한 RMI 레지스트리입니다.  </li></div>
+</ul>
+<a name="wp1009816"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 Jini 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009817"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1009818"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015670"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015421"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-c \</span><a name="wp1015422"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1015423"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015424"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015425"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015426"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012358"> </a> 
+<a name="wp1012350"> </a> 
+</pre></div>
+<a name="wp1012349"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012369"> </a> <div class="pBullet2"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012370"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-c</code> 입니다. 서비스 URL 는, RMI over JRMP 로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 로서 특정한 LDAP 서버입니다. </li></div>
+<a name="wp1012371"> </a> <div class="pBullet2Plus"><li>Stub는 LDAP 서버의 <code class="cCode">Test</code> 도메인 컴퍼넌트에 등록됩니다.  </li></div>
+<a name="wp1012372"> </a> <div class="pBullet2Last"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+</ul>
+<a name="wp1009834"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-c</code> 로 Jini 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009835"> </a> <li type="a">외부 디렉토리를 사용하지 않는 IIOP 상의 RMI 연결기</li>
+<a name="wp1009836"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015671"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015431"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-d \</span><a name="wp1015432"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop://&quot; \</span><a name="wp1015433"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015434"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012382"> </a> 
+<a name="wp1012383"> </a> 
+</pre></div>
+<a name="wp1009842"> </a> <p class="pBody">
+이 커멘드로, 
+</p>
+<ul class="pBullet2"><a name="wp1012390"> </a> <div class="pBullet2"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012391"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-d</code> 입니다. </li></div>
+<a name="wp1012392"> </a> <div class="pBullet2Last"><li>서비스 URL 는, IIOP 상의 RMI 연결기로서 선택되는 연결기를 지정합니다.  </li></div>
+</ul>
+<a name="wp1009845"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 자동적으로 생성된 URL 의 Jini 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009846"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 CORBA 를 사용합니다. </li>
+<a name="wp1009847"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015672"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015439"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-e \</span><a name="wp1015440"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndiiiop}/server&quot; \</span><a name="wp1015441"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015442"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012401"> </a> 
+<a name="wp1012402"> </a> 
+</pre></div>
+<a name="wp1012395"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012409"> </a> <div class="pBullet2"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012410"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-e</code> 입니다. </li></div>
+<a name="wp1012411"> </a> <div class="pBullet2Last"><li>서비스 URL 는, IIOP 상의 RMI 연결기로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub <code class="cCode">server</code> 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndiiiop</code> 와 특정한 CORBA 네임 서비스입니다. </li></div>
+</ul>
+<a name="wp1009859"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 <code class="cCode">test-server-e</code> 의 이름으로 Jini 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1009860"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1009861"> </a> <p class="pBody">
+다음의 커멘드를 입력해 Server 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015673"> </a> 
+<span class="cUserType">$ java -classpath . :$classp -Ddebug=true \</span><a name="wp1015451"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-f \</span><a name="wp1015452"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1015453"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1015454"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015455"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015456"> </a> 
+<span class="cUserType">  jini.Server &amp;</span><a name="wp1012421"> </a> 
+<a name="wp1012422"> </a> 
+</pre></div>
+<a name="wp1009869"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012437"> </a> <div class="pBullet2"><li>Jini 검색 서비스에의 액세스를 가능하게 하는, 시큐리티 정책가 지정되고 있습니다. </li></div>
+<a name="wp1012438"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-f</code> 입니다. </li></div>
+<a name="wp1012439"> </a> <div class="pBullet2Plus"><li>서비스 URL 는, RMI over IIOP 로서 선택되는 연결기를 지정합니다.  </li></div>
+<a name="wp1012440"> </a> <div class="pBullet2Plus"><li>RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 와 특정한 LDAP 서버입니다.  </li></div>
+<a name="wp1012441"> </a> <div class="pBullet2Plus"><li>Stub는 LDAP 서버의 <code class="cCode">Test</code> 도메인 컴퍼넌트에 등록됩니다.  </li></div>
+<a name="wp1012442"> </a> <div class="pBullet2Last"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다.  </li></div>
+</ul>
+<a name="wp1009877"> </a> <p class="pListEndingPara"><code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-f</code> 로 Jini 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다. </p>
+</ol>
+<a name="wp1009878"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<a name="wp1009879"> </a> <p class="pBody">
+선택한 트랜스폴트 및 외부 디렉토리를 사용해 <code class="cCode">Server</code> 를 기동한 후,<code class="cCode">Client</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015674"> </a> 
+$ <span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1009881"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1012447"> </a> 
+<span class="cUserType">  jini.Client</span><a name="wp1012448"> </a> 
+<a name="wp1012449"> </a> 
+</pre></div>
+<a name="wp1012445"> </a> <p class="pBody">
+<code class="cCode">Server</code> 로 작성되고 검색 서비스에 등록된 에이전트의 검출을 확인하는 출력이 표시됩니다. 또, 에이전트로 설정된 접속의 접속명과 접속의 확인이 표시됩니다.  
+</p>
+<a name="wp1009882"> </a> <p class="pBody">
+다음의 커멘드를 입력하면(자), 특정의 에이전트를 검색할 수 있습니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015675"> </a> 
+$ <span class="cUserType">java -classpath . :$classp -Ddebug=true \</span><a name="wp1009885"> </a> 
+<span class="cUserType">  -Djava.security.policy=java.policy \</span><a name="wp1012453"> </a> 
+<span class="cUserType">  -Dagent.name=</span><em class="cEmphasis">agentName</em><span class="cUserType"> \</span><a name="wp1012454"> </a> 
+<span class="cUserType">  jini.Client</span><a name="wp1012455"> </a> 
+<a name="wp1012456"> </a> 
+</pre></div>
+<a name="wp1009886"> </a> <p class="pListEndingPara">상기의 커멘드로, agentName 는 검색하는 에이전트의 이름입니다. <em class="cEmphasis"></em>또,<code class="cCode">*</code> 를 사용해 에이전트명을 부분적으로 지정할 수도 있습니다.  예를 들어, 문자 <code class="cCode">x</code> 로 시작되는 모든 에이전트명을 검색하는 경우는,<code class="cCode">x*</code> 와 지정합니다. </p>
+<a name="wp1010047"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp996900"> </a> <h2 class="pHeading1">
+4.4	Java Naming and Directory Interface (JNDI) /LDAP 검색 서비스
+</h2>
+<a name="wp1003061"> </a> <p class="pBody">
+JMX 테크놀러지에서는, LDAP 레지스트리를 연구 최종 단계로서 사용해, JNDI 검색 서비스에 RMI 연결기를 등록할 수 있습니다. 이 예에서는, 다음의 조작을 실행합니다.
+</p>
+<ol class="pList1"><a name="wp1003062"> </a> <div class="pList1"><li>에이전트측:</li></div>
+<ol type="a" class="pList2"><a name="wp1003063"> </a> <div class="pList2"><li>MBean 서버를 작성</li></div>
+<a name="wp1003064"> </a> <div class="pList2Plus"><li>연결기 서버를 작성</li></div>
+<a name="wp1003065"> </a> <div class="pList2Last"><li>LDAP 서버에 연결기 주소를 등록</li></div>
+</ol>
+<a name="wp1003066"> </a> <div class="pList1Plus"><li>클라이언트측:</li></div>
+<ol type="a" class="pList2"><a name="wp1003067"> </a> <div class="pList2"><li>JNDI/LDAP 검색 서비스의 포인터를 취득</li></div>
+<a name="wp1003068"> </a> <div class="pList2Plus"><li>JNDI/LDAP 검색 서비스에 등록된 모든 연결기 서버를 검색</li></div>
+<a name="wp1003072"> </a> <div class="pList2Plus"><li>JMX Remote API 연결기를 작성 </li></div>
+<a name="wp1003085"> </a> <div class="pList2LastEnd"><li>MBean 서버의 MBean 에 관한 정보를 취득</li></div>
+</ol></ol>
+<a name="wp1055504"> </a> <p class="pBody">
+JNDI/LDAP 검색의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Lookup/ldap</code> 내에 있습니다.  
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999452"> </a> <li>work_dir<code class="cCode">/jmx_examples/Lookup/ldap</code> 디렉토리를 엽니다. <em class="cEmphasis"></em></li>
+<a name="wp999453"> </a> <p class="pBody">
+이 디렉토리내에는, 다음의 파일이 있습니다.
+</p>
+<ul class="pBullet2"><a name="wp1012501"> </a> <div class="pBullet2"><li><code class="cCode">Server.java</code></li></div>
+<a name="wp1014885"> </a> <div class="pBullet2Plus"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1014886"> </a> <div class="pBullet2Plus"><li><code class="cCode">jmx-schema.txt</code></li></div>
+<a name="wp1014887"> </a> <div class="pBullet2Plus"><li><code class="cCode">60jmx-schema.ldif</code></li></div>
+<a name="wp1012504"> </a> <div class="pBullet2Last"><li><code class="cCode">README</code></li></div>
+</ul>
+<a name="wp999456"> </a> <li>텍스트 문자 편집기로 파일을 엽니다. </li>
+<a name="wp1013026"> </a> <p class="pListEndingPara">이러한 클래스에 도착해, 이후의 섹션으로 분석합니다. </p>
+</ol>
+<a name="wp999476"> </a> <h3 class="pHeading2">
+4.4. 1	예제 클래스의 분석
+</h3>
+<a name="wp999480"> </a> <p class="pBody">
+다음의 섹션에서는, JNDI/LDAP 검색 서비스의 예제로 사용되는 각 클래스를 분석해, 각 클래스가 상기로 설명한 조작을 어떻게 실행할까에 임해서 설명합니다.
+</p>
+<a name="wp999477"> </a> <h4 class="pHeading3">
+4.4. 1.1	Server.java
+</h4>
+<a name="wp1003448"> </a> <p class="pBody">
+JNDI/LDAP 검색 서비스의 <code class="cCode">Server.java</code> 클래스는, 그 크기에 의해, 일련의 코드예로서 나타나고 있습니다.
+</p>
+<a name="wp1012505"> </a> <div class="pCodeCaption">
+코드예&#160;4-12	JNDI/LDAP 검색 서비스의 예제 클래스 Server.java (발췌 1)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012511"> </a> 
+[...]<a name="wp1012513"> </a> 
+<a name="wp1012514"> </a> 
+public class Server {<a name="wp1012515"> </a> 
+   public final static int JMX_DEFAULT_LEASE = 60;<a name="wp1012516"> </a> 
+   private static boolean debug = false;<a name="wp1012517"> </a> 
+   private final MBeanServer mbs;<a name="wp1012518"> </a> 
+   public Server() {<a name="wp1012519"> </a> 
+      mbs = MBeanServerFactory.createMBeanServer();<a name="wp1012520"> </a> 
+   }<a name="wp1012521"> </a> 
+<a name="wp1012522"> </a> 
+  public static DirContext getRootContext() throws NamingException {<a name="wp1012523"> </a> 
+      final Hashtable env = new Hashtable();<a name="wp1012524"> </a> 
+<a name="wp1012525"> </a> 
+      final String factory =<a name="wp1012526"> </a> 
+        System.getProperty(Context.INITIAL_CONTEXT_FACTORY,<a name="wp1012527"> </a> 
+                           &quot;com.sun.jndi.ldap.LdapCtxFactory&quot;);<a name="wp1012528"> </a> 
+      final String ldapServerUrl =<a name="wp1012529"> </a> 
+        System.getProperty(Context.PROVIDER_URL);<a name="wp1012530"> </a> 
+      final String ldapUser =<a name="wp1012531"> </a> 
+        System.getProperty(Context.SECURITY_PRINCIPAL,<a name="wp1012532"> </a> 
+                           &quot;cn=Directory Manager&quot;);<a name="wp1012533"> </a> 
+      final String ldapPasswd =<a name="wp1012534"> </a> 
+        System.getProperty(Context.SECURITY_CREDENTIALS);<a name="wp1012535"> </a> 
+      debug(Context.PROVIDER_URL + &quot;=&quot; + ldapServerUrl);<a name="wp1012536"> </a> 
+      debug(Context.SECURITY_PRINCIPAL + &quot;=&quot; + ldapUser);<a name="wp1012537"> </a> 
+      if (debug) {<a name="wp1012538"> </a> 
+                  System.out.print(Context.SECURITY_CREDENTIALS + &quot;=&quot;);<a name="wp1012539"> </a> 
+                  final int len = (ldapPasswd==null)? 0:ldapPasswd.length();<a name="wp1012540"> </a> 
+                  for (int i=0;i&lt;len;i++) System.out.print(&quot;*&quot;);<a name="wp1012541"> </a> 
+                  System.out.println();<a name="wp1012542"> </a> 
+      }<a name="wp1012543"> </a> 
+      env.put(Context.INITIAL_CONTEXT_FACTORY, factory);<a name="wp1012544"> </a> 
+      env.put(Context.SECURITY_PRINCIPAL, ldapUser);<a name="wp1012545"> </a> 
+      if (ldapServerUrl ! = null)<a name="wp1012546"> </a> 
+           env.put(Context.PROVIDER_URL, ldapServerUrl);<a name="wp1012547"> </a> 
+      if (ldapPasswd ! = null)<a name="wp1012548"> </a> 
+           env.put(Context.SECURITY_CREDENTIALS, ldapPasswd);<a name="wp1012549"> </a> 
+      InitialContext root = new InitialLdapContext(env, null);<a name="wp1012550"> </a> 
+      return (DirContext)(root.lookup(&quot;&quot;));<a name="wp1012551"> </a> 
+  }<a name="wp1012552"> </a> 
+  <a name="wp1012553"> </a> 
+[...]<a name="wp1012554"> </a> 
+<a name="wp1012561"> </a> 
+</pre></div>
+<a name="wp1003756"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012505">코드예&#160;4-12</a>  에, MBean 서버 <code class="cCode">mbs</code> 의 초기 작성, 및 연결기 서버의 주소가 등록되는 LDAP 디렉토리 트리의 루트 문맥의 포인터의 취득을 나타냅니다. 프로바이더 URL, LDAP 사용자명, 시큐리티 자격등의 관련하는 LDAP 액세스 변수는 모두 여기로 지정되어 환경 맵 <code class="cCode">env</code> 에게 건네집니다. 환경 맵 <code class="cCode">env</code> 는, 이 후,<code class="cCode">InitialLdapContext</code> 의 호출에 파라미터로서 건네받아 이것에 의해 초기 LDAP 문맥이 취득됩니다.
+</p>
+<a name="wp1007203"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012505">코드예&#160;4-12</a>  에서는 생략 되고 있습니다만, 연결기가 LDAP 서버에 등록될 때의 에이전트명이 취득됩니다.
+</p>
+<a name="wp1007303"> </a> <div class="pCodeCaption">
+코드예&#160;4-13	JNDI/LDAP 검색 서비스의 예제 클래스 Server.java (발췌 2)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+[...]<a name="wp1012560"> </a> 
+<a name="wp1032416"> </a> 
+public static void register(DirContext root,<a name="wp1035174"> </a> 
+                           JMXServiceURL jmxUrl,<a name="wp1035175"> </a> 
+                           String name)<a name="wp1035176"> </a> 
+   throws NamingException, IOException {<a name="wp1035177"> </a> 
+<a name="wp1035178"> </a> 
+   final String mydn = System.getProperty(&quot;dn&quot;, &quot;cn=&quot;+name);<a name="wp1035179"> </a> 
+<a name="wp1035180"> </a> 
+   debug(&quot;dn: &quot; + mydn );<a name="wp1035181"> </a> 
+<a name="wp1035182"> </a> 
+   Object o = null;<a name="wp1035183"> </a> 
+   try {<a name="wp1035184"> </a> 
+       o = root.lookup(mydn);<a name="wp1035185"> </a> 
+   } catch (NameNotFoundException n) {<a name="wp1035186"> </a> 
+       Attributes attrs = new BasicAttributes();<a name="wp1035187"> </a> 
+       Attribute objclass = new BasicAttribute(&quot;objectClass&quot;);<a name="wp1035188"> </a> 
+       objclass.add(&quot;top&quot;);<a name="wp1035189"> </a> 
+       objclass.add(&quot;javaContainer&quot;);<a name="wp1035190"> </a> 
+       objclass.add(&quot;jmxConnector&quot;);<a name="wp1035191"> </a> 
+       attrs.put(objclass);<a name="wp1035192"> </a> 
+       attrs.put(&quot;jmxAgentName&quot;, name);<a name="wp1035193"> </a> 
+       o = root.createSubcontext(mydn, attrs);<a name="wp1035194"> </a> 
+   }<a name="wp1035195"> </a> 
+   if (o == null) throw new NameNotFoundException();<a name="wp1035196"> </a> 
+   final Attributes attrs = root.getAttributes(mydn);<a name="wp1035197"> </a> 
+   final Attribute oc = attrs.get(&quot;objectClass&quot;);<a name="wp1035198"> </a> 
+   if (! oc.contains(&quot;jmxConnector&quot;)) {<a name="wp1035199"> </a> 
+       final String msg = &quot;The supplied node [&quot; + mydn + <a name="wp1035200"> </a> 
+         &quot;] does not contain the jmxConnector objectclass&quot;;<a name="wp1035201"> </a> 
+       throw new NamingException(msg);<a name="wp1035202"> </a> 
+   }<a name="wp1035203"> </a> 
+   <a name="wp1035204"> </a> 
+   final Attributes newattrs = new BasicAttributes();<a name="wp1035205"> </a> 
+   newattrs.put(&quot;jmxAgentName&quot;, name);<a name="wp1035206"> </a> 
+   newattrs.put(&quot;jmxServiceURL&quot;, jmxUrl.toString());<a name="wp1035207"> </a> 
+   newattrs.put(&quot;jmxAgentHost&quot;, InetAddress.getLocalHost(). getHostName());<a name="wp1035208"> </a> 
+   newattrs.put(&quot;jmxProtocolType&quot;, jmxUrl.getProtocol());<a name="wp1035209"> </a> 
+   newattrs.put(&quot;jmxExpirationDate&quot;,<a name="wp1035210"> </a> 
+                getExpirationDate(JMX_DEFAULT_LEASE));<a name="wp1035211"> </a> 
+   root.modifyAttributes(mydn, DirContext.REPLACE_ATTRIBUTE, newattrs);<a name="wp1035212"> </a> 
+}<a name="wp1032417"> </a> 
+<a name="wp1032418"> </a> 
+[...]<a name="wp1012666"> </a> 
+<a name="wp1012667"> </a> 
+</pre></div>
+<a name="wp1014012"> </a> <p class="pBody">
+<a  href="lookup.html#wp1007303">코드예&#160;4-13</a>  에, JMX 연결기 서버의 서비스 URL 의 LDAP 디렉토리에의 등록을 나타냅니다. URL 가 등록되는 DN 는, 커멘드행의 <code class="cCode">dn</code> 시스템 프로퍼티, 즉 <code class="cCode">-Ddn=</code><em class="cEmphasis">mydn</em> 를 사용해 건네줄 수가 있습니다 (후술의 서버의 기동에 사용되는 커멘드를 참조). <code class="cCode">dn</code> 시스템 프로퍼티이 지정되지 않는 경우, DN:<code class="cCode">cn=</code>name 를 사용할 수 있습니다.  여기서 name 는 <code class="cCode">agentName</code> 입니다. <em class="cEmphasis"></em><em class="cEmphasis"></em>무엇보다, 반드시 이것을 사용할 필요는 없습니다. 실제로는 URL 가 등록되는 장소는 문제가 되지 않습니다.  클라이언트 코드로 직접 그 DN 가 사용되는 것이 없기 때문입니다.  그 대신해, LDAP 검색을 실행해, 보조적인 <code class="cCode">jmxConnector</code> <code class="cCode">ObjectClass</code> 를 포함한 노드가 검색됩니다. 여기서 중요하게 되는 것은, 각 URL 가 개개의 LDAP 노드에 등록된다고 하는 점입니다. 이러한 노드의 명명 방식은, LDAP 관리자, 이 경우는 각 사용자가 맡길 수 있습니다. 이 예에서는, 노드 <code class="cCode">cn=</code><em class="cEmphasis">name</em> 의 작성이 가능한 <code class="cCode">root</code> 문맥을 작성하는 방법으로 LDAP 서버를 설정해, 이 <code class="cCode">root</code> 문맥을,<code class="cCode">Context.PROVIDER_URL</code> 프로퍼티을 통해서 LDAP 의 초기 문맥에 건네주고 있는 것과 가정하고 있습니다 (<a  href="lookup.html#wp1012505">코드예&#160;4-12</a>  를 참조).
+</p>
+<a name="wp1014009"> </a> <p class="pBody">
+<a  href="lookup.html#wp1007303">코드예&#160;4-13</a>  의 코드에서는, 서버 URL 를 등록하는 노드가 존재할지 어떨지를 체크하고 있습니다. 존재하지 않는 경우, 노드의 작성을 시도해 주세요 (친노드가 존재하고 있지 않는 경우는 실패한다). <code class="cCode">jmxConnector</code> <code class="cCode">ObjectClass</code> 는 간단한 보조 클래스이기 (위해)때문에, 새로운 문맥을 작성할 필요가 있는 경우는, 구조화 클래스로서 <code class="cCode">javaContainer ObjectClass</code> 를 사용합니다. 이 경우도, 반드시 이 클래스를 사용할 필요는 없습니다. <code class="cCode">jmxConnector</code> 보조 클래스를 추가할 수 있는 구조화 클래스이면, 뭐든지 괜찮습니다. 코드는 다음에 서버를 등록하는 노드에,<code class="cCode">jmxConnector</code> 보조 클래스가 벌써 사용되고 있는지 어떤지를 체크합니다. 사용되어 있지 않은 경우는, 예외가 throw 됩니다.
+</p>
+<a name="wp1014431"> </a> <p class="pBody">
+이 시점에서, URL 를 등록하는 노드가 존재해, 적절한 <code class="cCode">jmxConnector</code> 보조 클래스가 지정되고 있는 것이 확실히 됩니다. 이 때문에, 나머지는 LDAP 검색을 위한 JMX Remote API 로 정의된 속성의 값을 옮겨놓을 뿐입니다 (<code class="cCode">jmx-schema.txt</code> 를 참조).  
+</p>
+<ul class="pBullet1"><a name="wp1014744"> </a> <div class="pBullet1"><li><code class="cCode">jmxServiceUrl</code>:서버의 기동 후에 <code class="cCode">server.getAddress()</code> 에 의해 취득된 <code class="cCode">String</code> 형식의 서버 URL 가 포함된다</li></div>
+<a name="wp1014745"> </a> <div class="pBullet1Plus"><li><code class="cCode">jmxAgentName</code>:JMX 에이전트명이 포함된다 </li></div>
+<a name="wp1014746"> </a> <div class="pBullet1Plus"><li><code class="cCode">jmxProtocolType</code>:<code class="cCode">jmxUrl.getProtocolType()</code> 로 반환되는 JMX 프로토콜형이 포함된다 </li></div>
+<a name="wp1014747"> </a> <div class="pBullet1Plus"><li><code class="cCode">jmxAgentHost</code>:에이전트 호스트의 이름이 포함된다 </li></div>
+<a name="wp1014748"> </a> <div class="pBullet1Last"><li><code class="cCode">jmxExpirationDate</code>:URL 의 유효 기일이 포함된다</li></div>
+</ul>
+<a name="wp1012668"> </a> <div class="pCodeCaption">
+코드예&#160;4-14	JNDI/LDAP 검색 서비스의 예제 클래스 Server.java (발췌 3)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012674"> </a> 
+[...]<a name="wp1015475"> </a> 
+<a name="wp1015476"> </a> 
+   public JMXConnectorServer rmi(String url)<a name="wp1015477"> </a> 
+     throws IOException, JMException,<a name="wp1015478"> </a> 
+        NamingException, ClassNotFoundException {<a name="wp1015479"> </a> 
+<a name="wp1015480"> </a> 
+     JMXServiceURL jurl = new JMXServiceURL(url);<a name="wp1015481"> </a> 
+     final HashMap env = new HashMap();<a name="wp1015482"> </a> 
+     // Prepare the environment Map<a name="wp1015483"> </a> 
+    <a name="wp1015484"> </a> 
+[...]<a name="wp1015485"> </a> 
+<a name="wp1015486"> </a> 
+     JMXConnectorServer <span class="cUserType">rmis =</span><a name="wp1015487"> </a> 
+<span class="cUserType">        JMXConnectorServerFactory.newJMXConnectorServer(jurl, env, mbs)</span>;<a name="wp1015488"> </a> 
+<a name="wp1015489"> </a> 
+     final String agentName = System.getProperty(&quot;agent.name&quot;,<a name="wp1015490"> </a> 
+                                                 &quot;DefaultAgent&quot;);<a name="wp1015491"> </a> 
+     start(rmis, env, agentName);<a name="wp1015492"> </a> 
+     return rmis;<a name="wp1015493"> </a> 
+   }<a name="wp1015494"> </a> 
+    <a name="wp1015495"> </a> 
+[...]<a name="wp1012698"> </a> 
+<a name="wp1012699"> </a> 
+</pre></div>
+<a name="wp1004115"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012668">코드예&#160;4-14</a>  에서는, JMX 서비스 URL <code class="cCode">jurl</code> 와 적절한 LDAP 프로퍼티이 환경 맵 <code class="cCode">env</code> 에게 건네져<code class="cCode">rmis</code> 라고 하는 새로운 RMI 연결기 서버가 작성되고 있습니다. 연결기 서버 <code class="cCode">rmis</code> 가,<code class="cCode">JMXConnectorServer.start()</code> 의 호출에 의해 기동해, LDAP 서버에 등록됩니다.
+</p>
+<a name="wp1012700"> </a> <div class="pCodeCaption">
+코드예&#160;4-15	JNDI/LDAP 검색 서비스의 예제 클래스 Server.java (발췌 4)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012706"> </a> 
+[...]<a name="wp1012708"> </a> 
+<a name="wp1012709"> </a> 
+    public void start(JMXConnectorServer server, Map env, String agentName)<a name="wp1012710"> </a> 
+       throws IOException, NamingException {<a name="wp1012711"> </a> 
+       <b class="cBold">server.start()</b>;<a name="wp1012712"> </a> 
+       final DirContext root=getRootContext();<a name="wp1012713"> </a> 
+       final JMXServiceURL address = server.getAddress();<a name="wp1012714"> </a> 
+       <b class="cBold">register(root, address, agentName)</b>;<a name="wp1012715"> </a> 
+    }<a name="wp1012716"> </a> 
+    <a name="wp1012717"> </a> 
+[...]<a name="wp1012718"> </a> 
+<a name="wp1012719"> </a> 
+</pre></div>
+<a name="wp1004363"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012700">코드예&#160;4-15</a>  에, JMX 연결기 서버 <code class="cCode">server</code> 의 작성, LDAP 서버의 루트 디렉토리 <code class="cCode">root</code> 의 포인터의 취득, 및 <code class="cCode">address</code> 라는 이름의 <code class="cCode">server</code> 의 URL 의 작성을 나타냅니다. 루트 디렉토리, URL, 및 에이전트명은, 파라미터로서 <code class="cCode">register()</code> 에게 건네져 LDAP 서버에 등록됩니다.  
+</p>
+<a name="wp1004117"> </a> <h4 class="pHeading3">
+4.4. 1.2	Client.java
+</h4>
+<a name="wp1004394"> </a> <p class="pBody">
+JNDI/LDAP 검색 서비스의 <code class="cCode">Client.java</code> 클래스를<a  href="lookup.html#wp1012720">코드예&#160;4-16</a>  에 나타냅니다.
+</p>
+<a name="wp1012720"> </a> <div class="pCodeCaption">
+코드예&#160;4-16	JNDI/LDAP 검색 서비스 예제 Client.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012726"> </a> 
+[...]<a name="wp1017581"> </a> 
+<a name="wp1017583"> </a> 
+public class Client {<a name="wp1017584"> </a> 
+<a name="wp1017585"> </a> 
+   private static boolean debug = false;<a name="wp1017586"> </a> 
+<a name="wp1017587"> </a> 
+   public static void listAttributes(DirContext root, String dn)<a name="wp1017588"> </a> 
+     throws NamingException {<a name="wp1017589"> </a> 
+     final Attributes attrs = root.getAttributes(dn);<a name="wp1017590"> </a> 
+     System.out.println(&quot;dn: &quot; + dn);<a name="wp1017591"> </a> 
+     System.out.println(&quot;attributes: &quot; + attrs);<a name="wp1017592"> </a> 
+   }<a name="wp1017593"> </a> 
+   <a name="wp1017594"> </a> 
+   public static DirContext getRootContext() throws NamingException {<a name="wp1017595"> </a> 
+      final Hashtable env = new Hashtable();<a name="wp1017596"> </a> 
+      // Prepare environment map<a name="wp1017597"> </a> 
+      [...]<a name="wp1017598"> </a> 
+      <a name="wp1017599"> </a> 
+      InitialContext root = new InitialLdapContext(env, null);<a name="wp1017600"> </a> 
+      return (DirContext)(root.lookup(&quot;&quot;));<a name="wp1017601"> </a> 
+   }<a name="wp1017602"> </a> 
+   <a name="wp1017603"> </a> 
+   // Confirm URL has not expired <a name="wp1017604"> </a> 
+  [...] <a name="wp1017605"> </a> 
+<a name="wp1017606"> </a> 
+   public static List lookup(DirContext root, String protocolType,<a name="wp1017607"> </a> 
+                             String name)<a name="wp1017608"> </a> 
+      throws IOException, NamingException {<a name="wp1017609"> </a> 
+      final ArrayList list = new ArrayList();<a name="wp1017610"> </a> 
+      String queryProtocol =<a name="wp1017611"> </a> 
+         (protocolType==null)? &quot;&quot;:&quot;(jmxProtocolType=&quot;+protocolType+&quot;) &quot;;<a name="wp1017612"> </a> 
+      String query =<a name="wp1017613"> </a> 
+          &quot;(&amp;&quot; + &quot;(objectClass=jmxConnector) &quot; +<a name="wp1017614"> </a> 
+          &quot;(jmxServiceURL=*) &quot; +<a name="wp1017615"> </a> 
+          queryProtocol +<a name="wp1017616"> </a> 
+          &quot;(jmxAgentName=&quot; + ((name! =null)? name:&quot;*&quot;) + &quot;)) &quot;;<a name="wp1017617"> </a> 
+<a name="wp1017618"> </a> 
+      SearchControls ctrls = new SearchControls();<a name="wp1017619"> </a> 
+      ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);<a name="wp1017620"> </a> 
+      final NamingEnumeration results = root.search(&quot;&quot;, query, ctrls);<a name="wp1017621"> </a> 
+      while (results.hasMore()) { <a name="wp1017622"> </a> 
+           final SearchResult r = (SearchResult) results.nextElement();<a name="wp1017623"> </a> 
+           debug(&quot;Found node: &quot; + r.getName());<a name="wp1017624"> </a> 
+           final Attributes attrs = r.getAttributes();<a name="wp1017625"> </a> 
+           final Attribute attr = attrs.get(&quot;jmxServiceURL&quot;);<a name="wp1017626"> </a> 
+           if (attr == null) continue;<a name="wp1017627"> </a> 
+           final Attribute exp = attrs.get(&quot;jmxExpirationDate&quot;);<a name="wp1017628"> </a> 
+           if ((exp ! = null) &amp;&amp; hasExpired((String) exp.get())) {<a name="wp1017629"> </a> 
+               System.out.print(r.getName() + &quot;: &quot;);<a name="wp1017630"> </a> 
+               System.out.println(&quot;URL expired since: &quot; + exp.get());<a name="wp1017631"> </a> 
+               continue;<a name="wp1017632"> </a> 
+           }  <a name="wp1017633"> </a> 
+           final String urlStr = (String) attr.get();<a name="wp1017634"> </a> 
+           if (urlStr.length() == 0) continue;<a name="wp1017635"> </a> 
+<a name="wp1017636"> </a> 
+   <a name="wp1017637"> </a> 
+           debug(&quot;Found URL: &quot;+ urlStr);<a name="wp1017638"> </a> 
+<a name="wp1017639"> </a> 
+   <a name="wp1017640"> </a> 
+           final JMXServiceURL url = new JMXServiceURL(urlStr);<a name="wp1017641"> </a> 
+           final JMXConnector conn =<a name="wp1017642"> </a> 
+               JMXConnectorFactory.newJMXConnector(url, null);<a name="wp1017643"> </a> 
+           list.add(conn);<a name="wp1017644"> </a> 
+           if (debug) listAttributes(root, r.getName());<a name="wp1017645"> </a> 
+      }<a name="wp1017646"> </a> 
+<a name="wp1017647"> </a> 
+      return list;<a name="wp1017648"> </a> 
+<a name="wp1017649"> </a> 
+   }  <a name="wp1017650"> </a> 
+}<a name="wp1017651"> </a> 
+<a name="wp1012798"> </a> 
+</pre></div>
+<a name="wp1004747"> </a> <p class="pBody">
+<a  href="lookup.html#wp1012720">코드예&#160;4-16</a>  에서는,<code class="cCode">Client</code> 는 우선 LDAP 디렉토리 <code class="cCode">DirContext</code> 의 포인터 <code class="cCode">root</code> 를 돌려주어, 다음에 이 디렉토리에서 <code class="cCode">jmxConnector</code> 형의 객체 클래스를 검색합니다. jmxConnector</code> 객체 클래스의 서비스 URL 와 유효 기일 속성,<code class="cCode">attr</code> 와 <code class="cCode">exp</code> 가 취득되어<code class="cCode">exp</code> 의 체크에 의해 URL 가 유효기간내인 것이 확인되어<code class="cCode">JMXConnectorFactory</code> 의 호출에 의해 새로운 연결기 <code class="cCode">conn</code> 가 작성됩니다. 연결기 <code class="cCode">conn</code> 가 연결기의 리스트에 추가되어 MBean 내의 <code class="cCode">Server</code> 로 작성된 MBean 에의 액세스에 사용됩니다.
+</p>
+<a name="wp1003104"> </a> <h4 class="pHeading3">
+4.4. 1.3	jmx-schema.txt
+</h4>
+<a name="wp1003145"> </a> <p class="pBody">
+<code class="cCode">jmx-schema.txt</code> 파일은, JMX Remote API 용의 LDAP schema 파일입니다.
+</p>
+<a name="wp1014860"> </a> <h4 class="pHeading3">
+4.4. 1.4	60jmx-schema.ldif
+</h4>
+<a name="wp1014863"> </a> <p class="pBody">
+<code class="cCode">60jmx-schema.ldif</code> 파일은, JMX 테크놀러지의 LDAP schema 파일 <code class="cCode">jmx-schema.txt</code> 에 대응하는 <code class="cCode">ldif</code> 파일입니다. Sun ONE Directory Server 를 사용하고 있는 경우, 이 파일을 Sun ONE Directory Server 의 <code class="cCode">config/schema</code> 디렉토리에 직접 카피할 수 있습니다 (<a  href="lookup.html#wp1010119"><span style="color: #3366CC">「4.4. 2.1 JNDI/LDAP 검색 서비스의 예제의 설정」</span></a> 을 참조).
+</p>
+<a name="wp999479"> </a> <h3 class="pHeading2">
+4.4. 2	JNDI/LDAP 검색 서빌의 예제의 실행
+</h3>
+<a name="wp1010115"> </a> <p class="pBody">
+JNDI/LDAP 검색 서비스를 사용하는 검색 서비스의 예제를 실행하려면 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 실행한 작업 외에도, 이 예제에 고유의 초기 작업을 사전에 실행할 필요가 있습니다. JNDI/LDAP 네트워크 테크놀러지를, JMX 테크놀러지로 지원되는 2 개의 연결기와 함께 사용해 연결기의 검색을 개시할 수 있습니다.
+</p>
+<a name="wp1010896"> </a> <p class="pBody">
+예제를 실행하는 경우, 작성된 에이전트의 종류와 에이전트의 작성에 사용된 트랜스폴트를 추적하기 위해서, 대응하는 섹션의 캐릭터 라인에 동일한 문자 사픽스가 에이전트명에 포함되어 있습니다. 예를 들어,<a  href="lookup.html#wp1010147"><span style="color: #3366CC">「Section&#160;a.  외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기」</span></a> 의 에이전트는 <code class="cCode">test-server-a</code> 라는 이름이 붙일 수 있습니다.
+</p>
+<a name="wp1010119"> </a> <h4 class="pHeading3">
+4.4. 2.1	JNDI/LDAP 검색 서빌의 예제의 설정
+</h4>
+<a name="wp1010120"> </a> <p class="pBody">
+다음의 순서는, 이 예제로 실행할 수 있는 각종의 연결기/트랜스폴트의 모든 편성으로 요구됩니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1006278"> </a> <li><a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 기동한 LDAP 서버를 정지합니다. </li>
+<a name="wp1003174"> </a> <p class="pBody">
+이것은 사용하고 있는 LDAP 서버의 종류에 맞추어 실행합니다.  
+</p>
+<a name="wp1003143"> </a> <li>JMX 테크놀러지의 schema를, 사용하고 있는 LDAP 서버의 <code class="cCode">schema</code> 디렉토리에 카피합니다. </li>
+<a name="wp1003157"> </a> <p class="pBody">
+예를 들어, Sun ONE Directory Server 5.0 을 사용하고 있는 경우, 다음과 같이 입력합니다.
+</p>
+<a name="wp1003158"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">cp 60jmx-schema.ldif /var/ds5/slapd-&lt;</span><em class="cEmphasis">hostname</em><span class="cUserType">&gt;/config/schema</span>
+</p>
+<a name="wp1003165"> </a> <p class="pBody">
+그 외의 LDAP 서버에 대해서는, 사용의 LDAP 서버의 종류에 맞추어 실행합니다.
+</p>
+<a name="wp1003162"> </a> <li>LDAP 서버를 재기동합니다. </li>
+<a name="wp1003163"> </a> <p class="pBody">
+이것은 사용하고 있는 LDAP 서버의 종류에 맞추어 실행합니다.
+</p>
+<a name="wp1010300"> </a> <li><code class="cCode">Server</code> 가 그 서비스 URL 를 등록하는 루트를 정의합니다. </li>
+<a name="wp1010301"> </a> <p class="pBody">
+<code class="cCode">Server</code> 에 <a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 작성한 도메인 컴퍼넌트의 사픽스 <code class="cCode">dc=Test</code> 의 패스를 지정할 필요가 있습니다.
+</p>
+<a name="wp1010305"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">provider=&quot;ldap://$ldaphost:$ldapport/dc=Test&quot;</span>
+</p>
+<a name="wp1015577"> </a> <li><code class="cCode">Client</code> 클래스와 <code class="cCode">Server</code> 클래스를 컴파일 합니다. </li>
+<a name="wp998608"> </a> <p class="pListEndingPara"><code class="cCode">$ </code><span class="cUserType">javac -d . Server.java Client.java</span></p>
+</ol>
+<a name="wp1010131"> </a> <h4 class="pHeading3">
+4.4. 2.2	RMI 연결기를 사용한 JNDI/LDAP 검색 서비스의 예제의 실행
+</h4>
+<a name="wp1010132"> </a> <p class="pBody">
+이 예에서는, JNDI/LDAP 검색 서비스를 사용해, RMI 의 디폴트의 트랜스폴트인 JRMP, 및 IIOP 트랜스폴트를 사용하는 RMI 연결기 서버를 검색하는 방법을 나타냅니다. 그 외 ,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 설명한 것처럼, RMI 연결기 Stub의 등록에는 다른 외부 디렉토리가 사용되고 있습니다.  
+</p>
+<a name="wp1010136"> </a> <p class="pBody">
+여기에 나타내는 트랜스폴트와 외부 디렉토리의 편성은 다음과 같습니다.
+</p>
+<ul class="pBullet1"><a name="wp1010137"> </a> <div class="pBullet1"><li>다음의 것을 사용한, JRMP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012813"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012814"> </a> <div class="pBullet2Plus"><li>RMI 레지스트리 </li></div>
+<a name="wp1012815"> </a> <div class="pBullet2Last"><li>LDAP 레지스트리</li></div>
+</ul>
+<a name="wp1012816"> </a> <div class="pBullet1Plus"><li>다음의 것을 사용한, IIOP 트랜스폴트상의 RMI 연결기</li></div>
+<ul class="pBullet2"><a name="wp1012817"> </a> <div class="pBullet2"><li>외부 디렉토리 없음</li></div>
+<a name="wp1012818"> </a> <div class="pBullet2Plus"><li>CORBA 네임 서비스 </li></div>
+<a name="wp1012819"> </a> <div class="pBullet2LastEnd"><li>LDAP 레지스트리</li></div>
+</ul>
+</ul><div class="pStep1">
+<ol class="pStep1"><a name="wp1010145"> </a> <li><code class="cCode">Server</code> 를 기동합니다. </li>
+<a name="wp1010146"> </a> <p class="pBody">
+<code class="cCode">Server</code> 의 기동에 사용하는 커멘드는, 사용하고 있는 외부 디렉토리에 의해 다릅니다. <code class="cCode">Client</code> 를 기동하기 전에, 각종의 트랜스폴트 및 외부 레지스트리를 사용해,<code class="cCode">Server</code> 의 다음의 인스턴스의 1 개 또는 복수를 기동할 수 있습니다.
+</p>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1010147"> </a> <li type="a">외부 디렉토리를 사용하지 않는 JRMP 상의 RMI 연결기</li>
+<a name="wp1010148"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1010149"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015590"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-a \</span><a name="wp1015591"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi://&quot; \</span><a name="wp1015592"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015593"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015594"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015595"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012829"> </a> 
+<a name="wp1012830"> </a> 
+</pre></div>
+<a name="wp1010154"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012841"> </a> <div class="pBullet2"><li><code class="cCode">debug</code> 는 true 로 설정되어<code class="cCode">Server</code> 의 실행시의 화면 출력을 보다 상세한 것으로 합니다. </li></div>
+<a name="wp1012842"> </a> <div class="pBullet2Plus"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-a</code> 입니다. </li></div>
+<a name="wp1012843"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1012844"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+<a name="wp1012845"> </a> <div class="pBullet2Last"><li>서비스 URL 에 의해, RMI 의 디폴트 트랜스폴트 JRMP 상에서 동작하는 RMI 연결기의 선택이 지정됩니다. </li></div>
+</ul>
+<a name="wp1010159"> </a> <p class="pBody">
+서버가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 JNDI/LDAP 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1010160"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 RMI 레지스트리를 사용합니다. </li>
+<a name="wp1010161"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1010166"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015600"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-b \</span><a name="wp1015601"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndirmi}/server&quot; \</span><a name="wp1015602"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015603"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015604"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015605"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012855"> </a> 
+<a name="wp1012856"> </a> 
+</pre></div>
+<a name="wp1010167"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012865"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-b</code> 입니다. </li></div>
+<a name="wp1012866"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1012867"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+<a name="wp1012868"> </a> <div class="pBullet2Last"><li>서비스 URL 는, RMI over JRMP 로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub <code class="cCode">server</code> 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndirmi</code> 로서 특정한 RMI 레지스트리입니다.  </li></div>
+</ul>
+<a name="wp1010174"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 의 JNDI/LDAP 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1010175"> </a> <li type="a">JRMP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1010176"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1010386"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015610"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-c \</span><a name="wp1015611"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:rmi:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1015612"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015613"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015614"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015615"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012879"> </a> 
+<a name="wp1012880"> </a> 
+</pre></div>
+<a name="wp1010185"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1012889"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-c</code> 입니다. </li></div>
+<a name="wp1012890"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1012891"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+<a name="wp1012892"> </a> <div class="pBullet2Last"><li>서비스 URL 는, RMI over JRMP 로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 와 특정한 LDAP 서버입니다. </li></div>
+</ul>
+<a name="wp1010194"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-c</code> 로 JNDI/LDAP 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1010195"> </a> <li type="a">외부 디렉토리를 사용하지 않는 IIOP 상의 RMI 연결기</li>
+<a name="wp1010196"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015620"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015691"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-d \</span><a name="wp1015621"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop://&quot; \</span><a name="wp1015622"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015623"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015624"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015625"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012902"> </a> 
+<a name="wp1012903"> </a> 
+</pre></div>
+<a name="wp1010202"> </a> <p class="pBody">
+이 커멘드로, 
+</p>
+<ul class="pBullet2"><a name="wp1010204"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-d</code> 입니다. </li></div>
+<a name="wp1010488"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1010489"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+<a name="wp1010205"> </a> <div class="pBullet2Last"><li>서비스 URL 는, 선택되는 연결기가 IIOP 상에서 동작하는 RMI 연결기인 것을 지정합니다. </li></div>
+</ul>
+<a name="wp1010206"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 자동적으로 생성된 URL 의 JNDI/LDAP 검색 서비스에의 등록을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1010207"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 CORBA 를 사용합니다. </li>
+<a name="wp1010208"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015636"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015692"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-e \</span><a name="wp1015637"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndiiiop}/server&quot; \</span><a name="wp1015638"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015639"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015640"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015641"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012913"> </a> 
+<a name="wp1012914"> </a> 
+</pre></div>
+<a name="wp1010215"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1010541"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-e</code> 입니다. </li></div>
+<a name="wp1010547"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1010542"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다. </li></div>
+<a name="wp1010218"> </a> <div class="pBullet2Last"><li>서비스 URL 는, IIOP 상의 RMI 연결기로서 선택되는 연결기를 지정합니다. RMI 연결기 Stub server 가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndiiiop</code> 로서 특정한 CORBA 네임 서비스입니다. </li></div>
+</ul>
+<a name="wp1010222"> </a> <p class="pBody">
+<code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 <code class="cCode">test-server-e</code> 의 이름으로 JNDI/LDAP 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다.
+</p>
+<a name="wp1010223"> </a> <li type="a">IIOP 상의 RMI 연결기.  외부 디렉토리에 LDAP 를 사용합니다. </li>
+<a name="wp1010224"> </a> <p class="pBody">
+다음의 커멘드를 입력해 <code class="cCode">Server</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1015650"> </a> 
+<span class="cUserType">$ java -classpath .  -Ddebug=true \</span><a name="wp1015693"> </a> 
+<span class="cUserType">  -Dagent.name=test-server-f \</span><a name="wp1015651"> </a> 
+<span class="cUserType">  -Durl=&quot;service:jmx:iiop:///jndi/${jndildap}/cn=x, dc=Test&quot; \</span><a name="wp1015652"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1015653"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1015654"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1015655"> </a> 
+<span class="cUserType">  jndi.Server &amp;</span><a name="wp1012939"> </a> 
+<a name="wp1012929"> </a> 
+</pre></div>
+<a name="wp1012917"> </a> <p class="pBody">
+이 커멘드로,
+</p>
+<ul class="pBullet2"><a name="wp1010235"> </a> <div class="pBullet2"><li>작성되는 에이전트의 이름은 <code class="cCode">test-server-f</code> 입니다. </li></div>
+<a name="wp1010701"> </a> <div class="pBullet2Plus"><li>에이전트가 등록되는 도메인 컴퍼넌트의 사픽스를 나타내는 URL,<code class="cCode">provider</code> 가 지정됩니다. </li></div>
+<a name="wp1010241"> </a> <div class="pBullet2Plus"><li>LDAP 서버에 액세스 하기 위한(해), 공통명의 속성 <code class="cCode">principal</code> 와 패스워드 <code class="cCode">credentials</code> 가 지정됩니다.  </li></div>
+<a name="wp1010591"> </a> <div class="pBullet2Last"><li>서비스 URL 는, 선택된 연결기를 RMI over IIOP 로서 지정합니다. RMI 연결기 Stub가 보존되는 외부 디렉토리는,<a  href="lookup.html#wp999517"><span style="color: #3366CC">「4.1 초기설정」</span></a> 으로 <code class="cCode">jndildap</code> 와 특정한 LDAP 서버입니다.  </li></div>
+</ul>
+<a name="wp1010242"> </a> <p class="pListEndingPara"><code class="cCode">Server</code> 가 기동하면(자), RMI 연결기의 작성, 및 그 URL 가 에이전트명 <code class="cCode">test-server-f</code> 로 JNDI/LDAP 검색 서비스에 등록되는 것을 확인하는 메세지가 표시됩니다. </p>
+</ol>
+<a name="wp1010243"> </a> <li><code class="cCode">Client</code> 를 기동합니다. </li>
+<a name="wp1012945"> </a> <p class="pBody">
+선택한 트랜스폴트 및 외부 디렉토리를 사용해 <code class="cCode">Server</code> 를 기동한 후,<code class="cCode">Client</code> 를 기동합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1012946"> </a> 
+$ <span class="cUserType">java -classpath .  -Ddebug=true \</span><a name="wp1017678"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1017680"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1017681"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1017682"> </a> 
+<span class="cUserType">  jndi.Client</span><a name="wp1017683"> </a> 
+<a name="wp1012957"> </a> 
+</pre></div>
+<a name="wp1012947"> </a> <p class="pBody">
+<code class="cCode">Server</code> 로 작성되고 검색 서비스에 등록된 에이전트의 검출을 확인하는 출력이 표시됩니다. 또, 에이전트로 설정된 접속의 접속명과 접속의 확인이 표시됩니다.  
+</p>
+<a name="wp1010249"> </a> <p class="pBody">
+특정의 에이전트를 검색하려면 , 다음의 커멘드를 입력합니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1010253"> </a> 
+<code class="cCode">$ </code><span class="cUserType">java -classpath .  -Ddebug=true \</span><a name="wp1017685"> </a> 
+<span class="cUserType">  -Djava.naming.provider.url=&quot;$provider&quot; \</span><a name="wp1017686"> </a> 
+<span class="cUserType">  -Djava.naming.security.principal=&quot;$principal&quot; \</span><a name="wp1017687"> </a> 
+<span class="cUserType">  -Djava.naming.security.credentials=&quot;$credentials&quot; \</span><a name="wp1017688"> </a> 
+<span class="cUserType">  -Dagent.name=agentName \</span><a name="wp1017689"> </a> 
+<span class="cUserType">  jndi.Client</span><a name="wp1012964"> </a> 
+<a name="wp1012965"> </a> 
+</pre></div>
+<a name="wp1010254"> </a> <p class="pListEndingPara">상기의 커멘드로, agentName 는 검색하는 에이전트의 이름입니다. <em class="cEmphasis"></em>또,* 를 사용해 에이전트명을 부분적으로 지정할 수도 있습니다.  예를 들어, 문자 x 로 시작되는 모든 에이전트명을 검색하는 경우는, x* 와 지정합니다. </p>
+<a name="wp1010729"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp1005796"> </a> <p class="pBody">
+
+</p>
+<a name="wp1013094"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013097"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013100"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013103"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013106"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013109"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013112"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013115"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013118"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013121"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013124"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013127"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013130"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013133"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013136"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013139"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013142"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013145"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013148"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013151"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013154"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013157"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013160"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013163"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013166"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013169"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013172"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013175"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013178"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013181"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013184"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013187"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013190"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013193"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013196"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1013199"> </a> <p class="pBodySmall">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="connectors.html">전의 항목</a>  | <a accesskey="n" href="security.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지의 튜토리얼<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

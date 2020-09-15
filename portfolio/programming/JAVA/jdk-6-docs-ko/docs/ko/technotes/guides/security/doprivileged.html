@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<!--NewPage-->
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>
+특권 블록 API
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="white">
+<center>
+<h1>특권 블록을 위한 API</h1>
+
+
+<!--  We use the SCCS file version as the document version. Note that while the file is being edited, the version below should  read '% I %' (without the spaces), not '1.n'. Upon 'sccs delget', SCCS will replace it with the correct '1.n' version number. --> <b>문서 개정 1.6</b>
+
+</center>
+<br>
+<hr>
+
+<h2>
+개요
+</h2>
+
+<blockquote>
+
+이 문서에서는, 특권 코드의 의미와 특권 코드를 사용하는 목적에 대해 설명합니다. 그 후로, 다음의 점에 특히 주목하면서 API 의 사용 방법을 나타냅니다.
+<ul>
+<li>값을 돌려주는 방법</li>
+<li>형태의 안전성</li>
+<li>예외 처리</li>
+<li>리플렉션</li>
+</ul>
+
+</blockquote>
+
+
+<H2>배경:특권 첨부 코드를 사용하는 의미</H2>
+
+<blockquote>
+
+<p>SDK 의 인스톨 정책에 의해, 특정의 코드 소스에 근거하는 코드에 대해서 허가되는 액세스권, 즉 system resource에 대한 액세스의 종류가 정해집니다. CodeSource 형의 「코드 소스」는, 기본적으로, 코드의 장소 (URL)와 코드에의 서명에 사용되고 있는 비공개키에 대응하는 공개키를 포함한 증명서의 참조 (코드가 서명되고 있는 경우)로, 구성되어 있습니다.
+
+<p>정책는, Policy 객체에 의해 나타내집니다. 구체적으로는,<code>Policy</code> 클래스 (<code>java.security</code> 패키지내)에서 정의되고 있는 abstract 메소드를 구현한 <code>Policy</code> 서브 클래스에 의해 나타내집니다.
+
+<p>Policy 객체가 사용하는 정책 정보가 어디에 놓여질까는, Policy 의 구현에 의합니다. Policy 의 레퍼런스 구현에서는, 정책 정보를 정책 구성 파일로부터 얻습니다. 디폴트의 Policy 의 레퍼런스 구현과 거기서 읽어내지는 정책 파일로 사용하는 구문에 대해서는,<a href = "PolicyFiles.html">「Policy 의 디폴트 구현과 정책 파일의 구문」</a>을 참조해 주세요. <b> Policy Tool</b> 를 사용한 (구문을 알 필요가 없다) 정책 파일의 작성 방법의 상세한 것에 대하여는, Policy Tool 의 문서 (<a href="../../tools/solaris/policytool.html">Solaris 용</a>) (<a href="../../tools/windows/policytool.html">Windows 용</a>)를 참조해 주세요.
+
+<p>그 때 유효하게 되어 있는 시큐리티 정책의 결정에 따라, CodeSource 자체와 그 CodeSource 에 근거하는 코드에 대해서 허가되고 있는 액세스권은, 「보호 도메인」에 감싸집니다. 따라서, 같은 열쇠로 서명된 같은 URL 에 있는 클래스는, 같은 도메인에 넣어져, 클래스는 1 개의 보호 도메인인 만큼 소속합니다. 같은 액세스권이 주어지고 있어도, 다른 코드 소스가 기본으로 되어 있는 클래스는, 다른 도메인에 속합니다.
+
+<p>현재, SDK 의 일부로서 제공되고 있는 코드는 모두 시스템 코드라고 보여져, 고유의 시스템 도메인 중(안)에서 실행됩니다. 시스템 코드에는, 자동적으로 모든 액세스권이 주어집니다.
+
+<p>애플릿 또는 어플리케이션은, 각각의 코드 소스에 의해 결정할 수 있는 도메인내에서 동작합니다. 애플릿 또는 시큐리티 매니저아래에서 실행되는 어플리케이션에, 시큐리티 보호된 동작 (파일의 읽기나 기입등)을 허가하려면 , 그 특정의 동작에 대한 액세스권을 애플릿이나 어플리케이션에게 줄 필요가 있습니다.
+
+<p>즉, 자원에 액세스 하려고 하는 경우는 항상, 그 지점에 이르기까지 실행 thread가 더듬어 온 모든 코드가, 그 자원 액세스를 위한 액세스권을 가지고 있지 않으면 안됩니다. 다만, thread안에 「특권」이 주어진 코드가 있는 경우는 제외합니다. 즉, 복수의 호출측의 체인이 존재하는 실행의 thread로, 액세스 제어의 검사를 하는 경우를 생각합니다. 보호 도메인의 경계를 횡단할 가능성이 있는 복수의 메소드의 호출과 같은 경우입니다. 마지막 호출측이 <code>AccessController</code> 의 <code>checkPermission</code> 메소드를 호출할 때, 요구된 액세스의 허가 또는 거부를 결정하는 기본적인 알고리즘은, 다음과 같이 됩니다.
+
+<blockquote>
+
+<p>호출 체인의 어떤 것인가의 호출측의 코드에, 요구된 액세스권이 없는 경우, AccessControlException 가 throw 됩니다. 다만, 이 액세스권이 주어지고 있는 코드의 호출측이 「특권 첨부」 (아래와 같이 참조)로 지정되고 있어, 계속되어 이 호출측에서 불려 가는 부분 (직접 또는 간접)이 모두 이 액세스권을 가지고 있는 경우는, 이 예외는 throw 되지 않습니다.
+
+</blockquote>
+
+<p>코드를 「특권 첨부」로 지정하면(자), 신뢰할 수 있는 코드는, 그것을 호출하고 있는 코드가 직접 이용할 수 있는 것보다 많은 자원에, 일시적으로 액세스 할 수 있게 됩니다. 이것은, 다음과 같은 경우에 필요하게 됩니다. 예를 들어, 어느 어플리케이션이 폰트가 들어간 파일에의 직접적인 액세스를 허가되어 있지 않을 때에, 문서를 표시하는 시스템 유틸리티가 사용자에 대신해 그 폰트를 취득할 필요가 있는 경우 등입니다. 그 때문에(위해), 폰트를 취득하는 동안, 시스템 유틸리티는 특권 첨부가 됩니다.
+
+</blockquote>
+
+
+<h2>doPrivileged API 의 사용</h2>
+
+<blockquote>
+
+이하의 섹션에서는, 「특권」기능의 사용 방법에 대해 설명합니다.
+
+<h3>반환값이 없고, 예외가 throw 되지 않는 경우</h3> 
+
+<blockquote>
+<p>특권 블록내로부터 값을 돌려줄 필요가 없는 경우는,<code>doPrivileged</code> 에의 호출은 다음과 같이 기술할 수 있습니다.
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                // privileged code goes here, for example:
+                System.loadLibrary("awt");
+                return null; // nothing to return
+            }
+        });
+       ...normal code here...
+  }
+ </pre>
+
+<p><CODE>AccessController.doPrivileged</CODE> 메소드는,<CODE>java.security.PrivilegedAction</CODE> 형의 객체를 받아, 그 <CODE>run</CODE> 메소드를 특권 모드로 호출합니다. 비동기의 예외에 의해 <CODE>doPrivileged</CODE> 의 실행이 중단되는 경우에서도,<CODE>run</CODE> 메소드를 실행한 뒤의 특권의 해제는, 구현이 보증합니다.
+
+<p>
+<code>PrivilegedAction</code> 는, Object 를 돌려주는 <code>run</code> 라는 이름의 1 개의 메소드를 포함한 인터페이스입니다. 위의 예는, 익명의 내부 클래스를 사용하는 인터페이스의 구현의 작성을 나타내고 있어<code>run</code> 메소드의 고정 구현이 제공됩니다. <code>doPrivileged</code> 에의 호출해 때에, PrivilegedAction 의 구현의 인스턴스가 건네받습니다. <code>doPrivileged</code> 메소드는, 특권을 유효하게 한 후에, PrivilegedAction 의 구현으로부터 <code>run</code> 메소드를 호출해,<code>run</code> 메소드의 반환값을 <code>doPrivileged</code> 의 반환값으로서 돌려줍니다. 위의 예에서는 반환값은 무시되고 있습니다.
+
+<p>「특권 코드」를 구성하는 실제의 요소에 따라서는, 내부 클래스의 처리를 위해서(때문에) 약간의 변경이 필요하게 되는 경우가 있습니다. 예를 들어, 「특권 코드」가 예외를 throw 하거나 국소 변수에 액세스 하거나 하는 경우는, 나머지의 마디로 설명하는 것 같은 변경이 필요하게 됩니다.
+
+<p>익명의 내부 클래스를 사용하지 않고 <code>doPrivileged</code> 를 호출할 수도 있습니다.
+
+<pre>
+    somemethod() {
+        ...normal code here...
+        MyAction mya = new MyAction();
+        // become privileged:
+        AccessController.doPrivileged(mya);
+       ...normal code here...
+    }
+
+    class MyAction implements PrivilegedAction {
+        public MyAction() {};
+        public Object run() {
+            // privileged code goes here, for example:
+            System.loadLibrary("awt");
+            return null; // nothing to return
+        }
+    }
+</pre>
+
+<p> 「특권」의 구조는 충분히 주의해 사용해, 특권 코드를 할 수 있는 한 작게 하도록(듯이) 항상 유의할 필요가 있습니다. 즉,<code>run</code> 메소드안의 코드는, 특권 첨부로 실행할 필요가 있는 코드인 만큼 제한해, 보다 일반적인 처리는 <code>run</code> 메소드의 외측에서 실시하도록(듯이) 합니다. 또,<code>doPrivileged</code> 의 호출은, 특권을 유효하게 할 필요가 있는 코드 중(안)에서 실시하도록(듯이) 합니다. 시큐리티 홀이 되는 위험이 있기 (위해)때문에, 그 자체가 <code>doPrivileged</code> 를 호출하는 것 같은 유틸리티 클래스를 작성 해서는 안됩니다. 상기의 예로 가리켰던 대로, 직접 호출하지 않아도,<code>PrivilegedAction</code> 클래스를 위한 유틸리티 클래스를 기술할 수 있습니다.
+
+</blockquote>
+
+
+<h3>값을 돌려주는 경우</h3> 
+
+<blockquote>
+
+<p> 다음은, 값을 돌려줄 필요가 있는 경우의 예입니다.
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        String user = (String) AccessController.doPrivileged(
+          new PrivilegedAction() {
+            public Object run() {
+                return System.getProperty("user.name");
+            }
+          }
+        );
+        ...normal code here...
+  }
+ </pre>
+
+<p> 이 방법에서는,<code>doPrivileged</code> 로부터 반환되는 값을 동적으로 캐스트 할 필요가 있습니다. 캐스트 대신에,<code>final</code> 의 국소 변수를 사용하는 방법이 있습니다.
+
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        final String user[] = {null};
+        AccessController.doPrivileged(
+          new PrivilegedAction() {
+            public Object run() {
+                user[0] = System.getProperty("user.name");
+                return null; // still need this
+            }
+          }
+        );
+        ...normal code here...
+  }
+ </pre>
+
+게다가 형태를 안전하게 취급하는 익명이 아닌 클래스를 전용에 작성하는 방법도 있습니다.
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        GetPropertyAction gpa = new GetPropertyAction("user.name");
+        AccessController.doPrivileged(gpa);
+        String user = gpa.getValue();
+        ...normal code here...
+   }
+
+   class GetPropertyAction implements PrivilegedAction {
+      private String property;
+      private String value;
+      public GetPropertyAction(String prop) { property = prop;}
+      public Object run() { 
+               value = System.getProperty(property);
+               return value;
+      } 
+      public String getValue() {return value;}
+
+   }
+</pre>
+
+<p> 이 예에는 형태의 캐스트는 포함되어 있지 않습니다만,<code>run</code> 메소드로부터는 값이 돌아가므로, 필요에 따라서, 1 행에 기술할 수도 있습니다.
+
+<pre>
+   somemethod() {
+        ...normal code here...
+        String user = (String) AccessController.doPrivileged(
+                                   new GetPropertyAction("user.name"));
+        ...normal code here...
+   }
+</pre>
+
+</blockquote>
+
+
+<h3>국소 변수에 액세스 하는 경우</h3>
+
+<blockquote>
+
+<p> 익명의 내부 클래스를 사용하는 경우는, 액세스 하는 국소 변수를 모두 <code>final</code> 로 할 필요가 있습니다. 예를 나타냅니다.
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        final String lib = "awt";
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                // privileged code goes here, for example:
+                System.loadLibrary(lib);
+                return null; // nothing to return
+            }
+        });
+       ...normal code here...
+  }
+ </pre>
+<p>변수 <code>lib</code> 를 특권 블록의 내부에서 사용하는 경우는, 변수를 <code>final</code> 로서 선언할 필요가 있습니다. 상세한 것에 대하여는, 
+
+상세한 것에 대하여는,<a href="http://java.sun.com/products/archive/jdk/1.1/index.html">「Inner Classes」</a>의 스펙을 참조해 주세요.
+
+<p>반복 설정되는 등의 이유로써, 기존의 변수를 <code>final</code> 로서 선언할 수 없는 경우는,<code>doPrivileged</code> 를 호출하기 직전에 새로운 <code>final</code> 변수를 작성해, 그 변수를 다른 변수와 동일한 것으로서 설정합니다. 예를 나타냅니다.
+
+ <pre>
+   somemethod() {
+        ...normal code here...
+        String lib;
+        ...
+        // lib gets set multiple times so we can't make it final
+        ...
+        // create a final String that we can use inside of the run method
+        final String fLib = lib;
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                // privileged code goes here, for example:
+                System.loadLibrary(fLib);
+                return null; // nothing to return
+            }
+        });
+       ...normal code here...
+  }
+ </pre>
+
+</blockquote>
+
+
+<h3>예외의 처리</h3>
+
+<blockquote>
+
+<p><code>run</code> 메소드 중(안)에서 실행하는 처리로, 「체크」예외 (메소드의 <code>throws</code> 절에 열기되지 않으면 안 되는 예외)가 throw 되는 경우는,<code>PrivilegedAction</code> 인터페이스는 아니고,<code>PrivilegedExceptionAction</code> 인터페이스를 사용할 필요가 있습니다.
+ 
+ <pre>
+   somemethod() throws FileNotFoundException {
+        ...normal code here...
+      try {
+        FileInputStream fis = (FileInputStream) AccessController.doPrivileged(
+          new PrivilegedExceptionAction() {
+            public Object run() throws FileNotFoundException {
+                return new FileInputStream("someFile");
+            }
+          }
+        );
+      } catch (PrivilegedActionException e) {
+        // e.getException() should be an instance of FileNotFoundException,
+        // as only "checked" exceptions will be "wrapped" in a
+        // <code>PrivilegedActionException</code>.
+        throw (FileNotFoundException) e.getException();
+      }
+        ...normal code here...
+  }
+ </pre>
+
+<p>체크 예외가 <code>run</code> 메소드의 실행중에 throw 되는 경우는, 위의 예로 가리킨 것처럼 PrivilegedActionException 의 「래퍼」예외에 두고 나서 throw 해, 기술한 코드를 사용해 캐치 합니다.
+
+</blockquote>
+
+
+<H2>리플렉션</H2>
+
+<blockquote>
+
+이 API 와 리플렉션의 상호작용은, 주의의 필요한 미묘한 점입니다. <code>doPrivileged()</code> 메소드는,<code>java.lang.reflect.Method.invoke()</code> 메소드를 사용해 리플렉션으로서 호출할 수가 있습니다. 이 경우, 특권 모드로 주어지는 특권은,<code>Method.invoke()</code> 의 특권은 아니고, 거기에 따라 불려 가는 리플렉션이 아닌 코드의 특권입니다. 이와 같이 하지 않으면 시스템 특권이 잘못해 (또는 악의를 가져) 사용자 코드에게 줄 수 있어 버리는 위험이 있습니다. 리플렉션을 통해 기존의 API 를 사용하는 경우에도, 같은 요건이 적용됩니다.
+
+</blockquote>
+
+</blockquote>
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+<TD>
+
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1997-2001 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+
+<FONT SIZE="-1">코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> </FONT>
+
+</TD>
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+</body>
+</html>
+

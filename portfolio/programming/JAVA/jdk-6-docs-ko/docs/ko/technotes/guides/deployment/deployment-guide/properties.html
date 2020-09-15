@@ -1,0 +1,544 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>시스템 및 사용자 레벨의 프로퍼티 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">구성 파일 및 프로퍼티의 배치</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<p><strong>구성 파일 및 프로퍼티의 배치</strong>에는 다음의 내용이 포함됩니다. </p>
+<table cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+    <td><ul>
+<li><a href="#overview">개요</a> </li>
+<li><a href="#location">구성 파일의 배치</a> </li>
+<li><a href="#properties">구성 프로퍼티의 배치</a> </li>
+      </ul></td>
+  </tr>
+</table>
+<h2><a name="overview"></a> 개요</h2>
+<p><code>deployment.properties</code> 파일은, Java 컨트롤 패널에서의 구성 프로퍼티의 배치를 포함 및 취득하기 위해서 사용합니다. 또, Java Plug-in 와 Java Web Start 양쪽 모두의 실행시의 동작을 커스터마이즈 하기 위해서도 사용합니다. </p>
+<p>사용자 레벨의 <code>deployment.properties</code> 파일은 필수입니다. 그 위치는 후술 합니다만, 변경은 할 수 없습니다. 또, 시스템 레벨의 <code>deployment.properties</code> 파일 (생략 가능)도 있습니다. 존재하는 경우, 그 위치는, 시스템 관리 책임자가 후술 하는 위치에 있는 <code>deployment.config</code> 파일로 정의합니다. </p>
+<h2><a name="location"></a> 구성 파일의 배치 <code>(deployment.properties)</code></h2>
+<h3><a name="dp_user_level"></a> 사용자 레벨</h3>
+<p>사용자 레벨의 <code>deployment.properties</code> 파일은 다음의 위치에 있습니다. </p>
+<blockquote> 
+  <table width="95%" border="1" align="center" cellpadding="3" cellspacing="0">
+    <tr bgcolor="#CCCCCC"> 
+<td> <div align="center"><strong><font size="+1"> operating system</font></strong></div></td>
+<td> <div align="center"><strong><font size="+1">위치</font></strong></div></td>
+    </tr>
+    <tr> 
+<td>Windows</td>
+<td><code>&lt;User Application Data Folder&gt;\Sun\Java\Deployment\deployment.properties</code></td>
+    </tr>
+    <tr> 
+<td>Unix</td>
+<td><code>${user.home}/. java/deployment/deployment.properties</code></td>
+    </tr>
+  </table>
+</blockquote>
+<p>(<code>${user.home}</code> 는, 일반적으로 <code> home/&lt;username&gt;</code>)</p>
+<h4>례:</h4>
+<p>Windows 2000/XP 상에서 실행하고 있는 사용자 <code>jsmith</code> 의 경우,<code>deployment.properties</code> 파일은 다음의 위치에 있습니다. </p>
+<blockquote> 
+<p><code>C:\Documents and Settings\jsmith\Application Data\Sun\Java\Deployment\deployment.properties</code></p>
+</blockquote>
+<p>Unix 상에서 실행하고 있는 사용자 <code>bjones</code> 의 경우,<code>deployment.properties</code> 파일은 다음의 위치에 있습니다. </p>
+<blockquote>
+<p><code>/home/bjones/.java/deployment/deployment.properties</code></p>
+</blockquote>
+<h3><a name="dp_system_level"></a> 시스템 레벨</h3>
+<p><code>deployment.config</code> 파일은, 사용의 인프라스트럭쳐(infrastructure)에 있어서의, 시스템 레벨의 <code>deployment.properties</code> 를 지정하기 위해서 사용됩니다. 디폴트에서는 <code>deployment.config</code> 파일은 존재하지 않습니다.  그 때문에, 시스템 레벨의 <code>deployment.properties</code> 파일도 존재하지 않습니다. <code>deployment.config</code> 가 존재하는 경우, 그 위치는 다음과 같습니다. </p>
+<blockquote>
+  <table width="95%" border="1" align="center" cellpadding="3" cellspacing="0">
+    <tr bgcolor="#CCCCCC"> 
+<td> <div align="center"><strong><font size="+1"> operating system</font></strong></div></td>
+<td> <div align="center"><strong><font size="+1">위치</font></strong></div></td>
+    </tr>
+    <tr> 
+<td>Windows</td>
+<td><code>&lt;Windows Directory&gt;\Sun\Java\Deployment\deployment.config</code></td>
+    </tr>
+    <tr> 
+<td>Unix</td>
+<td><code>/etc/.java/deployment/deployment.config</code></td>
+    </tr>
+  </table>
+</blockquote>
+<p> 또는</p>
+<blockquote> 
+  <table width="95%" border="1" align="center" cellpadding="3" cellspacing="0">
+    <tr bgcolor="#CCCCCC"> 
+      <td> 
+<div align="center"><strong><font size="+1"> operating system</font></strong></div>
+      </td>
+      <td> 
+<div align="center"><strong><font size="+1">위치</font></strong></div>
+      </td>
+    </tr>
+    <tr> 
+<td>Windows</td>
+<td><code>${deployment.java.home}\lib\deployment.config</code></td>
+    </tr>
+    <tr> 
+<td>Unix</td>
+<td><code>${deployment.java.home}/lib/deployment.config</code></td>
+    </tr>
+  </table>
+</blockquote>
+<p>(<code>${deployment.java.home}</code> 는, Java Web Start, Java Plug-in, Java Control Panel 등의 배치 대상 제품이 실행되고 있는 위치로부터의 jre 의 위치)</p>
+<p><code>deployment.config</code> 이 존재하는 경우,<code>deployment.system.config</code> 와 <code>deployment.system.config.mandatory</code> 의 2 개의 프로퍼티이 있습니다.  </p>
+<p><code>deployment.system.config</code> 는, 시스템 (기업 전체)의 <code>deployment.properties</code> 파일에 대한 URL 입니다. 시스템 관리 책임자가 사용자 고유의 구성 설정을 중앙 관리 또는 엄중 관리하기 위해서 사용할 수 있습니다.  </p>
+<p><code>deployment.system.config.mandatory</code> 는 불리언 값입니다. 디폴트 값는 <code>false</code> 입니다. <code>false</code> 의 경우,<code>deployment.system.config</code> 의 URL 로 나타나는 <code>deployment.properties</code> 파일을 로드하려고 합니다. URL 가 발견되어, 로드할 수 있는 경우는, 이 파일이 사용됩니다. <code>true</code> 의 경우,<code>deployment.system.config</code> 의 URL 로 나타나는 시스템 레벨의 <code>deployment.properties</code> 파일도 이와 같이 로드하려고 합니다. URL 가 발견되어, 로드할 수 있는 경우는, 이 파일이 사용됩니다.  발견되지 않는 경우나, 로드할 수 없는 경우는, 아무것도 실행할 수 없습니다. </p>
+<h2><code><a name="properties"></a> </code>구성 프로퍼티의 배치</h2>
+<p><code>deployment.properties</code> 파일로 설정 가능한 프로퍼티을 다음의 겉(표)에 나타냅니다. <br>
+</p>
+<table width="80%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr> 
+<td> <h2><u>주:</u></h2>
+<p>어느 시스템 배치 프로퍼티 (즉 <code>SomeKey=SomeValue</code>)도, 다른 키 <code>SomeKey.locked</code> 를 포함하는 것으로 잠글 수 있습니다. 키 <code>SomeKey.locked</code> 는, 값을 설정할 수 있는 경우도 할 수 없는 경우도 있습니다만, 어느 쪽의 경우도 <code>SomeKey=SomeValue</code> 는 락 되기 (위해)때문에, 사용자가 변경할 수 없습니다. 시스템 배치 프로퍼티을 잠그지 않는 경우, 사용자에 의한 변경이 가능하게 됩니다. </p>
+    </td>
+  </tr>
+</table>
+<br> <br>
+<table width="95%" border="1" align="center" cellpadding="1" cellspacing="0">
+  <tr> 
+<td bgcolor="#999999"><div align="center"><font size="+2"><strong>프로퍼티 키</strong></font></div></td>
+<td bgcolor="#999999"><div align="center"><font size="+2"><strong>형</strong></font></div></td>
+<td bgcolor="#999999"><div align="center"><font size="+2"><strong>디폴트 값</strong></font></div></td>
+<td bgcolor="#999999"><div align="center"><font size="+2"><strong>설명</strong></font></div></td>
+  </tr>
+  <tr> 
+    <td colspan="4">&nbsp;</td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1">인프라스트럭쳐(infrastructure)</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.user.cachedir<br> </td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; +<br> File.separator + &quot;cache&quot;</td>
+<td>사용자 레벨의 캐쉬 디렉토리</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.system.cachedir<br> </td>
+<td>String</td>
+<td>null</td>
+<td>시스템 레벨의 캐쉬 디렉토리</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.user.logdir</td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;log&quot;</td>
+<td>사용자 레벨의 로그 디렉토리</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.user.tmp<br> </td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; +<br> File.separator + &quot;tmp&quot;;</td>
+<td>일시 사용자 디렉토리 </td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">증명서 스토어와 정책 파일</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.user.security.policy<br> </td>
+<td>String</td>
+<td>&quot;file://$USER_HOME/security/java.policy&quot;</td>
+<td> <p>사용자 레벨의 보안-정책 파일. URL 의 프로토콜은 file, HTTP, 또는 HTTPS</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.user.security.trusted.cacerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.cacerts&quot;;</td>
+<td> <p>사용자 레벨의 루트 CA 증명서 스토어 </p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.user.security.trusted.jssecacerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.jssecacerts&quot;</td>
+<td> <p>사용자 레벨의 JSSE CA 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.user.security.trusted.certs <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.certs&quot;</td>
+<td> <p>사용자 레벨의 신뢰되는 서명자 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.user.security.trusted.jssecerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.jssecerts&quot;;</td>
+<td> <p>사용자 레벨의 신뢰되는 JSSE 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.user.security.trusted.clientauthcerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$USER_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.clientcerts&quot;</td>
+<td> <p>사용자 레벨의 클라이언트 인증 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.policy <br>
+      </p></td>
+<td>String</td>
+<td>null</td>
+<td> <p>시스템 레벨의 시큐리티 정책 파일. URL 의 프로토콜은 file, HTTP, 또는 HTTPS</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.cacerts <font color="#0000FF"></font><br>
+      </p></td>
+<td>String</td>
+<td>&quot;$JAVA_HOME&quot; + File.separator + &quot;lib&quot; + File.separator + &quot;security&quot; + File.separator + &quot;cacerts&quot;</td>
+<td> <p>시스템 레벨의 루트 CA 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.jssecacerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$JAVA_HOME&quot; + File.separator + &quot;lib&quot; + File.separator + &quot;security&quot; + File.separator + &quot;jssecacerts&quot;;</td>
+<td> <p>시스템 레벨의 JSSE CA 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.trusted.certs <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$SYSTEM_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.certs&quot;</td>
+<td> <p>시스템 레벨의 서명자 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.trusted.jssecerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$SYSTEM_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.jssecerts&quot;</td>
+<td> <p>시스템 레벨의 JSSE 증명서 스토어</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.system.security.trusted.clientauthcerts <br>
+      </p></td>
+<td>String</td>
+<td>&quot;$SYSTEM_HOME&quot; + File.separator + &quot;security&quot; + File.separator + &quot;trusted.clientcerts&quot;</td>
+<td> <p>시스템 레벨의 클라이언트 인증 증명서 스토어</p></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">시큐리티 액세스 및 컨트롤 설정</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.askgrantdialog.show <br>
+      </p></td>
+<td>String</td>
+<td>true</td>
+<td>사용자가 권한을 완전하게 줄 수가 있도록(듯이) 하는 경우는 true</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.askgrantdialog.notinca<br>
+      </p></td>
+<td>String</td>
+<td>true</td>
+<td>사용자가, 루트 /JSSE CA 증명서 스토어내의 CA 에 의해 발행되어 있지 않은 증명서에의 권한을 줄 수가 있도록(듯이) 하는 경우는 true</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.jsse.hostmismatch.warning <font color="#0000FF"></font></p></td>
+<td>String</td>
+<td>true</td>
+<td>호스트가 일치하지 않는 것의 경고를 JSSE HTTPS 증명서 검증으로 표시하는 경우는 true</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.trusted.policy <br>
+      </p></td>
+<td>String</td>
+    <td>&quot;&quot;</td>
+<td><p>정책 파일에는, 신뢰되는 어플리케이션이나 애플릿에게 줄 수 있는 권한의 상한 정책가 있다. 디폴트에서는 모든 권한이지만, 이 구성 설정을 사용하는 것으로, 권한의 것보다 낮은 세트를 사용자 또는 기업을 구성할 수 있다 <br> <br>
+      </p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.sandbox.awtwarningwindow <br>
+      </p></td>
+<td>String</td>
+<td>true</td>
+<td>sandbox 가 awtShowWindowWithoutWarning 를 포함한 경우는 true</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.security.sandbox.jnlp.enhanced <br>
+      </p></td>
+<td>String</td>
+<td>true</td>
+<td>사용자에게 JNLP API 시큐리티 다이얼로그를 표시해 동의를 요구하는 경우는 true</td>
+  </tr>
+  <tr align="left" valign="top">
+<td>deployment.security.validation.ocsp</td>
+<td>Boolean</td>
+<td>false</td>
+<td>OCSP (Online Certificate Status Protocol)를 유효하게 할지 어떨지를 지정. </td>
+  </tr>
+  <tr align="left" valign="top">
+<td>deployment.security.validation.ocsp.url</td>
+<td>String</td>
+<td>null</td>
+<td>OCSP 의 응답 서버를 나타내는 URL 캐릭터 라인을 지정. </td>
+  </tr>
+  <tr align="left" valign="top">
+<td>deployment.security.validation.ocsp.signer</td>
+<td>String</td>
+<td>null</td>
+<td>OCSP 응답 singer 의 증명서의 주체명을 지정. </td>
+  </tr>
+  <tr align="left" valign="top">
+<td>deployment.security.validation.crl</td>
+<td>Boolean</td>
+<td>false</td>
+<td> 증명서의 취소 리스트를 사용할지 어떨지를 지정. </td>
+  </tr>
+  <tr align="left" valign="top">
+<td>deployment.security.validation.crl.url</td>
+<td>String</td>
+<td>null</td>
+<td>증명서의 검증을 실행하기 위해(때문에), 증명서의 취소 리스트의 URL 를 지정. </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.security.authenticator <br> </td>
+<td>String</td>
+<td>true</td>
+<td>일반적으로, Java Plug-in 와 Java Web Start 에서는, Web 페이지의 인증이나 프록시의 인증을 실시할 필요가 있는 통신을 처리하기 위해서, Authenticator 를 인스톨 한다. 이것은 디폴트의 동작이다 (true). 이 옵션은, 일반적으로의 동작을 멈추는 경우에 사용한다.  예를 들어, 어플리케이션이 Web 페이지의 인증을 실시하면서 자신과 통신하기 위해서, 독자적인 Authenticator 를 인스톨 할 필요가 있는 경우 등 <strong><br></strong> <strong><br></strong></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1">네트워크 기능</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.proxy.type <font color="#0000FF"></font></p></td>
+<td>int</td>
+<td>PROX_TYPE_BROWSER 의 경우는 3</td>
+<td> <p>사용하는 프록시의 타입. 선택사항은, 다음대로</p>
+<p>PROX_TYPE_UNKNOWN = -1,<br> PROX_TYPE_NONE = 0,<br> PROX_TYPE_MANUAL = 1,<br> PROX_TYPE_AUTO = 2,<br> PROX_TYPE_BROWSER = 3</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.proxy.same <font color="#0000FF"></font></p></td>
+<td>boolean</td>
+<td>false</td>
+<td>true 의 경우는, https 와 ftp 에서도, http 용으로 구성된 것과 같은 Web 서버와 포트를 사용한다 (deployment.proxy.type = PROX_TYPE_MANUAL 의 경우만 유효).  <br></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.auto.config.url <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>자동 프록시 설정용 JavaScript 의 URL</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.bypass.list</td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>프록시를 우회도로 하는 호스트명의 일람. 이 프로퍼티에서는, 호스트명을 칸마로 단락짓는다.  예: 192.168. 1.100, localhost, sun.com</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.bypass.local <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td> <p>로컬 호스트의 경우는 모두 우회도로 한다</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.http.host <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>HTTP 프록시 호스트명</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.http.port <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>HTTP 프록시 포트</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.https.host <font color="#0000FF">&nbsp;</font><font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>HTTPS 프록시 호스트명</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.https.port</td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>HTTPS 프록시 포트</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.ftp.host <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>FTP 프록시 호스트명</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.ftp.port <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>FTP 프록시 포트</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.socks.host <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>SOCKS v4 프록시 호스트명</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.socks.port <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>(디폴트 값: 없음)</td>
+<td>SOCKS v4 프록시 포트</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.proxy.override.hosts <br> </td>
+<td>String</td>
+    <td>&quot;&quot;</td>
+<td>프록시가 오버라이드(override) 되는 일람</td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">캐쉬와 생략 가능한 패키지의 리포지터리(repository)</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.cache.max.size <br> </td>
+<td>String</td>
+    <td>&quot;-1&quot;</td>
+<td> <p>배치 캐쉬의 최대 사이즈 (MB). Java Web Start 및 Java Plug-in 의 각 캐쉬에 대한 캐쉬 사이즈.  </p>
+<p>0 - Java Plug-in 에서의 캐쉬를 무효로 한다.  Java Web Start 에서의 캐쉬 사이즈는 제한되지 않는다</p>
+<p>-1 - 캐쉬 사이즈의 제한 없음</p>      </td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.cache.jarcompression <br> </td>
+<td>String</td>
+    <td>0</td>
+<td> <p>애플릿의 jar 압축으로 사용되는 0? 9 의 압축비</p></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.javapi.cache.enabled<br> </td>
+<td>String</td>
+<td>false</td>
+<td>캐쉬를 무효(읒�어떨지 지정한다.  false 의 경우는 무효로 하지 않는다</td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">Java 콘솔</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.console.startup.mode <font color="#0000FF"></font></p></td>
+<td>String</td>
+<td> <p>&quot;HIDE&quot;</p></td>
+<td> <p>선택사항은, 다음대로</p>
+      <ul>
+<li>HIDE - Java 콘솔을 숨긴다</li>
+<li>SHOW - Java 콘솔을 표시한다</li>
+<li>DISABLE - Java 콘솔을 무효로 한다</li>
+      </ul></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1">트레이스 및 로그</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.trace <font color="#0000FF">&nbsp;</font></td>
+<td>String</td>
+<td>false</td>
+<td>트레이스를 유효하게 한다</td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.log <br> </td>
+<td>String</td>
+<td>false</td>
+<td>로그를 유효하게 한다</td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1">Java Web Start:JNLP 관련짓고</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.javaws.associations <font color="#0000FF">&nbsp;</font></td>
+<td>int</td>
+    <td>2</td>
+<td> <p>JNLP 가 관련짓고. 선택사항은, 다음대로</p>
+<p>ASSOCIATION_NEVER = 0,<br> ASSOCIATION_NEW_ONLY = 1,<br> ASSOCIATION_ASK_USER = 2,<br> ASSOCIATION_REPLACE_ASK = 3</p></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1">Java Web Start:데스크탑의 통합</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p><br> deployment.javaws.shortcut<br>
+      </p></td>
+<td>String</td>
+<td>&quot;ASK_IF_HINTED&quot;</td>
+<td> <p>Java Web Start 의 데스크탑 쇼트 컷을 작성할지 어떨지. 선택사항은, 다음대로</p>
+      <ul>
+<li> &quot;NEVER&quot;</li>
+<li>&quot;ALWAYS&quot;</li>
+<li>&quot;ASK_USER&quot;</li>
+<li>&quot;ASK_IF_HINTED&quot;</li>
+<li>&quot;ALWAYS_IF_HINTED&quot;</li>
+      </ul></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">Java Web Start: JRE 의 선택</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.javaws.installURL <br>
+      </p></td>
+<td>String</td>
+<td>&quot;http://java.sun.com/products/autodl/j2se&quot;</td>
+<td> <p>자동 다운로드의 URL</p></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">Java Web Start: JRE 의 관리</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.javaws.autodownload <br>
+      </p></td>
+<td>String</td>
+<td>&quot;ALWAYS&quot;</td>
+<td> <p>자동 다운로드를 실시할지 어떨지. 선택사항은, 다음대로</p>
+      <ul>
+<li>&quot;ALWAYS&quot;</li>
+<li>&quot;PROMPT&quot;</li>
+<li>&quot;NEVER&quot;</li>
+      </ul></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">브라우저의 선택과 패스</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td> <p>deployment.browser.path<br> <br>
+      </p></td>
+<td>String</td>
+<td>&quot;&lt;No Browser Selected&gt;&quot;</td>
+<td><p>어플리케이션 viewer,[제품 정보] 윈도우, 및 Web Start 어플리케이션으로부터 Web 페이지를 표시하기 위해서 사용하는 브라우저의 패스</p>
+<p>이 프로퍼티은 Solaris 및 Linux 에서만 사용한다. Widows 에서는 이 프로퍼티은 무시된다.  Windows 로 브라우저를 기동하는 그 외의 어플리케이션과 같은 방법으로, 디폴트의 브라우저가 판단된다</p></td>
+  </tr>
+  <tr> 
+<td colspan="4" bgcolor="#CCCCCC"><div align="center"><font size="+1"><font size="+1">갱신 타임 아웃의 확인</font></div></td>
+  </tr>
+  <tr align="left" valign="top"> 
+<td>deployment.javaws.update.timeout <font color="#0000FF">&nbsp;</font><font color="#0000FF">&nbsp;</font><br>    </td>
+<td>int</td>
+    <td>500</td>
+<td>단위는 밀리 세컨드</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr>
+</body>
+</html>

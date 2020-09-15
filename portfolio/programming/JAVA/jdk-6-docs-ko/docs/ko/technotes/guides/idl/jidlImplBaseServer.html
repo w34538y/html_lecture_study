@@ -1,0 +1,448 @@
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java IDL:ImplBase 서버측 모델을 사용한 「Hellow World」의 예 - xrath.com 에서 번역됨</TITLE>
+
+<!-- Changed by: carson 1/2004 for J2SE 5.0 -->
+
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+
+<H1 ALIGN=CENTER>Java IDL:ImplBase 서버측 모델을 사용한 「Hellow World」의 예</H1>
+
+<HR>
+
+<P>이 문서는, 인터페이스를 정의하는 IDL (Interface Definiton Language)와 Stub 및 스켈리턴을 생성하는 Java IDL 컴파일러를 사용해, 완전한 CORBA (Common Object Request Broker Architecture) 어플리케이션을 작성하는 방법에 대해, 고레벨의 개요를 설명한 것입니다. 이 문서에서는, ImplBase 상속 서버측 모델의 사용법을 설명합니다.   
+
+<P><tt>idlj</tt> 컴파일러는 POA 상속 모델에 근거하는 서버측 매핑을 디폴트로 생성합니다. 기존의 어플리케이션과의 호환성을 유지하기 (위해)때문에,<tt>idlj</tt> 컴파일러에 새로운 플래그 <tt>-oldImplBase</tt> 를 추가해, ImplBase 상속 모델에 근거하는 서버측 매핑을 작성할 수가 있습니다. J2SE 버젼 1.3 이전에 작성한 서버와 접속할 필요가 있는 기존의 어플리케이션은, MAKEFILE 를 갱신해 이 플래그를 이용할 수 있도록(듯이) 할 필요가 있습니다. 다만, 그러한 요구가 없는 신규 어플리케이션에서는 이러한 매핑은 작성하지 않는 것을 추천합니다.
+
+<P><strong>주: ImplBase 는 POA 모델이 있으므로 추천 되지 않습니다만, 버젼 1.3 이전의 J2SE 로 기술된 서버와 호환성을 가지기 위해서(때문에) 제공되고 있습니다. 이것은 비표준 모델이므로, 이것을 사용해 새로운 서버를 작성하는 것은 추천하지 않습니다. </strong>
+	
+
+
+<P>이 문서에서는, 다음의 내용에 대해 설명합니다.
+<UL>
+
+<LI>단순한 「Hello World」프로그램의 <A href="#IDL">IDL</A> 
+
+   
+
+<LI>객체를 작성하는<A href="#server">서버</A>  
+
+ImplBase 서버측 구현 (POA)을 사용하는 네이밍 서비스와 함께 객체를 발행
+
+   
+
+<LI>기존의 객체명의 객체 참조를 네이밍 서비스로부터 찾아, 그 객체를 호출하는<A HREF="#application">어플리케이션 클라이언트</A> 
+
+   
+<LI>컴파일 방법과 실행 방법에 대한<A href="#instructions">설명</A>  
+
+례
+
+   </UL>
+
+
+
+<P>
+
+
+
+
+
+
+<!--************IDL*************-->
+
+
+
+<A name="IDL">
+
+<H2>인터페이스 정의 (<code>Hello.idl</code>)</H2></A> 
+
+<P>CORBA 어플리케이션 작성의 제일 단계는, OMG 의 인터페이스 정의 언어 (IDL)를 사용해, 객체와 인터페이스를 모두 기술하는 것입니다. IDL 에는 C++ 를 닮은 구문이 있어, 이것을 사용해 모듈, 인터페이스, 데이터 구조등을 정의할 수가 있습니다. IDL 는 다양한 프로그램 언어에 매핑 할 수 있습니다. IDL 를 Java 에 매핑 하는 방법은<a href="mapping/jidlMapping.html">「IDL 와 Java 언어의 매핑의 개요」</a>로 설명하고 있습니다.
+
+<P>다음의 코드는 OMG IDL 로 기술된 것으로, CORBA 객체의 <TT>sayHello()</TT> 오퍼레이션이 캐릭터 라인을 돌려주어 <TT>shutdown()</TT> 오퍼레이션이 ORB 를 지 그런데 있습니다. OMG IDL 의 구문과 시멘틱스의 자세한 것은, OMG 의 Web 사이트에서 <a href="http://www.omg.org/docs/formal/99-10-07.pdf">CORBA Specification</a>  의 제 3 장을 참조해 주세요. </P>
+
+<P><EM><STRONG>Hello.idl</STRONG></EM>
+
+<pre>
+module HelloApp
+{
+  interface Hello
+  {
+  string sayHello();
+  oneway void shutdown();
+  };
+};
+</pre>
+
+
+<A name="interop"></a>  <B>주:</B> OMG IDL 로 코드를 기술하는 경우, 모듈명에 인터페이스명을 사용하지 말아 주세요. 모듈명에 인스턴스명을 사용하면(자), 다른 벤더의 툴을 사용한 컴파일 실행시에, 결과의 무결성이 유지되지 않게 되는 위험이 있습니다. 그 결과, 코드의 이식성이 손상됩니다. 예를 들어, 같은 이름을 포함한 코드를 Sun Microsystems 의 IDL-to-Java 컴파일러를 사용해 컴파일 하면(자), 1 개의 결과를 얻을 수 있습니다. 같은 코드를 다른 벤더의 IDL-to-Java 컴파일러를 사용해 컴파일 하면(자), 다른 결과가 되는 경우가 있습니다.  
+<p>
+
+어플리케이션을 완성 지난에는, 서버 (<code>HelloServer.java</code>)와 클라이언트 (<code>HelloClient.java</code>)를 구현합니다.
+
+
+
+<!--************PERSISTENT SERVER*************-->
+
+
+
+<A NAME="server">
+
+<H2>서버의 구현 (<code>HelloServer.java</code>)</H2></A> 
+
+
+
+<P>여기서 소개하는 서버는, 서번트와 서버의 2 개의 클래스로 구성됩니다
+
+. 서번트인 <TT>HelloImpl</TT> 는, IDL 인터페이스
+
+ <TT>Hello</TT> 의 구현입니다. 즉,<TT>Hello</TT> 의 각 인스턴스는,
+
+<TT>HelloImpl</TT> 의 인스턴스에 의해 구현됩니다. 이 서번트는
+
+idltojava 컴파일러에 의해 상기의 IDL 로부터 생성되는 <TT>_HelloImplBase</TT> 의 서브 클래스입니다.  
+
+예제 IDL 로부터 <TT>idlj</TT> 컴파일러에 의해 생성됩니다.
+
+서번트에게는, IDL 의 오퍼레이션 마다 1 개의 메소드가 포함됩니다.
+
+이 예에서는 <TT>sayHello()</TT> 메소드와 <tt>shutdown()</tt> 메소드가 포함됩니다. 서번트 메소드는,
+
+Java 의 일반적으로의 메소드와 다르지 않습니다. ORB 관련 처리를 실시하는 코드는
+
+인수나 결과의 정렬화등을 실시해,
+
+스켈리턴으로 제공됩니다. </P>
+
+
+
+<P><tt>HelloServer</tt> 클래스에는 서버의 <TT>main()</TT> 메소드가 포함됩니다. 이 <TT>main()</TT> 메소드에서는, 다음의 처리를 실시합니다.
+
+</P>
+<UL>
+
+<LI>ORB 의 인스턴스를 생성해 초기화한다
+
+<LI>서번트의 인스턴스
+
+(1 개의 CORBA <TT>Hello</TT> 객체의 구현)(을)를 생성해, 그것을 ORB 에게 전한다
+   
+<LI>네이밍 문맥의 CORBA 객체 참조를 취득해,
+
+새로운 CORBA 객체를 등록한다
+   
+<LI>루트의 네이밍 문맥을 취득한다
+
+
+<LI>새로운 객체를 「Hello」라고 하는 이름으로 네이밍 문맥에 등록한다
+
+
+<LI>클라이언트로부터 새로운 객체가 불려 가는 것을 기다린다
+</UL>
+
+<P><strong>주: ImplBase 는 POA 모델이 있으므로 추천 되지 않습니다만, 버젼 1.3 이전의 J2SE 로 기술된 서버와 호환성을 가지기 위해서(때문에) 제공되고 있습니다. 이것은 비표준 모델이므로, 이것을 사용해 새로운 서버를 작성하는 것은 추천하지 않습니다. </strong>
+
+<P>ImplBase 서버측 구현의 <tt>HelloServer</tt> 는, POA 구현의 경우와는 조금 다릅니다. 루트 POA 의 참조를 취득해 <tt>POAManager</tt> 를 기동하는 POA 베이스의 서버의 섹션은 필요 없습니다. 다음과 같이 됩니다.
+
+<P><EM><STRONG>HelloServer.java</STRONG></EM>
+
+<pre>// <A HREF="examplelicense.html">Copyright and License</A>  
+import HelloApp. *;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.CORBA. *;
+
+import java.util.Properties;
+
+class HelloImpl extends _HelloImplBase{
+
+  private ORB orb;
+
+  public void setORB(ORB orb_val){
+    orb = orb_val;
+  }
+  
+  public String sayHello(){
+    return "\nHello world !!\n";
+  }
+  
+  public void shutdown(){
+    orb.shutdown(false);
+  }
+}
+
+public class HelloServer {
+
+  public static void main(String args[]) {
+    try{
+      // create and initialize the ORB
+      ORB orb = ORB.init(args, null);
+
+      // create servant and register it with the ORB
+      HelloImpl helloImpl = new HelloImpl();
+      helloImpl.setORB(orb); 
+	    
+      // get the root naming context
+      org.omg.CORBA.Object objRef = 
+          orb.resolve_initial_references("NameService");
+      NamingContext ncRef = NamingContextHelper.narrow(objRef);
+
+      Hello href = HelloHelper.narrow(helloImpl);
+
+      // bind the Object Reference in Naming
+      NameComponent nc = new NameComponent("Hello", "");
+      NameComponent path[] = {nc};
+      ncRef.rebind(path, href);
+
+      System.out.println("HelloServer ready and waiting ...");
+
+      // wait for invocations from clients
+      orb.run();
+    }
+    
+    catch (Exception e) {
+      System.err.println("ERROR: " + e);
+      e.printStackTrace(System.out);
+    }
+
+    System.out.println("HelloServer Exiting ...");
+	
+  }
+}
+&nbsp;</pre>
+
+
+
+
+
+<!--************APPLICATION*************-->
+
+
+
+<A name="application">
+
+<H2>클라이언트 어플리케이션의 구현 (<code>HelloClient.java</code>)</H2></A> 
+
+
+
+<P>후술의 어플리케이션 클라이언트의 예는<a  href="jidlExample.html">디폴트의 튜토리얼</a>로 가리킨 것과 닮아 있습니다만, 이 예에서는 하위 호환성을 유지하는 신기능의 Interoperable Naming Service 는 사용되고 있지 않습니다. 클라이언트 어플리케이션의 예:</P>
+
+
+
+<UL>
+
+<LI>ORB 를 생성해 초기화한다
+
+   
+
+<LI>네이밍 문맥에의 참조를 취득한다
+
+   
+
+<LI>네이밍 문맥으로부터 「Hello」를 찾아, 그 CORBA 객체에의 참조를 받는다
+
+   
+
+<LI>객체의 <TT>sayHello()</TT> 및 <tt>shutdown()</tt> 오퍼레이션을 호출해,
+
+결과를 출력한다
+
+</UL>
+
+<P><EM><STRONG>HelloClient.java</STRONG></EM>
+
+
+<pre>// <A HREF="examplelicense.html">Copyright and License</A>  
+&nbsp;
+import HelloApp. *;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.CORBA. *;
+
+public class HelloClient{
+
+  static Hello helloImpl;
+  
+  public static void main(String args[]){
+  
+    try{
+      // create and initialize the ORB
+      ORB orb = ORB.init(args, null);
+
+      // get the root naming context
+      org.omg.CORBA.Object objRef = 
+	  orb.resolve_initial_references("NameService");
+      NamingContext ncRef = NamingContextHelper.narrow(objRef);
+ 
+      // resolve the Object Reference in Naming
+      NameComponent nc = new NameComponent("Hello", "");
+      NameComponent path[] = {nc};
+      Hello helloImpl = HelloHelper.narrow(ncRef.resolve(path));
+
+      System.out.println("Obtained a handle on server object: " + helloImpl);
+      System.out.println(helloImpl.sayHello());
+      helloImpl.shutdown();
+      }
+      
+    catch (Exception e) {
+      System.out.println("ERROR : " + e) ;
+      e.printStackTrace(System.out);
+    }
+  }
+}
+&nbsp;</pre>
+
+
+<!--************COMPILING THE EXAMPLES************-->
+
+
+
+<A name="instructions">
+
+<H2>「Hello World」의 구축 방법과 실행 방법</H2></A> 
+
+<P>「Hello World」프로그램은 단순합니다만, 이 프로그램을 통해,<A href="jidlGlossary.html#invocation">「정적 호출」</a>을 사용하는 CORBA 프로그램의 개발에 필요한 작업 모든 것을 배워, 경험할 수가 있습니다.   
+
+<P>이 예에서는 네임 서비스가 필요합니다. 네임 서비스란, 객체 참조에 이름을 바인드 해 <A href="jidlGlossary.html#CORBA%20object">CORBA 객체</a>에 명명할 수가 있는 CORBA 서비스입니다. <A HREF="jidlGlossary.html#name%20binding">「네임 바인딩」</a>은 네임 서비스에 포함되어 클라이언트는 이름을 주어 목적의 객체 참조를 취득할 수 있습니다. 이번 버젼의 Java SE 에 동고 되고 있는 네임 서비스에는, 2 개의 옵션이 있습니다. 일시 네이밍 서비스인 <tt><a href="jidlNaming.html">tnameserv</a> </tt> 와 bootstrap 서비스, 일시 네이밍 서비스, 지속 네이밍 서비스, 또는 서버 매니저를 포함한 demon 프로세스인 <tt><a href="../../tools/share/orbd.html">orbd</a> </tt> 입니다. 이 예에서는 <tt>orbd</tt> 를 사용합니다.
+
+<P>이 예를 실행하기에 즈음해, Solaris 소프트웨어의 사용시는, 포트 1024 미만으로 프로세스를 개시하는 경우, root 사용자가 될 필요가 있습니다. 이 때문에, 1024 이상의 포트를 사용하는 것을 추천합니다. 이 예에서는,<TT>-ORBInitialPort</TT> 옵션을 사용해 디폴트의 포트 번호를 오버라이드(override) 합니다. 다음의 설명에서는, Java&nbsp;IDL Object Request Broker Daemon (<tt>orbd</tt>)용으로 포트 1050 을 사용할 수 있는 것을 전제로 하고 있습니다. 필요하면 다른 포트로 변경해 주세요. Windows 로 이 예를 실행하는 경우는, 경로명에 backslash (\)를 사용합니다. </P>
+
+
+ 
+ 
+<P> 개발 머신으로 이 클라이언트서버 어플리케이션을 실행하려면 , 다음과 같이 합니다.  
+<OL>
+<LI>프로그램 파일을 작성하는지,<a href="HelloImplBase.zip">HelloImplBase.zip</a>  를 다운로드해 해동합니다.
+<P>
+
+<LI><TT>Hello.idl</TT> 파일이 놓여져 있는 디렉토리로 이동합니다.
+<P>
+<LI>IDL 파일로부터 IDL-to-Java 컴파일러 <TT>idlj</TT> 를 실행해, Stub와 스켈리턴을 작성합니다. 이 순서는, java/bin 디렉토리의 패스를, 사용하는 패스에 포함하고 있는 것을 전제로 하고 있습니다.  <P>
+
+<P><strong>주: ImplBase 는 POA 모델이 있으므로 추천 되지 않습니다만, 버젼 1.3 이전의 J2SE 로 기술된 서버와 호환성을 가지기 위해서(때문에) 제공되고 있습니다. 이것은 비표준 모델이므로, 이것을 사용해 새로운 서버를 작성하는 것은 추천하지 않습니다. </strong> <BR>
+<pre>
+  idlj -fall -oldImplBase Hello.idl
+</pre>
+
+<P><TT>idlj</TT> 컴파일러의 <TT>-fall</TT> 옵션을 사용해, 클라이언트와 서버측의 바인딩의 양쪽 모두를 생성할 필요가 있습니다. 이 커멘드행으로 디폴트의 서버측 바인딩이 생성됩니다. 이것은 POA 프로그래밍 모델인 것을 전제로 하고 있습니다. <tt>-oldImplBase</tt> 옵션은, 디폴트의 POA 상속 모델 서버측 바인딩은 아니고 ImplBase 상속 모델 서버측 바인딩을 생성하도록, 컴파일러에 지시합니다. <TT>idlj</TT> 옵션의 상세한 것에 대하여는,<A HREF = "../../tools/share/idlj.html">「IDL-to-Java 컴파일러의 옵션」</a>을 참조해 주세요.   
+
+<P><TT>idlj</TT> 컴파일러에서는 다수의 파일이 생성됩니다. 실제로 생성되는 파일의 수는, IDL 파일의 컴파일시에 선택된 옵션에 따라서 다릅니다. 생성된 파일에는 표준의 기능이 있으므로, 프로그램을 배치해 실행할 때까지는 무시해도 괜찮습니다. <TT>Hello.idl</TT> 의 <TT>idlj</TT> 컴파일러로, 커멘드행의 <TT>-fall</TT> 옵션을 사용해 생성되는 파일은 다음과 같습니다.  
+<P>
+<UL>
+<LI><TT>_HelloImplBase.java</TT>
+<P>이 추상 클래스는<A href="jidlGlossary.html#server%20skeleton">서버 스켈리턴</a>으로, 서버용으로 기본적인 CORBA 기능을 제공합니다. 이 클래스에서,<tt>InvokeHandler</tt> 와 <tt>Hello</tt> 인터페이스가 구현됩니다. 이것은 <tt>org.omg.CORBA.portable.ObjectImpl</tt> 를 상속합니다. 서버 클래스 <TT>HelloImpl</TT> 는 <TT>_HelloImplBase</TT> 를 상속합니다.   
+<P>
+<LI><TT>_HelloStub.java</TT>
+<P>이 클래스는<A href="jidlGlossary.html#client%20stub">「클라이언트 Stub」</a>로, 클라이언트용으로 기본적인 CORBA 기능을 제공합니다. 이것은 <tt>org.omg.CORBA.portable.ObjectImpl</tt> 를 상속해,<TT>Hello</TT> 인터페이스를 구현합니다.
+<P>
+<LI><TT>Hello.java</TT>
+<P>이 인터페이스에는 작성한 IDL 인터페이스의 Java 판이 포함됩니다. Hello.java</TT> 인터페이스는 표준적인 CORBA 객체 기능을 주는 <TT>org.omg.CORBA.Object</TT> 인터페이스를 상속합니다. 또 <tt>HelloOperations</tt> 인터페이스와 <TT>org.omg.CORBA.portable.IDLEntity</TT> 도 상속합니다.
+<P>
+<LI><TT>HelloHelper.java</TT>
+<P>이 클래스는 보조 기능, 특히 CORBA <A href="jidlGlossary.html#object%20reference">객체 참조</a>를 적절한 형태에 캐스트 하는 <TT>narrow()</TT> 메소드를 제공합니다. Helper 클래스는 CORBA 스트림에의 데이터형의 입출력과<tt>Any</tt> 의 데이터형의 삽입과 추출을 취급합니다. Holder 클래스는, Helper 클래스의 메소드에 입출력을 위양 합니다.
+<P>
+<LI><TT>HelloHolder.java</TT>
+<P>HelloHolder.java 이 <tt>final</tt> 클래스에는,<TT>Hello</TT> 형의 퍼블릭 인스턴스 멤버가 들어옵니다. IDL 형의 파라미터가 <tt>out</tt> 또는 <tt>inout</tt> 이면 Holder 클래스가 사용됩니다. 여기에서는,<TT>org.omg.CORBA.portable.OutputStream</TT> 및 <TT>org.omg.CORBA.portable.InputStream</TT> 인수에 대한 오퍼레이션이 규정됩니다. 이러한 인수는 CORBA 에는 존재합니다만, Java 의 시멘틱스에는 간단하게 매핑 할 수 없습니다. Holder 클래스는 Helper 클래스의 메소드에 입출력을 위양 합니다. Holder 클래스는 <tt>org.omg.CORBA.portable.Streamable</tt> 를 구현합니다.   
+<P>
+<LI><TT>HelloOperations.java</TT>
+<P>이 인터페이스에는 <TT>sayHello()</TT> 메소드 및 <tt>shutdown()</tt> 메소드가 포함됩니다. IDL-to-Java 매핑은, IDL 인터페이스로 정의된 오퍼레이션을 모두 이 파일에 짜넣어, Stub와 스켈리턴으로 공유합니다.
+</UL>
+
+
+<P>
+<LI><TT>HelloApp</TT> 디렉토리에 있는 Stub와 스켈리턴도 포함해<TT>. java</TT> 파일을 컴파일 합니다. 이 순서는, java/bin 디렉토리가 실행 패스에 포함되어 있는 것을 전제로 하고 있습니다.
+<pre>
+   javac *. java HelloApp/*.java
+</pre>
+
+<LI><tt>orbd</tt> 를 기동합니다.   
+<P>UNIX 커멘드 쉘로 <tt>orbd</tt> 를 기동하려면 , 다음과 같이 입력합니다.
+   <P>   
+<pre>
+  orbd -ORBInitialPort 1050 -ORBInitialHost localhost&
+</pre>
+<P>Windows 의 MS-DOS system prompt에서는, 다음과 같이 입력합니다.
+<pre>
+  start orbd -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+   
+<P><TT>1050</TT> 은 네임서버-를 실행하는 포트입니다. <tt>-ORBInitialPort</tt> 는 필요한 커멘드행의 인수입니다. Solaris 소프트웨어의 사용시는, 1024 보다 작은 포트로 프로세스를 개시하는 경우는, root 사용자가 될 필요가 있습니다. 이 때문에, 1024 이상의 포트를 사용하는 것을 추천합니다.
+
+<P><tt>-ORBInitialHost</tt> 는, 생략 가능한 커멘드행 인수입니다. 이 예에서는, 클라이언트와 서버는 어느쪽이나 개발 머신으로 실행하고 있으므로, 호스트를 <tt>localhost</tt> 로 설정했습니다. 복수의 머신으로 개발하는 경우는, 호스트명에 옮겨놓습니다. 이 프로그램을 2 대의 머신으로 실행하는 경우의 예는,<a href="tutorial/jidl2machines.html">「2 대의 머신으로 실행하는 Hello World 프로그램」</a>을 참조해 주세요. <P>
+ 
+<LI>Hello 서버를 기동합니다.
+<P>UNIX 커멘드 쉘로 Hello 서버를 기동하려면 , 다음과 같이 입력합니다.
+   <P>   
+<pre>
+  java HelloServer -ORBInitialPort 1050 -ORBInitialHost localhost&
+</pre>
+<P>Windows 의 MS-DOS system prompt에서는, 다음과 같이 입력합니다.
+<pre>
+  start java HelloServer -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+<P>이 예의 <TT>-ORBInitialHost localhost</TT> 는 생략 할 수가 있습니다. 네임서버-가 Hello 서버로서 동일 호스트상에서 동작하고 있기 때문입니다. 네임서버-가 다른 호스트로 동작하고 있는 경우는, IDL 네임서버-가 동작하고 있는 호스트를 <TT>-ORBInitialHost</TT> <em>nameserverhost</em> 로 지정합니다.
+
+<P>전회의 순서와 같게 네임서버- (<tt>orbd</tt>)의 포트를 지정합니다. 예를 들어 <TT>-ORBInitialPort  1050</TT> 과 같이 됩니다.   <P>
+<P> 서버가 실행중이 되면(자), 다음과 같은 메세지가 단말에 표시됩니다.
+ <pre>
+HelloServer ready and waiting ...
+ </pre>
+   
+<LI>클라이언트 어플리케이션을 실행합니다. <P>
+<pre>
+  java HelloClient -ORBInitialPort 1050 -ORBInitialHost localhost
+</pre>
+
+<P>이 예의 <TT>-ORBInitialHost localhost</TT> 는 생략 할 수가 있습니다. 네임서버-가 Hello 클라이언트로서 동일 호스트상에서 동작하고 있기 때문입니다. 네임서버-가 다른 호스트로 동작하고 있는 경우는, IDL 네임서버-가 동작하고 있는 호스트를 <TT>-ORBInitialHost</TT> <em>nameserverhost</em> 로 지정합니다.
+
+<P>전회의 순서와 같게 네임서버- (<tt>orbd</tt>)의 포트를 지정합니다. 예를 들어 <TT>-ORBInitialPort  1050</TT> 과 같이 됩니다.   <P>
+<p>클라이언트가 실행중이 되면(자), 다음과 같은 메세지가 단말에 표시됩니다.
+<pre>
+   Obtained a handle on server object: IOR: ...
+   Hello World !!
+   HelloServer Exiting ...
+</pre>
+  
+</OL>
+   
+   
+<P>이 튜토리얼을 종료하면(자), 네임서버- (<tt>orbd</tt>) 지 하든가 종료해 주세요. DOS prompt에서는, 서버를 실행하고 있는 윈도우를 선택해 <TT>Ctrl+C</TT> 라고 입력하면(자) 정지합니다. UNIX 쉘에서는, 프로세스를 검출해 종료 (kill)합니다. 서버를 명시적으로 정지할 때까지는, 호출 대기 상태가 계속됩니다.
+
+
+<P><STRONG><a href="tutorial/jidl2machines.html">「2 대의 머신으로 실행하는 Hello World 프로그램」</a> </STRONG>에서는, 클라이언트와 서버라고 하는 2 대의 머신으로 간단한 어플리케이션을 분산시키는 방법의 일례를 나타냅니다.
+
+
+
+<CENTER><P><HR>
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">홈</A> </TD>
+</TR></TABLE>
+
+
+<HR><P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  1995-2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</CENTER>
+
+
+
+</BODY>
+
+</HTML>

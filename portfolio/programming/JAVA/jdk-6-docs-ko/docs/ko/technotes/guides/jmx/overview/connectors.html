@@ -1,0 +1,109 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:57:34" />
+<title>JMX 연결기를 사용한 자원의 remote administration - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="JMXoverviewTOC.html" />
+    <link rel="Previous" href="agent.html" />
+    <link rel="Next" href="lookup.html" />
+    <link rel="Index" href="appendixA.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="agent.html">전의 항목</a>  | <a accesskey="n" href="lookup.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지 개요</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp874"> </a> <h2 class="pChapNum">
+제 5 장
+</h2>
+<a name="wp5529"> </a> <h2 class="pChapTitle">
+JMX 연결기를 사용한 자원의 remote administration
+</h2>
+<a name="wp997206"> </a> <p class="pBody">
+「Java Management Extensions Instrument and Agent Specification」에서는, 「연결기」라고 하는 개념을 정의하고 있습니다. 연결기를 사용하면(자), Java Management Extensions (JMX) 테크놀러지의 MBean 서버로부터 Java 테크놀러지 베이스의 원격 클라이언트에의 액세스가 가능하게 됩니다. 연결기의 클라이언트측은, MBean 서버와 기본적으로 같은 인터페이스를 export 합니다.  
+</p>
+<a name="wp997211"> </a> <p class="pBody">
+연결기는, 연결기 클라이언트와 연결기 서버로부터 됩니다. 연결기 서버는 MBean 서버에 접속해, 클라이언트로부터의 접속 요구를 대기합니다. 연결기 클라이언트는, 연결기 서버와의 접속을 확립합니다. 일반적으로, 연결기 클라이언트는, 연결기 서버와는 다른 Java 가상 머신 (Java VM) 내에 있어, 다른 머신상에서 실행되는 것이 많이 있습니다.  
+</p>
+<a name="wp997227"> </a> <p class="pBody">
+연결기는, 다양한 구현이 가능합니다. 특히, 클라이언트와 서버의 사이의 접속으로 통신하기 위한 프로토콜은 다종 다양합니다.  
+</p>
+<a name="wp998832"> </a> <p class="pBody">
+연결기 서버에는 일반적으로, 주소가 있어, 연결기 클라이언트와 연결기 서버의 사이에 접속을 확립하기 위해서 사용됩니다. 연결기에 따라서는, 접속의 확립을 위해서(때문에), 접속 Stub를 준비해 있는 경우도 있습니다. 접속을 확립하는 방법은, 사용하는 검색·검출 테크놀러지에 따라서 다릅니다 (<a  href="lookup.html#wp997591"><span style="color: #3366CC">제 6 장 「검출·검색 서비스」</span></a> 참조).
+</p>
+<a name="wp997556"> </a> <p class="pBody">
+이 장에서는, JMX Remote API 스펙으로 정의된 다양한 종류의 연결기와 연결기로 사용되는 프로토콜에 대해 설명합니다.
+</p>
+<ul class="pBullet1"><a name="wp997557"> </a> <div class="pBullet1"><li><a  href="connectors.html#wp997004"><span style="color: #3366CC">「RMI 연결기」</span></a> :JMX Remote API 표준에 준거하는 구현에서는, 이 표준 Remote Method Invocation (RMI) 프로토콜을 지원하지 않으면 안됩니다.  </li></div>
+<a name="wp998603"> </a> <div class="pBullet1Plus"><li><a  href="connectors.html#wp998561"><span style="color: #3366CC">「총칭 연결기」</span></a> :JMX Remote API 표준에서는, TCP 소켓을 직접 기본으로 한 추가의 프로토콜인 JMX Messaging Protocol (JMXMP)를 정의하고 있습니다. 표준의 구현에서는, JMXMP 연결기를 제외할 수도 있습니다만, RMI 연결기는 제외할 수 없습니다. Java SE 플랫폼에는 생략 가능한 JMXMP 연결기는 포함되어 있지 않습니다.  </li></div>
+<a name="wp997558"> </a> <div class="pBullet1Last"><li><a  href="connectors.html#wp997173"><span style="color: #3366CC">「사용자 정의 프로토콜」</span></a> :연결기에서는 JMX 테크놀러지로 정의되어 있지 않은 프로토콜을 구현할 수도 있습니다. </li></div>
+</ul>
+<a name="wp997004"> </a> <h2 class="pHeading1">
+	RMI 연결기
+</h2>
+<a name="wp997315"> </a> <p class="pBody">
+JMX Remote API 표준에서는, RMI 를 기본으로 한 표준 프로토콜을 정의하고 있습니다. RMI 연결기는, JMX Remote API 의 각 구현에 존재하지 않으면 안됩니다.  
+</p>
+<a name="wp997318"> </a> <p class="pBody">
+RMI 에서는, Java Remote Method Protocol (JRMP)와 Internet Inter-ORB Protocol (IIOP)라고 하는 2 개의 표준 트랜스폴트를 정의하고 있습니다. RMI 연결기는, 양쪽 모두의 트랜스폴트를 지원하고 있습니다.
+</p>
+<a name="wp997322"> </a> <p class="pBody">
+JRMP 상의 RMI 연결기에서는, 클라이언트와 서버의 사이의 접속을 시큐리티 보호 및 인증하기 위한 단순한 기구를 갖추고 있습니다. 이 기구에서는, RMI 연결기를 사용하는 환경에 대해서, 기본적인 레벨의 시큐리티를 제공합니다. 총칭 JMXMP 연결기에서는, 보다 고도의 레벨의 시큐리티를 제공하고 있습니다.  
+</p>
+<a name="wp997328"> </a> <p class="pBody">
+클라이언트와 서버의 사이의 접속으로 Secure Socket Layer (SSL)를 사용하기 위해서 RMI 소켓 팩토리를 사용하는 것으로, JRMP 상의 RMI 연결기의 기본 시큐리티 기구는 향상합니다.  
+</p>
+<a name="wp998561"> </a> <h2 class="pHeading1">
+	총칭 연결기
+</h2>
+<a name="wp998562"> </a> <p class="pBody">
+Java SE 플랫폼에 포함되지 않은 JMX Remote API 의 임의 지정 부분은, 총칭 연결기입니다. 이 연결기는, 플러그 인 가능한 모듈을 추가하는 것으로 구성할 수 있어 다음의 내용을 정의합니다.
+</p>
+<ul class="pBullet1"><a name="wp998563"> </a> <div class="pBullet1"><li>요구를 클라이언트로부터 서버에 송신하거나 응답이나 통지를 서버로부터 클라이언트에 송신하거나하기 위한 트랜스폴트 프로토콜</li></div>
+<a name="wp998564"> </a> <div class="pBullet1Last"><li>클라이언트로부터 서버에 송신되어 그 클래스 로더가 타겟 MBean 에 의존하는 것 같은 객체의 객체 랩핑</li></div>
+</ul>
+<a name="wp998565"> </a> <p class="pBody">
+JMX Messaging Protocol (JMXMP) 연결기는, 트랜스폴트 프로토콜이 TCP 베이스로, 객체 랩핑이 네이티브 Java 직렬화인 것 같은 구성의 총칭 연결기가 됩니다. 시큐리티는 RMI 연결기의 경우보다 고도입니다. 시큐리티는, Java Secure Socket Extension (JSSE), Java Authentication and Authorization Service (JAAS), 및 Simple Authentication and Security Layer (SASL)가 기본으로 됩니다.
+</p>
+<a name="wp1000555"> </a> <p class="pBody">
+총칭 연결기와 그 JMXMP 구성은 생략 가능합니다.  즉, JMX Remote API 의 구현에 항상 포함되어 있는 것은 아닙니다. Java SE 플랫폼에는 생략 가능한 총칭 연결기는 포함되어 있지 않습니다.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp1000556"> </a>  <b>주 &#8211;</b> JMXMP 연결기를 사용하는 경우는, JSR 160 레퍼런스 구현을 <span style="color: #3366CC"><a  href="http://java.sun.com/products/JavaManagement/download.html"></a> <a  href="http://java.sun.com/products/JavaManagement/download.html"></a> <a  href="http://java.sun.com/products/JavaManagement/download.html"></a> </span><code class="cCode">http://java.sun.com/products/JavaManagement/download.html</code> 로부터 다운로드해,<code class="cCode">jmxremote_optional.jar</code> 파일을 클래스 패스에 추가해 주세요. JSR 160 레퍼런스 구현에 포함되는 「JMX Remote API Tutorial」에는, JMXMP 연결기의 사용예가 있습니다.
+<hr class="pHr"/></note> <a name="wp999401"> </a> <p class="pBody">
+
+</p>
+<a name="wp997173"> </a> <h2 class="pHeading1">
+	사용자 정의 프로토콜
+</h2>
+<a name="wp997124"> </a> <p class="pBody">
+RMI 연결기는 JMX Remote API 의 각 구현에 포함되어 있을 필요가 있습니다만, JMX Remote API 표준으로 정의되어 있지 않은 프로토콜을 기본으로 한 연결기를 구현할 수도 있습니다. 이 전형적인 예로서는, HTTP/S 를 사용하는 프로토콜을 기본으로 한 연결기가 있습니다.  다른 프로토콜도 가능합니다. JMX 스펙에서는, 사용자 정의 프로토콜을 기본으로 한 연결기의 구현 방법에 대해 설명하고 있습니다.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="agent.html">전의 항목</a>  | <a accesskey="n" href="lookup.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지 개요<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

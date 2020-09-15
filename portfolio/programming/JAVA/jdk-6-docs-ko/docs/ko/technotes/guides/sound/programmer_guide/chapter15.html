@@ -1,0 +1,97 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 15 장 :MIDI 서비스의 제공</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p>
+<p><a name="124027"> </a> 제 13 장<a href="chapter13.html">「서비스 프로바이더 인터페이스의 개요」</a>로,<code>javax.sound.sampled.spi</code> 와 <code>javax.sound.midi.spi</code> 의 2 개의 패키지는 사운드 서비스의 개발자가 사용하는 추상 클래스를 정의하고 있는 것을 설명했습니다. 서비스 프로바이더는 이러한 추상 클래스 가운데 몇개의 클래스의 서브 클래스를 구현하는 것으로써, 실행 시스템의 기능성을 확장하는 새로운 서비스를 작성할 수가 있습니다. 제 14 장에서는 <code>javax.sound.sampled.spi</code> 패키지의 사용 방법을 설명했습니다. 이 장에서는, MIDI 디바이스와 MIDI 파일을 취급하기 위한 새로운 서비스를 제공하는 <code>javax.sound.midi.spi</code> 패키지의 사용 방법에 대해 설명합니다.  </p>
+<p><a name="124023"> </a> 기존의 MIDI 서비스만을 응용 프로그램으로 사용하는 프로그래머는, 이 장을 읽지 않아도 서로 지장있습니다. MIDI 의 개요와 응용 프로그램에 인스톨 끝난 MIDI 서비스의 사용 방법에 대해서는, 이 메뉴얼 ( 「Java Sound API 개발자 안내」)의 제? 부 「MIDI」를 참조해 주세요. 이 장에서는, 인스톨 끝난 MIDI 서비스에 액세스 하기 위해서 응용 프로그램이 호출하는 Java<font size="-1"><sup>TM</sup></font> Sound API 메소드에 대한 지식이 있는 것을 전제로 합니다.  
+</p><a name="122553"> </a> 
+<h3> 처음에</h3>
+<p><a name="122556"> </a> <code>javax.sound.midi.spi</code> 패키지에는 다음의 4 개의 추상 클래스가 존재해, MIDI 시스템을 제공하는 4 종류의 서비스를 나타내고 있습니다.
+</p>
+<ul>
+  <a name="122558"> </a>  
+<li><code>MidiFileWriter</code> 는, MIDI 파일 기입 서비스를 제공합니다. 이러한 서비스에 의해, 응용 프로그램은 그 프로그램에 의해 생성된, 또는 처리된 MIDI <code>Sequence</code> 를 MIDI 파일에 기입할 수가 있습니다.  <a name="122559"></a>  
+<li><code>MidiFileReader</code> 는, 파일 read 서비스를 제공합니다. 이 서비스는 응용 프로그램으로 사용하기 위해서, MIDI 파일로부터 MIDI <code>Sequence</code> 를 돌려줍니다.  <a name="122560"> </a>  
+<li><code>MidiDeviceProvider</code> 는, 특정의 종류의 MIDI 디바이스의 인스턴스 (1 개(살) 또는 복수)를 제공합니다. 하드웨어 디바이스가 포함되는 일도 있습니다.  <a name="122561"></a>  
+<li><code>SoundbankReader</code> 는, 사운드 뱅크 파일 read 서비스를 제공합니다. <code>SoundbankReader</code> 의 구상 서브 클래스는, 주어진(given) 사운드 뱅크 파일을 구문 분석 해,<code>Synthesizer</code> 에 로드할 수 있는 <code>Soundbank</code> 객체를 작성합니다.  
+</ul>
+<p>응용 프로그램은, 서비스 객체의 인스턴스를 직접 작성할 것은 없습니다.  서비스 객체가 <code>MidiDeviceProvider</code> 와 같은 프로바이더 객체에서도, 프로바이더 객체로부터 제공되는 <code>Synthesizer</code> 와 같은 객체에서도, 같습니다. 또, 프로그램이 SPI 클래스를 직접 참조하는 일도 없습니다. 그 대신해, 응용 프로그램은 <code> javax.sound.midi</code> 패키지내의 <code>MidiSystem</code> 객체에 요구를 실시합니다. <code>MidiSystem</code> 는, 그 요구를 받아,<code>javax.sound.midi.spi</code> 클래스의 구상 서브 클래스를 사용해 이러한 요구를 처리합니다.  </p>
+<a name="122566"> </a> 
+<h3> MIDI 파일 기입 서비스의 제공</h3>
+<p><a name="122568"> </a>  표준 MIDI 파일 형식은 Type 0, Type 1, Type 2 의 3 종류가 있어, Java Sound API 의 구현에서도 이러한 모든 것을 지원하고 있습니다. 이러한 파일 형식은, 파일내의 MIDI 순서 데이터의 내부 표현에 따라서 달라, 순서의 종류의 차이에 대응하고 있습니다. 이 3 종류의 파일 형식중 한쪽이 구현으로 지원되어 있지 않은 경우는, 구현되어 있지 않은 파일 형식의 지원를 서비스 프로바이더가 제공할 수가 있습니다. 표준 MIDI 파일 형식에는, 일부 독자 형식을 추가해 개편된 것이 있어, 표준의 형식과 같게, 서드 파티에 의한 지원를 받을 수가 있습니다.  
+</p><p><a name="124323"> </a> MIDI 파일의 기입 기능은 <code>MidiFileWriter</code> 의 구상 서브 클래스에 의해 제공됩니다. 이 추상 클래스는 <code>javax.sampled.spi.AudioFileWriter</code> 와 거의 같습니다. 여기에서도 같이 메소드는 기입할 수 있는 파일의 타입을 알기 위한 쿼리메소드와 실제로 파일을 기입하기 위한 메소드로 나눌 수 있습니다. <code>AudioFileWriter</code> 의 경우와 같게, 다음의 2 개의 쿼리메소드는 구상 메소드입니다.
+</p><blockquote><pre>boolean isFileTypeSupported(int fileType)
+boolean isFileTypeSupported(int fileType, Sequence sequence) 
+</pre></blockquote>
+1 번째의 메소드는, 지정된 타입의 MIDI 파일을 파일 라이터를 기입할 수 있을지 어떨지에 대한 일반적인 정보를 제공합니다. 2 번째의 메소드는, 보다 세세하게 특정하는 것입니다. 지정된 타입의 MIDI 파일에 특정의 Sequence 를 기입할 수 있을지 어떨지를 문의합니다. 일반적으로은, 이 2 개의 구상 메소드는 오버라이드(override) 할 필요는 없습니다. 디폴트 구현에서는, 2 개의 메소드는 각각 대응하는 2 개의 쿼리메소드의 한편을 호출해, 반환된 결과를 반복해 조사합니다. 이 2 개의 쿼리메소드는 추상 메소드이므로, 서브 클래스에 구현할 필요가 있습니다.
+<blockquote><pre>abstract int[] getMidiFileTypes() 
+abstract int[] getMidiFileTypes(Sequence sequence) 
+</pre></blockquote>
+1 번째의 메소드는 일반적으로 지원되는 모든 파일 타입의 배열을 돌려줍니다. 일반적인 구현에서는, 파일 라이터의 생성자 내에서 이 배열을 초기화해, 이 메소드로부터 이 배열을 돌려줍니다. 다음의 메소드는, 일련의 파일 타입중에서, 파일 라이터가 주어진(given) Sequence 를 기입할 수 있는 부분집합을 찾습니다. MIDI 스펙에 의해, 모든 타입의 순서를 모든 타입의 MIDI 파일에 기입할 수 있다고는 할 수 없습니다.
+<p></p><p><a name="122590"> </a> <code>MidiFileWriter</code> 서브 클래스의 <code>write</code> 메소드는, 주어진(given) <code>Sequence</code> 가 지정된 타입의 MIDI 파일에 적합하는 데이터 형식에 encode 해, 코드화 된 스트림을 파일 또는 출력 스트림에 기입합니다.
+<blockquote><pre>abstract int write(Sequence in, int fileType, 
+                   java.io.File out) 
+abstract int write(Sequence in, int fileType, 
+                   java.io.OutputStream out) 
+</pre></blockquote>
+이것을 실시하려면 ,<code>write</code> 메소드는, 트럭을 반복해 조사해 <code>Sequence</code> 를 구문 분석 해, 적응하는 파일 헤더를 구축해, 헤더와 트럭을 출력에 기입할 필요가 있습니다. <strong></strong>MIDI 파일의 헤더 형식은 당연, MIDI 스펙으로 정의되고 있습니다. 헤더에 포함되는 정보는, 그 파일이 MIDI 파일인 것을 나타내는 「magic number-」, 헤더의 길이, 트럭수, 순서의 타이밍 정보 (제산 형식과 분해가능) 등입니다. MIDI 파일의 나머지의 부분은, MIDI 스펙에 의해 정의된 형식의 트럭 데이터입니다.  
+<p></p>
+<p><a name="124482"> </a> 여기서, 응용 프로그램, MIDI 시스템, 및 서비스 프로바이더가 MIDI 파일의 기입으로 어떻게 제휴할까를 간단하게 설명합니다. 보통, 응용 프로그램은 파일에 보존하기 위한 MIDI <code>Sequence</code> 를 가지고 있습니다. 이 프로그램은, 파일을 기입하려고 하기 전에, 이 <code>Sequence</code> 에 사용할 수 있는 MIDI 파일 형식이 지원되고 있는지 어떤지를,<code>MidiSystem</code> 객체에 문의합니다. <code>MidiSystem.getMidiFileTypes(Sequence)</code> 메소드는, 시스템이 특정의 순서를 기입할 수가 있는 모든 MIDI 파일 타입의 배열을 돌려줍니다. 이 메소드는, 인스톨 되고 있는 <code>MidiFileWriter</code> 서비스의 각각 대응하는 <code>getMidiFileTypes</code> 메소드를 호출해, 결과를 수집해, 정수의 배열로 돌려주는 것으로 이것을 실시합니다. 이 배열은, 주어진(given) <code>Sequence</code> 에 대응하는 모든 파일 타입의 마스터 리스트라고 생각할 수가 있습니다. 파일에 <code>Sequence</code> 를 기입할 때는, 파일 타입을 나타내는 정수와 기입해지는 <code>Sequence</code> 와 출력처의 파일을 지정하는 인수가 <code>MidiSystem.write</code> 에의 호출에게 건네집니다. <code>MidiSystem</code> 는, 지정된 타입을 사용해 기입 요구를 처리하는 인스톨이 끝난 <code>MidiFileWriter </code> 를 판단해, 대응하는 <code>write</code> 를 적절한 <code>MidiFileWriter</code> 에 발송 합니다.  </p>
+<a name="122592"> </a> 
+<h3> MIDI 파일 read 서비스의 제공</h3>
+<p><a name="124559"> </a> <code>MidiFileReader</code> 추상 클래스는 <code>javax.sampled.spi.AudioFileReader</code> 클래스에 유사하고 있습니다. 어느 쪽의 클래스도 2 개의 overload 메소드로 구성되어 각각이 <code>File</code>,<code>URL</code>,<code>InputStream</code> 의 어느쪽이든 1 개의 인수를 취할 수가 있습니다. 1 번째의 overload 메소드는, 지정된 파일의 파일 형식을 돌려줍니다. <code>MidiFileReader</code> 의 경우, API 는 다음과 같습니다.
+</p><blockquote><pre>abstract MidiFileFormat getMidiFileFormat(java.io.File file) 
+abstract MidiFileFormat getMidiFileFormat(
+    java.io.InputStream stream) 
+abstract MidiFileFormat getMidiFileFormat(java.net.URL url) 
+</pre></blockquote>
+구상 서브 클래스에는, 특정의 MIDI 파일 (또는 스트림이나 URL)의 형식을 기술하는 <code>MidiFileFormat</code> 객체를 돌려주는 이러한 메소드를 구현할 필요가 있습니다. 다만, 그 파일 타입이 그 파일 리더로 지원되고 있어 파일에 유효한 헤더 정보가 포함되어 있는 것이 조건입니다. 이 조건이 채워지지 않은 경우는,<code>InvalidMidiDataException </code> 를 발행합니다.
+<p></p><p><a name="124619"> </a> 이제(벌써) 1 개의 overload 메소드는, 주어진(given) 파일, 스트림, 또는 URL 로부터 MIDI <code>Sequence</code> 를 돌려줍니다.
+<blockquote><pre>
+abstract Sequence getSequence(java.io.File file) 
+abstract Sequence getSequence(java.io.InputStream stream) 
+abstract Sequence getSequence(java.net.URL url) 
+</pre></blockquote>
+<code>getSequence</code> 메소드는 MIDI 입력 파일내의 바이트의 구문 분석의 작업을 실제로 실시해, 대응하는 <code>Sequence</code> 객체를 구성합니다. 이 작업은 본질적으로,<code>MidiFileWriter.write</code> 로 사용되는 처리의 반대입니다. 이 작업은 MIDI 스펙으로 규정 MIDI 파일의 내용과 Java Sound API 에 정해진 <code>Sequence</code> 객체에는 1 대 1 의 대응 관계가 있기 (위해)때문에, 구문 분석의 상세 순서는 간단합니다. <code>getSequence</code> 에게 건네진 파일안의 데이터를 파일 리더가 해석할 수 없는 경우 (파일이 망가져 있거나, MIDI 스펙에 따르지 않은 경우등)는,<code>InvalidMidiDataException</code> 를 발행합니다.
+<p></p><a name="122598"> </a> 
+<h3> 특정의 MIDI 디바이스의 제공</h3>
+<p><a name="124755"> </a> <code>MidiDeviceProvider</code> 는, 특정 타입 (1 개(살) 또는 복수)의 MIDI 디바이스를 제공하는 팩토리라고 생각할 수가 있습니다. 이 클래스는, MIDI 디바이스의 인스턴스를 돌려주는 메소드와 그 프로바이더를 제공할 수 있는 디바이스의 종류를 확인하기 위한 쿼리메소드로 구성됩니다.
+</p>
+<p><a name="124728"> </a> 다른 <code>javax.sound.midi.spi</code> 서비스와 같게, 어플리케이션 개발자는 <code>MidiSystem</code> 의 메소드, 이 경우는 <code>MidiSystem.getMidiDevice</code> 와 <code>MidiSystem.getMidiDeviceInfo</code> 에의 호출을 개입시켜 <code>MidiDeviceProvider</code> 서비스에 간접적으로 액세스 합니다. MidiDeviceProvider</code> 를 서브 클래스화하는 것의 목적은 새로운 종류의 디바이스를 제공하는 것이므로,<code>javax.sound.sampled.spi</code> 패키지의 <code>MixerProvider</code> 의 경우와 같게, 서비스의 개발자는 반환되는 디바이스에 관한 클래스를 작성할 필요가 있습니다. 그 경우, 반환된 디바이스의 클래스는 <code>javax.sound.sampled.Mixer</code> 인터페이스를 구현합니다. 여기에서는 <code>javax.sound.midi.MidiDevice</code> 인터페이스를 구현합니다. <code>Synthesizer</code> 나 <code>Sequencer</code> 와 같은 <code>MidiDevice</code> 의 서브 인터페이스를 구현하는 경우도 있습니다.  </p>
+<p><a name="124812"> </a> <code>MidiDeviceProvider</code> 의 단일의 서브 클래스에서도 복수의 종류의 <code>MidiDevice</code> 를 제공할 수가 있는 것으로부터, 이 클래스의 <code>getDeviceInfo</code> 메소드는 이용 가능한 복수의 <code>MidiDevices</code> 디바이스를 열거한 <code>MidiDevice.Info</code> 객체의 배열을 돌려줍니다.
+</p><blockquote><pre>abstract MidiDevice.Info[] getDeviceInfo() 
+</pre></blockquote>
+<p>반환된 배열에 포함되는 요소는 1 개의 경우도 있습니다. 일반적인 프로바이더의 구현에서는, 생성자 내에서 배열을 초기화해, 그것을 돌려줍니다. 이것에 의해,<code>MidiSystem</code> 는, 인스톨 끝난 <code>MidiDeviceProviders</code> 를 모두 반복해, 모든 인스톨이 끝난 디바이스의 리스트를 구축할 수 있습니다. 그 후,<code>MidiSystem</code> 는 이 리스트 (<code>MidiDevice.Info[]</code> 배열)를 응용 프로그램에 돌려줄 수가 있습니다.  </p>
+<p></p><p><a name="124843"> </a>  <code>MidiDeviceProvider</code> 에는, 다음의 구상 쿼리메소드도 포함됩니다.
+<blockquote><pre>boolean isDeviceSupported(MidiDevice.Info info) 
+</pre></blockquote>
+이 메소드에 의해, 시스템은 특정의 종류의 디바이스에 대해 프로바이더에 문의할 수가 있습니다. 일반적으로, 이 편리한 메소드는 오버라이드(override) 할 필요는 없습니다. 디폴트 구현에서는, getDeviceInfo 로부터 반환된 배열을 반복해, 각 요소와 인수를 비교합니다.
+<p></p><p><a name="124862"> </a> 마지막 <code>MidiDeviceProvider</code> 메소드는, 요구된 디바이스를 돌려줍니다.  
+<blockquote><pre>abstract MidiDevice getDevice(MidiDevice.Info info) 
+</pre></blockquote>
+이 메소드는, 최초로 인수가 이 프로바이더를 제공할 수 있는 디바이스를 기술하고 있을지 어떨지를 확인하지 않으면 안됩니다. 디바이스를 기술하고 있지 않는 경우는,<code>IllegalArgumentException</code> 를 throw 합니다. 인수에 대응하는 디바이스가 있는 경우는, 그 디바이스를 돌려줍니다.  
+<p></p><a name="122605"> </a> 
+<h3> 사운드 뱅크 파일 read 서비스의 제공</h3>
+<p><a name="122607"> </a> <code>SoundBank</code> 는,<code>Synthesizer</code> 에 로드할 수 있는 일련의 <code>Instruments</code> 입니다. <code>Instrument</code> (인스트르먼트)는, 특정의 종류의 사운드를 만드는 사운드 합성 알고리즘의 구현입니다. 이 안에는 부수 하는 이름과 정보의 캐릭터 라인도 포함됩니다. <code>SoundBank</code> 는 MIDI 스펙의 뱅크에 거의 대응하고 있습니다만, 확장성이 있어, 주소 가능한 집합입니다. MIDI 뱅크의 집합이라고 생각하는 (분)편이 적절합니다. <code>SoundBank</code> 와 <code>Synthesizer</code> 를 이해하기 위한 정보는, 제 12 장<a href="chapter12.html">「사운드의 합성」</a>을 참조해 주세요.  </p>
+<p><a name="122609"> </a>  <code>SoundbankReader</code> 는 1 개의 overload 메소드로부터 완성됩니다. 이 메소드를 시스템이 호출해 사운드 뱅크 파일로부터 <code>Soundbank</code> 객체를 읽어들입니다.
+</p><blockquote><pre>abstract Soundbank getSoundbank(java.io.File file) 
+abstract Soundbank getSoundbank(java.io.InputStream stream) 
+abstract Soundbank getSoundbank(java.net.URL url) 
+</pre></blockquote>
+<p><code>SoundbankReader</code> 의 구상 서브 클래스는, 프로바이더가 정의한 특정의 <code>SoundBank</code>,<code>Instrument</code>,<code>Synthesizer</code> 의 구현과 제휴해, 시스템이 파일로부터 특정의 <code>Synthesizer</code> 클래스에 <code>SoundBank</code> 를 로드할 수 있도록(듯이) 합니다. <code>Synthesizer</code> 마다 합성 기술은 크게 다릅니다. 이 때문에,<code>Synthesizer</code> 의 합성 처리에 컨트롤 또는 지정 데이터를 제공하는 <code>Instrument</code> 또는 <code>SoundBank</code> 에 보존되는 데이터의 형식은 다방면에 걸칩니다. 합성 기술에 따라서는, 필요한 파라미터 데이터가 수바이트만의 경우나, 방대한 사운드 샘플을 베이스로 하고 있는 경우가 있습니다. <code>SoundBank</code> 내에 어떠한 자원이 존재하는지는, 그러한 로드처의 <code>Synthesizer</code> 의 성질에 의존합니다. 그 때문에,<code>SoundbankReader</code> 서브 클래스의 <code>getSoundbank</code> 메소드의 구현에는, 특정의 종류의 <code>SoundBank</code> 에 관한 정보에의 액세스 수단이 있습니다. 게다가<code>SoundbankReader</code> 의 특정의 서브 클래스는,<code>SoundBank</code> 데이터를 보존하기 위한 특정의 파일 형식을 이해합니다. 이 파일 형식은 벤더 고유해 독자 형식의 경우가 있습니다.  </p>
+<p></p><p><a name="124966"> </a>  <code>SoundBank</code> 는 단순한 인터페이스입니다. <code>SoundBank</code> 객체의 내용에 관한 제약은 거의 없습니다. 이 인터페이스를 구현하기 위해서 객체가 지원할 필요가 있는 메소드 (<code>getResources</code>,<code>getInstruments</code>,<code>getVendor</code>,<code>getName</code> 등)에서는, 객체에 포함되는 데이터 요건은 느슨한 것입니다. 예를 들어,<code>getResources</code> 와 <code>getInstruments</code> 는 공백의 배열을 돌려줄 수가 있습니다. 서브 클래스화 된 <code>SoundBank</code> 객체의 실제의 내용, 특히 인스트르먼트와 인스트르먼트 이외의 자원은, 서비스 프로바이더에 의해 결정할 수 있습니다. 그 때문에, 사운드 뱅크 파일을 해석하는 기구는, 그 종류의 사운드 뱅크 파일의 스펙에 완전하게 의존합니다.
+</p><p><a name="122614"> </a> 사운드 뱅크 파일은 Java Sound API 의 외부에, 일반적으로은 그 종류의 사운드 뱅크를 로드할 수 있는 신디사이저의 벤더에 의해 작성됩니다. 사운드 뱅크 파일을 작성하기 위한 최종 사용자 툴을 벤더가 제공하는 경우도 있습니다.  
+</p>
+<p>&nbsp;</p></body>
+</html>

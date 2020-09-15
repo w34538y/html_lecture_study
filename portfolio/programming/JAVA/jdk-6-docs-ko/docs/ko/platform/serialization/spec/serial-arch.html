@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:1 - 시스템 아키텍쳐(architecture)
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="changelog.html">전의 항목</a>  | <a href="output.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="5800"><!-- --></a> 
+<h1>
+시스템 아키텍쳐(architecture)
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="5801"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 1 장</FONT></B></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="5802"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="3543"><!-- --></a>  <a href="serial-arch.html#6428">개요</a> 
+</li>
+<li>
+<a name="3548"><!-- --></a>  <a href="serial-arch.html#4176">객체 스트림에의 기입해</a> 
+</li>
+<li>
+<a name="3549"><!-- --></a>  <a href="serial-arch.html#4188">객체 스트림로부터의 read</a> 
+</li>
+<li>
+<a name="4171"><!-- --></a>  <a href="serial-arch.html#962">컨테이너로서의 객체 스트림</a> 
+</li>
+<li>
+<a name="6275"><!-- --></a>  <a href="serial-arch.html#6250">클래스의 직렬화 가능한 필드의 지정</a> 
+</li>
+<li>
+<a name="6447"><!-- --></a>  <a href="serial-arch.html#5251">클래스의 직렬화 가능한 필드 및 데이터의 문서화</a> 
+</li>
+<li>
+<a name="5868"><!-- --></a>  <a href="serial-arch.html#5253">클래스의 직렬화 가능 필드에의 액세스</a> 
+</li>
+<li>
+<a name="4556"><!-- --></a>  <a href="serial-arch.html#4542">ObjectOutput 인터페이스</a> 
+</li>
+<li>
+<a name="4561"><!-- --></a>  <a href="serial-arch.html#4548">ObjectInput 인터페이스</a> 
+</li>
+<li>
+<a name="4526"><!-- --></a>  <a href="serial-arch.html#4539">Serializable 인터페이스</a> 
+</li>
+<li>
+<a name="4889"><!-- --></a>  <a href="serial-arch.html#7185">Externalizable 인터페이스</a> 
+</li>
+<li>
+<a name="7308"><!-- --></a>  <a href="serial-arch.html#6469">Enum 정수의 직렬화</a> 
+</li>
+<li>
+<a name="6425"><!-- --></a>  <a href="serial-arch.html#7231">기밀 정보의 보호</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6428">	1.1	개요</a> <i></i></h2>
+
+<blockquote>
+<a name="3539"><!-- --></a>  Java<sup>TM</sup> 객체의 포함과 취득의 능력은, 일과성의 것을 제외한 모든 어플리케이션을 작성하기 위해서 필요한 일입니다. 직렬화 된 형식에서의 객체의 포함과 취득으로 중요한 (일)것은, 객체를 재구축 할 수 있도록(듯이) 객체 상태를 표현하는 것입니다. 스트림에 보관되는 객체는,<code>Serializable</code> 이나 <code>Externalizable</code> 인터페이스의 어느 쪽인지를 지원합니다. Java<sup>TM</sup> 객체에서는, 직렬화 된 형식에 의해, 객체의 내용이 보관되고 있던 Java<sup>TM</sup> 클래스를 식별 및 검증해, 그 내용을 새로운 인스턴스에 복원할 수 없으면 안됩니다. Serializable 객체의 경우, 스트림에는, 그 필드를 호환성이 있는 버젼의 클래스에 복원할 수 있을 뿐(만큼)의 충분한 정보가 포함되어 있습니다. Externalizable 객체의 경우, 그 내용의 외부 형식에 대해서는, 그 클래스의 책임입니다. <p>
+<a name="1081"><!-- --></a>  빈번하게 포함과 취득을 하는 객체는, 다른 객체를 참조합니다. 이러한 다른 객체는, 그러한 사이의 관계를 유지하기 위해서, 동시에 포함과 취득을 하지 않으면 안됩니다. 객체가 포함되면(자), 그 객체로부터 참조 관계에 있는 모든 객체도 포함됩니다. <p>
+<a name="999"><!-- --></a>  Java<sup>TM</sup> 객체의 직렬화의 목적은 다음과 같습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="1010"><!-- --></a>  심플해 확장성이 있는 기구로 한다
+</li>
+<li>
+<a name="1011"><!-- --></a>  Java<sup>TM</sup> 객체의 형태와 그 속성을, 직렬화 된 형식에 유지한다
+</li>
+<li>
+<a name="3223"><!-- --></a>  원격 객체에 대해, 필요에 따라서 정렬화와 비정렬화를 지원할 뿐(만큼)의 확장성을 가진다
+</li>
+<li>
+<a name="1003"><!-- --></a>  Java<sup>TM</sup> 객체의 심플한 지속성을 지원할 뿐(만큼)의 확장성을 가진다
+</li>
+<li>
+<a name="1041"><!-- --></a>  커스터마이즈의 경우만, 클래스마다의 구현을 필요와 시킨다
+</li>
+<li>
+<a name="3844"><!-- --></a>  객체에 의해 그 외부 형식을 정의할 수 있다
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4176">1.2	 객체 스트림에의 기입해</a> </h2>
+
+<blockquote>
+<a name="4177"><!-- --></a>  객체나 프리미티브(primitive)을 스트림에 기입하는 것은, 복잡한 처리가 아닙니다. 예를 나타냅니다. <p>
+<a name="4178"><!-- --></a> 
+<pre>// Serialize today&#39;s date to a file.
+    FileOutputStream f = new FileOutputStream("tmp");
+    ObjectOutput&#160;s&#160;=&#160;new&#160;ObjectOutputStream(f);
+    s.writeObject("Today");
+    s.writeObject(new Date());
+    s.flush();
+</pre>
+
+
+<a name="4179"><!-- --></a>  우선 <code>OutputStream</code> (이 경우는 <code>FileOutputStream</code>)가, 이 바이트를 받기 위해서(때문에) 필요합니다. 다음에,<code>FileOutputStream</code> 에 기입하는 <code>ObjectOutputStream</code> 가 작성됩니다. 그리고, 캐릭터 라인 「Today」라고 일자 객체가 스트림에 기입해집니다. 일반적으로, 객체는 <code>writeObject</code> 메소드에 의해 기입해져 프리미티브(primitive)은 스트림에 <code>DataOutput</code> 의 메소드에 의해 기입해집니다. <p>
+<a name="4184"><!-- --></a> <code><a href="output.html#1038">writeObject</a> </code> 메소드 (<a href="output.html#861">「2.3 writeObject 메소드」</a>를 참조)는, 지정된 객체를 직렬화해, 객체 그래프에 있는 다른 객체에의 그것의 참조를 재귀적으로 처리 (횡단(traverse))해, 그 그래프를 완전하게 직렬화한 표현을 작성합니다. 스트림내에서 객체에 대한 처음의 참조가 있으면(자), 그 객체가 직렬화 또는 외부화 되어 그 객체의 핸들을 할당할 수 있습니다. 그 객체에 대한 그것 이후의 참조는, 그 핸들로서 코드화 됩니다. 객체 핸들을 사용하면, 객체에 대해 당연 일어나는 공용 참조나 순환 참조가 보존됩니다. 객체의 그것 이후의 참조에서는 그 핸들만을 사용하기 위해(때문에), 매우 간결한 표현이 가능하게 됩니다. <p>
+<a name="4185"><!-- --></a>  배열, enum 정수, 및 <code>Class</code>,<code>ObjectStreamClass</code>,<code>String</code> 형의 객체에는, 특별한 처리가 필요합니다. 다른 객체를 스트림에 보관하거나 거기로부터 꺼내거나 하려면 , 그러한 객체에 <code>Serializable</code> 이나 <code>Externalizable</code> 인터페이스가 구현되어 있지 않으면 안됩니다.  <p>
+<a name="5809"><!-- --></a>  프리미티브(primitive) 데이터형은,<code>DataOutput</code> 인터페이스의 메소드 (<code>writeInt</code>,<code>writeFloat</code>,<code>writeUTF</code> 등)로 스트림에 기입해집니다. 개별의 바이트와 배열 바이트는,<code>OutputStream</code> 의 메소드로 기입해집니다. 직렬화 가능 필드 이외의 프리미티브(primitive) 데이터는 블록 데이터 레코드로 스트림에 기입해져 각 레코드의 전에는 마커와 레코드내의 바이트수의 표시가 넣을 수 있습니다.  <p>
+<a name="5817"><!-- --></a>  <code>ObjectOutputStream</code> 를 확장하면, 스트림의 클래스에 관한 정보를 커스터마이즈 하거나 직렬화 되는 객체를 옮겨놓을 수가 있습니다. 자세한 것은,<code>annotateClass</code> 와 <code>replaceObject</code> 메소드의 설명을 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4188">1.3 객체 스트림로부터의 read</a> </h2>
+
+<blockquote>
+<a name="4189"><!-- --></a>  기입과 같이, 스트림로부터 읽어들이는 것은, 복잡한 일이 아닙니다. <p>
+<a name="4190"><!-- --></a> 
+<pre>// Deserialize a string and date from a file.
+    FileInputStream in = new FileInputStream(&#34;tmp&#34;);
+    ObjectInputStream s = new ObjectInputStream(in);
+    String today = (String) s.readObject();
+    Date date = (Date) s.readObject();
+</pre>
+
+
+<a name="4191"><!-- --></a>  우선 <code>InputStream</code> (이 경우는 <code>FileInputStream</code>)가 소스 스트림로서 필요합니다. 다음에,<code>InputStream</code> 로부터 읽어들이는 <code>ObjectInputStream</code> 가 작성됩니다. 그리고, 캐릭터 라인 「Today」라고 일자 객체가 스트림로부터 읽힙니다. 일반적으로, 객체는 <code>readObject</code> 메소드로 읽혀 프리미티브(primitive)은 <code>DataInput</code> 의 메소드에 의해 스트림로부터 읽힙니다. <p>
+<a name="4195"><!-- --></a>  <code><a href="input.html#2971">readObject</a> </code> 메소드는, 스트림에 있는 다음의 객체를 직렬화 복원해,<code>readObject</code> 로부터 다른 객체에의 참조를 재귀적으로 이동해, 직렬화하는 완전한 객체 그래프를 작성합니다. <p>
+<a name="4248"><!-- --></a>  프리미티브(primitive) 데이터형은,<code>DataInput</code> 인터페이스의 메소드 (<code>readInt</code>,<code>readFloat</code>,<code>readUTF</code> 등)에 의해 스트림로부터 읽힙니다. 개별의 바이트와 배열 바이트는,<code>InputStream</code> 의 메소드에 의해 읽힙니다. 직렬화 가능 필드 이외의 프리미티브(primitive) 데이터는 블록 데이터 레코드로부터 읽힙니다. <p>
+<a name="4199"><!-- --></a>  <code>ObjectInputStream</code> 를 확장하면, 클래스에 관해서 스트림에 있는 정보를 이용하거나 직렬화 복원된 객체를 옮겨놓을 수가 있습니다. 자세한 것은,<code>resolveClass</code> 과 <code>resolveObject</code> 메소드의 설명을 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="962">1.4 컨테이너로서의 객체 스트림</a> </h2>
+
+<blockquote>
+<a name="4267"><!-- --></a>  객체 직렬화에 의해, 1 개(살) 또는 복수의 프리미티브(primitive)이나 객체가 들어간 바이트 스트림이 작성되어 소비됩니다. 스트림에 기입해진 객체는, 그 스트림에 나타내지고 있는 다른 객체를 순서에 참조합니다. 객체의 직렬화에 의해, 스트림에 포함되는 객체를 코드화해 포함하는 스트림 형식이 1 개만 작성됩니다. <p>
+<a name="4374"><!-- --></a>  컨테이너로서 작용하는 각 객체에는, 프리미티브(primitive)이나 객체를 거기에 포함하거나 거기로부터 꺼내거나 할 수가 있는 인터페이스가 구현되고 있습니다. 이러한 인터페이스는 <code>ObjectOutput</code> 와 <code>ObjectInput</code> 로, 다음 일을 실시합니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4417"><!-- --></a>  기입처의 스트림이나 읽어들여 원의 스트림을 준다
+</li>
+<li>
+<a name="7056"><!-- --></a>  원시형이나 객체를 스트림에 기입하는 요구를 처리한다
+</li>
+<li>
+<a name="4418"><!-- --></a>  원시형이나 객체를 스트림로부터 읽어들이는 요구를 처리한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="4357"><!-- --></a>  스트림에 포함되는 각 객체는, 포함할 수 있는 것을 명시적으로 나타내지 않으면 안됩니다.  또, 그 상태의 보관과 복원에 필요한 프로토콜을 구현하고 있지 않으면 안됩니다. 객체의 직렬화에서는, 그러한 프로토콜이 2 개 정의되고 있습니다. 이러한 프로토콜에 의해, 컨테이너는, 객체 상태를 기입하거나 읽어들이거나 하는 것을 객체에 의뢰할 수가 있습니다.  <p>
+<a name="7090"><!-- --></a>  객체 스트림에 포함되기 위해서(때문에)는, 각 객체는,<code>Serializable</code> 이나 <code>Externalizable</code> 인터페이스를 구현하지 않으면 안됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="5805"><!-- --></a> <code>Serializable</code> 클래스의 경우, 객체의 직렬화에 의해, 객체의 각 클래스의 필드가 자동적으로 보관 및 복원되어 필드나 슈퍼타입을 추가하는 것으로 발전하는 클래스가 자동적으로 처리됩니다. Serializable 클래스는, 어느 필드가 보관이나 복원을 하는지를 선언해, 임의 지정의 값이나 객체의 기입이나 read를 실시할 수가 있습니다.
+</li>
+<li>
+<a name="6552"><!-- --></a> <code>Externalizable</code> 클래스의 경우, 객체의 직렬화에서는, 그 외부 형식의 제어와 슈퍼타입 상태의 보관과 복원 방법에 대한 제어가 클래스에 모두 맡습니다.
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6250">1.5	 클래스의 직렬화 가능한 필드의 지정</a> </h2>
+
+<blockquote>
+<a name="7370"><!-- --></a>  클래스의 직렬화 가능 필드는, 2 개의 방법으로 정의할 수 있습니다. 클래스의 디폴트의 직렬화 가능 필드는, 비 transient 및 비 static 필드로서 정의합니다. 이 디폴트의 방법은,<code>Serializable</code> 클래스에 특별한 필드 <code>serialPersistentFields</code> 를 선언하는 것에 의해 오버라이드(override) 할 수 있습니다. 이 필드는, 직렬화 가능 필드의 이름 및 형태를 일람표시 하는 <code>ObjectStreamField</code> 객체의 배열을 사용해, 초기화할 필요가 있습니다. 이 필드의 수식자에는, private, static, 및 final 가 필요합니다. 필드의 값이 null 인지,<code>ObjectStreamField[]</code> 의 인스턴스는 아닌, 또는 필드에 필수의 수식자가 존재하지 않는 경우, 필드가 전혀 선언되어 있지 않은 경우와 같은 동작이 됩니다. <p>
+<a name="7412"><!-- --></a>  예를 들어, 다음의 선언에 의해, 디폴트의 동작이 복제됩니다.  <p>
+<a name="6853"><!-- --></a> 
+<pre>class List implements Serializable {
+    List next;
+
+    private static final ObjectStreamField[] serialPersistentFields
+                 = {new ObjectStreamField(&#34;next&#34;, List.class)};
+</pre>
+
+
+<a name="6854"><!-- --></a> 
+<pre>}
+</pre>
+
+
+<a name="7105"><!-- --></a>  클래스의 직렬화 가능 필드를 <code>serialPersistentFields</code> 를 사용해 정의하면(자), 직렬화 가능 필드가 <code>Serializable</code> 클래스의 현재의 정의내의 필드가 아니면 안된다고 하는 제한이 없어집니다. <code>Serializable</code> 클래스의 <code>writeObject</code> 및 <code>readObject</code> 메소드는, 클래스의 최신의 구현을 <a href="serial-arch.html#5253">「1.7 클래스의 직렬화 가능 필드에의 액세스」</a>에 기술되고 있는 인터페이스를 사용해 클래스의 직렬화 가능 필드에 매핑 할 수 있습니다. 이 때문에,<code>Serializable</code> 클래스의 필드는, 후의 릴리스로 변경할 수 있습니다.  다만, 필드가 직렬화 가능 필드에의 매핑을 유지하고 있어, 직렬화 가능 필드가 다른 릴리스간이라도 호환성이 있는 경우에 한정합니다. <p>
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="7110">주 - </a> </b>이 기구를 사용해 내부 클래스에 대해서 직렬화 가능 필드를 지정하는 경우에는, 제한이 있습니다. 내부 클래스는, 정수 또는 정수로부터 되는 식에 초기화된, final static 필드만 포함할 수가 있습니다. 따라서, 내부 클래스에 <code>serialPersistentFields</code> 를 설정할 수 없습니다. 다만, static 멤버 클래스에는 설정할 수 있습니다. 내부 클래스의 인스턴스의 직렬화에 관한 그 외의 제한 사항에 대해서는,<a href="serial-arch.html#4539">「1.10 Serializable 인터페이스」</a>를 참조해 주세요.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5251">1.6 클래스의 직렬화 가능한 필드 및 데이터의 문서화</a> </h2>
+
+<blockquote>
+<a name="6925"><!-- --></a>  클래스의 직렬화 상태를 문서화해 Serializable 클래스외의 구현과 상호 운용 가능하게 하는 것, 및 클래스의 전개를 문서화하는 것은 중요합니다. 직렬화 가능 필드가 문서화 되고 있으면, 그 필드가 직렬화 가능한가 어떤가를 최종적으로 확인할 수가 있습니다. 원시 코드내의 Serializable 클래스의 직렬화 형식을 문서화하는 1 개의 방법은, javadoc 의 직렬화 태그 <code>@serial</code>,<code>@serialField</code>, 및 <code>@serialData</code> 를 사용하는 것입니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="6812"><!-- --></a>  디폴트의 직렬화 가능 필드에 대해서는,<code>@serial</code> 태그를 javadoc 코멘트내에 배치할 필요가 있습니다. 구문은 이하대로입니다.
+<blockquote>
+<code>@serial</code>?  <em>field-description</em>
+</blockquote>
+옵션의 <em>field-description</em> 에는, 필드의 의미 및 설정 가능한 값을 기술합니다. <em>field-description</em> 가 복수의 열에 건너는 일도 가능합니다. 초기의 릴리스 후에 필드를 추가했을 경우는, 추가한 필드의 버젼을 <em>@since</em> 태그를 사용해 가리킵니다. <code>@serial</code> 의 <em>field-description</em> 에서는 직렬화 스펙의 문서가 제공되어 직렬화 형식의 문서내에서 필드의 javadoc 코멘트에 추가됩니다.  
+</li>
+<li>
+<a name="6813"><!-- --></a>  <code>serialPersistentFields</code> 배열의 <code>ObjectStreamField</code> 컴퍼넌트를 문서화하려면 ,<code>@serialField</code> 태그를 사용합니다. 각 <code>ObjectStreamField</code> 컴퍼넌트로, 이러한 태그 가운데 1 개를 사용할 필요가 있습니다. 구문은 이하대로입니다.
+<blockquote>
+<code>@serialField</code> <em>field-name field-type field-description</em>
+</blockquote>
+</li>
+<li>
+<a name="6814"><!-- --></a>  <code>@serialData</code> 태그를 사용해, 기입해 또는 read를 하는 데이터의 순서 및 형태를 기술합니다. 이 태그로,<code>writeObject</code> 에 의해 기입해진 임의 지정의 데이터, 또는 <code>Externalizable.writeExternal</code> 메소드에 의해 기입해진 모든 데이터의 순서와 형태를 기술합니다. 구문은 이하대로입니다.
+<blockquote>
+<code>@serialData</code>?  <em>data-description</em></blockquote>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="6835"><!-- --></a>  javadoc 어플리케이션은, javadoc 의 직렬화 태그를 인식해, 각 Serializable 클래스 및 Externalizable 클래스의 스펙을 생성합니다. 이러한 태그를 사용한 예에 대해서는,<a href="examples.html#4420">「C. 1 java.io.File 대체 구현의 예」</a>를 참조해 주세요. <p>
+<a name="6836"><!-- --></a>  클래스를 Serializable 로서 선언했을 경우, 객체의 직렬화 가능 상태는, 직렬화 가능 필드 (이름과 형태에 의한다)에 가세해 임의 지정의 데이터에 의해 정의됩니다. 임의 지정의 데이터는,<code>Serializable</code> 클래스의 <code>writeObject</code> 메소드에 의해서만 기입해집니다. 임의 지정의 데이터는,<code>Serializable</code> 클래스의 <code>readObject</code> 메소드에 의해 읽히는지, 또는 직렬화에서는 읽히지 않고 스킵 됩니다.  <p>
+<a name="6834"><!-- --></a>  클래스를 Externalizable 로서 선언했을 경우, 클래스 자체에 의해 스트림에 기입해진 데이터가 직렬화 상태를 정의합니다. 클래스는, 스트림에 기입해지는 각 데이터의 차례, 형태, 및 의미를 지정할 필요가 있습니다. 클래스는, 이전의 버젼으로 기입해진 데이터를 계속해 읽어들일 수 있도록(듯이) 해, 이전의 버젼으로 읽힌 데이터를 기입할 수 있도록(듯이) 하기 위해서, 스스로의 전개를 처리할 필요가 있습니다. 클래스는, 데이터의 보존 및 복원시에는, 슈퍼 클래스와 협조 동작하지 않으면 안됩니다. 스트림내의 슈퍼 클래스의 데이터 위치를 지정할 필요가 있습니다. <p>
+<a name="6915"><!-- --></a>  직렬화 가능 클래스의 설계자는, 그 클래스에 보존되는 정보가 지속성에 적절해, 직렬화 특유의 전개 및 상호 운용성의 규칙에 따르고 있는 것을 보증할 필요가 있습니다. 클래스의 전개의 상세한 것에 대하여는,<a href="version.html#9420">제 5 장 </a>「직렬화 가능 객체의 버젼 관리」를 참조해 주세요.  <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5253">1.7 클래스의 직렬화 가능 필드에의 액세스</a> </h2>
+
+<blockquote>
+<a name="5520"><!-- --></a>  직렬화에 의해, 스트림내의 직렬화 가능 필드에 액세스하기 위한 2 개의 기구가 제공됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="6679"><!-- --></a>  디폴트의 기구.  커스터마이즈가 필요없다
+</li>
+<li>
+<a name="6680"><!-- --></a>  직렬화 가능 필드 API.  이름 및 형태에 의해, 직렬화 가능 필드에의 액세스나 필드의 설정을, 클래스가 명시적으로 실시할 수가 있다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="5254"><!-- --></a>  <code>Serializable</code> 인터페이스를 구현해, 그 이상의 커스터마이즈를 실시하지 않는 객체의 읽어들여 또는 기입을 실시하는 경우는, 디폴트의 기구가 자동적으로 사용됩니다. 직렬화 가능 필드는, 클래스의 대응하는 필드에 매핑 되어 값은 그러한 필드로부터 스트림에 기입해지는지, 또는 읽혀 각각의 필드에 할당할 수 있습니다. 클래스가 <code>writeObject</code> 및 <code>readObject</code> 메소드를 제공하는 경우는,<code>defaultWriteObject</code> 및 <code>defaultReadObject</code> 를 호출하는 것에 의해, 디폴트의 기구가 불려 갑니다. <code>writeObject</code> 및 <code>readObject</code> 메소드가 구현되는 경우는, 직렬화 가능 필드의 값이 기입해지기 전, 또는 읽힌 뒤에, 클래스가 그러한 값을 수정할 수 있습니다. <p>
+<a name="5255"><!-- --></a>  디폴트의 기구를 사용할 수 없는 경우는, 직렬화 가능 클래스는,<code>ObjectOutputStream</code> 의 <code>putFields</code> 메소드를 사용해, 직렬화 가능 필드의 값을 스트림에 배치할 수 있습니다. <code>ObjectOutputStream</code> 의 <code>writeFields</code> 메소드는, 값을 올바른 순서로 배치하고 나서, 직렬화의 기존의 프로토콜을 사용해 스트림에 그러한 값을 기입합니다. 같이<code>ObjectInputStream</code> 의 <code>readFields</code> 메소드는, 스트림로부터 값을 읽어들여, 클래스가 이름으로 (한편 임의의 순서로) 그러한 값을 취득할 수 있도록(듯이) 합니다. 직렬화 가능 필드 API 의 자세한 것은,<a href="output.html#5068">「2.2 ObjectOutputStream.PutField 클래스」 </a>및<a href="input.html#4936">「3.2 ObjectInputStream.GetField 클래스」</a>를 참조해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4542">1.8 ObjectOutput 인터페이스</a> </h2>
+
+<blockquote>
+<a name="4543"><!-- --></a>  <code>ObjectOutput</code> 인터페이스는, 객체 기억역에 대한 abstract 의 스트림 베이스의 인터페이스입니다. 이 인터페이스는 DataOutput 인터페이스의 확장이므로, 그러한 메소드를 사용해 프리미티브(primitive) 데이터형을 기입할 수가 있습니다. 이 인터페이스를 구현하는 객체를 사용하면, 프리미티브(primitive)이나 객체를 포함할 수가 있습니다. <p>
+<a name="4930"><!-- --></a> 
+<pre>package java.io;
+
+public interface ObjectOutput extends DataOutput
+{
+    public void writeObject(Object obj) throws IOException;
+    public void write(int b) throws IOException;
+    public void write(byte b[]) throws IOException;
+     public void write(byte b[], int off, int len) throws IOException;
+    public void flush() throws IOException;
+    public void close() throws IOException;
+}
+</pre>
+
+
+<a name="4545"><!-- --></a>  <code>writeObject</code> 메소드는, 객체를 기입하기 위해서(때문에) 사용합니다. <code></code>throw 되는 예외는, 객체나 그 필드에 액세스 하고 있을 때 일어난 에러인가, 기억역에 기입하고 있을 때 일어난 예외를 나타내고 있습니다. 하등의 예외가 throw 되었을 경우, 그 기억역이 부수어지고 있을 가능성이 있습니다. 이러한 사태가 발생했을 경우는, 이 인터페이스를 구현하고 있는 객체를 참조해 상세를 확인해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4548">1.9	 ObjectInput 인터페이스</a> </h2>
+
+<blockquote>
+<a name="4909"><!-- --></a>  <code>ObjectInput</code> 인터페이스는, 객체의 꺼내에 대한 abstract 의 스트림 베이스의 인터페이스입니다. 이 인터페이스는 <code>DataInput</code> 인터페이스의 확장이므로, 이 인터페이스에서는, 프리미티브(primitive) 데이터형을 읽어들이는 메소드가 액세스 가능합니다. <p>
+<a name="5029"><!-- --></a> 
+<pre>package java.io;
+
+public interface ObjectInput extends DataInput
+{
+    public Object readObject()
+        throws ClassNotFoundException, IOException;
+    public int read() throws IOException;
+    public int read(byte b[]) throws IOException;
+    public int read(byte b[], int off, int len) throws IOException;
+    public long skip(long n) throws IOException;
+    public int available() throws IOException;
+    public void close() throws IOException;
+}
+</pre>
+
+
+<a name="4551"><!-- --></a>  <code>readObject</code> 메소드는, 객체의 read 및 반환을 위해서(때문에) 사용합니다. throw 되는 예외는, 객체나 그 필드를 액세스 하고 있을 때 일어난 에러인가, 기억역으로부터 읽어들이고 있을 때 일어난 예외를 나타내고 있습니다. 하등의 예외가 throw 되었을 경우, 그 기억역이 부수어지고 있을 가능성이 있습니다. 이러한 사태가 발생했을 경우는, 이 인터페이스를 구현하고 있는 객체를 참조해 상세를 확인해 주세요. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4539">1.10	 Serializable 인터페이스</a> </h2>
+
+<blockquote>
+<a name="4444"><!-- --></a>  객체의 직렬화를 실시하면, 보관하려고 하는 객체의 Java<sup>TM</sup> 클래스에 관한 정보를 가지는 스트림이 작성됩니다. Serializable 객체의 경우, 그 클래스가 다른 (그러나 호환성이 있다) 버젼의 구현이 존재하고 있어도, 이러한 객체를 복원하는데 충분한 정보가 보관 유지됩니다. <code>Serializable</code> 인터페이스는, 직렬화 가능 프로토콜을 구현하는 클래스를 식별하도록(듯이) 정의됩니다. <p>
+<a name="4461"><!-- --></a> 
+<pre>package java.io;
+
+public interface Serializable {};
+</pre>
+
+
+<a name="4425"><!-- --></a>  Serializable 클래스의 요건은 이하대로입니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4426"><!-- --></a> <code>java.io.Serializable</code> 인터페이스를 구현할 필요가 있다
+</li>
+<li>
+<a name="5928"><!-- --></a> 직렬화 가능하게 하는 필드를 지정할 필요가 있다
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7084"><!-- --></a> (<code>serialPersistentFields</code> 멤버를 사용해 필드를 명시적으로 직렬화 가능이라고 선언하는지, transient 키워드를 사용해 비직렬화 가능 필드를 지정한다)
+<p>
+</dl>
+
+<blockquote>
+<ul><li>
+<a name="5929"><!-- --></a>  최초의 직렬화 가능하지 않은 슈퍼 클래스의, 인수가 없는 생성자 에 액세스 할 수 있을 필요가 있다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="7085"><!-- --></a>  Serializable 클래스는, 옵션으로 다음의 메소드를 정의할 수 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4428"><!-- --></a>  보관하는 정보를 제어하거나 부가적인 정보를 스트림에 추가하는 <code>writeObject</code> 메소드
+</li>
+<li>
+<a name="6300"><!-- --></a>  대응하는 <code>writeObject</code> 메소드로 기입해진 정보를 읽어들이는지, 또는 객체가 복원된 뒤에 그 상태를 갱신하는 <code>readObject</code> 메소드
+</li>
+<li>
+<a name="6532"><!-- --></a> 스트림에 기입해지는 치환 객체를, 클래스를 지정할 수 있도록(듯이) 하는 <code>writeReplace</code> 메소드
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7086"><!-- --></a>  (자세한 것은<a href="output.html#5324">「2.5 writeReplace 메소드」</a>를 참조)
+<p>
+</dl>
+
+<blockquote>
+<ul><li>
+<a name="6533"><!-- --></a> 스트림로부터 읽히는 객체에 대해서, 클래스가 치환 객체를 지정할 수 있도록(듯이) 하는 <code>readResolve</code> 메소드
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7081"><!-- --></a>  (자세한 것은<a href="input.html#5903">「3.7 readResolve 메소드」</a>를 참조)
+<p>
+</dl>
+<blockquote>
+<a name="5895"><!-- --></a>  <code>ObjectOutputStream</code> 및 <code>ObjectInputStream</code> 를 사용하면(자), 조작 대상의 직렬화 가능 클래스를 전개 (이전의 버젼의 클래스와의 호환성을 가지는 클래스에의 변경을 가능)할 수 있습니다. 호환성을 유지하는 변경에 사용할 수 있는 기구에 대한 자세한 것은,<a href="version.html#6519">「5.5 호환성이 있는 Java<sup>TM</sup> 의 형태 전개」</a>를 참조해 주세요. <p>
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="7182">주 - </a> </b>로컬 클래스 및 익명 클래스를 포함한 내부 클래스 (static 멤버 클래스가 아닌 상자의 클래스)의 직렬화는, 몇개의 이유에 의해, 사용하지 않는 것을 강하게 추천합니다. 비 static 문맥으로 선언된 내부 클래스에는, 둘러싸는 클래스 인스턴스에의 암묵적인 비 transient 참조가 포함되므로, 그러한 내부 클래스 인스턴스를 직렬화하면(자), 관련하는 외부 클래스 인스턴스도 직렬화 되게 됩니다. 내부 클래스를 구현하는 <code>javac</code> (또는 그 외의 Java<sup>TM</sup> 컴파일러)에 의해 생성된 합성 필드는, 구현에 의존하므로, 컴파일러에 의해 상위가 생기는 일이 있습니다. 그러한 필드의 상위에 의해, 디폴트의 <code>serialVersionUID</code> 의 값이 모순될 뿐만 아니라, 호환성이 손상될 가능성이 있습니다. 로컬 및 익명의 내부 클래스에 할당할 수 있는 이름도 구현에 의존하므로, 컴파일러에 의해 상위가 생길 가능성이 있습니다. 내부 클래스는, 컴파일 완화시간 필드 이외의 static 멤버를 선언할 수 없기 때문에,<code>serialPersistentFields</code> 기구를 사용해 직렬화 가능 필드를 지정할 수 없습니다. 게다가 외부 인스턴스에 관련지을 수 있었던 내부 클래스는, 인수 없음의 생성자 (그러한 내부 클래스의 생성자 은, 둘러싸는 클래스를 부가 파라미터로서 암묵적으로 받아들인다)을 가지지 않기 때문에,<code>Externalizable</code> 를 구현할 수 없습니다. 다만, 상기의 문제는 모두, static 멤버 클래스에는 들어맞지 않습니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="4333">1.11 Externalizable 인터페이스</a> </h2>
+
+<blockquote>
+<a name="4334"><!-- --></a>  Externalizable 객체의 경우, 그 객체의 클래스를 식별하는 정보만이 컨테이너에 의해 보관됩니다. 클래스는, 그 내용을 보관해 복원할 필요가 있습니다. <code>Externalizable</code> 인터페이스는, 다음과 같이 정의됩니다. <p>
+<a name="4465"><!-- --></a> 
+<pre>package java.io;
+
+public interface Externalizable extends Serializable
+{
+    public void writeExternal(ObjectOutput out)
+        throws IOException;
+
+    public void readExternal(ObjectInput in)
+        throws IOException, java.lang.ClassNotFoundException;
+}
+</pre>
+
+
+<a name="3920"><!-- --></a>  Externalizable 객체의 클래스의 요건은, 이하대로입니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="3928"><!-- --></a> <code>java.io.Externalizable</code> 인터페이스를 구현할 필요가 있다
+</li>
+<li>
+<a name="3933"><!-- --></a> <code>writeExternal</code> 메소드를 구현해, 객체 상태를 보존할 필요가 있다
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7082"><!-- --></a>  (<code>Externalizable</code> 객체는, 그 상태를 보존하기 위해서 그 슈퍼타입과 명시적으로 조정해야 한다)
+<p>
+</dl>
+
+<blockquote>
+<ul><li>
+<a name="3936"><!-- --></a> <code>readExternal</code> 메소드를 구현해,<code>writeExternal</code> 메소드에 의해 기입해지는 데이터를 스트림로부터 읽어내 객체 상태를 복원할 필요가 있다
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7083"><!-- --></a>  (<code>Externalizable</code> 객체는, 그 상태를 보존하기 위해서 그 슈퍼타입과 명시적으로 조정해야 한다)
+<p>
+</dl>
+
+<blockquote>
+<ul><li>
+<a name="3934"><!-- --></a>  외부에서 정의된 형식의 경우는, 그 형식을 전면적으로 <code>writeExternal</code> 와 <code>readExternal</code> 메소드의 책임하로 할 필요가 있다
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="6336">주 - </a> </b><code>writeExternal</code> 와 <code>readExternal</code> 의 메소드는 public 이기 (위해)때문에, 클라이언트가, 객체의 메소드와 필드를 사용하지 않고 객체의 정보를 기입하거나 읽어들이거나 할 수 있는 위험성이 있습니다. 이러한 메소드를 사용하는 것은, 객체로 나타내는 정보가 기밀에 속하는 것 나오지 않을 때나, 기입이나 read가 있어도 기밀 보호를 방해할 가능성이 없는 경우인 만큼 하지 않으면 안됩니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="7141"><!-- --></a>  public 로 인수 없음의 생성자 을 가질 필요가 있다
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="7146">주 - </a> </b>둘러싸는 인스턴스에 관련지을 수 있었던 내부 클래스는, 인수 없음의 생성자 을 가질 수가 없습니다. 그러한 클래스의 생성자 은, 둘러싸는 인스턴스를 부가 파라미터로서 암묵적으로 받아들이기 (위해)때문에입니다. 따라서,<code>Externalizable</code> 인터페이스 기구는 내부 클래스에 사용하지 못하고, 내부 클래스를 직렬화할 필요가 있는 경우에는,<code>Serializable</code> 인터페이스를 구현할 필요가 있습니다. 다만, 직렬화 가능한 내부 클래스의 경우에서도 몇개의 제한 사항이 있습니다.  그 자세한 것은,<a href="serial-arch.html#4539">「1.10 Serializable 인터페이스」</a>를 참조해 주세요.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<blockquote>
+<a name="7139"><!-- --></a>  Externalizable 클래스는, 옵션으로 다음의 메소드를 정의할 수 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="6385"><!-- --></a> 스트림에 기입해지는 치환 객체를, 클래스를 지정할 수 있도록(듯이) 하는 <code>writeReplace</code> 메소드
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7079"><!-- --></a>  (자세한 것은<a href="output.html#5324">「2.5 writeReplace 메소드」</a>를 참조)
+<p>
+</dl>
+
+<blockquote>
+<ul><li>
+<a name="6338"><!-- --></a> 스트림로부터 읽히는 객체에 대해서, 클래스가 치환 객체를 지정할 수 있도록(듯이) 하는 <code>readResolve</code> 메소드
+</li>
+</ul>
+</blockquote>
+<dl>
+<dd><a name="7080"><!-- --></a>  (자세한 것은<a href="input.html#5903">「3.7 readResolve 메소드」</a>를 참조)
+<p>
+</dl>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6469">1.12 Enum 정수의 직렬화</a> </h2>
+
+<blockquote>
+<a name="7232"><!-- --></a> enum 정수의 직렬화는, 일반적으로의 직렬화 가능 또는 외부화 가능 객체와는 다릅니다. enum 정수의 직렬화 된 형식을 구성하는 것은, 그 이름 뿐입니다.  정수의 필드치는 형식내에 존재하지 않습니다. enum 정수를 직렬화하려면 , 그 enum 정수의<code>name</code> 메소드로 반환되는 값을 <code>ObjectOutputStream</code> 로 기입합니다. enum 정수를 직렬화 복원하려면 ,<code>ObjectInputStream</code> 로 스트림로부터 정수명을 읽어들입니다.  다음에, 받은 정수명과 함께 정수의 enum 형을 인수로서 건네주어 <code>java.lang.Enum.valueOf</code> 메소드를 호출해, 직렬화 복원된 정수를 가져옵니다. 다른 직렬화 가능 또는 외부화 가능 객체 같이 enum 정수는, 이후 직렬화 스트림에 출현하는 후방 참조의 대상으로 해 기능할 수 있습니다. <p>
+<a name="7248"><!-- --></a> enum 정수를 직렬화하는 프로세스를 커스터마이즈 할 수 없습니다. enum 형으로 정의된, 클래스 고유의 <code>writeObject</code>,<code>readObject</code>,<code>readObjectNoData</code>,<code>writeReplace</code>, 및 <code>readResolve</code> 메소드의 모든 것은, 직렬화 및 직렬화 복원동안은 무시됩니다. 같이<code>serialPersistentFields</code> 또는 <code>serialVersionUID</code> 필드 선언도 모두 무시됩니다.  모든 enum 형은 <code>0L</code> 로 고정된 <code>serialVersionUID</code> 를 가집니다. 송신되는 데이터의 형태에는 종류가 없기 때문에, enum 형의 직렬화 가능한 필드 및 데이터를 문서화할 필요는 없습니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="6469">1.13	 기밀 정보의 보호</a> </h2>
+
+<blockquote>
+<a name="1414"><!-- --></a>  자원의 컨트롤 액세스를 실시하는 클래스를 개발하는 경우에는, 기밀성의 높은 정보와 기능이 보호되도록(듯이) 주의하지 않으면 안됩니다. 직렬화 복원때, 객체의 private 상태가 복원됩니다. 예를 들어, 파일 기술자에게는,  operating system에 액세스 할 수 있는 핸들이 포함되어 있습니다. 상태의 복원은 스트림로부터 행해지므로, 파일 기술자를 위조할 수 있다고 하는 것은, 하등의 불법인 액세스가 가능하다고 하는 것입니다. 따라서, 직렬화의 실행시에는 안전한 어프로치를 취해야 하는 것이어, 스트림에 객체의 유효한 표현만이 포함되어 있다고는 믿지 않는 것입니다. 클래스를 올바르게 유지하려면 , 객체의 기밀성의 높은 상태를, 스트림로부터 복원하지 않게 하는지, 그 클래스에 의해 다시 검증하도록(듯이) 할 필요가 있습니다. 클래스의 기밀성의 높은 데이터를 보호하려면  몇개의 기법이 있습니다. <p>
+<a name="1415"><!-- --></a>  무엇보다 간단한 기법은, 기밀성의 높은 데이터를 포함한 필드를 <em>private transient</em> 로 하는 것입니다. transient 필드는, 지속적은 아니고, 지속성 기구에 의해 보존되지 않습니다. 필드를 이와 같이 하면(자), 그 상태가 스트림에 나타나지 않고, 직렬화 복원 시에도 복원되지 않습니다. (private 필드의) 기입이나 read를 그 클래스의 외부에서 대신에 실시할 수 없기 때문에, 그 클래스의 transient 필드는 안전합니다. <p>
+<a name="1416"><!-- --></a>  특히 기밀성의 높은 클래스는, 일절 직렬화 해야 하지는 않습니다. 이것을 확실히 하려면 , 객체에 <code>Serializable</code> 이나 <code>Externalizable</code> 인터페이스를 구현하지 않는 것입니다. <p>
+<a name="5785"><!-- --></a>  클래스에 따라서는, 기입이나 read를 허락해, 직렬화 복원 시에 상태를 특히 처리해 재검 증명하는 (분)편이 편리한 일도 있습니다. 클래스에는 <code>writeObject</code> 와 <code>readObject</code> 의 메소드를 구현해, 적절한 상태만을 보관 및 복원해야 합니다. 액세스가 거부되는 경우에는,<code>NotSerializableException</code> 가 throw 되어 그 이상의 액세스는 행해지지 않습니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="changelog.html">전의 항목</a>  | <a href="output.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:33 2005 -->
+ 
+
+
+</body>
+</html>

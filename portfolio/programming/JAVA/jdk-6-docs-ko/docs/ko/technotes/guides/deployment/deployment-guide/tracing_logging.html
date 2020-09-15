@@ -1,0 +1,104 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>트레이스 및 로그 - xrath.com 에서 번역됨</title>
+
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">트레이스 및 로그</h1>
+
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+<hr>
+<p><strong>트레이스 및 로그</strong>에는 다음의 내용이 포함됩니다. </p>
+<table width="33%" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr> 
+    <td><ul>
+<li><a href="tracing_logging.html#tracing">트레이스</a> </li>
+<li><a href="tracing_logging.html#logging">로그 기능</a> </li>
+<li><a href="#other">그 외의 옵션</a> </li>
+      </ul></td>
+  </tr>
+</table>
+<h2><a name="tracing"></a> 트레이스</h2>
+<p>트레이스란, Java 콘솔에서의 임의의 출력을 트레이스 파일에 리다이렉트(redirect) 하는 기능입니다.  </p>
+<h3>Java Plug-in</h3>
+<p>트레이스는, 프로퍼티 <code>javaplugin.trace</code> 를 유효하게 하면(자) 온이 됩니다. 다만, 이것에 의해 Java Plug-in 내부의 모든 트레이스 기능이 온이 됩니다. 한층 더 상세한 트레이스를 유효하게 하는 경우는,<code> javaplugin.trace.option</code> 를 사용합니다. 전장에서 가리킨 것처럼,<a href="console.html">Java 콘솔</a>로 트레이스 레벨 옵션 (0 ?  5)를 설정할 수 있습니다. 이러한 옵션에는 다음의 의미가 있습니다. </p>
+<ul>
+<li>0 &#151; 오프</li>
+<li>1 &#151; 기본</li>
+<li>2 &#151; 네트워크, 캐쉬, 및 기본</li>
+<li>3 &#151; 시큐리티, 네트워크 및 기본</li>
+<li>4 &#151; 확장 기능, 시큐리티, 네트워크, 및 기본</li>
+<li>5 &#151; LiveConnect, 확장 기능, 시큐리티, 네트워크, temp, 및 기본</li>
+</ul>
+<p>이것으로, 즉시 트레이스를 유효하게 할 수가 있습니다. </p>
+<p>상세하게 트레이스를 설정하는 이제(벌써) 1 개의 방법은,<a href="jcp.html">Java 컨트롤 패널</a>을 사용하는 것입니다. 예를 들어, 모든 트레이스를 유효하게 하는 (상기의 옵션 5) 경우,[Java 런타임 파라미터] 텍스트 필드에 다음과 같이 입력합니다. </p>
+<blockquote> 
+<p><code>-Djavaplugin.trace=true <br> -Djavaplugin.trace.option=basic|net|cache|security|ext|liveconnect|temp</code></p>
+</blockquote>
+<p>컨트롤 패널로 트레이스를 설정했을 경우, Plug-in 의 기동시에 트레이스가 유효하게 됩니다만, Plug-in 의 실행중으로 컨트롤 패널로 변경을 더해도, 재기동할 때까지 트레이스는 유효하게는 되지 않습니다. </p>
+<h3>Java Web Start</h3>
+<p> Java Web Start 어플리케이션의 첫회의 트레이스 레벨을 설정하려면 , 배치 프로퍼티에 deployment.trace.level 을 설정합니다. <code>deployment.trace.level</code> 프로퍼티에는, 다음의 값의 어느쪽이든을 사용할 수 있습니다.  </p>
+<ul>
+<li>basic</li>
+<li>cache</li>
+<li>net</li>
+<li>security</li>
+<li>ext</li>
+<li>liveconnect</li>
+</ul>
+<p>모든 트레이스 레벨을 사용하려면 ,<code>deployment.trace.level</code> 를 <code>all</code> 로 설정합니다. </p>
+<h2><a name="logging"></a> 로그 기능</h2>
+<p>트레이스와 같게, 로그와는 Java 콘솔에서의 임의의 출력을, Java Logging API 를 사용해 로그 파일에 리다이렉트(redirect) 하는 기능입니다. 로그 기능을 유효하게 하려면 , 다음의 작업을 실시합니다.  </p>
+<ul>
+<li>Java 컨트롤 패널을 엽니다. </li>
+<li><strong>「상세 설정」</strong> 탭을 클릭합니다. </li>
+<li><strong>「디버그」</strong>옵션의<strong>「로그를 유효하게 한다」</strong>를 선택합니다.
+  
+  
+  
+  </li>
+</ul>
+<blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+<h2><a name="other"></a> 그 외의 옵션</h2>
+
+<h3>파일명</h3>
+<p>트레이스 및 로그 파일명은 다음과 같이 됩니다. </p>
+<blockquote> 
+<p><code>plugin&lt;modified version number&gt;.trace</code><br> <code>plugin&lt;modified version number&gt;.log</code></p>
+</blockquote>
+<p><code>&lt;modified version number&gt;</code> 에는, 메이저, 마이너, 및 팟치파젼 번호가 포함됩니다 (<code>plugin142_06.trace</code> 또는 <code>plugin150.log</code> 등). </p>
+<h3>파일의 위치</h3>
+<p>트레이스와 로그 파일의 디폴트 위치 (디렉토리)를 다음에 나타냅니다. </p>
+<ul>
+<li><code>&lt;user.home&gt;/.java/deployment/log</code> (Unix 또는 Linux 의 경우)</li>
+<li><code>&lt;User Application Data Folder&gt;\Sun\Java\Deployment\log</code> (Windows 의 경우)</li>
+</ul>
+<p><code>&lt;User Application Data Folder&gt;</code> 는<a href="../../plugin/developer_guide/version.html#property">여기</a>에 정의되고 있습니다. </p>
+<p>환경 변수 <code>USER_JPI_PROFILE</code> 가 <code>&lt;user plugin home&gt;</code> 로 설정되어 있는 경우, 트레이스 및 로그 파일은 다음의 장소에 기입해집니다. </p>
+<ul>
+<li><code>&lt;user plugin home&gt;/.java/deployment/log</code> (Unix 또는 Linux 의 경우)</li>
+<li><code>&lt;user plugin home&gt;\Sun\Java\Deployment\log</code> (Windows 의 경우)</li>
+</ul>
+<hr>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<span><p>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java 스크리프트개발자 안내 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+
+<span BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000"><p>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+
+<TD WIDTH="60">
+<IMG SRC="../../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+
+<center>
+<h1>Java 스크리프트개발자 안내</h1> 
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</TD>
+
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+<ul>
+<li><a href="#who">Java 스크립트 API 의 대상자</a> 
+<li><a href="#package">스크립트 패키지</a> 
+<li><a href="#examples">례</a> 
+ <ul>
+<li><a href="#helloworld">「Hello, World」</a>  
+<li><a href="#evalfile">스크립트 파일의 평가</a>  
+<li><a href="#scriptvars">스크립트 변수</a>  
+<li><a href="#invoke">스크립트 함수 및 메소드의 호출</a>  
+<li><a href="#interfaces">스크립트에 의한 Java 인터페이스의 구현</a> 
+
+<li><a href="#scopes">스크립트의 복수의 스코프</a> 
+ </ul>
+<li><a href="#jsengine">JavaScript 스크립트 엔진</a> 
+<li><a href="#jstojava">JavaScript 로부터 Java 에의 통신</a> 
+ <ul>
+<li><a href="#jsimport">Java 패키지, 클래스의 임포트</a> 
+<li><a href="#jsarrays">Java 배열의 작성과 사용</a> 
+
+<li><a href="#jsimplement">Java 인터페이스의 구현</a> 
+<li><a href="#jsoverload">overload의 해결</a> 
+ </ul>
+<li><a href="#engineimpl">독자적인 스크립트 엔진의 구현</a> 
+<li><a href="#refs">레퍼런스</a> 
+</ul>
+
+
+</ul>
+
+<a name="who"> </a> 
+<h2> Java 스크립트 API 의 대상자 </h2>
+
+스크립트 언어에는, 다음과 같은 유용한 특성이 있습니다.
+<ul>
+<li><b>간이성</b>:대부분의 스크립트 언어는, 동적으로 형지를 무늬를 박아서 염색한 것 됩니다. 일반적으로은 변수형을 선언하지 않아도 신규의 변수를 작성할 수 있어 다른 형태의 객체를 포함하기 위해서 변수를 재사용할 수 있습니다. 또, 스크립트 언어는 많은 형태 변환을 자동적으로 실행하는 경우가 있습니다. 예를 들어, 필요에 따라서 숫자의 10 을 텍스트의 「10」으로 변환합니다.  
+<li><b>신속한 prototype의 개발</b>:편집-컴파일-실행이라고 하는 사이클은 아니고, 편집-실행이라고 하는 사이클을 사용할 수 있습니다.
+<li><b>어플리케이션의 확장/커스터마이즈</b>:설정 스크립트, 비지니스 논리/룰, 재무 어플리케이션의 수식 등, 어플리케이션의 일부를 「외부화」할 수 있습니다.
+<li><b>어플리케이션의 「커멘드행」쉘</b>: 디버그, 실행시/배치시의 구성 등에 사용합니다. 현재, 대부분의 어플리케이션에는 Web 베이스의 GUI 구성 툴이 있습니다. 다만, sysadmin/데프로이야는 커멘드행 툴을 우선해 사용하는 일이 있습니다. 이 때문에의 개별의 스크립트 언어를 작성하는 대신에, 「표준적인」스크립트 언어를 사용할 수 있습니다.
+
+</ul>
+
+<p>
+Java<font size="-1"><sup>TM</sup></font> 스크립트 API 는, Java 코드로부터 스크립트 엔진을 사용하기 위한 , 스크립트 언어에 의존하지 않는 시스템입니다. Java 스크립트 API 를 사용하면(자), 커스터마이즈 가능/확장 가능한 어플리케이션을 Java 언어로 기술해, 커스터마이즈 스크립트 언어의 선택을 최종 사용자에 맡길 수가 있습니다. Java 어플리케이션 개발자가 개발중에 확장 언어를 선택할 필요는 없습니다. 어플리케이션을 JSR-223 API 로 기술했을 경우, 사용자는 임의의 JSR-223 준거의 스크립트 언어를 사용할 수 있습니다.
+</p>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="package"> </a> 
+<h2>스크립트 패키지</h2>
+
+<p>Java 스크립트 기능은,<code><a href="../../../../api/javax/script/package-summary.html">javax.script</a> </code> 패키지내에 있습니다. 이것은 비교적 작은 단순한 API 입니다. 스크립트 API 의 개시 위치는,<code>ScriptEngineManager</code> 클래스입니다. ScriptEngineManager 객체는, jar 파일 서비스 발견 기구를 사용해 스크립트 엔진을 발견할 수 있습니다. 특정의 스크립트 언어로 기술된 스크립트를 해석하는 ScriptEngine 객체를 인스턴스화할 수도 있습니다. 스크립트 API 를 사용하는 가장 단순한 방법은, 다음과 같습니다.
+</p>
+<ol>
+<li><code>ScriptEngineManager</code> 객체를 생성합니다.
+<li>매니저로부터 <code>ScriptEngine</code> 객체를 가져옵니다.
+<li><code>ScriptEngine</code> 의 <code>eval</code> 메소드를 사용해, 스크립트를 평가합니다.
+
+</ol>
+<p>
+여기서, 몇개의 샘플 코드를 보겠습니다. 필수가 아닙니다만, 이러한 예를 보는 것은 JavaScript 의 이해에 도움이 되는 경우가 있습니다.  
+</p>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="examples"></a> 
+<h2>례</h2>
+
+<a name="helloworld"></a> 
+<h3>「Hello, World」</h3>
+
+
+<p>
+<code>ScriptEngineManager</code> 인스턴스로부터,<code>getEngineByName</code> 메소드를 사용해 JavaScript 엔진 인스턴스를 요구합니다. 스크립트 엔진으로, 지정된 캐릭터 라인을 JavaScript 코드로서 실행하기 위해서 <code>eval</code> 메소드가 불려 갑니다. 간결하게 하기 위해서, 이 예 및 이 이후의 예에서는, 예외 처리는 가리키지 않습니다. <code>javax.script</code> API 로부터 throw 되는 확인이 끝난 예외 및 실행시 예외가 존재합니다. 말할 필요도 없이, 예외를 적절히 처리할 필요가 있습니다.
+</p>
+
+<code>
+<pre>
+import javax.script. *;
+public class EvalScript {
+    public static void main(String[] args) throws Exception {
+        // create a script engine manager
+        <span class="classref">ScriptEngineManager</span> factory = new ScriptEngineManager();
+        // create a JavaScript engine
+        <span class="classref">ScriptEngine</span> engine = factory. <span class="methodref">getEngineByName</span>("JavaScript");
+        // evaluate JavaScript code from String
+        engine. <span class="methodref">eval</span>("print('Hello, World')");
+    }
+}
+</pre>
+</code>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="evalfile"></a> 
+<h3>스크립트 파일의 평가</h3>
+
+<p>
+이 예에서는, 입력 소스로서 <code>java.io.Reader</code> 를 받아들이는 <code>eval</code> 메소드를 호출합니다. 지정된 리더에 의해 읽어내지는 스크립트가 실행됩니다. 이 방법에서는, 관련하는 입력 스트림 객체를 리더로서 랩 하는 것에 의해, 파일, URL, 및 자원으로부터 스크립트를 실행할 수 있습니다.
+</p>
+
+<code>
+<pre>
+import javax.script. *;
+public class EvalFile {
+    public static void main(String[] args) throws Exception {
+        // create a script engine manager
+        <span class="classref">ScriptEngineManager</span> factory = new ScriptEngineManager();
+        // create JavaScript engine
+        <span class="classref">ScriptEngine</span> engine = factory. <span class="methodref">getEngineByName</span>("JavaScript");
+        // evaluate JavaScript code from given file - specified by first argument
+        engine. <span class="methodref">eval</span>(new java.io.FileReader(args[0]));
+    }
+}
+</pre>
+</code>
+
+다음의 텍스트를 포함한 「test.js」라고 하는 이름의 파일이 있다고 합니다.
+<pre>
+<code>
+println("This is hello from test.js");
+</code>
+</pre>
+
+전술의 Java 는 다음과 같이 실행할 수 있습니다.
+<pre>
+<code>
+java EvalFile test.js
+</code>
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="scriptvars"></a> 
+<h3>스크립트 변수</h3>
+
+<p>
+Java 어플리케이션으로 스크립트 엔진 및 스크립트를 묻는 경우, 어플리케이션 객체를 글로벌 변수로서 스크립트에 공개하는 일이 있습니다. 이 예는, 어플리케이션 객체를 글로벌 변수로서 스크립트에 공개하는 방법을 나타내고 있습니다. 어플리케이션내에 <code>java.io.File</code> 를 작성해, 같은 것을 「file」라고 하는 이름으로 글로벌 변수로서 공개합니다. 스크립트는 변수에 액세스 할 수 있습니다. 예를 들어, 스크립트상에서 public 메소드를 호출할 수가 있습니다. Java 객체, 메소드, 및 필드에 액세스 하는 구문은, 스크립트 언어에 따라서 다릅니다. JavaScript 는, 대부분의 「자연스러운」Java 에 유사한 구문을 지원하고 있습니다.
+</p>
+
+<code>
+<pre>
+public class ScriptVars { 
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        File f = new File("test.txt");
+        // expose File object as variable to script
+        engine. <span class="methodref">put</span>("file", f);
+
+        // evaluate a script string.  The script accesses "file" 
+        // variable and calls method on it
+        engine.eval("print(file.getAbsolutePath())");
+    }
+}
+
+</pre>
+</code>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="invoke"></a> 
+<h3>스크립트 함수 및 메소드의 호출</h3>
+<p>
+특정의 스크립트 함수를 반복해 호출하는 경우가 있습니다. 예를 들어, 어플리케이션 메뉴 기능이 스크립트에 의해 구현되고 있는 경우가 있습니다. 메뉴의 액션 이벤트 핸들러로, 특정의 스크립트 함수를 호출합니다. 다음의 예는, Java 코드로부터의 특정의 스크립트 함수의 호출을 나타내고 있습니다.
+</p>
+
+<pre>
+<code>
+import javax.script. *;
+
+public class InvokeScriptFunction {
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        // JavaScript code in a String
+        String script = "function hello(name) { print('Hello, ' + name); }";
+        // evaluate script
+        engine.eval(script);
+
+        // <code>javax.script.Invocable</code> is an optional interface.
+        // Check whether your script engine implements or not!
+        // Note that the JavaScript engine implements Invocable interface.
+        <span class="classref">Invocable</span> inv = (Invocable) engine;
+
+        // invoke the global function named "hello"
+        inv. <span class="methodref">invokeFunction</span>("hello", "Scripting!!" );
+    }
+}
+
+</code>
+</pre>
+
+<p>
+스크립트 언어가 (JavaScript 와 같이) 객체 베이스 또는 객체 지향의 경우, 스크립트 객체로 스크립트 메소드를 호출할 수가 있습니다.
+</p>
+
+<pre>
+<code>
+import javax.script. *;
+
+public class InvokeScriptMethod {
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        // JavaScript code in a String.  This code defines a script object 'obj'
+        // with one method called 'hello'.         
+        String script = "var obj = new Object(); obj.hello = function(name) { print('Hello, ' + name); }";
+        // evaluate script
+        engine.eval(script);
+
+        // <code>javax.script.Invocable</code> is an optional interface.
+        // Check whether your script engine implements or not!
+        // Note that the JavaScript engine implements Invocable interface.
+        <span class="classref">Invocable</span> inv = (Invocable) engine;
+
+        // get script object on which we want to call the method
+        Object obj = engine. <span class="methodref">get</span>("obj");
+
+        // invoke the method named "hello" on the script object "obj"
+        inv. <span class="methodref">invokeMethod</span>(obj, "hello", "Script Method !!" );
+    }
+}
+
+</code>
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="interfaces"></a> 
+<h3>스크립트에 의한 Java 인터페이스의 구현</h3>
+<p>
+Java 로부터 특정의 스크립트 함수를 호출하는 대신에, 스크립트 함수 또는 메소드를 사용해 Java 인터페이스를 구현하면(자) 편리한 경우가 있습니다. 또, 인터페이스를 사용하는 것에 의해, 많은 장소에서 <code>javax.script</code> API 의 사용을 회피할 수 있습니다. 인터페이스 구현측 객체를 취득해, 다양한 Java API 에 건네줄 수가 있습니다. 다음의 예는, 스크립트에서의 <code>java.lang.Runnable</code> 인터페이스의 구현을 나타내고 있습니다.
+
+</p>
+
+<pre>
+<code>
+import javax.script. *;
+
+public class RunnableImpl {
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        // JavaScript code in a String
+        String script = "function run() { println('run called'); }";
+
+        // evaluate script
+        engine.eval(script);
+
+        <span class="classref">Invocable</span> inv = (Invocable) engine;
+
+        // get Runnable interface object from engine.  This interface methods
+        // are implemented by script functions with the matching name.
+        Runnable r = inv. <span class="methodref">getInterface</span>(Runnable.class);
+
+        // start a new thread that runs the script implemented
+        // runnable interface
+        Thread th = new Thread(r);
+        th.start();
+    }
+}
+</code>
+</pre>
+<p>
+스크립트 언어가 객체 베이스 또는 객체 지향의 경우, 스크립트 객체상의 스크립트 메소드를 사용해 Java 인터페이스를 구현할 수 있습니다. 이것에 의해, 인터페이스 메소드의 스크립트 글로벌 함수를 호출할 필요가 없어집니다. 스크립트 객체는, 인터페이스 구현 측에 관련지을 수 있던 「상태」를 포함할 수 있습니다.
+</p>
+<pre>
+<code>
+
+import javax.script. *;
+
+public class RunnableImplObject {
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        // JavaScript code in a String
+        String script = "var obj = new Object(); obj.run = function() { println('run method called'); }";
+
+        // evaluate script
+        engine.eval(script);
+
+        // get script object on which we want to implement the interface with
+        Object obj = engine. <span class="methodref">get</span>("obj");
+
+        <span class="classref">Invocable</span> inv = (Invocable) engine;
+
+        // get Runnable interface object from engine.  This interface methods
+        // are implemented by script methods of object 'obj'
+        Runnable r = inv. <span class="methodref">getInterface</span>(obj, Runnable.class);
+
+        // start a new thread that runs the script implemented
+        // runnable interface
+        Thread th = new Thread(r);
+        th.start();
+    }
+}
+</code>
+</pre>
+
+
+<a href="#top">top</a> 
+<hr>
+
+
+<a name="scopes"></a> 
+<h3>스크립트의 복수의 스코프</h3>
+<p>
+<a href="#scriptvars">스크립트 변수</a>의 예에서는, 어플리케이션 객체를 스크립트 글로벌 변수로서 공개하는 방법에 대해 설명했습니다. 스크립트의 복수의 글로벌 「스코프」를 공개할 수 있습니다. 단일의 스코프는,<code>javax.script.Bindings</code> 의 인스턴스입니다. 이 인터페이스는,<code>java.util.Map&lt;String, Object&gt;</code> 로부터 파생합니다. 스코프는, 이름이 빈 상태(empty)도 null 도 아닌 캐릭터 라인인 이름-값의 페어세트입니다. 복수의 스코프는,<code>javax.script.ScriptContext</code> 인터페이스에 의해 지원되고 있습니다. 스크립트 문맥은, 스코프 마다 관련지을 수 있었던 바인딩을 가지는 1 개(살) 이상의 스코프를 지원하고 있습니다. 디폴트에서는, 모든 스크립트 엔진에 디폴트의 스크립트 문맥이 있습니다. 디폴트의 스크립트 문맥에는, 「ENGINE_SCOPE」라고 하는 적어도 1 개의 스코프가 있습니다. 스크립트 문맥에 의해 지원되고 있는 다양한 스코프가,<code>getScopes</code> 메소드에 의해 사용할 수 있습니다.
+
+</p>
+
+<pre>
+<code>
+
+import javax.script. *;
+
+public class MultiScopes {
+    public static void main(String[] args) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+        engine.put("x", "hello");
+        // print global variable "x"
+        engine.eval("println(x);");
+        // the above line prints "hello"
+
+        // Now, pass a different script context
+        <span class="classref">ScriptContext</span> newContext = new <span class="classref">SimpleScriptContext</span>();
+        <span class="classref">Bindings</span> engineScope = newContext. <span class="methodref">getBindings</span>(ScriptContext.ENGINE_SCOPE);
+
+        // add new variable "x" to the new engineScope        
+        engineScope. <span class="methodref">put</span>("x", "world");
+
+        // execute the same script - but this time pass a different script context
+        engine.eval("println(x);", newContext);
+        // the above line prints "world"
+    }
+}
+
+</code>
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jsengine"></a> 
+<h2>JavaScript 스크립트 엔진</h2>
+
+<p>
+Sun 에 의한 JDK 6 의 구현은,<a href="http://www.mozilla.org/rhino">Mozilla Rhino</a>  에 근거하는 JavaScript 스크립트 엔진과 서로 번들 되고 있습니다. 이것은, Mozilla Rhino 버젼 1.6R2 에 근거하고 있습니다. Rhino 구현의 대부분이 포함되어 있습니다. 사이즈 및 시큐리티상의 이유로부터, 몇개의 컴퍼넌트가 제외되었습니다.
+<ol>
+<li>JavaScript 로부터 바이트 코드에의 컴파일. 이것은, 「오프티마이자」라고도 불립니다. 이 기능은, 클래스 생성 라이브러리에 의존합니다. 이 기능의 삭제는, JavaScript 가 항상 해석되는 것을 의미합니다. 오프티마이자는 투과적이기 때문에, 이 기능의 삭제는 스크립트 실행에는 영향을 주지 않습니다.
+
+<li>Rhino 의 JavaAdapter 는 삭제되었습니다. JavaAdapter 는, JavaScript 에 의한 Java 클래스의 확장 및 JavaScript 에 의한 Java 인터페이스의 구현을 가능하게 하는 기능입니다. 이 기능에서도, 클래스 생성 라이브러리가 필요합니다. Rhino 의 JavaAdapter 는 Sun 의 JavaAdapter 의 구현으로 옮겨졌습니다. Sun 의 구현에서는, JavaScript 객체에 의해 단일의 Java 인터페이스만을 구현할 수 있습니다. 다음의 예는, 상정했던 대로 기능합니다.
+<pre>
+<code>
+       var v = new java.lang.Runnable() {
+                    run: function() { print('hello'); }
+               }
+       v.run();
+</code>
+</pre>
+
+대부분의 경우, JavaAdapter 는 Java anonymizer 클래스와 같은 구문을 사용해 단일의 인터페이스를 구현하기 위해서 사용됩니다. Java 클래스의 확장 또는 복수의 인터페이스의 구현을 위해서(때문에) JavaAdapter 를 사용하는 것은, 매우 보기 드뭅니다.
+
+<li>E4X (ECMAScript for XML - ECMA 표준 357)는 제외되었습니다. JavaScript 코드에서의 XML 리터럴의 사용은 구문 에러가 됩니다. E4X 의 지원는, ECMAScript 표준에서는 옵션입니다. 구현은 E4X 의 지원를 생략 할 수 있습니다만, ECMAScript 에 준거한 구현입니다.
+
+<li>Rhino 커멘드행 툴 (Rhino 쉘, 디버거등)은 포함되어 있지 않습니다. 다만, 대신에 <a href="../../../tools/share/jrunscript.html">jrunscript</a>  를 사용할 수 있습니다.
+</ol>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jstojava"></a> 
+<h2>JavaScript 로부터 Java 에의 통신</h2>
+
+<p>
+
+Java 클래스, 객체, 및 메소드에의 액세스는, 대부분의 경우 간단합니다. 특히, JavaScript 로부터 필드 및 메소드에의 액세스는, Java 로부터의 경우와 같습니다. 여기에서는, JavaScript 로부터 Java 에의 액세스의 중요한 측면으로 도착해 설명합니다. 자세한 것은,<a href="http://www.mozilla.org/rhino/scriptjava.html">http://www.mozilla.org/rhino/scriptjava.html</a>  를 참조해 주세요. 다음의 예는, Java 에 액세스 하는 JavaScript 의 발췌입니다. 이 섹션에서는, JavaScript 의 지식이 필요합니다. JavaScript 는 아니고 다른 JSR-223 스크립트 언어를 사용하는 경우, 이 섹션을 날려 먼저 진행해 주세요.
+</p>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jsimport"></a> 
+<h3>Java 패키지, 클래스의 임포트</h3>
+
+<p>
+Java 패키지 및 클래스를 임포트 하기 위해서, 편입 함수 <code>importPackage</code> 및 <code>importClass</code> 를 사용할 수 있습니다.
+
+</p>
+
+<pre>
+<code>
+// Import Java packages and classes 
+// like import package. *; in Java
+<span class="functionref">importPackage</span>(java.awt);
+// like import java.awt.Frame in Java
+<span class="functionref">importClass</span>(java.awt.Frame);
+// Create Java Objects by "new ClassName"
+var frame = new java.awt.Frame("hello");
+// Call Java public methods from script
+frame.setVisible(true);
+// Access "JavaBean" properties like "fields"
+print(frame.title);
+</code>
+</pre>
+
+<p>
+<span class="objectref">Packages</span> 글로벌 변수를 사용하면(자), Java 패키지에 액세스 할 수 있습니다. 예:<code>Packages.java.util.Vector</code>,<code>Packages.javax.swing.JFrame</code>. 「java」는 「Packages.java」의 쇼트 컷입니다. javax, org, edu, com, net 접두사에 등가의 쇼트 컷이 있기 (위해)때문에, 실제상 모든 JDK 플랫폼 클래스에 「Packages」접두사없이 액세스 할 수 있습니다.
+
+</p>
+<p>
+java.lang 는, Java 과는 달리 디폴트에서는 임포트 되지 않습니다. 이것은, JavaScript 의 편입의 Object, Boolean, Math 등과 경합 하기 (위해)때문에입니다.
+</p>
+
+<p>
+<code>importPackage</code> 및 <code>importClass</code> 함수는, JavaScript 의 글로벌 변수 스코프를 「번잡」으로 합니다. 이것을 회피하기 위해서,<span class="functionref">JavaImporter</span> 를 사용할 수 있습니다.
+
+<pre>
+<code>
+// create JavaImporter with specific packages and classes to import
+
+var SwingGui = new <span class="functionref">JavaImporter</span>(javax.swing,
+                            javax.swing.event,
+                            javax.swing.border,
+                            java.awt.event);
+with (SwingGui) {
+    // within this 'with' statement, we can access Swing and AWT
+    // classes by unqualified (simple) names.
+
+    var mybutton = new JButton("test");
+    var myframe = new JFrame("test");
+}
+
+</code>
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jsarrays"></a> 
+<h3>Java 배열의 작성과 사용</h3>
+<p>
+Java 객체의 작성은 Java 의 경우와 같습니다만, JavaScript 로 Java 배열을 작성하려면 , Java 리플렉션을 명시적으로 사용할 필요가 있습니다. 다만, 일단 작성되면(자), 요소의 액세스 또는 길이의 액세스는 Java 의 경우와 같습니다. 또, Java 메소드가 Java 배열을 상정하는 경우에 스크립트 배열을 사용할 수 있습니다 (자동변역). 이 때문에, 대부분의 경우, Java 배열을 명시적으로 작성할 필요는 없습니다.
+</p>
+<pre>
+<code>
+// create Java String array of 5 elements
+var a = java.lang.reflect.Array.newInstance(java.lang.String, 5);
+
+// Accessing elements and length access is by usual Java syntax
+a[0] = "scripting is great! ";
+print(a.length);
+</code>
+
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jsimplement"></a> 
+<h3>Java 인터페이스의 구현</h3>
+<p>
+Java 익명 클래스와 같은 구문을 사용하면(자), JavaScript 에 Java 인터페이스를 구현할 수 있습니다.
+</p>
+<pre>
+<code>
+var r  = new java.lang.Runnable() {
+    run: function() {
+        print("running...\n");
+    }
+};
+
+// "r" can be passed to Java methods that expect java.lang.Runnable
+var th = new java.lang.Thread(r);
+th.start();
+</code>
+</pre>
+
+<p>
+단일의 메소드에서의 인터페이스가 상정되고 있는 경우, 스크립트 함수를 직접 건네줄 수가 있습니다 (자동변역).
+</p>
+
+<pre>
+<code>
+function func() {
+     print("I am func! ");
+}
+
+// pass script function for java.lang.Runnable argument
+var th = new java.lang.Thread(func);
+th.start();
+</code>
+</pre>
+
+<a href="#top">top</a> 
+<hr>
+
+<a name="jsoverload"></a> 
+<h3>overload의 해결</h3>
+
+<p>
+Java 메소드가 인수의 형태에 의해 overload 되는 경우가 있습니다. Java 에서는, overload의 해결은 컴파일시에 발생합니다 (javac 에 의해 실행). 스크립트로부터 Java 메소드를 호출하면(자), 스크립트 interpreter/컴파일러는 적절한 메소드를 선택할 필요가 있습니다. JavaScript 엔진에서는, 특별한 일을 실시할 필요는 없습니다. 올바른 Java 메소드 overload 변형이, 인수의 형태에 근거해 선택됩니다. 다만, 특정의 overload 변형을 명시적으로 선택하는 (또는, 선택할 필요가 있다) 경우가 있습니다.
+</p>
+<pre>
+<code>
+var out = java.lang.System.out;
+
+// select a particular println function 
+out["println(java.lang.Object)"]("hello");
+</pre>
+</code>
+<p>
+JavaScript 의 Java 메소드 overload의 해결의 자세한 것은,<a href="http://www.mozilla.org/js/liveconnect/lc3_method_overloading.html">http://www.mozilla.org/js/liveconnect/lc3_method_overloading.html</a>  를 참조해 주세요.
+</p>
+
+<a href="#top">top</a> 
+
+<hr>
+
+<a name="engineimpl"></a> 
+<h2>독자적인 스크립트 엔진의 구현</h2>
+<p>
+JSR-223 준거의 스크립트 엔진의 구현에 대해, 상세하게는 설명하지 않습니다. 최저한,<code>javax.script.ScriptEngine</code> 및 <code>javax.script.ScriptEngineFactory</code> 인터페이스를 구현할 필요가 있습니다. abstract 클래스 <code>javax.script.AbstractScriptEngine</code> 는,<code>ScriptEngine</code> 인터페이스의 몇개의 메소드에 유용한 디폴트를 제공합니다.
+
+</p>
+
+<p>JSR-223 엔진의 구현을 개시하기 전에,<a href="http://scripting.dev.java.net">http://scripting.dev.java.net</a>  프로젝트를 체크할 수 있습니다. 이 프로젝트는, 많은 일반적인 open source 스크립트 언어의 JSR-223 구현을 보관 유지하고 있습니다.
+</p>
+<a href="#top">top</a> 
+<hr>
+
+
+<a name="refs"></a> 
+<h2>레퍼런스</h2>
+
+<ul>
+
+<li><a href="http://jcp.org/en/jsr/detail?id=223">「JSR-223 Scripting for the Java Platform」</a> 
+<li><a href="http://java.sun.com/javascript">「JavaScript Developer Connection」</a> 
+<li><a href="http://www.mozilla.org/js/liveconnect/lc3_method_overloading.html">「Java Method Overloading and LiveConnect 3」</a> 
+<li><a href="http://www.mozilla.org/rhino/">「Rhino:JavaScript for Java」</a> 
+<li><a href="http://www.mozilla.org/rhino/scriptjava.html">「Scripting Java (from JavaScript)」</a> 
+<li><a href="https://scripting.dev.java.net/">「scripting.dev.java.net project」</a> 
+</ul>
+
+
+<a href="#top">top</a> 
+
+<hr>
+
+
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../../legal/SMICopyright.html">Copyright</A>  &#169; 2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+<font size="-1"><a HREF="http://developers.sun.com/contact/feedback.jsp ?referer=http://java.sun.com/javase/6/docs/technotes/guides/scripting/index.html &category=j2se &mailsubject=Scripting">피드백</a> </font>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1"></FONT>
+
+</TD>
+
+
+
+</span></span>

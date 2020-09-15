@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<meta name="GENERATOR"
+ content="Mozilla/4.02 [en] (X11; U; SunOS 5.5.1 sun4u) [Netscape]">
+<title>Java(TM) Platform Debugger Architecture - xrath.com 에서 번역됨</title>
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+ alink="#ff0000" link="#0000ff" vlink="#000077">
+&nbsp;
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"  alt="Java" border="0" height="88" width="52">&nbsp;</td>
+      <td>
+      <center>
+<h1>Java<sup><font size="-2">TM</font></sup> Platform Debugger Architecture (JPDA)</h1>
+      </center>
+      </td>
+<td align="right" valign="top" width="60"> <font size="-1"><a  href="../../../index.html">문서의 목차</a> </font> </td>
+    </tr>
+  </tbody>
+</table>
+<!-- Body text begins here -->
+<blockquote>Java Platform Debugger Architecture (JPDA)는, 3 개의 인터페이스로 구성되어 있어 데스크탑 시스템의 개발 환경에서 디버거를 사용하는 것을 전제로 해서 설계되고 있습니다. Java Virtual Machine Tools Interface (JVM TI)에서는, 디버그시에 VM 로부터 제공되는 서비스가 정의되고 있습니다. JVM TI 는, 폐지한 Java Virtual Machine Debug Interface (JVMDI)의 대신이 되는 것입니다. Java Debug Wire Protocol (JDWP)에서는, 디버그중의 프로세스와 디버거의 프론트엔드와의 사이에 전송 되는 정보 및 요구의 형식이 정의되고 있습니다.  프론트엔드에는, Java Debug Interface (JDI)가 구현되고 있습니다. Java Debug Interface 에서는, 사용자 코드 레벨에서의 정보 및 요구가 정의되고 있습니다.
+</blockquote>
+<h2>확장</h2>
+<ul>
+<li><a href="enhancements.html">Java SE 6 에서의 JPDA 의 확장 기능</a>  </li>
+</ul>
+<ul>
+<li><a href="http://java.sun.com/j2se/5.0/docs/guide/jpda/enhancements.html">J2SE 5.0 에서의 JPDA 의 확장 기능</a>  </li>
+</ul>
+<ul>
+<li><a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/enhancements.html">J2SE 1.4 에서의 JPDA 의 확장 기능</a>  </li>
+</ul>
+<h2>설계</h2>
+<ul>
+<li><b><a href="jpda.html">JPDA 의 개요</a> </b></li>
+  <ul>
+<b><li><a href="jpda.html#modularity">모듈성</a>  </li>
+<li><a href="jpda.html#walk-through">동작의 개요</a>  </li>
+<li><a href="jpda.html#porting">이식</a>  </li>
+    </b>
+  </ul>
+<li> <b><a href="architecture.html">아키텍쳐(architecture)의 구성</a> </b></li>
+  <ul>
+<li> <b><a href="architecture.html">구성의 개요</a> </b></li>
+<li> <b><a href="architecture.html#components">컴퍼넌트</a> </b></li>
+<li> <b><a href="architecture.html#interfaces">디버거 인터페이스</a> </b></li>
+  </ul>
+  <ul>
+    <ul>
+<li> <b><a href="architecture.html#jvmti">Java Virtual Machine Tool Interface</a> </b></li>
+    </ul>
+    <ul>
+<li> <b><a href="architecture.html#jdwp">Java Debugger Wire Protocol</a> </b></li>
+<li> <b><a href="architecture.html#jdi">Java Debug Interface</a> </b></li>
+    </ul>
+  </ul>
+</ul>
+
+<h2>인터페이스에 관한 참고 자료</h2>
+<ul>
+<li> <b>Java Virtual Machine Tool Interface (JVM TI)</b></li>
+  <ul>
+<p style="font-size: 90%;"> 주:시험적인 Java Virtual Machine Profiling Interface (JVMPI)는 폐지되었습니다. JVMDI 는 JVM TI 에 대신했습니다.  </p>
+<li> <b><a href="../jvmti/index.html">스펙</a> </b><br> <br>
+    </li>
+  </ul>
+<li style="margin-bottom: 0em;"> <b>Java Virtual Machine Debug Interface (JVMDI)</b></li>
+  <ul>
+<p style="font-size: 90%;"> - JVMDI 는 폐지되었습니다. JVMDI 는 JVM TI 에 대신했습니다. JDK 5.0 문서의 「JVMDI 의 스펙」을 참조해 주세요. </p>
+  </ul>
+<li> <b>Java Debug Wire Protocol (JDWP)</b></li>
+  <p> </p>
+  <ul>
+<li> <b><a href="jdwp-spec.html">스펙</a> </b><br> <br>
+    </li>
+  </ul>
+<li> <b>Java Debug Wire Protocol Interface</b></li>
+  <p> </p>
+  <ul>
+<li> <b><a href="jdwpTransport.html">스펙</a> </b><br> <br>
+    </li>
+  </ul>
+<li> <b>Java Debug Interface (JDI)</b></li>
+  <p> </p>
+  <ul>
+<li> <b><a href="../../../jdk/api/jpda/jdi/index.html">스펙</a> </b></li>
+  </ul>
+</ul>
+<p>
+<h2>구현</h2>
+<p></p>
+<ul>
+<li> <b><a href="conninv.html">접속 및 호출의 상세</a> </b></li>
+</ul>
+<p>
+</p>
+<p><h2>상세 정보</h2>
+<p></p>
+<ul>
+<li><a href="http://java.sun.com/javase/technologies/core/toolsapis/jpda/index.jsp">JPDA 의 홈 페이지</a> </li>
+</ul>
+<p>
+<h2>례</h2>
+<p></p>
+<ul>
+<li> <b><a href="examples.html">JDI 어플리케이션의 예</a> </b></li>
+</ul>
+<blockquote>JDK 소프트웨어의 <tt>demo/jpda/examples.jar</tt> 파일에는,<tt>jdb</tt> Java 디버거의 원시 코드나, prototype판의 <tt>javadt</tt> GUI 디버거 등, JPDA 의 예가 들어가 있습니다.  </blockquote>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr noshade="noshade" size="3">
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr valign="top">
+<TD><A HREF="../../../legal/SMICopyright.html"><FONT SIZE="1">Copyright &copy;</FONT></A> <FONT SIZE="1"> 2004 </FONT><A HREF="http://www.sun.com/"><FONT SIZE="1">Sun Microsystems, Inc. </FONT></A> <FONT SIZE="1">All Rights Reserved. <BR><BR></FONT><FONT SIZE="2"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/jpda/index.html&category=j2se&mailsubject=Java Platform Debugger Architecture">피드백</A> </font></TD>
+<td align="right"><img src="../../../images/sunlogo64x30.gif"  alt="Sun" border="0" height="30" width="64"> <BR><I><FONT SIZE="+1"> Java Software </FONT></I><FONT SIZE="+1">&nbsp;</FONT></td>
+ </tr>
+  </tbody>
+</table>
+&nbsp;
+</body>
+</html>

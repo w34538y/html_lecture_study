@@ -1,0 +1,54 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:3 - RMI 시스템의 개요
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-arch3.html">전의 항목</a>  | <a href="rmi-arch5.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+
+
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">3.3	 원격 객체의 가베지 컬렉션</a> </h2>
+
+<a name="5102"><!-- --></a> 
+<blockquote>
+<a name="621"><!-- --></a>  로컬 시스템에 있어서의의와 같게, 분산 시스템에 대해도, 어느 클라이언트로부터도 참조되지 않게 된 원격 객체는 자동적으로 삭제되는 것이 바람직한 일입니다. 이것에 의해 프로그래머는, 시간의 제약 중(안)에서 원격 객체의 클라이언트의 추적을 종료시킨다고 하는 일로부터 해제됩니다. RMI 는 참조 카운트 방식의, Modula-3 의 Network Objects 를 닮은 가베지 컬렉션 알고리즘을 채용하고 있습니다. (Birrell, Nelson, Owicki 에 의한 다음의 문헌을 참조. 「Network Objects」<em>Digital Equipment Corporation Systems Research Center Technical Report 115</em>, 1994)<p>
+<a name="712"><!-- --></a>  참조 카운트 방식 가베지 컬렉션을 실행하기 위해서, RMI 의 런타임은 각 Java 가상 머신내의 라이브 참조를 항상 감시하고 있습니다. 라이브 참조가 Java 가상 머신에 들어 오면(자) 참조 카운트는 증가합니다. 어느 객체에의 최초의 참조는 「참조가 일어났다」일을 나타내는 메세지를 그 객체의 서버에 보냅니다. 라이브 참조가 로컬인 가상 머신내에서 참조되어 있지 않은 것을 알면(자), 카운트는 감소합니다. 마지막 참조가 폐기되면(자), 「참조되어 있지 않다」것을 나타내는 메세지가 서버에 보내집니다. 이 프로토콜에는 미묘한 점이 많이 있습니다만, 객체의 너무 빠른 수집이 일어나지 않는 것을 보증하기 위해서는, 그것들은 대부분, 참조가 일어난 것, 참조되어 있지 않은 것을 나타내는 메세지의 순서부의 관리에 관련하고 있습니다. <p>
+<a name="735"><!-- --></a>  원격 객체가 어느 클라이언트로부터도 참조되어 있지 않은 상태가 되면(자), RMI 런타임은, 그 객체를 약참조 (weak reference)에 의해 참조합니다. 약참조가 되면(자) Java 가상 머신의 가비지 컬렉터는, 만약 그 객체에의 로컬 참조가 그 밖에 존재하지 않으면, 객체는 폐기합니다. 분산 가베지 컬렉션 알고리즘은, 객체에의 정상적인 참조와 약참조를 보관 유지하면서, 로컬 Java 가상 머신의 가비지 컬렉터와 상호작용을 계속합니다. <p>
+<a name="736"><!-- --></a>  원격 객체에의 로컬인 참조가 존재하고 있는 동안은 가베지 컬렉트될 것은 없고, 객체는 원격 호출에게 건네지거나 클라이언트에 돌려주어지거나 합니다. 원격 객체를 건네주면(자), 그것이 건네받은 가상 머신의 식별자가 참조 세트에 추가 기입하십니다. 비참조의 통지를 필요로 하는 원격 객체는,<code>java.rmi.server.Unreferenced</code> 인터페이스를 구현하지 않으면 안됩니다. 이러한 참조가 존재하지 않게 되면(자) <code>unreferenced</code> 메소드가 불려 갑니다.  <code>unreferenced</code> 는, 참조 세트가 빈 상태(empty)이라고 불려 가기 (위해)때문에, 여러 차례 불려 가는 일이 있습니다. 원격 객체가 회수되는 것은, 원격와 로컬을 포함해 참조가 완전히 없어졌을 경우만입니다. <p>
+<a name="689"><!-- --></a>  클라이언트와 원격 서버-의 사이에 네트워크 파티션이 존재하면(자), 원격 객체의 컬렉션이 너무 빠른 시기에 일어나는 일이 있습니다.  이것은, 트랜스폴트가 클라이언트가 크래쉬 했다고 판단할 가능성이 있기 때문입니다. 시기 상조인 회수의 가능성이 있기 (위해)때문에, 원격 참조는 참조에 관한 완전한 무결성을 보증하는 것이 아닙니다. 바꾸어 말하면, 원격 참조가 실제로 존재하는 객체를 참조하고 있지 않을 가능성이 항상 존재한다고 하는 것입니다. 이러한 참조를 사용하려고 하면(자) <code>RemoteException</code> 가 발생해, 그 취급은 어플리케이션이 실시하지 않으면 안됩니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-arch3.html">전의 항목</a>  | <a href="rmi-arch5.html">다음의 항목</a>  
+
+
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

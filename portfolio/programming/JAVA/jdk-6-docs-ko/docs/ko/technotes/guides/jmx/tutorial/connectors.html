@@ -1,0 +1,698 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:54:04" />
+<title>JMX 연결기 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="tutorialTOC.html" />
+    <link rel="Previous" href="essential.html" />
+    <link rel="Next" href="lookup.html" />
+    <link rel="Index" href="security.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="essential.html">전의 항목</a>  | <a accesskey="n" href="lookup.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지의 튜토리얼</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp874"> </a> <h2 class="pChapNum">
+제 3 장
+</h2>
+<a name="wp5529"> </a> <h2 class="pChapTitle">
+JMX 연결기
+</h2>
+<a name="wp1066917"> </a> <p class="pBody">
+이 장에서는, 표준 및 동적인 관리 Bean (MBean)의 개념을 소개합니다. 또, Java Management Extensions (JMX) 테크놀러지를 사용해 MBean 상에서 로컬 및 원격로부터 조작을 실행하는 방법에 대해 가리킵니다.  
+</p>
+<a name="wp1056865"> </a> <h2 class="pHeading1">
+3.1	RMI 연결기를 사용한 표준 및 동적 MBeans 에의 액세스 
+</h2>
+<a name="wp1066930"> </a> <p class="pBody">
+이 예에서는, 표준 및 동적 MBeans 만을 설명합니다.  
+</p>
+<a name="wp1066934"> </a> <p class="pBody">
+<a  href="essential.html#wp1053098"><span style="color: #3366CC">제&#160;2 장 「JMX API 의 기본 요소」</span></a> 로 설명한 것처럼, 표준 MBean 는 내부의 메소드의 이름을 사용해 관리 인터페이스를 정적으로 정의하는 관리 Bean 입니다. 동적 MBean 는, 특정의 Java 인터페이스를 구현해, 실행시에 스스로의 속성과 조작을 나타냅니다.
+</p>
+<a name="wp1003593"> </a> <p class="pBody">
+JMX 테크놀러지는, RMI 에 근거해 연결기를 정의합니다. RMI 연결기는, Java Remote Method Protocol (JRMP)와 Internet Inter-Object Request Broker (ORB) Protocol (IIOP)의 2 개의 표준 RMI 트랜스폴트를 지원하고 있습니다. 이 연결기를 사용하면(자), MBean 서버의 MBean 에 원격 접속해, 로컬로 조작을 실행하는 것과 완전히 똑같이, 그 MBean 로 조작을 실행할 수 있습니다.
+</p>
+<a name="wp997193"> </a> <p class="pBody">
+이 예는, 표준 MBean 와 동적 MBean 의 구현을 설명하는 것을 목적으로 하고 있습니다. 또, 양 MBean 상에서 로컬에, 또 서버  원격 클라이언트간의 RMI 접속을 통해서 원격에 조작을 실행하는 방법도 가리킵니다.  
+</p>
+<a name="wp1003598"> </a> <p class="pBody">
+이 예를 실행하는 경우
+</p>
+<ol class="pList1"><a name="wp997205"> </a> <div class="pList1"><li>서버측:</li></div>
+<ol type="a" class="pList2"><a name="wp1003616"> </a> <div class="pList2"><li>MBean 서버를 작성</li></div>
+<a name="wp1066957"> </a> <div class="pList2Plus"><li>로컬 MBean 서버에 <code class="cCode">SimpleStandard</code> 와 <code class="cCode">SimpleDynamic</code> 의 MBean 를 등록</li></div>
+<a name="wp1066958"> </a> <div class="pList2Plus"><li>양 MBean 상에서 로컬 조작을 실행</li></div>
+<a name="wp1003618"> </a> <div class="pList2Last"><li>RMI 연결기 서버를 작성</li></div>
+</ol>
+<a name="wp997236"> </a> <div class="pList1Plus"><li>클라이언트측:</li></div>
+<ol type="a" class="pList2"><a name="wp997237"> </a> <div class="pList2"><li>RMI 연결기를 작성 </li></div>
+<a name="wp1066963"> </a> <div class="pList2Plus"><li>원격 MBean 서버에 <code class="cCode">SimpleStandard</code> 와 <code class="cCode">SimpleDynamic</code> 의 MBean 를 등록</li></div>
+<a name="wp1066964"> </a> <div class="pList2LastEnd"><li>양 MBean 로 원격 조작을 실행</li></div>
+</ol></ol>
+<a name="wp997296"> </a> <p class="pBody">
+RMI 연결기의 예는, 디렉토리 <em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Basic</code> 내에 있습니다.  
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997294"> </a> <li><em class="cEmphasis">work_dir</em><code class="cCode">/jmx_examples/Basic</code> 디렉토리를 엽니다. </li>
+<a name="wp997311"> </a> <p class="pBody">
+이 디렉토리내에는, 다음의 파일이 있습니다.
+</p>
+<ul class="pBullet2"><a name="wp997312"> </a> <div class="pBullet2"><li><code class="cCode">Server.java</code></li></div>
+<a name="wp1003605"> </a> <div class="pBullet2Plus"><li><code class="cCode">SimpleStandardMBean.java</code></li></div>
+<a name="wp1003606"> </a> <div class="pBullet2Plus"><li><code class="cCode">SimpleStandard.java</code></li></div>
+<a name="wp1066979"> </a> <div class="pBullet2Plus"><li>SimpleDynamic.java</li></div>
+<a name="wp1003608"> </a> <div class="pBullet2Plus"><li><code class="cCode">ClientListener.java</code></li></div>
+<a name="wp1001387"> </a> <div class="pBullet2Plus"><li><code class="cCode">Client.java</code></li></div>
+<a name="wp1001388"> </a> <div class="pBullet2Last"><li><code class="cCode">README</code></li></div>
+</ul>
+<a name="wp997252"> </a> <li>텍스트 문자 편집기로 각각의 <code class="cCode">*. java</code> 파일을 엽니다. </li>
+</ol>
+</div>
+<a name="wp997327"> </a> <h3 class="pHeading2">
+3.1. 1	예제 클래스의 분석
+</h3>
+<a name="wp1000631"> </a> <p class="pBody">
+다음의 섹션에서는, 기본적인 MBean 의 예제로 사용되는 각 클래스를 분석해, 각 클래스가 지금까지의 섹션으로 설명한 조작을 어떻게 실행할까에 임해서 설명합니다.
+</p>
+<a name="wp1000632"> </a> <h4 class="pHeading3">
+3.1. 1.1	Server.java
+</h4>
+<a name="wp997347"> </a> <p class="pBody">
+<code class="cCode">Server.java</code> 클래스는, 그 크기에 의해, 몇개의 코드 (발췌)로 나타납니다.  
+</p>
+<a name="wp1000780"> </a> <div class="pCodeCaption">
+코드예&#160;3-1	MBean 의 예제 클래스 Server.java (발췌 1)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1000777"> </a> 
+public class Server {<a name="wp1067009"> </a> 
+<a name="wp1067010"> </a> 
+ public static void main(String[] args) {<a name="wp1067011"> </a> 
+     try {<a name="wp1067012"> </a> 
+         <a name="wp1067013"> </a> 
+         MBeanServer mbs = MBeanServerFactory.createMBeanServer();<a name="wp1067014"> </a> 
+         waitForEnterPressed();<a name="wp1067015"> </a> 
+<a name="wp1067016"> </a> 
+         String domain = mbs.getDefaultDomain();<a name="wp1067017"> </a> 
+         waitForEnterPressed();<a name="wp1067018"> </a> 
+<a name="wp1067019"> </a> 
+         String mbeanClassName = &quot;SimpleStandard&quot;;<a name="wp1067020"> </a> 
+         String mbeanObjectNameStr =<a name="wp1067021"> </a> 
+             domain + &quot;:type=&quot; + mbeanClassName + &quot;, name=1&quot;;<a name="wp1067022"> </a> 
+         ObjectName mbeanObjectName =<a name="wp1067023"> </a> 
+             createSimpleMBean(mbs, mbeanClassName, mbeanObjectNameStr);<a name="wp1067024"> </a> 
+         waitForEnterPressed();<a name="wp1067025"> </a> 
+<a name="wp1067026"> </a> 
+         printMBeanInfo(mbs, mbeanObjectName, mbeanClassName);<a name="wp1067027"> </a> 
+         waitForEnterPressed();<a name="wp1067028"> </a> 
+<a name="wp1067029"> </a> 
+         manageSimpleMBean(mbs, mbeanObjectName, mbeanClassName);<a name="wp1067030"> </a> 
+         waitForEnterPressed();<a name="wp1067031"> </a> 
+<a name="wp1067032"> </a> 
+         mbeanClassName = &quot;SimpleDynamic&quot;;<a name="wp1067033"> </a> 
+         mbeanObjectNameStr =<a name="wp1067034"> </a> 
+             domain + &quot;:type=&quot; + mbeanClassName + &quot;, name=1&quot;;<a name="wp1067035"> </a> 
+         mbeanObjectName =<a name="wp1067036"> </a> 
+             createSimpleMBean(mbs, mbeanClassName, mbeanObjectNameStr);<a name="wp1067037"> </a> 
+         waitForEnterPressed();<a name="wp1067038"> </a> 
+<a name="wp1067039"> </a> 
+         printMBeanInfo(mbs, mbeanObjectName, mbeanClassName);<a name="wp1067040"> </a> 
+         waitForEnterPressed();<a name="wp1067041"> </a> 
+<a name="wp1067042"> </a> 
+         manageSimpleMBean(mbs, mbeanObjectName, mbeanClassName);<a name="wp1067043"> </a> 
+         waitForEnterPressed();<a name="wp1067044"> </a> 
+<a name="wp1067045"> </a> 
+         [...]<a name="wp1067046"> </a> 
+<a name="wp1012134"> </a> 
+</pre></div>
+<a name="wp1000661"> </a> <p class="pBody">
+이 클래스를 검토하면(자), 다음의 이벤트가 일어나고 있는 것을 알 수 있습니다.
+</p>
+<a name="wp997692"> </a> <p class="pBody">
+우선,<code class="cCode">Server.java</code> 클래스는,<code class="cCode">MBeanServerFactory</code> 클래스의 <code class="cCode">createMBeanServer()</code> 메소드를 호출해 <code class="cCode">mbs</code> 로 불리는 새로운 MBean 서버를 작성합니다.
+</p>
+<a name="wp1067051"> </a> <p class="pBody">
+다음에 MBean 서버를 등록하는 디폴트 도메인을,<code class="cCode">MBeanServer</code> 인터페이스의 <code class="cCode">getDefaultDomain()</code> 메소드를 호출해 가져옵니다. 이 도메인은, 캐릭터 라인 <code class="cCode">domain</code> 로 식별됩니다.  
+</p>
+<a name="wp1067052"> </a> <p class="pBody">
+MBean 클래스 <code class="cCode">SimpleStandard</code> 도, 이 경우는 캐릭터 라인 <code class="cCode">mbeanClassName</code> 라고 하는 변수에 의해 식별됩니다. <code class="cCode">SimpleStandard</code> 는, 이 MBean 를 인스턴스로 하는 Java 객체의 Java 클래스의 이름입니다. <code class="cCode"><code class="cCode">SimpleStandard.java</code> 객체에 대해서는,<a  href="connectors.html#wp1001692"><span style="color: #3366CC">「3.1. 1.3 </span><span style="color: #3366CC">SimpleStandard.java</span><span style="color: #3366CC">」</span></a> 를 참조해 주세요.
+</p>
+<a name="wp1067056"> </a> <p class="pBody">
+하나 더의 변수, 캐릭터 라인 <code class="cCode">mbeanObjectNameStr</code> 는, 도메인과 다음의 키=치 페어를 조합해 정의됩니다.  
+</p>
+<ul class="pBullet1"><a name="wp1067057"> </a> <div class="pBullet1"><li><code class="cCode">type</code>.  이 경우는,<code class="cCode">mbeanClassName</code>. </li></div>
+<a name="wp1067058"> </a> <div class="pBullet1Last"><li><code class="cCode">name</code>. 이 MBean 를, 다음에 작성되는 같은 타입의 다른 MBean 와 구별합니다. 이 경우, name 번호는 <code class="cCode">1</code> 입니다. </li></div>
+</ul>
+<a name="wp1067059"> </a> <p class="pBody">
+<code class="cCode">mbeanObjectNameStr</code> 의 목적은, 인간이 읽을 수 있는 식별자를 MBean 에 할당하는 것입니다.
+</p>
+<a name="wp1067060"> </a> <p class="pBody">
+createSimpleMBean()의 호출에 의해, 지정된 객체명의 SimpleStandard MBean 가 로컬 MBean 서버로 작성되어 등록됩니다.
+</p>
+<a name="wp1067061"> </a> <p class="pBody">
+다음에,<code class="cCode">printMBeanInfo()</code> 과 <code class="cCode">manageSimpleMBean()</code> 의 양쪽 모두의 조작이,<code class="cCode">SimpleStandard</code> MBean 로 실행됩니다. <code class="cCode"><code class="cCode">createSimpleMBean()</code> 와 같이, 이러한 메소드는 다음에 <code class="cCode">Server.java</code> 코드로 정의되어<a  href="connectors.html#wp1067135">코드예&#160;3-4</a> 와<a  href="connectors.html#wp1067177">코드예&#160;3-5</a> 로 나타납니다.  
+</p>
+<a name="wp1067065"> </a> <p class="pBody">
+이 코드에는 기술되고 있지 않습니다만,<code class="cCode">SimpleDynamic</code> 형의 2 번째의 MBean 가,<code class="cCode">SimpleStandard</code> MBean 와 완전히 같은 방법으로 MBean 서버에 작성되어 등록됩니다. 그 이름이 가리키도록(듯이), 이 MBean 는 <a  href="connectors.html#wp1067264"><span style="color: #3366CC">「3.1. 1.4 </span><span style="color: #3366CC">SimpleDynamic.java</span><span style="color: #3366CC">」</span></a> 로 설명하는 <code class="cCode">SimpleDynamic</code> Java 객체의 인스턴스입니다.
+</p>
+<a name="wp1067070"> </a> <div class="pCodeCaption">
+코드예&#160;3-2	MBean 의 예제 클래스 Server.java (발췌 2)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1067071"> </a> 
+[...]<a name="wp1067072"> </a> 
+<a name="wp1067073"> </a> 
+JMXServiceURL url =<a name="wp1067074"> </a> 
+  new JMXServiceURL(&quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);<a name="wp1067075"> </a> 
+JMXConnectorServer cs =<a name="wp1067076"> </a> 
+  JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);<a name="wp1067077"> </a> 
+cs.start();<a name="wp1067078"> </a> 
+waitForEnterPressed();<a name="wp1067079"> </a> 
+cs.stop();<a name="wp1067080"> </a> 
+<a name="wp1067081"> </a> 
+[...]<a name="wp1067082"> </a> 
+<a name="wp1067083"> </a> 
+</pre></div>
+<a name="wp1012281"> </a> <p class="pBody">
+<a  href="connectors.html#wp1067070">코드예&#160;3-2</a>  에서는, RMI 연결기 서버는 MBean 로 원격 조작을 할 수 있도록(듯이) 작성되고 있습니다. <code class="cCode">JMXServiceURL</code> 클래스를 호출하면(자), 연결기 서버의 주소가 되는 <code class="cCode">url</code> 라고 하는 새로운 서비스 URL 가 작성됩니다. 이 예에서는, 서비스 URL 는 「encode 형식」은 아니고 「JNDI 형식」에서 지정됩니다 (JNDI 형식의 자세한 것은,<code class="cCode">javax.management.remote.rmi</code> 패키지의 API 문서를 참조). 이 서비스 URL 는, 다음의 내용을 정의하고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp1001395"> </a> <div class="pBullet1"><li>연결기는 <code class="cCode">rmi</code> 로 나타내지는 디폴트의 RMI 트랜스폴트를 사용한다 </li></div>
+<a name="wp1004532"> </a> <div class="pBullet1Last"><li>RMI 연결기 Stub가 보존되는 RMI 레지스트리는, 로컬 호스트의 포트 <code class="cCode">9999</code> 로 가동해, 서버 주소는 <code class="cCode">server</code> 의 이름으로 등록된다. 예로 지정되는 포트 <code class="cCode">9999</code> 는 임의의 숫자.  사용 가능한 포트를 지정할 수 있다</li></div>
+</ul>
+<a name="wp1004536"> </a> <p class="pBody">
+RMI 연결기 서버 <code class="cCode">cs</code> 는, 파라미터에 서비스 URL <code class="cCode">url</code>,<code class="cCode">null </code>환경 맵, 및 MBean 서버 <code class="cCode">mbs</code> 를 사용해, 생성자 <code class="cCode">JMXConnectorServerFactory</code> 를 호출해 작성됩니다. 연결기 서버 <code class="cCode">cs</code> 는,<code class="cCode">JMXConnectorServer</code> 의 <code class="cCode">start()</code> 메소드를 호출해,<code class="cCode">RMIConnectorServer</code> 가 RMI 객체 <code class="cCode">server</code> 를 RMI 레지스트리에 export 하는 것으로 기동됩니다. 이 접속은, Enter 키를 누를 때까지 유효합니다.  이것은 <code class="cCode">Server</code> 코드의 후반에 정의하는 간단한 메소드 <code class="cCode">waitForEnterPressed</code> 의 순서에 따른 것입니다.
+</p>
+<a name="wp1067103"> </a> <div class="pCodeCaption">
+코드예&#160;3-3	MBean 의 예제 클래스 Server.java (발췌 3)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1067104"> </a> 
+[...]<a name="wp1067105"> </a> 
+<a name="wp1067106"> </a> 
+private static ObjectName createSimpleMBean(MBeanServer mbs,<a name="wp1067107"> </a> 
+                                              String mbeanClassName,<a name="wp1067108"> </a> 
+                                              String mbeanObjectNameStr) {<a name="wp1067109"> </a> 
+     echo(&quot;\n&gt;&gt;&gt; Create the &quot; + mbeanClassName +<a name="wp1067110"> </a> 
+          &quot; MBean within the MBeanServer&quot;);<a name="wp1067111"> </a> 
+     echo(&quot;ObjectName = &quot; + mbeanObjectNameStr);<a name="wp1067112"> </a> 
+     try {<a name="wp1067113"> </a> 
+          ObjectName mbeanObjectName =<a name="wp1067114"> </a> 
+             ObjectName.getInstance(mbeanObjectNameStr);<a name="wp1067115"> </a> 
+          mbs.createMBean(mbeanClassName, mbeanObjectName);<a name="wp1067116"> </a> 
+             return mbeanObjectName;<a name="wp1067117"> </a> 
+          } catch (Exception e) {<a name="wp1067118"> </a> 
+            echo(	&quot;!!! Could not create the &quot; + <a name="wp1067119"> </a> 
+                  mbeanClassName + &quot; MBean !!!&quot;);<a name="wp1067120"> </a> 
+            e.printStackTrace();<a name="wp1067121"> </a> 
+            echo(&quot;\nEXITING...\n&quot;);<a name="wp1067122"> </a> 
+            System.exit(1);<a name="wp1067123"> </a> 
+        }<a name="wp1067124"> </a> 
+        return null;<a name="wp1067125"> </a> 
+     }<a name="wp1067126"> </a> 
+<a name="wp1067127"> </a> 
+[...]<a name="wp1067128"> </a> 
+<a name="wp1067129"> </a> 
+</pre></div>
+<a name="wp1067133"> </a> <p class="pBody">
+<a  href="connectors.html#wp1067103">코드예&#160;3-3</a>  는,<code class="cCode">createSimpleMBean()</code> 메소드의 정의를 나타내고 있습니다. 이 메소드에서는, 객체명 <code class="cCode">mbeanObjectNameStr</code> 를 사용한 MBean 인스턴스가,<code class="cCode">ObjectName</code> 인터페이스의 <code class="cCode">getInstance()</code> 메소드에게 건네져 MBean 서버내에서 MBean 에 등록하기 위한 새로운 객체명이 작성됩니다. 최종적인 객체명 인스턴스는,<code class="cCode">mbeanObjectName</code> 로 설정됩니다. 다음에 <code class="cCode">MBeanServer</code> 의 메소드 <code class="cCode">createMBean()</code> 에 의해,<code class="cCode">mbeanClassName</code> 로 식별되는 Java 객체와 MBean 인스턴스 <code class="cCode">mbeanObjectName</code> 의 편성에 의해 MBean 의 인스턴스가 작성되어 MBean 서버 <code class="cCode">mbs</code> 에 이 MBean 가 등록됩니다.
+</p>
+<a name="wp1067135"> </a> <div class="pCodeCaption">
+코드예&#160;3-4	MBean 의 예제 클래스 Server.java (발췌 4)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+[...]<a name="wp1067136"> </a> 
+<a name="wp1067137"> </a> 
+private static void printMBeanInfo(MBeanServer mbs,<a name="wp1067138"> </a> 
+                                     ObjectName mbeanObjectName,<a name="wp1067139"> </a> 
+                                     String mbeanClassName) {<a name="wp1067140"> </a> 
+     MBeanInfo info = null;<a name="wp1067141"> </a> 
+     try {<a name="wp1067142"> </a> 
+         info = mbs.getMBeanInfo(mbeanObjectName);<a name="wp1067143"> </a> 
+     } catch (Exception e) {<a name="wp1067144"> </a> 
+         echo(	&quot;!!! Could not get MBeanInfo object for &quot; +<a name="wp1067145"> </a> 
+     	 mbeanClassName +&quot; !!!&quot;);<a name="wp1067146"> </a> 
+         e.printStackTrace();<a name="wp1067147"> </a> 
+         return;<a name="wp1067148"> </a> 
+     }<a name="wp1067149"> </a> 
+<a name="wp1067150"> </a> 
+     MBeanAttributeInfo[] attrInfo = info.getAttributes();<a name="wp1067151"> </a> 
+     if (attrInfo.length &gt; 0) {<a name="wp1067152"> </a> 
+         for (int i = 0; i &lt; attrInfo.length; i++) {<a name="wp1067153"> </a> 
+     	echo(&quot; ** NAME: 	&quot; + attrInfo[i]. getName());<a name="wp1067154"> </a> 
+     	echo(&quot;    DESCR: 	&quot; + attrInfo[i]. getDescription());<a name="wp1067155"> </a> 
+     	echo(&quot;    TYPE: 	&quot; + attrInfo[i]. getType() +<a name="wp1067156"> </a> 
+               	&quot;READ: &quot;+ attrInfo[i]. isReadable() +<a name="wp1067157"> </a> 
+               	&quot;WRITE: &quot;+ attrInfo[i]. isWritable());<a name="wp1067158"> </a> 
+        }<a name="wp1067159"> </a> 
+     } else echo(&quot; ** No attributes **&quot;);<a name="wp1067160"> </a> 
+<a name="wp1067161"> </a> 
+[...]<a name="wp1067162"> </a> 
+</pre></div>
+<a name="wp1067166"> </a> <p class="pBody">
+<a  href="connectors.html#wp1067135">코드예&#160;3-4</a>  는,<code class="cCode">printMBeanInfo()</code> 메소드의 정의를 나타내고 있습니다. printMBeanInfo()</code> 메소드는 <code class="cCode">MBeanServer</code> 의 메소드 <code class="cCode">getMBeanInfo()</code> 를 호출해,<code class="cCode">mbeanObjectName</code> 에 의해 개시되는 속성과 조작의 상세를 가져옵니다. <code class="cCode"><code class="cCode">MBeanAttributeInfo</code> 는 다음의 메소드를 정의합니다. 그러한 메소드는 각각,<code class="cCode">mbeanObjectName</code> MBean 의 속성에 관한 정보를 취득하는 경우에 불려 갑니다.
+</p>
+<ul class="pBullet1"><a name="wp1067167"> </a> <div class="pBullet1"><li><code class="cCode">getName</code>. 속성의 이름을 취득한다. </li></div>
+<a name="wp1067168"> </a> <div class="pBullet1Plus"><li><code class="cCode">getDescription</code>.  인간이 읽을 수 있는 속성의 설명을 취득한다</li></div>
+<a name="wp1067169"> </a> <div class="pBullet1Plus"><li><code class="cCode">getType</code>.  속성의 클래스명을 취득한다</li></div>
+<a name="wp1067170"> </a> <div class="pBullet1Plus"><li><code class="cCode">isReadable</code>.  속성이 읽어내 가능한가 아닌가를 판단한다</li></div>
+<a name="wp1067171"> </a> <div class="pBullet1Last"><li><code class="cCode">isWritable</code>. 속성이 기입해 가능한가 어떤가를 판단한다. </li></div>
+</ul>
+<a name="wp1067172"> </a> <p class="pBody">
+여기에는 가리키고 있지 않습니다만, 호출을 하는 것은,<code class="cCode">mbeanObjectName</code> MBean 의 생성자 , 조작, 및 통지에 관한 정보를 취득하기 (위해)때문에입니다.
+</p>
+<ul class="pBullet1"><a name="wp1067173"> </a> <div class="pBullet1"><li><code class="cCode">MBeanConstructorInfo</code>. MBean 의 Java 클래스에 관한 정보를 취득한다. </li></div>
+<a name="wp1067174"> </a> <div class="pBullet1Plus"><li><code class="cCode">MBeanOperationInfo</code>.  MBean 로 실행되는 조작의 내용, MBean 로 사용되는 파라미터의 종류를 학습한다</li></div>
+<a name="wp1067175"> </a> <div class="pBullet1Last"><li><code class="cCode">MBeanNotificationInfo</code>.  MBean 의 조작이 실행되었을 경우에, MBean 로부터 송신되는 통지의 종류를 조사한다</li></div>
+</ul>
+<a name="wp1067177"> </a> <div class="pCodeCaption">
+코드예&#160;3-5	MBean 의 예제 클래스 Server.java (발췌 5)
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+[...]<a name="wp1067178"> </a> 
+<a name="wp1067179"> </a> 
+private static void manageSimpleMBean(MBeanServer mbs,<a name="wp1067180"> </a> 
+                                        ObjectName mbeanObjectName,<a name="wp1067181"> </a> 
+                                        String mbeanClassName) {<a name="wp1067182"> </a> 
+        try {<a name="wp1067183"> </a> 
+            printSimpleAttributes(mbs, mbeanObjectName);<a name="wp1067184"> </a> 
+<a name="wp1067185"> </a> 
+            Attribute stateAttribute = new Attribute(&quot;State&quot;,<a name="wp1067186"> </a> 
+                                                     &quot;new state&quot;);<a name="wp1067187"> </a> 
+            mbs.setAttribute(mbeanObjectName, stateAttribute);<a name="wp1067188"> </a> 
+<a name="wp1067189"> </a> 
+            printSimpleAttributes(mbs, mbeanObjectName);<a name="wp1067190"> </a> 
+	    <a name="wp1067191"> </a> 
+            echo(&quot;\n    Invoking reset operation...&quot;);<a name="wp1067192"> </a> 
+            mbs.invoke(mbeanObjectName, &quot;reset&quot;, null, null);<a name="wp1067193"> </a> 
+<a name="wp1067194"> </a> 
+            printSimpleAttributes(mbs, mbeanObjectName);<a name="wp1067195"> </a> 
+        } catch (Exception e) {<a name="wp1067196"> </a> 
+            e.printStackTrace();<a name="wp1067197"> </a> 
+        }<a name="wp1067198"> </a> 
+    }<a name="wp1067199"> </a> 
+<a name="wp1067200"> </a> 
+    private static void printSimpleAttributes(<a name="wp1067201"> </a> 
+                                        MBeanServer mbs,<a name="wp1067202"> </a> 
+                                        ObjectName mbeanObjectName) {<a name="wp1067203"> </a> 
+        try {<a name="wp1067204"> </a> 
+            String State = <a name="wp1067205"> </a> 
+               (String) mbs.getAttribute(mbeanObjectName, &quot;State&quot;);<a name="wp1067206"> </a> 
+            Integer NbChanges =<a name="wp1067207"> </a> 
+               (Integer) mbs.getAttribute(mbeanObjectName,<a name="wp1067208"> </a> 
+                                          &quot;NbChanges&quot;);<a name="wp1067209"> </a> 
+        } catch (Exception e) {<a name="wp1067210"> </a> 
+            echo(	&quot;!!! Could not read attributes !!!&quot;);<a name="wp1067211"> </a> 
+            e.printStackTrace();<a name="wp1067212"> </a> 
+        }<a name="wp1067213"> </a> 
+   }<a name="wp1067214"> </a> 
+<a name="wp1067215"> </a> 
+[...] <a name="wp1067216"> </a> 
+</pre></div>
+<a name="wp1067220"> </a> <p class="pBody">
+<a  href="connectors.html#wp1067177">코드예&#160;3-5</a>  는 간단한 MBean 를 관리하기 위한 방법을 나타내고 있습니다.  
+</p>
+<a name="wp1067221"> </a> <p class="pBody">
+우선,<code class="cCode">manageSimpleMBean()</code> 메소드가,<code class="cCode">Server</code> 에서도 정의되는 <code class="cCode">printSimpleAttributes()</code> 메소드를 호출합니다. <code class="cCode"><code class="cCode">printSimpleAttributes()</code> 메소드는, MBean <code class="cCode">mbeanObjectName</code> 로부터 <code class="cCode">state</code> 라고 하는 MBean 속성과<code class="cCode">NbChanges</code> 라고 하는 이제(벌써) 1 개의 MBean 속성을 가져옵니다. 이러한 속성은 모두,<a  href="connectors.html#wp1001692"><span style="color: #3366CC">「3.1. 1.3 </span><span style="color: #3366CC">SimpleStandard.java</span><span style="color: #3366CC"></span>」</a>에 나타내도록(듯이),<code class="cCode">SimpleStandard</code> 클래스에서 정의됩니다.
+</p>
+<a name="wp1067225"> </a> <p class="pBody">
+다음에 <code class="cCode">manageSimpleMBean()</code> 메소드는,<code class="cCode">Attribute</code> 클래스의 인스턴스인 속성 <code class="cCode">stateAttribute</code> 를 정의합니다. <code class="cCode">stateAttribute</code> 속성은, 값 <code class="cCode">new state</code> 를 <code class="cCode">SimpleStandard</code> 로 정의되는 기존의 속성 <code class="cCode">state</code> 에 관련짓습니다. 다음에 <code class="cCode">MBeanServer</code> 의 <code class="cCode">setAttribute()</code> 메소드에 호출하는 것으로,<code class="cCode">mbeanObjectName</code> MBean 상태가 <code class="cCode">stateAttribute</code> 로 정의되는 새로운 상태로 설정됩니다.  
+</p>
+<a name="wp1067226"> </a> <p class="pBody">
+마지막에 <code class="cCode">MBeanServer</code> 의 <code class="cCode">invoke()</code> 메소드에 호출하는 것으로,<code class="cCode">mbeanObjectName</code> MBean 의 <code class="cCode">reset</code> 조작이 기동합니다. reset</code> 조작은,<code class="cCode">SimpleStandard</code> 클래스에서 정의됩니다.
+</p>
+<a name="wp997727"> </a> <h4 class="pHeading3">
+3.1. 1.2	SimpleStandardMBean.java
+</h4>
+<a name="wp998770"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean.java</code> 클래스를<a  href="connectors.html#wp1000966">코드예&#160;3-6</a>  에 나타냅니다.
+</p>
+<a name="wp1000966"> </a> <div class="pCodeCaption">
+코드예&#160;3-6	MBean 의 예제 클래스 SimpleStandardMBean.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1000973"> </a> 
+public interface SimpleStandardMBean {<a name="wp998834"> </a> 
+<a name="wp1000959"> </a> 
+       public String getState();<a name="wp1000960"> </a> 
+       public void setState(String s);<a name="wp1000961"> </a> 
+       public int getNbChanges();<a name="wp1000962"> </a> 
+       public void reset();<a name="wp1000963"> </a> 
+<a name="wp1000964"> </a> 
+}<a name="wp1000965"> </a> 
+<a name="wp1000931"> </a> 
+</pre></div>
+<a name="wp1000967"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean.java</code> 클래스는, MBean <code class="cCode">SimpleStandard</code> 의 간단한 JMX 스펙의 관리 인터페이스입니다. 이 인터페이스는, JMX 에이전트로부터의 관리를 위해서(때문에) <code class="cCode">SimpleStandard</code> 로 정의된 4 개의 조작을 공개합니다.
+</p>
+<a name="wp1001692"> </a> <h4 class="pHeading3">
+3.1. 1.3	SimpleStandard.java
+</h4>
+<a name="wp1001696"> </a> <p class="pBody">
+<code class="cCode">SimpleStandardMBean.java</code> 클래스를<a  href="connectors.html#wp1004775">코드예&#160;3-7</a>  에 나타냅니다.
+</p>
+<a name="wp1004775"> </a> <div class="pCodeCaption">
+코드예&#160;3-7	MBean 의 예제 클래스 SimpleStandard.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1004834"> </a> 
+public class SimpleStandard<a name="wp1004840"> </a> 
+    extends NotificationBroadcasterSupport<a name="wp1004841"> </a> 
+    implements SimpleStandardMBean {<a name="wp1004842"> </a> 
+    public String getState() {<a name="wp1004843"> </a> 
+       return state;<a name="wp1004844"> </a> 
+    }<a name="wp1004845"> </a> 
+    public void setState(String s) {<a name="wp1004846"> </a> 
+       state = s;<a name="wp1004847"> </a> 
+       nbChanges++;<a name="wp1004848"> </a> 
+    }<a name="wp1004849"> </a> 
+    <a name="wp1004850"> </a> 
+    public int getNbChanges() {<a name="wp1004851"> </a> 
+        return nbChanges;<a name="wp1004852"> </a> 
+    }<a name="wp1004853"> </a> 
+    <a name="wp1004854"> </a> 
+    public void reset() {<a name="wp1004855"> </a> 
+       AttributeChangeNotification acn = <a name="wp1004856"> </a> 
+           new AttributeChangeNotification(this,<a name="wp1004857"> </a> 
+                                          0,<a name="wp1004858"> </a> 
+                                          0,<a name="wp1004859"> </a> 
+                                          &quot;NbChanges reset&quot;,<a name="wp1004860"> </a> 
+                                          &quot;NbChanges&quot;,<a name="wp1004861"> </a> 
+                                          &quot;Integer&quot;,<a name="wp1004862"> </a> 
+                                          new Integer(nbChanges),<a name="wp1004863"> </a> 
+                                          new Integer(0));<a name="wp1004864"> </a> 
+       state = &quot;initial state&quot;;<a name="wp1004865"> </a> 
+       nbChanges = 0;<a name="wp1004866"> </a> 
+       nbResets++;<a name="wp1004867"> </a> 
+       sendNotification(acn);<a name="wp1004868"> </a> 
+    }<a name="wp1004869"> </a> 
+    <a name="wp1004870"> </a> 
+    public int getNbResets() {<a name="wp1004871"> </a> 
+       return nbResets;<a name="wp1004872"> </a> 
+    }<a name="wp1004873"> </a> 
+<a name="wp1067241"> </a> 
+    public MBeanNotificationInfo[] getNotificationInfo() {<a name="wp1067242"> </a> 
+        return new MBeanNotificationInfo[] {<a name="wp1067243"> </a> 
+	  new MBeanNotificationInfo(<a name="wp1067244"> </a> 
+	  new String[] {<a name="wp1067245"> </a> 
+	    AttributeChangeNotification.ATTRIBUTE_CHANGE },<a name="wp1067246"> </a> 
+	    AttributeChangeNotification.class.getName(),<a name="wp1067247"> </a> 
+	    &quot;This notification is emitted when the reset() <a name="wp1067248"> </a> 
+	     method is called. &quot;)<a name="wp1067249"> </a> 
+	};<a name="wp1067250"> </a> 
+    }<a name="wp1004884"> </a> 
+    <a name="wp1004885"> </a> 
+    private String state = &quot;initial state&quot;;<a name="wp1004886"> </a> 
+    private int nbChanges = 0;<a name="wp1004887"> </a> 
+    private int nbResets = 0;<a name="wp1004888"> </a> 
+<a name="wp1004889"> </a> 
+}	 <a name="wp1004835"> </a> 
+<a name="wp1004836"> </a> 
+</pre></div>
+<a name="wp1001690"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> 클래스는, 간단한 JMX 스펙의 표준 MBean 를 정의합니다.
+</p>
+<a name="wp1004896"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> MBean 는,<a  href="connectors.html#wp997727"><span style="color: #3366CC">「3.1. 1.2 </span><span style="color: #3366CC">SimpleStandardMBean.java</span><span style="color: #3366CC">」</span></a> 에 나타내도록(듯이), 대응하는 <code class="cCode">SimpleStandardMBean</code> 인터페이스를 구현하는 것으로, 관리를 위한 조작과 속성을 개시합니다.
+</p>
+<a name="wp1067256"> </a> <p class="pBody">
+이 MBean 로 개시되는 간단한 조작을 다음에 나타냅니다.
+</p>
+<ul class="pBullet1"><a name="wp1067257"> </a> <div class="pBullet1"><li>상태를 정의한다</li></div>
+<a name="wp1067258"> </a> <div class="pBullet1Plus"><li>현재 상태를 갱신한다</li></div>
+<a name="wp1067259"> </a> <div class="pBullet1Plus"><li>상태의 갱신 회수를 카운트 한다</li></div>
+<a name="wp1067260"> </a> <div class="pBullet1Plus"><li>상태의 값이라고 변경 회수를 원의 값인 제로에 리셋 한다</li></div>
+<a name="wp1067261"> </a> <div class="pBullet1Last"><li>리셋가 불려 갔을 경우에 항상 통지를 송신한다</li></div>
+</ul>
+<a name="wp1067262"> </a> <p class="pBody">
+리셋 조작에 의해 발행되는 통지는, 클래스 <code class="cCode">AttributeChangeNotification</code> 의 인스턴스이며, 리셋의 호출전에 <code class="cCode">State</code> 속성으로 실행된 변경수에 관한 정보를 수집합니다. 송신되는 통지의 내용은,<code class="cCode">MBeanNotificationInfo</code> 인스턴스로 정의됩니다.
+</p>
+<a name="wp1067264"> </a> <h4 class="pHeading3">
+3.1. 1.4	SimpleDynamic.java
+</h4>
+<a name="wp1067268"> </a> <p class="pBody">
+<code class="cCode">SimpleDynamic</code> 클래스를<a  href="connectors.html#wp1067270">코드예&#160;3-8</a>  에 나타냅니다.
+</p>
+<a name="wp1067270"> </a> <div class="pCodeCaption">
+코드예&#160;3-8	MBean 의 예제 클래스 SimpleDynamic.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1018651"> </a> 
+public class SimpleDynamic<a name="wp1067275"> </a> 
+    extends NotificationBroadcasterSupport<a name="wp1067276"> </a> 
+    implements DynamicMBean {<a name="wp1067277"> </a> 
+<a name="wp1067278"> </a> 
+    public SimpleDynamic() {<a name="wp1067279"> </a> 
+        buildDynamicMBeanInfo();<a name="wp1067280"> </a> 
+    }<a name="wp1067281"> </a> 
+<a name="wp1067282"> </a> 
+[...]<a name="wp1067283"> </a> 
+</pre></div>
+<a name="wp1067284"> </a> <p class="pBody">
+<code class="cCode">SimpleDynamic</code> 의 동적 MBean 에서는,<code class="cCode">DynamicMBean</code> 인터페이스를 구현하는 것으로, 실행시에 관리용의 속성과 조작을 개시하는 방법을 나타냅니다. 여기에서는, 우선, MBean 에 관한 정보를 동적으로 취득하기 위한 메소드 <code class="cCode">buildDynamicMBeanInfo()</code> 의 정의로부터 개시합니다. <code class="cCode">buildDynamicMBeanInfo()</code> 메소드는, 동적 MBean 에 <code class="cCode">MBeanInfo</code> 를 구축합니다.
+</p>
+<a name="wp1067285"> </a> <p class="pBody">
+<code class="cCode">SimpleDynamic</code> 외 코드는,<code class="cCode">DynamicMBean</code> 인터페이스의 구현에 대응하고 있습니다. 개시되는 속성, 조작, 통지는,<code class="cCode">SimpleStandard</code> MBean 로 개시되는 것 것과 같습니다.
+</p>
+<a name="wp1025470"> </a> <h4 class="pHeading3">
+3.1. 1.5	ClientListener.java
+</h4>
+<a name="wp1018531"> </a> <p class="pBody">
+<code class="cCode">ClientListener.java</code> 클래스를<a  href="connectors.html#wp1018533">코드예&#160;3-9</a>  에 나타냅니다.
+</p>
+<a name="wp1018533"> </a> <div class="pCodeCaption">
+코드예&#160;3-9	MBean 의 예제 클래스 ClientListener.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1018534"> </a> 
+<a name="wp1018535"> </a> 
+public class ClientListener implements NotificationListener { <a name="wp1018536"> </a> 
+ public void handleNotification(Notification notification, Object handback) <a name="wp1018537"> </a> 
+     { <a name="wp1018538"> </a> 
+         System.out.println(&quot;\nReceived notification: &quot; + notification); <a name="wp1018539"> </a> 
+     } <a name="wp1018540"> </a> 
+}<a name="wp1018541"> </a> 
+<a name="wp1018542"> </a> 
+</pre></div>
+<a name="wp1018543"> </a> <p class="pBody">
+<code class="cCode">ClientListener</code> 클래스는, 간단한 JMX 스펙의 통지 리스너를 구현합니다.  
+</p>
+<a name="wp1018544"> </a> <p class="pBody">
+통지가 수령되면(자),<code class="cCode">NotificationListener</code> 인터페이스의 <code class="cCode">handleNotification()</code> 메소드가 불려 가 통지의 수령을 확인하기 위한 메세지가 인쇄됩니다.
+</p>
+<a name="wp998855"> </a> <h4 class="pHeading3">
+3.1. 1.6	Client.java
+</h4>
+<a name="wp998859"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 클래스를<a  href="connectors.html#wp1000974">코드예&#160;3-10</a>  에 나타냅니다.  
+</p>
+<a name="wp1000974"> </a> <div class="pCodeCaption">
+코드예&#160;3-10	MBean 의 예제 클래스 Client.java
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp1000976"> </a> 
+public class Client {<a name="wp1069727"> </a> 
+<a name="wp1069728"> </a> 
+  public static void main(String[] args) {<a name="wp1069729"> </a> 
+    try {<a name="wp1069730"> </a> 
+      // Create an RMI connector client<a name="wp1069731"> </a> 
+      //<a name="wp1069732"> </a> 
+      JMXServiceURL url = new JMXServiceURL(<a name="wp1069733"> </a> 
+         &quot;service:jmx:rmi:///jndi/rmi://localhost:9999/server&quot;);<a name="wp1069734"> </a> 
+      JMXConnector jmxc = JMXConnectorFactory.connect(url, null);<a name="wp1069735"> </a> 
+      ClientListener listener = new ClientListener();<a name="wp1069736"> </a> 
+      MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();<a name="wp1069737"> </a> 
+      waitForEnterPressed();      <a name="wp1069738"> </a> 
+      <a name="wp1069739"> </a> 
+      // Get domains from MBeanServer<a name="wp1069740"> </a> 
+      //<a name="wp1069741"> </a> 
+      String domains[] = mbsc.getDomains();<a name="wp1069742"> </a> 
+      for (int i = 0; i &lt; domains.length; i++) {<a name="wp1069743"> </a> 
+          System.out.println(&quot;Domain[&quot; + i + &quot;] = &quot; + domains[i]);<a name="wp1069744"> </a> 
+      }<a name="wp1069745"> </a> 
+      waitForEnterPressed();      <a name="wp1069746"> </a> 
+<a name="wp1069747"> </a> 
+      String domain = mbsc.getDefaultDomain();      <a name="wp1069919"> </a> 
+  <a name="wp1069920"> </a> 
+      // Create SimpleStandard MBean <a name="wp1069921"> </a> 
+      ObjectName mbeanName = <a name="wp1069923"> </a> 
+             new ObjectName(domain +&quot;:type=SimpleStandard, name=2&quot;);<a name="wp1069924"> </a> 
+      mbsc.createMBean(&quot;SimpleStandard&quot;, stdMBeanName, null, null);<a name="wp1069753"> </a> 
+      waitForEnterPressed();      <a name="wp1069754"> </a> 
+            <a name="wp1069755"> </a> 
+      // Create SimpleDynamic MBean<a name="wp1069962"> </a> 
+      ObjectName dynMBeanName =<a name="wp1069963"> </a> 
+          new ObjectName(domain +&quot;:type=SimpleDynamic, name=2&quot;);<a name="wp1069759"> </a> 
+      echo(&quot;\nCreate SimpleDynamic MBean...&quot;);<a name="wp1069760"> </a> 
+      mbsc.createMBean(&quot;SimpleDynamic&quot;, dynMBeanName, null, null);<a name="wp1069761"> </a> 
+      waitForEnterPressed();<a name="wp1069762"> </a> 
+      <a name="wp1069763"> </a> 
+      // Get MBean count<a name="wp1069764"> </a> 
+      echo(&quot;\nMBean count = &quot; + mbsc.getMBeanCount());<a name="wp1069766"> </a> 
+<a name="wp1069767"> </a> 
+      // Query MBean names<a name="wp1069768"> </a> 
+      echo(&quot;\nQuery MBeanServer MBeans:&quot;);<a name="wp1069770"> </a> 
+      Set names = mbsc.queryNames(null, null);<a name="wp1069771"> </a> 
+      for (Iterator i = names.iterator(); i.hasNext(); ) {<a name="wp1069772"> </a> 
+      echo(	&quot;ObjectName = &quot; + (ObjectName) i.next());<a name="wp1069773"> </a> 
+      }<a name="wp1069774"> </a> 
+      waitForEnterPressed();<a name="wp1069775"> </a> 
+      <a name="wp1069776"> </a> 
+      mbsc.setAttribute(stdMBeanName,<a name="wp1069777"> </a> 
+                        new Attribute(&quot;State&quot;, &quot;changed state&quot;));<a name="wp1069778"> </a> 
+<a name="wp1069779"> </a> 
+      SimpleStandardMBean proxy = JMX.newMBeanProxy(<a name="wp1069780"> </a> 
+          mbsc, stdMBeanName, SimpleStandardMBean.class, true);<a name="wp1069781"> </a> 
+      echo(&quot;\nState = &quot; + proxy.getState());<a name="wp1069782"> </a> 
+<a name="wp1069783"> </a> 
+      ClientListener listener = new ClientListener();<a name="wp1069784"> </a> 
+      mbsc.addNotificationListener(stdMBeanName, listener, null, null);<a name="wp1069785"> </a> 
+<a name="wp1069786"> </a> 
+      mbsc.invoke(stdMBeanName, &quot;reset&quot;, null, null);<a name="wp1069787"> </a> 
+<a name="wp1069788"> </a> 
+      mbsc.removeNotificationListener(stdMBeanName, listener);<a name="wp1069789"> </a> 
+      mbsc.unregisterMBean(stdMBeanName);<a name="wp1069790"> </a> 
+      <a name="wp1069791"> </a> 
+      [...]<a name="wp1069792"> </a> 
+      <a name="wp1069793"> </a> 
+      jmxc.close();<a name="wp1069794"> </a> 
+    } catch (Exception e) {<a name="wp1069795"> </a> 
+      e.printStackTrace();<a name="wp1069796"> </a> 
+    }<a name="wp1069797"> </a> 
+  }<a name="wp1069798"> </a> 
+}<a name="wp1069799"> </a> 
+[...]<a name="wp1069800"> </a> 
+</pre></div>
+<a name="wp998928"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 클래스는, RMI 연결기 클라이언트를 작성합니다.  이 클라이언트는,<code class="cCode">Server.java</code> 로 작성되는 RMI 연결기 서버에의 접속용으로 설정됩니다.  
+</p>
+<a name="wp998929"> </a> <p class="pBody">
+<code class="cCode">Client.java</code> 는 <code class="cCode">Server.java</code> 로 정의되는 것과 같은 서비스 URL,<code class="cCode">url</code> 를 정의합니다. 이것에 의해, 연결기 클라이언트는, 로컬 호스트의 포트 <code class="cCode">9999</code> 로 동작하는 RMI 레지스트리로부터 RMI 연결기 서버 Stub <code class="cCode">server</code> 를 취득해, RMI 연결기 서버에 접속할 수가 있습니다.
+</p>
+<a name="wp998930"> </a> <p class="pBody">
+RMI 레지스트리가 이와 같이 특정된 후, 연결기 클라이언트를 작성할 수 있습니다. 연결기 클라이언트 <code class="cCode">jmxc</code> 는,<code class="cCode">JMXConnectorFactory</code> 의 <code class="cCode">connect()</code> 메소드에 의해 작성된 인터페이스 <code class="cCode">JMXConnector</code> 의 인스턴스입니다. <code class="cCode">connect()</code> 메소드는, 불려 가면(자), 파라미터 <code class="cCode">url</code> 와 <code class="cCode">null</code> 환경 맵이 건네받습니다.
+</p>
+<a name="wp1067415"> </a> <p class="pBody">
+또 클라이언트는,<a  href="connectors.html#wp1025470"><span style="color: #3366CC">「3.1. 1.5 </span><span style="color: #3366CC">ClientListener.java</span><span style="color: #3366CC">」</span></a> 에 나타내도록(듯이),<code class="cCode">ClientListener</code> 의 인스턴스를 작성해 통지를 대기합니다.
+</p>
+<a name="wp998934"> </a> <p class="pBody">
+다음에,<code class="cCode">JMXConnector</code> 인스턴스 <code class="cCode">jmxc</code> 의 <code class="cCode">getMBeanServerConnection()</code> 메소드를 호출해, JMX 스펙 <code class="cCode">MBeanServerConnection</code> 의 인스턴스 <code class="cCode">mbsc</code> 가 작성됩니다.  
+</p>
+<a name="wp998851"> </a> <p class="pBody">
+이것에 의해 연결기 클라이언트는 <code class="cCode">Server.java</code> 로 작성된 MBean 서버에 접속되어 양단에의 접속이 완전하게 투과적인 상태에 있으면 MBean 의 등록과 MBean 에서의 조작이 가능하게 됩니다.  
+</p>
+<a name="wp1032061"> </a> <p class="pBody">
+클라이언트는,<code class="cCode">MBeanServerConnection</code> 의 <code class="cCode">createMBean()</code> 메소드를 호출해, MBean 서버에 <code class="cCode">SimpleStandard</code> MBean 와 SimpleDynamic MBean 를 작성 및 등록합니다.  그리고,<code class="cCode">SimpleStandard</code> 와 <code class="cCode">SimpleDynamic</code> 로 정의된 조작을, 로컬 JMX 스펙의 MBean 조작과 완전히와 같이  실행합니다. <code class="cCode"> 
+</p>
+<a name="wp1069832"> </a> <p class="pBody">
+MBean 프록시에 의해 Java 인터페이스를 개입시켜 MBean 에 액세스 할 수 있기 (위해)때문에, 긴 코드를 기술하지 않아도, 프록시상에서 호출해 원격 MBean 에 액세스 할 수 있습니다. <code class="cCode">SimpleStandardMBean</code> 의 MBean 프록시를 여기서 작성하려면 ,<code class="cCode">javax.management.JMX</code> 클래스의 <code class="cCode">newMBeanProxy()</code> 메소드를 호출해, MBean 의 <code class="cCode">MBeanServerConnection</code>, 객체명, MBean 인터페이스의 클래스명, 및 true 를 건네주어, 이 프록시가 <code class="cCode">NotificationBroadcaster</code> 로서 동작할 필요가 있는 것을 알립니다. MXBean 의 프록시를 표준 MBean 의 경우와 완전히 같은 방법으로 작성하려면 ,<code class="cCode">newMBeanProxy()</code> 는 아니고 <code class="cCode">newMXBeanProxy()</code> 를 호출합니다.
+</p>
+<a name="wp1069831"> </a> <p class="pBody">
+SimpleDynamic</code> 로 실행되는 각 조작은,<code class="cCode">SimpleStandard</code> 로 실행되는 것 것과 같기 때문에, 여기에서는 조작의 코드를 기재하고 있습니다.
+</p>
+<a name="wp1032062"> </a> <p class="pBody">
+마지막으로, 클라이언트는 <code class="cCode">SimpleStandard</code> MBean 의 등록을 해제해, 접속을 종료합니다. 마지막 <code class="cCode">removeNotificationListener</code> 는 생략 가능합니다.  이것은 원격 클라이언트로 등록된 리스너는, 그 클라이언트의 종료시에 삭제되기 (위해)때문에입니다.
+</p>
+<a name="wp1005075"> </a> <h3 class="pHeading2">
+3.1. 2	MBean 의 예제의 실행
+</h3>
+<a name="wp996972"> </a> <p class="pBody">
+클래스의 예제를 검증한 후, 이번은 예제를 실행합니다. 예제를 실행하려면 , 다음의 순서에 따르는지,<code class="cCode">README</code> 파일을 참조합니다.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1067443"> </a> <li>Java 클래스를 컴파일 합니다. </li>
+<a name="wp1067449"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">javac *. java</span>
+</p>
+<a name="wp1000292"> </a> <li>로컬 호스트의 포트 <code class="cCode">9999</code> 로 RMI 레지스트리를 기동합니다. </li>
+<a name="wp1000457"> </a> <p class="pBody">
+RMI 레지스트리는,<code class="cCode">Server</code> 에 의해 RMI 연결기 Stub의 등록에 사용됩니다.
+</p>
+<a name="wp999064"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">rmiregistry 9999 &amp;</span>
+</p>
+<a name="wp999063"> </a> <li><code class="cCode">Server</code> 클래스를 기동합니다. </li>
+<a name="wp999044"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">java -classpath . 서버</span>
+</p>
+<a name="wp1067459"> </a> <p class="pBody">
+MBean 서버의 작성, 및 MBean 서버에서의 <code class="cCode">SimpleStandard</code> MBean 의 작성을 확인하는 prompt가 표시됩니다. 다음에 <code class="cCode">SimpleStandard</code> MBean 에 관한 정보를 취득해, 이 MBean 로 조작을 실행하는 경우는, Enter 키를 누르도록(듯이) 요구됩니다.  
+</p>
+<a name="wp1067460"> </a> <p class="pBody">
+<code class="cCode">SimpleStandard</code> 에서의 조작이 종료하면(자),<code class="cCode">SimpleDynamic</code> MBean 에 대해, 같은 프로세스가 반복해집니다.
+</p>
+<a name="wp1067461"> </a> <p class="pBody">
+표준 및 동적 MBean 가 작성되어 각 MBean 상에서의 조작이 실행된 후, RMI 연결기 서버의 작성이 표시됩니다.  이 서버를 사용하면(자), 원격 <code class="cCode">Client</code> 로부터 MBeans 상에서 조작을 실행할 수 있습니다.
+</p>
+<a name="wp999053"> </a> <li>다른 단말 윈도우로 <code class="cCode">Client</code> 클래스를 기동합니다. </li>
+<a name="wp999061"> </a> <p class="pBody">
+<code class="cCode">$ </code><span class="cUserType">java -classpath . 클라이언트</span>
+</p>
+<a name="wp1002882"> </a> <p class="pListEndingPara">RMI 연결기의 작성, 및 연결기 서버와의 접속의 작성의 확인이 표시됩니다. 도메인명과<code class="cCode">SimpleStandard</code> 및 SimpleDynamic 의 MBean 의 작성과 등록에 대해서도 통지됩니다. 클라이언트는 다음에,<code class="cCode">SimpleStandard</code> 와 SimpleDynamic 의 양 MBean 로 조작을 실행해, 그 후, 양 MBean 의 등록을 해제합니다.  </p>
+<a name="wp1003045"> </a> <p class="pListEndingPara"></p>
+</ol>
+<a name="wp999649"> </a> <p class="pBody">
+
+</p>
+<a name="wp1001464"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001467"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001470"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001473"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001476"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001479"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001482"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001485"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001488"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001491"> </a> <p class="pBodySmall">
+
+</p>
+<a name="wp1001494"> </a> <p class="pBodySmall">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="tutorialTOC.html">목차</a>  | <a accesskey="p" href="essential.html">전의 항목</a>  | <a accesskey="n" href="lookup.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지의 튜토리얼<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

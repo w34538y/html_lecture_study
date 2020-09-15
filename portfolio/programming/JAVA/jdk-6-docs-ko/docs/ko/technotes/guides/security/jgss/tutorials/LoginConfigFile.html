@@ -1,0 +1,125 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JAAS 로그인 구성 파일 - xrath.com 에서 번역됨</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000077" alink="#FF0000">
+
+
+<H2>JAAS 로그인 구성 파일</H2>
+
+<blockquote>
+
+<p> JAAS 인증은 플러그 인 가능한 형식에서 실행되기 (위해)때문에, Java 어플리케이션은, 기반이 되는 인증 기술로부터 독립한 상태를 유지할 수 있습니다. 적절한 인증 기술등의 구성 정보는 실행시로 지정됩니다. 구성 정보의 소스 (파일이나 데이타베이스)는, 현재의 <a href="../../../../../api/javax/security/auth/login/Configuration.html">javax.security.auth.login.Configuration</a>  구현에 따라서 다릅니다. Sun Microsystems 의 디폴트의 <code>Configuration</code> 구현은, 이 문서로 설명하도록(듯이), 구성 파일로부터 구성 정보를 읽어냅니다.
+
+
+<H3>로그인 구성 파일의 구조 및 내용</H3>
+
+<blockquote>
+
+<p>로그인 구성 파일은, 1 개(살) 이상의 엔트리로 구성됩니다. 각 엔트리에는, 특정의 어플리케이션으로 사용하는 기반이 되는 인증 기술이 지정됩니다. 각 엔트리의 구조를, 다음에 나타냅니다.
+
+<blockquote>
+<pre>
+&lt;entry name&gt; { 
+    &lt;LoginModule&gt; &lt;flag&gt; &lt;LoginModule options&gt;;
+    &lt;LoginModule&gt; &lt;flag&gt; &lt;LoginModule options&gt;;
+    .  .  .
+    };
+</pre>
+</blockquote>
+
+<p>이와 같이, 각 로그인 구성 파일 엔트리는, LoginModule 의 이름과 LoginModule 고유의 항목 1 개 이상으로 구성됩니다. LoginModule 고유의 항목은, LoginModule, 플래그치, LoginModule 에게 건네지는 옵션을 지정합니다. 이것들에 대해서는 이하를 참조해 주세요. LoginModule 고유의 개개의 항목의 말미에는 세미콜론을 붙입니다. 게다가 모든 항목을 1 조안괄호로 둘러쌉니다. 각 구성 파일의 엔트리의 마지막으로, 세미콜론을 붙입니다.
+
+<p>예를 들어,<a href="AcnOnly.html">「JAAS 인증」</a>튜토리얼로 사용하는 로그인 구성 파일에는, 다음의 엔트리만이 포함됩니다.
+
+<blockquote>
+<pre>
+<b>JaasSample {
+  com.sun.security.auth.module.Krb5LoginModule required;
+};</b>
+</pre>
+</blockquote>
+
+<p>여기에서는, 엔트리의 이름은 "JaasSample" 입니다. 이 이름을 사용해, JAAS 인증 튜토리얼 어플리케이션 (<code>JaasAcn.java</code>)은 엔트리를 참조합니다. 이 엔트리는, 사용자 인증에 사용하는 로그인 모듈이 <code>com.sun.security.auth.module</code> 패키지내의 Krb5LoginModule 인 것, 및 인증이 성공했다고 보여지기 위해서(때문에)는 이 Krb5LoginModule 가 「성공한다」필요가 있는 것을 나타냅니다. Krb5LoginModule 가 성공하는 것은, 사용자가 입력한 이름 및 패스워드를 사용해, Kerberos KDC 에의 로그인에 성공했을 경우만입니다.
+
+<p>JAAS 인증 튜토리얼의<a href="AcnOnly.html#ClientLC">「LoginContext 의 인스턴스화」</a>로 설명한 것처럼, 로그인 구성 파일의 엔트리의<b>이름</b>은, LoginContext 의 인스턴스화시에 어플리케이션이 엔트리의 참조에 사용하는 이름입니다. 어플리케이션 개발자는, 임의의 이름을 설정할 수 있습니다. 여기서, 「어플리케이션」이라고 하는 말은, JAAS 로그인을 실시하는 어떠한 코드를 가리킵니다. 이것은, 어플리케이션의 경우 (<a href="AcnOnly.html">「JAAS 인증」 </a>및<a href="AcnAndAzn.html">「JAAS 승인」</a>튜토리얼로 가리킨 것처럼)도, JAAS 조작을 실시하는 Login 유틸리티의 경우 (<a href="LoginSample.html">「JAAS Login 유틸리티의 사용」 </a>및<a href="ClientServer.html">「JAAS Login 유틸리티 및 Java GSS-API 를 사용한 안전한 메시지 교환」</a>튜토리얼로 가리킨 것처럼)도 있습니다.
+
+<p>다음에, LoginModule 고유의 항목의 원가요소를 나타냅니다. 자세한 것은,<a href="../../../../../api/javax/security/auth/login/Configuration.html">「Configuration」</a>문서를 참조해 주세요.
+
+<ul>
+
+<li><b>LoginModule</b>
+ 
+<p>특정의 인증 테크놀러지를 구현하는 클래스의 완전 지정 클래스명을 지정합니다. 이 클래스는,<code>javax.security.auth.spi.LoginModule</code> 인터페이스를 구현할 필요가 있습니다. 일반적으로, LoginModule 는 사용자명 및 패스워드의 입력을 요구해, 그것을 검증합니다. 어느 벤더의 제공하는 로그인 모듈 구현에서도 사용 가능합니다. 몇개의 구현이, 산의 JRE 에 동고 되고 있습니다. 이러한 튜토리얼을 통해서,<code>com.sun.security.auth.module</code> 패키지내의 Krb5LoginModule 를 사용합니다. Krb5LoginModule 는, 기반이 되는 인증 기술로서 Kerberos 를 사용합니다. 다양한 로그인 모듈의 문서를 참조해 주세요. 모든 문서는,<code>com.sun.security.auth</code> 패키지내에 있습니다.
+<ul>
+<li><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/JndiLoginModule.html">JndiLoginModule</a> 
+<li><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/KeyStoreLoginModule.html">KeyStoreLoginModule</a> 
+<li><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule</a> 
+<li><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/NTLoginModule.html">NTLoginModule</a> 
+<li><a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/UnixLoginModule.html">UnixLoginModule</a> 
+</ul>
+
+<p>
+
+<li><b>플래그</b>
+
+<p>플래그치는, LoginModule 가 「required」, 「requisite」, 「sufficient」, 「optional」에 성공했는지의 여부를 나타냅니다.    <p>
+
+<li><b>로그인 모듈 옵션</b>
+
+<p>지정된 로그인 모듈 구현으로 옵션의 설정이 가능한 경우, 여기서 임의의 옵션치를 지정할 수 있습니다. 공백에서 단락지어진 값리스트는, 기반이 되는 로그인 모듈에 직접 건네받습니다. 옵션은, 로그인 모듈 자체에 의해 정의되어 내부의 동작을 제어합니다. 예를 들어, 디버그/테스트 기능을 지원하는 옵션을 로그인 모듈로 정의할 수 있습니다. 일련의 튜토리얼로 사용하는 Krb5LoginModule 용으로 정의된 옵션의 자세한 것은,<a href="../../../../../jre/api/security/jaas/spec/com/sun/security/auth/module/Krb5LoginModule.html">Krb5LoginModule 문서</a>를 참조해 주세요.  
+
+<p>구성 파일의 옵션을 지정하는 적정한 방법은, 이름-값페어의 사용입니다 (예,<i>debug=true</i>). 옵션명 (이 경우는 「debug」)과 값 (이 경우는 「true」)은, 등호로 단락짓습니다.   
+
+</ul>
+
+</blockquote>
+
+
+<H3>사용하는 로그인 구성 파일의 위치 지정</H3>
+
+<blockquote>
+
+<p>사용하는 구성 파일은, 다음의 2 개의 몇개의 방법으로 지정할 수 있습니다.
+
+<ol>
+
+<li>커멘드행
+
+<p>커멘드행 인수 <code>-Djava.security.auth.login.config</code> 를 사용해, 사용하는 로그인 구성 파일을 지정할 수 있습니다. 이 방법은, 모든 튜토리얼로 사용됩니다. 예를 들어, JAAS 인증 튜토리얼에서는,<code>JaasAcn</code> 어플리케이션의 실행에 다음의 커멘드를 사용합니다. 이 커멘드는, 구성 파일이 현행의 디렉토리의 <code>jaas.conf</code> 파일인 것을 지정합니다.
+
+<blockquote>
+<pre>
+java -Djava.security.auth.login.config=jaas.conf JaasAcn
+</pre>
+</blockquote>
+
+<li>Java 시큐리티의 프로퍼티 파일
+
+<p>로그인 구성 파일의 위치를 지정하는 다른 방법은, 시큐리티 프로퍼티 파일의 <code>login.config.url. <i>n</i></code> 프로퍼티치에 URL 를 지정하는 것입니다. 시큐리티 프로퍼티 파일은, JRE 의 <code>lib/security</code> 내의 <code>java.security</code> 파일입니다.  
+
+<p>여기서,<i>n</i> 는 1 으로부터 시작되는 정수의 연번입니다. 이 때문에, 필요에 따라서 복수의 로그인 구성 파일을 지정할 수 있습니다. 이 경우,<code>login.config.url. 1</code> 프로퍼티에 최초의 파일의 URL 를,<code>login.config.url. 2</code> 프로퍼티에 2 번째의 파일의 URL 를 설정합니다. 복수의 구성 파일을 지정하는 (즉 n > 1 의) 경우, 파일은 읽어내져 1 개(살)에 연결됩니다.
+
+<p>여기서, 이 튜토리얼로 사용하는 <code>jaas.conf</code> 로그인 구성 파일을 지정하기 위해서, 시큐리티 프로퍼티 파일에 추가할 필요가 있는 항목의 예를 나타냅니다. 이 예는, 파일이 다음의 Microsoft Windows 시스템의 <code>C:\AcnTest</code> 디렉토리에 있으면(자) 가정하고 있습니다.
+
+<blockquote>
+<pre>
+login.config.url. 1=file:C:/AcnTest/jaas.conf
+</pre>
+</blockquote>
+
+URL 에는, 사용자의 실행하는  operating system에 관계없이, 항상 slash를 사용합니다.
+
+</blockquote>
+
+</blockquote>
+
+
+</ol></body>
+
+</html>
+

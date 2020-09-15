@@ -1,0 +1,1207 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:10:43 오후 2002" />
+<title>이미징  - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-fonts.html" />
+    <link rel="Next" href="j2d-color.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-fonts.html">전의 항목</a>  | <a accesskey="n" href="j2d-color.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp65659"> </a> <h2 class="pChapNum">
+제 5 장&#160;&#160;
+</h2>
+<a name="wp65661"> </a> <h2 class="pChapTitle">
+이미징 
+</h2>
+<a name="wp65671"> </a> <p class="pBody">
+Java 2D&#8482; API 에서는, 3 종류의 이미징 모델이 지원되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp68573"> </a> <div class="pBullet1"><li>구버젼의 JDK 로 제공되고 있는 프로듀서/컨슈머(consumer) (푸쉬) 모델</li></div>
+<a name="wp68580"> </a> <div class="pBullet1Plus"><li>Java&#8482; 2 SDK 로 도입된 직접 방식 모델. </li></div>
+<a name="wp68578"> </a> <div class="pBullet1Last"><li>직접 방식 모델과 호환성이 있는 파이프라인 (풀) 모델.  장래의 Java 확장 이미징 API 로 완전하게 구현된다 </li></div>
+</ul>
+<a name="wp69740"> </a> <p class="pBody">
+다음의 겉(표)는, 3 종류의 이미징 모델의 기능을 비교한 것입니다.
+</p>
+<a name="wp72976"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp72928">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp72928"> </a> <div class="pCellHeading">
+&#160;
+</div>
+</th>
+    <th><a name="wp72930"> </a> <div class="pCellHeading">
+푸쉬 모델
+</div>
+</th>
+    <th><a name="wp72932"> </a> <div class="pCellHeading">
+중간 방식 이미지 버퍼 모델
+</div>
+</th>
+    <th><a name="wp72934"> </a> <div class="pCellHeading">
+프르모델
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp72936"> </a> <div class="pCellHeading">
+주요한 인터페이스와 클래스
+</div>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72938"> </a> <div class="pBullet1"><li><code class="cCode"> Image</code></li></div>
+<a name="wp72939"> </a> <div class="pBullet1Plus"><li><code class="cCode">ImageProducer</code></li></div>
+<a name="wp72940"> </a> <div class="pBullet1Plus"><li><code class="cCode">ImageConsumer</code></li></div>
+<a name="wp72941"> </a> <div class="pBullet1Last"><li><code class="cCode">ImageObserver<br /></code> (JDK 1.0.x, 1.1.x)</li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72943"> </a> <div class="pBullet1"><li><code class="cCode">BufferedImage</code></li></div>
+<a name="wp72944"> </a> <div class="pBullet1Plus"><li><code class="cCode">Raster</code></li></div>
+<a name="wp72945"> </a> <div class="pBullet1Plus"><li><code class="cCode">BufferedImageOp</code></li></div>
+<a name="wp72946"> </a> <div class="pBullet1Last"><li><code class="cCode">RasterOp<br /></code>(Java<sup class="cSuperscript">TM</sup> 2D API)<sup class="cSuperscript"> </sup></li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72948"> </a> <div class="pBullet1"><li><code class="cCode">RenderableImage</code></li></div>
+<a name="wp72949"> </a> <div class="pBullet1Last"><li><code class="cCode">RenderableImageOp<br /></code>(Java 2D API)</li></div>
+</ul>
+<ul class="pBullet1"><a name="wp72950"> </a> <div class="pBullet1"><li><code class="cCode">RenderedOp</code></li></div>
+<a name="wp72951"> </a> <div class="pBullet1Plus"><li><code class="cCode">RenderableOp</code></li></div>
+<a name="wp72952"> </a> <div class="pBullet1Last"><li><code class="cCode">TiledImage<br /></code>(Java 확장 이미징 API)</li></div>
+</ul>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp72954"> </a> <div class="pCellHeading">
+장점
+</div>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72956"> </a> <div class="pBullet1"><li>네트워크 경유등으로 이미지의 가용성에 의해 나타나는 처리</li></div>
+<a name="wp72957"> </a> <div class="pBullet1Last"><li>인크레멘탈에 처리되는 이미지</li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72959"> </a> <div class="pBullet1"><li>무엇보다 단순한 프로그래밍 인터페이스</li></div>
+<a name="wp72960"> </a> <div class="pBullet1Last"><li>공통 사용 모델</li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72962"> </a> <div class="pBullet1"><li>필요한 데이터만을 포함/처리</li></div>
+<a name="wp72963"> </a> <div class="pBullet1Last"><li>소극적 평가의 허용</li></div>
+</ul>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp72965"> </a> <div class="pCellHeading">
+단점
+</div>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72967"> </a> <div class="pBullet1"><li>처리하지 않고 전송을 요구</li></div>
+<a name="wp72968"> </a> <div class="pBullet1Last"><li>보다 복잡한 프로그래밍 인터페이스</li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72970"> </a> <div class="pBullet1"><li>이미지 전체의 메모리 할당이 필요</li></div>
+<a name="wp72971"> </a> <div class="pBullet1Last"><li>이미지 전체의 처리가 필요</li></div>
+</ul>
+</td>
+<td align="left" valign="top"><ul class="pBullet1"><a name="wp72973"> </a> <div class="pBullet1"><li>보다 복잡한 프로그래밍 인터페이스</li></div>
+<a name="wp72974"> </a> <div class="pBullet1Last"><li>보다 복잡한 구현</li></div>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp65675"> </a> <p class="pBody">
+이 장에서는, 직접 방식 이미징 모델의 객체와 기법에 대해 설명합니다. Java 2D API 의 직접 방식 이미징용의 클래스와 인터페이스에서는, 메모리에 데이터가 포함되고 있는 픽셀에 매핑 된 이미지를 취급하기 위한 기법이 제공되고 있습니다. 이 API 는, 다양한 형식에서 기억되고 있는 이미지 데이터에의 액세스와 몇 종류인가의 필터링 조작을 사용한 이미지 데이터의 처리를 지원하고 있습니다.  
+</p>
+<a name="wp62520"> </a> <h2 class="pHeading1">
+5.1	인터페이스와 클래스
+</h2>
+<a name="wp69754"> </a> <p class="pBody">
+Java 2D&#8482; API 의 직접 방식 이미징 API 는, 인터페이스, 이미지 데이터 클래스, 이미지 조작 클래스, 샘플 모델 클래스, 칼라 모델 클래스, 및 예외의 6 종류로 분류할 수 있습니다.
+</p>
+<a name="wp69751"> </a> <h3 class="pHeading2">
+5.1. 1	이미징 인터페이스
+</h3>
+<a name="wp65180"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp62752">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62752"> </a> <div class="pCellHeading">
+인터페이스
+</div>
+</th>
+    <th><a name="wp62754"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62784"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImageOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62971"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImage</code> 객체로 실행되는 단일 입력/단일 출력의 조작을 기술합니다. <code class="cCode">AffineTransformOp</code>,<code class="cCode">ColorConvertOp</code>,<code class="cCode">ConvolveOp</code>,<code class="cCode">LookupOp</code>, 및 <code class="cCode">RescaleOp</code> 로 구현됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62916"> </a> <div class="pCellBody">
+<code class="cCode">RasterOp </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62975"> </a> <div class="pCellBody">
+<code class="cCode">Raster</code> 객체로 실행되는 단일 입력/단일 출력의 조작을 정의합니다. <code class="cCode">AffineTransformOp</code>,<code class="cCode">BandCombineOp</code>,<code class="cCode">ColorConvertOp</code>,<code class="cCode">ConvolveOp</code>,<code class="cCode">LookupOp</code>, 및 <code class="cCode">RescaleOp</code> 로 구현됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64598"> </a> <div class="pCellBody">
+<code class="cCode">RenderedImage </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64600"> </a> <div class="pCellBody">
+<code class="cCode">Raster</code> 의 형식의 이미지 데이터를 포함한, 또는 생성할 수 있는 객체에 대한 공통 프로토콜을 정의합니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64640"> </a> <div class="pCellBody">
+<code class="cCode">WritableRenderedImage </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64642"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RenderedImage</code>
+</div>
+<a name="wp64643"> </a> <div class="pCellBody">
+변경이 가능한 <code class="cCode">Raster</code> 의 형식의 이미지 데이터를 포함한, 또는 생성할 수 있는 객체에 대한 공통 프로토콜을 정의합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64651"> </a> <div class="pCellBody">
+<code class="cCode">TileObserver </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64656"> </a> <div class="pCellBody">
+<code class="cCode">WritableRenderedImage</code> 의 변경 상태가 변화했을 때에 통지할 필요가 있는 객체를 위한 프로토콜을 정의합니다.  
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp64405"> </a> <h3 class="pHeading2">
+5.1. 2	이미지 데이터 클래스
+</h3>
+<a name="wp68794"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table summary="Class and descriptions" border="0" cellpadding="7" id="wp68733">
+  <caption></caption>
+  <thead>
+  <tr align="left">    <th align="left" valign="top"><a name="wp68733"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th align="left" valign="top"><a name="wp68735"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68737"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImage</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68739"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode"> Image</code>
+</div>
+<a name="wp68740"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode"> WriteableRenderedImage</code>
+</div>
+<a name="wp68741"> </a> <div class="pCellBody">
+액세스 가능한 데이터 버퍼가 있는 이미지입니다. <code class="cCode">BufferedImage</code> 에는, 이미지 데이터의 <code class="cCode">ColorModel</code> 와 <code class="cCode">Raster</code> 가 포함됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68743"> </a> <div class="pCellBody">
+<code class="cCode">ByteLookupTable</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68745"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">LookupTable</code>
+</div>
+<a name="wp68746"> </a> <div class="pCellBody">
+바이트 데이터를 포함한 <code class="cCode">LookupTable</code> 입니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68748"> </a> <div class="pCellBody">
+<code class="cCode">DataBuffer </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68750"> </a> <div class="pCellBody">
+픽셀 데이터를 보관 유지하는 1 개(살) 이상의 데이터 배열을 랩 합니다. 각 데이터 배열을 「뱅크」라고 부릅니다. <em class="cEmphasis"></em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68752"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferByte </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68754"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">DataBuffer </code>(Final)
+</div>
+<a name="wp68755"> </a> <div class="pCellBody">
+바이트형의 데이터를 포함하는 데이터 버퍼입니다. (Java Advanced Imaging API 로 사용됩니다).
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68757"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferInt </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68759"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">DataBuffer</code> (Final)<code class="cCode">)</code>
+</div>
+<a name="wp68760"> </a> <div class="pCellBody">
+int 형의 데이터를 포함하는 데이터 버퍼입니다 (Java Advanced Imaging API 로 사용됩니다).
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68762"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferShort </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68764"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">DataBuffer </code>(Final)
+</div>
+<a name="wp68765"> </a> <div class="pCellBody">
+short 형의 데이터를 포함하는 데이터 버퍼입니다 (Java Advanced Imaging API 로 사용됩니다).
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68767"> </a> <div class="pCellBody">
+<code class="cCode">DataBufferUShort </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68769"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">DataBuffer </code>(Final)
+</div>
+<a name="wp68770"> </a> <div class="pCellBody">
+부호 없음 short 형의 데이터를 포함하는 데이터 버퍼입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68772"> </a> <div class="pCellBody">
+<code class="cCode">Kernel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68774"> </a> <div class="pCellBody">
+입력 픽셀과 그 주위의 픽셀이 <code class="cCode">ConvolveOp</code> 필터링 조작의 출력 픽셀의 값에게 주는 영향을 기술하는 매트릭스입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68776"> </a> <div class="pCellBody">
+<code class="cCode">LookupTable</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68778"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">객체</code>
+</div>
+<a name="wp68779"> </a> <div class="pCellBody">
+단일 밴드화 된 픽셀 데이터의 값을 칼라치에 매핑 하는 테이블입니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68781"> </a> <div class="pCellBody">
+<code class="cCode">Raster </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68783"> </a> <div class="pCellBody">
+이미지 데이타를 뽑기 시작할 수 있는 픽셀의 구형 배열입니다. <code class="cCode">Raster</code> 에는,<code class="cCode">DataBuffer</code> 과 <code class="cCode">SampleModel</code> 가 포함되어 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68785"> </a> <div class="pCellBody">
+<code class="cCode">ShortLookupTable</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68787"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">LookupTable</code>
+</div>
+<a name="wp68788"> </a> <div class="pCellBody">
+short 형의 데이터를 포함한 룩업테이블입니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68790"> </a> <div class="pCellBody">
+<code class="cCode">WritableRaster </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68792"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">Raster</code>
+</div>
+<a name="wp68793"> </a> <div class="pCellBody">
+변경할 수 있는 <code class="cCode">Raster</code> 입니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp68832"> </a> <h3 class="pHeading2">
+5.1. 3	이미지 조작 클래스
+</h3>
+<a name="wp65263"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp65265">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp65265"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp65267"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64417"> </a> <div class="pCellBody">
+<code class="cCode">AffineTransformOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64788"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64817"> </a> <div class="pCellBody">
+변환원의 <code class="cCode">Image</code> 또는 <code class="cCode">Raster</code> 의 2 차원 좌표로부터, 변환처의 <code class="cCode">Image</code> 또는 <code class="cCode">Raster</code> 의 2 차원 좌표에의 선형 변환을 실시하는 아핀 변환을 정의하는 클래스입니다. 이 클래스에서는, 쌍일차 또는 최근옆의 아핀 변환 조작을 실행할 수 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64421"> </a> <div class="pCellBody">
+<code class="cCode">BandCombineOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64821"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64825"> </a> <div class="pCellBody">
+지정된 매트릭스를 사용해,<code class="cCode">Raster</code> 의 밴드의 임의의 선형 결합을 실행합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68838"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImageFilter</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68840"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode"> ImageFilter</code>
+</div>
+<a name="wp68841"> </a> <div class="pCellBody">
+<code class="cCode">BufferedImageOp</code> (단일 소스/단일 목적지의 이미지 연산자)를 사용해 <code class="cCode">BufferedImage</code> 또는 <code class="cCode">Raster</code> 의 필터링을 행하기 위한 간단한 수단을 제공하는 <code class="cCode">ImageFilter</code> 입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64429"> </a> <div class="pCellBody">
+<code class="cCode">ColorConvertOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64848"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64850"> </a> <div class="pCellBody">
+소스 이미지의 데이터에 대해 픽셀 단위의 칼라 변환을 실시합니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64433"> </a> <div class="pCellBody">
+<code class="cCode">ConvolveOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68443"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64857"> </a> <div class="pCellBody">
+<code class="cCode">Kernel</code> 를 사용해, 소스 이미지의 적화연산을 실시합니다. 적화연산은, 입력 픽셀의 주위의 픽셀에 커넬치를 걸어 출력 픽셀의 값을 생성하는 공간 연산입니다. <code class="cCode">Kernel</code> 는, 입력 픽셀에 인접하는 픽셀과 출력 픽셀의 사이의 관계를 수학적으로 정의하고 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64441"> </a> <div class="pCellBody">
+<code class="cCode">LookupOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64882"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64879"> </a> <div class="pCellBody">
+소스로부터 목적지에의 룩 업 조작을 실시합니다. <code class="cCode">Raster</code> 의 경우, 룩 업은 샘플치에 대해서 행해집니다. <code class="cCode">BufferedImage</code> 의 경우는, 칼라 성분과 알파 성분에 대해서 행해집니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64449"> </a> <div class="pCellBody">
+<code class="cCode">RescaleOp</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64912"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code>
+</div>
+<a name="wp64914"> </a> <div class="pCellBody">
+소스 이미지의 데이터에 대해, 픽셀 단위의 재슬캘링을 실시합니다.  그 때문에(위해)는, 각 픽셀의 값에 슬캘링 계수를 걸고 나서, 오프셋(offset)를 더합니다.  
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp64487"> </a> <h3 class="pHeading2">
+5.1. 4	샘플 모델 클래스
+</h3>
+<a name="wp65271"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp65273">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp65273"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp65275"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64468"> </a> <div class="pCellBody">
+<code class="cCode">BandedSampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64958"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ComponentSampleModel</code> (Final)
+</div>
+<a name="wp64963"> </a> <div class="pCellBody">
+포함되고 있는 이미지 데이터에의 액세스를 제공합니다.  샘플은,<code class="cCode">DataBuffer</code> 의 개별의 뱅크의 밴드로서 포함되고 있습니다. 1 개의 픽셀은, 각 밴드로부터 얻을 수 있는 1 개의 샘플로 구성됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64472"> </a> <div class="pCellBody">
+<code class="cCode">ComponentSampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64982"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">SampleModel</code>
+</div>
+<a name="wp64992"> </a> <div class="pCellBody">
+포함되고 있는 이미지 데이터에의 액세스를 제공합니다.  픽셀의 각 샘플은,<code class="cCode">DataBuffer</code> 의 독립한 요소안에 있습니다. 픽셀이 다른 종류의 인타리브가 지원되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68449"> </a> <div class="pCellBody">
+<code class="cCode">MultiPixelPackedSampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68451"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">SampleModel</code>
+</div>
+<a name="wp68452"> </a> <div class="pCellBody">
+포함되고 있는 이미지 데이터에의 액세스를 제공합니다.  1 개의 샘플의 복수의 픽셀이,<code class="cCode">DataBuffer</code> 의 1 개의 요소에 거둘 수 있고 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64476"> </a> <div class="pCellBody">
+<code class="cCode">PixelInterleavedSampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64984"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ComponentSampleModel</code>
+</div>
+<a name="wp68568"> </a> <div class="pCellBody">
+포함되고 있는 이미지 데이터에의 액세스를 제공합니다.  각 픽셀의 샘플 데이터는 데이터 배열의 인접하는 요소에 거둘 수 있고 있어 모든 요소는 <code class="cCode">DataBuffer</code> 의 단일의 뱅크에 거둘 수 있고 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64480"> </a> <div class="pCellBody">
+<code class="cCode">SampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65042"> </a> <div class="pCellBody">
+기본으로 되어 있는 데이터가 <code class="cCode">DataBuffer</code> 에 어떻게 포함되고 있는지 모르는 상태로, 이미지로부터 샘플 데이터를 추출하는 방식을 정의하고 있는 abstract 클래스입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64484"> </a> <div class="pCellBody">
+<code class="cCode">SinglePixelPackedSampleModel </code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64988"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">SampleModel</code>
+</div>
+<a name="wp68911"> </a> <div class="pCellBody">
+이미지 데이터에의 액세스를 제공합니다.  개별의 픽셀에 속하는 모든 샘플이,<code class="cCode">DataBuffer</code> 의 1 개의 요소에 포함되고 있습니다.  
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp64040"> </a> <h3 class="pHeading2">
+5.1. 5	칼라 모델 클래스
+</h3>
+<a name="wp69804"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp65281">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp65281"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp65283"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64227"> </a> <div class="pCellBody">
+<code class="cCode">ColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64229"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Transparency</code>
+</div>
+<a name="wp65085"> </a> <div class="pCellBody">
+JDK 1.1 의 클래스입니다. 이미지의 픽셀치를 적, 초록, 파랑등의 색성분으로 변환하는 메소드를 정의하고 있는 추상 클래스입니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64236"> </a> <div class="pCellBody">
+<code class="cCode">ComponentColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64238"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ColorModel</code>
+</div>
+<a name="wp65105"> </a> <div class="pCellBody">
+임의의 <code class="cCode">ColorSpace</code> 와 색성분의 배열을 처리해 <code class="cCode">ColorSpace</code> 에 적합시킬 수 있는 <code class="cCode">ColorModel</code> 입니다. 이 클래스를 사용하면(자), 대부분의 <code class="cCode">GraphicsDevice</code> 의 대부분의 칼라 모델을 표현할 수 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64244"> </a> <div class="pCellBody">
+<code class="cCode">DirectColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65098"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">PackedColorModel</code>
+</div>
+<a name="wp65118"> </a> <div class="pCellBody">
+JDK 1.1 의 클래스입니다. 이 <code class="cCode">ColorModel</code> 는, 픽셀의 비트에 RGB 의 색성분이 직접 파묻히고 있는 픽셀치를 나타냅니다. X11 의 TrueColor 와 유사한 칼라 모델입니다. <code class="cCode">ColorModel</code><code class="cCode">. </code><code class="cCode">getRGBdefault</code> 로부터 반환되는 디폴트의 RGB 의 <code class="cCode">ColorModel</code> 는,<code class="cCode">DirectColorModel</code> 입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64260"> </a> <div class="pCellBody">
+<code class="cCode">IndexColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65100"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ColorModel</code>
+</div>
+<a name="wp65145"> </a> <div class="pCellBody">
+JDK 1.1 의 클래스입니다. 이 <code class="cCode">ColorModel</code> 는, sRGB 의 <code class="cCode">ColorSpace</code> 에 있는 고정 칼라 맵에의 인덱스인 픽셀치를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64264"> </a> <div class="pCellBody">
+<code class="cCode">PackedColorModel</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp65102"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">ColorModel</code>
+</div>
+<a name="wp65160"> </a> <div class="pCellBody">
+이 추상 <code class="cCode">ColorModel</code> 클래스는, 픽셀의 비트에 색성분이 직접 파묻히고 있는 픽셀치를 나타냅니다. RGB 의 색성분을 포함한 픽셀을 지원하기 위해(때문에),<code class="cCode">DirectColorModel</code> 은 <code class="cCode">PackedColorModel</code> 를 상속하고 있습니다.  
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp68512"> </a> <h3 class="pHeading2">
+5.1. 6	예외 클래스
+</h3>
+<a name="wp69810"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp68484">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp68484"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp68486"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68488"> </a> <div class="pCellBody">
+<code class="cCode">ImagingOpException</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68490"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode"> RuntimeException</code>
+</div>
+<a name="wp68491"> </a> <div class="pCellBody">
+BufferedImageOp 또는 RasterOp 의 필터 메소드가 이미지를 처리할 수 없는 경우에 throw 됩니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp68493"> </a> <div class="pCellBody">
+<code class="cCode">RasterFormatException</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp68495"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RuntimeException</code>
+</div>
+<a name="wp68496"> </a> <div class="pCellBody">
+Raster 에 무효인 레이아웃 정보가 있는 경우에 throw 됩니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+
+</div>
+<a name="wp64209"> </a> <h2 class="pHeading1">
+5.2	즉시 모드 이미징의 컨셉
+</h2>
+<a name="wp65688"> </a> <p class="pBody">
+직접 방식 이미징 모델은, 메모리에 포함되고 있는 고정 해상도의 이미지에 대응하고 있습니다. 또, 이미지 데이터에 대한 필터링 조작도 지원하고 있습니다. 이 모델에서는, 많은 클래스와 인터페이스가 사용되고 있습니다.
+</p>
+<a name="wp65861"> </a> <p class="pBody">
+</p><div align="left"><img src="images/t606a8.jpg" alt="다음의 문맥으로 이 그래픽스를 설명합니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp65690"> </a> <div class="pFigureCaption">
+그림 5-1	BufferedImage 와 지원 클래스<br /><br />
+</div><a name="wp69065"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp65690">그림 5-1</a>  에 나타내도록(듯이),<code class="cCode">BufferedImage</code> 는 이미지의 전체적인 관리 기능을 제공합니다. <code class="cCode">BufferedImage</code> 는 메모리내에 직접 작성할 수 있어 그것을 사용해, 파일 또는 URL 로부터 취득한 이미지 데이터를 보관 유지 및 조작할 수 있습니다. <code class="cCode">BufferedImage</code> 는, 임의의 <code class="cCode">Graphics2D</code> 객체를 사용해 화면 장치에 표시하거나 적당한 <code class="cCode">Graphics2D</code> 문맥을 사용해 다른 출력 먼저 렌더링 하거나 할 수 있습니다. <code class="cCode">BufferedImage</code> 객체에는,<code class="cCode">Raster</code> 객체와 <code class="cCode">ColorModel</code> 객체가 포함되어 있습니다. <code class="cCode">Raster</code> 클래스는, 이미지 데이터의 관리 기능을 제공합니다. <KBD> 
+</p>
+<a name="wp65692"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 클래스는, 이미지 데이터의 관리 기능을 제공합니다. <KBD><KBD>Raster</kbd> 클래스는, 이미지의 구형 좌표를 나타내, 메모리에 이미지 데이터를 보관 유지해, 단일의 이미지 데이터 버퍼로부터 복수의 서브 이미지를 작성하는 구조를 제공합니다. 또, 이미지내의 특정의 픽셀에 액세스하기 위한 메소드도 제공하고 있습니다. Raster 객체에는,<code class="cCode">DataBuffer</code> 객체와 <code class="cCode">SampleModel</code> 객체가 포함되어 있습니다.    
+</p>
+<a name="wp65694"> </a> <p class="pBody">
+<code class="cCode">DataBuffer</code> 클래스는, 메모리내에 픽셀 데이터를 보관 유지합니다.  
+</p>
+<a name="wp65696"> </a> <p class="pBody">
+<code class="cCode">SampleModel</code> 클래스는, 버퍼의 데이터를 해석해, 그것을 개별의 픽셀 또는 픽셀의 구형 범위로서 제공합니다.  
+</p>
+<a name="wp65698"> </a> <p class="pBody">
+<code class="cCode">ColorModel</code> 클래스는, 이미지의 샘플 모델로 제공되는 픽셀 데이터의 색을 해석하는 기능을 제공합니다.  
+</p>
+<a name="wp67352"> </a> <p class="pBody">
+image 패키지에서는, 그 밖에,<code class="cCode">BufferedImage</code> 객체와 <code class="cCode">Raster</code> 객체에 대한 필터링 조작을 정의하는 클래스가 제공되고 있습니다. 이미지 처리의 각각의 조작은,<code class="cCode">BufferedImageOp</code> 인터페이스와 <code class="cCode">RasterOp</code> 인터페이스의 어느 쪽인지 또는 그 양쪽 모두를 구현하는 클래스에 파묻히고 있습니다. 조작 클래스에서는, 실제의 이미지 조작을 실시하는 <code class="cCode">filter</code> 메소드군이 정의되고 있습니다.  
+</p>
+<a name="wp67356"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp67384">그림 5-2</a>  은, Java 2D&#8482; API 의 이미지 처리의 기본적인 모델입니다.  
+</p>
+<a name="wp67382"> </a> <p class="pBody">
+</p><div><img src="images/j2d-imagea.gif" height="132" width="456" alt="흐름도에, 소스 이미지가 목적지 이미지가 되기 전에 이미지 처리 과정을 흐르는 모습을 나타냅니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp67384"> </a> <div class="pFigureCaption">
+그림 5-2	이미지 처리 모델<br /><br />
+</div><a name="wp67385"> </a> <p class="pBody">
+이미지 조작에서는, 다음의 기능이 지원되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp67386"> </a> <div class="pBullet1"><li>아핀 변환</li></div>
+<a name="wp67387"> </a> <div class="pBullet1Plus"><li>진폭 슬캘링</li></div>
+<a name="wp67388"> </a> <div class="pBullet1Plus"><li>룩업테이블의 변경</li></div>
+<a name="wp67389"> </a> <div class="pBullet1Plus"><li>밴드의 선형 결합</li></div>
+<a name="wp67390"> </a> <div class="pBullet1Plus"><li>색의 변환</li></div>
+<a name="wp67391"> </a> <div class="pBullet1Last"><li>간직해</li></div>
+</ul>
+<a name="wp67350"> </a> <p class="pBody">
+간직해 이미지의 표시와 조작만이 필요한 경우는,<code class="cCode">BufferedImage</code> 클래스와 필터링 조작 클래스를 이해하는 것만으로 충분합니다. 한편, 필터를 기술하거나 이미지 데이터에 직접 액세스 하거나 하는 경우는,<code class="cCode">BufferedImage</code> 클래스와 관련이 있는 클래스를 이해할 필요가 있습니다.  
+</p>
+<a name="wp65725"> </a> <h3 class="pHeading2">
+5.2. 1	용어
+</h3>
+<a name="wp65727"> </a> <p class="pBody">
+다음의 용어는, 이후에의 설명으로 사용되고 있는 것입니다.  
+</p>
+<a name="wp65758"> </a> <p class="pBody">
+데이터 요소: 이미지 데이터를 기억하는 단위로서 사용되고 있는 원시형입니다. <code class="cCode">DataBuffer</code> 배열의 개개의 멤버입니다. 데이터 버퍼내의 요소의 레이아웃은, 이미지의 <code class="cCode">SampleModel</code> 에 의해 행해지는 픽셀로서의 데이터의 해석에는 의존하지 않습니다.
+</p>
+<a name="wp65729"> </a> <p class="pBody">
+샘플: 이미지의 픽셀을 구성하는 개별의 멤버입니다. <code class="cCode">SampleModel</code> 는,<code class="cCode">DataBuffer</code> 의 요소를 픽셀과 그 샘플로 변환하는 구조를 제공합니다. 픽셀의 샘플은, 특정의 칼라 모델의 기본적인 값을 나타내는 경우가 있습니다. 예를 들어, RGB 칼라 모델의 픽셀은, 적, 록, 청이라고 하는 3 개의 샘플로 구성되어 있습니다.  
+</p>
+<a name="wp69136"> </a> <p class="pBody">
+성분: 색의 해석에 의존하지 않는 픽셀의 값입니다. 성분과 샘플의 차이는,<code class="cCode">IndexColorModel</code> 로 도움이 됩니다. <code class="cCode"> IndexColorModel</code> 의 경우, 픽셀의 성분은 <code class="cCode">LookupTable</code> 의 인덱스가 됩니다.
+</p>
+<a name="wp65731"> </a> <p class="pBody">
+밴드: 이미지에 포함되는 같은 종류의 전샘플의 집합입니다.  예를 들어, 빨강의 전샘플이나 초록의 전샘플 등입니다. 픽셀 데이터는 다양한 방법으로 포함할 수 있습니다만, Java 2D API 에서는, 밴드화 방식과 피크세르인타리브화 방식의 2 종류가 지원되고 있습니다. 밴드화 기억 방식의 경우, 이미지 데이터는 밴드의 단위로 편성되어, 픽셀은 각 밴드의 같은 위치에 있는 샘플 데이터로 구성됩니다. 피크세르인타리브화 기억 방식의 경우는, 이미지 데이터는 픽셀 단위에 편성됩니다.  모든 픽셀이 1 개의 배열에 포함되어 있어, 밴드는 각 픽셀의 같은 인덱스 위치에 있는 샘플의 집합으로 구성됩니다.
+</p>
+<a name="wp65733"> </a> <p class="pBody">
+원색: 특정의 칼라 모델에 있어서의 칼라치의 개별의 멤버입니다.  예를 들어, RGB 모델에서는, 원색의 빨강과 초록과 파랑으로부터 칼라치를 생성합니다.  
+</p>
+<a name="wp66504"> </a> <h2 class="pHeading1">
+5.3	BufferedImage 클래스의 사용 방법
+</h2>
+<a name="wp66506"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 클래스는, 직접 이미징 모드의 지원로 중심이 되는 클래스입니다. 메모리내의 이미지를 관리해, 픽셀 데이터를 포함 및 해석하거나<code class="cCode">Graphics</code> 문맥 또는 <code class="cCode">Graphics2D</code> 문맥에 픽셀 데이터를 렌더링 하거나 하는 수단을 제공하고 있습니다.  
+</p>
+<a name="wp66509"> </a> <h3 class="pHeading2">
+5.3. 1	BufferedImage 의 작성
+</h3>
+<a name="wp67919"> </a> <p class="pBody">
+이 메소드로부터는 <code class="cCode">BufferedImage</code> 가 돌려주어져 그 draw 특성은, 객체의 작성에 사용된 컴퍼넌트의 draw 특성에 대응하고 있습니다. 작성되는 이미지는 불투명해,<code class="cCode">Component</code> 의 foreground와 백그라운드의 색을 가져, 이미지의 투명도를 조절할 수 없습니다. <code class="cCode"></code><code class="cCode"></code>이 기법을 사용하면(자), 컴퍼넌트의 애니메이션으로 더블 버퍼링의 draw를 실시할 수가 있습니다.  상세한 것에 대하여는,<a  href="j2d-image.html#wp67210">「오프 스크린 버퍼에의 draw」</a>를 참조해 주세요.  
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+    public Graphics2D createDemoGraphics2D(Graphics g) {<a name="wp67979"> </a> 
+        Graphics2D g2 = null;<a name="wp67980"> </a> 
+        int width = getSize(). width; <a name="wp67981"> </a> 
+        int height = getSize(). height; <a name="wp67982"> </a> 
+<a name="wp67983"> </a> 
+        if (offImg == null || offImg.getWidth() ! = width ||<a name="wp67984"> </a> 
+                        offImg.getHeight() ! = height) {<a name="wp67985"> </a> 
+            offImg = (BufferedImage) createImage(width, height);<a name="wp67986"> </a> 
+        } <a name="wp67987"> </a> 
+<a name="wp67988"> </a> 
+        if (offImg ! = null) {<a name="wp67989"> </a> 
+            g2 = offImg.createGraphics();<a name="wp67990"> </a> 
+            g2.setBackground(getBackground());<a name="wp67991"> </a> 
+        }<a name="wp67992"> </a> 
+<a name="wp67993"> </a> 
+        // .. clear canvas ..<a name="wp67998"> </a> 
+        g2.clearRect(0, 0, width, height);<a name="wp67999"> </a> 
+<a name="wp68000"> </a> 
+        return g2;<a name="wp68001"> </a> 
+    }<a name="wp67916"> </a> 
+</pre></div>
+<a name="wp66519"> </a> <p class="pBody">
+몇개인가 제공되고 있는 생성자  메소드를 사용해, 빈 상태(empty)의 <code class="cCode">BufferedImage</code> 를 메모리내에 작성할 수도 있습니다.
+</p>
+<a name="wp66525"> </a> <h3 class="pHeading2">
+5.3. 2	오프 스크린 버퍼에서의 draw
+</h3>
+<a name="wp67511"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 클래스를 사용하면(자), 그래픽 요소를 오프 스크린 상태로 준비해, 그것을 화면에 카피할 수가 있습니다. 이 방법은, 그래픽이 복잡한 경우, 또는 1 개의 그래픽을 반복해 사용하는 경우에, 특히 유효합니다. 예를 들어, 복잡한 도형을 몇번이나 표시할 필요가 있는 경우는, 오프 스크린 버퍼에 그 도형을 한 번 draw 하고 나서, 윈도우의 다른 장소에 그것을 카피합니다. 한 번 draw 한 도형을 카피하는 것으로, 그래픽의 표시를 고속화할 수 있습니다.  
+</p>
+<a name="wp67512"> </a> <p class="pBody">
+<code class="cCode">java.awt</code> 패키지에서는, 윈도우에 draw 하는 경우와 같은 방법으로 <code class="cCode">Image</code> 객체에 draw 할 수 있으므로, 간단하게 오프 스크린 버퍼를 사용할 수 있습니다. 오프 스크린 이미지에 draw 할 때도, Java 2D&#8482; API 의 모든 렌더링 기능을 사용할 수 있습니다.  
+</p>
+<a name="wp67516"> </a> <p class="pBody">
+오프 스크린 버퍼는, 애니메이션으로 자주(잘) 사용됩니다. 예를 들어, 오프 스크린 버퍼를 사용해 객체를 1 회 draw 해, 윈도우 중(안)에서 그것을 돌아다니게 하는 것 같은 사용법을 합니다. 같이 사용자가 마우스를 사용해 그래픽을 이동시킬 때의 피드백에도, 오프 스크린 버퍼를 이용합니다. 모든 마우스 위치에서 그래픽을 draw 하는 것이 아니라, 1 번 오프 스크린 버퍼에 draw 한 그래픽을, 사용자가 마우스를 드래그 하는데 맞추어, 마우스의 위치에 카피합니다. <a href="#wp67519"><span class="Footnote">1</span></a> 
+</p>
+<a name="wp67523"> </a> <p class="pBody">
+</p><div align="right"><img src="images/j2d-image11.gif" height="238" width="468" alt="다음의 문맥으로 이 그래픽스를 설명합니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp67525"> </a> <div class="pFigureCaption">
+그림 5-3	오프 스크린 버퍼의 사용 방법<br /><br />
+</div><a name="wp67529"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp67525">그림 5-3</a>  은, 오프 스크린 이미지에 draw 하고 나서 그 이미지를 윈도우에 몇번이나 카피하고 있는 프로그램의 예입니다. 마지막에 이미지를 카피할 때는, 이미지를 변환하고 있습니다. 변환을 지정해 이미지를 재draw 하는 대신에 draw 되고 있는 이미지를 변환하면(자), 불충분한 결과가 되는 경우가 있는 것에 주의해 주세요.
+</p>
+<a name="wp67530"> </a> <h4 class="pHeading3">
+5.3. 2.1	오프 스크린 버퍼의 작성
+</h4>
+<a name="wp67531"> </a> <p class="pBody">
+오프 스크린 버퍼로서 사용할 수 있는 이미지를 만드는 경우는,<code class="cCode">Component</code>. <code class="cCode">createImage</code> 메소드를 사용하는 것이 가장 간단한 방법입니다.
+</p>
+<a name="wp67532"> </a> <p class="pBody">
+색공간(color space), 발색수, 및 픽셀 레이아웃이 draw처의 윈도우와 정확하게 일치하는 이미지를 만드는 것으로, 이미지를 그래픽스 장치에 효율적으로 옮길 수가 있습니다. 이것에 의해,<code class="cCode">drawImage</code> 는 처리를 재빠르게 실행할 수 있습니다.
+</p>
+<a name="wp67533"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 객체를 직접 작성해, 오프 스크린 버퍼로서 사용할 수도 있습니다. 이 방법은, 오프 스크린 이미지의 종류 또는 투명도를 제어할 필요가 있는 경우에 편리합니다.  
+</p>
+<a name="wp67534"> </a> <p class="pBody">
+다음은,<code class="cCode">BufferedImage</code> 로 지원되고 있는 정의 끝난 이미지입니다.
+</p>
+<ul class="pBullet1"><a name="wp67535"> </a> <div class="pBullet1"><li><code class="cCode">TYPE_3BYTE_BGR</code></li></div>
+<a name="wp67536"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_4BYTE_ABGR</code></li></div>
+<a name="wp67537"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_4BYTE_ABGR_PRE</code></li></div>
+<a name="wp69224"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_BYTE_BINARY</code></li></div>
+<a name="wp69228"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_BYTE_GRAY</code></li></div>
+<a name="wp69238"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_BYTE_INDEXED</code></li></div>
+<a name="wp67539"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_CUSTOM</code></li></div>
+<a name="wp69260"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_INT_ARGB_PRE</code></li></div>
+<a name="wp67540"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_INT_ARGB</code></li></div>
+<a name="wp69264"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_INT_BGR</code></li></div>
+<a name="wp69274"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_INT_RGB</code></li></div>
+<a name="wp69284"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_USHORT_555_RGB</code></li></div>
+<a name="wp69288"> </a> <div class="pBullet1Plus"><li><code class="cCode">TYPE_USHORT_565_RGB</code></li></div>
+<a name="wp69268"> </a> <div class="pBullet1Last"><li><code class="cCode">TYPE_INT_GRAY</code></li></div>
+</ul>
+<a name="wp69324"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 객체는, 알파 채널을 포함할 수가 있습니다. <a  href="j2d-image.html#wp67525"><a  href="j2d-image.html#wp67525">그림 5-3</a>  에서는, 알파 채널을 사용해, draw 되는 영역과 draw 되지 않는 영역을 구별해, 벌써 draw 되고 있는 그래픽 (이 경우는 쉐이딩 된 구형) 위에 불규칙한 도형을 표시할 수 있습니다. 또, 알파 채널을 사용하면(자), 기존의 이미지의 색과 새로운 이미지의 색을 혼합할 수도 있습니다.  
+</p>
+<a name="wp69325"> </a> <p class="pBody">
+주:투명도의 지정을 위해서(때문에) 알파 이미지 데이터가 필요한 경우 이외는, 즉 그림 5-2 에 나타내는 불규칙한 형상의 이미지를 draw 하는 것 같은 경우는, 알파 정보를 가지는 오프 스크린 버퍼의 작성을 피할 필요가 있습니다. 필요가 없는 경우에 알파치를 사용하면(자), 렌더링의 퍼포먼스가 저하합니다.  
+</p>
+<a name="wp67543"> </a> <p class="pBody">
+<code class="cCode">GraphicsConfiguration</code> 에서는, 사용하고 있는 구성과 호환성이 있는 형식에서, 버퍼링 된 이미지를 자동적으로 작성하는 편리한 메소드가 제공되고 있습니다. 또, 윈도우가 존재하는 그래픽스 장치에 관한 그래픽스 구성을 문의해, 호환성이 있는 <code class="cCode">BufferedImage</code> 객체의 작성에 필요한 정보를 취득할 수도 있습니다.  
+</p>
+<a name="wp67210"> </a> <h4 class="pHeading3">
+5.3. 2.2	오프 스크린 버퍼에서의 draw
+</h4>
+<a name="wp66527"> </a> <p class="pBody">
+버퍼의 이미지에 draw 하려면 , 그 <code class="cCode">BufferedImage.createGraphics</code> 메소드를 호출합니다.  이 메소드로부터는,<code class="cCode">Graphics2D</code> 객체가 돌려주어집니다. 이 객체를 사용하면(자), 모든 <code class="cCode">Graphics2D</code> 계 메소드를 호출해, graphics primitive를 draw 하거나 텍스트를 배치하거나 이미지에 다른 이미지를 렌더링 하거나 할 수 있습니다. 이 draw 기법은, 2D 이미징 패키지로 제공되고 있는 디저링등의 확장 기능을 지원하고 있습니다. 다음의 코드는, 오프 스크린 버퍼링의 사용 방법을 나타낸 것입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<a name="wp70019"> </a> 
+<code class="cCode">    public void update(Graphics g){</code><a name="wp70162"> </a> 
+<code class="cCode">        Graphics2D g2 = (Graphics2D) g;</code><a name="wp70163"> </a> 
+<code class="cCode">        if(firstTime){</code><a name="wp70165"> </a> 
+<code class="cCode">            Dimension dim = getSize();</code><a name="wp70166"> </a> 
+<code class="cCode">            int w = dim.width;</code><a name="wp70167"> </a> 
+<code class="cCode">            int h = dim.height;</code><a name="wp70168"> </a> 
+<code class="cCode">            area = new Rectangle(dim);</code><a name="wp70169"> </a> 
+<b class="cBold">            bi = (BufferedImage) createImage(w, h);</b><a name="wp70170"> </a> 
+<b class="cBold">            big = bi.createGraphics();</b><a name="wp70171"> </a> 
+<b class="cBold">            rect.setLocation(w/2-50, h/2-25);</b><a name="wp70172"> </a> 
+<b class="cBold">            big.setStroke(new BasicStroke(8.0f));</b><a name="wp70173"> </a> 
+<b class="cBold">            firstTime = false;</b><a name="wp70174"> </a> 
+<b class="cBold">        } </b><a name="wp70175"> </a> 
+<a name="wp70176"> </a> 
+<b class="cBold">        // Clears the rectangle that was previously drawn. </b><a name="wp70177"> </a> 
+<b class="cBold">        big.setColor(Color.white);</b><a name="wp70178"> </a> 
+<b class="cBold">        big.clearRect(0, 0, area.width, area.height);</b><a name="wp70179"> </a> 
+<a name="wp70180"> </a> 
+<b class="cBold">        // Draws and fills the newly positioned rectangle to the buffer. </b><a name="wp70181"> </a> 
+<b class="cBold">        big.setPaint(strokePolka);</b><a name="wp70182"> </a> 
+<b class="cBold">        big.draw(rect);</b><a name="wp70183"> </a> 
+<b class="cBold">        big.setPaint(fillPolka);</b><a name="wp70184"> </a> 
+<b class="cBold">        big.fill(rect);</b><a name="wp70185"> </a> 
+<a name="wp70186"> </a> 
+<b class="cBold">        // Draws the buffered image to the screen. </b><a name="wp70187"> </a> 
+<b class="cBold">        g2.drawImage(bi, 0, 0, this);</b><a name="wp70188"> </a> 
+<code class="cCode">            </code><a name="wp71835"> </a> 
+<code class="cCode">    }</code><a name="wp71846"> </a> 
+<a name="wp71847"> </a> 
+</pre></div>
+<a name="wp67504"> </a> <h3 class="pHeading2">
+5.3. 3	BufferedImage 데이터의 직접적인 조작
+</h3>
+<a name="wp67505"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 에 직접 draw 하는 것 외에, 2 종류의 방법으로, 이미지의 픽셀 데이터에 직접 액세스 해 조작할 수가 있습니다. <a  href="j2d-image.html#wp63208">「이미지의 처리와 확장」</a>으로 설명되고 있도록(듯이), 이 기법은,<code class="cCode">BufferedImageOp</code> 의 필터링 인터페이스를 구현하는 경우에 도움이 됩니다.  
+</p>
+<a name="wp66543"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code>. <code class="cCode">setRGB</code> 메소드를 사용하면(자), 픽셀 또는 픽셀 배열의 값에 특정의 RGB 치를 직접 설정할 수 있습니다. 다만, 픽셀을 직접 변경하면(자), 디저링은 행해지지 않습니다. 또,<code class="cCode">BufferedImage</code> 에 관련하는 <code class="cCode">WritableRaster</code> 객체를 조작하는 것에 의해 픽셀 데이터를 조작할 수도 있습니다. 상세한 것에 대하여는,<a  href="j2d-image.html#wp66674">「Raster 의 관리와 조작」</a>을 참조해 주세요.  
+</p>
+<a name="wp66550"> </a> <h3 class="pHeading2">
+5.3. 4	BufferedImage 의 필터링
+</h3>
+<a name="wp66611"> </a> <p class="pBody">
+<code class="cCode">BufferedImageOp</code> 인터페이스를 구현하는 객체를 사용해,<code class="cCode">BufferedImage</code> 에 필터링 조작을 적용할 수 있습니다. 필터링 및 이 필터링 인터페이스를 제공하는 클래스에 대해서는,<a  href="j2d-image.html#wp63208">「이미지의 처리와 확장」</a>을 참조해 주세요.  
+</p>
+<a name="wp66557"> </a> <h3 class="pHeading2">
+5.3. 5	BufferedImage 의 렌더링
+</h3>
+<a name="wp66559"> </a> <p class="pBody">
+버퍼링 된 이미지를 특정의 문맥에 렌더링 하려면 , 문맥의 <code class="cCode">Graphics</code> 객체로 제공되고 있는 <code class="cCode">drawImage</code> 메소드의 어떤 것인지를 호출합니다. 예를 들어,<code class="cCode">Component</code>. <code class="cCode">paint</code> 메소드 중(안)에서 렌더링 할 때는, 메소드에게 건네진 그래픽스 객체의 <code class="cCode">drawImage</code> 메소드를 호출합니다.  
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+    public void paint(Graphics g) {<a name="wp68353"> </a> 
+<a name="wp68354"> </a> 
+        if (getSize(). width &lt;= 0 || getSize(). height &lt;= 0)<a name="wp68355"> </a> 
+            return;<a name="wp68356"> </a> 
+<a name="wp68357"> </a> 
+        Graphics2D g2 = (Graphics2D) g;<a name="wp68358"> </a> 
+<a name="wp68361"> </a> 
+        if (offImg ! = null &amp;&amp; isShowing())  {<a name="wp68362"> </a> 
+            g2.drawImage(offImg, 0, 0, this);<a name="wp68363"> </a> 
+        }<a name="wp68364"> </a> 
+    }<a name="wp68138"> </a> 
+</pre></div>
+<a name="wp66674"> </a> <h2 class="pHeading1">
+5.4	Raster 의 관리와 조작 
+</h2>
+<a name="wp66676"> </a> <p class="pBody">
+<code class="cCode">BufferedImage</code> 객체는,<code class="cCode">Raster</code> 를 사용해 픽셀 데이터의 구형 배열을 관리합니다. <code class="cCode"><code class="cCode">Raster</code> 클래스에서는, 이미지의 좌표계를 위한 필드로서 폭, 높이, 및 원점이 정의되고 있습니다. <code class="cCode">Raster</code> 객체 자체는,<code class="cCode">DataBuffer</code> 과 <code class="cCode">SampleModel</code> 라고 하는 2 개의 객체를 사용해, 픽셀 데이터를 관리합니다. <code class="cCode">DataBuffer</code> 는 라스터의 픽셀 데이터를 포함하는 객체로 (<a  href="j2d-image.html#wp69487">「이미지 데이터와 DataBuffer」</a>을 참조),<code class="cCode">SampleModel</code> 는 <code class="cCode">DataBuffer</code> 로부터의 픽셀 데이터의 해석을 제공합니다 (<a  href="j2d-image.html#wp66873">「SampleModel 로부터의 픽셀 데이터의 추출」</a>을 참조).  
+</p>
+<a name="wp67258"> </a> <h3 class="pHeading2">
+5.4. 1	Raster 의 작성
+</h3>
+<a name="wp67259"> </a> <p class="pBody">
+대부분의 경우, Raster 를 직접 만들 필요는 없습니다. 메모리에 <code class="cCode">BufferedImage</code> 를 만들면(자),<code class="cCode">Raster</code> 가 반드시 제공됩니다. 다만,<code class="cCode">BufferedImage</code> 생성자  메소드를 사용하면(자),<code class="cCode">WritableRaster</code> 를 건네주어 <code class="cCode">Raster</code> 를 작성할 수 있습니다.  
+</p>
+<a name="wp67264"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 클래스에서는,<code class="cCode">DataBuffer</code> 과 <code class="cCode">SampleModel</code> 를 지정해 <code class="cCode">Raster</code> 를 작성하기 위한 static 팩토리 메소드가 몇개인가 제공되고 있습니다. <code class="cCode"><code class="cCode">RasterOp</code> 필터링 클래스를 구현할 때는, 이러한 팩토리를 사용할 수 있습니다.
+</p>
+<a name="wp66680"> </a> <h3 class="pHeading2">
+5.4. 2	부모와 아이의 라스터
+</h3>
+<a name="wp66682"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 클래스에는, 친라스터와 아이 라스터의 컨셉이 짜넣어지고 있습니다. 이것에 의해, 같은 부모로부터 몇살에서도 버퍼링 된 이미지를 작성할 수 있으므로, 기억 효율을 향상시킬 수가 있습니다. 부모와 그 아이는 모두 같은 데이터 버퍼를 참조해, 각각의 아이는, 버퍼내에서 자신의 이미지의 장소를 식별하기 위해서 고유의 오프셋(offset)와 경계를 가지고 있습니다. 아이는,<code class="cCode">getParent</code> 메소드 사용해 소유권을 식별합니다.  
+</p>
+<a name="wp67257"> </a> <p class="pBody">
+서브 라스터를 작성하려면 ,<code class="cCode">Raster</code>. <code class="cCode">createSubRaster</code> 메소드를 사용합니다. 서브 라스터를 작성하려면 , 서브 라스터가 커버하는 부모의 영역과 부모의 원점으로부터의 오프셋(offset)를 지정합니다.  
+</p>
+<a name="wp66687"> </a> <h3 class="pHeading2">
+5.4. 3	Raster 에 대한 조작
+</h3>
+<a name="wp66698"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 클래스에서는, 픽셀과 픽셀 데이터에 액세스하기 위한 다양한 방법이 정의되고 있습니다. 이러한 방법은,<code class="cCode">RasterOp</code> 인터페이스를 구현할 때, 또는 저레벨의 픽셀 조작을 실시할 필요가 있는 메소드를 구현할 경우에, 도움이 됩니다. RasterOp 인터페이스는, 이미지 데이터에 대한 라스터 레벨의 필터링 및 조작을 제공합니다.
+</p>
+<a name="wp66703"> </a> <p class="pBody">
+<code class="cCode">Raster.getPixel</code> 메소드를 사용하면(자), 픽셀을 개별적으로 취득할 수 있습니다.  픽셀은, 배열안의 개별의 샘플로서 돌려주어집니다. <code class="cCode"><code class="cCode">Raster</code>. <code class="cCode">getDataElements</code> 메소드로부터는, 지정한 일련의 해석되어 있지 않은 이미지 데이터가 <code class="cCode">DataBuffer</code> 로부터 꺼내져 돌려주어집니다. <code class="cCode">Raster</code>. <code class="cCode">getSample</code> 메소드로부터는, 개별의 픽셀의 샘플이 돌려주어집니다. <code class="cCode">getSamples</code> 메소드로부터는, 이미지의 특정의 범위에 대한 밴드가 돌려주어집니다.
+</p>
+<a name="wp69483"> </a> <p class="pBody">
+Raster</code>. <code class="cCode">getDataElements</code> 메소드로부터는, 지정한 일련의 해석되어 있지 않은 이미지 데이터가 <code class="cCode">DataBuffer</code> 로부터 꺼내져 돌려주어집니다. <code class="cCode">이러한 객체에서는,<code class="cCode">Raster</code> 의 픽셀 데이터에 액세스 해 해석하기 위한별의 수단이 제공되고 있습니다.  
+</p>
+<a name="wp69484"> </a> <h3 class="pHeading2">
+5.4. 4	WritableRaster 서브 클래스
+</h3>
+<a name="wp69485"> </a> <p class="pBody">
+<code class="cCode">WritableRaster</code> 서브 클래스에서는, 픽셀 데이터와 샘플을 설정하는 메소드가 제공됩니다. <code class="cCode"><code class="cCode">BufferedImage</code> 에 관련하는 <code class="cCode">Raster</code> 는 실제로는 <code class="cCode">WritableRaster</code> 이므로, 픽셀 데이터의 조작에 필요한 모든 액세스가 제공됩니다.
+</p>
+<a name="wp69487"> </a> <h2 class="pHeading1">
+5.5	이미지 데이터와 DataBuffer
+</h2>
+<a name="wp66743"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 에 속하고 있는 <code class="cCode">DataBuffer</code> 는, 이미지 데이터의 배열을 나타냅니다. 직접 또는 <code class="cCode">BufferedImage</code> 의 생성자 을 사용해 <code class="cCode">Raster</code> 를 만들 때는, 픽셀로 폭과 높이를 지정함과 함께, 이미지 데이터의 <code class="cCode">SampleModel</code> 를 지정합니다. 이 정보를 사용해, 적절한 데이터 종류와 사이즈의 <code class="cCode">DataBuffer</code> 가 작성됩니다.  
+</p>
+<a name="wp66745"> </a> <p class="pBody">
+<code class="cCode">DataBuffer</code> 에는 3 개의 서브 클래스가 있어, 각각이 다른 종류의 데이터 요소를 나타내고 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp69504"> </a> <div class="pBullet1"><li><code class="cCode">DataBufferByte</code> (8 비트의 값) </li></div>
+<a name="wp69505"> </a> <div class="pBullet1Plus"><li><code class="cCode">DataBufferInt</code> (32 비트의 값) </li></div>
+<a name="wp69508"> </a> <div class="pBullet1Plus"><li><code class="cCode">DataBufferShort</code> (16 비트의 값) </li></div>
+<a name="wp69512"> </a> <div class="pBullet1Last"><li><code class="cCode">DataBufferUShort</code> (부호 없음 short 의 값) </li></div>
+</ul>
+<a name="wp66749"> </a> <p class="pBody">
+전으로 정의한 것처럼, 요소는 데이터 버퍼의 배열이 연속하지 않은 멤버로, 성분 또는 샘플은, 정리해 픽셀을 형성하는 불연속의 값입니다. <code class="cCode"><code class="cCode">DataBuffer</code> 에 포함되고 있는 특정의 종류의 요소와<code class="cCode">SampleModel</code> 로 나타내지는 특정의 종류의 픽셀의 사이에는, 다양한 매핑이 생각됩니다. 이러한 매핑을 구현해, 특정의 <code class="cCode">DataBuffer</code> 로부터 특정의 픽셀을 취득하는 수단을 제공하는 것은,<code class="cCode">SampleModel</code> 의 다양한 서브 클래스의 역할입니다.  
+</p>
+<a name="wp66755"> </a> <p class="pBody">
+<code class="cCode">DataBuffer</code> 의 생성자 은, 특정의 사이즈로 특정의 수의 뱅크를 가지는 버퍼를 작성하기 위한 수단을 제공합니다.  
+</p>
+<a name="wp66772"> </a> <p class="pBody">
+<code class="cCode">DataBuffer</code> 의 이미지 데이터에는 직접 액세스 할 수 있습니다만, 일반적으로,<code class="cCode">Raster</code> 클래스와 <code class="cCode">WritableRaster</code> 클래스의 메소드를 사용해 액세스 하는 (분)편이 간단하고 편리합니다.  
+</p>
+<a name="wp66873"> </a> <h2 class="pHeading1">
+5.6	SampleModel 로부터의 픽셀 데이터의 추출
+</h2>
+<a name="wp66874"> </a> <p class="pBody">
+추상 클래스의 <code class="cCode">SampleModel</code> 에서는, 기본으로 되어 있는 데이터의 포함 방법을 몰라도 이미지의 샘플을 추출할 수 있는 메소드가 정의되고 있습니다. 이 클래스는, 관련하는 <code class="cCode">DataBuffer</code> 의 이미지 데이터의 높이와 폭을 추적하기 위한 필드와 그 버퍼의 밴드수와 데이터 종류를 기술하기 위한 필드를 제공하고 있습니다. <code class="cCode">SampleModel</code> 의 메소드군은 픽셀의 집합으로서 이미지 데이터를 제공해, 각 픽셀은 많은 샘플 또는 성분으로 구성되어 있습니다.  
+</p>
+<a name="wp66875"> </a> <p class="pBody">
+<code class="cCode">java.awt.image</code> 패키지에서는, 5 종류의 샘플 모델이 제공되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp69534"> </a> <div class="pBullet1"><li><code class="cCode">ComponentSampleModel</code> &#8212; <code class="cCode">DataBuffer</code> 의 1 개의 뱅크의 독립한 데이터 배열 요소군에게 샘플 데이터가 포함되고 있는 이미지로부터 픽셀을 추출한다. </li></div>
+<a name="wp66876"> </a> <div class="pBullet1"><li><code class="cCode">BandedSampleModel</code> &#8212; 개별의 데이터 요소에 각 샘플이 포함되고 있는 이미지로부터 픽셀을 추출한다. 밴드는, 연속한 데이터 요소에 포함되고 있다. </li></div>
+<a name="wp69565"> </a> <div class="pBullet1Plus"><li><code class="cCode">PixelInterleavedSampleModel</code> &#8212; 개별의 데이터 요소에 각 샘플이 포함되고 있는 이미지로부터 픽셀을 추출한다. 픽셀은, 연속한 데이터 요소에 포함되고 있다. </li></div>
+<a name="wp66878"> </a> <div class="pBullet1Plus"><li><code class="cCode">MultiPixelPackedSampleModel</code> &#8212; 1 개의 데이터 요소에 1 개의 샘플의 복수의 픽셀이 포함되고 있는 단일 밴드화 된 이미지로부터 픽셀을 추출한다. </li></div>
+<a name="wp66879"> </a> <div class="pBullet1Last"><li><code class="cCode">SinglePixelPackedSampleModel</code> &#8212; <code class="cCode">DataBuffer</code> 의 최초의 뱅크에 있는 1 개의 데이터 배열 요소에 단일 픽셀의 샘플 데이터가 포함되고 있는 이미지로부터 샘플을 추출한다.  </li></div>
+</ul>
+<a name="wp67744"> </a> <p class="pBody">
+데이터 소스의 종류에 의해,<code class="cCode">SampleModel</code> 로 나타내지는 픽셀 데이터와 특정의 칼라 모델의 칼라 데이터 표현과의 사이에는, 직접적인 상호 관계가 있는 경우와 없는 경우가 있습니다. 예를 들어, 사진 이미지 데이터의 경우, 샘플은 RGB 데이터를 나타내는 경우가 있습니다. 의료용 화상 장치의 이미지 데이터의 경우는, 온도나 뼈밀도 등, 다른 종류의 데이터를 샘플이 나타내고 있을 가능성이 있습니다.  
+</p>
+<a name="wp66957"> </a> <p class="pBody">
+이미지 데이터에 액세스하기 위한 메소드에는, 3 개의 종류가 있습니다. <code class="cCode"><code class="cCode">getPixel</code> 계 메소드는, 샘플 마다 1 개의 엔트리가 있는 배열로서 픽셀 전체를 돌려줍니다. <code class="cCode">getDataElement</code> 메소드를 사용하면(자),<code class="cCode">DataBuffer</code> 에 포함되고 있는 해석되어 있지 않은 미처리의 데이터에 액세스 할 수 있습니다. <code class="cCode">getSample</code> 메소드는, 특정의 밴드의 픽셀 성분에 대한 액세스를 제공합니다.  
+</p>
+<a name="wp67775"> </a> <h2 class="pHeading1">
+5.7	ColorModel 와 칼라 데이터
+</h2>
+<a name="wp67781"> </a> <p class="pBody">
+<code class="cCode">Raster</code> 객체는 이미지 데이터를 관리하기 위한의 것입니다만,<code class="cCode">BufferedImage</code> 클래스에는, 이외에, 칼라 픽셀치로서 데이터를 해석하는 <code class="cCode">ColorModel</code> 가 포함되어 있습니다. abstract 클래스의 <code class="cCode">ColorModel</code> 에서는, 이미지의 픽셀 데이터를 대응하는 <code class="cCode">ColorSpace</code> 의 칼라치로 변환하는 메소드가 정의되고 있습니다.  
+</p>
+<a name="wp69584"> </a> <p class="pBody">
+<code class="cCode">java.awt.image</code> 패키지에서는, 4 종류의 칼라 모델이 제공되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp67777"> </a> <div class="pBullet1"><li><code class="cCode">PackedColorModel</code> &#8212; int 형의 픽셀의 비트에 직접 파묻히고 있는 색성분을 가지는 픽셀치를 나타내는 abstract <code class="cCode">ColorModel</code>. <code class="cCode">DirectColorModel</code> 은,<code class="cCode">PackedColorModel</code> 의 서브 클래스. </li></div>
+<a name="wp63444"> </a> <div class="pBullet1Plus"><li><code class="cCode">DirectColorModel</code> &#8212; 픽셀 자체의 비트에 직접 파묻히고 있는 RGB 의 색성분을 가지는 픽셀치를 나타내는 <code class="cCode">ColorModel</code>. X11 의 TrueColor 와 유사한 칼라 모델입니다. <code class="cCode"></code></li></div>
+<a name="wp67801"> </a> <div class="pBullet1Plus"><li><code class="cCode">ComponentColorModel</code> &#8212; 임의의 <code class="cCode">ColorSpace</code> 와 색성분의 배열을 처리해 <code class="cCode">ColorSpace</code> 에 적합시킬 수 있는 <code class="cCode">ColorModel</code>.  </li></div>
+<a name="wp67802"> </a> <div class="pBullet1Last"><li><code class="cCode">IndexColorModel</code> &#8212; sRGB 의 색공간(color space)에 있는 고정 칼라 맵에의 인덱스인 픽셀치를 나타내는 <code class="cCode">ColorModel</code>. </li></div>
+</ul>
+<a name="wp67788"> </a> <p class="pBody">
+<code class="cCode">ComponentColorModel</code> 와 <code class="cCode">PackedColorModel</code> 는, Java&#8482; 2 SDK 로 새롭게 도입된 것입니다.
+</p>
+<a name="wp67061"> </a> <p class="pBody">
+<code class="cCode">DataBuffer</code> 의 데이터에 근거해,<code class="cCode">SampleModel</code> 는 <code class="cCode">ColorModel</code> 에 픽셀을 제공해,<code class="cCode">ColorModel</code> 는 그 픽셀을 색으로서 해석합니다.  룩업테이블 
+</p>
+<a name="wp65329"> </a> <h3 class="pHeading2">
+5.7. 1	룩업테이블
+</h3>
+<a name="wp67100"> </a> <p class="pBody">
+예를 들어, 빨강과 초록과 파랑의 독립한 배열 등입니다. <code class="cCode"> java.awt.image</code> 패키지에서는, 바이트형의 데이터를 포함하는 것 (<code class="cCode">ByteLookupTable</code>)와 short 형의 데이터를 포함하는 것 (<code class="cCode">ShortLookupData</code>)의 2 종류의 룩업테이블이 정의되고 있어, 모두 abstract <code class="cCode">LookupTable</code> 클래스를 상속하고 있습니다.
+</p>
+<a name="wp63208"> </a> <h2 class="pHeading1">
+5.8	이미지의 처리와 확장
+</h2>
+<a name="wp61818"> </a> <p class="pBody">
+image 패키지에서는, 2 개의 인터페이스 <code class="cCode">BufferedImage</code> 와 <code class="cCode">Raster</code> 가 제공되고 있습니다. <code class="cCode">BufferedImageOp</code>,<code class="cCode">RasterOp</code> 
+</p>
+<a name="wp69607"> </a> <p class="pBody">
+이러한 인터페이스를 구현하는 클래스로서는,<code class="cCode">AffineTransformOp</code>,<code class="cCode">BandCombineOp</code>,<code class="cCode">ColorConvertOp</code>,<code class="cCode">ConvolveOp</code>,<code class="cCode">LookupOp</code>,<code class="cCode">RescaleOp</code> 가 있습니다. 이러한 클래스를 사용해, 이미지에 대한 기하학적 변환, 애매하게 해, 샤프화, 콘트라스트 강조, 임계치, 색조 보정등의 처리를 실시할 수가 있습니다.  
+</p>
+<a name="wp72067"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp72082">그림 5-4</a>  은, 윤곽의 검출과 강조의 결과를 나타낸 것입니다. 이 조작은, 이미지내의 휘도의 날카로운 변화를 강조하는 것입니다. 윤곽의 검출은, 보통, 의료용 화상 처리나 지도 어플리케이션으로 사용됩니다. 윤곽의 검출을 사용하면(자), 이미지내의 인접하는 구조동안의 콘트라스트가 강해져, 보다 세부까지 식별할 수 있게 됩니다.
+</p>
+<a name="wp72080"> </a> <p class="pBody">
+</p><div><img src="images/j2d-image2.gif" height="241" width="731" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp72082"> </a> <div class="pFigureCaption">
+그림 5-4	윤곽의 검출과 강조<br /><br />
+</div><a name="wp72085"> </a> <p class="pBody">
+다음의 코드는, 윤곽의 검출에 대해 기술한 것입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+float[] elements = { 0.0f, -1. 0f, 0.0f,<a name="wp71983"> </a> 
+                    -1. 0f, 4. f, -1. 0f,<a name="wp71984"> </a> 
+                    0.0f, -1. 0f, 0.0f};<a name="wp71985"> </a> 
+...<a name="wp71996"> </a> 
+<a name="wp71997"> </a> 
+BufferedImage bimg = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);<a name="wp71981"> </a> 
+Kernel kernel = new Kernel(3, 3, elements);<a name="wp72315"> </a> 
+ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, 		                                   null);<a name="wp71977"> </a> 
+cop.filter(bi, bimg);<a name="wp71978"> </a> 
+</pre></div>
+<a name="wp71959"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp67831">그림 5-5</a>  은, 룩업테이블 조작의 예입니다. 룩 업 조작은, 픽셀의 개별의 컴퍼넌트를 변경하는 경우에 사용할 수 있습니다.
+</p>
+<a name="wp72487"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image3.gif" height="145" width="470" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp67831"> </a> <div class="pFigureCaption">
+그림 5-5	룩업테이블의 조작<br /><br />
+</div><a name="wp72086"> </a> <p class="pBody">
+다음의 코드는, 룩업테이블 조작에 대해 기술한 것입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+	byte reverse[] = new byte[256];<a name="wp72034"> </a> 
+   for (int j=0; j&lt;200; j++){ <a name="wp72036"> </a> 
+       		reverse[j]=(byte)(256-j); <a name="wp72037"> </a> 
+	}	<a name="wp72038"> </a> 
+   	ByteLookupTable blut=new ByteLookupTable(0, reverse); <a name="wp72053"> </a> 
+   	LookupOp lop = new LookupOp(blut, null); <a name="wp72056"> </a> 
+   lop.filter(bi, bimg);  <a name="wp72024"> </a> 
+</pre></div>
+<a name="wp72032"> </a> <p class="pBody">
+<a  href="j2d-image.html#wp72115">그림 5-6</a>  은, 재슬캘링의 예입니다. 재슬캘링에서는, 모든 점의 휘도를 강하게 하거나 약하게 하거나 할 수 있습니다. 재슬캘링을 사용하면(자), 신축성이 없는 이미지의 다이나믹 레인지를 확대해, 단조롭게 보이는 영역의 세부를 두드러지게 할 수가 있습니다.  
+</p>
+<a name="wp72114"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image7.gif" height="167" width="470" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp72115"> </a> <div class="pFigureCaption">
+도 5-6	재슬캘링<br /><br />
+</div><a name="wp72128"> </a> <p class="pBody">
+다음의 코드는, 재슬캘링에 대해 기술한 것입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+	RescaleOp rop = new RescaleOp(1.5f, 1.0f, null);<a name="wp72124"> </a> 
+	rop.filter(bi, bimg);<a name="wp72116"> </a> 
+</pre></div>
+<a name="wp61900"> </a> <h3 class="pHeading2">
+5.8. 1	이미지 처리 조작의 사용 방법
+</h3>
+<a name="wp72236"> </a> <p class="pBody">
+다다미 포함은, 대부분의 공간 필터링 알고리즘의 기본으로 되어 있는 처리입니다. 다다미 포함에서는, 이미지의 각 픽셀의 값과 주위의 픽셀의 값의 사이에 중요를 행하거나 평균화하거나 하는 처리를 합니다.  이것에 의해, 커넬로 수학적으로 지정할 수 있는 방법에 따라, 출력되는 각 픽셀에 주위의 인접하는 픽셀로부터의 영향을 반영시킬 수가 있습니다. <a  href="j2d-image.html#wp72247"><a  href="j2d-image.html#wp72247">그림 5-7</a>  은, 다다미 포함의 예입니다.
+</p>
+<a name="wp72256"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image9.gif" height="145" width="470" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp72247"> </a> <div class="pFigureCaption">
+그림 5-7	다다미 포함을 사용한 애매하게 해<br /><br />
+</div><a name="wp72257"> </a> <p class="pBody">
+다음에 나타내는 코드는, 이미지 처리 클래스의 1 개인 <code class="cCode">ConvolveOp</code> 의 사용 방법의 예입니다. 다음의 예에서는, 소스 이미지의 각 픽셀은, 인접하는 8 개의 픽셀과 균등하게 평균화됩니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+float weight = 1.0f/9. 0f;float[] elements = new float[9]; // create 2D array// fill the array with nine equal elements<a name="wp61902"> </a> 
+for (i = 0; i &lt; 9; i++) {   elements[i] = weight;}// use the array of elements as argument to create a Kernelprivate Kernel myKernel = new Kernel(3, 3, elements) ;public ConvolveOp simpleBlur = new ConvolveOp(myKernel);<a name="wp61903"> </a> 
+<a name="wp61904"> </a> 
+// sourceImage and destImage are instances of BufferedImagesimpleBlur.filter(sourceImage, &#160;destImage) // blur the image<a name="wp61905"> </a> 
+</pre></div>
+<a name="wp61906"> </a> <p class="pBody">
+변수 simpleBlur 에는,<code class="cCode">BufferedImage</code> 또는 <code class="cCode">Raster</code> 의 애매하게 해 조작을 구현하는 <code class="cCode">ConvolveOp</code> 의 새로운 인스턴스가 포함됩니다. sourceImage 와 destImage 는,<code class="cCode">BufferedImage</code> 의 2 개의 인스턴스로 합니다. <code class="cCode">ConvolveOp</code> 클래스의 핵이 되는 메소드의 <code class="cCode">filter</code> 를 호출하면(자), 소스 이미지의 픽셀과 그것을 둘러싸는 8 개의 픽셀의 값이 평균화되어, 목적지 이미지의 대응하는 픽셀의 값으로 설정됩니다.
+</p>
+<a name="wp69780"> </a> <p class="pBody">
+이 예의 간직해 커넬은, 4 자리수의 유효 숫자로 지정되는 요소를 가지는 다음의 행렬로 나타내집니다.
+</p>
+<a name="wp72983"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image4.gif" height="73" width="462" alt="모든 값이 0.1111 의 3 × 3 의 매트릭스. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp72275"> </a> <p class="pBody">
+이미지의 다다미 포함에서는, 목적지 이미지의 각 픽셀의 값은, 그 픽셀의 값과 주위의 픽셀의 값을 평균화할 때의 하중치의 조로서 커넬을 사용해 산출됩니다. 이 조작은, 이미지의 채널 마다 행해집니다.  
+</p>
+<a name="wp61912"> </a> <p class="pBody">
+다음의 식은, 다다미 포함을 실시할 때 커넬의 하중치를 소스 이미지의 픽셀과 관련짓는 방법을 나타내고 있습니다. 커넬의 각 치는, 이미지의 공간 위치에 연결시킬 수 있습니다.  
+</p>
+<a name="wp72995"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image5.gif" height="73" width="462" alt="3 × 3 의 매트릭스. 최초의 행의 값은,i ? 1,j ? 1,i,j ? 1, 및 i ＋ 1,j ? 1 입니다. 2 번째의 행의 값은,i ? 1,j,i,j, 및 i ＋ 1,j 입니다.  3 번째의 행의 값은,i ? 1,j ＋ 1,i,j ＋ 1, 및 i ＋ 1,j ＋ 1 입니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp61916"> </a> <p class="pBody">
+목적지 픽셀의 값은, 커넬의 하중치와 주위의 소스 픽셀의 값을 건 적을 합계한 것입니다. 많은 단순한 조작에서는, 커넬은 평행으로 대칭의 행렬이며, 하중치를 합계하면(자) 1 이 됩니다.
+</p>
+<a name="wp61920"> </a> <p class="pBody">
+이 예의 간직해 커넬은, 비교적 단순한 것입니다. 이 커넬에서는, 소스 이미지의 각 픽셀이 균등하게 하중 됩니다. 다른 커넬을 선택해, 소스 이미지에 대한 하중 레벨을 높게 하거나 낮게 하거나 하는 것으로, 목적지 이미지의 휘도를 강하게 하거나 약하게 하거나 할 수 있습니다. <code class="cCode">ConvolveOp</code> 생성자 으로 설정되는 <code class="cCode">Kernel</code> 객체로, 실행되는 필터링의 종류가 정해집니다. 다른 값을 설정하면, 애매하게 해 (Gauss, 원형, 이동 등), 샤프화, 평활화 조작 등, 다른 종류의 적화계산을 실행할 수 있습니다. <a  href="j2d-image.html#wp72165">그림 5-8</a>  은, 다다미 포함을 사용한 샤프화의 예입니다.
+</p>
+<a name="wp72156"> </a> <p class="pBody">
+</p><div align="center"><img src="images/j2d-image10.gif" height="145" width="470" alt="전의 문장으로, 이 그래픽스를 설명하고 있습니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody">
+</p>
+<a name="wp72165"> </a> <div class="pFigureCaption">
+그림 5-8	다다미 포함을 사용한 샤프화<br /><br />
+</div><a name="wp72302"> </a> <p class="pBody">
+다음에 나타내는 코드는, 다다미 포함을 사용한 샤프화의 예입니다.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+float[] elements = { 0.0f, -1. 0f, 0.0f,<a name="wp72303"> </a> 
+                    -1. 0f,  5. f, -1. 0f,<a name="wp72293"> </a> 
+                     0.0f, -1. 0f,  0.0f};<a name="wp72286"> </a> 
+...<a name="wp72297"> </a> 
+<a name="wp72298"> </a> 
+Kernel kernel = new Kernel(3,3, elements);<a name="wp72310"> </a> 
+ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, 														null);<a name="wp72287"> </a> 
+	cop.filter(bi, bimg);<a name="wp72157"> </a> 
+</pre></div>
+<a name="wp67839"> </a> <p class="pBody">
+
+</p>
+
+  <a name="wp67519"> </a> <div class="pFootNote">
+<a href="#wp67516"><span class="Footnote">1</span></a> 새로운 위치에 카피를 신규 작성하기 전에, 이전의 버젼의 이미지를 소거하는 경우, 그것을 프로그래머가 기술할 필요가 있습니다. 이것은, 백그라운드를 재draw 하는지, 다른 오프 스크린 버퍼로부터 백그라운드를 카피하는 것에 의해 실시할 수가 있습니다.
+
+</div>
+<a name="wp61919"> </a> <div class="pFootNote">
+<a href="#wp61916"><span class="Footnote">2</span></a> 행렬내의 하중치의 합계가 1 인 경우, 목적지 이미지의 휘도는 소스와 동일합니다.
+
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-fonts.html">전의 항목</a>  | <a accesskey="n" href="j2d-color.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

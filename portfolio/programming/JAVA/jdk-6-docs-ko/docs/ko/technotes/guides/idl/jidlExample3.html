@@ -1,0 +1,383 @@
+<HTML>
+
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+
+<TITLE>Java IDL:콜백 객체를 사용하는 예 - xrath.com 에서 번역됨</TITLE>
+
+<!-- Changed by: dcarson 12/2002 -->
+
+   <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+
+<H1 ALIGN=CENTER>Java IDL:콜백 객체를 사용하는 예</H1>
+
+<P>
+<HR>
+
+<p>
+클라이언트 프로그램에서는, 서버측에서 일어난 변경이나 갱신에의 대응이 필요하게 되는 일이 있습니다. 예를 들어, 주가 서버상에서 주가가 갱신될 때마다, 클라이언트의 그래프 표시 프로그램이나 스프레드쉬트 프로그램에서도 갱신을 실시하고 싶다고 했을 경우 등입니다. 이러한 경우, 클라이언트에는 
+<P>
+<UL>
+<LI>주가 서버상의 메소드를 정기적으로 호출해 주가를 물어 합 깬다. 이것을, 「폴링」모델 또는 「풀」모델이라고 한다
+<LI> 주가가 갱신될 때마다 통지하도록(듯이) 서버에 요구한다. 이것을, 「콜백」모델 또는 「푸쉬」모델이라고 한다
+</UL>
+
+
+<p>
+이 문서의 예에서는, 클라이언트 프로그램으로부터 서버에 콜백 객체를 건네주는 방법과 그 후에 서버로부터 클라이언트로 변경을 통지하는 방법에 대해 설명합니다. 여기에서는, 단순한 어플리케이션을 확장한 코드를 소개합니다. 어플리케이션을 간략화한 개소에 대해서는, 코드내에 코멘트를 기재합니다.
+
+
+
+<P>이 문서로 소개하는 코드는, 다음과 같은 것입니다.
+<UL>
+
+<LI>콜백을 사용하는 샘플 프로그램의 <A href="#IDL">IDL</A> 
+
+   
+
+<LI>클라이언트에 콜백을 실시하는<A href="#server">서버</a>의 구현
+
+
+<LI>콜백 객체 참조를 서버에 보내는<A href="#client">클라이언트</a> 
+<LI><A href="#listener"><tt>Listener</tt></a>  의 구현
+<LI><A href="#messageserver"><tt>MessageServer</tt></a>  의 구현
+   
+   </UL>
+
+
+
+<P>컴파일 방법과 실행 방법에 대한<A href="#instructions">설명</A>  
+
+프로그램예도 준비되어 있습니다.  
+
+<H1>콜백의 예:중급 레벨</H1>
+
+<a name="IDL"></a> 
+<h2>IDL 파일의 기술</h2>
+
+<P>이 어플리케이션예로 사용하는 <tt>callback.idl</tt> 파일은, 다음과 같은 것입니다.
+
+<UL><pre>
+interface Listener {
+	void message(in string msg);
+};
+
+interface MessageServer {
+	void register(in Listener lt);
+};
+</pre></UL>
+
+<a name="server"></a> 
+<h2>서버 코드의 기술</h2>
+
+<P>이 어플리케이션예로 사용하는 <tt>Server.java</tt> 파일은, 다음과 같은 것입니다.   
+
+<UL><pre>
+import org.omg.CORBA.ORB;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextHelper;
+
+public class Server {
+
+    public static void main(String[] args) {
+	try {
+            //create and initialize the ORB
+            Properties props = System.getProperties();
+            props.put("org.omg.CORBA.ORBInitialPort", "1050");
+            //<STRONG>Replace MyHost with the name of the host on which you are running the server</STRONG>
+            props.put("org.omg.CORBA.ORBInitialHost", "<em>&lt;MyHost&gt;</em>");
+            ORB orb = ORB.init(args, props);
+	    System.out.println("Initialized ORB");
+
+            //Instantiate Servant and create reference
+	    POA rootPOA = POAHelper.narrow(
+		orb.resolve_initial_references("RootPOA"));
+	    MessageServerImpl msImpl = new MessageServerImpl();
+	    rootPOA.activate_object(msImpl);
+	    MessageServer msRef = MessageServerHelper.narrow(
+		rootPOA.servant_to_reference(msImpl));
+
+            //Bind reference with NameService
+	    NamingContext namingContext = NamingContextHelper.narrow(
+		orb.resolve_initial_references("NameService"));
+            System.out.println("Resolved NameService");
+            NameComponent[] nc = { new NameComponent("MessageServer", "") };
+	    namingContext.rebind(nc, msRef);
+
+	    //Activate rootpoa
+            rootPOA.the_POAManager(). activate();
+
+            //Start readthread and wait for incoming requests
+            System.out.println("Server ready and running ....");
+            
+            //REMOVE THE NEXT LINE FOR THE SIMPLER EXAMPLE
+            msImpl.startReadThread();
+            
+            orb.run();
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+</pre></UL>
+
+
+<!- **************MESSAGE SERVER IMPL ************** --> <a name="messageserver"></a> 
+<h2>MessageServer 구현의 기술</h2>
+
+<P>이 파일의 코드에서는, 새로운 클라이언트를 등록해, 메세지를 받아들인 후, 등록된 클라이언트에 그 메세지를 중계합니다. 이 어플리케이션예로 사용하는 <tt>MessageServerImpl.java</tt> 파일은, 다음과 같은 것입니다.
+
+
+
+<UL><pre>
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Vector;
+import java.util.Iterator;
+
+public class MessageServerImpl extends MessageServerPOA {
+
+    private Vector clients = new Vector();
+    private ReadThread rt = null;
+
+    public MessageServerImpl() {
+	rt = new ReadThread(this);
+    }
+
+    public void register(Listener lt) {
+	clients.add(lt);
+    }
+
+    public void startReadThread() {
+        rt.start();
+    }
+
+    public void message(String msg) {
+	Iterator it = clients.iterator();
+	while (it.hasNext()) {
+	    Listener lt = (Listener) it.next();
+	    lt.message(msg);
+	    //FOR THE SIMPLER EXAMPLE, ADD A SIMPLE
+	    //MESSAGE TO BE CALLED BACK, FOR EXAMPLE,
+	    //SLEEP FOR 30 SECONDS, THEN SEND THE TIME
+	}
+    }
+}
+
+//EXCLUDE THIS CLASS FOR THE SIMPLER EXAMPLE
+class ReadThread extends Thread {
+
+    MessageServerImpl msImpl = null;
+
+    public ReadThread(MessageServerImpl msImpl) {
+	this.msImpl = msImpl;
+    }
+
+    public void run() {
+	BufferedReader br = new BufferedReader(
+	    new InputStreamReader(System.in));
+
+        try {
+	    for (;;) {
+                System.out.print("message &gt; ");
+		String msg = br.readLine();
+		msImpl.message(msg);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+</pre></UL>
+
+
+<a name="client"></a> 
+<h2>클라이언트 코드의 기술</h2>
+
+<P>이 어플리케이션예로 사용하는 <tt>Client.java</tt> 파일은, 다음과 같은 것입니다.  
+
+<a name="clientprop"></a> 
+<UL><pre>
+import java.util.Properties;
+import org.omg.CORBA.ORB;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextHelper;
+
+public class Client {
+
+    public static void main(String[] args) {
+	try {
+	
+            //initialize orb
+            Properties props = System.getProperties();
+            props.put("org.omg.CORBA.ORBInitialPort", "1050");
+            //<STRONG>Replace MyHost with the name of the host on which you are running the server</STRONG>
+            props.put("org.omg.CORBA.ORBInitialHost", "<em>&lt;MyHost&gt;</em>");
+            ORB orb = ORB.init(args, props);
+	    System.out.println("Initialized ORB");
+
+            //Instantiate Servant and create reference
+	    POA rootPOA = POAHelper.narrow(
+		orb.resolve_initial_references("RootPOA"));
+            ListenerImpl listener  = new ListenerImpl();
+            rootPOA.activate_object(listener);
+	    Listener ref = ListenerHelper.narrow(
+                rootPOA.servant_to_reference(listener));
+
+            //Resolve MessageServer
+	    MessageServer msgServer = MessageServerHelper.narrow(
+	        orb.string_to_object("corbaname:iiop:1. 2@localhost:1050#MessageServer"));
+
+            //Register listener reference (callback object) with MessageServer
+            msgServer.register(ref);
+            System.out.println("Listener registered with MessageServer");
+
+	    //Activate rootpoa
+            rootPOA.the_POAManager(). activate();
+
+            //Wait for messages
+            System.out.println("Wait for incoming messages");
+            orb.run();
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+</pre></UL>
+
+<!- **************LISTENER IMPL ************** --><a name="listener"></a> 
+<h2>Listener 구현의 기술</h2>
+
+<P>Listener 는, 서버로부터의 메세지 수신을 식별하면(자), 그 메세지를 클라이언트에 표시합니다. 이 어플리케이션예로 사용하는 <tt>ListenerImpl.java</tt> 파일은, 다음과 같은 것입니다.
+
+<UL><pre>
+public class ListenerImpl extends ListenerPOA {
+
+    public void message(String msg) {
+	System.out.println("Message from server : " + msg);
+    }
+}
+</pre></UL>
+
+
+<!- **************INSTRUCTIONS************** --> <a name="instructions"></a> 
+<h2>샘플의 컴파일 방법과 실행 방법에 대한 설명</h2>
+
+이 어플리케이션예를 실행하려면 , 이하의 순서를<strong>서버</strong>머신으로 실행합니다.
+
+<P>
+<OL>
+<LI>예를 이전에 실행했던 적이 있는 경우는, 생성된 기존의 파일을 삭제합니다. UNIX 오퍼레이팅(operating) 환경에서는, 다음과 같은 커멘드를 사용합니다.
+<UL><pre>
+rm -rf . /classes . /orb.db
+</pre></UL>
+<P>
+<LI>Stub와 스켈리턴을 생성합니다. 우선, Stub와 스켈리턴을 두는 디렉토리를 작성해, 다음에,<tt>idlj</tt> 컴파일러를 실행해 Stub와 스켈리턴을 생성합니다. 커멘드는 다음과 같이 됩니다.
+<UL><pre>
+mkdir -p . /classes
+&lt;<em>path_to_java</em>&gt;/bin/idlj -fall -td . /classes callback.idl
+</pre></UL>
+<P>
+<LI>다음과 같이 해,<tt>. java</tt> 파일을 컴파일 합니다.
+<UL><pre>
+&lt;<em>path_to_java</em>&gt;/bin/javac -classpath . /classes -d . /classes *. java
+</pre></UL>
+<P>
+<LI>다음과 같이 해,<tt>orbd</tt> 네임 서비스를 개시합니다.
+<UL><pre>
+&lt;<em>path_to_java</em>&gt;/bin/orbd -ORBInitialPort 1050 -ORBInitialHost &lt;<em>host_name</em>&gt; &
+</pre></UL>
+<P>
+<LI>다음과 같이 해, 서버를 실행합니다.
+<UL><pre>
+&lt;<em>path_to_java</em>&gt;/bin/java -classpath . /classes Server -ORBInitialPort 1050
+</pre></UL>
+</OL>
+
+<P>
+서버를 개시하면(자), 단말 윈도우에 다음과 같은 출력이 표시됩니다.
+<P>
+
+<UL><pre>
+Initialized ORB
+Resolved NameService
+Server ready and running ....
+message > 
+</pre></UL>
+
+<P>이 prompt를 사용해 클라이언트에 메세지를 송신하게 됩니다만, 그 전에, 클라이언트 어플리케이션을 개시할 필요가 있습니다. <strong>클라이언트</strong>의 단말로 다음의 순서를 실행해, 클라이언트 어플리케이션을 실행합니다. <STRONG>클라이언트 코드의 <a href="#clientprop">properties</a>  섹션으로, 서버가 실행되고 있는 호스트명을 사용한 것을 확인해 주세요. </STRONG>
+<P>
+
+<UL><pre>
+&lt;<em>path_to_java</em>&gt;/bin/java -classpath . /classes Client -ORBInitialPort 1050 
+</pre></UL>
+
+
+<P>클라이언트 어플리케이션으로부터의 출력이, 다음과 같은 형식에서 표시됩니다.
+<P>
+<UL><pre>
+Initialized ORB
+Listener registered with MessageServer
+Wait for incoming messages
+</pre></UL>
+
+<P>콜백을 사용한 기능을 표시하려면 , 서버 단말의 prompt에 데이터를 입력합니다.  그렇다면, 그 데이터가 모든 클라이언트 단말에 표시됩니다. 통지의 내용에는, 클라이언트가 관심을 가지는 것을 뭐든지 포함할 수가 있습니다.
+
+
+<P>일례로서 풋볼의 시합의 스코아가 변화했을 때에, 클라이언트에 통지해 보겠습니다.
+<UL><pre>
+message > Niners TD.  Niners 7 - Giants 0
+message > Giants TD.  Niners 7 - Giants 7
+message > Niners TD.  Niners 14 - Giants 7
+</pre></UL>
+
+<P>상기와 같은 메세지가 송신되면(자), 클라이언트에 다음과 같이 표시됩니다.
+<UL><pre>
+Wait for incoming messages
+Message from server : Niners TD.  Niners 7 - Giants 0
+Message from server : Giants TD.  Niners 7 - Giants 7
+Message from server : Niners TD.  Niners 14 - Giants 7
+</pre></UL>
+
+
+
+
+<CENTER><P><HR>
+
+<TABLE cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">홈</A> </TD>
+</TR></TABLE>
+
+
+
+<HR><P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2002-2004
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</CENTER>
+
+
+
+</BODY>
+
+</HTML>

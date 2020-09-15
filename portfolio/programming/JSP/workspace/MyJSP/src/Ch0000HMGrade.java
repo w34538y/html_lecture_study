@@ -1,0 +1,93 @@
+import java.util.*;
+
+public class Ch0000HMGrade {
+	public static void main(String[] args){
+		ArrayList<HashMap<String, Object>> list = null;
+		HashMap<String, Object>            hm   = null;
+		
+		list = input();
+		hm	 = proc( list );
+		output( hm );
+	}
+	
+	public static ArrayList<HashMap<String, Object>> input(){
+		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+		
+		Scanner sc = new Scanner(System.in);
+		int    code;
+		double score;
+		String name;
+		
+		for(int i = 0; i < 2; i++)
+		{
+			HashMap<String, Object> hm = new HashMap<String, Object>();
+			
+			System.out.println("코드 입력: ");
+			code = sc.nextInt();
+			
+			System.out.println("이름 입력: ");
+			name = sc.next();
+			
+			System.out.println("학점 입력: ");
+			score = sc.nextDouble();
+			
+			hm.put("CODE", code);
+			hm.put("NAME", name);
+			hm.put("SCORE", score);
+			
+			list.add(hm);
+		}
+		sc.close();
+		return list;
+	}
+	
+	public static HashMap<String, Object> proc(ArrayList<HashMap<String, Object>> list){
+		
+		HashMap<String, Object> hmRes = new HashMap<String, Object>();
+		
+		double score;
+		double dTot = 0.0;
+		
+		for( int i = 0; i < list.size(); i++)
+		{
+			HashMap<String, Object> hm = list.get(i);
+			score = (double)hm.get("SCORE");
+			dTot = dTot + score;
+		}
+		hmRes.put("LIST", list);
+		hmRes.put("CNT", list.size());
+		hmRes.put("TOT", dTot);
+		hmRes.put("AVG", dTot / list.size());
+		
+		return hmRes;
+		
+	}
+	
+	public static void output( HashMap<String, Object> hmRes){
+		
+		int code;
+		double score;
+		String name;
+		@SuppressWarnings ("unchecked")
+		ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>) hmRes.get("LIST");
+		
+		
+		for(int i = 0; i < list.size(); i++)
+		{
+			HashMap<String, Object> hm = list.get(i);
+			
+			code  = (int)    hm.get("CODE");
+			score = (double) hm.get("SCORE");
+			name  = (String) hm.get("NAME");
+			
+			System.out.println("CODE  =>"+ code);
+			System.out.println("SCORE =>"+ score);
+			System.out.println("NAME  =>"+ name);
+			
+		}
+		System.out.println("CNT=>"+ hmRes.get("CNT"));
+		System.out.println("TOT=>"+ hmRes.get("TOT"));
+		System.out.println("AVG=>"+ hmRes.get("AVG"));
+	}
+
+}

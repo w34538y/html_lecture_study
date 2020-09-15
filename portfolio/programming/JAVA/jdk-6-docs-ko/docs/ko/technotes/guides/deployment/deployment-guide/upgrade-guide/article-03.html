@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>서명필의 . cab 파일을 재패키지 하면(자), 애플릿의 서명이 없어진다... - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="styles/style1.css">
+</head>
+
+<body>
+<blockquote> 
+<h2><span class="bg2">서명필의 <code>. cab</code> 파일을 <code>. jar</code> 파일로서 재패키지 하면(자), 애플릿의 서명이 없어진다</span></h2>
+<h3><br> <font color="#CC0033">증상</font></h3>
+  <blockquote> 
+<p> 서명필의 <code>. cab</code> 파일을 <code>. jar</code> 파일로서 재패키지 하면(자), Sun JRE 로 실행중의 애플릿이 미서명으로서 다루어집니다. <code>. cab</code> 파일로서 패키지 된 같은 애플릿은, Microsoft VM 에서는 서명필로서 실행됩니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">원인</font></h3>
+  <blockquote> 
+<p> Microsoft 에서는, 독자적인 Authenticode 및 <code>. cab</code> 파일 테크놀러지에 의해 애플릿의 서명을 지원하고 있습니다. 서명 정보는 재패키지의 처리중에 없어집니다. 그 결과, Sun JVM 에서는 <code>. jar</code> 파일을 미서명으로서 취급합니다. </p>
+  </blockquote>
+<h3><font color="#CC0033">해결 방법</font></h3>
+  <blockquote> 
+<p> JDK 의 <font face="Courier New" size="2">jarsigner</font> 툴을 사용해 <code>. jar</code> 파일에 서명합니다. </p>
+    <ol>
+<li>VeriSign 로부터 <a href="http://www.verisign.com/products/signing/index.html">Sun Java Signing</a>  증명서를 취득하는지, Thawte 로부터 <a href="http://www.thawte.com/html/SUPPORT/devel/jdk.html">Java Code Signing</a>  증명서를 가져옵니다.  또, 다른 인증국 (CA)으로부터 유사한 증명서를 취득할 수도 있습니다. </li>
+<li><font face="Courier New" size="2">keytool</font> 와 별명을 사용해, 증명서를 키스토어에 임포트 합니다. 예를 나타냅니다. </li>
+      <blockquote> 
+<pre>C:\&gt;C:\j2sdk1. 5\bin\keytool -import -alias MyCert -file VSSStanleyNew.cer </pre>
+      </blockquote>
+<li><code>jarsigner</code> 를 사용해,<code>. jar</code> 파일에 서명합니다.  그 때, 전의 순서로 생성된 키스토어의 RSA 증명서를 사용합니다. 지정된 별명이 같은 것을 확인해 주세요.  다음에 예를 나타냅니다. </li>
+      <blockquote> 
+<pre>C:\&gt;C:\j2sdk1. 5\bin\jarsigner C:\TestApplet.jar MyCert
+Enter Passphrase for keystore: ********</pre>
+      </blockquote>
+<li>&quot;<code>jarsigner -verify -verbose -certs</code>&quot; 를 사용해,<code>. jar</code> 파일의 검증을 실시합니다.  
+        <blockquote>
+<pre>C:&gt;C:\jdk1. 4.2\bin\jarsigner -verify -verbose 
+                -certs d:\TestApplet.jar
+
+
+         245 Wed Mar 10 11:48:52 PST 2000 META-INF/manifest.mf
+         187 Wed Mar 10 11:48:52 PST 2000 META-INF/MYCERT.SF
+         968 Wed Mar 10 11:48:52 PST 2000 META-INF/MYCERT.RSA
+smk      943 Wed Mar 10 11:48:52 PST 2000 TestApplet.class
+smk      163 Wed Mar 10 11:48:52 PST 2000 TestHelper.class
+
+      X. 509, CN=XXXXXXX YYY, OU=Java Software, 
+                O=Sun Microsystems, L=Cupertino, 
+                ST=CA, C=US (mycert)
+      X. 509, CN=Sun Microsystems, OU=Java Plug-in QA, 
+                O=Sun Microsystems, L=Cupertino, ST=CA, C=US
+      X. 509, <a href="mailto:EmailAddress=server-certs@thawte.com">EmailAddress=server-certs@thawte.com</a> , 
+                CN=Thawte Server CA, OU=Certification 
+                Services Division, O=Thawte Consulting cc, 
+                L=Cape Town, ST=Western Cape, C=ZA
+
+
+  s = signature was verified
+  m = entry is listed in manifest
+  k = at least one certificate was found in keystore
+  i = at least one certificate was found in identity scope
+
+jar verified. </pre>
+        </blockquote>
+      </li>
+    </ol>
+  </blockquote>
+<h3><font color="#CC0033">상세 정보</font></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VerSign 에 의한<a href="http://www.verisign.com/products/signing/index.html">「Code Signing」</a>, 또는 Thawte 에 의한<a href="http://www.thawte.com/codesign">「code-signing certificate support」</a>를 참조해 주세요. </p>
+  <p>&nbsp;</p>
+</blockquote>
+</body>
+</html>

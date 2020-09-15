@@ -1,0 +1,105 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:2 - 분산 객체 모델
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel6.html">전의 항목</a>  | <a href="rmi-objmodel8.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">2.6	 원격 메소드 호출에서의 파라미터 인도</a> </h2>
+
+
+<a name="5102"><!-- --></a> 
+<blockquote>
+<a name="2537"><!-- --></a>  원격 객체에의 인수, 원격 객체로부터의 반환값은, 직렬화 가능한 객체이면 어떤 것에서도 가능합니다. 이것에는 원시형, 원격 객체,<code>java.io.Serializable</code> 인터페이스를 구현한 비원격 객체가 포함됩니다. 클래스를 직렬화 가능하게 하는 방법의 상세한 것에 대하여는, 「Java 객체 직렬화 스펙」을 참조해 주세요. 로컬에서는 입수할 수 없는 파라미터 또는 반환값의 클래스는, RMI 시스템에 의해 동적으로 다운로드됩니다. RMI 가 파라미터, 반환값, 예외를 읽어낼 때에 파라미터 및 반환값의 클래스를 다운로드하는 방법의 상세한 것에 대하여는,<a href="rmi-arch5.html">「클래스의 동적인 로드」</a>를 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="2523"><!-- --></a>  2.6. 1 비원격 객체의 인도<i></i>
+</h3>
+
+<blockquote>
+<a name="2524"><!-- --></a>  원격 메소드 호출의 파라미터로서 건네받거나 원격 메소드 호출의 결과로서 되돌려지는 비원격 객체는, 카피에 의해 건네받습니다.  즉, 비원격 객체는, Java SE 플랫폼의 객체 직렬화 기구를 사용해 직렬화할 수가 있습니다. <em></em><p>
+<a name="3655"><!-- --></a>  따라서, 원격 메소드 호출로 비원격 객체가 돌려주어질 때, 비원격 객체의 내용은, 원격 객체의 호출이 불려 가기 전에 카피됩니다. <p>
+<a name="3393"><!-- --></a>  원격 메소드 호출로부터 비원격 객체가 되돌려질 때는, 호출측의 가상 머신에 신규 객체가 작성됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="3404"><!-- --></a>  2.6. 2 원격 객체의 인도<i></i>
+</h3>
+
+<blockquote>
+<a name="3728"><!-- --></a>  원격 메소드 호출로, export 된 원격 객체를 파라미터 또는 반환값으로서 건네주는 경우에는, 그 원격 객체의 Stub가 대신에 건네받습니다. export되어 있지 않은 원격 객체는, Stub 인스턴스로 옮겨지지 않습니다. 파라미터로서 건네받은 원격 객체는, 원격 인터페이스만을 구현할 수가 있습니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="4716"><!-- --></a>  2.6. 3	 참조의 무결성<i></i>
+</h3>
+
+<blockquote>
+<a name="4792"><!-- --></a>  단일의 원격 메소드 호출로, 어느 객체에의 2 개의 참조가, 어느 JVM 로부터 다른 JVM 에 파라미터 (또는 반환값)로서 건네받아 그러한 참조가 송신측의 JVM 상의 동일 객체를 참조하고 있는 경우, 이러한 참조는, 수신측의 JVM 상의 객체의 1 개의 카피도 참조합니다. 한층 더 일반적으로 설명하면(자), 단일의 원격 메소드 호출내에서는, RMI 시스템은, 호출내에서 파라미터로서 건네받거나 반환값으로서 반환되는 객체간의 참조의 무결성을 유지합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="4795"><!-- --></a>  2.6. 4 클래스의 주석<i></i>
+</h3>
+
+<blockquote>
+<a name="4796"><!-- --></a>  원격 메소드 호출로, 어느 JVM 로부터 다른 JVM 에 객체를 송신할 때에, RMI 시스템은 호출해 스트림내의 클래스 기술자에게 클래스의 정보 (URL)를 주석으로서 붙여 수신측에서 클래스를 로드할 수 있도록(듯이) 합니다. 원격 메소드 호출중에는, 필요에 따라서 수시, 클래스를 다운로드할 필요가 있습니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="4941"><!-- --></a>  2.6. 5 파라미터의 전송<i></i>
+</h3>
+
+<blockquote>
+<a name="4947"><!-- --></a>  원격 호출해 먼저 건네주는 파라미터를 직렬화하기 위해서(때문에), RMI 호출내의 파라미터는,<code>java.io.ObjectOutputStream</code> 클래스의 서브 클래스인 스트림에 기입해집니다. <code>ObjectOutputStream</code> 서브 클래스는,<code>replaceObject</code> 메소드를 오버라이드(override) 해, export 된 각 원격 객체를 대응하는 Stub 인스턴스로 옮겨놓습니다. 객체인 파라미터는,<code>ObjectOutputStream</code> 의 <code>writeObject</code> 메소드를 사용해 스트림에 기입해집니다. <code>ObjectOutputStream</code> 는,<code>writeObject</code> 메소드에 의해 스트림에 기입해진 각 객체 (기입해진 객체에 의해 참조되고 있는 객체도 포함한다)의,<code>replaceObject</code> 메소드를 호출합니다. RMI 의 서브 클래스 <code>ObjectOutputStream</code> 의 <code>replaceObject</code> 메소드의 반환값은, 다음과 같습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="4977"><!-- --></a> <code>replaceObject</code> 에게 건네진 객체가 <code>java.rmi.Remote</code> 의 인스턴스이며, 그 객체가 RMI 런타임에 export 되었을 경우, 원격 객체의 Stub가 반환된다. 객체가 <code>java.rmi.Remote</code> 의 인스턴스이며, 그 객체가 RMI 런타임에 export 되지 않는 경우,<code>replaceObject</code> 는 객체 자체를 돌려준다. 원격 객체의 Stub는,<code>java.rmi.server.RemoteObject.toStub</code> 메소드에의 호출에 의해 취득된다
+</li>
+<li>
+<a name="4980"><!-- --></a> <code>replaceObject</code> 에게 건네진 객체가 <code>java.rmi.Remote</code> 의 인스턴스가 아닌 경우는, 단지 그 객체가 반환된다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="4981"><!-- --></a>  RMI 의 서브 클래스 <code>ObjectOutputStream</code> 도 <code>annotateClass</code> 메소드를 구현해, 클래스가 호출해 옆에서 다운로드할 수 있도록(듯이) 호출 스트림에 클래스의 장소에 대한 주석을 붙입니다. <code>annotateClass</code> 의 사용 방법의 자세한 것은,<a href="rmi-arch5.html">「클래스의 동적인 로드」</a>를 참조해 주세요. <p>
+<a name="4985"><!-- --></a>  어느 파라미터도 동일한 <code>ObjectOutputStream</code> 에 기입해지기 (위해)때문에, 호출측에서 같은 객체를 참조하고 있는 참조는, 수신측에서도 같은 객체의 카피를 참조합니다. 수신측에서는, 파라미터는 동일한 <code>ObjectInputStream</code> 에 의해 읽어내집니다. <p>
+<a name="4996"><!-- --></a>  객체의 기입용의 <code>ObjectOutputStream</code> ( 및 읽기용의 <code>ObjectInputStream</code>)의 그 외의 디폴트의 동작은, 파라미터의 인도로 유지됩니다. 예를 들어, 객체의 기입시의 <code>writeReplace</code> 의 호출해, 및 객체의 읽기시의 <code>readResolve</code> 의 호출은, RMI 의 파라미터 정렬화 및 비정렬화 스트림로 우선됩니다. <p>
+<a name="4990"><!-- --></a>  반환값 (또는 예외)도 상기의 RMI 에서의 파라미터의 인도와 같은 방법으로 <code>ObjectOutputStream</code> 서브 클래스에 기입해져 파라미터의 전송과 같은 방법으로 옮겨놓을 수 있습니다. <p>
+</blockquote>
+
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-objmodel6.html">전의 항목</a>  | <a href="rmi-objmodel8.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

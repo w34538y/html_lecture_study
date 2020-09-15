@@ -1,0 +1,849 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html">
+<META NAME="description" CONTENT="CORBA 에 의해 지원되고 있는 임의의 언어로 기술된 클라이언트로부터 Enterprise JavaBeans[tm] 컴퍼넌트 (이하 「EJB[tm] 컴퍼넌트」) 에 액세스 할 수 있도록(듯이) 하는 방법을 설명합니다. 이 문서는,Java[tm] 2 Platform, Enterprise Edition (이하 「J2EE[tm]」) 및 CORBA (Common Object Request Broker Architecture) 에 관한 고도의 지식을 가지고 계신 프로그래머를 대상으로 쓰여져 있습니다. ">
+<META NAME="keywords" CONTENT="Enterprise JavaBeans,EJB,CORBA 클라이언트,RMI-IIOP, Java RMI,Java IDL,IDL, 인터페이스 정의 언어, 상호 운용성
+">
+
+<TITLE>
+Enterprise JavaBeans[tm] 컴퍼넌트와 CORBA 클라이언트 개발자 가이드
+ - xrath.com 에서 번역됨</TITLE>
+
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BR>
+<HR WIDTH=50%>
+<BR>
+<H1 ALIGN=CENTER>
+Enterprise JavaBeans<font size=-1><sup>TM</sup></font> 컴퍼넌트와 CORBA 클라이언트 개발자 가이드
+</H1>
+<BR>
+<P ALIGN=CENTER><FONT SIZE=-1><BR>
+<HR WIDTH=50%>
+<BR>
+<P>
+이 문서는, CORBA 에 의해 지원되고 있는 임의의 언어로 기술된 클라이언트로부터 Enterprise JavaBeans<font size=-1><sup>TM</sup></font> 컴퍼넌트 (이하 「EJB<font size=-1><sup>TM</sup></font> 컴퍼넌트」)에 액세스 할 수 있도록(듯이) 하는 방법을 설명합니다. 이 문서는, Java<font size=-1><sup>TM</sup></font> 2 Platform, Enterprise Edition (이하 「J2EE<font size=-1><sup>TM</sup></font>」) 및 CORBA (Common Object Request Broker Architecture)에 관한 고도의 지식을 가지고 계신 프로그래머를 대상으로 쓰여져 있습니다.  </P>
+<P>
+<strong>J2EE 테크놀러지</strong>는, 엔터프라이즈 어플리케이션을 단순화 합니다. J2EE 테크놀러지에 의해, 엔터프라이즈 어플리케이션은, Enterprise JavaBeans<font size=-1><sup>TM</sup></font> (EJB<font size=-1><sup>TM</sup></font>)에 근거한 모듈형의 재사용 가능한 표준 컴퍼넌트에 준거하게 되어, J2EE 테크놀러지로부터 제공된 완전한 서비스 세트를 이용할 수 있게 됩니다. 어플리케이션의 세세한 동작의 상당수는, J2EE 테크놀러지에 의해 자동적으로 처리됩니다. 시간이 걸리는 복잡한 어플리케이션 개발 처리가 자동화되기 (위해)때문에, 엔터프라이즈 개발자는, 인프라스트럭쳐(infrastructure)의 구축보다 비지니스 논리의 확장에 힘을 쏟을 수가 있습니다. </P>
+<P>
+EJB<font size=-1><sup>TM</sup></font> 의 서버측 컴퍼넌트 모델을 사용하면(자), 트랜잭션(transaction)에 적절한, 확장성과 이식성의 높은 미들웨어 컴퍼넌트를 간단하게 개발할 수 있습니다. Enterprise JavaBeans 서버를 사용하는 것으로, 트랜잭션(transaction), 시큐리티, 데이타베이스 접속성등의 미들웨어 서비스가 자동적으로 지원되기 (위해)때문에, 미들웨어 개발의 복잡함이 경감됩니다. </P>
+<P>
+<strong>CORBA</strong> 는, 객체 관리 그룹 (OMG)의 규격의 1 개입니다. 벤더에 의존하지 않는 개방적인 아키텍쳐(architecture)와 복수의 컴퓨터 어플리케이션이 네트워크 경유로 이용할 수 있는 인프라스트럭쳐(infrastructure)라고 하는 특징을 갖추고 있습니다. CORBA 베이스의 프로그램은, 표준 프로토콜인 IIOP (Internet Inter-ORB Protocol)를 사용해, 다른 CORBA 베이스의 프로그램과 제휴할 수 있습니다. 이 때, 쌍방의 프로그램의 작성원벤더는 같아도 차이가 나도 괜찮습니다. 이러한 프로그램이 이용하는 컴퓨터,  operating system, 프로그램 언어, 네트워크에 대해서도, 거의 제한은 없습니다. CORBA 의 상세한 것에 대하여는,<a target="AuxWindow"  href="http://www.omg.org/gettingstarted/gettingstartedindex.htm">http://www.omg.org/gettingstarted/gettingstartedindex.htm</a>  를 참조해 주세요. </P>
+<P>
+<A NAME="pgfId-1000422"></A> CORBA 테크놀러지는 분산 객체 시스템, 그 시스템를 지원하는 서비스, 및 발설어와의 상호 운용성을 제공해 Java 플랫폼을 보완합니다. CORBA 테크놀러지는, Java 2 플랫폼의 중요한 부분이며, Enterprise JavaBeans 컴퍼넌트, 표준 프로토콜 Internet Inter-ORB Protocol ( 「Java RMI-IIOP」)를 이용해 실행되고 있는 Java Remote Method Invocation API, 및 Java IDL API ( 「Java IDL」)로 사용됩니다. </P>
+<P>
+<A NAME="pgfId-998373"></A> OMG Interface Definition Language (IDL)는, 원격 객체에 의해 구현되는 인터페이스의 설명에 사용됩니다. IDL 는, 인터페이스명과 개개의 속성 및 메소드의 이름의 정의에 사용됩니다. IDL 파일의 작성 후, IDL 컴파일러를 사용해 클라이언트 Stub와 서버 스켈리턴을 생성할 수 있습니다. OMG 로 언어 매핑의 스펙이 정의되고 있는 언어이면, 어느 언어에서도 사용할 수 있습니다. OMG IDL 의 상세한 것에 대하여는,<a target="AuxWindow"  href="http://www.omg.org/gettingstarted/omg_idl.htm">http://www.omg.org/gettingstarted/omg_idl.htm</a>  를 참조해 주세요. </P>
+<P>
+<A NAME="pgfId-1000436"></A> <strong>Java IDL</strong> 는, 업계표준의 OMG IDL 및 객체 관리 그룹 (<a target="AuxWindow"  href="http://www.omg.org/">http://www.omg.org</a> )에 의해 정의된 IIOP 를 사용해, 분산 Java 어플리케이션으로부터 원격 네트워크 서비스를 투과적으로 처리할 수 있도록(듯이) 합니다. Java RMI over IIOP API 는,<CODE> javax.rmi</CODE> API 를 개입시킨 CORBA 서버 및 어플리케이션의 프로그래밍을 가능하게 합니다.  </P>
+<P>
+<A NAME="pgfId-998262"></A> EJB 컴퍼넌트의 프로그래밍을 실시하는 개발자는, 분산 객체 모델로서 Java RMI 프로그래밍 모델을 사용합니다. 이 프로그래밍 모델에서는, Java RMI-IIOP 가 모든 어플리케이션 서버에 공통의 필수 트랜스폴트 프로토콜이 됩니다. 이기종 서버 혼재 환경에서는, EJB 아키텍쳐(architecture)와 CORBA 의 표준 매핑에 의해, 다음과 같은 상호 운용성이 실현됩니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-998228"></A> 어느 벤더의 ORB 를 사용하고 있는 클라이언트로부터, 그 외의 벤더에 의해 제공된 Enterprise JavaBeans 테크놀러지가 유효하게 되어 있는 서버 ( 「EJB 서버」) 상의 엔터프라이즈 Bean 에 액세스 할 수 있다</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-998230"></A> 어느 EJB 서버상의 엔터프라이즈 Bean 로부터 다른 EJB 서버상의 엔터프라이즈 Bean 에 액세스 할 수 있다</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-998232"></A> Java 프로그램 언어 이외의 언어로 기술된 CORBA 클라이언트로부터 임의의 EJB 컴퍼넌트에 액세스 할 수 있다 (OMG IDL 로부터 그 프로그램 언어에의 매핑이 존재하는 경우)</LI>
+</UL>
+<P>
+<A NAME="pgfId-1000334"></A> 이 문서의 나머지의 부분에서는, 엔터프라이즈 Bean 객체에 액세스 하는 CORBA 클라이언트 어플리케이션의 예를 소개합니다. 이 문서에서는, Java 프로그램 언어, C++, C, Smalltalk, COBOL, Ada, Lisp, 또는 Python 를 포함한 임의의 CORBA 지원 언어로 기술된 클라이언트 어플리케이션을 「CORBA 클라이언트」라고 부릅니다. 이하의 예의 Java 코드는 엔터프라이즈 Bean 고유의 코드입니다만, Java RMI-IIOP API 를 사용해 작성된 서버에 액세스 하는 CORBA 클라이언트의 개발 프로세스는 공통입니다. </P>
+<P>
+<A NAME="pgfId-1004703"></A> J2EE 테크놀러지를 구현하는 그 외의 벤더가 제공하는 유사 어플리케이션에의 링크는,<A HREF="#41577" CLASS="XRef">「같은 그 외의 예에의 링크」</a>로 확인할 수 있습니다. <em></em></P>
+<BR>
+<HR WIDTH=50%>
+<BR>
+<H1>
+<A NAME="pgfId-998204"></A> 
+
+Enterprise JavaBeans 컴퍼넌트에 액세스 하는 CORBA 클라이언트의 개발</H1>
+<P>
+<A NAME="pgfId-998322"></A> 이하는, EJB 컴퍼넌트에 액세스 하는 CORBA 클라이언트 어플리케이션의 개발예입니다. 이 예의 클라이언트는 C++ 프로그램 언어로 기술되고 있습니다만, 실제로는, CORBA 에 의해 지원되고 있는 언어이면 어느 언어를 사용해도 괜찮습니다. </P>
+<P>
+<A NAME="pgfId-998347"></A> 이하의 마디에서는, 엔터프라이즈 Bean 에 액세스 할 수 있는 CORBA 클라이언트의 일반적인 개발 프로세스를 소개합니다. </P>
+<OL>
+
+<LI><A HREF="#27206" >Enterprise JavaBeans 컴퍼넌트의 기술</A> </LI>
+<LI><A HREF="#31647" >CORBA IDL 의 생성</A>  </LI>
+<LI><A HREF="#64914" >CORBA 클라이언트의 작성</A> </LI>
+<LI><A HREF="#73772" >Enterprise JavaBeans 컴퍼넌트의 배치</A>  </LI>
+<LI><A HREF="#33286" >클라이언트의 실행 가능 파일의 실행</A>  </LI>
+</OL>
+<P>
+<A NAME="pgfId-996969"></A> 이 문서에서는, 이하의 토픽도 다룹니다. </P>
+<UL>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997525"></A> <A HREF="#23458" >Java RMI-IIOP 클라이언트 어플리케이션의 작성</A>  </LI>
+<LI>
+<A NAME="pgfId-997515"></A> <A HREF="#74676" >확장의 이점</A>  </LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997520"></A> <A HREF="#15189" >복잡한 인터페이스의 사용상의 힌트</A>  </LI>
+
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997530"></A> <A HREF="#41577" >같은 그 외의 예에의 링크</A> </LI>
+</UL>
+<P>
+<A NAME="pgfId-998358"></A> 예를 단순화 하기 위한(해), 일부의 설명을 생략 하고 있습니다. 보다 고도의 솔루션의 구축 방법에 대해서는,<A HREF="#15189" >「복잡한 인터페이스의 사용상의 힌트」</a>를 참조해 주세요. <em></em>
+
+
+<OL>
+<H2>
+<A NAME="pgfId-997537"></A> <A NAME="27206"></A> 제 I 부 :Enterprise JavaBeans 컴퍼넌트의 기술</H2>
+
+
+<P>
+<A NAME="pgfId-996979"></A> 이하는, Java RMI-IIOP 및 CORBA 클라이언트로부터 어플리케이션 서버에 송신된 단순한 <CODE>String</CODE> 로그 메세지를 받아들이는 엔터프라이즈 Bean 의 코드예입니다. 이 엔터프라이즈 Bean 는, 받아들인 메세지를 현재의 서버 시간과 함께 서버상에 출력합니다. </P>
+
+<strong><LI>
+<A NAME="pgfId-998454"></A> <CODE>/Java/src/ejbinterop</CODE> 디렉토리에,<CODE>Logger.java</CODE>,<CODE>LoggerHome.java</CODE>,<CODE>LoggerEJB.java</CODE>,<CODE>LogMessage.java</CODE> 의 각 파일을 작성합니다. </LI></strong>
+
+
+<A NAME="pgfId-998534"></A> 
+<H3 CLASS="Head4">
+<A NAME="pgfId-1005375"></A> Logger.java</H3>
+<P>
+<A NAME="pgfId-1005376"></A> <CODE>Logger.java</CODE> 파일은, 엔터프라이즈 Bean 의 원격 인터페이스로서<CODE>EJBObject</CODE> 객체를 확장합니다. 원격 인터페이스는, EJB 객체의 원격크라이안트뷰를 제공해, 원격 클라이언트로부터 호출해 가능한 비지니스 메소드를 정의합니다.  </P>
+
+
+<pre><A NAME="pgfId-996984"></A> 
+//Code Example 1: Logger.java
+package ejbinterop;
+
+import javax.ejb.EJBObject;
+import java.rmi.RemoteException;
+
+/**
+ * Accepts simple String log messages and prints
+ * them on the server.
+ */
+public interface Logger extends EJBObject
+{
+    /**
+     * Logs the given message on the server with
+     * the current server time.
+     */
+    void logString(String message) throws RemoteException;
+}</pre>
+
+
+
+<H3 CLASS="Head4">
+<A NAME="pgfId-997002"></A> LoggerHome.java</H3>
+<P>
+<A NAME="pgfId-1005381"></A> <CODE>LoggerHome.java</CODE> 파일은,<CODE>EJBHome</CODE> 를 확장합니다. <CODE>EJBHome</CODE> 인터페이스는, 모든 EJB 컴퍼넌트의 원격 홈 인터페이스에 의해 확장될 필요가 있습니다. 홈 인터페이스는, 원격 클라이언트에 의한 EJB 객체의 작성, 검색, 삭제를 가능하게 하는 메소드와 EJB 인스턴스에 고유하지 않는 홈 비지니스 메소드를 정의합니다.  </P>
+
+
+<pre><A NAME="pgfId-997005"></A> 
+//Code Example 2: LoggerHome.java
+package ejbinterop;
+
+import java.rmi.RemoteException;
+import javax.ejb.EJBHome;
+import javax.ejb.CreateException;
+
+public interface LoggerHome extends EJBHome
+{
+    Logger create() throws RemoteException, CreateException;
+}</pre>
+
+
+
+<H3 CLASS="Head4">
+<A NAME="pgfId-997015"></A> LoggerEJB.java</H3>
+<P>
+<A NAME="pgfId-1005382"></A> <CODE>LoggerEJB.java</CODE> 파일에는, 세션 Bean 의 코드가 포함되고 있습니다. 세션 Bean 는 클라이언트에 의해 작성된 엔터프라이즈 Bean 이며, 일반적으로, 1 회의 클라이언트서버 세션이 종료할 때까지 유효합니다. 세션 Bean 는, 계산이나 데이타베이스 액세스등의 처리를, 클라이언트에 대신해 실행합니다. 이 예의 엔터프라이즈 Bean 는, 클라이언트로부터 단순한 <CODE>String</CODE> 로그 메세지를 받아들여 서버상에 출력합니다. </P>
+
+
+<pre><A NAME="pgfId-997018"></A> 
+//LoggerEJB.java
+package ejbinterop;
+
+import javax.ejb. *;
+import java.util. *;
+import java.rmi. *;
+import java.io. *;
+
+/**
+ * Accepts simple String log messages and prints
+ * them on the server.
+ */
+public class LoggerEJB implements SessionBean {
+
+    public LoggerEJB() {}
+    public void ejbCreate() {}
+    public void ejbRemove() {}
+    public void ejbActivate() {}
+    public void ejbPassivate() {}
+    public void setSessionContext(SessionContext sc) {}
+
+    /**
+     * Logs the given message on the server with
+     * the current server time.
+     */
+    public void logString(String message) {
+        LogMessage msg = new LogMessage(message);
+
+        System.out.println(msg);
+    }
+}</pre>
+
+
+
+<H3 CLASS="Head4">
+<A NAME="pgfId-998529"></A> LogMessage.java</H3>
+<P>
+<A NAME="pgfId-1005383"></A> <CODE>LogMessage.java</CODE> 파일은, 현재 일시를 기록해, 메세지를 나타내는 서식 첨부의 <CODE>String</CODE> 를 작성해, 이 메세지를 서버에 출력합니다. </P>
+
+<pre>
+//LogMessage.java
+package ejbinterop;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.text. *;
+
+/**
+ * Simple message class that handles pretty
+ * printing of log messages.
+ */
+public class LogMessage implements Serializable
+{
+    private String message;
+    private long datetime;
+
+    /**
+     * Constructor taking the message.  This will
+     * take the current date and time.
+     */
+    public LogMessage(String msg) {
+        message = msg;
+        datetime = (new Date()). getTime();
+    }
+
+    /**
+     * Creates a formatted String showing the message.
+     */
+    public String toString() {
+        StringBuffer sbuf = new StringBuffer();
+        DateFormat dformat
+            = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+	DateFormat.LONG);
+        FieldPosition fpos = new
+            FieldPosition(DateFormat.DATE_FIELD);
+        dformat.format(new Date(datetime), sbuf, fpos);
+        sbuf.append(&quot;: &quot;);
+        sbuf.append(message);
+        return sbuf.toString();
+    }
+}</pre>
+
+<P>
+<A NAME="pgfId-999274"></A> 
+<LI><strong>이 섹션으로 기술한 파일을 컴파일 합니다. 다음에 예를 나타냅니다. <p></P>
+
+<pre><A NAME="pgfId-999275"></A> javac -classpath $J2EE_HOME/lib/j2ee.jar:.. *. java</pre>
+</strong><P><strong></strong> <A NAME="pgfId-1000519"></A> 이러한 커멘드는, 현재의 디렉토리내에 모든 <CODE>. java</CODE> 파일의 <CODE>class</CODE> 파일을 작성합니다. 이 커멘드를 시작해 이 문서로 다루는 커멘드를 이용하기 위해서는, 환경 변수 <EM CLASS="Variable">J2EE_HOME</EM> 를 올바르게 설정해 둘 필요가 있습니다. <EM CLASS="Variable"> $J2EE_HOME</EM> 를 사용하는 것은, Unix&#174; 오퍼레이팅(operating) 환경의 규약입니다. Microsoft Windows 오퍼레이팅(operating) 환경에서 작업을 실시하는 경우는, 이 부분을 <EM CLASS="Variable"> %J2EE_HOME%</EM> 로 옮겨놓아 주세요. </P>
+
+<H2>
+<A NAME="pgfId-999277"></A> <A NAME="31647"></A> 제 II 부 :CORBA IDL 의 생성</H2>
+
+<P>
+<A NAME="pgfId-999278"></A> 이 마디에서는, 전의 마디로 생성한 Java 클래스 파일로부터 인터페이스 정의 언어 (IDL) 파일을 생성하는 방법을 설명합니다. 이하의 예에서는, Java 코드를 IDL 에 매핑 할 때,<CODE> rmic</CODE> 컴파일러를 사용합니다. IDL 에서는, 프로그램 언어에 의존하지 않고 , 선언하는 것만으로 객체의 API 를 지정할 수가 있습니다.  </P>
+
+<P>
+<A NAME="pgfId-998675"></A> 
+<LI><strong>전의 순서로 생성한 Java 클래스 파일에 대해서, 다음과 같이 해 <CODE> rmic</CODE> 컴파일러를 실행합니다.
+
+<pre><A NAME="pgfId-998678"></A> rmic -idl -noValueMethods -classpath
+  $J2EE_HOME/lib/j2ee.jar:&lt;path_to_ejbinterop_dir&gt;
+  -d &lt;path_to_where_idl_files_should_be_generated&gt;
+  ejbinterop.Logger ejbinterop.LoggerHome
+</pre></strong>
+<P>
+<A NAME="pgfId-998700"></A> 이 예에서는,<CODE> javax.ejb</CODE> 패키지를 정의하는 JAR 파일과 <CODE> ejbinterop</CODE> 파일의 디렉토리를 수중에 넣고 있습니다. Java<font size=-1><sup>TM</sup></font> 2 Platform, Enterprise Edition (J2EE<font size=-1><sup>TM</sup></font>) version 1.3 레퍼런스 구현 (RI)을 사용하는 경우, JAR 파일은 <CODE><em>$J2EE_HOME</em>/lib/j2ee.jar</CODE> 에 있습니다.  </P>
+<P>
+<A NAME="pgfId-998701"></A> 위의 예의 <CODE> rmic</CODE> 의 커멘드행에서는, 처리를 고속화하기 위해(때문에),<CODE></CODE><CODE>noValueMethods</CODE> 옵션을 사용하는 것을 추천합니다. 이 옵션을 지정하면(자),<CODE> rmic</CODE> 는, CORBA 치 형에 매핑 되는 파라미터 또는 반환값의 형태를 가지는 메소드를 모두 스킵 합니다. 그 결과, 불필요한 IDL 를 생성해 C++ 클라이언트에 구현하는 것을 막을 수 있습니다. 다만, 이 방법에서는, 파라미터 또는 반환값으로서 기본 데이터형, 배열, 및<CODE> Strings</CODE> 밖에 사용할 수 없는 (Java 클래스형을 사용할 수 없다)라고 하는 결점도 있습니다. 상세한 것에 대하여는,<A HREF="#15189" ><em>「복잡한 인터페이스의 사용상의 힌트」</em></A> 를 참조해 주세요.  </P>
+<P>
+<A NAME="pgfId-997565"></A> Java 클래스 파일에 대해서 <CODE>rmic</CODE> 컴파일러를 실행하면(자), 상기의 <CODE>rmic</CODE> 문의 <EM CLASS="Variable">-d</EM> 옵션으로 지정한 디렉토리에, 다음의 파일이 생성됩니다.  </P>
+<UL>
+<LI>
+<A NAME="pgfId-997068"></A> <CODE>java/lang/Ex.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997069"></A> <CODE>java/lang/Exception.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997070"></A> <CODE>java/lang/Object.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997071"></A> <CODE>java/lang/Throwable.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997072"></A> <CODE>java/lang/ThrowableEx.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997073"></A> <CODE>javax/ejb/CreateEx.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997074"></A> <CODE>javax/ejb/CreateException.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997075"></A> <CODE>javax/ejb/EJBHome.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997076"></A> <CODE>javax/ejb/EJBMetaData.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997077"></A> <CODE>javax/ejb/EJBObject.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997078"></A> <CODE>javax/ejb/Handle.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997079"></A> <CODE>javax/ejb/HomeHandle.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997080"></A> <CODE>jajavax/ejb/RemoveEx.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997081"></A> <CODE>javax/ejb/RemoveException.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997082"></A> <CODE>ejbinterop/Logger.idl </CODE>
+</LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-997083"></A> <CODE>ejbinterop/LoggerHome.idl </CODE>
+</LI>
+</UL>
+<P>
+<A NAME="pgfId-997578"></A> &nbsp;</P>
+<DL>
+<DD CLASS="Note">
+<A NAME="pgfId-997579"></A> </DD>
+
+<STRONG>주:</STRONG>이러한 생성 파일이 많게는, Java programming environment 내에서만 사용 가능한 API 가 포함되어 있습니다. 예를 들어,<CODE> EJBMetaData</CODE> 구현은, 현재는 각 어플리케이션 서버에 고유합니다. 따라서, Java 플랫폼 이외의 플랫폼에서 동등의 것을 개발해, 장기간에 걸쳐서 연속 운용하는 것은 곤란합니다. 이것들을 IDL 로부터 삭제할 수도 있습니다만, Java 인터페이스로 변경을 더할 때마다 삭제 처리를 실행해, 재차 <CODE> rmic</CODE> 컴파일러를 사용해 IDL 파일을 생성해야 하기 때문에, 매우 귀찮습니다.
+
+
+</DL>
+<DL>
+<DD CLASS="Note">
+<A NAME="pgfId-997847"></A> </DD>
+
+
+<P>
+<STRONG>주:</STRONG>CORBA 예외는 상속을 지원하지 않기 때문에, Java 언어와 IDL 의 매핑에 의해, 실제의 Java 예외에 상당하는 CORBA 치 형을 포함한 <CODE> Ex</CODE> 클래스가 작성됩니다. 다만, 여기서 채택하는 예는 매우 기본적인 것이므로, 예외의 지원까지는 그다지 고려하지 않습니다. 예외의 상세한 것에 대하여는,<CODE><A target="AuxWindow" HREF="../idl/jidlExceptions.html" CLASS="URL">http://java.sun.com/javase/6/docs/technotes/guides/idl/jidlExceptions.html. </A> </CODE> (을)를 참조해 주세요.
+
+
+
+</DL>
+<P>
+<LI><strong><A NAME="pgfId-998896"></A> C++ 벤더가 제공하고 있는 IDL 로부터 C++ 에의 컴파일러를 사용해 IDL 파일을 컴파일 해, IDL 에 대응하는 C++ 코드를 생성합니다. 이 처리의 순서는 벤더에 따라서 다릅니다. 벤더 독자적인 순서에 대해서는, 수중의 제품 문서를 참조해 주세요. </strong><p></P>
+
+<H3>
+<A NAME="pgfId-998902"></A> <A NAME="64914"></A> 제 III 부 :CORBA 클라이언트의 작성</H3>
+
+<P>
+<A NAME="pgfId-997094"></A> 클라이언트 어플리케이션은, CORBA 에 의해 지원되고 있는 임의의 언어로 기술할 수 있습니다. 다음에, Object Request Broker (ORB)와 <CODE> LoggerHome</CODE> 의 <CODE> corbaname</CODE> URL 를 가지는 단순한 C++ 클라이언트의 코드를 소개합니다. 서버상의 단순한 <CODE> String</CODE> 메세지를 기록하는 코드입니다. <CODE> include</CODE> 문으로 변경을 더해 C++ ORB 벤더의 라이브러리에 따라 값팩토리 등록 코드를 수정할 필요가 있습니다. 이 예는 ORBacus for C++ 4.0. 5 용이며, 일부는 이 제품 고유의 C++ 코드입니다. </P>
+<P>
+<A NAME="pgfId-1000121"></A> <CODE>corbaname</CODE> URL 는, 사용자가 읽을 수 있는 형식의 URL 이며, CORBA 객체에의 액세스를 가능하게 합니다. 이것을 사용해, 특정의 네이밍 문맥으로부터 캐릭터 라인화 된 이름을 취득하는 (이름 해석을 실시한다) 일이 생깁니다. 이것은, CORBA Interoperable Naming Service (INS)의 일부입니다. INS 는, J2EE 플랫폼의 이전의 릴리스로 배포된 CORBA Object Services (COS)의 확장입니다. INS 의 상세한 것에 대하여는,<a href="../idl/jidlNaming.html#INS" target="AuxWindow">http://java.sun.com/javase/6/docs/technotes/guides/idl/jidlNaming.html#INS. </a>  (을)를 참조해 주세요. </P>
+<P>
+<A NAME="pgfId-998739"></A> 이 예의 클라이언트 코드는, 다음의 처리를 실행합니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-998741"></A> Object Request Broker (ORB)의 작성. ORB 는, 객체 요구 서비스를 그 제공원 객체에 접속한다 </LI>
+
+<P>
+<LI><A NAME="pgfId-998750"></A> 값팩토리의 등록<p></P>
+<P>
+<LI><A NAME="pgfId-998751"></A> <CODE>corbaname</CODE> URL 의 포인트처 네이밍 문맥으로 <CODE>LoggerHome</CODE> 객체를 검색한다<p></P>
+<P>
+<LI><A NAME="pgfId-998746"></A> <CODE>LoggerHome</CODE> 객체에 반환되는 객체로부터 안전한 다운로드 캐스트를 실행한다<p></P>
+<P>
+<LI><A NAME="pgfId-998747"></A> <CODE>LoggerEJB</CODE> 객체 참조의 작성<p></P>
+<P>
+<LI><A NAME="pgfId-998748"></A> 메세지의 기록<p></P>
+<P>
+<LI>이 EJB 참조를 재사용하지 않는 것을 어플리케이션 서버에 통지한다</LI><p></P>
+</UL>
+<P>
+<LI><strong>다음과 같은 C++ 코드를 사용해 클라이언트를 작성합니다. 실제의 코드는 C++ 구현에 따라서 다릅니다. 이 예는 ORBacus for C++ 4.0. 5 용이며, 일부는 이 제품 고유의 C++ 코드입니다. <p></P></strong>
+
+<A NAME="pgfId-997590"></A> 
+<pre>
+//Code Example: Client.cpp
+#include &lt;fstream.h&gt;
+
+// C++ ORB Vendor specific include files
+// These are from C++ ORBacus 4.0. 5
+
+#include &lt;OB/CORBA.h&gt;
+#include &lt;OB/OBORB.h&gt;
+
+// Include files generated from our IDL
+#include &lt;java/lang/Exception.h&gt;
+#include &lt;java/lang/Throwable.h&gt;
+#include &lt;javax/ejb/CreateException.h&gt;
+#include &lt;javax/ejb/RemoveException.h&gt;
+#include &lt;ejbinterop/Logger.h&gt;
+#include &lt;ejbinterop/LoggerHome.h&gt;
+
+/**
+ * Given an ORB and a corbaname URL for a LoggerHome
+ * object, logs a simple string message on the server.
+ */
+void
+run(CORBA::ORB_ptr orb, const char* logger_home_url)
+{
+  cout &lt;&lt; &quot;Looking for: &quot; &lt;&lt; logger_home_url &lt;&lt; endl;
+
+  // Look up the LoggerHome object in the naming context
+  // pointed to by the corbaname URL
+  CORBA::Object_var home_obj
+    = orb-&gt;string_to_object(logger_home_url);
+
+  // Perform a safe downcast
+  ejbinterop::LoggerHome_var home
+    = ejbinterop::LoggerHome::_narrow(home_obj.in());
+
+  assert(! CORBA::is_nil(home));
+
+  // Create a Logger EJB reference
+  ejbinterop::Logger_var logger = home-&gt;create();
+
+  CORBA::WStringValue_var msg =
+    new CORBA::WStringValue((const CORBA::WChar*) L&quot;Message
+      from a C++ client&quot;);
+
+  cout &lt;&lt; &quot;Logging...&quot; &lt;&lt; endl;
+
+  // Log our message
+  logger-&gt;logString(msg);
+
+  // Tell the application server we won't use this
+  // EJB reference any more
+  logger-&gt;remove();
+
+  cout &lt;&lt; &quot;Done&quot; &lt;&lt; endl;
+}
+
+/**
+ * Simple main method that checks arguments, creates an
+ * ORB, and handles exceptions.
+ */
+int
+main(int argc, char* argv[])
+{
+  int exit_code = 0;
+  CORBA::ORB_var orb;
+
+  try {
+
+  // Check the arguments
+  if (argc ! = 2) {
+    cerr &lt;&lt; &quot;Usage: Client &lt;corbaname URL of LoggerHome&gt;&quot; &lt;&lt; endl;
+    return 1;
+  }
+
+  // Create an ORB
+  orb = CORBA::ORB_init(argc, argv);
+
+  // Register value factories
+
+  // NOTE: This is overkill for the example since we'll never
+  // get these exceptions.   Also, the _OB_id method is a
+  // proprietary feature of ORBacus C++ generated code.
+  CORBA::ValueFactory factory = new java::lang::Throwable_init;
+  orb -&gt; register_value_factory(java::lang::Throwable::_OB_id(),
+    factory);
+  factory -&gt; _remove_ref();
+
+  factory = new java::lang::Exception_init;
+  orb -&gt; register_value_factory(java::lang::Exception::_OB_id(),
+    factory);
+  factory -&gt; _remove_ref();
+
+  factory = new javax::ejb::CreateException_init;
+  orb -&gt; 		    register_value_factory(javax::ejb::CreateException::_OB_id(),
+      factory);
+  factory -&gt; _remove_ref();
+
+  factory = new javax::ejb::RemoveException_init;
+  orb -&gt;
+    register_value_factory(javax::ejb::RemoveException::_OB_id(),
+      factory);
+  factory -&gt; _remove_ref();
+
+  // Perform the work
+  run(orb, argv[1]);
+
+} catch(const CORBA::Exception&amp; ex) {
+  // Handle any CORBA related exceptions
+  cerr &lt;&lt; ex. _to_string() &lt;&lt; endl;
+  exit_code = 1;
+}
+
+  // Release any ORB resources
+  if (! CORBA::is_nil(orb)) {
+    try {
+      orb -&gt; destroy();
+    } catch(const CORBA::Exception&amp; ex) {
+      cerr &lt;&lt; ex. _to_string() &lt;&lt; endl;
+      exit_code = 1;
+    }
+  }
+
+  return exit_code;
+}</pre>
+
+<strong><LI>
+C++ 컴파일러를 사용해, Client.cpp 파일을 포함한 모든 C++ 파일을 컴파일 해, 클라이언트의 실행 가능 파일을 작성합니다. 플랫폼에 의해 사용하는 툴이 다르기 (위해)때문에, 수중의 제품 문서로 상세를 확인해 주세요. </LI></strong>
+
+<H3>
+<a name="73772"></a>  <A NAME="pgfId-998921"></A> 제 IV 부 :Enterprise JavaBeans 컴퍼넌트의 배치</H3>
+
+<strong><LI>
+기호의 어플리케이션 서버를 사용해, 엔터프라이즈 Bean 를 배치합니다. 이하는, J2EE 1.3 레퍼런스 구현 (RI)을 사용해 <CODE> LoggerEJB</CODE> 컴퍼넌트를 배치하는 예입니다. </LI></strong>
+<OL>
+<LI>
+RI 어플리케이션을 개시합니다. 단말 윈도우 또는 커멘드 prompt에 다음의 커멘드를 입력해 주세요. </LI>
+
+<pre>	$J2EE_HOME/bin/j2ee -verbose</pre>
+
+<P>
+<LI>J2EE 1.3 RI 로부터 「J2EE 서버의 기동이 완료했습니다.」라고 하는 메세지가 표시되면(자), 다른 단말 윈도우 또는 커멘드 prompt로부터 배치 툴을 실행합니다. 다음의 커멘드를 입력해 주세요. </LI>
+
+<pre>	$J2EE_HOME/bin/deploytool</pre>
+
+<P>
+<LI>배치 툴의 <CODE>[파일]</CODE> <CODE>-&gt;</CODE> <CODE>[신규]</CODE> <CODE>-&gt;</CODE> <CODE>[어플리케이션]</CODE> 을 선택합니다.
+<p></P>
+<P>
+<LI><A NAME="pgfId-997618"></A> [어플리케이션의 파일명] 필드에 <CODE> Logger.ear</CODE> 라고 입력해, 어플리케이션을 작성하는 파일을 지정합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997623"></A> [어플리케이션의 표시명] 필드에 <CODE> Logger</CODE> 라고 입력합니다.
+ <p></P>
+<P>
+<LI><A NAME="pgfId-997628"></A> [이해] 를 선택해, 설정을 보존해 다이얼로그 윈도우를 닫습니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997633"></A> 배치 툴의 <CODE>[파일]</CODE> <CODE> -&gt;</CODE> <CODE>[신규]</CODE> <CODE> -&gt;</CODE> <CODE>[엔터프라이즈]</CODE> 를 선택합니다.
+<p></P>
+<P>
+<LI><A NAME="pgfId-1005451"></A> [소개] 화면이 표시되면(자),[다음] 을 선택합니다. 표시되지 않는 경우는 속행합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-998943"></A> [신규 엔터프라이즈 Bean 위저드] 의 [컨텐츠] 박스로부터 [편집] 을 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-1005452"></A> [사용 가능한 파일] 리스트를 전개해,<CODE> ejbinterop</CODE> 패키지로부터 이하의 4 개의 <CODE> . class</CODE> 파일을 추가합니다. <CODE> Logger.class</CODE>,<CODE> LoggerHome.class</CODE>,<CODE> LoggerEJB.class</CODE>,<CODE> LogMessage.class</CODE>[이해] 를 선택해,[다음] 을 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997641"></A> <CODE>[스테이트레스</CODE> <CODE>세션</CODE> <CODE>Bean</CODE> <CODE>타입]</CODE> 을 선택합니다.
+<p></P>
+<P>
+<LI><A NAME="pgfId-997646"></A> <CODE>[엔터프라이즈</CODE> <CODE>Bean</CODE> <CODE>클래스]</CODE> 의 <CODE>ejbinterop.LoggerEJB</CODE> 를 선택합니다.  <p></P>
+<P>
+<LI><A NAME="pgfId-997650"></A> <CODE>[원격</CODE> <CODE>홈</CODE> <CODE>인터페이스]</CODE> 의 <CODE>ejbinterop.LoggerHome</CODE> 를 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997654"></A> <CODE>[원격</CODE> <CODE>인터페이스]</CODE> 의 <CODE>ejbinterop.Logger</CODE> 를 선택합니다.  <p></P>
+<P>
+<LI><A NAME="pgfId-997658"></A> <CODE>[시큐리티</CODE> <CODE>설정]</CODE> 페이지가 표시될 때까지,[다음] 버튼을 반복해 누릅니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997662"></A> [<CODE>배치치</CODE> <CODE>의 설정</CODE>] 버튼을 선택합니다. <CODE></CODE>
+<p></P>
+<P>
+<LI><A NAME="pgfId-997666"></A> [<CODE>지원하는</CODE> <CODE>클라이언트의</CODE> <CODE>선택</CODE>] 을 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997670"></A> [이해] 를 선택해, 설정을 보존해 다이얼로그 윈도우를 닫습니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997674"></A> [완료] 를 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-997678"></A> 배치 툴의 [<CODE>툴</CODE>] <CODE> -&gt;</CODE> [<CODE>배치</CODE>] 를 선택합니다.
+<p></P>
+<P>
+<LI><A NAME="pgfId-1005453"></A> <strong>Java RMI-IIOP 클라이언트만을 실행하고 있는 경우</strong>는,[클라이언트 JAR 를 돌려줍니다] 를 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-998953"></A> [다음] 을 선택합니다.  <p></P>
+<P>
+<LI><A NAME="pgfId-997682"></A> [<CODE>JNDI</CODE><CODE>Name</CODE>어플리케이션] 의 LoggerEJB 명 필드에 <CODE>ejbinterop/logger</CODE> 라고 입력합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-998963"></A> [완료] 를 선택합니다. <p></P>
+<P>
+<LI><A NAME="pgfId-1005772"></A> [파일] -&gt;[종료] 를 선택해, 배치 툴을 종료합니다. <p></P>
+</OL>
+<P>
+<A NAME="pgfId-997891"></A> 이것으로, Logger 어플리케이션과 <CODE> LoggerEJB</CODE> 컴퍼넌트가 배치되어 메세지를 수신할 준비를 할 수 있었습니다.  </P>
+
+<H3>
+<A NAME="pgfId-997893"></A> <A NAME="33286"></A> 제 V 부:클라이언트의 실행 가능 파일의 실행</H3>
+
+<strong><LI>
+클라이언트의 실행 가능 파일을 실행합니다. 예를 들어, 실행 가능 클라이언트 파일이 들어가 있는 디렉토리로부터 단말 윈도우내에 다음의 URL 를 입력한다고 하는 방법이 있습니다.  </LI>
+
+<pre><A NAME="pgfId-1000172"></A> Client corbaname:iiop:1. 2@localhost:1050#ejbinterop/logger</pre>
+</strong>
+<P>
+<A NAME="pgfId-999091"></A> 이 URL 의 각 부분의 해설은 다음과 같습니다. </P>
+<UL>
+<LI>
+<CODE> Client</CODE> 는 실행하는 어플리케이션의 이름</LI>
+<P><LI>
+<A NAME="pgfId-999094"></A> <CODE> corbaname</CODE> 는 특정의 네이밍 문맥으로부터 캐릭터 라인화 된 이름을 취득하는 것을 지정 </LI>
+<P><LI>
+<A NAME="pgfId-999095"></A> <CODE> iiop:1. 2</CODE> 는 ORB 에 IIOP 프로토콜과 GIOP 1.2 를 사용하도록(듯이) 지시</LI>
+<P><LI>
+<A NAME="pgfId-999096"></A> 참조를 검색하는 호스트 머신은 로컬 머신 <CODE> localhost</CODE>. 이 예를 응용해 2 대의 머신을 실행하는 경우는,<CODE> localhost</CODE> 의 위치에 서버를 실행하는 머신의 IP 주소 또는 호스트명을 입력한다</LI>
+<P><LI>
+<A NAME="pgfId-999098"></A> <CODE>1050</CODE> 은 네이밍 서비스가 요구를 대기하는 포트. J2EE 버젼 1.3 RI 에서는, 네이밍 서비스가 대기하는 디폴트 포트는 1050. 참조 부분으로부터 해시 마크가 있는 포인트 (<CODE> Client corbaname:iiop:1. 2@localhost:1050</CODE> )까지가, 루트 네이밍 문맥을 돌려주는 URL</LI>
+<P><LI>
+<A NAME="pgfId-1000198"></A> <CODE> ejbinterop/logger</CODE> 는 해결하는 네이밍 문맥내의 이름</LI>
+</UL>
+<P>
+<A NAME="pgfId-999099"></A> J2EE 1.3 레퍼런스 구현을 사용하고 있는 경우는, 어플리케이션 서버상에 다음과 같은 메세지가 표시됩니다.  </P>
+<pre><A NAME="pgfId-1000207"></A> 
+Sep 21, 2001 3:33:07 PM PDT: Message from a C++ client<CODE> ejbinterop/
+logger</CODE> is the name to be resolved from the Naming Service.
+</pre>
+
+<H3>
+<A NAME="pgfId-1005501"></A> 제 VI 부 :J2EE 서버의 정지</H3>
+
+<strong><LI>
+<A NAME="pgfId-1005504"></A> J2EE 서버를 정지합니다. 서버를 정지하려면 , 단말 윈도우 또는 커멘드 prompt에 다음의 커멘드를 입력합니다. </LI>
+
+<pre><A NAME="pgfId-1005736"></A> $J2EE_HOME/bin/j2ee -stop</pre>
+</strong><P CLASS="StepPara1">
+<A NAME="pgfId-1005726"></A> 실행 프로세스의 종료 순서는  operating system에 따라서 다릅니다. 다른 서버를 사용하고 있는 경우는, 시스템 문서로 상세를 확인해 주세요. </P>
+
+</OL>
+<BR>
+<HR WIDTH=50%>
+<BR>
+<H1>
+<A NAME="pgfId-997911"></A> <A NAME="23458"></A> Java RMI-IIOP 클라이언트 어플리케이션의 작성</H1>
+<P>
+<A NAME="pgfId-997310"></A> 여기까지의 예를 사용해, 엔터프라이즈 Bean 에 접속하는 Java RMI-IIOP 를 간단하게 개발할 수 있습니다. 다음에, C++ 클라이언트를 사용하는 예와의 차이를 들어 둡니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-999143"></A> 클라이언트의 CLASSPATH 에는, 적절한 엔터프라이즈 Bean 를 실행하고 있는 J2EE 어플리케이션 서버에 의해 작성된 클라이언트 JAR 파일의 위치를 포함할 필요가 있다. 이 JAR 파일에는 필요한 클라이언트 Stub가 포함된다.  </LI>
+<P><LI>
+<A NAME="pgfId-997314"></A> J2EE 1.3 을 사용하는 어플리케이션을 배치할 때는, 배치 툴의 [배치] 화면의 최초의 페이지로 [<CODE>클라이언트 Jar 를 돌려주는</CODE>] 체크 박스를 온으로 한다 </LI>
+</UL>
+<P>
+<A NAME="pgfId-997316"></A> 이하는,<CODE> LoggerEJB</CODE> 컴퍼넌트의 Java RMI-IIOP 버젼의 클라이언트의 코드입니다. C++ 클라이언트의 예와 같은 순서에 따릅니다. 클라이언트의 실행시는, C++ 의 예와 같은 URL 를 사용합니다.  </P>
+
+<UL>
+<A NAME="pgfId-997773"></A> 
+<pre>
+//Code Example: LogClient.java
+package ejbinterop;
+
+import java.rmi.RemoteException;
+import javax.rmi. *;
+import java.io. *;
+import javax.naming. *;
+import javax.ejb. *;
+
+/**
+ * Simple Java RMI-IIOP client that uses an EJB component.
+ */
+public class LogClient
+{
+    /**
+     * Given a corbaname URL for a LoggerHome,
+     * log a simple String message on the server.
+     */
+    public static void run(String loggerHomeURL)
+        throws CreateException, RemoveException,
+               RemoteException, NamingException
+    {
+        System.out.println(&quot;Looking for: &quot; + loggerHomeURL);
+
+        // Create an InitialContext.  This will use the
+        // CosNaming provider we will specify at runtime.
+        InitialContext ic = new InitialContext();
+
+        // Lookup the LoggerHome in the naming context
+        // pointed to by the corbaname URL
+        Object homeObj = ic.lookup(loggerHomeURL);
+
+        // Perform a safe downcast
+        LoggerHome home
+            = (LoggerHome) PortableRemoteObject.narrow(homeObj,
+	LoggerHome.class);
+
+        // Create a Logger EJB reference
+        Logger logger = home.create();
+
+        System.out.println(&quot;Logging...&quot;);
+
+        // Log our message
+        logger.logString(&quot;Message from a Java RMI-IIOP client&quot;);
+
+        // Tell the application server we won't use this
+        // EJB reference anymore
+        logger.remove();
+
+        System.out.println(&quot;Done&quot;);
+    }
+
+    /**
+     * Simple main method to check arguments and handle
+     * exceptions.
+     */
+    public static void main(String args[])
+    {
+        try {
+
+            if (args.length ! = 1) {
+                System.out.println(&quot;Args: corbaname URL of LoggerHome&quot;);
+                System.exit(1);
+            }
+
+            LogClient.run(args[0]);
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+            System.exit(1);
+        }
+    }
+}</pre>
+</UL>
+
+<H2 CLASS="Head3">
+<A NAME="pgfId-1005509"></A> Java RMI-IIOP 클라이언트로 어플리케이션을 실행</H2>
+<P>
+<A NAME="pgfId-1005517"></A> C++ 클라이언트는 아니고 Java RMI-IIOP 클라이언트로 어플리케이션예를 실행하려면 , 다음의 순서에 따라 주세요. </P>
+<OL>
+<LI>
+<A NAME="pgfId-1005518"></A> 다음의 커멘드를 사용해,<CODE>ejbinterop</CODE> / 디렉토리내의 . <CODE>java</CODE> 파일을 컴파일 합니다. </LI>
+
+<pre><A NAME="pgfId-1005545"></A> <CODE>javac -classpath $J2EE_HOME/lib/j2ee.jar:&lt;ejbinterop_directory&gt; *. java</CODE>
+</pre>
+
+<P>
+<LI><A NAME="pgfId-1005626"></A> <A HREF="#73772" ><em>「Enterprise JavaBeans 컴퍼넌트의 배치」</em></A> 의 설명에 따라 Enterprise JavaBeans 를 배치합니다. Java RMI-IIOP 클라이언트 어플리케이션의 실행시는, 반드시 [툴] -&gt; [배치] 를 선택해,[클라이언트 JAR 를 돌려줍니다] 를 선택해 주세요. J2EE RI 또는 그 외의 어플리케이션 서버를 기동하는 방법에 대해서는, 배치에 관한 설명을 참조해 주세요. <p></P>
+<P>
+<LI><A NAME="pgfId-1005537"></A> 다음과 같은 커멘드를 사용해, 클라이언트 어플리케이션을 실행합니다. <p></P>
+
+<pre><A NAME="pgfId-1005538"></A> java -classpath $J2EE_HOME/lib/j2ee.jar:
+&lt;path to LoggerClient.jar&gt;/LoggerClient.jar:
+&lt;directory_above_ejbinterop&gt;:&lt;ejbinterop_directory&gt;
+ejbinterop.LogClient
+corbaname:iiop:1. 2@localhost:1050#ejbinterop/logger </pre>
+<P>J2EE RI 를 실행하고 있는 윈도우에, 다음의 메세지가 표시됩니다. </P>
+<pre><A NAME="pgfId-1005828"></A> <CODE>Jan 31, 2002 2:27:47 PM PST: Message from a Java RMI-IIOP client</CODE>
+</pre>
+<P>클라이언트를 실행하고 있는 윈도우에는, 다음의 메세지가 표시됩니다.
+<P>
+<pre><A NAME="pgfId-1005831"></A> <CODE>Looking for: corbaname:iiop:1. 2@localhost:1050#ejbinterop/logger
+Logging...
+Done</CODE>
+</pre>
+
+<P>
+<LI><A NAME="pgfId-1005539"></A> J2EE 서버를 정지합니다. <p></P>
+</OL>
+
+<BR>
+<HR WIDTH=50%>
+<BR>
+
+
+<A NAME="pgfId-1005483"></A> 
+<H1>
+기본 어플리케이션의 확장</H1>
+<P>
+<A NAME="pgfId-1005484"></A> 이 마디에서는, 이하의 토픽을 다룹니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-1005485"></A> <A HREF="#74676" >확장의 이점</A> </LI>
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-1005489"></A> <A HREF="#15189" >복잡한 인터페이스의 사용상의 힌트</A> </LI>
+
+<LI CLASS="Bullet1-">
+<A NAME="pgfId-1005497"></A> <A HREF="#41577" >같은 그 외의 예에의 링크</A> </LI>
+</UL>
+
+<H2>
+<A NAME="pgfId-997901"></A> <A NAME="74676"></A> 확장의 이점</H2>
+<P>
+<A NAME="pgfId-997902"></A> 어플리케이션의 확장에 의해, 다음 일이 가능하게 됩니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-999100"></A> 예를 바탕으로치형을 사용하는 코드를 작성 </LI>
+
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-999103"></A> 이 때문에는,<CODE> rmic</CODE> 의 실행시에 <CODE> -noValueMethods</CODE> 스윗치를 생략 합니다. 게다가 IDL 로부터 C++ 언어에의 매핑 컴파일러를 재실행해, 생성된 치 형이 지원될지 어떨지를 확인합니다.  </P>
+
+<LI>
+<A NAME="pgfId-999115"></A> <CODE>Logger</CODE> 에 <CODE>LogMessage</CODE> 를 취하는 메소드를 추가.  </LI>
+</UL>
+
+
+<H2>
+<A NAME="pgfId-997719"></A> <A NAME="15189"></A> 복잡한 인터페이스의 사용상의 힌트</H2>
+<P>
+<A NAME="pgfId-999118"></A> 인터페이스는, 각각 다른 언어를 사용하는 클라이언트와 서버간의 통신에 대해 중요한 역할을 완수합니다. 이하의 힌트를 참고로 하는 것으로, 이 영역에서 성공하는 확률을 높일 수가 있습니다. </P>
+<UL>
+<LI>
+<A NAME="pgfId-997278"></A> 메소드의 파라미터 또는 반환값의 형태로서 복잡한 Java 클래스 (<CODE> java.util</CODE> 내의 컬렉션등)를 사용하지 않는다</LI>
+
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-1004697"></A> 이러한 형태를 IDL 에 매핑 하면(자), 다음에 클라이언트 프로그램 언어에 구현할 필요가 있습니다. Java 객체의 직렬화 및 RMI-IIOP API 는, 와이어 형식과 시간의 경과와 함께 변화하는 클래스의 내부 표현을 허가합니다. 이 때문에, CORBA 클라이언트 어플리케이션과 Java<font size=-1><sup>TM</sup></font> 2 Platform, Standard Edition (J2SE<font size=-1><sup>TM</sup></font>)의 구현 또는 버젼이 비호환이 될 가능성이 있습니다.  </P>
+
+<LI>
+<A NAME="pgfId-997294"></A> IDL 로 개시</LI>
+
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-997296"></A> 반환값의 형태 또는 메소드의 파라미터로 복잡한 데이터 구조를 사용해야 하는 경우도 있습니다. 이러한 경우는, IDL 로 개시해 보세요. 데이터 구조와 예외를 IDL 로 정의하고 나서 EJB 인터페이스로 사용합니다. 이것에 의해, 역매핑에 의해 사용자의 CORBA 인터페이스에 침입하는 부정행위를 저지할 수 있습니다.  </P>
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-997300"></A> 예를 들어, 최초로 IDL 로 <CODE> LogMessage</CODE> 클래스를 정의해 두어, Java 언어로부터 IDL 에의 컴파일에서는, Logger EJB 컴퍼넌트의 메소드 파라미터로서 이 클래스를 사용합니다.  </P>
+
+<LI>
+<A NAME="pgfId-1000237"></A> EJB 인터페이스의 다중 정의를 피한다</LI>
+
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-1000238"></A> CORBA IDL 는, 메소드의 다중 정의를 지원하지 않습니다. Java 언어와 IDL 의 매핑에서는, 메소드명을 모든 IDL 파라미터형과 조합하는 것 같은 IDL 메소드 정의를 작성하는 것에 의해, 이 문제를 해결합니다. 다만, 생성되는 메소드명은, Java 프로그램 언어 이외의 언어를 사용하는 개발자에게 있어서는 매우 이해하기 어려운 것이 됩니다.  </P>
+
+<LI>
+<A NAME="pgfId-997303"></A> 브릿지의 이용</LI>
+
+<P CLASS="ParaIndent2">
+<A NAME="pgfId-999134"></A> 선택사항이 매우 한정되어 있는 경우나, 기술하려고 하고 있는 코드에의 영향이 큰 경우는, 서버측 브릿지를 이용해 보세요. 브릿지의 자세한 구축 방법은, 링크의 경우(때)에 기재되어 있는 사이트에서 확인할 수 있습니다.  </P>
+</UL>
+
+
+<H3>
+<A NAME="pgfId-1005512"></A> <A NAME="41577"></A> 같은 그 외의 예에의 링크</H3>
+<P>
+<A NAME="pgfId-997394"></A> J2EE 테크놀러지를 구현하는 벤더의 상당수는, CORBA 와 Enterprise JavaBeans 테크놀러지를 통합하는 뛰어난 예와 힌트를 제공하고 있습니다.  </P>
+<UL>
+<LI>
+<A NAME="pgfId-997781"></A> IONA - <EM CLASS="Title">「EJB-CORBA and CORBA-EJB Interoperability」</EM> <A HREF="http://www.iona.com/support/docs/iportal_application_server/3.0/DevelopGuide/html/intro-RMI.html#281858" target="AuxWindow" CLASS="Hypertext">http://www.iona.com/support/docs/iportal_application_server/3. 0/DevelopGuide/html/intro-RMI.html#281858</a> </LI>
+<LI>
+<A NAME="pgfId-997397"></A> BEA - <EM CLASS="Title">「EJB-to-CORBA/Java Simpapp Sample Application」</EM> <A HREF="http://edocs.bea.com/wle/wle50/interop/ejbcorba.htm" target="AuxWindow" CLASS="Hypertext">http://edocs.bea.com/wle/wle50/interop/ejbcorba.htm</a> </LI>
+<LI>
+<A NAME="pgfId-997398"></A> Borland - <EM CLASS="Title">「Sevens steps to build a VisiBroker C++ CORBA Client for an EJB Server」</EM> <A HREF="http://www.borland.com/devsupport/appserver/faq/ejbcpp/ejb_cpp.html" target="AuxWindow" CLASS="Hypertext">http://www.borland.com/devsupport/appserver/faq/ejbcpp/ejb_cpp.html</a> </LI>
+</UL>
+<P>
+<HR WIDTH=50%>
+<A NAME="pgfId-1001052"></A> &nbsp;<p></P>
+
+<P><FONT SIZE=-2>Copyright &copy; 2002-2004 Sun Microsystems, Inc., 901 San Antonio Road, Palo Alto, California 94303, U.S.A.  All rights reserved.
+
+<P>본제품에 짜넣어진 기술에 관한 지적 소유권은, 미국 Sun Microsystems, Inc.  에 귀속합니다. 이러한 안에는, 1 개 이상의 미국 특허 (일람은 <a href="http://www.sun.com/patents">http://www.sun.com/patents</a> ), 외국 특허 또는 특허 출원에 의해 보호되고 있는 것도 있습니다.
+
+<P>본제품은, 그 사용, 복제의 반포, 역 컴파일을 제한하는 라이센스에 근거해 배포됩니다. 산 또는 산에 대한 허락자의 서면에 의한 사전의 허가없이, 본제품의 어떠한 부분도, 어떠한 방법에 따라도 복제하는 것이 금지됩니다.
+
+<P>폰트 기술을 포함한 제삼자의 소프트웨어는, 저작권법에 따라 보호되고 있어 제공자로부터 라이센스를 받고 있는 것입니다.
+
+<P>Sun, Sun Microsystems, Sun 의 로고, Java Enterprise JavaBeans, EJB, J2EE, Java SE 는, 미국 및 그 외의 나라에 있어서의 미국 Sun Microsystems, Inc.  의 등록상표입니다.
+
+<P>UNIX 는, X/Open Company, Ltd 가 독점적으로 허가하고 있는 미국 및 다른 나라에 있어서의 등록상표입니다.
+
+
+</FONT>
+<HR WIDTH=50%>
+<P>
+
+
+</font></BODY>
+</HTML>

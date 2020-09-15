@@ -1,0 +1,368 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>
+JNDI/RMI 레지스트리 서비스 프로바이더 
+ - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077
+ALINK=#ff0000>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<center>
+
+<h1>
+RMI 레지스트리 서비스 프로바이더<br> Java Naming and Directory Interface<font size=4><sup>TM</sup></font> (JNDI)
+</h1>
+</center>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<P><FONT SIZE=-1>코멘트의 송부처: <a href="mailto:jndi@java.sun.com">jndi@java.sun.com</a> </FONT>
+<P>
+<P><I>목차</I>
+<UL>
+<LI>
+<A HREF="#INTRO">처음에</A> </LI>
+
+<LI>
+<A HREF="#PROP">환경 프로퍼티</A> </LI>
+
+<LI>
+<A HREF="#NAME">이름</A> </LI>
+
+<LI>
+<A HREF="#RMI">RMI URL</A> </LI>
+   
+<LI>
+<A HREF="#FORM">RMI URL 의 형식</A> </LI>
+
+<LI>
+<A HREF="#MAP">API 매핑</A> </LI>
+
+<LI>
+<A HREF="#BIND">바인딩</A> </LI>
+
+<LI>
+<A HREF="#USAGE">사용예</A> </LI>
+
+<LI>
+<A HREF="#SEC">시큐리티에 대해</A> </LI>
+
+</UL>
+<P>
+<HR>
+<P>
+
+<A NAME="INTRO"></a> 
+
+<h2>처음에</h2>
+<p>
+RMI 레지스트리 서비스 프로바이더를 사용해, JNDI 어플리케이션으로부터 RMI 레지스트리에 등록되어 있는 원격 객체에 액세스 할 수가 있습니다. 프로바이더에 레지스트리의 위치를 건네주면(자), 그 레지스트리에 등록되어 있는 객체에 바인드 된 네이밍 문맥이 작성됩니다. 이 문맥은, JNDI 로부터 액세스 가능한 다른 이름 공간 (LDAP 등)에 바인드 됩니다. 각 원격 객체에의 참조도, 똑같이 다른 이름 공간에 바인드 됩니다.
+<p>
+레지스트리 문맥을 다른 이름 공간에 바인드 하면(자), 원격 객체에 대해서, 레지스트리의 위치에 의존하지 않는 액세스를 실시할 수가 있습니다. RMI 클라이언트에서는, 레지스트리의 호스트명 또는 포트 번호의 정보는 필요 없습니다. RMI 서버에서는, 서버의 서비스를 잠재적인 클라이언트에 통지할 경우에, 이 기능을 이용할 수가 있습니다. 또, 원격 객체로부터, 사용자, 조직, 및 네트워크 자원의 정보에 액세스 할 경우에 사용되는 기업 디렉토리에 대해서, 링크를 작성할 수가 있습니다.
+<p>
+이 서비스 프로바이더가 인스톨 되고 있는 경우는, JNDI 에 <tt>java.rmi.Naming</tt> 클래스의 기능이 짜넣어집니다.
+<p>
+<p>
+이 문서에서는, RMI 레지스트리 서비스 프로바이더의 기능에 대해 설명합니다.
+<hr>
+<p>
+<A NAME="PROP"></a> 
+<h2>환경 프로퍼티</h2>
+<p>
+RMI 레지스트리 서비스 프로바이더에서는, 다음의 JNDI 환경 프로퍼티이 사용됩니다. 환경 프로퍼티, 시스템 프로퍼티, 애플릿 파라미터, 및 resource file를 사용했을 때의 프로퍼티의 초기치에 대해서는,<a href="../../../api/javax/naming/InitialContext.html#ENVIRONMENT">JNDI 의 문서</a>를 참조해 주세요.
+
+<p>
+<a name=INITPROP><b><pre>java.naming.factory.initial</pre></b></a> 
+<blockquote>
+레지스트리 서비스 프로바이더를 선택할 경우에, 초기 문맥으로서 사용됩니다. 프로바이더에서는 사용되지 않습니다. 프로바이더의 초기 문맥 팩토리의 클래스명을 지정합니다.
+<p>
+예를 나타냅니다.
+<p>
+<blockquote>
+<pre>
+env.put(Context.INITIAL_CONTEXT_FACTORY,
+    "com.sun.jndi.rmi.registry.RegistryContextFactory");
+</pre>
+</blockquote>
+<p>
+이 프로퍼티은,<a href=#URLPROP><tt>java.naming.provider.url</tt> 프로퍼티</a>과 함께 사용됩니다. 레지스트리를 초기 문맥으로서 사용하고 있는 경우는, 이 프로퍼티을 설정할 필요가 있습니다. 다만, 초기 문맥에 URL 만을 건네주었을 경우는, 이 프로퍼티을 지정할 필요는 없습니다. 자세한 것은,<a href="#RMI">「RMI URL」</a>를 참조해 주세요.
+
+</blockquote>
+<a name=URLPROP><b><pre>java.naming.provider.url</pre></b></a> 
+<blockquote>
+레지스트리가 초기 문맥으로서 사용되고 있을 때는, 이 프로퍼티에 레지스트리의 위치를 지정합니다. RMI URL 에는, 객체명 컴퍼넌트를 포함하지 말아 주세요 (<a href="#FORM">「RMI URL 의 형식」</a>을 참조).
+<p>
+예를 나타냅니다.
+<p>
+<blockquote>
+<pre>
+env.put(Context.PROVIDER_URL, "rmi://server:1099");
+</pre>
+</blockquote>
+<p>
+이 프로퍼티의 디폴트 값는 「rmi:」입니다.  로컬 호스트의 포트 1099 상에서 동작하는 레지스트리입니다.
+<p>
+이 프로퍼티은,<a href=#INITPROP><tt>java.naming.factory.initial</tt> 프로퍼티</a>과 함께 사용됩니다.
+
+</blockquote>
+
+<b><pre>java.naming.factory.state</pre></b>
+
+<blockquote>
+상태 팩토리 클래스의 완전 수식명의 리스트입니다. 구두점으로 단락지어지고 있습니다. 건네받은 객체가 포함될 때, 객체 상태를 취득하기 위해서 사용됩니다. 이 기구를 사용해, 객체를 레지스트리에 포함할 수 있는 형식으로 변환할 수가 있습니다. RMI 레지스트리 서비스 프로바이더에서는,<tt>java.rmi.Remote</tt>,<tt>javax.naming.Reference</tt>, 및 <tt>javax.naming.Referenceable</tt> 객체를 포함할 수가 있습니다. 자세한 것은,<a href="../../../api/javax/naming/spi/NamingManager.html#getStateToBind(java.lang.Object,%20javax.naming.Name,%20javax.naming.Context,%20java.util.Hashtable)"><tt>javax.naming.spi.NamingManager.getStateToBind()</tt></a>  를 참조해 주세요.
+</blockquote>
+
+<b><pre>java.naming.factory.object</pre></b>
+
+<blockquote>
+객체 팩토리 클래스의 완전 수식명의 리스트입니다. 구두점으로 단락지어지고 있습니다. 레지스트리로부터 읽힌 객체가 변환됩니다. 이 기구를 사용해, 객체를 어플리케이션에 적절한 형식으로 변환할 수가 있습니다. 이 기구를 사용해, 객체를 어플리케이션에 적절한 형식으로 변환할 수가 있습니다.  자세한 것은<a href="../../../api/javax/naming/spi/NamingManager.html#getObjectInstance(java.lang.Object,%20javax.naming.Name,%20javax.naming.Context,%20java.util.Hashtable)"><tt>javax.naming.spi.NamingManager.getObject.Instance()</tt></a>  를 참조해 주세요.
+</blockquote>
+
+<a name=SOCKPROP><b><pre>com.sun.jndi.rmi.factory.socket</pre></b><a>
+<blockquote>
+이 프로퍼티은, 클라이언트 소켓을 취득해 RMI 를 호출하기 (위해)때문에, RMI 런타임으로 사용하는 소켓 팩토리를 지정합니다. 지정된 소켓 팩토리의 값은, 반드시 <a href="../../../api/java/rmi/server/RMIClientSocketFactory.html"><tt>java.rmi.server.RMIClientSocketFactory</tt></a>  형이 됩니다. 이 프로퍼티이 설정되어 있지 않은 경우, 레지스트리에서는 디폴트의 소켓 팩토리가 사용됩니다.  
+</blockquote>
+
+<b><pre>java.naming.rmi.security.manager</pre></b>
+<blockquote>
+프로바이더에 의해,<tt>RMISecurityManager</tt> 가 인스톨 됩니다. 임의의 값을 설정할 수 있습니다. <a href="#SEC">「시큐리티에 대하며」</a>를 참조해 주세요.
+</blockquote>
+<hr>
+<p>
+<A NAME="NAME"></a> 
+<h2>이름</h2>
+<p>
+
+RMI 레지스트리에서는, 플랫인 이름 공간이 지원됩니다. 계층이 없기 때문에, 모든 이름은 기본 요소입니다. 이름에는 임의의 문자를 사용할 수 있습니다.  대문자 소문자가 구별됩니다.
+<p>
+이름은, 레지스트리 문맥의 메소드에 인수로서 건네받습니다. 또, 그 메소드의 결과로서 <tt><a href="../../../api/javax/naming/Name.html">Name</a> </tt> 객체 또는 캐릭터 라인이 돌려주어집니다. <tt>Name</tt> 객체를 사용할 때는, 레지스트리에게 건네지는 기본명을 값으로 해서 가지는 컴퍼넌트가 1 개 필요합니다. 캐릭터 라인이 이름으로서 사용되면(자), 복합명의 캐릭터 라인 표현으로서 해석됩니다. 예를 들어,<tt>ctx</tt> 가 레지스트리 문맥의 경우는, 다음의 2 개의 바인드되어 있지 않은 조작은 등가가 됩니다.
+<blockquote><pre>
+String name = ...
+ctx.unbind(name);
+ctx.unbind(new CompositeName(name));
+</pre></blockquote>
+
+이름에, 메타캐라크타의 「/」, 「\」, 「"」, 및 「\」의 4 개(살)이 포함되는 경우에는 주의가 필요합니다. '/', '\\', '"', and '\''. 이러한 문자는, 적절한 방법으로 이스케이프 하는지, 인용부호로 둘러쌀 필요가 있습니다. 예를 들어, 「X/Y」를 기본명으로서 사용하는 경우는, 복합명 「X\/Y」라고 표현해, 컴퍼넌트 「X」 및 「Y」의 2 개로 구성되는 컴퍼넌트명으로 해석되지 않게 합니다. 상세한 것에 대하여는,<a href="../../../api/javax/naming/CompositeName.html"><tt>CompositeName</tt></a>  를 참조해 주세요.
+<hr>
+<p>
+<A NAME="RMI"></a> 
+<h2>RMI URL</h2>
+<p>
+JNDI 에서는, 객체가 지정되고 있는 URL 의 해결이 지원됩니다. 그리고, 레지스트리 서비스 프로바이더에서는, RMI URL 를 이름으로서 사용할 수 있습니다. 이 때문에,<tt>java.rmi.Naming</tt> 의 기능의 범용성이 향상해, 범용적인 JNDI 인터페이스 이외는 필요가 없어집니다.
+<p>
+<tt>com.sun.jndi.url.rmi.rmiURLContextFactory</tt> 클래스에 의해, RMI URL 의 URL 문맥 팩토리가 구현됩니다. 이 때문에, 디폴트의 JNDI 초기 문맥에 RMI URL 를 이름으로서 건네줄 수가 있습니다.
+<hr>
+<p>
+<A NAME="FORM"></a> 
+<h2>RMI URL 의 형식</h2>
+<p>
+RMI URL 에서는, 다음의 어느 쪽인가의 형식이 사용됩니다.
+<pre>
+   rmi://[host][:port][/[object]]
+
+   rmi:[/][object]
+</pre>
+객체명을 지정하지 않았던 경우는, 지정한 호스트 및 포트의 레지스트리가 URL 로 지정됩니다. 객체명을 지정했을 경우는, 지정한 객체명아래의 레지스트리에 등록되어 있는 원격 객체가 URL 로 지정됩니다.
+<p>
+호스트를 생략 했을 경우는, 로컬 호스트가 지정되고 있다고 보입니다. 포트를 생략 했을 경우는, 디폴트 레지스트리의 포트 1099 가 지정되고 있다고 보입니다.
+<hr>
+<p>
+<A NAME="MAP"></a> 
+<h2>API 매핑</h2>
+<p>
+
+레지스트리 서비스 프로바이더에 의해,<tt>java.naming.Context</tt> 및 <tt>java.naming.Referenceable</tt> 인터페이스가 구현됩니다. <tt>Context</tt> 및 <tt>Referenceable</tt> 메소드는, 다음에 설명하는 레지스트리 조작에 매핑 됩니다.
+
+<b><pre>
+lookup()
+lookupLink()
+</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.lookup()</tt> 메소드가 불려 갑니다. 반환된 객체가 <tt>javax.naming.Reference</tt> 의 래퍼의 경우는, 참조되는 객체는 <tt>javax.naming.spi.NamingManager.getObjectInstance()</tt> 를 사용해 작성됩니다. JNDI 링크는, 현재 지원되고 있지 않습니다.
+</blockquote>
+
+<b><pre>bind()</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.bind()</tt> 메소드가 불려 갑니다. 최초로,<tt>javax.naming.spi.NamingManager.getStateToBind()</tt> 에 의해 상태 팩토리가 참조됩니다. 바인드 하는 객체의 종류는,<tt>java.rmi.Remote</tt>,<tt>javax.naming.Reference</tt>, 또는 <tt>javax.naming.Referenceable</tt> 가 아니면 안됩니다. 객체가 <tt>javax.naming.Reference</tt> 또는 <tt>javax.naming.Referenceable</tt> 의 경우는, 그 참조는,<tt>Remote</tt> 래퍼에게 이송되고 나서 바인드 됩니다 (<a href="#BIND">「객체를 레지스트리에 바인드 한다」</a>를 참조).
+</blockquote>
+
+
+<b><pre>rebind()</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.rebind()</tt> 메소드가 불려 갑니다. 불려 가지 않는 경우는, JNDI <tt>bind()</tt> 조작에 바인드 다시 합니다.
+</blockquote>
+
+<b><pre>unbind()</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.unbind()</tt> 메소드가 불려 갑니다.
+</blockquote>
+
+<b><pre>rename()</pre></b>
+<blockquote>
+이 메소드는, JNDI 의 조작 순서 (<tt>lookup()</tt>,<tt>bind()</tt>,<tt>unbind()</tt>)로서 구현됩니다. 순서는, 기본적으로는 실행되지 않습니다.
+</blockquote>
+
+<b><pre>list()</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.list()</tt> 메소드가 불려 갑니다. 다만, 바인드 되고 있는 객체의 종류는 이 메소드로부터 돌려주어지지 않기 때문에, 반환된 각 <tt>javax.naming.NameClassPair</tt> 는, 클래스명으로서 총칭의 <tt>java.lang.Object</tt> 를 가집니다.
+</blockquote>
+
+<b><pre>listBindings()</pre></b>
+<blockquote>
+<tt>java.rmi.Registry.list()</tt> 메소드가 불려 갑니다. <tt>javax.naming.Binding</tt> 가 반환된 열거로부터 읽힐 때마다,<tt>java.rmi.Registry.lookup()</tt> 가 불려 가<tt>javax.naming.spi.NamingManager.getObjectInstance()</tt> 경유로 건네받습니다.  
+</blockquote>
+
+<b><pre>createSubcontext()
+destroySubcontext()</pre></b>
+<blockquote>
+이러한 조작은 지원되고 있지 않습니다.
+</blockquote>
+
+<b><pre>getNameParser()</pre></b>
+<blockquote>
+대문자 소문자를 구별하는 기본명의 경우에, 이름 퍼서가 돌려주어집니다.
+</blockquote>
+
+<b><pre>getNameInNamespace()</pre></b>
+<blockquote>
+빈 상태(empty)의 캐릭터 라인 (레지스트리의 이름)이 돌려주어집니다.
+</blockquote>
+
+<b><pre>composeName()</pre></b>
+<blockquote>
+2 개의 이름의 편성이 돌려주어집니다.
+</blockquote>
+
+<b><pre>addToEnvironment()</pre></b>
+<blockquote>
+지정한 프로퍼티이, 문맥의 환경에 추가됩니다. <tt>java.naming.rmi.security.manager</tt> 프로퍼티이 추가되면(자), 프로바이더에 의해 디폴트의 RMI 시큐리티 매니저가 인스톨 됩니다 (<a href="#SEC">「시큐리티에 대하며」</a>를 참조). 그 외의 프로퍼티의 환경에의 추가 또는 변경을 실시할 수도 있습니다만, 문맥에는 영향을 주지 않습니다.
+</blockquote>
+
+<b><pre>removeFromEnvironment()</pre></b>
+<blockquote>
+지정한 프로퍼티이, 문맥의 환경으로부터 삭제됩니다. 삭제되지 않았던 경우는, 문맥에 대한 영향은 없습니다.
+</blockquote>
+
+<b><pre>close()</pre></b>
+<blockquote>
+프로바이더에 의해 사용되고 있는 내부 상태가 클리어 됩니다.  클리어 되지 않았던 경우는, 직접적인 영향은 없습니다.
+</blockquote>
+
+<b><pre>getReference()</pre></b>
+<blockquote>
+이 문맥이 참조로 구축되고 있는 경우는, 그 참조의 복제가 돌려주어집니다. 이 문맥이 참조로 구축되어 있지 않은 경우는, 호스트명이 식별 가능해 「localhost」이외이면, 그 문맥의 새로운 참조가 돌려주어집니다 (<a href="#BIND">「레지스트리 문맥과 원격 객체의 바인딩」</a>을 참조).
+</blockquote>
+
+<hr>
+<p>
+<A NAME="BIND"></a> 
+<h2>바인딩</h2>
+<p>
+
+<b>객체를 레지스트리에 바인드 한다</b>
+<p>
+객체에 의해 <tt>java.rmi.Remote</tt> 인터페이스가 구현되고 있는 경우는, 그 객체는 레지스트리 문맥에 바인드 됩니다. 객체가 JNDI Reference 객체의 경우, 또는 객체에 의해 <tt>Referenceable</tt> 인터페이스가 구현되고 있는 경우도, 그 객체는 바인드 됩니다. 이 경우, 대응하는 참조가 객체 대신에 바인드 됩니다.
+<p>
+
+<b>레지스트리 문맥과 원격 객체의 바인딩</b>
+<p>
+RMI 레지스트리 문맥 마다,<tt>Referenceable</tt> 인터페이스가 구현됩니다. 이 결과,<tt>Referenceable</tt> 객체를 포함할 수 있어 JNDI 로부터 액세스 가능한 이름 공간에 각 문맥이 바인드 됩니다. 레지스트리에 등록되어 있는 각 원격 객체에의 참조도 구축됩니다. 이 때, 그 객체를 다른 이름 공간에 바인드 할 수가 있습니다.
+<p>
+<tt>com.sun.jndi.rmi.registry.RegistryContextFactory</tt> 클래스에 의해, 레지스트리 참조를 대응하는 레지스트리 문맥 또는 원격 객체로 변환하는 객체 팩토리가 구현됩니다.
+<p>
+레지스트리 문맥을 구축하는 경우는, 레지스트리의 URL 를 식별할 수 없으면 안됩니다. 이 URL 는,<tt>java.naming.provider.url</tt> 프로퍼티으로 지정되어 있거나, 초기 문맥에 이름으로서 건네받거나 레지스트리 참조에 파묻혀 있거나 합니다. URL 에 호스트명이 지정되어 있지 않은 경우, 또는 호스트명 「localhost」가 사용되고 있는 경우는, 레지스트리 문맥의 <tt>getReference()</tt> 메소드로부터 문맥에 대해서 참조를 돌려줄 수 없습니다. 이러한 레지스트리 문맥의 경우는, 다른 이름 공간에 바인드 할 수 없습니다.
+<p>
+
+<b>레지스트리 참조의 형식</b>
+<p>
+RMI 레지스트리에 대한 JNDI 참조에는, 캐릭터 라인 주소 (<tt>StringRefAddr</tt> 클래스)의 리스트가 포함됩니다. 각 주소는, 「URL」형으로 지정됩니다. 각 주소에는 RMI URL 가 포함됩니다. 이 RMI URL 에는, 레지스트리 또는 레지스트리에 등록되어 있는 원격 객체가 지정되고 있습니다 (<a href="#FORM">「RMI URL 의 형식」</a>을 참조).
+<p>
+복수의 URL 가 1 개의 참조에 포함될 때는, 각 URL 는 동일한 논리 자원의 대체 주소입니다. 주소의 차례는 중요하지는 않습니다. <tt>StringRefAddr</tt> 클래스 이외의 주소, 또는 「URL」주소형 이외의 주소는 무시됩니다.
+<hr>
+<p>
+
+<A NAME="USAGE"></a> 
+<h2>사용예</h2>
+<p>
+
+<b>프로그램예 1</b>
+<p>
+레지스트리에 액세스 하는 초기 문맥을 작성할 때는,<tt>java.naming.factory.initial</tt> 및 <tt>java.naming.provider.url</tt> 를 설정합니다. 자세한 것은,<a href="#PROP">「환경 프로퍼티」</a>을 참조해 주세요. 레지스트리에 포함된 이름은, 다음과 같이 출력됩니다.
+<blockquote>
+<pre>
+Context ictx = new InitialContext(env);
+NamingEnumeration enum = ictx.list("");
+</pre>
+</blockquote>
+
+<p>
+<b>프로그램예 2</b>
+<p>
+프로그램예 1 의 프로퍼티을 사용하지 않고, RMI URL 를 이름으로서 건네주어, 디폴트의 초기 문맥으로 해결합니다.
+<blockquote>
+<pre>
+Context registryCtx = (Context) ictx.lookup("rmi://host");
+</pre>
+</blockquote>
+
+<p>
+<b>프로그램예 3</b>
+<p>
+레지스트리 문맥은, JNDI 에 액세스 가능한 다른 이름 공간에 바인드 됩니다. 여기에서는, 프로그램예 2 의 <tt>registryCtx</tt> 를 LDAP 디렉토리에 바인드 합니다.
+<blockquote>
+<pre>
+Context ldapCtx = (Context) ictx.lookup("ldap://server/o=sun, c=us");
+ldapCtx.bind("cn=rmi", registryCtx);
+</pre>
+</blockquote>
+
+이름 「R1」 및 「R2」가 이 레지스트리에 바인드 되고 있는 경우는, LDAP 이름 공간을 표시하고 있는 JNDI 클라이언트에는, 「cn=rmi」엔트리아래에 「R1」 및 「R2」가 표시됩니다.
+<p>
+
+<b>프로그램예 4</b>
+<p>
+RMI 레지스트리에 등록되어 있는 원격 객체는, 그 객체에 대한 참조를 구축하면(자), JNDI 에 액세스 가능한 다른 이름 공간에 바인드 됩니다. 프로그램예 3 의 「R1」라고 하는 이름의 객체가 변수 <tt>obj</tt> 에 보관 유지되고 있는 경우는, 이 객체는 LDAP 디렉토리에 바인드 됩니다.
+<blockquote>
+<pre>
+RefAddr addr = new StringRefAddr("URL", "rmi://host/R1");
+Reference ref = new Reference(obj.getClass(). getName(), addr);
+ldapCtx.bind("cn=R1", ref);
+</pre>
+</blockquote>
+<hr>
+<p>
+
+<A NAME="SEC"></a> 
+<h2>시큐리티에 대해</h2>
+
+<h4>시큐리티 매니저</h4>
+<p>
+일반적으로의 RMI 시큐리티가 적용됩니다. RMI 를 사용해 원격 서버-의 클래스를 동적으로 로드하려면 , 우선 시큐리티 매니저를 인스톨 할 필요가 있습니다. 시큐리티 매니저는, 다른 RMI 어플리케이션과 같은 방법으로 인스톨 할 수 있습니다. <a href="../../../platform/rmi/spec/rmiTOC.html">Java<sup><font size=-2>TM</font></sup> Remote Method Invocation 의 스펙</a>을 참조해 주세요. <tt>java.naming.rmi.security.manager</tt> 환경 프로퍼티이 프로바이더에게 건네지는 경우는, 프로바이더에 의해 <tt>RMISecurityManager</tt> 가 인스톨 됩니다.
+
+<h4>액세스권</h4>
+<p>
+JNDI 및 RMI 레지스트리 프로바이더를 사용하는 어플리케이션에는, 다음의 액세스권이 필요합니다.
+<p>
+<pre>permission java.net.SocketPermission "host[:port]", "connect";</pre>
+<blockquote>
+	<tt>java.naming.provider.url</tt> 프로퍼티, 및 문맥 메소드에게 건네진 URL 캐릭터 라인명으로 지정되고 있는, 각 호스트 또는 포트에 대해서 할당할 수 있습니다.
+</blockquote>
+<p>
+<pre>permission java.net.SocketPermission "host[:port]", "connect, accept";
+</pre>
+<blockquote>
+	<tt>javax.naming.Reference</tt> 의 URL 캐릭터 라인으로 지정되고 있는, 각 호스트 또는 포트에 대해서 할당할 수 있습니다.
+</blockquote>
+<p>
+<pre>permission java.lang.RuntimePermission "setSecurityManager";</pre>
+<blockquote>
+	<tt>java.naming.rmi.security.manager</tt> 환경 프로퍼티을 사용하고 있는 경우는, RMI 레지스트리 프로바이더를 사용할 경우에 <tt>RMISecurityManager</tt> 의 인스톨이 요구됩니다.
+</blockquote>
+
+<HR SIZE=3 NOSHADE WIDTH=100%>
+<br><i>Copyright &copy; 1999-2001 Sun Microsystems, Inc., All Rights Reserved. </i> 
+
+</body>
+</html>
+

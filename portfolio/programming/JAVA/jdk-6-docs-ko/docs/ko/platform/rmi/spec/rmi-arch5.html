@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:3 - RMI 시스템의 개요
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a> 
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-arch4.html">전의 항목</a>  | <a href="rmi-arch6.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">3.4 클래스의 동적인 로드</a> </h2>
+
+<a name="5102"><!-- --></a> 
+<blockquote>
+<a name="5473"><!-- --></a>  RMI 에서는, 직렬화 가능한 임의의 객체를, RMI 호출에 건네주는 파라미터, 반환값, 및 예외로 할 수가 있습니다. 또, 객체의 직렬화 기구를 사용해, 가상 머신간에 데이터를 전송 하거나 수신측에서 클래스 정의 파일을 로드할 수 있도록(듯이), 호출 스트림에 적절한 장소 정보를 주석으로서 붙이는 처리를 실시합니다. <p>
+<a name="5619"><!-- --></a>  원격 메소드 호출을 위한 파라미터 및 반환값을 라이브 객체로 하기 위해서(때문에), 수신측의 JVM 로 비정렬화할 때, 스트림내에 존재하는 객체의 모든 형태의 클래스 정의가 필요하게 됩니다. 비정렬화 처리에서는, 우선, 로컬 클래스의 로딩 문맥 (현재의 thread의 문맥 클래스 로더) 내의 이름에 의해 클래스의 해석 처리가 시도됩니다. 또, RMI 에서는, 전송 하는 엔드 포인트로 지정된 네트워크의 장소로부터, 원격 메소드 호출의 파라미터나 반환값으로서 건네받는 객체의 실제의 형태의 클래스 정의를 동적으로 로드하는 기능도 제공되고 있습니다. 이것에는, 특정의 원격 객체의 구현 클래스에 대응하는 원격 Stub 클래스 (원격 참조의 포함에 사용)의 동적인 다운로드도 포함됩니다.  또, 선언된 파라미터의 형태의 서브 클래스 등, RMI 호출로 값에 의해 건네받는 다른 형태의 클래스 가운데, 비정렬화하는 측의 클래스의 로딩 문맥으로 아직 사용 가능하게 되지 않은 클래스를 동적으로 다운로드할 수도 있습니다. <p>
+<a name="5556"><!-- --></a>  클래스의 동적인 로드를 지원하기 위해서, RMI 런타임에서는, RMI 파라미터와 반환값의 정렬화 및 비정렬화에 사용하는 정렬화 스트림에,<code>java.io.ObjectOutputStream</code> 및 <code>java.io.ObjectInputStream</code> 의 특별한 서브 클래스를 사용합니다. 이러한 각 서브 클래스에 의해 <code>ObjectOutputStream</code> 의 <code>annotateClass</code> 메소드, 및 <code>ObjectInputStream</code> 의 <code>resolveClass</code> 메소드가 오버라이드(override) 되어 스트림내의 클래스 기술자에게 대응하는 클래스 정의를 포함한 클래스 파일의 장소에 대한 정보가 전해집니다. <p>
+<a name="5557"><!-- --></a>  RMI 정렬화 스트림에 기입해진 클래스 기술자 마다, 그 클래스 객체의 <code>java.rmi.server.RMIClassLoader.getClassAnnotation</code> 의 호출 결과가 <code>annotateClass</code> 메소드에 의해 <code>annotateClass</code> 스트림에 추가됩니다.  이 결과는,<code>null</code> 인가,<code>String</code> 객체입니다. <code>String</code> 객체는, 원격 엔드 포인트가 그 클래스의 클래스 정의 파일을 다운로드하는, 원의 코드 베이스 URL 패스 (스페이스에서 단락지어진 URL 의 일람)를 나타냅니다. <p>
+<a name="5605"><!-- --></a>  RMI 정렬화 스트림로부터 읽어내진 클래스 기술자 마다,<code>resolveClass</code> 메소드에 의해, 스트림로부터 객체가 1 개 읽어내집니다. 객체가 <code>String</code> 의 경우, 및 <code>java.rmi.server.useCodebaseOnly</code> 프로퍼티의 값이 <code>true</code> 가 아닌 경우,<code>resolveClass</code> 는 <code>RMIClassLoader.loadClass</code> 호출의 결과를 돌려줍니다.  이 호출의 최초의 파라미터는 주석을 붙일 수 있었던 <code>String</code> 객체로, 2 번째의 파라미터는 클래스 기술자내의 목적의 클래스명입니다. 이외의 경우,<code>resolveClass</code> 는, 클래스명을 유일한 파라미터로 하는 <code>RMIClassLoader.loadClass</code> 호출의 결과를 돌려줍니다. <p>
+<a name="5611"><!-- --></a>  RMI 에서의 클래스의 로드의 상세한 것에 대하여는,<a href="rmi-server27.html">「RMIClassLoader 클래스」</a>를 참조해 주세요. <p>
+</blockquote>
+
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-arch4.html">전의 항목</a>  | <a href="rmi-arch6.html">다음의 항목</a>  
+
+
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

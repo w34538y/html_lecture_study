@@ -1,0 +1,1408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<title>
+Java  암호화 아키텍쳐(architecture) Sun 프로바이더의 문서
+ - xrath.com 에서 번역됨</title>
+<!-- ===== ==== -->
+
+<!-- ==== sandbox for notes  ==== -->
+
+<!-- ==== css stylesheet below ==== -->
+
+<style type="text/css">
+
+    p {
+    font-family: serif;
+    font-size: medium;
+
+    margin-top: 18pt;
+    margin-bottom: 18pt;
+    margin-left: 24pt;
+    margin-right: 0pt;
+    padding-left: 0pt;
+    padding-right: 0pt;
+    }
+
+
+    li {
+    font-family: serif;
+    font-size: medium;
+
+    margin-top: 3pt;
+    margin-bottom: 9pt;
+    margin-left: 24pt;
+    margin-right: 0pt;
+    padding-left: 0pt;
+    padding-right: 0pt;
+    }
+
+    li li {margin-left: 42pt}
+
+    table {margin-left: 24pt}
+
+    code, tt {
+	  font-family: monospace;
+		font-size: 115%;
+		font-weight: bold;
+	  color: black;
+    }
+    pre {
+	  font-family: monospace;
+		font-size: 115%;
+		font-weight: bold;
+	  color: black;
+		margin-left: 30pt;
+    }
+
+    . changebar {border-right: 5px solid red}
+
+
+    h1 {
+	font-size: 150%;
+	font-weight: bold ;
+	font-family: serif;
+	margin-top: 36pt;
+	margin-bottom: 16pt;
+	margin-left: 0pt;
+	margin-right: 0pt;
+    }
+
+    h2 {font-size: 120%;
+	font-weight: 400;
+	font-family: serif;
+	margin-top: 30pt;
+	margin-bottom: 12pt;
+	margin-left: 24pt;
+	margin-right: 0pt;}
+
+    h3 {font-size: medium ;
+	font-weight: bold;
+	font-family: sans-serif;
+	margin-top: 18pt;
+	margin-bottom: 9pt;
+	margin-left: 24pt;
+	margin-right: 0pt;}
+
+    h4 {font-size: medium ;
+	font-weight: bold;
+	font-style: italic;
+	font-family: sans-serif;
+	margin-top: 9pt;
+	margin-bottom: 6pt;
+	margin-left: 30pt;
+	margin-right: 0pt;}
+
+    . green  {color: #006600;
+	     font-weight: bold}
+
+    . red    {color: red}
+    . blue   {color: blue }
+    . brown  {color: brown}
+
+    . ind1 {margin-left: 16pt }
+    . ind2 {margin-left: 32pt }
+    . ind3 {margin-left: 44pt }
+
+     . tocx {
+	margin-top: 12pt;
+	margin-bottom: 6pt;
+	margin-left:  0pt;
+	margin-right: 0pt;
+    }
+    . toc {
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	margin-left: 24pt;
+	margin-right: 0pt;
+	font-size: 100%;
+	font-family: helvetica;
+	font-weight: bold;
+    }
+
+    . toc2 {
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+	margin-left: 36pt;
+	margin-right: 0pt;
+    }
+
+    . large {font-size: 18pt}
+
+</style>
+
+
+<!-- ==== javascript below ==== -->
+<script type="text/javascript">
+
+</script>
+
+
+</head>
+
+
+<!-- ==================================================== -->
+<body>
+
+<hr>
+
+<center>
+<H1>
+Java<!--<font size=-1><sup>TM</sup></font> --> &trade; 암호화 아키텍쳐(architecture) Sun 프로바이더의 문서<br>
+</H1>
+<h2>Java<sup><font size="-2">TM</font></sup> Platform Standard Edition 6</h2>
+
+</center>
+<hr>
+
+<!-- These can be un/commented out as necessary. -->
+
+<font size="+2"><a href="#Introduction">처음에</a> <br> <a href="#SunPKCS11Provider"><code>SunPKCS11</code> 프로바이더</a> <br> <a href="#SUNProvider"><code>SUN</code> 프로바이더</a> <br> <a href="#SunRsaSignProvider"><code>SunRsaSign</code> 프로바이더</a> <br> <a href="#SunJSSEProvider"><code>SunJSSE</code> 프로바이더</a> <br> <a href="#SunJCEProvider"><code>SunJCE</code> 프로바이더</a> <br> <a href="#SunJGSSProvider"><code>SunJGSS</code> 프로바이더</a> <br> <a href="#SunSASLProvider"><code>SunSASL</code> 프로바이더</a> <br> <a href="#XMLDSigProvider"><code>XMLDSig</code> 프로바이더</a> <br> <a href="#SunPCSCProvider"><code>SunPCSC</code> 프로바이더</a> <br> <a href="#SunMSCAPI"><code>SunMSCAPI</code> 프로바이더</a> <br></font> <br>
+
+<hr>
+<p>
+<b>주:</b><a href="StandardNames.html">표준명의 문서</a>에는, 이 문서로 사용되고 있는 표준명에 관한 상세한 정보가 포함되어 있습니다.
+</p>
+<hr>
+
+<!-- ==================================================== -->
+<p>
+<a name="Introduction"></a> 
+<h1>처음에</h1>
+
+
+<p>
+
+Java 플랫폼에서는, 암호화, 공개키 인프라스트럭쳐(infrastructure), 인증, 안전한 통신, 액세스 제어 등, 주요한 시큐리티 분야에 건너는 일련의 API 가 정의되고 있습니다. 이러한 API 에 의해, 개발자는 어플리케이션 코드에 시큐리티 기구를 간단하게 통합할 수 있습니다. <a href="crypto/CryptoSpec.html">Java 암호화 아키텍쳐(architecture) (JCA)</a>  및 그<a href="crypto/CryptoSpec.html#ProviderArch">프로바이더 아키텍쳐(architecture)</a>는,Java Development Kit (JDK)의 코어 개념입니다. 이 아키텍쳐(architecture)에 대해 충분히 이해하고 있는 것이 전제가 됩니다.
+
+<p>
+
+이 문서에서는, Sun 의 Java 환경의 일부로서 동고 되고 있는 프로바이더의 기술적인 상세한 것에 대하여 설명합니다.
+
+<blockquote>
+<hr>
+<p>
+<b>주:</b>
+
+Sun JDK 에서의 암호화 구현은, 역사적인 이유 및 제공하는 서비스의 종류에 의해, 다양한 프로바이더에 의해 배포되고 있습니다 ( 「Sun」, 「SunJSSE」, 「SunJCE」, 「SunRsaSign」). 범용 어플리케이션은, 특정의 프로바이더로부터 암호화 서비스를 요구<b>하지 않게 할 필요가 있습니다. </b>예를 들어, 다음과 같이 지정할 수 있습니다.
+
+<pre><code>    getInstance("...", <b><i>"SunJCE"</i></b>);  // not recommended
+	vs.
+    getInstance("...");            // recommended</code></pre>
+
+<p>
+
+후자와 같이 하지 않으면 어플리케이션은 특정의 프로바이더에 연결시킬 수 있게 되어, 그 프로바이더는 다른 Java 구현으로 사용할 수 없을 가능성이 있습니다. 특정의 요구된 프로바이더보다 우선 순위가 높은, 사용 가능한 최적화된 프로바이더 (예를 들어, PKCS11 에 의한 하드웨어 가속기 또는 Microsoft 의 MSCAPI 등의 네이티브 OS 구현)를 이용할 수 없는 경우도 있습니다.
+
+<hr>
+</blockquote>
+
+
+<!-- ==================================================== -->
+<p><a name="SunPKCS11Provider"></a> 
+<h1><code>SunPKCS11</code> 프로바이더</h1>
+
+<p>
+
+암호화 토큰 인터페이스 표준 (<a href="http://www.rsasecurity.com/rsalabs/pkcs">PKCS#11</a> )은, 하드웨어 암호화 가속기나 스마트 카드등의 암호화 기구에 대한 네이티브 프로그래밍 인터페이스를 제공하고 있습니다. 적절히 구성하면(자),<code>SunPKCS11</code> 프로바이더에 의해, 어플리케이션은 표준의 JCA/JCE API 를 사용해 네이티브 PKCS#11 라이브러리에 액세스 할 수 있게 됩니다. <b><code>SunPKCS11</code> 프로바이더 자체에는 암호화 기능은 포함되어 있지 않습니다. </b>이 프로바이더는, Java 환경과 네이티브 PKCS11 프로바이더간의 안녕 제트로서 기능합니다. 이 프로바이더의 자세한 것은,<a href="p11guide.html">「Java PKCS#11 레퍼런스 가이드」</a>를 참조해 주세요.
+
+
+<!-- ==================================================== -->
+<p><a name="SUNProvider"></a> 
+<h1><code>SUN</code> 프로바이더</h1>
+
+<p>
+
+JDK 1.1 에서는 <code>Provider</code> 아키텍쳐(architecture)가 도입되었습니다. 최초의 JDK 프로바이더에는 <code>SUN</code> 라는 이름이 붙일 수 있어 2 개의 암호화 서비스 (<code>MessageDigest</code> 및 <code>Signature</code>)가 포함되어 있었습니다. 후속의 릴리스에서는, 다른 기구도 추가되었습니다 (<code>SecureRandom</code> 난수 제네레이터,<code>KeyPairGenerator</code>, <code>KeyFactory</code> 등).
+
+<p>
+
+당시 유효했던 미국의 수출 제한 사항에 의해, JDK 의 내부에서 사용 가능한 암호화 기능에 중대한 제한이 부과되었습니다. 이 때문에,<code>SUN</code> 프로바이더에는, 데이터를 직접 암호화 또는 복호화 하지 않는 암호화 엔진이 포함되어 있습니다.
+
+<p>
+
+<code>SUN</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+
+<tbody>
+
+
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>AlgorithmParameterGenerator</code>
+</td>
+<td>
+DSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>AlgorithmParameters</code>
+</td>
+<td>
+DSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>CertificateFactory</code>
+</td>
+<td>
+X. 509
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>CertPathBuilder</code>
+</td>
+<td>
+PKIX
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>CertPathValidator</code>
+</td>
+<td>
+PKIX
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>CertStore</code>
+</td>
+<td>
+Collection <br> LDAP <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>구성</code>
+</td>
+<td>
+JavaLoginConfig
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyFactory</code>
+</td>
+<td>
+DSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyPairGenerator</code>
+</td>
+<td>
+DSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyStore</code>
+</td>
+<td>
+JKS
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>MessageDigest</code>
+</td>
+<td>
+MD2 <br> MD5 <br> SHA-1 <br> SHA-256 <br> SHA-384 <br> SHA-512 <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>Policy</code>
+</td>
+<td>
+JavaPolicy
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SecureRandom</code>
+</td>
+<td>
+SHA1PRNG
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>서명</code>
+</td>
+<td>
+NONEwithDSA <br> SHA1withDSA <br>
+</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ==================================================== -->
+
+<p>
+<h2> 키 사이즈 제한 </h2>
+<p>
+
+<code>SUN</code> 프로바이더에서는, 다음의 디폴트 키 사이즈 (비트 단위)를 사용해, 다음의 제한을 강제합니다.
+
+<p>
+
+<blockquote>
+<p>
+<b>KeyPairGenerator</b>
+<p>
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> DSA </td><td> 1024 </td>
+    <td>
+키 사이즈는, 512 에서 1024 의 범위에서, 64 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+
+<p>
+
+<b>AlgorithmParameterGenerator</b>
+
+<p>
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> DSA </td><td> 1024 </td>
+    <td>
+키 사이즈는, 512 에서 1024 의 범위에서, 64 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+
+</blockquote>
+
+<p>
+<h2> <code>CertificateFactory</code>/<code>CertPathBuilder</code>/ <code>CertPathValidator</code>/<code>CertStore</code> 구현</h2>
+<p>
+<code>CertificateFactory</code>,<code>CertPathBuilder</code>,<code>CertPathValidator</code>, 및 <code>CertStore</code> 에 대한 <code>SUN</code> 프로바이더 구현의 자세한 것은, 「PKI 개발자 안내」의<a href="certpath/CertPathProgGuide.html#AppB">「부록 B」</a>  를 참조해 주세요.
+
+
+<!-- ==================================================== -->
+<p><a name="SunRsaSignProvider"></a> 
+<h1><code>SunRsaSign</code> 프로바이더</h1>
+
+<p>
+
+<code>SunRsaSign</code> 프로바이더는,<a href="#SunJSSEProvider"<code>SunJSSE</code></a>  프로바이더의 RSA 서명의 기능이 확장된 대체 기능으로서 JDK 1.3 으로 도입되었습니다.
+
+<p>
+
+<code>SunRsaSign</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyFactory</code>
+</td>
+<td>
+RSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyPairGenerator</code>
+</td>
+<td>
+RSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>서명</code>
+</td>
+<td>
+MD2withRSA <br> MD5withRSA <br> SHA1withRSA <br> SHA256withRSA <br> SHA384withRSA <br> SHA512withRSA <br>
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+<h2> 키 사이즈 제한 </h2>
+<p>
+
+<code>SunRsaSign</code> 프로바이더에서는, 다음의 디폴트 키 사이즈 (비트 단위)를 사용해, 다음의 제한을 강제합니다.
+
+<p>
+
+<blockquote>
+<p>
+<b>KeyPairGenerator</b>
+<p>
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSA </td><td> 1024 </td>
+    <td>
+키 사이즈의 범위는, 512 에서 65536 비트의 사이일 필요가 있습니다. 전자의 값은 불필요하게 커지고 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+<p>
+</blockquote>
+
+
+<!-- ==================================================== -->
+<p><a name="SunJSSEProvider"></a> 
+<h1><code>SunJSSE</code> 프로바이더</h1>
+
+<p>
+
+Java Secure Socket Extension (JSSE)는, 개별의 「옵션 패키지」( 「표준 확장 기능」이라고도 불리고 있습니다)로서 릴리스 되어 JDK 1.2.x 및 1.3.x 로 사용할 수 있었습니다. <code>SunJSSE</code> 프로바이더는 이 릴리스의 일부로서 도입되었습니다.
+
+<p>
+
+이전의 JDK 릴리스에서는, JDK 로 RSA 서명 프로바이더는 사용할 수 없었습니다. 이 때문에,<code>SunJSSE</code> 에서는, 공통으로 사용 가능한 RSA 베이스의 증명서를 사용하기 위해서 독자적인 RSA 구현을 제공할 필요가 있었습니다. JDK 5 에서는 <code>SunRsaSign</code> 프로바이더가 도입되었습니다. 이 프로바이더는,<code>SunJSSE</code> 프로바이더의 모든 기능 ( 및 그 이상의 기능)을 제공합니다. JDK 5.0 이후를 타겟으로 하고 있는 어플리케이션은, 대신에 <code>SunRsaSign</code> 프로바이더의 인스턴스를 요구할 필요가 있습니다. 하위 호환성을 위해서(때문에), 이 프로바이더로 RSA 알고리즘을 아직 사용할 수 있습니다만, 이 알고리즘은 실제로는 <code>SunRsaSign</code> 프로바이더에 구현되고 있습니다.
+
+<p>
+
+<code>SunJSSE</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyFactory</code>
+</td>
+<td>
+RSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyManagerFactory</code>
+</td>
+<td>
+SunX509
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyPairGenerator</code>
+</td>
+<td>
+RSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyStore</code>
+</td>
+<td>
+PKCS12
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>서명</code>
+</td>
+<td>
+MD2withRSA <br> MD5withRSA <br> SHA1withRSA <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SSLContext</code>
+</td>
+<td>
+SSLv3 <br> TLSv1 <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>TrustManagerFactory</code>
+</td>
+<td>
+PKIX
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+
+<code>SunJSSE</code> 는, 다음의 <code>protocol</code> 파라미터도 지원하고 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="20%"
+cellpadding="5">
+<thead>
+<tr>
+<th BGCOLOR="#dedeef"> 프로토콜 </th>
+</tr>
+</thead>
+<tbody>
+<tr><td> SSLv3 </td></tr>
+<tr><td> TLSv1 </td></tr>
+<tr><td> SSLv2Hello </td></tr>
+</tbody>
+</table>
+
+
+
+<p><a name="SupportedCipherSuites"></a> 
+<P>
+
+<code>SunJSSE</code> 는, 수많은 암호군을 지원하고 있습니다. 다음의 겉(표)는, SunJSSE 로 지원되고 있는 암호군 (디폴트의 우선 순위) 및 그 암호군이 도입된 릴리스를 나타내고 있습니다.
+
+<blockquote>
+
+<!-- PLEASE MAKE SURE TO EDIT THE TABLE BY HAND SO THAT ITS STRUCTURE AND EDITIBILITY IS PRESERVED. DO not USE AN HTML EDITOR -->
+
+<TABLE BORDER="1" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD ROWSPAN="2" BGCOLOR="#dedeef">
+<B>암호군</B></TD>
+    <TD COLSPAN="4" BGCOLOR="#dedeef" ALIGN="CENTER">
+<B>지원하고 있는 릴리스</B></TD>
+
+  </TR>
+  <TR>
+    <TD BGCOLOR="#dedeef" ALIGN="CENTER">
+    <B>&lt;1. 4.2</B></TD>
+    <TD BGCOLOR="#dedeef" ALIGN="CENTER">
+    <B>1.4. 2</B></TD>
+    <TD BGCOLOR="#dedeef" ALIGN="CENTER">
+<B>J2SE&nbsp;5</B></TD>
+    <TD BGCOLOR="#dedeef" ALIGN="CENTER">
+<B>Java&nbsp;SE&nbsp;6</B></TD>
+  </TR>
+
+<tr><td><code>SSL_RSA_WITH_RC4_128_MD5</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_WITH_RC4_128_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_RSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_RSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_ECDSA_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_RSA_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_ECDSA_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_RSA_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DHE_RSA_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DHE_DSS_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DHE_DSS_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_WITH_DES_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_RSA_WITH_DES_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_DSS_WITH_DES_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_EXPORT_WITH_RC4_40_MD5</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_WITH_NULL_MD5</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_RSA_WITH_NULL_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_ECDSA_WITH_NULL_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_RSA_WITH_NULL_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_ECDSA_WITH_NULL_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDHE_RSA_WITH_NULL_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DH_anon_WITH_RC4_128_MD5</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DH_anon_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_DH_anon_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DH_anon_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DH_anon_WITH_DES_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_anon_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_anon_WITH_AES_128_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_anon_WITH_AES_256_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DH_anon_EXPORT_WITH_RC4_40_MD5</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA</code></td><td align="center">0</td><td align="center">0</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_ECDH_anon_WITH_NULL_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_RC4_128_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_RC4_128_MD5</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_3DES_EDE_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_3DES_EDE_CBC_MD5</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_DES_CBC_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_WITH_DES_CBC_MD5</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_EXPORT_WITH_RC4_40_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_EXPORT_WITH_RC4_40_MD5</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_EXPORT_WITH_DES_CBC_40_SHA</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+<tr><td><code>TLS_KRB5_EXPORT_WITH_DES_CBC_40_MD5</code></td><td align="center">&nbsp;</td><td align="center">&nbsp;</td><td align="center">0</td><td align="center">0</td></tr>
+
+</TABLE>
+
+
+    <p><a name="requirements"></a> 
+<p>AES_256 를 사용하는 암호군에서는, 강도가 무제한의 JCE 관할 정책 파일이 인스톨 되고 있을 필요가 있습니다. <a  href="http://java.sun.com/javase/ja/6/download.html">「Java SE 다운로드 페이지」</a>를 참조해 주세요.
+      </p>
+<p>Elliptic Curve Cryptography (ECDSA, ECDH, ECDHE, ECDH_anon)를 사용하는 암호군에서는, 다음의 프로퍼티을 가지는 JCE 암호화 프로바이더가 인스톨 되고 있을 필요가 있습니다.
+<ul>
+<li><p>패키지 <code>java.security.spec</code> 및 <code>java.security.interfaces</code> 내의 클래스와 인터페이스로 정의되고 있도록(듯이) ECC 를 구현합니다. Elliptic Curve 열쇠 객체의 <code>getAlgorithm()</code> 메소드는 캐릭터 라인 「EC」를 돌려줄 필요가 있습니다.
+</p></li>
+
+<li><p>Signature 알고리즘의 <code>SHA1withECDSA</code> 와 <code>NONEwithECDSA</code>, KeyAgreement 알고리즘의 <code>ECDH</code>, 및 알고리즘 <code>EC</code> 의 KeyPairGenerator 와 KeyFactory 를 지원합니다. 이러한 알고리즘중 한쪽이 결핍 하고 있는 경우, SunJSSE 에서는 EC 암호군의 사용이 허가되지 않습니다.
+</p></li>
+
+<li><p>암호화 프로바이더는,<a href="http://www.ietf.org/rfc/rfc4492.txt">RFC 4492</a>  스펙의 섹션 5.1. 1 ( 「부록 A」도 참조)으로 설명 떠날 수 있어 모든 SECG 곡선을 지원할 필요가 있습니다. 증명서에서는, 압축되어 있지 않은 형식을 사용해 포인트를 encode 해,<code>namedCurve</code> 선택을 사용해 (즉 객체 식별자를 사용해) 곡선을 encode 할 필요가 있습니다. 이러한 요건이 채워지지 않은 경우, EC 암호군이 올바르고 협상 되지 않는 것이 있습니다.
+</p></li>
+</ul>
+</blockquote>
+
+<!-- ==================================================== -->
+<p><a name="SunJCEProvider"></a> 
+<h1><code>SunJCE</code> 프로바이더</h1>
+
+<p>
+
+<a href="#SUNProvider">「<code>SUN</code> 프로바이더」</a>로 간단하게 설명되고 있도록(듯이), 당시의 미국의 수출 제한 사항에 의해,JDK 내에서 사용 가능한 암호화 기능이 제한되고 있었습니다. 이 때문에, 어플리케이션으로 데이터의 암호화 또는 복호화를 가능하게 하기 위해서, 개별의 API 및 레퍼런스 구현이 개발되었습니다. Java 암호화 확장 기능 (JCE)은, 개별의 「옵션 패키지」( 「표준 확장 기능」이라고도 불리고 있습니다)로서 릴리스 되어 JDK 1.2.x 및 1.3.x 로 사용할 수 있었습니다. JDK 1.4 의 개발시에 제한이 완화되었기 때문에, JCE ( 및 SunJSSE)는 JDK 의 일부로서 번들 할 수 있게 되었습니다.
+
+<p>
+
+<code>SunJCE</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="30%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="70%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>AlgorithmParameterGenerator</code>
+</td>
+<td>
+DiffieHellman
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>AlgorithmParameters</code>
+</td>
+<td>
+AES <br> Blowfish <br> DES <br> DESede <br> DiffieHellman <br> OAEP <br> PBEWithMD5AndDES <br> PBEWithMD5AndTripleDES <br> PBEWithSHA1AndDESede <br> PBEWithSHA1AndRC2_40 <br> RC2 <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>암호</code>
+</td>
+<td>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+<thead>
+<tr>
+<th BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th BGCOLOR="#dedeef"> 모드</th>
+<th BGCOLOR="#dedeef"> 패딩</th>
+</thead>
+<tbody>
+<tr>
+<td>
+AES
+</td>
+<td>
+ECB, CBC, PCBC, CTR, CTS, CFB, CFB8..CFB128, OFB, OFB8..OFB128
+</td>
+<td>
+NOPADDING, PKCS5PADDING, ISO10126PADDING
+</td>
+</tr>
+<tr>
+<td>
+AESWrap
+</td>
+<td>
+ECB
+</td>
+<td>
+NOPADDING
+</td>
+</tr>
+<tr>
+<td>
+ARCFOUR
+</td>
+<td>
+ECB
+</td>
+<td>
+NOPADDING
+</td>
+</tr>
+<tr>
+<td>
+Blowfish, DES, DESede, RC2
+</td>
+<td>
+ECB, CBC, PCBC, CTR, CTS, CFB, CFB8..CFB64, OFB, OFB8..OFB64
+</td>
+<td>
+NOPADDING, PKCS5PADDING, ISO10126PADDING
+</td>
+</tr>
+<tr>
+<td>
+DESedeWrap
+</td>
+<td>
+CBC
+</td>
+<td>
+NOPADDING
+</td>
+</tr>
+<tr>
+<td>
+PBEWithMD5AndDES, PBEWithMD5AndTripleDES<sup>1</sup> PBEWithSHA1AndDESede, PBEWithSHA1AndRC2_40
+</td>
+<td>
+CBC
+</td>
+<td>
+PKCS5Padding
+</td>
+</tr>
+<tr>
+<td>
+RSA
+</td>
+<td>
+ECB
+</td>
+<td>
+NOPADDING, PKCS1PADDING, OAEPWITHMD5ANDMGF1PADDING, OAEPWITHSHA1ANDMGF1PADDING, OAEPWITHSHA-1ANDMGF1PADDING, OAEPWITHSHA-256ANDMGF1PADDING, OAEPWITHSHA-384ANDMGF1PADDING, OAEPWITHSHA-512ANDMGF1PADDING <!-- OAEPPadding later -->
+</td>
+</tr>
+</table>
+
+<p><b>각주 1:</b>  PBEWithMD5AndTripleDES 는, 표준화되어 있지 않은 독자적인 알고리즘입니다.  </p>
+
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyAgreement</code>
+</td>
+<td>
+DiffieHellman
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyFactory</code>
+</td>
+<td>
+DiffieHellman <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyGenerator</code>
+</td>
+<td>
+AES <br> ARCFOUR <br> Blowfish <br> DES <br> DESede <br> HmacMD5 <br> HmacSHA1 <br> HmacSHA256 <br> HmacSHA384 <br> HmacSHA512 <br> RC2 <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyPairGenerator</code>
+</td>
+<td>
+DiffieHellman <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyStore</code>
+</td>
+<td>
+JCEKS <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>Mac</code>
+</td>
+<td>
+HmacMD5 <br> HmacSHA1 <br> HmacSHA256 <br> HmacSHA384 <br> HmacSHA512 <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SecretKeyFactory</code>
+</td>
+<td>
+DES <br> DESede <br> PBEWithMD5AndDES <br> PBEWithMD5AndTripleDES <br> PBEWithSHA1AndDESede <br> PBEWithSHA1AndRC2_40 <br> PBKDF2WithHmacSHA1 <br>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>
+<h2> 키 사이즈 제한 </h2>
+<p>
+
+<p>SunJCE 프로바이더에서는, 다음의 디폴트 키 사이즈 (비트 단위)를 사용해, 다음의 제한을 강제합니다.
+<p>
+
+<blockquote>
+<p>
+
+<b>KeyGenerator</b>
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> AES </td><td> 128 </td>
+    <td>
+키 사이즈는 128, 192, 또는 256 으로 할 필요가 있습니다.
+    </td>
+</tr>
+<tr>
+<td> ARCFOUR (RC4) </td><td> 128 </td>
+    <td>
+키 사이즈는, 40 에서 1024 의 범위내일 필요가 있습니다.
+    </td>
+</tr>
+<tr>
+<td> Blowfish </td><td> 128 </td>
+    <td>
+키 사이즈는, 32 에서 448 의 범위에서, 8 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+<tr>
+<td> DES </td><td> 56 </td>
+    <td>
+	키 사이즈는 56 으로 할 필요가 있습니다.
+    </td>
+</tr>
+<tr>
+<td> DESede (트리플 DES) </td><td> 168 </td>
+    <td>
+	키 사이즈는 112 또는 168 으로 할 필요가 있습니다.
+	<p>
+	키 사이즈가 112 의 경우에는 2 개의 중간열쇠를 보관 유지하는 트리플 DES 열쇠가, 168 의 경우에는 3 개의 중간열쇠를 보관 유지하는 트리플 DES 열쇠가, 각각 생성됩니다.  </p>
+	<p>
+	「Meet-In-The-Middle」문제이기 때문에, 112 비트 또는 168 비트의 열쇠 데이터가 사용됩니다만,<b>유효한</b>키 사이즈는 각각 80 비트 또는 112 비트입니다.
+	</p>
+    </td>
+</tr>
+<tr>
+<td> HmacMD5 </td><td> 512 </td>
+    <td>
+키 사이즈의 제한은 없습니다.
+    </td>
+</tr>
+<tr>
+<td> HmacSHA1 </td><td> 512 </td>
+    <td>
+키 사이즈의 제한은 없습니다.
+    </td>
+</tr>
+<tr>
+<td> HmacSHA256 </td><td> 256 </td>
+    <td>
+키 사이즈의 제한은 없습니다.
+    </td>
+</tr>
+<tr>
+<td> HmacSHA384 </td><td> 384 </td>
+    <td>
+키 사이즈의 제한은 없습니다.
+    </td>
+</tr>
+<tr>
+<td> HmacSHA512 </td><td> 512 </td>
+    <td>
+키 사이즈의 제한은 없습니다.
+    </td>
+</tr>
+<tr>
+<td> RC2 </td><td> 128 </td>
+    <td>
+키 사이즈는, 40 에서 1024 의 범위내일 필요가 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+
+<p>
+
+<b>주:</b>다양한 패스워드 베이스 암호화 (PBE) 알고리즘은, 많은 알고리즘을 사용해 열쇠 데이터를 생성해, 최종적으로 타겟의 Cipher 알고리즘에 의존합니다. 예를 들어, 「PBEWithMD5AndDES」는 항상 56 비트의 열쇠를 생성합니다.
+
+<p>
+
+<b>KeyPairGenerator</b>
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> Diffie-Hellman (DH)</td><td> 1024 </td>
+    <td>
+키 사이즈는, 512 에서 1024 의 범위에서, 64 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+<p>
+
+<b>AlgorithmParameterGenerator</b>
+
+<p>
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> Diffie-Hellman (DH) </td><td> 1024 </td>
+    <td>
+키 사이즈는, 512 에서 1024 의 범위에서, 64 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+<tr>
+<td> DSA </td><td> 1024 </td>
+    <td>
+키 사이즈는, 512 에서 1024 의 범위에서, 64 의 배수일 필요가 있습니다.
+    </td>
+</tr>
+</tbody>
+</table>
+
+</blockquote>
+<p></p>
+
+
+<!-- ==================================================== -->
+<p><a name="SunJGSSProvider"></a> 
+<h1><code>SunJGSS</code> 프로바이더</h1>
+
+<p>
+
+<code>SunJGSS</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> OID </th>
+<th width="60%" BGCOLOR="#dedeef"> 이름 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+    <code>1.2. 840.113554. 1.2. 2</code>
+</td>
+<td>
+Kerberos v5
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+    <code>1.3. 6.1. 5.5. 2</code>
+</td>
+<td>
+SPNEGO
+</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ==================================================== -->
+<p><a name="SunSASLProvider"></a> 
+<h1><code>SunSASL</code> 프로바이더</h1>
+
+<p>
+
+<code>SunSASL</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SaslClient</code>
+</td>
+<td>
+CRAM-MD5 <br> DIGEST-MD5 <br> EXTERNAL <br> GSSAPI <br> PLAIN <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SaslServer</code>
+</td>
+<td>
+CRAM-MD5 <br> DIGEST-MD5 <br> GSSAPI <br>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ==================================================== -->
+<p><a name="XMLDSigProvider"></a> 
+<h1><code>XMLDSig</code> 프로바이더</h1>
+
+<p>
+
+<code>XMLDSig</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyInfoFactory</code>
+</td>
+<td>
+DOM
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>TransformService</code>
+</td>
+<td>
+http://www.w3.org/TR/2001/REC-xml-c14n-20010315 - <i>(<code>CanonicalizationMethod.INCLUSIVE</code>)</i> <br> http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments - <i>(<code>CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS</code>)</i> <br> http://www.w3.org/2001/10/xml-exc-c14n# - <i>(<code>CanonicalizationMethod.EXCLUSIVE</code>)</i> <br> http://www.w3.org/2001/10/xml-exc-c14n#WithComments - <i>(<code>CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS</code>)</i> <br> http://www.w3.org/2000/09/xmldsig#base64 - <i>(<code>Transform.BASE64</code>)</i> <br> http://www.w3.org/2000/09/xmldsig#enveloped-signature - <i>(<code>Transform.ENVELOPED</code>)</i> <br> http://www.w3.org/TR/1999/REC-xpath-19991116 - <i>(<code>Transform.XPATH</code>)</i> <br> http://www.w3.org/2002/06/xmldsig-filter2 - <i>(<code>Transform.XPATH2</code>)</i> <br> http://www.w3.org/TR/1999/REC-xslt-19991116 - <i>(<code>Transform.XSLT</code>)</i> <br>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>XMLSignatureFactory</code>
+</td>
+<td>
+DOM
+</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ==================================================== -->
+<p><a name="SunPCSCProvider"></a> 
+<h1><code>SunPCSC</code> 프로바이더</h1>
+
+<p>
+
+SunPCSC 프로바이더를 사용하면(자), 어플리케이션은 <a href="../../../jre/api/security/smartcardio/spec/">Java 스마트 카드 I/O API</a>  를 사용해, 기초가 되는  operating system의 PC/SC 스마트 카드 스택과 서로 작용할 수가 있습니다. 일부의  operating system에서는, PC/SC 스택을 사용하기 전에 이것을 유효하게 해 구성할 필요가 있는 일이 있습니다. 자세한 것은,  operating system의 문서를 참조해 주세요.
+
+<p>Solaris 및 Linux 플랫폼에서는, SunPCSC 는 <code>libpcsclite.so</code> 라이브러리를 사용해 PC/SC 스택에 액세스 합니다. SunPCSC 는, 디렉토리 <code>/usr/$LIBISA</code> 및 <code>/usr/local/$LIBISA</code> 내에서 이 라이브러리를 검색합니다. <code>$LIBISA</code> 는, 32 비트의 플랫폼에서는 <code>lib</code>, 64 비트의 Solaris 플랫폼에서는 <code>lib/64</code>, 64 비트의 Linux 플랫폼에서는 <code>lib64</code> 에 각각 전개됩니다. 시스템 프로퍼티 <code>sun.security.smartcardio.library</code> 가, 대체의 <code>libpcsclite.so</code> 구현의 완전한 파일명으로 설정되는 경우도 있습니다. Windows 플랫폼에서는, SunPCSC 는 항상 <code>winscard.dll</code> 를 호출하기 (위해)때문에, Java 레벨의 구성은 불필요하고, 실시할 수가 없습니다.
+
+<p>
+
+호스트 플랫폼에서 PC/SC 가 사용 가능한 경우, SunPCSC 구현은 <code>TerminalFactory.getDefault()</code> 및 <code>TerminalFactory.getInstance("PC/SC")</code> 를 개입시켜 취득할 수 있습니다. PC/SC 가 사용 가능하지 않은지, 또는 올바르게 구성되어 있지 않은 경우는,<code>NoSuchAlgorithmException</code> 와 함께 <code>getInstance()</code> 호출이 실패해,<code>getDefault()</code> 는 단말을 지원하지 않는 JRE 편입 구현을 돌려줍니다.
+
+<p>
+<code>SunPCSC</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>TerminalFactory</code>
+</td>
+<td>
+PC/SC
+</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ==================================================== -->
+<p><a name="SunMSCAPI"></a> 
+<h1><code>SunMSCAPI</code> 프로바이더</h1>
+
+<p>
+
+SunMSCAPI 프로바이더를 사용하면(자), 어플리케이션은 표준의 JCA/JCE API 를 사용해, Microsoft Windows 플랫폼의 네이티브 암호화 라이브러리, 증명서 스토어, 및 열쇠 컨테이너에 액세스 할 수 있습니다. SunMSCAPI 프로바이더 자체에는 암호화 기능은 포함되어 있지 않습니다. 이 프로바이더는, Java 환경과 Windows 의 네이티브 암호화 서비스간의 안녕 제트로서 기능합니다.
+
+<p>
+
+<code>SunMSCAPI</code> 프로바이더에서는, 다음의 알고리즘을 사용할 수 있습니다.
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%"
+cellpadding="5">
+
+<thead>
+<tr>
+<th width="40%" BGCOLOR="#dedeef"> 엔진 </th>
+<th width="60%" BGCOLOR="#dedeef"> 알고리즘명 </th>
+</tr>
+</thead>
+<tbody>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>암호</code>
+</td>
+<td>
+RSA <i> RSA/ECB/PKCS1Padding 마셔</i>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyPairGenerator</code>
+</td>
+<td>
+RSA
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>KeyStore</code>
+</td>
+<td>
+Windows-MY <br>
+    <p>
+네이티브 Microsoft Windows MY 키스토어를 식별하는 키스토어의 타입. 사용자의 개인 증명서 및 관련하는 비공개키가 포함되어 있습니다.
+    </p>
+
+Windows-ROOT <br>
+    <p>
+네이티브 Microsoft Windows ROOT 키스토어를 식별하는 키스토어의 타입. 루트 인증국의 증명서 및 다른 신뢰할 수 있는 자기 서명 증명서가 포함되어 있습니다.
+    </p>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>SecureRandom</code>
+</td>
+<td>
+Windows-PRNG
+    <p>
+네이티브 의사 난수 생성 (PRNG) 알고리즘의 이름.
+    </p>
+</td>
+</tr>
+<!-- ==================================================== -->
+<tr>
+<td>
+<code>서명</code>
+</td>
+<td>
+MD2withRSA <br> MD5withRSA <br> SHA1withRSA <br>
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+<h2> 키 사이즈 제한 </h2>
+<p>
+
+<p>SunMSCAPI 프로바이더에서는, 다음의 디폴트 키 사이즈 (비트 단위)를 사용해, 다음의 제한을 강제합니다.
+<p>
+
+<blockquote>
+<p>
+
+<b>KeyGenerator</b>
+
+<p>
+
+<table border="5" frame="border" align="center" width="90%" cellpadding="5">
+<thead>
+<tr>
+<th width="10%" BGCOLOR="#dedeef"> 알고리즘의 이름 </th>
+<th width="10%" BGCOLOR="#dedeef"> 디폴트 키 사이즈</th>
+<th width="80%" BGCOLOR="#dedeef"> 제한/코멘트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> RSA </td><td> 1024 </td>
+    <td>
+키 사이즈의 범위는 384 비트에서 16,384 비트입니다. 기초가 되는 Microsoft Windows 암호화 서비스 프로바이더에 따라서 다릅니다.
+    </td>
+</tr>
+</tbody>
+</table>
+
+</blockquote>
+
+<hr>
+
+<!-- ==================================================== -->
+</body></html>

@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>병렬 압축 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body>
+<h1 align="center">병렬 압축</h1>
+
+    <ul>
+      <li>
+	<a href="#description">설명</a> 
+      </li>
+      <li>
+	<a href="#enabling">병렬 압축의 유효화</a> 
+      </li>
+      <li>
+	<a href="#more_info">상세 정보</a> 
+      </li>
+    </ul>
+
+<h1><a name="description">설명</a> </h1>
+
+    <p>
+병렬 압축은, 멀티 프로세서 (또는 multi-thread) 하드웨어를 이용하기 위해서 병렬에 풀 GC 를 실행하는 것으로 기존의 병렬 수집가를 보완합니다. 이름이 가리키는 대로, 2 개(살) 이상의 CPU 또는 2 개(살) 이상의 하드웨어 thread를 가지는 플랫폼에 적절하고 있습니다. 이 기능은 <a href="http://java.sun.com/j2se/1.5.0/">JDK 5.0</a>  update 6 으로 최초로 사용 가능하게 되어, JDK&nbsp;6 의 구현에서는 퍼포먼스가 큰폭으로 향상하고 있습니다.
+    </p>
+
+    <p>
+병렬 압축이 사용 가능하게 되기 이전은, 병렬 수집가는 병렬에 젊은 세대 컬렉션 (Young GC)을 실행하고 있었습니다만, 풀 GC 는 싱글스 레드로 실행되고 있었습니다. Young GC 시에는 젊은 세대만이 수집되어 풀 GC 시에는 heap 전체가 수집됩니다. 세대 및 가베지 컬렉션에 대해서는, 다음의 문서를 참조해 주세요. 병렬 압축은 풀 GC 를 병렬에 실행합니다. 이것에 의해, 가베지 컬렉션에 의한 오버헤드가 감소해, 특히 멀티 프로세서 하드웨어상에서 실행되고 있는 큰 heap를 가지는 어플리케이션으로, 어플리케이션의 퍼포먼스가 향상합니다.
+    </p>
+
+<h1><a name="enabling">병렬 압축의 유효화</a> </h1>
+
+    <p>
+병렬 압축은 디폴트로 유효하게 되어 있지 않습니다.
+    </p>
+
+    <p align="center">
+<code><b>-XX:+UseParallelOldGC</b></code>
+    </p>
+
+    <p>
+병렬 압축을 유효하게 하려면 , 이 옵션을 <code>java</code> 커멘드행에 추가합니다. 향후의 릴리스에서는, 병렬 압축은 멀티 프로세서 하드웨어상에서 디폴트로 유효하게 될 예정입니다.
+    </p>
+
+    <p>
+병렬 압축은 병행 Mark Sweep 수집가와 함께 사용할 수 없습니다. 병렬 젊은 세대 수집가와 함께 마셔 사용할 수 있습니다. 사용 가능한 수집가 및 추천의 사용 방법에 대해서는, 다음의 문서를 참조해 주세요.
+    </p>
+
+<h1><a name="more_info">상세 정보</a> </h1>
+
+    <p>
+핫 스포트의<a href="https://java.sun.com/j2se/reference/whitepapers/memorymanagement_whitepaper.pdf">메모리 관리 화이트 페이퍼</a>에서는, 핫 스포트로 사용 가능한 다양한 수집가에 대해 설명되고 있어 병렬 압축을 사용하는 타이밍에 관한 추천 사항 및 알고리즘에 관한 고레벨인 설명이 포함되어 있습니다.
+    </p>
+
+    <p>
+핫 스포트의<a href="http://java.sun.com/docs/hotspot/index.html">문서 페이지</a>에는, 각 릴리스에 고유의 가베지 컬렉션의 조정을 행하기 위한 가이드에의 링크가 포함되어 있습니다. 이 가이드에게는, 요건에 최적인 가비지 컬렉터를 선택하기 위한 가이드 라인, 및 가베지 컬렉션에 의한 오버헤드를 줄이는 경우에 도움이 되는 기술이 나타나고 있습니다.
+  </body>
+</html>

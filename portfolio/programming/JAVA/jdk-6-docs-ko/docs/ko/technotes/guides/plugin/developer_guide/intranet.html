@@ -1,0 +1,70 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>배치:인트라넷 - xrath.com 에서 번역됨</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1><code>OBJECT/EMBED</code> 태그에 의한 인트라넷</h1>
+<hr>
+<form name="form1" >
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p><br>이 섹션에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a>  </li>
+<li><a href="#IE">Internet Explorer 에서의 Java Plug-in 의 배치</a>  </li>
+<li><a href="#Nav">Mozilla 브라우저에서의 Java Plug-in 의 배치 </a>  </li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p>인트라넷은 인터넷보다 제어된 환경이므로,<code>APPLET</code>,<code>OBJECT</code>, 또는<code>EMBED</code> 목의 태그를 사용해 애플릿을 배치하는지를 선택할 수가 있습니다. 이 장에서는,<code>OBJECT</code> 또는 <code>EMBED</code> 태그를 사용한 배치에 대해 채택합니다. </p>
+<p>Java Plug-in 는 인트라넷 환경에 배치 가능합니다. 이 때문에, 사용자는 방화벽(fire wall)의 외부에 나오는 일 없이, Java Plug-in 를 다운로드 및 인스톨 할 수 있습니다. 여기에서는, Internet Explorer 및 지원되고 있는 Mozilla 브라우저에서의 배치 방법의 상세를 설명합니다. </p>
+<table summary="layout" width="90%" border="1" cellpadding="5" bgcolor="#FFFFCC" align="center" cellspacing="0">
+  <tr>
+    <td>
+<p><font color="#000000" size="4"><b><u>주:</u></b></font> </p>
+<p>이하의 내용을 이해하려면 , Java Plug-in 의 태그 구조에 대해 이해하고 있을 필요가 있습니다. 태그 구조에 대해서는,<a href="using_tags.html">「Java Plug-in 에서의 OBJECT, EMBED, 및 APPLET 태그의 사용」</a>을 참조해 주세요. </p>
+    </td>
+  </tr>
+</table>
+<h2><a name="IE"></a>  Internet Explorer (IE)에서의 Java Plug-in 의 배치</h2>
+<p>IE 를 사용하는 인트라넷 환경에 Java Plug-in 를 배치하는 경우, Java Plug-in 의 바이노리필드를 다운로드해 Web 서버에 포함할 필요가 있습니다. 다음에, HTML 파일의 <tt>&lt;OBJECT&gt;</tt> 태그내의 <tt>codebase</tt> 속성을, 그 바이너리를 지시하도록(듯이) 변경할 필요가 있습니다. 예를 들어,<code>http://my_company.com/plugin/</code> 에 존재하는 Java Plug-in 의 바이노리필드를 사용하는 경우, 다음과 같이 <tt>codebase</tt> 속성을 지정할 필요가 있습니다.  </p>
+<blockquote>
+<p><code>&quot;http://my_company.com/plugin/jre-6-rc-windows-i586.exe#Version=6, 0,0,99&quot;</code>  </p>
+</blockquote>
+<p>(인터넷 환경에서 배치를 실시하는 경우, 상기의 <code>. exe</code> 파일 대신에 <code>. cab</code> 파일을 사용하는 경우가 있습니다. <code>. cab</code> 파일은 <code>. exe</code> 를 지시함과 동시에, 다운로드의 진척 상황을 나타내는 바를 표시합니다. ) </p>
+<p>상기의 URL 의 버젼 번호에 주의해 주세요. Java Plug-in 6 에서는, 버젼 번호는 <code>6,0,0,99</code> 입니다. 버젼 번호는 릴리스 마다 변경됩니다. Java Plug-in 의 최신 릴리스를 지정하는 경우,<tt>&lt;OBJECT&gt;</tt> 태그내의 버젼 번호를 변경할 필요가 있습니다.  </p>
+<p>파일 <code>jre-6-rc-windows-i586.exe#Version=6, 0,0,99</code> 는, Java Software 의 Web 사이트로부터 직접 다운로드 가능한 파일과 같은 바이너리입니다. 이것은, VeriSign 디지털 서명으로 서명되고 있어 서명자는 Sun Microsystems, Inc 입니다. Java Plug-in HTML 컨버터를 사용하고 있는 경우, 변환전에 변환 템플릿 파일을 변경하는 것만으로, Plug-in 의 최신 버젼을 지정할 수가 있습니다 (<tt>CabFileLocation</tt> 변수를 사용). 변환 템플릿의 사용 방법의 자세한 것은, Java Plug-in HTML 컨버터의 README 파일을 참조해 주세요. <code>CabFileLocation</code> 에는,<code>. cab</code> 또는 <code>. exe</code> 파일의 위치를 지정할 수 있습니다. </p>
+<p> 이러한 변경을 구현 후에, Java Plug-in 의 인스톨되어 있지 않은 머신으로 IE 를 사용해 HTML 페이지를 브라우즈 하면(자), IE 는 미리 정의된 장소 (이 예에서는 <tt>http://my_company.com/plugin</tt>)를 참조해, Java Plug-in 를 다운로드합니다.  Web 서버가 인트라넷 내부에 존재하는 경우에는, 방화벽(fire wall)의 외부로부터 Java Plug-in 를 다운로드할 필요가 없는 점에 유의해 주세요.  
+<p>
+<table summary="layout" width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr>
+    <td>
+<h3 align="left"><u>주: 추천 사항</u></h3>
+<p>장기간에 걸쳐 신뢰성을 유지하기 위한 추천 사항을, 다음에 나타냅니다. </p>
+      <ul>
+<li><code>OBJECT</code> 태그의 <code>codebase</code> 속성에는,<code>java.sun.com</code> 의 <code>. cab</code> 버젼은 아니고,<code>. exe</code> 버젼을 사용하는 것을 추천합니다. <code>java.sun.com</code> 의 <code>. cab</code> 버젼은, 배치에 사용하지 않는 갱신된 버젼을 지시하는 경우가 있습니다. </li>
+<li>게다가<code>java.sun.com</code> 에 의존 하지않고서 다운로드를 실시할 수 있도록, 필요로 하는 버젼용의 독자적인 다운로드 사이트를 작성하는 일도 추천 되고 있습니다. <code>java.sun.com</code> 로 다운로드 가능한 버젼은, 빈번하게 변경됩니다. </li>
+      </ul>
+</td>
+  </tr>
+</table>
+<h2><a name="Nav"></a> Mozilla 브라우저에서의 Java Plug-in 의 배치</h2>
+<p>지원되고 있는 Mozilla 브라우저에서는 APPLET 태그를 사용하지 않으면 안됩니다. </p>
+<p>Mozilla 를 사용하는 인트라넷 환경에 Java Plug-in 를 배치하는 경우, Java Plug-in 의 바이노리필드를 다운로드해, 사용하는 Web 서버의 어느 쪽인가에 포함할 필요가 있습니다. 다음에 Java Plug-in 의 다운로드 페이지를 설정해, EMBED 태그의 <tt>pluginspage</tt> 속성이 이 페이지를 지정하도록(듯이) 변경할 필요가 있습니다. 예를 들어, Java Plug-in 의 다운로드 페이지를 「<tt>http://my_company.com/plugin/</tt>」로 설정해, 그 페이지가 <tt>plugin-install.html</tt> 인 경우,<tt>pluginspage</tt> 로서 「<tt>http://my_company.com/plugin/plugin-install.html</tt>」를 지정할 수 있습니다. 다운로드 페이지에는, Windows 판이나 Solaris 판 등, 버젼이 다른 Java Plug-in 를 다운로드 가능하게 하는 옵션을 설정할 수 있습니다. </p>
+<p>Java Plug-in 가 인스톨되어 있지 않은 머신이 Web 페이지에 액세스 하면(자), 플러그 인이 존재하지 않는 것을 나타내는 아이콘이 HTML 페이지에 표시됩니다. 사용자가 그 아이콘을 클릭하면(자), Mozilla 에 의해 미리 정의된 Java Plug-in 의 다운로드 페이지 (여기에서는 <code>http://my_company.com/plugin/plugin-install.html</code>)가 표시됩니다. Web 서버가 인트라넷 내부에 존재하는 경우에는, 방화벽(fire wall)의 외부로부터 Java Plug-in 를 다운로드할 필요가 없는 점에 유의해 주세요. </p>
+<h2>Unix/Linux 상의 Mozilla 에서의 Java Plug-in 의 배치</h2>
+<p>Unix 또는 Linux 를 사용하고 있는 경우, 다음의 2 개의 방법으로 Java Plug-in 를 인트라넷 환경에 인스톨 할 수 있습니다.
+<ul>
+<li>개별의 머신에, 사용자 어카운트 마다 인스톨 한다 (Windows 환경에 인스톨 하는 경우)</li>
+<li>시스템 관리 책임자가, 공유 인스톨용의 공유 NSF 드라이브에 인스톨 한다</li>
+</ul>
+<p>어느 쪽의 경우에도, 지원되고 있는 Mozilla 브라우저에서는 환경 변수 NPX_PLUGIN_PATH 가 Java Plug-in 를 지시하도록(듯이) 설정할 필요가 있습니다. Java Plug-in 를 로컬 머신에 인스톨 하는 경우, 사용자는, 이 변수를 로컬 머신의 JRE 내의 Java Plug-in 를 지시하도록(듯이) 설정할 필요가 있습니다. 공유 인스톨의 경우, 시스템 관리 책임자는, NSF 드라이브상의 공유 JRE 내에서 Java Plug-in 가 공유되는 위치를 판별해, NPX_PLUGIN_PATH 를 지정해, 각 머신의 사용자 프로필이 이 정도치를 지시하도록(듯이) 할 필요가 있습니다. </p>
+<p>&nbsp;</p>
+</body>
+</html>

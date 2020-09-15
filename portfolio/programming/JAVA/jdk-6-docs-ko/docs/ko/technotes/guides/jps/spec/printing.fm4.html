@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 4 - 문서의 인쇄와 스트림 전달
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing.fm3.html">전의 항목</a>  | <a href="printing.fm5.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998347"><i></i> Doc 의 작성</a> </h2>
+
+<blockquote>
+<a name="998501"><!-- --></a>  Doc 를 작성하려면 , Doc 인터페이스를 구현할 필요가 있습니다. Java 인쇄 서비스 API 에는, SimpleDoc 로 불리는 Doc 가 구현되고 있습니다. 어플리케이션에서는, SimpleDoc 의 구현을 사용할 필요는 없습니다. 다만, Doc 에 준거하기 위해서, 모든 Doc 구현은 SimpleDoc 의 구현과 같은 시멘틱스에 준거할 필요가 있습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="998573"><!-- --></a>  모든 Doc 구현에는, Doc 인터페이스의 5 개의 메소드를 모두 구현할 필요가 있다
+</li>
+<li>
+<a name="999027"><!-- --></a>  Doc 구현은, Doc 객체에 액세스 할 경우에, 복수의 thread에 대응하고 있지 않으면 안 된다.
+</li>
+<li>
+<a name="999028"><!-- --></a>  Doc 메소드는, 불려 갔을 때에, 같은 객체를 돌려준다. 즉, 새로운 스트림은 돌려주지 않는다. 입력 스트림이 1 개 뿐이므로, Doc 의 컨슈머(consumer)는 1 개 밖에 존재하지 않는다
+</li>
+<li>
+<a name="999031"><!-- --></a>  Doc 는, 요구되었을 경우에 서비스에 스트림을 돌려준다
+</li>
+<li>
+<a name="999032"><!-- --></a>  Doc 는, 데이터의 종류가 드큐먼트후레이바와 일치할지 어떨지를 체크한다
+</li>
+<li>
+<a name="999049"><!-- --></a>  getAttributes 로부터 반환된 속성은 항상, 인쇄 메소드에게 건네진 속성을 오버라이드(override) 한다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="999060"><!-- --></a>  Doc 를 작성하려면 , 파일로부터 문서를 로드할 필요가 있습니다. DocFlavor 의 표현 클래스에 의해, 파일로부터 문서를 로드할 방법이 정해집니다. 이 예의 표현 클래스는, InputStream 입니다. <p>
+<a name="999062"><!-- --></a> 
+<pre>	FileInputStream fis = new FileInputStream(&#34;java2dlogo.gif&#34;);
+</pre>
+
+
+<a name="999061"><!-- --></a>  스트림이 돌려주어지면(자), DocFlavor 및 DocAttributeSet 를 지정해 SimpleDoc 에 건네줍니다. DocAttributeSet 가 없는 경우는, 대신에 NULL 를 건네줍니다. <p>
+<a name="999074"><!-- --></a> 
+<pre>	Doc doc = new SimpleDoc(fis, flavor, null);
+</pre>
+
+
+<a name="999073"><!-- --></a>  커스텀 Doc 구현의 예에 대해서는,<a href="appendix_printGIF.fm.html#7083">「예: PrintGIF.java」</a>를 참조해 주세요. <p>
+<a name="1000443"><!-- --></a>  다음의 마디에서는, 인쇄 작업 또는 서비스에 이벤트를 등록하는 방법에 대해 설명합니다. <p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing.fm3.html">전의 항목</a>  | <a href="printing.fm5.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

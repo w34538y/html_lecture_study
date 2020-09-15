@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 4 - 문서의 인쇄와 스트림 전달
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing.fm1.html">전의 항목</a>  | <a href="printing.fm3.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="998467"><i></i> 서비스의 검색</a> </h2>
+
+<blockquote>
+<a name="999413"><!-- --></a>  인쇄 서비스의 검색 및 스트림 인쇄 서비스의 검색은, 다소 차이가 납니다. <a href="printing.fm2.html#998927">「인쇄 서비스의 검색」</a>에서는, 인쇄 서비스의 검색에 대해 설명합니다. 「스트림 인쇄 서비스의 검색」에서는, 스트림 인쇄 서비스의 검색에 대해 설명합니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="998927"><!-- --></a>  <i></i> 인쇄 서비스의 검색
+</h3>
+
+<blockquote>
+<a name="999409"><!-- --></a>  인쇄 작업을 프린터에 송신하려면 , 인쇄 데이터를 처리할 수 있는 프린터를 어플리케이션으로부터 검색할 필요가 있습니다. 양면 인쇄의 문서를 인쇄하려면 , 양면 인쇄 기능을 가진 프린터를 우선 검색할 필요가 있습니다.  <p>
+<a name="998928"><!-- --></a>  Java 인쇄 서비스 API 에는, javax.print.PrintServiceLookup 클래스가 짜넣어지고 있어 어플리케이션으로부터 프린터를 검색할 경우에 사용하는 static 메소드가 준비되어 있습니다. <p>
+<a name="1000286"><!-- --></a>  어플리케이션으로부터, DocFlavor 및 AttrbuteSet 을 지정해 PrintServiceLookup 의 lookupPrintServices 를 호출합니다. <p>
+<a name="1000287"><!-- --></a> 
+<blockquote><pre>DocFlavor flavor = DocFlavor.INPUT_STREAM.POSTSCRIPT;
+PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+aset.add(MediaSizeName.ISO_A4);
+aset.add(new Copies(2));
+PrintService[] service =
+	PrintServiceLookup.lookupPrintServices(flavor,
+			aset);
+</pre></blockquote>
+
+
+<a name="998931"><!-- --></a>  이 메소드에 의해 인쇄 서비스의 배열이 돌려주어집니다. 이 배열은, 속성 세트로 지정된 기능을 가져, 드큐먼트후레이바로 지정된 데이터 서식을 인쇄할 수 있는 프린터로 구성됩니다. DocFlavor 의 선택 및 AttributeSet 의 작성의 상세한 것에 대하여는,<a href="attributes.fm.html#996958">「속성」 </a>및<a href="docflavor.fm.html#996958">「문서의 종류의 지정」</a>을 참조해 주세요. <p>
+<a name="998932"><!-- --></a>  lookupPrintServices 메소드로부터 반환되는 프린터의 기본 세트는, 플랫폼으로부터 반환되는 프린터 세트와 같습니다. 예를 들어, Windows NT 를 사용하고 있을 때는, Windows 의 컨트롤 패널안의 「프린터」에 표시되는 프린터 세트와 같습니다. 같이 Solaris 를 사용하고 있을 때는, System V Unix 의 「lpstat」커멘드가 열거하는 프린터와 같습니다. 다만, Sun 이외의 벤더는 프린터 세트를 확장할 수 있기 (위해)때문에, JINI 프린터등의 추가 프린터가 반환되는 일도 있습니다. <p>
+<a name="998933"><!-- --></a>  적절한 PrintService 를 취득하면(자), 다양한 조회 메소드에 액세스 해, 지원되는 속성 카테고리의 값을 조사할 수가 있습니다. PrintService 로부터 인쇄 작업을 취득하는 방법에 대해서는,<a href="printing.fm3.html#998941">「인쇄 작업의 취득」</a>을 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="999433"><!-- --></a>  <i></i>스트림 인쇄 서비스의 검색
+</h3>
+
+<blockquote>
+<a name="999439"><!-- --></a>  어플리케이션에서는, 스트림 인쇄 서비스를 사용해, 인쇄 데이터를 다른 서식으로 변환할 수 있습니다. 예를 들어, 특정의 서식의 인쇄 데이터를 인쇄할 수 있는 프린터가 없는 경우에, 서식을 변환합니다. 여기에서는, StreamPrintService 를 사용해 GIF 문서를 Postscript 로 변환하는 방법에 대해 설명합니다. <p>
+<a name="999731"><!-- --></a>  StreamPrintServiceFactory 클래스에는, 스트림 인쇄 서비스를 검색하기 위한 lookupStreamPrintServiceFactories 메소드가 짜넣어지고 있습니다. 이 메소드에는, PrintServiceLookup 의 lookupPrintServices 메소드와 같게, 입력 문서의 종류를 표현하는 DocFlavor 를 인수로서 지정합니다. 이 예에서는, DocFlavor.INPUT_STREAM.GIF 입니다. 다만, lookupPrintServices 와 달리, 이 메소드에는 MIME 타입의 인수도 지정할 수 있습니다. MIME 타입에 의해, 출력의 서식을 지정합니다. 이 예에서는, GIF 를 Postscript 로 변환하기 (위해)때문에, MIME 타입은 「application/postscript」입니다. DocFlavor 클래스에는, DocFlavor 의 MIME 타입을 돌려주는 getMimeType 메소드가 짜넣어지고 있습니다. lookupStreamPrintServicesFactories 메소드를 실행하면(자), StreamPrintServiceFactory 객체의 배열이 돌려주어집니다. 이 객체는, StreamPrintService 인스턴스의 팩토리입니다. 다음의 코드예에서는, StreamPrintServiceFactory 객체의 배열을 취득하고 있습니다. 이 객체를 사용해, GIF 이미지를 PostScript 로 변환할 수 있는 StreamPrintService 객체를 취득할 수 있습니다. <p>
+<a name="999766"><!-- --></a> 
+<blockquote><pre>DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
+String psMimeType = DocFlavor.BYTE_ARRAY.POSTSCRIPT.getMimeType();
+StreamPrintServiceFactory[] psfactories =
+	StreamPrintServiceFactory.lookupStreamPrintServiceFactories(
+		flavor, psMimeType);
+</pre></blockquote>
+
+
+<a name="999443"><!-- --></a>  StreamPrintServiceFactory 객체에는, getPrintService 로 불리는 인스턴스 메소드가 짜넣어지고 있습니다. OutputStream 파라미터를 지정해 이 메소드를 실행하면(자), StreamPrintService 인스턴스가 작성되어 파라미터로 지정한 파일이 스트림에 써내집니다. <p>
+<a name="999444"><!-- --></a> 
+<blockquote><pre>FileOutputStream fos = new FileOutputStream(filename);
+StreamPrintService psService = psfactories[0]. getPrintService(fos);
+</pre></blockquote>
+
+
+<a name="999446"><!-- --></a>  JDK V1. 4 에는, 스트림 인쇄 서비스가 짜넣어지고 있습니다.  이 스트림 인쇄 서비스를 사용하면, Pageable 및 Printable 등의 그래피컬 인터페이스를 호출해 Postscript 를 export 할 수 있습니다. 이 서비스를 사용할 수 있을지 어떨지를 확인하려면 , StreamPrintServiceFactory 클래스를 사용해 서비스를 검색합니다. 2D 그래픽스의 스트림 전달에 대해서는,<a href="printing2d.fm.html#">「2D 그래픽스의 인쇄와 스트림 전달」</a>을 참조해 주세요. <p>
+<a name="999447"><!-- --></a>  StreamPrintService 에는, PrintService 가 구현되고 있습니다. 즉, PrintService 를 사용할 수 있을 때는, StreamPrintService 를 항상 사용할 수 있습니다. 작업이 스트림에 인쇄되면(자), 어플리케이션으로부터 출력 스트림을 닫습니다. 스트림을 닫으면(자), StreamPrintService 인스턴스는 사용할 수 없게 됩니다. <p>
+<a name="999437"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="printing.fm1.html">전의 항목</a>  | <a href="printing.fm3.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

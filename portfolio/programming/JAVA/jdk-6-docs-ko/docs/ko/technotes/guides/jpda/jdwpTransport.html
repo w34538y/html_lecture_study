@@ -1,0 +1,498 @@
+<html>
+
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java(tm) Debug Wire Protocol Transport Interface (jdwpTransport)  - xrath.com 에서 번역됨</title>
+</head>
+
+<body BGCOLOR=white LINK=blue VLINK=blue ALINK=red>
+<p>  
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif" width="52" height="88" align="bottom" alt="Java" border="0"> </td>
+<td>
+<h1 align="center">Java<font size="1"><sup>TM</sup></font> Debug Wire Protocol Transport Interface (jdwpTransport)
+		</h1></td>
+<td width="60" align="right" valign="top">
+<p align="right"><a href="../../../index.html"><font size="2">문서의 목차</font></a> 
+</p></td>
+</tr>
+</tbody></table>
+
+
+<p>트랜스폴트는, 일련의 함수로서 다이나믹 라이브러리 (<i>DLL</i> 또는 공용 라이브러리로 불리는 일도 있다)에 구현됩니다. 라이브러리는, 기동시에 JDWP 에이전트 (또는 다른 에이전트)에 의해 불려 가는 <i>onload</i> 함수를 export 합니다.
+
+<p>JVMTI 와 같게, jdwpTransport 함수에는, 「환경 포인터」라고 불리는 인터페이스 포인터를 개입시켜 액세스 합니다. 환경 포인터는, 환경에의 포인터로,<tt>jdwpTransportEnv*</tt> 형을 가집니다. 환경 포인터는 <i>onload</i> 함수로부터 JDWP 등의 에이전트에 돌려주어집니다.
+
+<p>트랜스폴트는, 1 개의 환경 또는 복수의 환경을 지원하는 경우가 있습니다. 즉, 트랜스폴트는 동시에 1 개의 에이전트만으로 사용되는 일도, 복수의 에이전트로 사용되는 일도 있습니다. 트랜스폴트가 복수의 환경을 지원하는 경우는,<i>onload</i> 함수를 호출할 때마다 새로운 환경 포인터가 돌려주어집니다. 트랜스폴트가 1 개의 환경만을 지원하는 경우,<i>onload</i> 함수의 2 번째 이후의 호출은 에러를 돌려줍니다.
+
+<p>트랜스폴트는 thread 세이프입니다.  또, jdwpTransport 함수는 복수의 병렬 thread로 사용할 수 있습니다. 예를 들어, 다른 thread가 <tt>WritePacket</tt> 함수를 호출해 패킷을 기입하는 동안에 패킷을 대기하기 위해서, 어느 thread가 jdwpTransport <tt>ReadPacket</tt> 함수로 블록 되는 경우가 있습니다.
+
+<p>대부분의 경우, jdwpTransport 함수는, 복귀 상태를 나타내는 <tt>jdwpTransportError</tt> 치를 돌려줍니다. 함수에 따라서는, 호출측의 함수로 지정된 포인터에 의해, 이외의 값을 돌려줍니다. 반환값의 값이 jdwpTransport 함수에 의해 할당할 수 있는 경우, 이 함수는, 에이전트가 지정하는 메모리 할당 루틴을 사용합니다. 메모리 할당 루틴은,<i>onload</i> 함수를 개입시켜, 기동시에 트랜스폴트로 지정됩니다.
+  
+<p>에러의 경우 (즉, jdwpTransport 함수의 1 개가 <tt>JDWPTRANSPORT_ERROR_NONE</tt> 이외의 값을 돌려주는 경우)는, jdwpTransport 함수 <tt>GetLastError</tt> 의 호출에 의해 에러를 나타내는 캐릭터 라인을 나중에 취득할 수 있겠습니다. 에러는 thread 베이스로 기록됩니다. <tt>GetLastError</tt> 함수는, 현재의 thread만으로 마지막에 발생한 에러를 나타내는 캐릭터 라인을 돌려줍니다.
+</p>
+
+
+<h2>트랜스폴트의 구현의 개발</h2>
+
+<p>트랜스폴트 라이브러리의 개발에는, 각종 규칙과 C/C++ 의 정의를 호출하는 C 언어를 지원하는 임의의 네이티브 언어를 사용할 수 있습니다.
+
+<p>jdwpTransport 인터페이스를 사용하기 위해서 필요한 함수, 데이터형, 정수의 정의는, 인클루드 파일 jdwpTransport.h 로 정의됩니다. 이러한 정의를 사용하려면 , Java SE 인클루드 디렉토리를 인클루드 패스에 추가해, 원시 코드에 다음의 행을 추가합니다.
+
+<blockquote><pre>#include "jdwpTransport.h"
+</pre></blockquote>
+
+
+<h2>트랜스폴트의 기동</h2>
+
+<p>트랜스폴트 라이브러리는, 다음의 prototype를 가지는 <i>onload</i> 함수를 export 하고 있을 필요가 있습니다.
+
+<blockquote><pre>
+JNIEXPORT jint JNICALL 
+jdwpTransport_OnLoad(JavaVM *jvm,
+                     jdwpTransportCallback *callback,
+                     jint version,
+                     jdwpTransportEnv** env);
+</pre></blockquote>
+
+<p>이 함수는, 라이브러리의 로드시에 JDWP 등의 에이전트에 의해 불려 갑니다.
+
+<p><tt>jvm</tt> 인수는, 에이전트가 JNI 의 <tt>GetJavaVM</tt> 함수를 호출하는 것으로 취득된 JNI 호출 인터페이스입니다.
+
+<p><tt>callback</tt> 인수는, 트랜스폴트가 사용하는, 메모리 메니지먼트 루틴의 함수 테이블에의 포인터입니다.  이 함수 테이블은, 트랜스폴트의 구현으로 할당할 수 있는 반환값용으로 메모리를 할당하기 위해서(때문에) 사용됩니다.
+
+<blockquote><pre>
+typedef struct jdwpTransportCallback {
+    void* (*alloc)(jint numBytes);
+    void (*free)(void *buffer);
+} jdwpTransportCallback;
+</pre></blockquote>
+
+<p><tt>callback</tt> 인수는 <i>onload</i> 함수로 유효하고, 그 때문에 트랜스폴트는 <tt>jdwpTransport_OnLoad</tt> 함수로 함수 테이블을 카피할 필요가 있습니다.  
+
+<p>함수 테이블에는 2 개의 엔트리가 있습니다. <tt>alloc</tt> 함수는 메모리의 영역을 할당합니다. 이 함수에는 할당하는 바이트수를 지정하는 단일의 인수가 있습니다. <tt>alloc</tt> 함수는, 할당할 수 있었던 메모리의 선두 위치에의 포인터를 돌려줍니다. 메모리 요구를 받아들일 수가 없는 경우는 NULL 를 돌려줍니다. 요구된 바이트수가 0 의 경우는, NULL 가 돌려주어집니다. <tt> free</tt> 함수는,<tt>alloc</tt> 함수를 사용해 할당하고 끝난 메모리 영역을 해제합니다.  
+
+<p>에이전트가 제공하는 메모리 메니지먼트 함수는 thread 세이프이며, 이러한 함수에의 호출을 동기 하는데 트랜스폴트의 구현은 필요 없습니다. 메모리 메니지먼트 함수의 구현에서는, jdwpTransport 함수를 호출하지 않는 것이 보증되고 있습니다.
+
+<p><tt>version</tt> 는, 에이전트가 필요로 하는 트랜스폴트 인터페이스의 버젼입니다. 이것은,<tt>JDWPTRANSPORT_VERSION_1_0</tt> 와 같이 지정됩니다.
+
+<p><tt>env</tt> 는, 함수에 의해 반환되는 환경 포인터에의 포인터입니다.
+
+<p>트랜스폴트의 초기화가 정상적으로 행해졌을 경우,<tt>jdwpTransport_OnLoad</tt> 함수는,<tt>JNI_OK</tt> 를 돌려줍니다. 초기화에 실패했을 경우는, 다음의 에러가 돌려주어집니다.
+
+<blockquote><pre>JNI_ENOMEM
+JNI_EVERSION
+JNI_EEXIST
+</pre></blockquote>
+
+<p> 초기화를 완료하기 위한 메모리가 부족한 경우는,<tt>JNI_ENOMEM</tt> 가 돌려주어집니다.
+
+<p> <tt>version</tt> 인수의 버젼이 <tt>JDWPTRANSPORT_VERSION_1_0</tt> 가 아닌 경우,<tt>JNI_EVERSION</tt> 가 돌려주어집니다.
+
+<p> 트랜스폴트가 1 개의 환경만을 지원해,<i>onload</i> 함수의 최초의 호출에 의해 환경 포인터가 벌써 돌려주어지고 있는 경우는,<tt>JNI_EEXIST</tt> 가 돌려주어집니다.
+</p>
+
+
+<h2>함수</h2>
+
+<p>
+jdwpTransport 함수는, 다음과 같은 카테고리로 분류됩니다.
+<ul>
+<li><a href=#connection><b>접속의 관리</b></a> 
+	   <ul>
+	     	<li><a href=#Attach>Attach</a> 
+	     	<li><a href=#StartListening>StartListening</a> 
+	     	<li><a href=#StopListening>StopListening</a> 
+	      	<li><a href=#Accept>Accept</a> 
+	     	<li><a href=#IsOpen>IsOpen</a> 
+	 	<li><a href=#Close>Close</a> 		
+	   </ul>
+<li><a href=#IO><b>I/O 함수</b></a> 
+	  <ul>
+		<li><a href=#ReadPacket>ReadPacket</a> 
+		<li><a href=#WritePacket>WritePacket</a> 
+	  </ul>
+<li><a href=#miscellaneous><b>그 외의 함수</b></a> 
+	  <ul>
+	    <li><a href=#GetLastError>GetLastError</a> 
+	    <li><a href=#GetCapabilities>기능의 취득</a> 
+	  </ul>
+</ul>
+
+
+<a name="connection"></a> 
+<p><hr noshade size=3>
+<h2>접속의 관리</h2>
+
+<p>접속 관리 함수는, 디버거와의 접속을 확립 및 절단 할 경우에 사용됩니다. 접속은, 디버거에의 및 디버거로부터의 JDWP 패킷의 확실한 흐름을 제공합니다. 접속에 기입해지는 패킷은, 기입해졌던 대로의 순서로 디버거에 의해 읽어내집니다. 같이 디버거로부터 접속에 기입해진 패킷은, 기입해졌던 대로의 순서로 읽어내집니다.
+
+<p> 접속은, 「능동적」또는 「수동적」으로 확립됩니다. 접속을 「능동적」으로 확립하는 경우는, 디버거와의 접속을 개시하기 위해서 jdwpTransport 의 <tt>Attach</tt> 함수가 불려 갑니다. 접속을 「수동적」으로 확립하는 경우는, 트랜스폴트를 「대기 모드」로 해 디버거로부터의 접속을 대기시키기 위해서(때문에), jdwpTransport 의 <tt>StartListening</tt> 함수가 불려 갑니다. 대기 모드가 되면(자), 접속을 받아들이기 위해서(때문에) <tt>Accept</tt> 함수가 사용됩니다. 접속의 확립 방법에 관계없이, 접속을 절단 할 경우에 <tt>Close</tt> 함수가 사용되어 접속이 디버거에 대해서 열리고 있는지 어떤지를 테스트할 경우에 <tt>IsOpen</tt> 가 사용됩니다.  
+</p>
+
+<a name="Attach"></a> 
+<hr noshade width=75%>
+<h3>Attach</h3>
+<blockquote><pre>
+jdwpTransportError
+Attach(jdwpTransportEnv* env, const char* address, 
+       jlong attachTimeout, jlong handshakeTimeout)
+</pre></blockquote>
+
+<p>디버거에 접속합니다. 디버거에의 접속은, 2 개의 순서로 행해집니다. 최초로, 지정한 주소에의 접속이 확립됩니다. 접속이 확립되면(자), 디버거에의 접속이 확실히 확립된 것을 확인하기 위해서, 「핸드 쉐이크」가 실행됩니다. 핸드 쉐이크에서는,<a href="jdwp-spec.html">Java Debug Wire Protocol</a>  스펙으로 지정되고 있는 ASCII 캐릭터 라인 <i>JDWP-Handshake</i> 의 교환을 합니다.
+
+<p><tt>address</tt> 인수는, 디버거의 주소를 나타내는 캐릭터 라인에의 포인터입니다. 정확한 형식은, 트랜스폴트에 고유합니다 (TCP/IP 베이스의 트랜스폴트의 경우는, 주소에 디버거의 호스트명과 포트 번호가 포함되는 일이 있다. 시리얼 포트를 개입시킨 접속을 지원하는 트랜스폴트의 경우는, 시리얼 포트의 디바이스명이 되는 일이 있다).
+
+<p><tt>attachTimeout</tt> 인수는, 접속시에 사용하는 타임 아웃을 지정합니다. 트랜스폴트가 접속 타임 아웃 (<a href=#GetCapabilities>GetCapabilities</a>  를 참조)을 지원해,<tt>attachTimeout</tt> 가 정의 경우, 디버거에의 접속시에 사용하는 타임 아웃을 밀리 세컨드 단위로 지정합니다. 트랜스폴트가 접속 타임 아웃을 지원하지 않는 경우, 또는 <tt>attachTimeout</tt> 가 0 으로 지정되고 있는 경우는, 접속시에 타임 아웃은 사용되지 않습니다.  
+
+<p><tt>handshakeTimeout</tt> 인수는, 디버거와의 핸드 쉐이크에 사용되는 타임 아웃을 지정합니다. 트랜스폴트가 핸드 쉐이크 타임 아웃 (<a href=#GetCapabilities>GetCapabilities</a>  를 참조)을 지원해,<tt>handshakeTimeout</tt> 가 정의 경우, 디버거와의 핸드 쉐이크시에 사용하는 타임 아웃을 밀리 세컨드 단위로 지정합니다. 핸드 쉐이크 타임 아웃의 정확한 사용법은, 트랜스폴트에 고유합니다.  예를 들어, 어느 구현에서는, 디버거로부터의 <i>JDWP-Handshake</i> 메세지를 대기하는 동안의 문자간 타임 아웃으로서 타임 아웃이 사용되는 경우가 있습니다. 다른 구현에서는, 타임 아웃을 사용해 핸드 쉐이크의 교환을 위해서(때문에) 허가되는 합계 시간을 나타냅니다. 일반적으로, 핸드 쉐이크 타임 아웃의 목적은, 트랜스폴트가 유효한 디버거 이외에 접속하는 경우의 에러 처리를 고려하는 것입니다. 트랜스폴트가 핸드 쉐이크 타임 아웃을 지원하지 않는 경우, 또는 <tt>handshakeTimeout</tt> 가 0 으로 지정되고 있는 경우는, 핸드 쉐이크시에 타임 아웃은 사용되지 않습니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT
+JDWPTRANSPORT_ERROR_ILLEGAL_STATE
+JDWPTRANSPORT_ERROR_IO_ERROR
+JDWPTRANSPORT_ERROR_TIMEOUT
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT</tt> 는,<tt>address</tt> 가 무효인가, 또는 <tt>timeout</tt> 가 부의 경우에 돌려주어집니다.  
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_STATE</tt> 는, 트랜스폴트가 현재 「대기 모드」 (<a href=#StartListening>StartListening</a>  를 참조)에 들어가 있는지, 디버거에 대해서 오픈 접속이 벌써 존재하는 경우에 돌려주어집니다 (<a href=#IsOpen>IsOpen</a>  를 참조).
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 디버거에의 접속중에 (접속 타임 아웃 이외의) 에러가 발생했을 경우에 돌려주어집니다. 초기 핸드 쉐이크중의 에러 (핸드 쉐이크 타임 아웃을 포함한다)는, I/O 에러로 간주해집니다. I/O 에러는, 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.
+
+<p><tt>JDWPTRANSPORT_ERROR_TIMEOUT</tt> 는, 트랜스폴트가 접속 타임 아웃을 지원하는 경우,<tt>attachTimeout</tt> 의 값이 정의 경우, 및 그 attachTimeout 의 시간내에 디버거와의 접속을 확립할 수 없는 경우에 돌려주어집니다.
+
+<a name="StartListening"></a> 
+<hr noshade width=75%>
+<h3>StartListening</h3>
+<blockquote><pre>
+jdwpTransportError
+StartListening(jdwpTransportEnv* env, const char* address, char** actualAddress);
+</pre></blockquote>
+
+<p>트랜스폴트를 「대기 모드」로 해, 디버거로부터의 접속을 대기합니다.
+
+<p><tt>address</tt> 인수는, 트랜스폴트가 대기하는 로컬 주소를 나타내는 캐릭터 라인에의 포인터입니다. 정확한 형식은, 트랜스폴트에 고유합니다 (TCP/IP 베이스의 트랜스폴트의 경우는, 주소에 로컬 TCP 포트 번호가 포함되는 일이 있다. 시리얼 포트를 개입시킨 접속을 지원하는 트랜스폴트의 경우는, 시리얼 포트의 디바이스명이 되는 일이 있다). <tt>address</tt> 인수는,<tt>NULL</tt> 또는 빈 상태(empty)의 캐릭터 라인으로 지정할 수가 있습니다 (최초의 문자는 <tt>\0</tt>). 그 경우, 트랜스폴트는, 트랜스폴트에 고유의 디폴트의 주소로 대기합니다.
+
+
+<p><tt>actualAddress</tt> 가 <tt>NULL</tt> 가 아닌 경우는,<tt>StartListening</tt> 함수에 의해 반환되는 캐릭터 라인의 주소로 설정됩니다. 반환되는 캐릭터 라인에는, 트랜스폴트가 대기하는 주소의 캐릭터 라인 표현이 포함됩니다. 이것은,<tt>address</tt> 인수로 지정된 주소와 다른 경우와 같은 경우가 있습니다. 캐릭터 라인은,<tt>jdwpTransport_OnLoad</tt> 함수가 불려 갔을 때에 트랜스폴트에 제공되는 할당 콜백을 사용해 할당할 수 있습니다. 호출측은, 반환된 캐릭터 라인의 해제을 실시합니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT
+JDWPTRANSPORT_ERROR_ILLEGAL_STATE
+JDWPTRANSPORT_ERROR_IO_ERROR
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT</tt> 는,<tt>address</tt> 가 무효의 경우에 돌려주어집니다.
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_STATE</tt> 는, 디버거에 대해서 오픈 접속이 벌써 존재하는지 (<a href=#IsOpen>IsOpen</a>  를 참조), 트랜스폴트가 벌써 대기 모드에 들어가 있는 경우에 돌려주어집니다.
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 트랜스폴트를 대기 모드로 할 경우에 에러가 발생했을 경우에 돌려주어집니다. 에러의 성질은 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.  </p>
+
+<a name="StopListening"></a> 
+<hr noshade width=75%>
+<h3>StopListening</h3>
+<blockquote><pre>
+jdwpTransportError
+StopListening(jdwpTransportEnv* env)
+</pre></blockquote>
+
+<p>트랜스폴트를 「대기 모드」로부터 해제해, 디버거로부터의 접속을 대기하지 않게 합니다.
+
+<p>트랜스폴트가 「대기 모드」에 들어가 있는 경우는, 이 모드로부터 해제합니다. 디버거에 대해서 오픈 접속 (<a href=#IsOpen>IsOpen</a>  를 참조)이 존재하는 경우는, 이 함수에 의해 영향을 받을 것은 없습니다. 즉,<tt>StopListening</tt> 는, 디버거에의 접속을 절단 하지 않습니다. 트랜스폴트가 대기 모드에 들어가 있지 않은 경우, 이 함수는 아무것도 실행하지 않고, 에러는 돌려주어지지 않습니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_IO_ERROR
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 트랜스폴트를 대기 모드로부터 해제할 경우에 에러가 발생했을 경우에 돌려주어집니다. 에러의 성질은 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.  </p>
+
+
+<a name="Accept"></a> 
+<hr noshade width=75%>
+<h3>Accept</h3>
+<blockquote><pre>
+jdwpTransportError
+Accept(jdwpTransportEnv* env, jlong acceptTimeout, jlong handshakeTimeout)
+</pre></blockquote>
+
+<p>디버거로부터의 접속을 받아들입니다. 디버거로부터의 접속의 수락은, 2 개의 순서로 행해집니다. 최초로, 디버거에 의해 접속이 확립됩니다. 접속이 확립되면(자), 디버거에 의한 접속이 확실히 확립된 것을 확인하기 위해서, 「핸드 쉐이크」가 실행됩니다. 핸드 쉐이크에서는,<a href="jdwp-spec.html">Java Debug Wire Protocol</a>  스펙으로 지정되고 있는 ASCII 캐릭터 라인 <i>JDWP-Handshake</i> 의 교환을 합니다.
+
+<p><tt>acceptTimeout</tt> 인수는, 디버거로부터의 접속을 대기할 경우에 사용하는 타임 아웃을 지정합니다. 트랜스폴트가 수락 타임 아웃 (<a href=#GetCapabilities>GetCapabilities</a>  를 참조)을 지원해,<tt>acceptTimeout</tt> 가 정의 경우, 디버거로부터의 접속을 대기할 경우에 사용하는 타임 아웃을 밀리 세컨드 단위로 지정합니다. 트랜스폴트가 수락 타임 아웃을 지원하지 않는 경우, 또는 <tt>timeout</tt> 가 0 으로 지정되고 있는 경우는, 접속의 대기는 무제한하게 블록 됩니다.
+
+<p><tt>handshakeTimeout</tt> 인수는, 디버거와의 핸드 쉐이크에 사용되는 타임 아웃을 지정합니다. 트랜스폴트가 핸드 쉐이크 타임 아웃 (<a href=#GetCapabilities>GetCapabilities</a>  를 참조)을 지원해,<tt>handshakeTimeout</tt> 가 정의 경우, 디버거와의 핸드 쉐이크시에 사용하는 타임 아웃을 밀리 세컨드 단위로 지정합니다. 핸드 쉐이크 타임 아웃의 정확한 사용법은, 트랜스폴트에 고유합니다.  예를 들어, 어느 구현에서는, 디버거로부터의 <i>JDWP-Handshake</i> 메세지를 대기하는 동안의 문자간 타임 아웃으로서 타임 아웃이 사용되는 경우가 있습니다. 다른 구현에서는, 타임 아웃을 사용해 핸드 쉐이크의 교환을 위해서(때문에) 허가되는 합계 시간을 나타냅니다. 일반적으로, 핸드 쉐이크 타임 아웃의 목적은, 디버거 이외가 debuggee 에의 접속을 확립하는 경우의 에러 처리를 고려하는 것입니다. 트랜스폴트가 핸드 쉐이크 타임 아웃을 지원하지 않는 경우, 또는 <tt>handshakeTimeout</tt> 가 0 으로 지정되고 있는 경우는, 핸드 쉐이크시에 타임 아웃은 사용되지 않습니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT
+JDWPTRANSPORT_ERROR_ILLEGAL_STATE
+JDWPTRANSPORT_ERROR_IO_ERROR
+JDWPTRANSPORT_ERROR_TIMEOUT
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT</tt> 는,<tt>attachTimeout</tt> 또는 <tt>handshakeTimeout</tt> 가 부의 경우에 돌려주어집니다.  
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_STATE</tt> 는, 디버거에 대해서 오픈 접속이 벌써 존재하는지 (<a href=#IsOpen>IsOpen</a>  를 참조), 트랜스폴트가 대기 모드에 들어가 있지 않은 경우에 돌려주어집니다 (<a href=#StartListening>StartListening</a>  를 참조).
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 디버거로부터의 접속의 수락중에 (수락 타임 아웃 이외의) 에러가 발생했을 경우에 돌려주어집니다. 초기 핸드 쉐이크중의 에러 (핸드 쉐이크 타임 아웃을 포함한다)는, I/O 에러로 간주해집니다. 에러의 성질은 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.
+
+<p><tt>JDWPTRANSPORT_ERROR_TIMEOUT</tt> 가 반환되는 것은, 트랜스폴트가 수락 타임 아웃을 지원하는 경우,<tt>acceptTimeout</tt> 의 값이 정의 경우, 및 그 타임 아웃의 시간내에 디버거와의 접속을 확립할 수 없는 경우입니다.
+
+<p><b>주:</b> 디버거로부터의 접속의 대기중에 <tt>Accept</tt> 로 블록 되고 있는 thread는,<tt>StopListening</tt> 를 호출하는 다른 thread에 의해 끼어들어질 가능성이 있습니다. 그 경우,<tt>Accept</tt> 를 호출한 thread는, I/O 에러가 발생한 것을 나타내는 <tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 를 돌려줍니다. <tt>Accept</tt> 로 블록 되고 있는 thread가 접속을 받아들여, 디버거와의 핸드 쉐이크를 처리하고 있는 경우,<tt>StopListening</tt> 는 접속을 중단하지 않습니다.
+
+<a name="IsOpen"></a> 
+<hr noshade width=75%>
+<h3>IsOpen</h3>
+<blockquote><pre>
+jboolean
+isOpen(jdwpTransportEnv* env)
+</pre></blockquote>
+
+<p>디버거에 대해서 오픈 접속이 존재할지 어떨지를 지정합니다.
+
+<p>디버거에 대해서 오픈 접속이 존재하는 경우 (에게만),<tt>JNI_TRUE</tt> 를 돌려줍니다. 그 이외의 경우는,<tt>JNI_FALSE</tt> 를 돌려줍니다.  </p>
+
+
+<a name="Close"></a> 
+<hr noshade width=75%>
+<h3>Close</h3>
+<blockquote><pre>
+jdwpTransportError
+Close(jdwpTransportEnv* env)
+</pre></blockquote>
+
+<p>디버거에 대해서 오픈 접속을 닫습니다.  
+
+<p>디버거에 대해서 오픈 접속이 존재하지 않는 경우 (<a href=#IsOpen>IsOpen</a>  를 참조), 이 함수는 아무것도 실행하지 않고, 에러는 돌려주어지지 않습니다.
+
+<p>I/O 함수 (즉,<a href=#ReadPacket>ReadPacket</a>  및 <a href=#WritePacket>WritePacket</a> )로 블록 되고 있는 thread가 존재하는 경우, 이러한 I/O 함수는 클로즈에 의해 중단되어 I/O 에러가 발생한 것을 나타내는 <tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 를 돌려줍니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_IO_ERROR
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 접속을 절단 할 경우에 에러가 발생했을 경우에 돌려주어집니다. 에러의 성질은 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.  </p>
+
+
+
+
+<a name="IO"></a> 
+<p><hr noshade size=3>
+<h2>I/O 함수</h2>
+
+<p>I/O 함수는, JDWP 패킷의 디버거로부터의 읽기 및 디버거에의 기입에 사용됩니다.
+
+<a name="ReadPacket"></a> 
+<hr noshade width=75%>
+<h3>ReadPacket</h3>
+<blockquote><pre>
+
+typedef struct {
+    jint len; 
+    jint id;
+    jbyte flags;
+    jbyte cmdSet;
+    jbyte cmd;
+    jbyte *data;
+} jdwpCmdPacket;
+
+typedef struct {
+    jint len;
+    jint id;
+    jbyte flags;
+    jshort errorCode;
+    jbyte *data;
+} jdwpReplyPacket;
+
+typedef struct jdwpPacket {
+    union {
+        jdwpCmdPacket cmd;
+        jdwpReplyPacket reply;
+    } type;
+} jdwpPacket;
+
+jdwpTransportError
+ReadPacket(jdwpTransportEnv* env, jdwpPacket* packet)
+</pre></blockquote>
+
+<p>디버거에 대해서 오픈 접속으로부터 JDWP 패킷을 읽어냅니다.
+
+<p>이 함수는, 오픈 접속에 대해서 「블록 리드」를 실행합니다. 모든 JDWP 패킷이 돌려주어질 때까지, 또는 스트림 지향 프로토콜 베이스의 트랜스폴트의 경우에, 스트림의 마지막이 검출될 때까지 무제한하게 블록 합니다.
+
+<p><tt>packet</tt> 인수는, 이 함수에 의해 설정되는 <tt>jdwpPacket</tt> 구조체의 주소입니다. <tt>packet.type.cmd.len</tt> 또는 <tt>packet.type.reply.len</tt> 필드 (패킷이 커멘드 패킷이나 응답 패킷 등에 의해서 다르기)에는, 패킷의 길이가 설정됩니다. 스트림의 마지막이 검출되었을 경우, 길이의 필드는 <tt>0</tt> 으로 설정되어 패킷의 그 외의 필드는 모두 미정도리가 됩니다. 패킷의 모두는 아니게 일부의 바이트가 읽어내진 후에 스트림의 마지막이 검출되었을 경우는, I/O 에러로 간주해져<tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 가 돌려주어집니다. 그 경우, 길이의 필드는 설정되지 않습니다. 패킷 전체가 읽어내지면(자), 패킷의 모든 필드에는, 호스트순서로 값이 설정됩니다. 이것은, JDWP 패킷을 전송 할 경우에 필요한 빅 endian의 순서와 다른 경우와 같은 경우가 있습니다.
+
+<p> <tt>packet.type.cmd.data</tt> 또는 <tt>packet.type.reply.data</tt> 필드 (패킷이 커멘드 패킷이나 응답 패킷 등에 의해서 다르기)에는,<tt>NULL</tt> 또는 이 함수에 의해 할당할 수 있었던 패킷 데이터에의 포인터가 설정됩니다. 패킷 데이터는,<tt>jdwpTransport_OnLoad</tt> 함수가 불려 갔을 때에 트랜스폴트에 제공되는 할당 콜백을 사용해 할당할 수 있습니다. 호출측은, 패킷 데이터의 해제을 실시합니다. 패킷 데이터 (헤더가 존재하는 경우는 헤더의 뒤의 데이터)의 레이아웃은, 수신했을 때의 바이트순서로 호출해 측에 돌려주어집니다.  
+
+<p> <tt>ReadPacket</tt> 함수는, 패킷의 길이 (최초의 4 바이트로 나타난다)가 <tt>>=</tt> 11 바이트인 것을 체크하는 것만으로, 반환된 패킷에 대해서 무결성 체크를 실시하지 않습니다. <tt>length</tt> 필드가 11 바이트 미만의 경우는,<tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 가 돌려주어집니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_IO_ERROR
+JDWPTRANSPORT_ERROR_ILLEGAL_STATE
+JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 읽기중에 I/O 에러가 발생했을 경우,<a href=#Close>Close</a>  함수를 호출하는 다른 thread에 의해 비동기에게 접속이 닫혀졌을 경우, 또는 부정한 형식의 패킷 (<tt>length</tt> 필드가 11 바이트 미만)을 수신했을 경우에 돌려주어집니다. I/O 에러는, 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.  </p>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_STATE</tt> 는, 디버거에 대해서 오픈 접속이 존재하지 않는 경우 (<a href=#IsOpen>IsOpen</a>  를 참조)에 돌려주어집니다.  </p>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT</tt> 는,<tt>packet</tt> 가 <tt>NULL</tt> 의 경우에 돌려주어집니다.
+
+
+
+<a name="WritePacket"></a> 
+<hr noshade width=75%>
+<h3>WritePacket</h3>
+<blockquote><pre>
+jdwpTransportError
+WritePacket(jdwpTransportEnv* env, const jdwpPacket* packet)
+</pre></blockquote>
+
+<p>오픈 접속에 JDWP 패킷을 기입합니다.
+
+<p><tt>packet</tt> 인수는,<tt>jdwpPacket</tt> 구조체에의 포인터입니다. 패킷 헤더의 모든 필드는, 호스트순서로 포함될 필요가 있습니다. 패킷 데이터 필드 (<tt>packet.type.cmd.data</tt> 또는 <tt>packet.type.reply.data</tt>)는,<tt>NULL</tt> 또는 헤더의 직후의 패킷 데이터가 포함되고 있는 장소에의 포인터가 아니면 안됩니다. 패킷 데이터는, 네트워크순서 (빅 endian)로 전송의 준비가 되어 있을 필요가 있습니다.
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT
+JDWPTRANSPORT_ERROR_IO_ERROR
+JDWPTRANSPORT_ERROR_ILLEGAL_STATE
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_ARGUMENT</tt> 는,<tt>packet</tt> 가 <tt>NULL</tt> 의 경우, 패킷의 길이의 필드 (<tt>packet.type.cmd.len</tt> 또는 <tt>packet.type.reply.len</tt>)가 11 미만의 경우, 또는 이 필드가 11 이상에서도 패킷 데이터 필드 (<tt>packet.type.cmd.data</tt> 또는 <tt>packet.type.reply.data</tt>)가 <tt>NULL</tt> 의 경우에 돌려주어집니다.
+
+<p><tt>JDWPTRANSPORT_ERROR_IO_ERROR</tt> 는, 기입중에 I/O 에러가 발생했을 경우, 또는 <a href=#Close>Close</a>  함수를 호출하는 다른 thread에 의해 비동기에게 접속이 닫혀졌을 경우에 돌려주어집니다. I/O 에러는, 트랜스폴트에 고유합니다. <a href=#GetLastError>GetLastError</a>  를 사용해, 에러의 캐릭터 라인 표현을 취득할 수가 있습니다.  </p>
+
+<p><tt>JDWPTRANSPORT_ERROR_ILLEGAL_STATE</tt> 는, 디버거에 대해서 오픈 접속이 존재하지 않는 경우 (<a href=#IsOpen>IsOpen</a>  를 참조)에 돌려주어집니다.  </p>
+
+
+
+
+
+<a name="miscellaneous"></a> 
+<p><hr noshade size=3>
+<h2>그 외의 함수</h2>
+
+
+<a name="GetLastError"></a> 
+<hr noshade width=75%>
+<h3>GetLastError</h3>
+
+<blockquote><pre>
+jdwpTransportError
+GetLastError(jdwpTransportEnv* env, char** msg);
+</pre></blockquote>
+
+<p>마지막 에러의 캐릭터 라인 표현을 돌려줍니다.
+
+<p>발생한 에러는, thread 마다 기록됩니다. <tt>GetLastError</tt> 의 그 이후의 호출은, 마지막 I/O 에러의 캐릭터 라인 표현을 돌려줍니다.
+
+<p><tt>msg</tt> 인수는, 이 함수에 의해 반환되는 null 로 끝나는 캐릭터 라인에의 포인터입니다. 캐릭터 라인은,<tt>jdwpTransport_OnLoad</tt> 함수가 불려 갔을 때에 트랜스폴트에 제공되는 할당 콜백을 사용해 할당할 수 있습니다. 호출측은, 반환된 캐릭터 라인의 해제을 실시합니다.
+
+
+<p>이 함수는,<a href=#Universal>범용 에러</a>, 또는 다음의 에러의 어떤 것인지를 돌려줍니다.
+<blockquote><pre>
+JDWPTRANSPORT_ERROR_MSG_NOT_AVAILABLE
+</pre></blockquote>
+
+<p><tt>JDWPTRANSPORT_ERROR_MSG_NOT_AVAILABLE</tt> 는, 이 thread로 I/O 에러가 발생하지 않았는지, 사용 가능한 마지막 에러의 캐릭터 라인 표현이 존재하지 않는 경우에 돌려주어집니다.  
+
+
+<a name="GetCapabilities"></a> 
+<hr noshade width=75%>
+<h3>GetCapabilities</h3>
+
+<blockquote><pre>
+
+typedef struct {
+    unsigned int can_timeout_attach	:1;
+    unsigned int can_timeout_accept	:1;
+    unsigned int can_timeout_handshake  :1;
+    unsigned int reserved3		:1;
+    unsigned int reserved4		:1;
+    unsigned int reserved5		:1;
+    unsigned int reserved6		:1;
+    unsigned int reserved7		:1;
+    unsigned int reserved8		:1;
+    unsigned int reserved9		:1;
+    unsigned int reserved10		:1;
+    unsigned int reserved11		:1;
+    unsigned int reserved12		:1;
+    unsigned int reserved13		:1;
+    unsigned int reserved14		:1;    
+    unsigned int reserved15		:1;
+} JDWPTransportCapabilities;
+
+jdwpTransportError
+GetCapabilities(jdwpTransportEnv* env, JDWPTransportCapabilities* capabilitiesPtr)
+
+</pre></blockquote>
+
+<p><tt>capabilitiesPtr</tt> 를 개입시켜, 이 트랜스폴트로 지원되고 있는 옵션의 jdwpTransport 기능을 돌려줍니다. capabilities 구조체에는, 플래그명에 나타나고 있는 기능이 지원되고 있는지 어떤지를 나타내는, 몇개의 boolean 형의 플래그가 포함되어 있습니다. 현재의 플래그세트는, 이하대로입니다.
+
+<p>
+<TABLE BORDER="0" WIDTH="100%">
+  <TR>
+<TD><tt>can_timeout_attach</tt></TD>
+<TD>트랜스폴트로 타임 아웃을 사용하는 접속이 지원될지 어떨지를 나타낸다</TD>
+  </TR>
+  <TR>
+<TD><tt>can_timeout_accept</tt></TD>
+<TD>트랜스폴트로 수락 타임 아웃이 지원될지 어떨지를 나타낸다 </TD>
+  </TR>
+  <TR>
+<TD><tt>can_timeout_handshake</tt></TD>
+<TD>접속의 확립시에 디버거와 초기 핸드 쉐이크를 실행할 경우에 트랜스폴트로 타임 아웃이 지원될지 어떨지를 나타낸다 </TD
+  ></TR>
+</TABLE>
+
+<p>이 함수는 에러를 돌려주지 않습니다.  </p>
+
+
+<a name="Universal"></a> 
+<hr noshade width=75%>
+<h3>범용 에러</h3>
+
+<p>
+<TABLE BORDER="0" WIDTH="100%">
+  <TR>
+<TD><tt>JDWPTRANSPORT_ERROR_NONE</tt></TD>
+<TD>에러는 발생하지 않았다. 함수의 실행이 정상적으로 종료했을 때에 반환되는 에러 코드 </TD>
+  </TR>
+  <TR>
+<TD><tt>JDWPTRANSPORT_ERROR_OUT_OF_MEMORY</tt></TD>
+<TD>함수로 메모리의 할당이 필요하게 되었지만, 더 이상 할당할 수 있는 메모리가 없었다 </TD>
+  </TR>
+    <TR>
+<TD><tt>JDWPTRANSPORT_ERROR_INTERNAL</tt></TD>
+<TD>예기치 않은 내부 에러가 발생했다</TD>
+  </TR>
+</TABLE>
+
+<hr noshade width=75%>
+
+
+<hr size="3" noshade="noshade">
+<table summary="layout" border="0" width="100%">
+<tbody>
+<tr valign="top">
+<td><font size="-2"><a href="../../../legal/SMICopyright.html">Copyright</a>  2004 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font> 
+             
+<p><font size="-1"><A HREF="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/javase/6/docs/technotes/guides/jpda/index.html&category=j2se&mailsubject=Java Platform Debugger Architecture">피드백</A>  </font></p>
+</td>
+<td align="right"><img src="../../../images/sunlogo64x30.gif" alt="Sun" border="0" width="64" height="30"></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+</body>
+</html>

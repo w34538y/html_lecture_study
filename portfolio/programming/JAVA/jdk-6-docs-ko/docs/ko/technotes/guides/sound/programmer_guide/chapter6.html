@@ -1,0 +1,228 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor=#ffffff>
+<hr>
+<h1>제 6 장:컨트롤을 사용한 오디오 처리</h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<p>&nbsp;</p>
+<p><a name="114170"> </a> 전의 장에서는 오디오 샘플의 재생과 수중에 넣어 방법에 대해 설명했습니다. 샘플은 할 수 있는 한 충실히, 변경하지 않고 (다른 오디오 라인으로부터의 샘플의 믹싱을 제외하다) 배송하는 것이 은근히 요구되고 있었습니다. 그러나, 신호를 수정할 수 있는 것이 바람직한 경우도 있습니다. 볼륨의 조정, 보다 풍부한 볼륨, 리바브, 피치의 변경등이 사용자에 의해 요구되는 일이 있습니다. 이 장에서는, 이러한 신호 처리를 위한 Java<font size="-1"><sup>TM</sup></font> Sound API 기능에 대해 설명합니다.
+</p><p><a name="114172"> </a> 신호 처리를 실시하는 방법은 2 종류 있습니다.
+</p><ul><a name="114174"> </a> 
+<li>믹서 또는 그 컴퍼넌트 라인이 지원하는 처리 기능을 사용하려면 ,<code>Control</code> 객체에 대해서 문의를 실시하고 나서, 사용자의 요망에 맞추어 컨트롤을 설정합니다. 믹서와 라인에서는, 일반적으로, 게인, 빵, 리바브의 각 컨트롤이 지원되고 있습니다.  <a name="114175"> </a> 
+<p>
+<li>필요한 처리가 믹서 또는 라인으로 지원되어 있지 않은 경우는, 프로그램으로 직접 오디오 바이트를 취급해, 필요에 따라서 가공합니다.  
+<p><a name="114177"> </a> 
+</ul>
+위의 2 개 가운데, 후자의 기법을 위한 특별한 API 는 없기 때문에, 이 장에서는 주로 전자의 기법에 대해 설명합니다.
+<p></p><a name="114180"> </a> 
+<h3> 컨트롤에 대해</h3>
+<p><a name="114182"> </a> 믹서에는, 일부 또는 모든 라인에 사용할 수 있는 다양한 종류의 신호 처리 컨트롤이 있습니다. 예를 들어, 오디오의 혼잡에 사용되는 믹서에는, 게인 컨트롤 첨부의 입력 포트, 게인과 빵의 컨트롤 첨부의 타겟 데이터 라인이 있습니다. 오디오 재생에 사용되는 믹서에는, 소스 데이터 라인에 샘플링 레이트 컨트롤이 있습니다. 어느 경우에서도, 컨트롤에는 모두 <code>Line</code> 인터페이스의 메소드를 개입시켜 액세스 합니다.  
+</p><p><a name="114185"> </a> <code>Mixer</code> 인터페이스는 <code>Line</code> 를 상속하고 있으므로, 믹서 자체의 컨트롤세트를 가질 수가 있습니다. 이것들은, 믹서의 모든 소스 또는 타겟 라인에 영향을 주는 마스터 컨트롤로서의 책임을 다합니다. 예를 들어, 믹서에 마스터 게인 컨트롤이 있어, 그 데시벨치가 타겟 데이터 라인의 개개의 게인 컨트롤에 추가되는 경우 등입니다.  
+</p><p><a name="115789"> </a> 또, 믹서 자체의 컨트롤에는, 소스 라인에서도 타겟 라인도 아닌, 믹서가 처리를 위해서(때문에) 내부적으로 사용하는 특별한 라인에 영향을 주는 것도 있습니다. 예를 들어, 글로벌의 리바브콘트로르로 혼합 입력 신호에게 주는 리바브의 종류를 선택해, 이 「웨트 (리바브를 걸쳤다)」신호를 「드라이」신호에 되돌려 믹싱 하고 나서, 믹서의 타겟 라인에 전달합니다.
+</p><p><a name="114187"> </a> 믹서 또는 믹서의 라인의 어느 쪽인가에 컨트롤이 있는 경우는, 그래픽 객체에 의해 프로그램의 사용자 인터페이스에 표시해, 사용자가 오디오의 특성을 조절할 수 있도록(듯이) 하고 싶은 경우가 있습니다. 컨트롤 자체는 그래픽이 아닙니다. 컨트롤에 대해서 실시할 수가 있는 동작은 설정의 취득이라고 변경만입니다. 프로그램으로 그래픽 표현을 사용할지 어떨지, 또 어떠한 그래픽 표현 (슬라이더, 버튼등)을 사용할까는 개발자에게 맡습니다.
+</p><p><a name="114189"> </a> 모든 컨트롤은, 추상 클래스 <code>Control</code> 의 구상 서브 클래스로서 구현됩니다. 일반적인 오디오 처리 컨트롤의 상당수는,<code>Control</code> 의 추상 서브 클래스에 의해 데이터형 (불형, 열거형, 부동 소수점형등)에 근거해 기술됩니다. 예를 들어 불형의 컨트롤은, 뮤트 또는 리바브의 온/오프 등, 2 치 상태의 컨트롤을 나타냅니다. 이것에 대해, 부동 소수점형의 컨트롤은, 빵, 밸런스, 볼륨 등, 연속적으로 변화하는 컨트롤을 나타내는데 적합합니다.
+</p><p><a name="114191"> </a> Java Sound API 는,<code>Control</code> 의 다음의 서브 클래스를 지정합니다.  
+</p>
+<ul>
+  <a name="114193"> </a>  
+<li><code>BooleanControl</code>&#151; 2 치 상태 (true 또는 false)의 컨트롤을 나타냅니다. 예를 들어, 뮤트, 솔로, 온/오프 스윗치등을 나타내는데 적합합니다. <code></code> <a name="114194"> </a>  
+    <p> 
+<li><code>FloatControl</code>&#151; 있는 범위의 부동 소수점치에서의 컨트롤을 실시하는 데이터 모델입니다. 예를 들어, 볼륨과 빵은,<code>FloatControls</code> 로 나타내면(자), 다이얼이나 슬라이더에 의해 조작할 수 있습니다.  <a name="114195"> </a>  
+    <p> 
+<li><code>EnumControl</code>&#151; 1 조의 객체로부터의 선택을 제시합니다. 예를 들어, 사용자 인터페이스안의 1 조의 버튼을 <code>EnumControl</code> 에 관련지으면(자), pre-set 되고 있는 복수의 리바브 설정으로부터 어떤 것인지를 선택할 수 있게 됩니다.  <a name="114196"> </a>  
+    <p> 
+<li><code>CompoundControl</code>&#151; 각각이 <code>Control</code> 서브 클래스의 인스턴스이다, 서로 관련한 항목의 집합에의 액세스를 제공합니다. <code><code>CompoundControls</code> 는, 그래픽 이퀄라이저등의 멀티 컨트롤 모듈을 나타냅니다. 그래픽 이퀄라이저는, 일반적으로 1 조의 슬라이더로서 나타내져 각 슬라이더는 <code>FloatControl</code> 에 효과를 줍니다.  
+    <p><a name="114198"> </a>  
+</ul>
+상기의 <code>Control</code> 의 각 서브 클래스에는, 기본 데이터형에 적절한 메소드가 있습니다. 대부분의 클래스에는, 컨트롤의 현재의 값의 설정과 취득, 컨트롤의 라벨의 취득등의 메소드가 있습니다.  
+<p></p><p><a name="115790"> </a> 물론, 각 클래스에는 그 클래스 전용의 메소드와 그 클래스에 의해 표현되는 데이터 모델이 있습니다. 예를 들어,<code>EnumControl</code> 에는 설정 가능한 값의 조를 취득하기 위한 메소드가 있어,<code>FloatControl</code> 에서는 컨트롤의 최소치와 최대치, 및 정밀도 (증분 또는 스텝 사이즈)를 취득할 수 있습니다.
+</p><p><a name="114976"> </a>  <code>Control</code> 의 각 서브 클래스에는 대응하는 <code>Control.Type</code> 서브 클래스가 있어, 이것에는 특정의 컨트롤을 식별하는 static 인스턴스가 포함되어 있습니다.  
+</p><p><a name="115785"> </a> 다음의 겉(표)는,<code>Control</code> 서브 클래스와 대응하는 <code>Control.Type</code> 서브 클래스, 및 컨트롤의 특정의 종류를 나타내는 static 인스턴스의 일람입니다.
+</p><p><a name="115028"> </a> 
+ 
+<Table summary="Control, Control.Type and static instances" Border="2" align="center" width="90%">
+  <caption></caption>
+  <tr bgcolor="#CCCCCC"> 
+<th><a name="114979"> </a>  <code><font size="4"><b>Control</b></font></code> 
+    </th>
+<th> <a name="114981"> </a>  <code><b><font size="4">Control.Type</font></b></code> </th>
+<th> <a name="114983"> </a>  <code><font size="4"><b>Control.Type</b></font></code><font size="4"><b> 인스턴스</b></font> </th>
+  </tr>
+  <tr valign="top"> 
+<td> <a name="114985"> </a>  <code>BooleanControl</code> </td>
+<td> <a name="114987"> </a>  <code>BooleanControl.Type</code> </td>
+    <td> 
+<p><code>MUTE</code></p>
+      <blockquote> 
+<p>라인의 뮤트 상태</p>
+      </blockquote>
+<p> <code>APPLY_REVERB</code> </p>
+      <blockquote>
+<p><a name="114990"> </a> 리바브의 온/오프 </p>
+      </blockquote>
+    </td>
+  </tr>
+<tr>
+<td> <a name="114992"> </a>  <code>CompoundControl</code> </td>
+<td> <a name="114994"> </a>  <code>CompoundControl.Type </code> </td>
+<td> <a name="114996"> </a> (없음) </td>
+  </tr>
+  <tr valign="top"> 
+<td> <a name="114998"> </a>  <code>EnumControl</code> </td>
+<td> <a name="115000"> </a>  <code>EnumControl.Type </code> </td>
+<td> <a name="115002"> </a>  <code>REVERB</code> 
+      <blockquote>
+<p><a name="115003"> </a> 리바브의 각 설정 (각각이 ReverbType 의 인스턴스)에의 액세스 </p>
+      </blockquote>
+      <p><a name="115004"> </a>  </p>
+    </td>
+  </tr>
+  <tr valign="top"> 
+<td> <a name="115006"> </a>  <code>FloatControl</code> </td>
+<td> <a name="115008"> </a>  <code>FloatControl.Type</code> </td>
+<td> <a name="115010"> </a>  <code> AUX_RETURN</code> 
+      <blockquote> 
+<p><a name="115011"> </a> 라인상의 보조 귀가 게인 </p>
+      </blockquote>
+<p><a name="115012"> </a>  <code>AUX_SEND</code> </p>
+      <blockquote> 
+<p><a name="115134"> </a> 라인상의 보조 보내 게인 </p>
+      </blockquote>
+<p><a name="115174"> </a>  <code>BALANCE</code> </p>
+      <blockquote> 
+<p><a name="115175"> </a> 좌우의 볼륨 밸런스 </p>
+      </blockquote>
+<p><a name="115176"> </a>  <code>MASTER_GAIN </code> </p>
+      <blockquote> 
+<p><a name="115016"> </a> 라인상의 전게인 </p>
+      </blockquote>
+<p><a name="115202"> </a>  <code>PAN </code> </p>
+      <blockquote> 
+<p><a name="115018"> </a> 좌우의 위치 </p>
+      </blockquote>
+<p><a name="115019"> </a>  <code>REVERB_RETURN </code> </p>
+      <blockquote> 
+<p><a name="115020"> </a> 리바브 처리 후의 라인상의 게인 </p>
+      </blockquote>
+<p><a name="115021"> </a>  <code>REVERB_SEND </code> </p>
+      <blockquote> 
+<p><a name="115022"> </a> 리바브 처리전의 라인상의 게인 </p>
+      </blockquote>
+<p><a name="115023"> </a>  <code>SAMPLE_RATE </code> </p>
+      <blockquote> 
+<p><a name="115024"> </a> 재생 샘플링 레이트 </p>
+      </blockquote>
+<p><a name="115025"> </a>  <code>VOLUME </code> </p>
+      <blockquote>
+<p><a name="115256"> </a> 라인상의 볼륨 </p>
+      </blockquote>
+      <p><a name="115027"> </a>  </p>
+    </td>
+  </tr>
+
+</Table>
+
+<p></p><p><a name="115029"> </a> 
+ 	   
+</p><p><a name="117861"> </a> Java Sound API 의 구현에서는, 이러한 컨트롤 타입의 어떤 것인가 또는 모든 것을 믹서와 라인에 제공할 수 있습니다. Java Sound API 로 정해지지 않은 컨트롤 타입을 추가할 수도 있습니다. 이러한 컨트롤 타입은, 4 개의 추상 서브 클래스의 구상 서브 클래스를 통해서, 또는, 4 개의 추상 서브 클래스를 상속하지 않는 <code>Control </code> 서브 클래스를 통해서 구현할 수 있습니다. 응용 프로그램은, 지원되고 있는 컨트롤을 각 라인에 문의할 수가 있습니다.
+</p><a name="117862"> </a> 
+<h3> 목적의 컨트롤을 가지는 라인의 취득</h3>
+<p><a name="114235"> </a> 많은 경우, 응용 프로그램은, 그 라인으로 지원되고 있는 컨트롤이 있으면, 그것을 표시합니다. 라인에 컨트롤이 없으면 표시하지 않습니다. 그러나, 특정의 컨트롤을 가지는 라인을 찾는 것이 중요한 경우도 있습니다. 그 경우는, 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>의<a href="chapter3.html#113154">「목적의 종류의 라인의 취득」</a>으로 설명한 것처럼,<code>Line.Info</code> 를 사용해 적절한 성질을 가지는 라인을 취득할 수 있습니다.  </p>
+<p><a name="114237"> </a> 예를 들어, 사용자가 사운드 입력의 볼륨을 조절할 수 있는 입력 포트를 찾는 경우를 생각합니다. 다음의 코드 (발췌)는, 디폴트의 믹서가 목적의 포트와 컨트롤을 가지고 있을지 어떨지 문의하는 방법을 나타냅니다.
+</p><blockquote><pre><code>Port lineIn;
+</code><code>FloatControl volCtrl;
+</code><code>try {
+</code><code>  mixer = AudioSystem.getMixer(null);
+</code><code>  </code>lineIn = (Port) mixer.getLine(Port.Info.LINE_IN);
+<code>  lineIn.open();
+</code><code>  volCtrl = (FloatControl) lineIn.getControl(<br>
+      FloatControl.Type.VOLUME);
+</code><code>  // Assuming getControl call succeeds, 
+</code><code>  // we now have our LINE_IN VOLUME control.
+</code><code>} catch (Exception e) {
+</code><code>  System.out.println("Failed trying to find LINE_IN"
+</code><code>    + " VOLUME control: exception = " + e);
+</code><code>}
+</code><code>if (volCtrl ! = null)
+</code><code>  // ...
+</code></pre></blockquote><a name="114255"> </a> 
+<h3> 라인으로부터의 컨트롤의 취득</h3>
+<p><a name="114257"> </a> 컨트롤을 사용자 인터페이스에 표시할 필요가 있는 응용 프로그램은, 이용 가능한 라인과 컨트롤을 문의해 다음에, 해당 하는 각 라인에 적절한 사용자 인터페이스 요소를 표시합니다. 그 경우, 프로그램으로 실시할 필요가 있는 것은 사용자에게 「핸들」을 제공하는 것만으로, 그러한 컨트롤이 오디오 신호에 무엇을 실시할까를 알 필요는 없습니다. 라인의 컨트롤을 사용자 인터페이스 요소에 할당하는 방법을 프로그램이 알고 있는 한, 그 이외의 처리는,<code>Mixer</code>,<code>Line</code>,<code>Control</code> 의 Java Sound API 아키텍쳐(architecture)가 전반적으로 맡습니다.  
+</p>
+<p><a name="117125"> </a> 예를 들어, 프로그램으로 사운드를 재생하는 경우를 생각합니다. 프로그램은, 제 3 장<a href="chapter3.html">「오디오 system resource에의 액세스」</a>의<a href="chapter3.html#113154">「목적의 종류의 라인의 취득」</a>으로 설명한 방법으로 취득한,<code>SourceDataLine</code> 를 사용하고 있습니다. 라인의 컨트롤에는,<code>Line</code> 메소드를 호출하는 것으로 액세스 할 수 있습니다.  
+</p>
+<blockquote><pre>Control[] getControls()
+</pre></blockquote>
+다음에, 반환된 각 배열에 대해서, 다음의 <code>Control</code> 메소드를 사용해, 컨트롤 타입을 가져옵니다.
+<blockquote><pre>Control.Type getType()
+</pre></blockquote>
+특정의 <code>Control.Type</code> 인스턴스를 알면, 프로그램은 대응하는 사용자 인터페이스 요소를 표시할 수가 있습니다. 물론, 특정의 <code>Control.Type</code> 에 대응하는 사용자 인터페이스 요소를 선택하는 방법은, 프로그램이 채용하는 수법에 의해 다릅니다. 한편, 같은 클래스의 모든 <code>Control.Type</code> 인스턴스를 나타내기 위해서(때문에) 동종의 요소를 사용하는 경우가 있습니다. 이 때문에는,<code>Control.Type</code> 인스턴스의 「클래스」를,<code>Object.getClass</code> 메소드등을 사용해 문의할 필요가 있습니다. <em></em>결과가 <code>BooleanControl.Type</code> 와 일치했다고 합시다. 이 경우, 프로그램은 총칭 체크 박스나 토글버튼을 표시해, 클래스가 <code>FloatControl.Type</code> 와 일치하면(자), 그래픽스 라이더등을 표시합니다.  
+<p></p>
+<p><a name="116400"> </a>  또, 프로그램이 다른 타입의 컨트롤 (동일 클래스의 것이어도)을 구별해, 각각 다른 사용자 인터페이스 요소를 사용하는 경우도 있습니다. 이 때문에는,<code>Control</code> 의 <code>getType</code> 메소드로부터 반환된 「인스턴스」를 테스트할 필요가 있습니다. <em></em>예를 들어, 컨트롤 타입이 <code>BooleanControl.Type.APPLY_REVERB</code> 와 일치했을 경우는 프로그램은 체크 박스를 표시해,<code>BooleanControl.Type.MUTE</code> 와 일치했을 경우는 토글버튼을 표시합니다.  </p>
+<a name="116401"> </a> 
+<h3> 컨트롤을 사용한 오디오 신호의 변경</h3>
+<table summary="layout" width="80%" bgcolor="#CCCCCC" align="center" cellpadding="5">
+  <tr>
+<td><font size="+1"><b>주:</b></font> 
+<p>현재의 구현에서는,<code>Control</code> 의 값을 변경하려면 <code>Line</code> 가 오픈이 아니면 안됩니다. <br>
+      </p>
+    </td>
+  </tr>
+</table>
+<p><a name="116402"> </a> 지금까지, 컨트롤에 액세스 해 그 타입을 판단하는 방법에 대해 설명했습니다. 여기에서는,<code>Controls</code> 를 사용해 오디오 신호의 성질을 변경하는 방법에 대해 설명합니다. 이용할 수 있는 모든 컨트롤에 대해 설명하는 것이 아니라, 몇개의 예를 사용해 개요를 설명합니다. 다음의 예를 사용합니다.
+</p><ul><a name="114276"> </a> 
+<li>라인의 뮤트 상태의 제어<a name="114277"> </a> 
+<li>라인의 볼륨의 변경 <a name="114278"> </a> 
+<li>다양한 리바브의 pre-set로부터의 선택
+<p><a name="114280"> </a> 
+</ul>
+프로그램은 벌써, 모든 믹서와 라인, 그러한 라인상의 모든 컨트롤에 액세스 하고 있어, 컨트롤과 거기에 대응하는 사용자 인터페이스와의 사이의 논리적 관계를 관리하기 위한 데이터 구조를 가지고 있는 것으로 합니다. 이러한 경우, 이러한 컨트롤에 대한 사용자의 조작을 대응하는 <code>Control</code> 메소드로 변환하는 것은 간단합니다.  
+<p></p><p><a name="114282"> </a> 다음에, 특정의 컨트롤에의 변경에 반영시키기 위해서(때문에) 호출할 필요가 있는 몇개의 메소드에 대해 설명합니다.
+</p><a name="114284"> </a> 
+<h4> 라인의 뮤트 상태의 제어</h4>
+<p><a name="114286"> </a> 라인의 뮤트 상태를 제어하기 위해서 필요한 것은, 다음의 <code>BooleanControl</code> 메소드를 호출하는 것 뿐입니다.
+<blockquote><pre>void setValue(boolean value)
+</pre></blockquote>
+프로그램은, 컨트롤과 관리의 대응 데이터 구조를 참조하는 것으로써, 뮤트가 <code>BooleanControl</code> 의 인스턴스인 것을 알고 있으면(자) 가정합니다. 라인을 통과하는 신호를 뮤트 하려면 , 프로그램은 파라미터에 <code>true</code> 를 지정해 상기의 메소드를 호출합니다. 뮤트를 오프로 해 신호가 라인을 흐르도록(듯이) 하려면 , 프로그램은 파라미터에 <code>false</code> 를 지정해 이 메소드를 호출합니다.  
+<p></p><a name="114292"> </a> 
+<h4> 라인의 볼륨의 변경</h4>
+<p><a name="114294"> </a> 프로그램이, 어느 라인의 음량 조절에 그래픽스 라이더를 관련짓고 있다고 합니다. 음량 조절 (<code>FloatControl.Type.VOLUME</code>)의 값은, 다음의 <code>FloatControl</code> 메소드를 사용해 설정합니다.
+<blockquote><pre>void setValue(float newValue)
+</pre></blockquote>
+사용자가 슬라이더를 작동시킨 것을 검출하면(자), 프로그램은 슬라이더의 현재의 값을 취득해, 그 값을 <code>newValue</code> 파라미터로서 상기의 메소드에 건네줍니다. 이것에 의해, 그 컨트롤이 소속하는 라인을 흐르는 신호의 볼륨이 변경됩니다.
+<p></p><a name="114300"> </a> 
+<h4> 다양한 리바브의 pre-set로부터의 선택</h4>
+<p><a name="114302"> </a> 프로그램으로 사용하는 믹서에,<code>EnumControl.Type.REVERB</code> 라고 하는 타입의 컨트롤을 가지는 라인이 있다고 합니다. 그 컨트롤에 대해서 <code>EnumControl</code> 메소드를 호출합니다.
+<blockquote><pre>
+java.lang.Objects[] getValues() 
+</pre></blockquote>
+<code>ReverbType</code> 객체의 배열이 돌려주어집니다. 필요에 따라서, 다음의 <code>ReverbType</code> 메소드를 사용해, 이러한 각 객체의 특정의 파라미터 설정에 액세스 할 수 있습니다.
+<blockquote><pre>
+int getDecayTime() 
+int getEarlyReflectionDelay() 
+float getEarlyReflectionIntensity() 
+int getLateReflectionDelay() 
+float getLateReflectionIntensity() 
+</pre></blockquote>
+예를 들어, 동굴에서의 잔향을 닮은 설정의 1 개의 리바브만이 필요한 경우는,<code>getDecayTime</code> 가 2,000 이상의 값을 돌려주는 객체가 발견될 때까지,<code>ReverbType</code> 객체의 배열을 반복해 조사합니다. 이러한 메소드의 상세한 것에 대하여는,<code>javax.sound.sampled.ReverbType</code> 의 API 레퍼런스 문서를 참조해 주세요. 대표적인 반환값의 겉(표)도 기재되어 있습니다.
+<p></p><p><a name="114316"> </a> 그러나, 일반적으로는 프로그램은 <code>getValues</code> 메소드로부터 반환된 배열내의 <code>ReverbType</code> 객체의 각각 대해, 라디오 버튼등의 사용자 인터페이스 요소를 작성합니다. 사용자가 이러한 라디오 버튼의 어떤 것인지를 클릭하면(자), 프로그램은 <code>EnumControl</code> 메소드를 호출합니다.
+<blockquote><pre>void setValue(java.lang.Object value) 
+</pre></blockquote>
+여기서,<code>value</code> 는, 새롭게 작성된 버튼에 대응하는 <code>ReverbType</code> 로 설정됩니다. 이 <code>EnumControl</code> 가 소속하는 라인을 통해서 송신되는 오디오 신호는, 컨트롤의 현재의 <code>ReverbType</code> (<code>setValue</code> 메소드의 <code>value</code> 인수로 지정되는 특정의 <code>ReverbType</code>)를 지정하는 파라미터 설정에 따라 리바브 처리를 합니다.
+<p></p><p><a name="114323"> </a> 따라서, 사용자가 있는 리바브의 pre-set (ReverbType)를 다른 pre-set로 변경할 수 있도록(듯이) 하는 것은, 응용 프로그램측에서 보면(자),<code>getValues</code> 로부터 반환된 각 배열의 요소를 다른 라디오 버튼에 접속하는 것을 가리킵니다.  
+</p><a name="114326"> </a> 
+<h3> 오디오 데이터의 직접 가공</h3>
+<p><a name="114328"> </a> <code>Control</code> API 를 사용하면(자), Java Sound API 의 구현 또는 믹서의 서드 파티 프로바이더는, 컨트롤을 사용해 임의의 신호 처리를 실시할 수가 있습니다. 다만, 필요한 신호 처리의 종류를 믹서가 제시하지 않는 경우가 있습니다. 그 경우에서도, 작업은 증가합니다만, 신호 처리를 프로그램에 구현하는 것은 가능합니다. Java Sound API 에서는 오디오 데이터에의 액세스는 바이트 배열로서 주어지므로, 이러한 바이트를 임의의 방법으로 수정할 수가 있습니다.  </p>
+<p><a name="114330"> </a> 입력 사운드를 처리하는 경우는,<code>TargetDataLine</code> 로부터 바이트를 읽어들이고 나서 가공할 수가 있습니다. 알고리즘으로서는 평범합니다만 재미있는 효과를 낳는 예에, 프레임을 역의 순서에 배열하는 것으로써 사운드를 뒤로부터 재생하는 수법이 있습니다. 이러한 평범한 수법은 그다지 도움이 되지 않을지도 모릅니다만, 프로그램에 사용할 수 있는 것보다 세련된 수많은 디지탈 신호 처리 (DSP) 기술이 있습니다. 예를 들어, 이코라이제이션, 다이나믹 레인지 압축, 피크 제한, 시간축의 압축 또는 신장등이나, 지연, 코러스, flanging, 뒤틀림 (일그러짐)등의 특수 효과 등입니다.  
+</p>
+<p><a name="114332"> </a> 처리한 사운드를 재생하려면 , 가공한 바이트열을 <code>SourceDataLine</code> 또는 <code>Clip</code> 에 기입합니다. 물론, 바이트열은 기존의 사운드로부터 꺼낸 것이 아니어도 상관하지 않습니다. 사운드는 제로로부터 합성할 수도 있습니다만, 음향학의 지식이나 음향 합성 기능의 지식이 필요합니다. 가공과 합성의 어느 쪽의 경우에서도, 오디오 DSP 의 교본을 조사해 알고리즘을 찾거나 서드 파티제의 신호 처리 함수 라이브러리를 자신의 프로그램에 임포트 할 수가 있습니다. 합성음의 재생의 경우는,<code>javax.sound.midi</code> 패키지의 <code>Synthesizer</code> API 를 사용할 수 있을지 어떨지를 검토해 주세요( 제 12 장<a href="chapter12.html">「사운드의 합성」</a>을 참조).  
+</p>
+<p>&nbsp;</p></body>
+</html>

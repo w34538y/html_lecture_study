@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 인쇄 서비스 API 사용자 가이드 3 - 문서의 종류의 지정
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table summary="layout" width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="docflavor.fm3.html">전의 항목</a>  | <a href="printing.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font --></td><td align=right><i>Java<sup><font size="-1">TM</font></sup> 인쇄 서비스 API 사용자 가이드</i></td>
+</tr></table>
+<br>
+ 
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="1000526"><i></i> DocFlavor 의 사용 방법</a> </h2>
+
+<blockquote>
+<a name="1000527"><!-- --></a>  이하의 순서에서는, 표준적인 어플리케이션에 있어서의 DocFlavor 의 기능에 대해 설명합니다. <p>
+<ol>
+<li>클라이언트가, 인쇄 데이터의 서식을 판단해, 데이터를 프린터에 건네주는 방법을 결정합니다. 다음에, 서식을 표현하는 DocFlavor 를 작성 또는 취득하는: DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
+<li>DocFlavor 를 사용해, DocFlavor 로 지정된 서식을 인식해, 클라이언트의 속성 세트로 지정되고 있는 기능을 가지는 프린터를 검색하는: PrintService[] services =				PrintServiceLookup.lookupPrintServices(flavor, aset);
+<li>인쇄 서비스로부터, DocPrintJob 객체에 의해 표현되는 인쇄 작업을 작성하는: DocPrintJob printJob = services[0]. createPrintJob();
+<li>인쇄하는 문서를 표현하는 Doc 를 작성하는: Doc doc = new InputStreamDoc(&quot;duke.gif&quot;, flavor);
+<li>DocPrintJob 객체의 인쇄 메소드를 호출해, 문서를 인쇄하는: printJob.print(doc, aset);.  클라이언트가 Doc 객체를 인쇄 메소드에 건네주면(자), DocPrintJob 객체는 인쇄 데이터를 Doc 객체로부터 취득해, 클라이언트로 사용할 수 있는 드큐먼트후레이바를 판단합니다. 드큐먼트후레이바의 표현 클래스는, DocPrintJob 가 클라이언트로부터 문자 또는 바이트의 순서를 취득할 경우에 사용하는 안녕 제트입니다.  
+</ol>
+<a name="998217"><!-- --></a>  인쇄 어플리케이션의 상세한 것에 대하여는,<a href="printing.fm.html#996958">「문서의 인쇄와 스트리밍 전달」<a name="998217"><!-- --></a> 을 참조해 주세요. <p>
+<a name="998218"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="JPSTOC.fm.html">목차</a>  | <a href="docflavor.fm3.html">전의 항목</a>  | <a href="printing.fm.html">다음의 항목</a>  <!-- | <a href="jps_glossaryapp.fm.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2001 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,240 @@
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL:용어집 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<!-- updated 4/2001 with POA/PI/new tools -->
+
+<H1 ALIGN=CENTER>Java&nbsp;IDL 용어집</H1>
+<HR><P>
+<DL>
+
+<DT><A NAME="adapter activator"><B>어댑터 activator</B></A> 
+<DD>어댑터 activator는, 어플리케이션의 개발자가 <a href="#POA">POA</a>  와 관련지을 수 있는 객체입니다. <a href="#ORB">ORB</a>  는, 존재하고 있지 않는 아이 POA 에의 요구를 받아들이면(자), 어댑터 activator의 오퍼레이션을 호출합니다. 어댑터 activator는 필요한 POA 를 그 자리에서 작성합니다.  <BR><BR>
+
+
+<DT><A NAME="attribute,(IDL)"><B>속성 (IDL)</B></A> 
+<DD>객체와 값의 특정 가능한 관련짓고. 속성 <tt>A</tt> 는, 오퍼레이션의 편성<tt>get_A</tt> 및 <tt>set_A</tt> 에 의해 클라이언트에 식별됩니다. readonly 속성의 경우는 get 오퍼레이션만을 생성합니다.  
+
+<P>또,<A HREF="#IDL">IDL 인터페이스</a>의 속성은 공공적인 클래스 필드나 C++ 의 데이터 멤버를 닮아 있습니다. <A href="#idlj"><code>idlj</code> 컴파일러</a>는 OMG IDL 의 속성을 Java 프로그램 언어로 기술된 액세스용 메소드 및 수식용 메소드에 매핑 합니다. 예를 들어,<TT>ball</TT> 라고 하는 인터페이스는 <TT>color</TT> 라고 하는 속성을 포함한다고 합니다. <TT>idlj</TT> 컴파일러는 색을 취득하기 위한 Java 프로그램 언어의 메소드를 생성합니다. 또 그 속성이 <code>readonly</code> 가 아닌 한, 생성된 메소드는 색을 설정할 수도 있습니다.  <BR><BR>
+
+<DT><A NAME="client"><B>클라이언트</B></A> 
+<DD>분산 객체상에서 오퍼레이션을 호출하는 임의의 코드. 클라이언트는, 그 자체가 CORBA 객체인 일도, 비객체 지향의 프로그램도 있습니다. 그러나, CORBA 객체상의 메소드를 호출하고 있는 한, 클라이언트로서 기능하고 있다고 말할 수 있습니다.  <BR><BR>
+
+<DT><A NAME="client stub"><B>클라이언트 Stub</B></A> 
+<DD><A href="#idlj"><TT>idlj</TT></A>  에 의해 생성된 Java 프로그램 언어의 클래스. 객체의<A href="#invocation">호출</a>동안, 클라이언트 <A href="#ORB">ORB</A>  로부터 투과적으로 사용됩니다. 클라이언트에 의한 원격 객체 참조는, 클라이언트 Stub를 가리킵니다. 이 Stub는, 그것을 생성한 IDL 인터페이스 고유하고, 클라이언트가 IDL 인터페이스로 정의된 CORBA 객체의 메소드를 호출하는데 필요한 정보를 포함하고 있습니다.  <BR><BR>
+
+<DT><A NAME="client tier"><B>클라이언트층</B></A> 
+<DD>서버층에 서비스를 요구하는 분산 어플리케이션의 일부. 일반적으로, 클라이언트층의 특징은, 자원 절약의 로컬 환경, 그래피컬 사용자 인터페이스, 개발과 보수에 필요로 하는 노력의 간소화입니다.  <BR><BR>
+<P>
+
+<DT><A NAME="CORBA"><B>Common Object Request Broker Architecture (CORBA)</B></A> 
+<DD>CORBA 객체 모델의 기초가 되는 <A HREF="#OMG">OMG</A>  스펙의 아키텍쳐(architecture). CORBA 의 스펙에는, 언어에 의존하지 않는 방법으로 객체간의 결정을 작성해 분산 어플리케이션의 구현을 가능하게 하는 인터페이스 정의 언어 (IDL)가 포함됩니다. Java 2 Platform Standard Edition (J2SE)는, Java CORBA ORB 및 Internet InterORB Protocol (IIOP)를 이용하는 CORBA Object Request Broker (ORB) 및 2 개의 CORBA 프로그래밍 모델을 제공하고 있습니다. 2 개의 프로그래밍 모델이란, RMI 프로그래밍 모델 (<a href="#rmi-iiop"><EM>RMI-IIOP</EM></a> )과 IDL 프로그래밍 모델 (<a href="#Java IDL"><EM>Java IDL</EM></a> )입니다. 프로그래밍 모델의 상세한 것에 대하여는,<a href="../corba/index.html">「CORBA 기술과 Java 플랫폼」</a>을 참조해 주세요. <BR><B>관련 항목: </B><A href="#client tier">클라이언트층</a>,<A href="#service tier">서비스층</a>,<A href="#data store tier">데이터 포함층</A>  <BR><BR>
+
+<DT><A NAME="CORBA object"><B>CORBA 객체</B></A> 
+<DD>(1) OMG IDL 인터페이스에 의해 정의된 실체, 한편 (2) 객체 참조가 이용 가능한 실체. <code> Object</code> 는 또, IDL 인터페이스의 객체 참조에 이용되는 암묵의 공통 기본형이기도 합니다.  <BR><BR>
+
+
+<DT><A NAME="data store tier"><B>데이터 포함층</B></A> 
+<DD>RDB와 같은 지속 데이터와 그 포함 기구에의 액세스를 관리하는 분산 어플리케이션의 일부.  <BR><BR>
+
+<DT><A NAME="distributed application"><B>분산 어플리케이션</B></A> 
+<DD>복수의 컴퓨터로 실행하도록(듯이) 설계된 프로그램. 전형적인 것은, 그 기능에 의해<A href="#client tier">클라이언트</a>,<A href="#service tier">서비스</a>, 및<A href="#data store tier">데이터 포함</a>과 같은 층에 분할됩니다.  <BR><BR>
+
+<DT><A NAME="distributed environment"><B>분산환경</B></A> 
+<DD><A href="#CORBA object">CORBA 객체</a>를 사용하는 1 개(살) 이상의 컴퓨터의 네트워크. 다양한 머신에 인스톨 된 객체의 상호통신이 가능합니다.  <BR><BR>
+ 
+<DT><A NAME="DII"><B>Dynamic Invocation Interface (DII)</B></A> 
+<DD>클라이언트에 대해, 원격의 CORBA 객체에의 동적 호출을 가능하게 하는 API. 컴파일시에 클라이언트가, 자신이 호출하는 객체에 대해 모르는 경우에 사용합니다. 객체를 발견하면(자), 클라이언트 프로그램은 그 정의를 취득해, 객체에의 파라미터화 된 호출을 발행해, 객체로부터의 응답을 받아들입니다. 이것들 모든 것은, 원격 객체에 대해서 형태 고유의<A href="#client stub">클라이언트 Stub</a>를 사용하지 않고에 행해집니다.  <BR><BR>
+
+<DT><A NAME="DSI"><B>Dynamic Skeleton Interface (DSI)</B></A> 
+<DD>컴파일시에 객체 구현형이 불명한 경우에, 요구를 ORB 로부터 객체 구현에 건네주는 방법을 제공하는 API. DSI 는 클라이언트측의 <A href="#DII">DII</A>  와 동등의 기능을 서버 측에 제공합니다. 어플리케이션 프로그래머는 DSI 를 사용하고 받은 요구의 파라미터를 검사해, 타겟 객체 및 메소드를 판정할 수가 있습니다.  <BR><BR>
+
+<DT><A NAME="exception,(IDL)"><B>예외 (IDL)</B></A> 
+<DD>호출해에 응답해 반환되는, 예외적인 상황을 나타내는 IDL 의 구조. 예외에는 다음의 2 개의 카테고리가 있습니다. (1) <code>org.omg.CORBA.SystemException</code> 로부터 상속하는 시스템 예외 (<code>java.lang.RuntimeException</code> 가 됩니다), 및 (2) <code>org.omg.CORBA.UserException</code> 로부터 상속하는 사용자 정의 예외 (<code>java.lang.Exception</code> 가 됩니다).  <BR><BR>
+ 
+<DT><A NAME="factory object"><B>팩토리 객체</B></A> 
+<DD>CORBA 객체의 신규 작성에 사용되는 CORBA 객체. 팩토리 객체 자체는, 일반적으로, 서버의 인스톨시에 작성됩니다.  <BR><BR>
+
+<DT><A NAME="idlj"><B>idlj 컴파일러</B></A> 
+<DD>OMG IDL 로 기술된 인터페이스를 받아, Java 프로그램 언어의 인터페이스 및 클래스를 생성하는 툴. 생성된 인터페이스 및 클래스는, IDL 인터페이스로부터 Java 프로그램 언어에의 매핑을 나타냅니다. 출력되는 파일의 형식은 <code>. java</code> 파일입니다. 버젼 1.3 보다 전의 J2SDK 의 <TT>idlj</TT> 컴파일러는,<TT>idltojava</TT> 컴파일러로 불리고 있었습니다. <TT><TT>idlj</TT> 컴파일러에서는, RMI-IIOP 에 필요한 CORBA 의 새로운 표준 기능이 지원되고 있습니다. <TT>idlj</TT> 컴파일러는, 인스톨 프로그램에 의해 SDK 의 <TT>. bin</TT>&nbsp; 디렉토리에 포함됩니다.  <BR><BR>
+
+<DT><A NAME="idltojava"><B>idltojava 컴파일러</B></A> 
+<DD>OMG IDL 로 기술된 인터페이스를 받아, Java 프로그램 언어의 인터페이스 및 클래스를 생성하는 툴. 생성된 인터페이스 및 클래스는, IDL 인터페이스로부터 Java 프로그램 언어에의 매핑을 나타냅니다. 출력되는 파일의 형식은 <code>. java</code> 파일입니다. J2SDK 의 버젼 1.3 으로부터는,<TT>idlj</TT> 컴파일러로 IDL-to-Java 언어 매핑을 취급하게 되어, RMI-IIOP 에 필요한 새로운 CORBA 표준 기능이 지원되고 있습니다. <code><code>idltojava</code> 컴파일러는, Java Developer Connection (JDC)의 Web 사이트로부터 다운로드할 수 있습니다.  <BR><BR>
+
+<DT><A NAME="implementation"><B>구현</B></A> 
+<DD>지원하는 IDL 인터페이스의 오퍼레이션이나 속성 모든 동작을 정의하는 구상 클래스. <A href-"#servant object">서번트 객체</a>는, 구현의 인스턴스입니다. 1 개의 인터페이스에 대해서 많은 구현이 가능합니다.  <BR><BR>
+
+<DT><A name="initial naming context"><B>초기 네이밍 문맥</B></A> 
+<DD><TT>orb.resolve_initial_references("NameService")</TT> 메소드에의 호출에 의해 반환되는 <TT>NamingContext</TT> 객체. 초기 네이밍 문맥은 COS 네임 서비스에의<A href="#object reference">객체 참조</a>입니다. COS 네임 서비스는, ORB 에 등록되어 다른 <code>NamingContext</code> 객체를 작성하는데 사용됩니다. <BR><B>관련 항목:</B> <A href="#naming context">네이밍 문맥</A>  <BR><BR>
+
+<DT><A NAME="IDL"><B>인터페이스 정의 언어 (IDL)</B></A> 
+<DD> 모든 CORBA 객체의 인터페이스를 정의하는 <A HREF="#OMG">OMG 표준 </a>언어. IDL 인터페이스는,<A HREF="#operation,(IDL)">오퍼레이션</a>,<A HREF="#exception,(IDL)">예외</a>, 및<A HREF="#attribute,(IDL)">속성</a>세트를 선언합니다. 각 오퍼레이션에는, 이름, 파라미터, 결과, 및 예외를 정의한 시그니챠를 붙일 수 있습니다. OMG IDL 에는 오퍼레이션의 구현은 포함되지 않습니다. 그 이름이 가리키도록(듯이), IDL 는 인터페이스를 정의할 뿐(만큼)의 언어입니다. IDL 의 완전한 구문 및 시멘틱스에 대해서는,<A href="http://www.omg.org/">OMG Web 사이트</a>를 참조해 주세요.  <BR><BR>
+
+<DT><A NAME="IFR"><B>인터페이스 리포지터리(repository) (IFR)</B></A> 
+<DD>등록된 컴퍼넌트의 인터페이스와 그것이 지원하는 메소드, 필요한 파라미터의 모든 것을 포함한 서비스. IFR 는, 객체의 인터페이스 정의를 포함, 변경, 및 관리합니다. 프로그램이 IFR API 를 사용해 이 정보에 액세스 해, 변경하는 일도 가능합니다. 일반의 클라이언트/서버 환경에서는 IFR 는 필요 없습니다.  <BR><BR> 
+
+<DT><A NAME="IIOP"><B>Internet InterORB Protocol (IIOP)</B></A> 
+<DD>OMG 스펙에 의한 ORB 간 통신용의 네트워크 프로토콜. Java IDL 는, CORBA/IIOP 스펙 2.3. 1 에 준거하고 있습니다. <BR><BR>
+
+<DT><A NAME="invocation"><B>호출</B></A> 
+<DD>CORBA 객체에의 메소드 호출을 실행하는 프로세스. 객체의 네트워크상의 위치를 알지 못하고에 행해집니다. 정적 호출의 경우, 호출용으로 클라이언트 Stub를 사용해, 불려 가는 서비스용으로 서버 스켈리턴을 사용합니다. 컴파일시에 객체의 인터페이스를 알 수 있는 경우는, 정적 호출을 사용합니다. 컴파일시에 인터페이스가 불명한 경우는,<A href="#DII">동적 호출</a>을 사용할 필요가 있습니다.  <BR><BR>
+
+<DT><A NAME="Java IDL"><B>Java&nbsp;IDL</B></A> 
+<DD>CORBA 객체를 Java 프로그램 언어로부터 사용하는 것을 가능하게 하는 클래스, 라이브러리, 및 툴. Java&nbsp;IDL 의 핵심을 이루는 컴퍼넌트는 ORB, 네임 서비스, 및 &nbsp;idlj<code> 컴파일러입니다. 그 모든 것이 이번 릴리스의 J2SE 에 포함되어 있습니다.  <BR><BR>
+
+<DT><A NAME="name binding"><B>네임 바인딩</B></A> 
+<DD>이름을<A HREF="#object reference">객체 참조</a>에 관련짓는 것. 네임 바인딩은<A href="#naming context">네이밍 문맥</a>에 포함됩니다.  <BR><BR>
+
+<DT><A NAME="namespace"><B>이름 공간</B></A> 
+<DD>그룹에 정리된<A href="#naming context">네이밍 문맥</a>의 컬렉션.  <BR><BR>
+
+<DT><A NAME="naming context"><B>네이밍 문맥</B></A> 
+<DD>
+<TT>NamingContext</TT> 인터페이스를 지원해, 다른 네이밍 문맥과 단순명의 언젠가 또는 그 양쪽 모두를 포함해 (지시해), 일종의 디렉토리로서 기능하는 <A href="#CORBA object">CORBA 객체</A> . 네이밍 문맥은 디렉토리 구조에 유사하고 있습니다. 디렉토리 구조에서는 마지막 항목이 파일을, 나머지의 항목은 디렉토리를 나타냅니다만, 네이밍 문맥에서는 마지막 항목은 객체 참조명을, 나머지의 항목은 네이밍 문맥을 나타냅니다.  <BR><BR>
+
+<DT><A NAME="Naming service"><B>네임 서비스</B></A> 
+<DD>
+<A href="#CORBA object">CORBA 객체</a>에 네이밍을 가능하게 하는 CORBA 서비스. 네이밍은 이름을 객체 참조에 바인드 하는 것으로써 가능하게 됩니다. <A HREF="jidlGlossary.html#name binding">「네임 바인딩」</a>은 네임 서비스에 포함되어 클라이언트는 이름을 주어 목적의 객체 참조를 취득할 수 있습니다. 이번 릴리스 된 JAVA SE 에 동고 되고 있는 네임 서비스에는 2 개의 옵션이 있습니다. 1 개(살)은 demon 프로세스인 <tt><a href="../../tools/share/orbd.html">orbd</a> </tt> 로, bootstrap 서비스, 일시 네임 서비스, 지속 네임 서비스, 및 서버 매니저가 포함되어 있습니다.  이제(벌써) 1 개(살)은, 일시 네임 서비스인 <tt><a href="../../tools/share/tnameserv.html">tnameserv</a> </tt> 입니다.  <BR><BR>
+
+<DT><A NAME="object"><B>object</B></A> 
+<DD>
+컴퓨터상에서, 오퍼레이션 및 데이터가 모듈화된 단위에 그룹화 한 것. 객체는, 스스로가 다른 객체에 제시하는 인터페이스, 인터페이스상의 오퍼레이션이 불려 갔을 때의 동작, 및 객체 상태에 의해 정의됩니다.  <BR><BR>
+
+<DT><A NAME="object adapter"><B>객체 어댑터</B></A> 
+<DD>객체 참조, 액티브화, 서비스에 관련하는 상태를 객체의 구현에 제공하는 ORB 컴퍼넌트. 구현의 종류에 따라서는 다른 어댑터가 제공되는 일도 있습니다. OMG 가 스펙화한 일반적인 객체 어댑터는 <a href="#POA">POA</a>  로, 다른 벤더의 구현에 대응하는 경우도 최저한의 재작성으로, 복수의 ORB 구현에 대해 사용할 수 있습니다.  <BR><BR>
+
+<DT><A NAME="object id"><B>객체 ID</B></A> 
+<DD>객체 ID 는 <a href="#POA">POA</a>  와 사용자 구현으로 사용되는 값으로, 특정의 추상 CORBA 객체를 식별합니다. 객체 ID 의 값은, POA 로 할당해 관리하는 경우와 구현으로 할당해 관리하는 경우가 있습니다. 객체 ID 의 값은 클라이언트에는 숨겨지고 있어 참조용으로 캡슐화됩니다. 객체 ID 에는 표준 형식은 없습니다. 해석되지 않는 8중창 순서로서 POA 로 관리됩니다.  <BR><BR>
+
+<DT><A NAME="object implemementation"><B>객체의 구현</B></A> 
+<DD><A HREF="#implementation">「구현」</a>을 참조.  <BR><BR>
+
+<DT><A NAME="OMG"><B>Object Management Group (OMG)</B></A>     
+<DD>
+객체 지향 어플리케이션 개발을 위한 공통의 시스템를 제공하는 목적으로, 업계의 가이드 라인 및 객체 관리 스펙을 확립하는, 700 이상의 멤버로부터 완성되는 국제적인 조직. 그 멤버에게는, 플랫폼 벤더, 객체 지향 데이타베이스 벤더, 소프트웨어 툴 개발자, 기업 개발자, 및 소프트웨어 어플리케이션 벤더가 포함됩니다. CORBA 객체 모델의 스펙은, OMG 가 책정한 <A HREF="#CORBA">Common Object Request Broker Architecture</A>  에 의해 정해져 있습니다. 상세한 것에 대하여는,<a href="http://www.omg.org">www.omg.org</a>  를 참조해 주세요.  <BR><BR>
+
+<DT><A NAME="object reference"><B>객체 참조</B></A> 
+<DD>ORB 로 객체를 지정하는데 필요한 정보를 포함한 구조. 객체 참조는 <a href="#CORBA object">CORBA 객체</a>의 위치를 조사하기 위해서(때문에) 메소드 호출로 사용됩니다. 객체 참조는, 프로그램 언어 고유의 객체 포인터와 동등의 기능을 CORBA 객체에 구현한 것입니다. 객체 참조는, 팩토리 객체나 네임 서비스로부터 취득할 수가 있습니다. 객체 참조는 불투명하다 (내부 구조가 어플리케이션 개발자에게 무관계하다) 모아 두어 언제나 같은 CORBA 객체를 가리킵니다. 그러나, 동일한 CORBA 객체를 가리키는 복수의 객체 참조가 존재하는 일도 있습니다.  <BR><BR>
+
+<DT><A NAME="ORB"><B>Object Request Broker (ORB)</B></A> 
+<DD>
+CORBA 객체가 서로 통신하는 것을 가능하게 하는<A HREF="#distributed environment">분산환경</a>의 라이브러리, 프로세스, 및 다른 기반. ORB 는, 객체 요구 서비스를 그 제공원 객체에 접속한다 <BR><BR>
+
+
+
+<DT><A NAME="operation,(IDL)"><B>오퍼레이션 (IDL)</B></A> 
+<DD>Java 프로그램 언어의 메소드에의 매핑을 실시하는 <A HREF="#IDL">IDL 인터페이스</a>내의 구조. 예를 들어,<TT>ball</TT> 라고 하는 인터페이스는 <TT>bounce</TT> 라고 하는 오퍼레이션을 지원한다, 라고 하는 상태입니다. 오퍼레이션은, 파라미터를 취해, 결과를 돌려주어, 예외를 발생시킬 수가 있습니다. 이 IDL 오퍼레이션은 다른 한쪽향인 일도 있습니다. 이 경우, 결과 (반환값이나 out 인수)는 돌려주어지고 두, 예외도 발생하지 않습니다. <code></code> <BR><BR>
+
+<DT><A NAME="operations interface"><B>오퍼레이션 인터페이스</B></A> 
+<DD>비추상 IDL 인터페이스는, 2 개의 퍼블릭 Java 인터페이스에 맵 되고 있습니다. 시그니챠인타페스와<a href="#operations interface">오퍼레이션 인터페이스</a>입니다. 오퍼레이션 인터페이스의 이름은 IDL 인터페이스와 같습니다만,<TT>Operations</TT> 라고 하는 접미사(suffix)이 있어, 동일한 장소에 있는 클라이언트와 서버를 위해서(때문에) 최적화된 호출을 제공하는 기구로서 서버측 매핑으로 사용됩니다.  <BR><BR>
+
+<DT><A NAME="orbd"><B>ORBD (Object Request Broker Daemon)</B></A> 
+<DD><B><a href="../../tools/share/orbd.html">orbd</a> </B> 툴은, bootstrap 서비스, 일시<a href="#Naming service">네임 서비스</a>, 지속 네임 서비스, 서버 매니저를 포함한 demon 프로세스입니다.  <BR><BR>
+
+<DT><A NAME="parameters"><B>파라미터 (IDL)</B></A> 
+<DD>클라이언트가 오퍼레이션을 호출할 때에 IDL 오퍼레이션에 건네주는 1 개(살) 이상의 객체. 파라미터는, in (클라이언트로부터 서버에 건네받는다), out (서버로부터 클라이언트에 건네받는다), 또는 inout (클라이언트로부터 서버에 건네받아 그 후 서버로부터 클라이언트에 반환된다)로서 선언됩니다.  <BR><BR>
+
+<DT><A NAME="persistent object"><B>지속 객체</B></A> 
+<DD>객체를 생성한 프로세스나 thread가 소실해도 계속 존재하는 객체. 지속 객체는, 명시적으로 삭제될 때까지 존재합니다.  <BR><BR>
+
+
+<DT><A NAME="PIDL"><B>PIDL (의사 IDL)</B></A> 
+<DD>CORBA <a href="#pseudo-object">의사 객체</a>를 기술하는 인터페이스 정의 언어. IDL 로부터 Java 프로그램 언어에의 매핑을 포함한 각 언어 매핑은, 의사 객체를 언어 고유의 구조에 매핑 하는 방법을 기술합니다. PIDL 매핑은, 정규 CORBA 객체의 매핑 규정에 따르는 경우도, 따르지 않는 경우도 있습니다.  <BR><BR>
+
+<DT><A NAME="POA"><B>POA (휴대용 객체 어댑터)</B></A> 
+<DD>객체 어댑터는,<a href="#object reference">객체 참조</a>를 사용하는 요구와 적절한 코드를 접속해, 그 요구에 서비스를 제공하는 기구입니다. OMG 가 스펙화한 일반적인 객체 어댑터는 POA 로, 다른 벤더의 구현에 대응하는 경우도 최저한의 재작성으로, 복수의 ORB 구현에 대해 사용할 수 있습니다.  
+
+<P>POA 는, 적어도 클라이언트의 입장으로부터는 지속 객체가 가능하게 되도록(듯이) 하고 있습니다. 즉, 서버가 물리적으로 몇번 재기동되어도, 또는 다양한<a href="#implementation">객체 구현</a>에 의한 구현을 해도, 클라이언트에 관계하고 있으면 이러한 지속 객체는 항상 존재해, 포함된 데이터값는 보수되고 있습니다.  <BR><BR>
+
+<DT><A NAME="POA Manager"><B>POA 매니저</B></A> 
+<DD>POA 매니저는 1 개 또는 복수의 <a href="#POA">POA</a>  의 처리 상태를 캡슐화하는 객체입니다. 개발자는 POA 매니저로 오퍼레이션을 사용해, 관련하는 POA 를 기다리는 행렬에 넣거나 거기로부터 파기하거나 하는 요구를 낼 수가 있습니다. 또, POA 매니저를 사용해 POA 를 비활성화 할 수도 있습니다.  <BR><BR>
+
+<DT><A NAME="policy"><B>정책</B></A> 
+<DD>정책는 어플리케이션에 의해 <a href="#POA">POA</a>  에 관련지을 수 있었던 객체로, 그 POA 에 구현한 객체가 공유하는 기능을 지정합니다. 이 스펙은, POA 의 thread 모델이나 객체 관리에 대한 다양한 옵션을 관리할 방침을 정의합니다. 다른 스펙에서는 다른 정책가 정의되어 POA 로 구현한 객체에의 요구를 <a href="#ORB">ORB</a>  가 처리하는 방법으로 영향을 주는 일도 있습니다.  <BR><BR>
+
+<DT><A NAME="PI"><B>포타브르인세프타</B></A> 
+<DD>포타브르인세프타는, ORB 서비스가 그것을 개입시켜 일반적으로의 실행의 흐름을 차단할 수가 있는 ORB 에의 훅입니다. 자세한 것은,<a href="../../api/org/omg/PortableInterceptor/package-summary.html">「<tt>PortableInterceptor</tt> 패키지」</a>를 참조해 주세요.  <BR><BR>
+
+
+
+<DT><A NAME="pragma"><B>프라그마</B></A> 
+<DD>
+<tt>idltojava</tt> 컴파일러에 대해, IDL 파일의 컴파일중에 특정의 오퍼레이션을 실행하도록(듯이) 주어지는 지시. 예를 들어, 프라그마 javaPackage 는,<tt>idltojava</tt> 컴파일러에 대해, IDL 인터페이스로부터 생성한 Java 프로그램 언어의 인터페이스 및 클래스를, 지정한 Java 프로그램 언어의 패키지에 배치하도록(듯이) 지시합니다. J2SE v. 1.3 으로 그 이후의 버젼에서는, 이 기능은,<tt>idlj</tt> 에 대해서 <tt>-pkgPrefix</tt> 커멘드행 옵션을 사용하는 것에 의해 지원됩니다.  <BR><BR>
+
+<DT><A NAME="pseudo-object"><B>의사 객체</B></A>  
+<DD>IDL 로 기술되었다고 하는 점에서는 CORBA 객체에 유사하고 있지만, 객체 참조를 사용한 인도도 네로우 변환도 캐릭터 라인화도 할 수 없는 객체. 의사 객체의 예로서 인터페이스 리포지터리(repository)와 DII 를 들 수가 있습니다. 이것들은 라이브러리로서 구현되고 있습니다만, OMG 의 스펙으로 명확하게 IDL 인터페이스를 가지는 의사 객체로서 규정되고 있습니다. 의사 객체용의 IDL 는 PIDL 로 불려 그 명확한 스펙은 현재 책정중입니다.  <BR><BR>
+
+
+<DT><A NAME="rmi-iiop"><B>RMI-IIOP</B></A>  
+<DD><a href="../rmi-iiop/index.html">Java RMI-IIOP</a>  는 Object Request Broker 및 컴파일러의 <TT>rmic -iiop</TT> 로, IIOP Stub와 Tie 클래스를 생성합니다. RMI-IIOP 를 사용하면(자) 개발자는 원격 인터페이스를 Java 프로그램 언어로 써, Java 기술과 Java RMI API 를 사용하는 것만으로 인터페이스를 구현할 수 있습니다. 이러한 인터페이스는 OMG 매핑이 지원하는 다른 언어나, 벤더가 제공하는 그 언어의 ORB 로 구현할 수가 있습니다. 또 클라이언트는, 원격의 Java 기술 베이스의 인터페이스로부터 파생한 IDL 를 사용해 다른 언어로 쓸 수도 있습니다. RMI-IIOP 를 사용하면(자), IIOP 상에서, 참조 및 값의 양쪽 모두에 의해 객체를 건네줄 수가 있습니다.  <BR><BR>
+
+<DT><A NAME="servant"><B>서번트</B></A> 
+<DD>서번트는, 1 개(살) 또는 복수의 객체의 요구를 구현하는 프로그램 언어 객체 또는 엔티티입니다. 일반적으로, 서번트는 서버 프로세스의 문맥에 존재합니다. 객체의 참조로 작성되는 요구는,<a href="#ORB">ORB</a>  로 조정 되어 특정의 서번트상의<a href="#invocation">호출</a>로 변환됩니다. 객체의 라이프 타임의 사이는, 그 객체는 복수의 서번트와 관련지을 수가 있습니다. 즉, 그 객체 참조로 발생한 요구는 복수의 서번트를 타겟으로 합니다.  <BR><BR>
+
+<DT><A NAME="servant manager"><B>서번트 매니저</B></A> 
+<DD>서번트 매니저는, 개발자가 <a href="#POA">POA</a>  와 관련지을 수가 있는 객체입니다. <a href="#ORB">ORB</a>  는 서번트 매니저의 오퍼레이션을 호출해, 요구에 응해 서번트를 활성화 하거나 비활성화 시키거나 합니다. 서번트 매니저에게는, Object Id 치로 특징지워지는 객체와 특정의 서번트의 관련을 관리해, 객체가 존재할지 어떨지를 결정하는 기능이 있습니다. 서번트 매니저에게는 <tt>ServantActivator</tt> 와 <tt>ServantLocator</tt> 의 2 종류가 있어, POA 의 정책에 의해 사용하는 장면이 다릅니다.  <BR><BR>
+
+<DT><A NAME="servant object"><B>서번트 객체</B></A> 
+<DD><A href="#IDL">IDL 인터페이스</a>를 위한<A href="#implementation">객체 구현</a>의 인스턴스. 호출을 어디에 송신하면 좋은가를 ORB 가 알 수 있도록(듯이), 서번트 객체는 ORB 에 등록됩니다. CORBA 객체의 메소드가 불려 갔을 때, 요구된 서비스를 실행하는 것이 서번트의 역할입니다.  <BR><BR>
+
+<DT><A NAME="server"><B>서버</B></A> 
+<DD>1 개(살) 이상의 <A href="#IDL">IDL 인터페이스</a>의 구현을 포함한 프로그램. 예를 들어, 데스크 탑 파브리싱 서버는 <TT>Document</TT> 객체형,<TT>ParagraphTag</TT> 객체형, 및 다른 관련하는 객체형을 구현한다고 하는 상태입니다. 서버에는, 각 구현 (<A href="#servant object">서번트 객체</a>)을 ORB 에 등록하는 것이 요구됩니다. 등록하면(자) ORB 는 서번트에 대해 알 수 있기 때문입니다. 서버는, 객체 서버로서 참조되는 일도 있습니다.  <BR><BR>
+
+<DT><A NAME="server skeleton"><B>서버 스켈리턴</B></A> 
+<DD>
+<tt>idlj</tt> 컴파일러에 의해 생성되는 공공적인 추상 클래스. 메소드 호출을<A href="#servant object">서번트 객체</a>에 발송 할 때에 필요한 정보를 ORB 에 제공합니다. <A href="#client stub">클라이언트 Stub</a>와 같이, 서버 스켈리턴은, 생성원의 IDL 인터페이스에 고유합니다. 서버 스켈리턴은, 클라이언트 Stub와 동등의 기능을 서버 측에 제공합니다. 서버 스켈리턴도 클라이언트 Stub도 ORB 의 정적 호출로 사용됩니다.  <BR><BR>
+
+<DT><A NAME="servertool"><B>servertool</B></A> 
+<DD>Java IDL 서버 툴 <TT><a href="../../tools/share/servertool.html">servertool</a> </TT> 는 어플리케이션 프로그래머를 간단하게 이용할 수 있는 인터페이스를 제공해, 서버의 등록, 등록 해제, 기동, 종료을 실시합니다.   
+
+
+
+<BR><BR>
+<DT><A NAME="service tier"><B>서비스층</B></A> 
+<DD><A href="#distributed application">분산 어플리케이션</a>의 일부. 비지니스 논리를 포함해, 계산 처리의 대부분을 실시합니다. 일반적으로, 서비스층은, 자원의 최적 이용을 위해서(때문에) 공유 머신상에 배치됩니다.  <BR><BR>
+
+<DT><A NAME="signature interface"><B>시그니챠인타페스</B></A> 
+<DD>비추상 IDL 인터페이스는, 2 개의 퍼블릭 Java 인터페이스에 맵 되고 있습니다. 시그니챠인타페스와<a href="#operations interface">오퍼레이션 인터페이스</a>입니다. 시그니챠인타페스는 <TT>IDLEntity</TT> 를 확장한 것으로 IDL 인터페이스명과 같은 이름을 가져, 지정한 형태의 인터페이스를 다른 인터페이스로 사용하는 경우에 메소드 선언의 시그니챠형으로서 사용합니다.  <BR><BR>
+
+<DT><A NAME="skeleton"><B>스켈리턴</B></A> 
+<DD>객체 인터페이스 전용의 <a href="#ORB">ORB</a>  컴퍼넌트로,<a href="#object adapter">객체 어댑터</a>가 특정의 메소드에 요구를 건네줄 때에 지원합니다.  <BR><BR>
+
+<DT><A NAME="static invocation"><B>정적 호출</B></A> 
+<DD><A href="#invocation">호출</a>을 참조.  <BR><BR>
+
+<DT><A NAME="stringified object reference"><B>캐릭터 라인화 된 객체 참조</B></A> 
+<DD>디스크상에 텍스트 파일의 형식 (또는 다른 하등의 형식)에서 포함할 수 있도록, 캐릭터 라인에 변환된<A href="#object reference">객체 참조</A> . 변환된 캐릭터 라인은, ORB 의 구현에 의존하지 않기 위해(때문에), 불투명한 것으로 해 다루어질 필요가 있습니다. <TT>org.omg.CORBA.Object</TT> 의 표준 메소드인 <TT>object_to_string</TT> 및 <TT>string_to_object</TT> 는, 캐릭터 라인화 된 참조를 모든 CORBA 객체로 이용 가능하게 합니다.  <BR><BR>
+
+<DT><A NAME="stub"><B>Stub</B></A> 
+<DD>단독 오퍼레이션에 대응하는 로컬 수속으로, 불려 가는 오퍼레이션을 호출한다.  <BR><BR>
+
+<DT><A NAME="tnameserv"><B>tnameserv</B></A> 
+<DD>CORBA 의 COS (Common Object Services) 네임 서비스는, 파일 시스템이 파일에 대해서 디렉토리 구조를 제공하고 있는 것과 같이, 객체 참조에 대해서 트리 구조의 디렉토리를 제공합니다. Java IDL 의 일시 네임 서비스인 <tt><a href="../../tools/share/tnameserv.html">tnameserv</a> </tt> 는, COS 네임 서비스의 스펙을 단순한 형태로 구현한 것입니다. <a href="#object reference">객체 참조</a>는 이름 공간에 이름으로 포함되어 각각의 객체 참조와 이름의 조는, 네임 바인딩으로 불립니다. 네임 바인딩은 네이밍 문맥에 짜넣을 수가 있습니다. 네이밍 문맥은 그 자체가 네임 바인딩이며, 파일 시스템의 서브 디렉토리와 같은 편성 기능을 가집니다. 모든 바인딩은 초기 네이밍 문맥아래에 포함됩니다. 이름 공간에 있어, 초기 네이밍 문맥은 유일한 지속적 바인딩입니다. 그 이외의 네이밍 문맥은, 일시 네이밍 서비스 프로세스가 정지해, 재기동되면(자) 없어집니다.  <BR><BR>
+
+<DT><A NAME="transient object"><B>일시 객체</B></A> 
+<DD>작성한 프로세스나 thread의 라이프 타임에 의해 존재 기간이 한정되고 있는 객체.  <BR><BR>
+
+</DL>
+
+ 
+<CENTER><P><HR>
+<A href="jidlDistApp.html">분산 어플리케이션의 개념</A>  | <A href="corba.html">CORBA 및 Java IDL 의 사용법</A>  | Java IDL 용어집
+ 
+ 
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="index.html">홈</A> </TD>
+
+</TR></TABLE>
+ 
+<HR><FONT SIZE="-2"><A HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A> </FONT><FONT SIZE="-2">1996-2004 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA. 94043-1100 USA., All rights reserved. </FONT><p></P>
+</CENTER>
+ 
+</BODY>
+</HTML>
+

@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JVM TI 의 확장 기능 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+  </head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+<TD>
+
+<center>
+<h1>JDK 6<br> Java<SUP><FONT SIZE="1">TM</FONT></SUP> Virtual Machine Tool Interface (JVM TI)의 확장 기능</h1>
+</center>
+
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">목차</a> </font>
+
+</TD>
+</TR>
+</TABLE>
+
+<hr>
+JDK 5.0 의 초기 릴리스로부터 JDK 6 에의 이행에 수반해, JVM<sup><font size="-1">TM</font></sup> tool interface (JVM TI)에 다음의 기능이 추가되었습니다.
+<UL>
+<LI><B>클래스 파일 변환의 지원</B> - 벌써 로드 되고 있는 클래스의 동적 변환을 편리화하기 (위해)때문에,<A HREF="../../../platform/jvmti/jvmti.html#RetransformClasses"><code>RetransformClasses</code></A>  기능이 추가되었습니다. 메소드에 Instrumentation을 추가하는 것 같은 조작에 적절하고 있습니다. 재변환의 지원에 의해, 로드 된 클래스를 계측 하기 위해서 원의 클래스 파일에 액세스 할 필요가 없어집니다. 적용된 변환을 간단하게 해제할 수 있습니다. 또, 멀티 에이전트 환경에서 기능하도록(듯이) 설계되고 있습니다. <P>
+
+</LI>
+
+<LI><B>heap 워킹 지원의 확장</B> - 한층 더 강력하고 유연한 <A HREF="../../../platform/jvmti/jvmti.html#Heap">heap 기능</A>  이 추가되었습니다. 새로운 기능의 이점은 다음과 같습니다.
+  <UL>
+<LI>프리미티브(primitive)인 값 (캐릭터 라인, 배열, 프리미티브(primitive) 필드의 값)에 액세스 할 수 있다</LI>
+<LI>리파라의 태그를 설정할 수 있기 (위해)때문에, 로컬라이즈 된 참조 그래프의 구축이 보다 효과적으로 할 수 있다</LI>
+<LI>한층 더 광범위한 필터 처리 기능을 제공한다</LI>
+
+<LI>확장 가능해서, JVM TI 의 향후의 버젼으로 기능을 추가할 수 있다</LI>
+  </UL>
+<A HREF="../../../platform/jvmti/jvmti.html#FollowReferences"><code>FollowReferences</code></A>  및 <A HREF="../../../platform/jvmti/jvmti.html#IterateThroughHeap"><code>IterateThroughHeap</code></A>  기능이, 지원하는 형태와 정수와 함께 추가되었습니다. 이전의 기능은, 계속 지원됩니다만, 사용은 추천하지 않습니다. <P>
+</LI>
+
+<LI><B>클래스의 상세</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#GetConstantPool"><code>GetConstantPool</code></A> ,<A HREF="../../../platform/jvmti/jvmti.html#GetClassVersionNumbers"><code>GetClassVersionNumbers</code></A> ,<A HREF="../../../platform/jvmti/jvmti.html#IsModifiableClass"><code>IsModifiableClass</code></A>  기능에서는, 클래스에 관한 추가 정보를 제공합니다. <P>
+</LI>
+
+<LI><B>네이티브 메소드의 계측의 지원</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#SetNativeMethodPrefix"><code>SetNativeMethodPrefix</code></A>  및 <A HREF="../../../platform/jvmti/jvmti.html#SetNativeMethodPrefixes"><code>SetNativeMethodPrefixes</code></A> 기능에 의해, JVM 에 대응하는 기구로 네이티브 메소드를 랩핑 하는 것으로 네이티브 메소드를 계측 할 수 있습니다.
+<P>
+</LI>
+
+<LI><B>시스템 클래스 로더에 의한 Instrumentation의 지원의 확장</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#AddToSystemClassLoaderSearch"><code>AddToSystemClassLoaderSearch</code></A>  기능에 의해, 시스템 클래스 로더로 Instrumentation사포트크라스를 정의할 수 있습니다. <P>
+</LI>
+
+<LI><B>메소드로부터의 조기 복귀의 지원</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#ForceEarlyReturn">force early return</A>  기능에 의해, 디버거등의 툴로 메소드를 어느 실행 포인트로부터에서도 강제 복귀시킬 수가 있습니다. <P>
+</LI>
+
+<LI><B>모니터 스택 심도 정보</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#GetOwnedMonitorStackDepthInfo"><code>GetOwnedMonitorStackDepthInfo</code></A>  기능은, 지정된 thread가 소유하는 모니터와 모니터를 잠근 스택 프레임의 심도에 관한 정보를 제공합니다. <P>
+</LI>
+
+<LI><B>자원 부족 통지의 지원</B> - 새로운 <A HREF="../../../platform/jvmti/jvmti.html#ResourceExhausted"><code>ResourceExhausted</code></A>  이벤트는, 중요한 자원 (Java<sup><font size="-1">TM</font></sup> 플랫폼 heap등)이 부족하면(자) JVM 에 통지합니다. <P>
+</LI>
+
+</UL>
+
+그 외, JDK 5.0 으로부터 JDK 6 에의 이행에 수반하는 변경점에는, 새로운 에러 코드의 추가, 필드 인덱스의 정의의 수정 (라이브 단계에서 <A HREF="../../../platform/jvmti/jvmti.html#AddToBootstrapClassLoaderSearch"><code>AddToBootstrapClassLoaderSearch</code></A>  의 호출을 할 수 있도록(듯이) 수정), 다수의 스펙의 정리와 명확화가 포함됩니다. 변경점의 상세한 것에 대하여는,<A HREF="../../../platform/jvmti/jvmti.html#ChangeHistory">「변경 이력」</a>을 참조해 주세요.
+
+
+
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT><p></P>
+
+   <br> <!-- <FONT SIZE="-1"> Please send comments to: </FONT> -->
+
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+</TR>
+</TABLE>
+<pre>
+
+
+
+
+
+
+</pre>
+  </body>
+

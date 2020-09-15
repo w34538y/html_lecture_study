@@ -1,0 +1,549 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>AWT Native Interface - xrath.com 에서 번역됨</TITLE>
+<!--Created by Applixware HTML Author, Release 4.4 on Fri Aug 20 11:23:53 1999-->
+<meta name="date" content="1999-01-01">
+</HEAD>
+<BODY bgcolor="#ffffff">
+<CENTER>
+<h2>AWT Native Interface</h2>
+</CENTER>
+
+<CENTER>
+<h3>native code로부터 AWT Canvas 에의 렌더링을 실시할 때의 기본 사항</h3>
+</CENTER>
+<blockquote>
+<P><FONT SIZE=4>새로운 Java<sup><font size=-2>TM</font></sup> 2 AWT Native Interface 를 사용하면(자), 렌더링 라이브러리를 native code에 컴파일 해, Java <TT><FONT FACE="courier, courier new">Canvas</FONT></TT> draw면에 직접 draw 할 수 있습니다. 그 결과, 이러한 라이브러리를 Java 로 변환하는 일 없이, 또 퍼포먼스를 현저하게 저하시키는 일 없이 사용할 수 있습니다. 이 문서에는, AWT Native Interface 의 사용이 간단한 것을 나타내는 예, 및 그 기술적인 해설이 포함되어 있습니다. </FONT>
+</blockquote>
+<p></P>
+<P><B><FONT SIZE=4>처음에</FONT></B></P>
+<blockquote>
+<P><FONT SIZE=4> Java 2 Platform, Standard Edition 의 정의에는, JNI (Java Native Interface)가 포함됩니다. Java 개발자의 대부분은 JNI 를 사용할 것은 없습니다만, Java 바이트 코드가, 호스트 마이크로 프로세서용의 네이티브인 기계 명령에 컴파일 된 어플리케이션 코드와 직접 교환하는 유일한 방법이기 (위해)때문에, 어느 상황에서는 이 인터페이스는 매우 중요합니다. JNI 의 사용법으로서 가장 많은 것은, Java 프로그램 언어가 아직 지원하지 않는 플랫폼 기능에의 액세스를 가능하게 하는 「이스케이프 밸브」로서의 기능입니다. 예를 들어, JNI 를 사용해, USB 포트 경유로 시스템에 접속된 스캐너등의 주변기기와 통신을 실시하는 native code를 통합할 수 있습니다. </FONT></P>
+<P><FONT SIZE=4>JNI 는 범용인 모아 두어 실행해야 할 태스크가 Pure Java 를 사용해 실현될 수 있을지 어떨지에 관계없이, 거의 모든 종류의 네이티브 라이브러리에의 액세스에 사용할 수 있습니다. JNI 를 사용하는 것에 의한 디메리트는, 코드의 이식성이 손상되는 것입니다만, 이것은 비지니스상 및 기술적인 관점으로부터 받아들여진다, 또는 필요해조차 있는 것이라고 말할 수 있습니다. </FONT></P>
+<P><FONT SIZE=4>비지니스적 관점에 대해서는, 종래의 소프트웨어를 Java 에 이식하려고 하고 있는 경우를 생각해 보세요. 그 소프트웨어는 중요한 처리에 서드 파티제의 라이브러리를 사용하고 있습니다. 원시 코드를 사용하는 권한을 가지지 않고, Java 판을 제공하도록(듯이) 서드 파티를 설득할 수 없는 경우에는, 그것을 사용할 수 없게 됩니다. 소스를 입수할 수 있었다고 해도, 표준 라이브러리의 Java 에의 이식 및 테스트에는, 방대한 코스트가 듭니다. </FONT></P>
+<P><FONT SIZE=4>native code에 손보지 않는 다른 중요한 이유는, 퍼포먼스에 있습니다. 퍼포먼스를 향상시키기 (위해)때문에 몇년이나 걸쳐 튜닝 된 코드를 이용하고 있는 경우, 그것을 Java 로 변환해 퍼포먼스를 저하시키는 일은 바라지 않을 것입니다. 일반적으로, Java 의 이식성과 코드 보수 관리의 용이함이, 퍼포먼스면에서의 디메리트를 추가해 남음이 있다고 판단할 때까지, native code를 그대로 사용하는 것이 최선입니다. </FONT></P>
+<P><FONT SIZE=4>draw 라이브러리는, 대부분의 개발자가 퍼포먼스상의 이유로써 그대로 사용하는 native code가 좋은 예입니다. 유감스럽게, draw 라이브러리는, JNI 를 개입시켜 Java 코드와 통합하는 것의 가장 어려운 라이브러리의 1 개입니다. 기본적인 문제는, draw용 코드가 어디에 draw해야할 것인가를 모르는 것에 있습니다. 이 때문에, Java draw면에 관한 정보 (<TT><FONT FACE="courier, courier new">Canvas</FONT></TT> 의 기반이 되는 피어에의 핸들등)에 액세스 할 필요가 있습니다만, 그것을 실시할 수 없습니다. </FONT></P>
+<P><FONT SIZE=4>현재까지, Java 플랫폼으로부터 이 사적인 정보에의 액세스가 가능했습니다. 여기서 말하는 「프라이빗」이란, 문서화되어 있지 않은, 지원되어 있지 않은, 추천되어 있지 않다고 하는 의미입니다. 서기 2000 년 초두의 Java 2 업그레이드 릴리스 (Kestrel)로 「AWT Native Interface」가 도입되는 것은, 이러한 상황이 변화하는 것을 나타내는 좋은 소식입니다. 이것으로, 처음으로 공식으로 Java <TT><FONT FACE="courier, courier new">Canvas</FONT></TT> 에 관한 모든 정보를 입수할 수 있게 되기 (위해)때문에,  operating system의 제공하는 draw 루틴을 사용해, native code 라이브러리로부터 <TT><FONT FACE="courier, courier new">Canvas </FONT></TT> 에 직접 draw 할 수 있게 됩니다.  </FONT></P>
+</blockquote>
+<P><B><FONT SIZE=4>가동 방법</FONT></B></P>
+<blockquote>
+<P><FONT SIZE=4>이 섹션에서는, AWT Native Interface 의 가장 일반적인 사용법에 대해 설명합니다. 구체적으로는,<TT><FONT FACE="courier, courier new">paint</FONT></TT> 메소드를 오버라이드(override) 해 네이티브 draw 라이브러리에 draw 조작을 지시하면(자), 네이티브 draw 라이브러리가 Java VM 에 문의해, draw에 필요한 정보를 가져옵니다. 다만,<TT><FONT FACE="courier, courier new">paint</FONT></TT> 메소드내의 코드 만이 아니고, 모든 native code가 AWT Native Interface 를 사용해 타겟의 draw면에 관한 정보를 취득하게 되는 점에 유의해 주세요.  </FONT>
+</P>
+<P><FONT SIZE=4>네이티브의 draw 라이브러리를 Java <TT><FONT FACE="courier, courier new">Canvas</FONT></TT> 에 접속하기 위한 최초의 스텝은,<TT><FONT FACE="courier, courier new">Canvas</FONT></TT> 를 상속하는 클래스를 새롭게 정의해 <TT><FONT FACE="courier, courier new">paint</FONT></TT> 메소드를 오버라이드(override) 하는 것입니다. Java 시스템은, 다른 모든 GUI 객체와 같이,<TT><FONT FACE="courier, courier new">Canvas</FONT></TT> 객체에 대한 모든 draw 조작을 <TT><FONT FACE="courier, courier new">paint</FONT></TT> 메소드를 개입시켜 건네줍니다. </FONT></P>
+<P><FONT SIZE=4>신규 <TT><FONT FACE="courier, courier new">paint</FONT></TT> 메소드를 네이티브 draw 라이브러리내에 구현하려면 , 이 메소드를 <TT><FONT FACE="courier, courier new">public native void</FONT></TT> 로서 선언하는 것, 및 클래스의 <TT><FONT FACE="courier, courier new">static</FONT></TT></FONT><TT><FONT FACE="courier, courier new"><FONT SIZE=4>블록내에 System.loadLibrary (</FONT>&quot;<FONT FACE="courier, courier new">myRenderingLib</FONT>&quot;</FONT></TT>)에의 호출을 포함하는 것으로, 이 메소드 자체를 실행시에 로드하는 것이 필요합니다. <TT><FONT FACE="courier, courier new">myRenderingLib</FONT></TT>」는, 네이티브의 공유 라이브러리에 사용되는 이름으로, Solaris 의 경우, 디스크상의 실제의 라이브러리 파일명은 <TT><FONT FACE="courier, courier new">libmyRenderingLib.so</FONT></TT> 입니다. </FONT></P>
+<P><FONT SIZE=4>다음에, 이러한 클래스의 간단한 예를 나타냅니다. </FONT></P>
+<P></P><pre>
+import java.awt. *;
+import java.awt.event. *;
+
+public class MyCanvas extends Canvas {
+    static {
+        System.loadLibrary("myRenderingLib");
+    }
+    public native void paint(Graphics g);
+
+    public static void main(String[] args) {
+        Frame f = new Frame();
+        f.setBounds(0, 0, 500, 110);
+        f.add( new MyCanvas() );
+        f.addWindowListener( new WindowAdapter() {
+            public void windowClosing(WindowEvent ev) {
+                System.exit(0);
+            }
+        } );
+        f.show();
+    }
+}
+<p></P></pre>
+<P><FONT SIZE=4>이 클래스가 <TT><FONT FACE="courier, courier new">main </FONT></TT> 메소드를 보관 유지하는 것, 즉 이 코드는 테스트 목적으로 어플리케이션으로서 실행 가능한 것으로 유의해 주세요. </FONT></P>
+<P><FONT SIZE=4>다음의 스텝은, 상기의 <TT><FONT FACE="courier, courier new">MyCanvas </FONT></TT> 클래스 파일에 대해서 <TT><FONT FACE="courier, courier new">javah </FONT></TT> 툴을 실행해, Java 가 사용하는 네이티브의 <TT><FONT FACE="courier, courier new">paint </FONT></TT> 메소드에의 인터페이스가 기술된 C/C++ 헤더 파일을 생성하는 것입니다. <TT><FONT FACE="courier, courier new"> javah </FONT></TT> 는, Java 2 SDK 에 포함되는 표준 툴입니다. </FONT></P>
+<P><FONT SIZE=4>마지막 스텝은 가장 흥미로운 것으로,<TT><FONT FACE="courier, courier new">javah</FONT></TT> 가 생성한 헤더 파일에 준거한 인터페이스를 사용해, 네이티브 draw 메소드를 기술해, 그것을 <TT><FONT FACE="courier, courier new">jre/lib/sparc/libjawt.so</FONT></TT> 라이브러리에 링크시킨다 (Solaris 의 경우. <TT><FONT FACE="courier, courier new"></FONT></TT>Windows 의 경우는 <TT><FONT FACE="courier, courier new">jre/bin/jawt.dll</FONT></TT> 라이브러리)  것에 따라, 표준 공유 라이브러리 (위의 예에서는 <TT><FONT FACE="courier, courier new">myRenderingLib</FONT></TT>)로서 구축합니다. 이 코드는, Java Virtual Machine 에의 콜백을 행해,<TT><FONT FACE="courier, courier new">MyCanvas </FONT></TT> 피어에의 액세스에 필요한 draw면정보를 가져옵니다. 이 정보가 이용 가능하게 되면(자), 코드는, 기반이 되는 오레이팅 시스템의 제공하는 표준 draw 루틴을 사용해,<TT><FONT FACE="courier, courier new">MyCanvas</FONT></TT> 에 직접 draw 할 수 있게 됩니다. </FONT></P>
+<P><FONT SIZE=4>다음에 나타내는 네이티브 <TT><FONT FACE="courier, courier new">paint </FONT></TT> 메소드의 원시 코드는, Solaris X11 베이스의 draw 환경, 및 AWT Native Interface 의 존재하는 Java VM 에서의 사용을 염두에 두어 설계된 것입니다.  </FONT>
+<pre>
+/*
+ * Copyright 1999 Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ * 
+ */
+
+#include "MyCanvas.h"
+#include "jawt_md.h"
+
+/*
+ * Class:     MyCanvas
+ * Method:    paint
+ * Signature: (Ljava/awt/Graphics;) V
+ */
+JNIEXPORT void JNICALL Java_MyCanvas_paint
+(JNIEnv* env, jobject canvas, jobject graphics)
+{
+    JAWT awt;
+    JAWT_DrawingSurface* ds;
+    JAWT_DrawingSurfaceInfo* dsi;
+    JAWT_X11DrawingSurfaceInfo* dsi_x11;
+    jboolean result;
+    jint lock;
+    GC gc;
+    
+    short	i;
+    char	*testString = "^^^ rendered from native code ^^^";
+
+    /* Get the AWT */
+    awt.version = JAWT_VERSION_1_3;
+    if (JAWT_GetAWT(env, &awt) == JNI_FALSE) {
+        printf("AWT Not found\n");
+        return;
+    }
+
+    /* Get the drawing surface */
+    ds = awt.GetDrawingSurface(env, canvas);
+    if (ds == NULL) {
+        printf("NULL drawing surface\n");
+        return;
+    }
+
+    /* Lock the drawing surface */
+    lock = ds->Lock(ds);
+    if((lock & JAWT_LOCK_ERROR) ! = 0) {
+        printf("Error locking surface\n");
+        awt.FreeDrawingSurface(ds);
+        return;
+    }
+
+    /* Get the drawing surface info */
+    dsi = ds->GetDrawingSurfaceInfo(ds);
+    if (dsi == NULL) {
+        printf("Error getting surface info\n");
+        ds->Unlock(ds);
+        awt.FreeDrawingSurface(ds);
+        return;
+    }
+
+    /* Get the platform-specific drawing info */
+    dsi_x11 = (JAWT_X11DrawingSurfaceInfo*) dsi->platformInfo;
+
+
+    /* Now paint */
+    gc = XCreateGC(dsi_x11->display, dsi_x11->drawable, 0, 0);
+    XSetBackground(dsi_x11->display, gc, 0);
+    for (i=0; i<36;i++)
+    {
+	XSetForeground(dsi_x11->display, gc, 10*i);
+   	XFillRectangle(dsi_x11->display, dsi_x11->drawable, gc,
+                   	10*i, 5, 90, 90);
+    }
+    XSetForeground(dsi_x11->display, gc, 155);
+    XDrawImageString(dsi_x11->display, dsi_x11->drawable, gc,
+    			100, 110, testString, strlen(testString));
+    XFreeGC(dsi_x11->display, gc);
+
+
+    /* Free the drawing surface info */
+    ds->FreeDrawingSurfaceInfo(dsi);
+
+    /* Unlock the drawing surface */
+    ds->Unlock(ds);
+
+    /* Free the drawing surface */
+    awt.FreeDrawingSurface(ds);
+}
+</pre>
+<p></P>
+<P><FONT SIZE=4>여기서의 중요한 데이터 구조는,<TT><FONT FACE="courier, courier new">jawt.h </FONT></TT> (<TT><FONT FACE="courier, courier new">jawt_md.h</FONT></TT> 에 포함된다)로 정의된 <TT><FONT FACE="courier, courier new">JAWT </FONT></TT> 입니다. <TT><FONT FACE="courier, courier new">JAWT </FONT></TT> 를 이용하는 것으로, 작업의 실행에 native code가 필요로 하는 모든 정보에의 액세스가 가능하게 됩니다. 네이티브 메소드의 최초의 부분은 상용문으로,<TT><FONT FACE="courier, courier new">JAWT</FONT></TT> 구조의 생성,<TT><FONT FACE="courier, courier new">JAWT_DrawingSurface </FONT></TT> 구조의 취득, draw면의 락 (한 번에 1 개의 draw 엔진만)을 실행하고 나서, 필요한 플랫폼 고유의 draw 정보에의 포인터를 (<TT><FONT FACE="courier, courier new">platformInfo </FONT></TT> 필드내에) 포함한 <TT><FONT FACE="courier, courier new">JAWT_DrawingSurfaceInfo </FONT></TT> 구조를 가져옵니다. 이 부분에는, draw면의 경계의 구형 및 현재의 클리핑 영역도 포함됩니다. </FONT></P>
+<P><FONT SIZE=4><TT><FONT FACE="courier, courier new">platformInfo</FONT></TT> 로 지정되고 있는 정보 구조는,<TT> <FONT FACE="courier, courier new">jawt_md.h</FONT></TT> 로 불리는 머신 의존의 헤더 파일로 정의됩니다. Solaris/X11 의 draw에서는,<TT><FONT FACE="courier, courier new">MyCanvas</FONT></TT> 에 관련지을 수 있었던 X11 디스플레이와 X11 드로아불의 정보도 포함됩니다. draw 조작의 완료 후에,<TT><FONT FACE="courier, courier new">JAWT_DrawingSurfaceInfo</FONT></TT> 의 해제, 및 <TT><FONT FACE="courier, courier new">JAWT_DrawingSurface</FONT></TT> 의 락 해제 및 해제을 하기 (위해)때문에, 보다 많은 상용문이 존재하게 됩니다. </FONT></P>
+<P><FONT SIZE=4>Windows 플랫폼으로도 대응하는 코드를 같은 방법으로 구축할 수 있습니다.  다만, 포함되는 것은 Windows 32 용의 <TT><FONT FACE="courier, courier new">jawt_md.h </FONT></TT> 인 것, 및 draw면정보의 <TT><FONT FACE="courier, courier new">platformInfo </FONT></TT> 필드내의 구조는,<TT><FONT FACE="courier, courier new">JAWT_Win32DrawingSurfaceInfo* </FONT></TT> 로서 캐스트 되는 것이 다릅니다. 또, 실제의 draw 조작은, Windows 플랫폼에 적절한 것으로 변경할 필요가 있습니다. </FONT></P>
+</blockquote>
+<P><B><FONT SIZE=4>통계</FONT></B></P>
+<blockquote>
+<P><FONT SIZE=4>native code 라이브러리로부터 Java <TT><FONT FACE="courier, courier new">Canvas </FONT></TT> 에 직접 draw 하는 기능은, 종래의 (특히 고성능의 draw 엔진을 포함한다) 소프트웨어 시스템을 Java 에 이행 시키는 것을 계획하고 있는 개발자에게는 매우 유용합니다. 이것에 의해, 퍼포먼스에 영향을 주는 draw용 코드에는 손보지 않고, 다른 코드를 Java 로 변환한다고 하는 방법으로 단계적으로 이행하는 것이 용이하게 됩니다. 그 결과, Java 중심의 어플리케이션에 의한 높은 이식성과 개발 효율이라고 하는 혜택을 향수하면서, native code의 활용에 의해 퍼포먼스에의 투자를 쓸데없게 하지 않고 끝납니다. </FONT></P>
+</blockquote>
+<P><B><FONT SIZE=4>레퍼런스</FONT></B></P>
+<blockquote>
+<P><FONT SIZE=4>Java 네이티브 인터페이스에 관해서는, Sun Microsystems, Inc.  의 Sheng Liang 저 「The Java Native Interface: Programmer's Guide and Specification」를 참조해 주세요. 이 서적은, 1999 년 6 월에 Addison-Wesley 로부터 출판되었습니다 (ISBN: 0-201-32577-2). </FONT></P>
+<P></P>
+</blockquote>
+<CENTER>
+<P><B><FONT SIZE=6>부록</FONT></B></P>
+<P><B><FONT SIZE=6>jawt.h 및 jawt_md.h 의 헤더 파일</FONT></B></P>
+</CENTER>
+<P><FONT SIZE=5>jawt.h</FONT></P>
+<blockquote><pre>
+/*
+ * @(#) jawt.h	1.2 99/05/27
+ *
+ * Copyright 1999 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+#ifndef _JAVASOFT_JAWT_H_
+#define _JAVASOFT_JAWT_H_
+
+#include "jni.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * AWT native interface (new in JDK 1.3)
+ *
+ * The AWT native interface allows a native C or C++ application a means
+ * by which to access native structures in AWT.   This is to facilitate moving
+ * legacy C and C++ applications to Java and to target the needs of the
+ * community who, at present, wish to do their own native rendering to canvases
+ * for performance reasons.   Standard extensions such as Java3D also require a
+ * means to access the underlying native data structures of AWT.
+ *
+ * There may be future extensions to this API depending on demand.
+ *
+ * A VM does not have to implement this API in order to pass the JCK.
+ * It is recommended, however, that this API is implemented on VMs that support
+ * standard extensions, such as Java3D.
+ *
+ * Since this is a native API, any program which uses it cannot be considered
+ * 100% pure java.
+ */
+
+/*
+ * AWT Native Drawing Surface (JAWT_DrawingSurface).
+ *
+ * For each platform, there is a native drawing surface structure.   This
+ * platform-specific structure can be found in jawt_md.h.   It is recommended
+ * that additional platforms follow the same model.   It is also recommended
+ * that VMs on Microsoft Windows platforms and Solaris operating environment 
+ * support the existing structures in jawt_md.h.
+ *
+ *******************
+ * EXAMPLE OF USAGE:
+ *******************
+ *
+ * In Miscrosoft Windows, a programmer wishes to access the HWND of a canvas 
+ * to perform native rendering into it.   The programmer has declared the 
+ * paint() method for their canvas subclass to be native:
+ *
+ *
+ * MyCanvas.java:
+ *
+ * import java.awt. *;
+ *
+ * public class MyCanvas extends Canvas {
+ *
+ *     static {
+ *         System.loadLibrary("mylib");
+ *     }
+ *
+ *     public native void paint(Graphics g);
+ * }
+ *
+ *
+ * myfile.c:
+ *
+ * #include "jawt_md.h"
+ * #include <assert.h>
+ *
+ * JNIEXPORT void JNICALL
+ * Java_MyCanvas_paint(JNIEnv* env, jobject canvas, jobject graphics)
+ * {
+ *     JAWT awt;
+ *     JAWT_DrawingSurface* ds;
+ *     JAWT_DrawingSurfaceInfo* dsi;
+ *     JAWT_Win32DrawingSurfaceInfo* dsi_win;
+ *     jboolean result;
+ *     jint lock;
+ *
+ *     // Get the AWT
+ *     awt.version = JAWT_VERSION_1_3;
+ *     result = JAWT_GetAWT(env, &awt);
+ *     assert(result ! = JNI_FALSE);
+ *
+ *     // Get the drawing surface
+ *     ds = awt.GetDrawingSurface(env, canvas);
+ *     assert(ds ! = NULL);
+ *
+ *     // Lock the drawing surface
+ *     lock = ds->Lock(ds);
+ *     assert((lock & JAWT_LOCK_ERROR) == 0);
+ *
+ *     // Get the drawing surface info
+ *     dsi = ds->GetDrawingSurfaceInfo(ds);
+ *
+ *     // Get the platform-specific drawing info
+ *     dsi_win = (JAWT_Win32DrawingSurfaceInfo*) dsi->platformInfo;
+ *
+ *     //////////////////////////////
+ *     // !!! DO PAINTING HERE !!! //
+ *     //////////////////////////////
+ *
+ *     // Free the drawing surface info
+ *     ds->FreeDrawingSurfaceInfo(dsi);
+ *
+ *     // Unlock the drawing surface
+ *     ds->Unlock(ds);
+ *
+ *     // Free the drawing surface
+ *     awt.FreeDrawingSurface(ds);
+ * }
+ *
+ */
+
+/*
+ * JAWT_Rectangle
+ * Structure for a native rectangle.
+ */
+typedef struct jawt_Rectangle {
+    jint x;
+    jint y;
+    jint width;
+    jint height;
+} JAWT_Rectangle;
+
+struct jawt_DrawingSurface;
+
+/*
+ * JAWT_DrawingSurfaceInfo
+ * Structure for containing the underlying drawing information of a component.
+ */
+typedef struct jawt_DrawingSurfaceInfo {
+    /*
+     * Pointer to the platform-specific information.   This can be safely
+     * cast to a JAWT_Win32DrawingSurfaceInfo on Microsoft Windows or a
+     * JAWT_X11DrawingSurfaceInfo on Solaris operating environment.   
+     * See jawt_md.h for details.
+     */
+    void* platformInfo;
+    /* Cached pointer to the underlying drawing surface */
+    struct jawt_DrawingSurface* ds;
+    /* Bounding rectangle of the drawing surface */
+    JAWT_Rectangle bounds;
+    /* Number of rectangles in the clip */
+    jint clipSize;
+    /* Clip rectangle array */
+    JAWT_Rectangle* clip;
+} JAWT_DrawingSurfaceInfo;
+
+#define JAWT_LOCK_ERROR                 0x00000001
+#define JAWT_LOCK_CLIP_CHANGED          0x00000002
+#define JAWT_LOCK_BOUNDS_CHANGED        0x00000004
+#define JAWT_LOCK_SURFACE_CHANGED       0x00000008
+
+/*
+ * JAWT_DrawingSurface
+ * Structure for containing the underlying drawing information of a component.
+ * All operations on a JAWT_DrawingSurface MUST be performed from the same
+ * thread as the call to GetDrawingSurface.
+ */
+typedef struct jawt_DrawingSurface {
+    /* Cached reference to the Java environment of the calling thread */
+    JNIEnv* env;
+    /* Cached reference to the target object */
+    jobject target;
+    /*
+     * Lock the surface of the target component for native rendering.
+     * When finished drawing, the surface must be unlocked with
+     * Unlock().   This function returns a bitmask with one or more of the
+     * following values:
+     *
+     * JAWT_LOCK_ERROR - When an error has occurred and the surface could not
+     * be locked.
+     *
+     * JAWT_LOCK_CLIP_CHANGED - When the clip region has changed.
+     *
+     * JAWT_LOCK_BOUNDS_CHANGED - When the bounds of the surface have changed.
+     *
+     * JAWT_LOCK_SURFACE_CHANGED - When the surface itself has changed
+     */
+    jint (JNICALL *Lock)
+        (struct jawt_DrawingSurface* ds);
+    /*
+     * Get the drawing surface info.
+     * The value returned may be cached, but the values may change if
+     * additional calls to Lock() or Unlock() are made.
+     * Lock() must be called before this can return a valid value.
+     * Returns NULL if an error has occurred.
+     * When finished with the returned value, FreeDrawingSurfaceInfo must be
+     * called.
+     */
+    JAWT_DrawingSurfaceInfo* (JNICALL *GetDrawingSurfaceInfo)
+        (struct jawt_DrawingSurface* ds);
+    /*
+     * Free the drawing surface info.
+     */
+    void (JNICALL *FreeDrawingSurfaceInfo)
+        (JAWT_DrawingSurfaceInfo* dsi);
+    /* 
+     * Unlock the drawing surface of the target component for native rendering.
+     */
+    void (JNICALL *Unlock)
+        (struct jawt_DrawingSurface* ds);
+} JAWT_DrawingSurface;
+
+/*
+ * JAWT
+ * Structure for containing native AWT functions.
+ */
+typedef struct jawt {
+    /*
+     * Version of this structure.   This must always be set before
+     * calling JAWT_GetAWT()
+     */
+    jint version;
+    /*
+     * Return a drawing surface from a target jobject.   This value
+     * may be cached.
+     * Returns NULL if an error has occurred.
+     * Target must be a java.awt.Canvas.
+     * FreeDrawingSurface() must be called when finished with the
+     * returned JAWT_DrawingSurface.
+     */
+    JAWT_DrawingSurface* (JNICALL *GetDrawingSurface)
+        (JNIEnv* env, jobject target);
+    /*
+     * Free the drawing surface allocated in GetDrawingSurface.
+     */
+    void (JNICALL *FreeDrawingSurface)
+        (JAWT_DrawingSurface* ds);
+} JAWT;
+
+/*
+ * Get the AWT native structure.   This function returns JNI_FALSE if
+ * an error occurs.
+ */
+_JNI_IMPORT_OR_EXPORT_
+jboolean JNICALL JAWT_GetAWT(JNIEnv* env, JAWT* awt);
+
+#define JAWT_VERSION_1_3 0x00010003
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif /* ! _JAVASOFT_JAWT_H_ */
+
+</blockquote></pre>
+<P><FONT SIZE=5>jawt_md.h (Solaris/X11 오퍼레이팅(operating) 환경판)</FONT></P>
+<blockquote><pre>
+/*
+ * @(#) jawt_md.h	1.2 99/05/27
+ *
+ * Copyright 1999 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+#ifndef _JAVASOFT_JAWT_MD_H_
+#define _JAVASOFT_JAWT_MD_H_
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Intrinsic.h>
+#include "jawt.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * X11-specific declarations for AWT native interface.
+ * See notes in jawt.h for an example of use.
+ */
+typedef struct jawt_X11DrawingSurfaceInfo {
+    Drawable drawable;
+    Display* display;
+    VisualID visualID;
+    Colormap colormapID;
+    int depth;
+} JAWT_X11DrawingSurfaceInfo;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* ! _JAVASOFT_JAWT_MD_H_ */
+</blockquote></pre>
+<P></P>
+<P></P>
+<P><FONT SIZE=5>jawt_md.h (Microsoft Windows 판)</FONT></P>
+<blockquote><pre>
+/*
+ * @(#) jawt_md.h	1.2 99/05/27
+ *
+ * Copyright 1999 by Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of Sun Microsystems, Inc.  ("Confidential Information").   You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with Sun.
+ */
+
+#ifndef _JAVASOFT_JAWT_MD_H_
+#define _JAVASOFT_JAWT_MD_H_
+
+#include <windows.h>
+#include "jawt.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * Microsoft Windows specific declarations for AWT native interface.
+ * See notes in jawt.h for an example of use.
+ */
+typedef struct jawt_Win32DrawingSurfaceInfo {
+    /* Native window, DDB, or DIB handle */
+    union {
+        HWND hwnd;
+        HBITMAP hbitmap;
+        void* pbits;
+    };
+    /*
+     * This HDC should always be used instead of the HDC returned from
+     * BeginPaint() or any calls to GetDC().
+     */
+    HDC hdc;
+    HPALETTE hpalette;
+} JAWT_Win32DrawingSurfaceInfo;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* ! _JAVASOFT_JAWT_MD_H_ */
+</blockquote></pre>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<P><FONT SIZE="-2">Copyright &#169; 1999 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+</TD>
+
+</TR>
+</TABLE>
+</BODY>
+</HTML>

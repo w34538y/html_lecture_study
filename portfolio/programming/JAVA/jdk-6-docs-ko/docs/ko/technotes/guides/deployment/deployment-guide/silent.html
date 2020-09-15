@@ -1,0 +1,165 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>사일런트 인스톨 - xrath.com 에서 번역됨</title>
+
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+//-->
+</script>
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table summary="layout" width="100%" border="0">
+<tr>
+<td width="1%">
+<img src="../../../../images/javalogo52x88.gif" width="52" height="88">
+</td>
+
+<td>
+<h1 align="center">사일런트 인스톨<br>
+</h1>
+</td>
+
+<td width="52">
+</td>
+</tr>
+</table>
+
+ 
+<p>이 마디에서는, Windows 32 비트 플랫폼에 있어서의 Java Runtime Environment (JRE)의 사일런트 인스톨을 설명합니다. 대상이 되는 독자는 다음과 같습니다.  </p>
+<ul>
+<li> 인트라넷에 배치된 복수의 PC 에, 사용자에 의한 조작없이 Java Plug-in 및 JRE 를 배치하는 시스템 관리 책임자</li>
+<li>JRE 를 필요로 하는 제품을 보유하고 있는 기업. 이러한 기업의 제품에서는, JRE 를 사일런트 인스톨 할 수 있습니다. </li>
+</ul>
+<p>사일런트 인스톨의 마디에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#intro">처음에</a>  </li>
+<li><a href="#running">사일런트 모드에서의 인스톨</a> </li>
+<li><a href="#uninstalling">사일런트 모드에서의 언인스톨</a> </li>
+<li><a href="#creating">로그 파일의 작성</a> </li>
+</ul>
+<h2><a name="intro"></a>  	처음에</h2>
+<p>Java<font size="-2"><sup>TM</sup></font> SE Runtime Environment (JRE) 인스톨은, Microsoft Window Installer (MSI) 2.0 테크놀러지를 사용해 구축되고 있습니다. MSI 에는, 사일런트 (자동적인) 인스톨 지원가 짜넣어지고 있습니다. 이 문서에서는, MSI 인스톨을 실행한다 . exe 를 사용해 JRE 를 사일런트 인스톨 하는 방법에 대해 설명합니다.
+<h2><a name="running"></a> 사일런트 모드에서의 인스톨</h2>
+<p>Java SE 6 에서는 Windows 의 오프 라인 인스톨 커멘드는, Windows 인스톨의 구문과 같습니다. 커멘드는 다음과 같습니다.
+
+<pre> &lt;jre&gt;.exe   [/lang=&lt;language ID&gt;] /s [ADDLOCAL=jrecore[, extra][, other_US] | ALL] <br>      		[IEXPLORER=1] [MOZILLA=1] [INSTALLDIR=&lt;drive&gt;:\&lt;install_path&gt;] <br>             [REBOOT=Suppress] </pre>
+
+<p>이 예에서는, 
+<ul>
+<li><code>&lt;jre&gt;.exe</code> 는, Java Runtime Environment (JRE)의 단일의 실행 가능 인스톨러입니다. </li>
+<li> <code>/lang=&lt;language ID&gt;</code> 를 지정하면(자), 인스톨러에 로컬라이즈 된 언어를 설정합니다 (<a href="javascript:;" onClick="MM_openBrWindow('language.html','languageIDs','scrollbars=yes,resizable=yes,width=700,height=800')">「언어 ID」</a>  를 참조). </li>
+<li> <code>ADDLOCAL</code> 를 지정하는 경우는,<code>jrecore[, extra][, other_US]</code> 또는 <code>ALL</code> 의 어딘가에 됩니다. </li>
+<li><code>IEXPLORER=1</code> 를 지정하면(자), Plug-in 가 Internet Explorer 브라우저에 등록됩니다. </li>
+<li> <code>MOZILLA=1</code> 를 지정하면(자), Plug-in 가 Mozilla 1.1 이후 및 Netscape 의 브라우저에 등록됩니다 (5.0 보다 전의 릴리스용). </li>
+<li> <code>INSTALLDIR</code> 를 지정하면(자), 인스톨 하는 드라이브와 패스가 지정됩니다. </li>
+<li> <code>REBOOT=Suppress</code> 를 지정하면(자), 락 된 파일이 있는 경우는 컴퓨터를 재기동하지 않습니다. </li>
+
+<li><code>ADDLOCAL=ALL</code> 를 지정하면(자), 모든 기능이 인스톨 됩니다. </li>
+<li><code>ADDLOCAL=jrecore[, extra][, other_US]</code> 에서는, 다음의 옵션을 지정할 수 있습니다.  
+    <ul>
+<li><code>jrecore</code> 는 JRE 의 코어가 인스톨 됩니다</li>
+<li><code>extra</code> (생략 가능)는, 추가의 폰트, 칼라, 사운드 뱅크가 인스톨 됩니다</li>
+<li><code>other</code> (생략 가능)는 로케일 고유의 <code>. jar</code> 파일이 인스톨 된다</li>
+    </ul>
+  </li>
+<li><code>ADDLOCAL</code> 를 지정하지 않는 경우, 다음의 구성만이 인스톨 됩니다.  
+    <ul>
+<li><code>jrecore</code> 가 인스톨 됩니다</li>
+<li><code>extra</code> 가 인스톨 됩니다</li>
+<li>영어 이외의 로컬라이즈 지원가 인스톨 되고 있는 경우에만,<code>other</code> 가 인스톨 됩니다.  </li>
+    </ul>
+  </li>
+<li><code>INSTALLDIR</code> 를 지정하지 않는 경우,<code>C:\Program Files\java\jre1. 6.0</code> (디폴트의 위치)에 인스톨 됩니다.  </li>
+</ul>
+<table width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr> 
+    <td> 
+<p><b><font size="+1"><u>주:</u></font></b></p>
+<p>커멘드에서는 대문자와 소문자를 구별합니다.  또 <code>ADDLOCAL</code> 로 기능을 지정하는 경우는 공백 문자를 포함하지 않습니다. </p>
+    </td>
+  </tr>
+</table>
+<h3>인스톨 구성</h3>
+<h4>프로그램예 1 </h4>
+<p>JRE 인스톨러가 <code>jre-6-rc-windows-i586.exe</code> 로, 다음의 구성을 인스톨 한다고 합니다.
+
+<ul>
+<li>Windows 인스톨을 실행한다 </li>
+<li>JRE 코어, 추가의 폰트, 칼라, 사운드 뱅크를 인스톨 한다</li>
+<li>Netscape 7 및 Mozilla 1.3 의 Plug-in 를 등록한다</li>
+  </ul>
+<p>상기의 구성을 인스톨 하는 커멘드는 다음과 같습니다.  </p>
+<blockquote>
+<p><code>jre-6-rc-windows-i586.exe /s ADDLOCAL=jrecore, extra MOZILLA=1</code></p>
+</blockquote>
+<h4>프로그램예 2 </h4>
+<p>JRE 인스톨러가 <code>jre-6-rc-windows-i586.exe</code> 로, 다음의 구성을 인스톨 한다고 합니다.
+<ul>
+<li>Windows 오프 라인 인스톨을 실행해,<code>D</code> 드라이브의 <code>java\jre</code> 에 JRE 를 인스톨 한다</li>
+<li>JRE 의 모든 기능을 인스톨 한다
+  </li>
+<li>Internet Explorer 에 Java Plug-in 를 등록한다</li>
+</ul>
+<p> 상기의 구성을 인스톨 하는 커멘드는 다음과 같습니다.  
+
+<blockquote>
+<p><code>jre-6-rc-windows-i586.exe /s ADDLOCAL=ALL IEXPLORER=1　INSTALLDIR="D:\java\jre&quot;</code> </p>
+</blockquote>
+<table width="90%" border="1" align="center" cellpadding="5" cellspacing="0" bgcolor="#FFFFCC">
+  <tr>
+<td><p><b><font size="+1"><u>주:</u></font></b></p>
+<p>JRE 의 인스톨이 완료할 때까지 MS-DOS 윈도우를 연 채로 하려면 ,<code>start /w</code> 커멘드를 다음과 같이 사용합니다.  </p>
+<p><code>start /w jre-6-rc-windows-i586.exe /s ADDLOCAL=jrecore, extra MOZILLA=1</code></p>
+    </td>
+  </tr>
+</table>
+<h2><a name="uninstalling"></a> 사일런트 모드에서의 언인스톨</h2>
+<p><code>Implementation-Version</code> <code>n<sub>1</sub>. n<sub>2</sub>. n<sub>3</sub>_n<sub>4</sub>n<sub>5</sub></code> 를 사일런트 모드로 언인스톨하는 커멘드행은 다음과 같이 됩니다. </p>
+<blockquote> 
+<p><code>msiexec.exe /qn /x {3248F0A8-6813-11D6-A77B-00B0D0n<SUB>1</SUB>n<SUB>2</SUB>n<SUB>3</SUB>n<SUB>4</SUB>n<SUB>5</SUB>0}</code></p>
+</blockquote>
+<table width="90%" border="1" cellpadding="5" align="center" bgcolor="#FFFFCC" cellspacing="0">
+  <tr> 
+<td> <p><b><font size="+1"><u>설명</u></font></b></p>
+      <ol>
+<li>이 커멘드는 어느 위치로부터에서도 실행 가능합니다.  </li>
+<li><code>msiexec.exe</code> 의 실행 가능 파일은, Windows 의 시스템 디렉토리에 포함되고 있습니다. </li>
+<li>인스톨로 설명한 <code>REBOOT=Suppress</code> 옵션을 언인스톨 커멘드에서도 사용할 수 있습니다. </li>
+<li>버젼의 서식에 대해 자세한 것은,<a href="version-format.html">「부록 2:Sun 의 지원하는 <code>Specification-Version</code> 및 <code>Implementation-Version</code> 의 형식」</a>을 참조해 주세요. </li>
+      </ol></td>
+  </tr>
+</table>
+<h4>버젼 1.6. 0 의 예</h4>
+<blockquote>
+<p><code>msiexec.exe /qn /x {3248F0A8-6813-11D6-A77B-00B0D0160000}</code></p>
+</blockquote>
+<h4>버젼 1.6. 0_02 에서의 예</h4>
+<blockquote> 
+<p><code>msiexec.exe /qn /x {3248F0A8-6813-11D6-A77B-00B0D0151020}</code></p>
+</blockquote>
+<h2><a name="creating"></a> 로그 파일의 작성</h2>
+<p>로그 파일은, 인스톨 또는 언인스톨이 정상적으로 종료했는지 어떠했는지의 확인에 사용합니다. 인스톨 또는 언인스톨에 대한 로그 파일을 작성하는 경우는, 인스톨이나 언인스톨의 커멘드의 말미에 <code>/L C:\&lt;path&gt;setup.log</code> 를 추가합니다. 확인하려면 , 로그 파일의 말미까지 스크롤 합니다.  
+
+<h4>인스톨의 예</h4>
+<p>다음은 인스톨의 예입니다.  </p>
+<blockquote> 
+<p><code>jre-6-rc-windows-i586.exe /s /L C:\&lt;path&gt;setup.log</code></p>
+</blockquote>
+<p>상기의 커멘드에 의해, 로그가 <code>setup.log</code> 파일에 기록됩니다.  
+<h4>언인스톨의 예</h4>
+<p>다음은 언인스톨의 예입니다.
+
+<blockquote>
+<p><code>msiexec.exe /qn /x {3248F0A8-6813-11D6-A77B-00B0D0160000} /L C:\&lt;path&gt;setup.log</code></p>
+</blockquote>
+<hr>
+</body>
+</html>

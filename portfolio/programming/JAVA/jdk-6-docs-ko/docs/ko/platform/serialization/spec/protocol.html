@@ -1,0 +1,775 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:6 - 객체 직렬화 스트림 프로토콜
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="version.html">전의 항목</a>  | <a href="security.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="8101"><!-- --></a> 
+<h1>
+객체 직렬화 스트림 프로토콜
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="8116"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<br> <U><B><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN">제 6 장</FONT></B></U>
+</td>
+</tr>
+</table>
+
+
+<br> <a name="8121"><!-- --></a> 
+<h4><i>		 토픽:</i></h4>
+
+
+<blockquote>
+<ul><li>
+<a name="8120"><!-- --></a>  <a href="protocol.html#8130">개요</a> 
+</li>
+<li>
+<a name="8136"><!-- --></a>  <a href="protocol.html#8299">스트림 요소</a> 
+</li>
+<li>
+<a name="10246"><!-- --></a>  <a href="protocol.html#5849">스트림 프로토콜의 버젼</a> 
+</li>
+<li>
+<a name="8283"><!-- --></a>  <a href="protocol.html#10258">스트림 형식의 문법</a> 
+</li>
+<li>
+<a name="8526"><!-- --></a>  <a href="protocol.html#10128">례</a> 
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="8130">6.1	개요</a> </h2>
+
+<blockquote>
+<a name="286"><!-- --></a>  스트림 형식은, 다음의 설계 목표를 실현했습니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="3872"><!-- --></a>  효율적인 읽기를 실현하기 위한 컴팩트화 및 구조화
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="8296"><!-- --></a>  스트림의 구조와 형식의 지식만을 사용해 스트림내를 스킵 가능. 클래스 마다 코드를 호출할 필요가 없다
+</li>
+<li>
+<a name="8297"><!-- --></a>  데이터에의 스트림 액세스만이 필요
+</li>
+</ul>
+</blockquote>
+
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="8299">6.2	스트림 요소</a> </h2>
+
+<blockquote>
+<a name="9605"><!-- --></a>  기본 구조에서는, 스트림내에서 객체를 나타낼 필요가 있습니다. 객체의 클래스, 필드, 및 클래스 고유의 메소드에 의해 기입해져 나중에 읽어내지는 데이터등의 속성을 표현할 필요가 있습니다. 스트림의 객체의 표현은, 어느 문법에 따라 기술할 수가 있습니다. null 객체, 신규 객체, 클래스, 배열, 캐릭터 라인, 및 벌써 스트림에 있는 객체에의 백 참조에 대해, 특별한 표현이 있습니다. 스트림에 기입해진 각 객체에는, 이 객체를 백 참조하기 위해서 사용하는 핸들을 할당할 수 있습니다. 핸들은, 0x7E0000 로부터 시작해 차례차례 할당할 수 있습니다. 스트림이 리셋 되면(자), 핸들은 다시 0x7E0000 로부터 시작됩니다. <p>
+<a name="4499"><!-- --></a>  클래스 객체는, 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="8441"><!-- --></a>  그 <code>ObjectStreamClass</code> 객체
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="8442"><!-- --></a>  다이나믹 프록시 클래스 이외의 클래스의 <code>ObjectStreamClass</code> 객체는, 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="7811"><!-- --></a>  호환 클래스의 스트림 고유 식별자 (SUID)
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="7812"><!-- --></a> 클래스의 다양한 프로퍼티을 나타내는 플래그세트.  클래스가 <code>writeObject</code> 메소드를 정의하고 있는지, 클래스가 직렬화 가능, 외부화 가능, 또는 enum 형인가, 등
+</li>
+<li>
+<a name="8445"><!-- --></a>  직렬화 가능 필드의 수
+</li>
+<li>
+<a name="9726"><!-- --></a>  디폴트의 기구에 의해 직렬화 된 클래스의 필드의 배열. 배열이나 객체에서는, 필드의 형태가 캐릭터 라인으로서 포함된다. 이 캐릭터 라인은, 「Java<sup>TM</sup> Virtual Machine Specification, Second Edition」의 4.3. 2 로 지정되고 있는 필드 기술자의 형식 (&#34;<code>Ljava/lang/Object;</code>&#34;등)이 아니면 안된다
+</li>
+<li>
+<a name="9733"><!-- --></a> <code>annotateClass</code> 메소드에 의해 기입해지는 임의 지정의 블록 데이터 레코드 또는 객체
+</li>
+<li>
+<a name="9734"><!-- --></a> <code>ObjectStreamClass</code> 의 슈퍼타입 (슈퍼 클래스가 직렬화 가능하지 않으면 null)
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="53671"><!-- --></a>  다이나믹 프록시 클래스의 <code>ObjectStreamClass</code> 객체는, 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="53672"><!-- --></a>  다이나믹 프록시 클래스가 구현하는 인터페이스수
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="53673"><!-- --></a>  다이나믹 프록시 클래스가 구현하는 모든 인터페이스의 이름. 그 Class 객체상에서 <code>getInterfaces</code> 메소드를 호출했을 때에 반환되는 차례로 표시한다
+</li>
+<li>
+<a name="53674"><!-- --></a> <code>annotateProxyClass</code> 메소드에 의해 기입해지는 임의 지정의 블록 데이터 레코드 또는 객체
+</li>
+<li>
+<a name="53800"><!-- --></a>  ObjectStreamClass 의 슈퍼타입,<code>java.lang.reflect.Proxy</code>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="53801"><!-- --></a> <code>String</code> 객체의 표현은 길이의 정보로 구성되어 그 정보의 후에 변경 후의 UTF-8 로 encode 된 캐릭터 라인의 내용이 계속됩니다.  변경 후의 UTF-8 인코딩은, Java<sup>TM</sup> 가상 머신과<code>java.io.DataInput</code> 및 <code>DataOutput</code> 인터페이스로 사용되는 것 것과 같습니다. 다만, 보조 문자와 null 문자의 표현으로, 표준 UTB-8 와는 다릅니다. 길이의 정보의 형식은, 변경 후의 UTF-8 인코딩에서의 캐릭터 라인의 길이에 의해 다릅니다.  지정된 <code>String</code> 의 변경 후의 UTF-8 인코딩장이 65,536 바이트 미만의 경우, 길이는, 부호 없음 16 비트 정수를 나타내는 2 바이트로서 기입해집니다. Java<sup>TM</sup> 2 platform, Standard Edition, v1. 3 이후는, 변경 후의 UTF-8 인코딩에 의한 캐릭터 라인의 길이가 65,536 바이트 이상의 경우, 길이는, 부호 첨부 64 비트 정수를 나타내는 8 바이트로 기입해집니다. 직렬화 스트림의 <code>String</code> 의 전에 있는 타입 코드는,<code>String</code> 의 기입에 사용된 형식을 나타내고 있습니다. <p>
+<a name="4523"><!-- --></a>  배열은 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="7824"><!-- --></a>  그러한 <code>ObjectStreamClass</code> 객체
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="7825"><!-- --></a>  요소의 수
+</li>
+<li>
+<a name="7826"><!-- --></a>  값의 순서. 값의 형태는 그 배열의 형태에 내재 하고 있다. 예를 들어, 바이트 배열의 값의 형태는 바이트이다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="8447"><!-- --></a> enum 정수는 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="53793"><!-- --></a> 정수의 기본으로 되어 있는 enum 형의 <code>ObjectStreamClass</code> 객체
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="53794"><!-- --></a> 정수의 이름 캐릭터 라인
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<a name="53788"><!-- --></a>  스트림의 신규 객체는 다음의 요소에 의해 나타내집니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="8448"><!-- --></a>  그 객체의 가장 많이 파생된 클래스
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="8449"><!-- --></a>  객체의 각 직렬화 가능 클래스의 데이터 (최상정도의 슈퍼 클래스를 선두로 한다). 각 클래스의 스트림에는 이하가 포함된다
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul><li>직렬화 가능 필드. <a href="serial-arch.html#6250">「1.5 클래스의 직렬화 가능한 필드의 지정」</a>을 참조</li><li>그 클래스에 <code>writeObject</code>/<code>readObject</code> 메소드가 있으면,<code>writeObject</code> 메소드에 의해 기입해진, 원시형의 임의 지정의 객체 및 (또는) 블록 데이터 레코드와 거기에 계속되어 <code>endBlockData</code> 가 있는 경우가 있다</li></blockquote>
+</ul><blockquote>
+<a name="7842"><!-- --></a>  클래스에 의해 기입해진 모든 프리미티브(primitive) 데이터는, 블록 데이터 레코드에 버퍼링 되어 랩 됩니다. 이것은, 그 데이터가 <code>writeObject</code> 메소드 중(안)에서 스트림에 기입해졌는지,<code>writeObject</code> 메소드의 밖으로부터 직접 스트림에 기입해졌는지에는 관계 없습니다. 이 데이터는, 대응하는 <code>readObject</code> 메소드에 의해 읽어들이는지, 스트림로부터 직접 읽어들일 수가 있습니다. <code>writeObject</code> 메소드에 의해 기입해진 객체는, 전에 기입해진 블록 데이터 레코드가 있으면 그것을 정지해, 정규 객체, null, 또는 백 참조의 어떤 것인가 가운데로, 적절한 것으로 해 기입해집니다. 블록 데이터 레코드에서는, 에러의 회복에 의해 임의 지정 데이터를 파기할 수가 있습니다. 클래스중에서 불려 갔을 경우에는, 스트림은 데이터나 객체를 <code>endBlockData</code> 까지 파기할 수가 있습니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5849">6.3	 스트림 프로토콜의 버젼</a> </h2>
+
+<blockquote>
+<a name="10264"><!-- --></a>  JDK<sup>TM</sup> 1.2 에서는, 직렬화 스트림 형식을, JDK<sup>TM</sup> 1.1 의 모든 마이너 릴리스와 하위 호환성이 없는 형식으로 변경할 필요가 있습니다. 하위 호환성이 필요한 경우에 대비해 직렬화 스트림의 기입시에, 어느 <em>PROTOCOL_VERSION</em> 를 사용하는지를 나타내는 기능이 추가되고 있습니다. 메소드 <code>ObjectOutputStream.useProtocolVersion</code> 는, 직렬화 스트림의 기입에 사용하는 프로토콜의 버젼을 파라미터에 있습니다. <p>
+<a name="10265"><!-- --></a>  스트림 프로토콜의 버젼을 다음에 나타냅니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="11039"><!-- --></a>  <code>ObjectStreamConstants.PROTOCOL_VERSION_1</code>
+</li>
+</ul>
+</blockquote>
+<a name="11079"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">초기의 스트림 형식을 나타냅니다. </TD>
+</TR>
+</TABLE>
+
+<blockquote>
+<ul><li>
+<a name="11041"><!-- --></a>  <code>ObjectStreamConstants.PROTOCOL_VERSION_2</code>
+</li>
+</ul>
+</blockquote>
+<a name="11082"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">새로운 외부 데이터 형식을 나타냅니다. 프리미티브(primitive) 데이터는 블록 데이터 모드로 기입해져<em>TC_ENDBLOCKDATA</em> 로 종료합니다. </TD>
+</TR>
+</TABLE>
+<a name="11085"><!-- --></a> 
+<TABLE BORDER=0 WIDTH="100%">
+<TR>
+<TD WIDTH="8%">&nbsp;</TD>
+<TD WIDTH="3%" ALIGN="LEFT" VALIGN="BASELINE"></TD>
+<TD WIDTH="89%" ALIGN="LEFT" VALIGN="BASELINE">블록 데이터 경계는 표준화 되었습니다. 블록 데이터 모드로 기입해진 프리미티브(primitive) 데이터는, 1024 바이트의 데이터의 블록을 넘지 않게 표준의 데이터 형식에 되돌려집니다. 이 변경의 이점은, 스트림내의 직렬화 데이터 형식의 스펙을 강화하는 것입니다. 이 변경은, 완전하게 하위 및 상위 호환성이 있습니다. </TD>
+</TR>
+</TABLE>
+<blockquote>
+<a name="10255"><!-- --></a>  JDK<sup>TM</sup> 1.2 는, 디폴트에서는 <code>PROTOCOL_VERSION_2</code> 를 기입합니다. <p>
+<a name="10388"><!-- --></a>  JDK<sup>TM</sup> 1.1 은, 디폴트에서는 <code>PROTOCOL_VERSION_1</code> 를 기입합니다. <p>
+<a name="10251"><!-- --></a>  JDK<sup>TM</sup> 1.1. 7 이후에서는, 양쪽 모두의 버젼을 읽어낼 수가 있습니다. <p>
+<a name="11072"><!-- --></a>  JDK<sup>TM</sup> 1.1. 7 보다 전의 릴리스에서는,<code>PROTOCOL_VERSION_1</code> 밖에 읽어낼 수가 없습니다. <p>
+</blockquote>
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="10258">6.4	 스트림 형식의 문법</a> </h2>
+
+<blockquote>
+<a name="4999"><!-- --></a>  이하의 겉(표)는, 스트림 형식의 문법을 나타낸 것입니다. 비끝 기호는 이탤릭으로, 끝 기호는 고정폭의 폰트로 가리킵니다. <em></em>비끝의 정의에는, 그 후에 「:」이 계속됩니다. 정의에는 1 개 또는 복수의 대체 정의가 계속되어, 각각이 다른 행에 나타납니다. 다음의 겉(표)에, 그 표기법을 나타냅니다.
+
+<br><br>
+<Table Border="1" Cellpadding="5">
+<caption></caption>
+
+<tr><td><a name="10013"><!-- --></a>  <b> 표기법</b><br>
+
+</td><td><a name="10015"><!-- --></a>  <b> 의미</b><br>
+
+</td></tr>
+<tr valign="bottom"><td><a name="10017"><!-- --></a> 
+<p><em> (datatype</em>)	
+
+</td>
+<td><a name="10019"><!-- --></a> 
+<p> 이 토큰에는, 바이트등의 데이터형이 지정된다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="10021"><!-- --></a> 
+<p><em> token[n]</em>
+
+</td>
+<td><a name="10023"><!-- --></a> 
+<p>	 이 토큰의 사전에 정의된 오카렌스수.  이것은 배열이다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="10025"><!-- --></a> 
+<p><em> x0001</em>	
+
+</td>
+<td><a name="10027"><!-- --></a> 
+<p> 16 진수로 나타낸 리터럴치. 16 진수의 자리수가 그 값의 사이즈를 나타낸다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="10029"><!-- --></a> 
+<p> &lt;<em>xxx</em>&gt;
+
+</td>
+<td><a name="10031"><!-- --></a> 
+<p>		 스트림로부터 읽힌 값이며, 배열의 길이를 나타내기 위해서(때문에) 사용된다
+
+</td>
+</tr>
+
+</Table>
+ 
+<Table>
+<tr><td></td>
+</tr>
+</Table><p>
+<p>
+<a name="9298"><!-- --></a> 기호 (utf)는 2 바이트의 길이 정보를 사용해 기술된 캐릭터 라인을 지정하는 경우에 사용합니다.  (long-utf)(은)는 8 바이트의 길이 정보를 사용해 기술된 캐릭터 라인을 지정하는 경우에 사용합니다. 상세한 것에 대하여는,<a href="protocol.html#8299">「6.2 스트림 요소」</a>를 참조해 주세요. <p>
+</blockquote>
+<br>
+<h3>
+<a name="53688"><!-- --></a>  	6.4. 1	문법 규칙
+</h3>
+
+<blockquote>
+<a name="9583"><!-- --></a>  직렬화 된 스트림은, 스트림 규칙을 채우는 임의의 스트림에 의해 나타내집니다. <p>
+<a name="4949"><!-- --></a> 
+<pre><em>stream:
+</em>  <em>magic version contents
+</em></pre>
+
+
+<a name="4953"><!-- --></a> 
+<pre><em>contents:
+</em>  <em>content
+</em>  <em>contents content
+</em></pre>
+
+
+<a name="9188"><!-- --></a> 
+<pre><em>content:
+</em>  <em>object
+</em>  <em>blockdata
+</em></pre>
+
+
+<a name="4393"><!-- --></a> 
+<pre><em>object:
+</em>  <em>newObject
+</em>  <em>newClass
+</em>  <em>newArray
+</em>  <em>newString
+  newEnum
+</em>  <em>newClassDesc
+</em>  <em>prevObject
+</em>  <em>nullReference
+</em>  <em>exception
+</em>  <em>TC_RESET
+</em></pre>
+
+
+<a name="9070"><!-- --></a> 
+<pre><em>newClass</em>:
+  <em>TC_CLASS</em><em> classDesc newHandle
+</em></pre>
+
+
+<a name="9261"><!-- --></a> 
+<pre><em>classDesc:
+  newClassDesc
+  nullReference
+  (ClassDesc) prevObject      // an object required to be of type
+                             // ClassDesc
+</em></pre>
+
+
+<a name="9716"><!-- --></a> 
+<pre><em>superClassDesc:
+  classDesc
+</em></pre>
+
+
+<a name="10577"><!-- --></a> 
+<pre><em>newClassDesc:
+  </em><em>TC_CLASSDESC</em><em> className serialVersionUID newHandle classDescInfo
+  </em><em>TC_PROXYCLASSDESC</em><em> newHandle proxyClassDescInfo</em>
+</pre>
+
+
+<a name="10578"><!-- --></a> 
+<pre><em>classDescInfo:
+  classDescFlags fields classAnnotation superClassDesc 
+</em></pre>
+
+
+<a name="9169"><!-- --></a> 
+<pre><em>className:
+  (utf)
+</em></pre>
+
+
+<a name="9171"><!-- --></a> 
+<pre><em>serialVersionUID:
+  (long)
+</em></pre>
+
+
+<a name="9176"><!-- --></a> 
+<pre><em>classDescFlags:
+  (byte)                  // Defined in Terminal Symbols and
+                            // Constants
+</em></pre>
+
+
+<a name="53665"><!-- --></a> 
+<pre>proxyClassDescInfo:
+  (int) &lt;count&gt; proxyInterfaceName[count] classAnnotation
+      superClassDesc
+</pre>
+
+
+<a name="53669"><!-- --></a> 
+<pre>proxyInterfaceName:
+</pre>
+
+
+<a name="53670"><!-- --></a> 
+<pre>  (utf)
+</pre>
+
+
+<a name="9170"><!-- --></a> 
+<pre><em>fields:
+  (short) &lt;count&gt;  fieldDesc[count]
+</em></pre>
+
+
+<a name="9270"><!-- --></a> 
+<pre><em>fieldDesc:
+  primitiveDesc
+  objectDesc
+</em></pre>
+
+
+<a name="9207"><!-- --></a> 
+<pre><em>primitiveDesc:
+  prim_typecode fieldName
+</em></pre>
+
+
+<a name="10063"><!-- --></a> 
+<pre><em>objectDesc:
+  obj_typecode fieldName className1
+</em></pre>
+
+
+<a name="10064"><!-- --></a> 
+<pre><em>fieldName:
+  (utf)
+</em></pre>
+
+
+<a name="53757"><!-- --></a> 
+<pre><em>className1:
+  (String) object             // String containing the field&#39;s type,
+</em>                             // in field descriptor format
+</pre>
+
+
+<a name="53759"><!-- --></a> 
+<pre><em>classAnnotation:
+  endBlockData
+  contents endBlockData      // contents written by annotateClass
+</em></pre>
+
+
+<a name="53716"><!-- --></a> 
+<pre><em>prim_typecode:
+  `B&#39;	// byte
+  `C&#39;	// char
+  `D&#39;	// double
+  `F&#39;	// float
+  `I&#39;	// integer
+  `J&#39;	// long
+  `S&#39;	// short
+  `Z&#39;	// boolean
+</em></pre>
+
+
+<a name="9114"><!-- --></a> 
+<pre><em>obj_typecode:
+  `[`	// array
+  `L&#39;	// object
+</em></pre>
+
+
+<a name="4426"><!-- --></a> 
+<pre><em>newArray:
+  </em><em>TC_ARRAY</em><em> classDesc newHandle (int) &lt;size&gt; values[size]
+</em></pre>
+
+
+<a name="4430"><!-- --></a> 
+<pre><em>newObject:
+  </em><em>TC_OBJECT</em><em> classDesc newHandle classdata[]  // data for each class
+</em></pre>
+
+
+<a name="9475"><!-- --></a> 
+<pre><em>classdata:
+  nowrclass                 // </em><em>SC_SERIALIZABLE</em><em> &amp; classDescFlag &amp;&amp;
+                            // ! (</em><em>SC_WRITE_METHOD</em><em> &amp; classDescFlags)
+  wrclass objectAnnotation  // </em><em>SC_SERIALIZABLE</em><em> &amp; classDescFlag &amp;&amp;
+                            // </em><em>SC_WRITE_METHOD</em><em> &amp; classDescFlags
+  externalContents          // </em><em>SC_EXTERNALIZABLE</em><em> &amp; classDescFlag &amp;&amp;
+                            // ! (</em><em>SC_BLOCKDATA</em><em>  &amp; classDescFlags
+  objectAnnotation          // </em><em>SC_EXTERNALIZABLE</em><em> &amp; classDescFlag&amp;&amp; 
+                            // </em><em>SC_BLOCKDATA</em><em> &amp; classDescFlags
+</em></pre>
+
+
+<a name="11092"><!-- --></a> 
+<pre><em>nowrclass:
+  values                    // fields in order of class descriptor
+</em></pre>
+
+
+<a name="7942"><!-- --></a> 
+<pre><em>wrclass:
+  nowrclass
+</em></pre>
+
+
+<a name="9749"><!-- --></a> 
+<pre><em>objectAnnotation:
+  endBlockData
+  contents endBlockData     // contents written by writeObject
+                            // or writeExternal </em><em>PROTOCOL_VERSION_2</em><em>.
+</em></pre>
+
+
+<a name="10242"><!-- --></a> 
+<pre><em>blockdata:
+  blockdatashort
+  blockdatalong
+</em></pre>
+
+
+<a name="10270"><!-- --></a> 
+<pre><em>blockdatashort:
+  </em><em>TC_BLOCKDATA</em><em> (unsigned byte) &lt;size&gt; (byte)[size]
+</em></pre>
+
+
+<a name="9453"><!-- --></a> 
+<pre><em>blockdatalong:
+  </em><em>TC_BLOCKDATALONG</em><em> (int) &lt;size&gt; (byte)[size]
+</em></pre>
+
+
+<a name="53766"><!-- --></a> 
+<pre><em>endBlockData	:
+  </em><em>TC_ENDBLOCKDATA
+</em></pre>
+
+
+<a name="53767"><!-- --></a> 
+<pre><em>externalContent:          // Only parseable by readExternal
+  ( bytes)                // primitive data
+    object
+</em></pre>
+
+
+<a name="10234"><!-- --></a> 
+<pre><em>externalContents:         // externalContent written by 
+  externalContent         // writeExternal in </em><em>PROTOCOL_VERSION_1</em><em>.
+  externalContents externalContent
+</em></pre>
+
+
+<a name="4452"><!-- --></a> 
+<pre><em>newString:
+  </em><em>TC_STRING</em><em> newHandle (utf)
+  </em><em>TC_LONGSTRING</em><em> newHandle (long-utf)
+</em></pre>
+
+
+<a name="53777"><!-- --></a> 
+<pre>newEnum:
+  TC_ENUM classDesc newHandle enumConstantName
+</pre>
+
+
+<a name="53781"><!-- --></a> 
+<pre>enumConstantName:
+(String) object
+</pre>
+
+
+<a name="4456"><!-- --></a> 
+<pre><em>prevObject
+  </em><em>TC_REFERENCE</em><em> (int) handle
+</em></pre>
+
+
+<a name="4460"><!-- --></a> 
+<pre><em>nullReference
+  </em><em>TC_NULL
+</em></pre>
+
+
+<a name="9611"><!-- --></a> 
+<pre><em>exception:
+  </em><em>TC_EXCEPTION</em><em> reset (Throwable) object	 reset 
+</em></pre>
+
+
+<a name="9150"><!-- --></a> 
+<pre><em>magic:
+  </em><em>STREAM_MAGIC
+</em></pre>
+
+
+<a name="9153"><!-- --></a> 
+<pre><em>version
+  </em><em>STREAM_VERSION
+</em></pre>
+
+
+<a name="4487"><!-- --></a> 
+<pre><em>values:          // The size and types are described by the
+                 // classDesc for the current object
+</em></pre>
+
+
+<a name="10151"><!-- --></a> 
+<pre><em>newHandle:       // The next number in sequence is assigned
+                 // to the object being serialized or deserialized
+</em></pre>
+
+
+<a name="11119"><!-- --></a> 
+<pre><em>reset:           // The set of known objects is discarded
+                 // so the objects of the exception do not
+                 // overlap with the previously sent objects 
+                 // or with objects that may be sent after 
+                 // the exception
+</em></pre>
+
+
+</blockquote>
+<br>
+<h3>
+<a name="10152"><!-- --></a>  	6.4. 2	끝 기호와 정수
+</h3>
+
+<blockquote>
+<a name="9323"><!-- --></a>  <code>java.io.ObjectStreamConstants</code> 의 다음의 기호는, 스트림로 예기 되는 끝치와 정수치를 정의한 것입니다. <p>
+<a name="10162"><!-- --></a> 
+<pre>    final static short STREAM_MAGIC = (short) 0xaced;
+    final static short STREAM_VERSION = 5;
+    final static byte TC_NULL = (byte) 0x70;
+    final static byte TC_REFERENCE = (byte) 0x71;
+    final static byte TC_CLASSDESC = (byte) 0x72;
+    final static byte TC_OBJECT = (byte) 0x73;
+    final static byte TC_STRING = (byte) 0x74;
+    final static byte TC_ARRAY = (byte) 0x75;
+    final static byte TC_CLASS = (byte) 0x76;
+    final static byte TC_BLOCKDATA = (byte) 0x77;
+    final static byte TC_ENDBLOCKDATA = (byte) 0x78;
+    final static byte TC_RESET = (byte) 0x79;
+    final static byte TC_BLOCKDATALONG = (byte) 0x7A;
+    final static byte TC_EXCEPTION = (byte) 0x7B;
+    final static byte TC_LONGSTRING = (byte) 0x7C;
+    final static byte TC_PROXYCLASSDESC = (byte) 0x7D;
+    final static byte TC_ENUM = (byte) 0x7E;
+    final static  int   baseWireHandle = 0x7E0000;
+</pre>
+
+
+<a name="10163"><!-- --></a>  flag byte classDescFlags 는, 다음의 기호의 값을 가지는 일이 있습니다. <p>
+<a name="9422"><!-- --></a> 
+<pre>    final static byte SC_WRITE_METHOD = 0x01; //if SC_SERIALIZABLE
+     final static byte SC_BLOCK_DATA = 0x08;    //if SC_EXTERNALIZABLE
+    final static byte SC_SERIALIZABLE = 0x02;
+    final static byte SC_EXTERNALIZABLE = 0x04;
+    final static byte SC_ENUM = 0x10;
+</pre>
+
+
+<a name="9895"><!-- --></a>  스트림을 기입하고 있는 Serializable 클래스에 <code>writeObject</code> 메소드가 있어, 그것이 스트림에 추가 데이터를 기입한 가능성이 있으면(자), 플래그 <em>SC_WRITE_METHOD</em> 는 온으로 설정됩니다. 이 경우에는, 그 클래스의 데이터는 항상 <em>TC_ENDBLOCKDATA</em> 마커로 끝나지 않으면 안됩니다. <p>
+<a name="10223"><!-- --></a> <code>STREAM_PROTOCOL_2</code> 를 사용해 <code>Externalizable</code> 클래스가 스트림에 기입해지는 경우는, 플래그 <em>SC_BLOCKDATA</em> 가 설정됩니다. JDK<sup>TM</sup> 1.2 의 디폴트에서는, 이 프로토콜을 사용해 <code>Externalizable</code> 객체가 스트림에 기입해집니다. JDK<sup>TM</sup> 1.1 에서는,<em>STREAM_PROTOCOL_1</em> 를 사용해 기입해집니다. <p>
+<a name="9900"><!-- --></a>  스트림을 기입한 클래스가 <code>java.io.Serializable</code> 을 확장했지만,<code>java.io.Externalizable</code> 는 확장하지 않았던 경우는, 플래그 <em>SC_SERIALIZABLE</em> 가 온으로 설정됩니다.  그 스트림을 읽어들이는 클래스도 또 <code>java.io.Serializable</code> 를 확장해, 디폴트의 직렬화 기구를 사용하지 않으면 안됩니다. <p>
+<a name="9901"><!-- --></a>  스트림을 기입한 클래스가 <code>java.io.Externalizable</code> 를 확장했을 경우는, 플래그 <em>SC_EXTERNALIZABLE</em> 가 온으로 설정됩니다.  그 데이터를 읽어들이는 클래스도 또, <code>Externalizable</code> 를 확장해, 디폴트의 직렬화 기구를 사용하지 않으면 안됩니다.  이 데이터는 그 <code>writeExternal</code> 와 <code>readExternal</code> 메소드를 사용해 읽힙니다. <p>
+<a name="53782"><!-- --></a> 스트림에 기입해진 클래스가 enum 형이면, 플래그 <em>SC_ENUM</em> 가 설정됩니다. 수취하는 측의 대응하는 클래스도 enum 형이 아니면 안됩니다. enum 형의 정수의 데이터는,<a href="serial-arch.html#6469">「1.12 Enum 정수의 직렬화」</a>로 설명하도록(듯이), 읽고 쓰기됩니다. <p>
+</blockquote>
+<br> <a name="10128"><!-- --></a> 
+<h4><i>		 례</i></h4>
+
+<blockquote>
+<a name="8334"><!-- --></a>  오리지날 클래스와 링크 리스트의 2 개의 인스턴스의 경우를 상정합니다. <p>
+<a name="9963"><!-- --></a> 
+<pre>class List implements java.io.Serializable {
+    int value;
+    List next;
+    public static void main(String[] args) {
+        try {
+            List list1 = new List();
+            List list2 = new List();
+            list1.value = 17;
+            list1.next = list2;
+            list2.value = 19;
+            list2.next = null;
+
+            ByteArrayOutputStream o = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(o);
+            out.writeObject(list1);
+            out.writeObject(list2);
+            out.flush();
+            ...
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+</pre>
+
+
+<a name="9560"><!-- --></a> 
+결과의 스트림의 내용은 다음과 같이 됩니다. <p>
+<a name="9983"><!-- --></a> 
+<pre>00: ac ed 00 05 73 72 00 04 4c 69 73 74 69 c8 8a 15 &gt;....sr..Listi...&lt;
+</pre>
+
+
+<a name="9774"><!-- --></a> 
+<pre>10: 40 16 ae 68 02 00 02 49 00 05 76 61 6c 75 65 4c &gt;Z......I..valueL&lt;
+</pre>
+
+
+<a name="9775"><!-- --></a> 
+<pre>20: 00 04 6e 65 78 74 74 00 06 4c 4c 69 73 74 3b 78 &gt;..nextt..LList;x&lt;
+</pre>
+
+
+<a name="9776"><!-- --></a> 
+<pre>30: 70 00 00 00 11 73 71 00 7e 00 00 00 00 00 13 70 &gt;p....sq. ~......p&lt;
+</pre>
+
+
+<a name="9777"><!-- --></a> 
+<pre>40: 71 00 7e 00 03                                  &gt;q. ~..&lt;
+</pre>
+
+
+<a name="9754"><!-- --></a> 
+<pre>
+</pre>
+
+
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="version.html">전의 항목</a>  | <a href="security.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:42 2005 -->
+ 
+
+
+</body>
+</html>

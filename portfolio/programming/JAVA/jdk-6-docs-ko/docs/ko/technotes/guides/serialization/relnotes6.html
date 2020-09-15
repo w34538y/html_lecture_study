@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<META NAME="GENERATOR" CONTENT="Mozilla/4,02 [en] (X11; U; SunOS 5.6 sun4u) [Netscape]">
+<TITLE>직렬화 릴리스 노트 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: Susan Snyder,  10-16-05 -->
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+&nbsp;
+<TABLE summary="layout" BORDER=0 WIDTH="100%" >
+<TR>
+<TD WIDTH="60"></TD>
+
+<TD>
+<CENTER>
+<H1>
+Java<sup><font size=-1>TM</font></sup> SE Development Kit 6 에서의<br>직렬화의 변경과 확장</H1></CENTER>
+</TD>
+
+<TD width=15% ALIGN=center>
+<font size="-1"><a href="../../../index.html">문서의 목차 </a> </font>
+</TD>
+
+</TR>
+</TABLE>
+<!-- Body text begins here -->
+<blockquote>
+여기에서는, JavaTM SE Development Kit 6 (JDK)의 직렬화의 확장 기능에 대해 설명합니다. 이전의 릴리스로 확장된 기능에 대한 개요는<a href=relnotes.html>「이전의 릴리스에서의 확장 기능」</a>을 참조해 주세요. <b></b>
+<p>
+<dl>
+<dt><b><code>java.io.ObjectStreamClass.lookupAny</code></b></dt>
+<dd>이전의 릴리스에서는, 직렬화가 불가능한<code>클래스</code>의 <code>ObjectStreamClass</code> 인스턴스를 프로그램으로 취득하는 것은 곤란했습니다. 그러나, 클래스 기술자의 스트림 형식을 커스터마이즈 하는 경우는, 그처럼 하는 것이 바람직한 경우도 있습니다 (상세한 것에 대하여는,<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4413615">4413615</a>  를 참조). 새로운 메소드 <a href="../../../api/java/io/ObjectStreamClass.html#lookupAny(java.lang.Class)"><tt>ObjectStreamClass.lookupAny</tt></a>  를 이 때문에 사용할 수 있게 되었습니다.
+<p>
+</dd>
+<dt><b>버그의 수정:지연 가베지 컬렉션</b></dt>
+<dd>이전의 릴리스에서는, 버그 <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6232010">6232010</a>  에 의해,<code>ObjectOutputStream</code> 및 <code>ObjectInputStream</code> 의 직렬화 가능 클래스 및 서브 클래스를 직렬화 조작으로 사용후 당분간 경과해도, 이러한 클래스에의 강한 참조가 있는 경우가 있었습니다. 이 때문에 이것들을 정의하는 클래스 로더의 가베지 컬렉션이 무기한에 늦을 가능성이 있었습니다. 이 버그를 수정하기 위해서, 직렬화의 구현으로 내장형 캐쉬가 재구축 되었습니다.
+<p>
+</dd>
+</dl>
+
+</blockquote>
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td>
+<p><font SIZE="-2"><a HREF="../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font></p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>
+

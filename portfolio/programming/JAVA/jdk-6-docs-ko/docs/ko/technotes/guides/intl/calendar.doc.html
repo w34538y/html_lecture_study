@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>지원되는 달력 - xrath.com 에서 번역됨</title>
+  <style type="text/css">
+. new { background: yellow; } </style>
+</head>
+<body style="background-color: rgb(255, 255, 255);" lang="en"
+ vlink="#000077">
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"  alt="Java" align="bottom" border="0" height="88" width="52"> </td>
+      <td>
+<h1 align="center">지원되는 달력<br>
+      </h1>
+      </td>
+      <td width="60">&nbsp;</td>
+    </tr>
+  </tbody>
+</table>
+<!-- Body text begins here -->
+<p><br> 여기에서는, Sun 의 JDK (Java SE Development Kit) 6 으로 JRE (Java SE Runtime Environment) 6 으로 지원되는 달력 시스템에 대해 설명합니다. Java SE 플랫폼외의 구현에서는, 다른 달력 시스템을 지원하는 경우가 있습니다. <br>
+</p>
+<hr>
+<h2><a name="introduction"></a> 1.  처음에</h2>
+<p><a href="../../../api/java/util/Calendar.html"><code>Calendar</code></a>  는,<code>YEAR</code>,<code>MONTH</code>,<code>DAY</code>,<code>HOUR</code> 등,<a href="../../../api/java/util/Date.html"><code>Date</code></a>  객체와 정수 필드 세트와의 변환을 실시하는 추상 base class입니다. <code>Calendar</code> 의 서브 클래스는, 특정의 달력 시스템의 규칙에 따라 <code>Date</code> 를 해석합니다. 플랫폼은,<code>Calendar</code> 의 public 구상 서브 클래스 <a  href="../../../api/java/util/GregorianCalendar.html"><code>GregorianCalendar</code></a>  를 제공합니다. <a name="calendar_instantiation"></a> 팩토리 메소드인 <code>Calendar.getInstance</code> 는, 지정된 <code>Locale</code> 를 위한 구상 달력 시스템의 구현을 돌려줍니다. 지원되는 달력 시스템은 다음과 같습니다. <br> <br>
+<table bgcolor="#ffffff" border="1" cellpadding="3" cellspacing="0"
+ width="80%">
+  <tbody>
+    <tr>
+<th bgcolor="#ccccff" valign="middle"><code> 로케일</code><br>
+      </th>
+<th bgcolor="#ccccff" valign="middle">달력 시스템<br>
+      </th>
+<th bgcolor="#ccccff" valign="middle">최초의 도입 버젼 (JRE 버젼)<br>
+      </th>
+    </tr>
+    <tr>
+<td valign="middle">th_TH (와 그 변형)<br>
+      </td>
+<td valign="middle">타이불력<br>
+      </td>
+      <td align="center" valign="middle">1.4<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="middle">ja_JP_JP<br>
+      </td>
+<td valign="middle">일본이 달력<br>
+      </td>
+      <td align="center" valign="middle">1.6<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="top">상기 이외의<code>로케일</code><br>
+      </td>
+<td valign="top">태양력 (<code>GregorianCalendar</code>)<br>
+      </td>
+      <td align="center" valign="top">1.1<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<p></p>
+<hr>
+<h2><a name="thaibuddhist"></a> 2.  타이불력<br>
+</h2>
+타이에서는 태양력과 「불력」에 의한 계수가 병용 되고 있습니다. 불력 (<span lang="th">??????????</span>, 약칭 B.E.  (<span lang="th">?.?.</span>))의 초년은, BCE (BC) &nbsp; 543 (율리우스력)에 상당합니다. 따라서, 태양력연 + 543 이 B.E.  해가 됩니다. <br><br> 타이어의 로케일이 지정되고 있는 경우,<code>Calendar.getInstance</code> 메소드는 타이불력인스턴스를 돌려줍니다. 로케일은 언어 및 나라의 값에 의해 정해집니다. 이 타이불력의 구현은, 정확하게 B.E.  2484 (1941 태양력년) 이후의 일자를 지원합니다. 역사 달력 시스템의 이행은, 구현에 의해 지원되고 있지 않습니다. 불력의 <code>Calendar.ERA</code> 의 값은 1 입니다. <br>
+<hr>
+<h2><a name="japanese"></a> 3.  일본이 달력</h2>
+일본에서는 태양력과 연호의 계수가 병용 되고 있습니다. 연호는 천황의 즉위로 시작되어, 연호가 새로워지면(자) 연수가 1 에 리셋 됩니다. 연호의 초년은 태양력년의 이행과는 동기 하지 않고, 어느 일자에도 연호의 첫날이 될 가능성이 있습니다. 예를 들어, 현재의 연호의 첫날은 1989 년 (태양력) 1 월 8 일입니다. 다만, 세월은 태양력과 동기 합니다. <br>로케일을 <br> ja_JP_JP 로 지정하면(자),<code>Calendar.getInstance</code> 메소드는 일본이 달력 인스턴스를 돌려줍니다. 이 구현은, 「Meiji」이후의 연호를, 다음에 나타내는 매년호의 이행일과 함께 지원합니다. <br> <br>
+<table border="1" cellpadding="3" cellspacing="1" width="100%">
+  <tbody>
+    <tr>
+<th bgcolor="#ccccff" valign="middle">연호명<br> (일본어)<br>
+      </th>
+<th align="center" bgcolor="#ccccff" valign="top"><a  name="JapaneseEraAbbreviations"></a> 약어<br><br>
+      </th>
+<th bgcolor="#ccccff" valign="middle"><b><code>ERA<br></code>필드<code> </code>치</b><br>
+      </th>
+<th bgcolor="#ccccff" valign="middle">이행 일시<br> (태양력)<br>
+      </th>
+    </tr>
+    <tr>
+<td valign="top"><big>- (</big><span lang="ja">서기</span><big>)</big><br>
+      </td>
+      <td align="center" valign="top">-<br>
+      </td>
+      <td align="center" valign="top"><code></code>0<br>
+      </td>
+      <td valign="top">-<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="top">Meiji (<span lang="ja">메이지</span>)<br>
+      </td>
+<td align="center" valign="top">M<br>
+      </td>
+      <td align="center" valign="top">1<br>
+      </td>
+<td valign="top">1868-01-01 00:00:00 현지 시각<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="top">Taisho (<span lang="ja">타이쇼</span>)<br>
+      </td>
+<td align="center" valign="top">T<br>
+      </td>
+      <td align="center" valign="top">2<br>
+      </td>
+<td valign="top">1912-07-30 00:00:00 현지 시각<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="top">Showa (<span lang="ja">쇼와</span>)<br>
+      </td>
+<td align="center" valign="top">S<br>
+      </td>
+      <td align="center" valign="top">3<br>
+      </td>
+<td valign="top">1926-12-26 00:00:00 현지 시각<br>
+      </td>
+    </tr>
+    <tr>
+<td valign="top">Heisei (<span lang="ja">헤세이</span>)<br>
+      </td>
+<td align="center" valign="top">H<br>
+      </td>
+      <td align="center" valign="top">4<br>
+      </td>
+<td valign="top">1989-01-08 00:00:00 현지 시각<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br> 「Meiji」이전의 태양력년의 계수는 지원되고 있습니다. <code>GregorianCalendar</code> 와 달리, 일본이 달력의 구현은 태양력년의 이행에 대응하는 율리우스력을 지원하고 있습니다. 태양력년의 1 이전의 세는 방법은 0,-1,-2 …여, 1, 2, 3 …이 아닙니다. 엄밀하게 말하면(자), 태양력은 1873 년 (Meiji 5)부터 사용되어 다른 달력 시스템은 그 이전부터 사용되고 있었습니다. 다만, 구현에서는 「Meiji」의 첫날을 1868 년 1 월 1 일로 정의하고 있습니다만, 이것은 사실이 아닙니다. 달력 시스템에 관한 일본의 법령은, 일본외의 타임 존의 취급에 대해 규정하고 있습니다. 구현에서는, 연호의 이행 시각은 어느 타임 존에서도 현지 시각의 오전 0 시로 상정되고 있습니다. <br><br> Calendar API 에서는, 일부의 필드는, 연호 이행의 해와 동기 해, 그 때문에(위해) 연호의 초년의 예외 규칙을 처리합니다. 다음의 겉(표)에 그 내용을 나타냅니다. <br> <br>
+<table border="1" cellpadding="3" cellspacing="1" width="100%">
+  <tbody>
+    <tr>
+<th bgcolor="#ccccff" valign="top">달력 필드<br>
+      </th>
+<th bgcolor="#ccccff" valign="top">설명<br>
+      </th>
+    </tr>
+    <tr>
+<td valign="middle"><code><a  href="../../../api/java/util/Calendar.html#WEEK_OF_YEAR">WEEK_OF_YEAR</a> <br></code> </td>
+<td valign="top">매년호의 1 년 째의 <code>WEEK_OF_YEAR</code> 를 산정하려면 , 첫날의 요일과 최초의 주의 최소 날짜부터 산정하는 경우와 같은 규칙을 적용합니다. 예를 들어, 첫날의 요일이 <code>SUNDAY</code> 로 최초의 주의 최소 날짜가 1 의 경우,1926-12-19 의 <code>WEEK_OF_YEAR</code> 의 값은 <i>Taisho</i> 15 의 52 가 되어,1926-12-26 의 값은 <i>Showa</i> 1 의 1 이 됩니다. <br>
+      </td>
+    </tr>
+    <tr>
+<td valign="middle"><code><a  href="../../../api/java/util/Calendar.html#DAY_OF_YEAR">DAY_OF_YEAR</a> <br></code></td>
+<td valign="top">매년호의 첫날의 <code>DAY_OF_YEAR</code> 는 1 입니다. 예를 들어, 「Showa」로부터 「Heisei」에의 이행을 보면(자), 「Showa」(쇼와 64.01. 07, 태양력 1989-01-07)의 마지막 날은 7 이며, 그 다음날은 「Heisei」(헤세이 1.01. 08)의 첫날이므로 1 입니다. <code>getLeastMaximum</code> 메소드는, 모든 해를 통해서 최소의 연간 날짜를 돌려줍니다. 2005 년 (태양력) 시점의 값은 6 입니다. <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<hr size="2" width="100%">
+<h2>4.  태양력 이외의 일자의 서식 설정과 구문 분석</h2>
+<a href="../../../api/java/text/DateFormat.html"><code>DateFormat</code></a>  인스턴스에는, 지정된<code>로케일</code>또는 디폴트의 로케일에 의해 내부 일시를 변환하기 위한 <code>Calendar</code> 인스턴스가 포함되어 있습니다. <code>Calendar</code> 인스턴스를 작성하는 경우는,<a href="#calendar_instantiation">같은 규칙</a>  이 적용됩니다. 예를 들어, ja_JP_JP 로케일이 지정되었을 경우,<code>DateFormat.getDateInstance</code> 메소드는, 일본이 달력의 일자를 처리하는 <code>DateFormat</code> 인스턴스를 돌려줍니다. 다음의&nbsp;코드를 실행했다고 합니다. <br>
+<blockquote>
+<pre>DateFormat df = DateFormat.getDateInstance(DateFormat.FULL,<br>                                          &nbsp;new Locale("ja", "JP", "JP"));<br>System.out.println(df.format(new Date()));</pre>
+</blockquote>
+다음과 같은 출력이 생성됩니다. <br>
+<blockquote>
+<pre><span lang="ja">헤세이 17년 10월 25일</span></pre>
+</blockquote>
+그 외 <code>DateFormat.parse</code> 메소드는, 연호와 함께 일자의 캐릭터 라인을 해석합니다. 다음의 코드를 실행했다고 합니다. <br>
+<blockquote>
+<pre>System.out.println(df.parse("<span lang="ja">헤세이 원년 10월 25일</span>"));<br></pre>
+</blockquote>
+다음과 같은 아시아/토쿄 타임 존의 출력이 생성됩니다. <br>
+<blockquote>
+<pre>Wed Oct 25 00:00:00 JST 1989<br></pre>
+</blockquote>
+덧붙여<code>DateFormat.parse</code> 메소드에 의해 반환된 <code>Date</code> 객체는, 대응하는 태양력의 일자를 나타냅니다. <code>Date</code> 를 일본이 달력의 일자로 변환하려면 , 지정된 <code>Date</code> 에 대해서 <code>Calendar.setTime</code> 메소드를 사용할 필요가 있습니다. <br><br> <code>SimpleDateFormat</code> 에서는, 타이불력과 일본이 달력 시스템에 대해 다음의 규칙이 적용됩니다. <br> <br>
+<table bgcolor="#ffffff" border="1" cellpadding="3" cellspacing="1"
+ width="100%">
+  <tbody>
+    <tr>
+<th align="center" bgcolor="#ccccff" valign="top"><b>달력 시스템<br></b></th>
+<th align="center" bgcolor="#ccccff" valign="top"><b>패턴 문자<br></b></th>
+<th align="center" bgcolor="#ccccff" valign="top"><b>설명<br></b></th>
+    </tr>
+    <tr>
+<td colspan="1" rowspan="2" valign="top">타이불력<br>
+      </td>
+<td align="center" valign="top"><code>G<br></code></td>
+<td valign="top">패턴 문자수에 의해 연호명의 표시가 바뀔 것은 없습니다. <br>
+      </td>
+    </tr>
+    <tr>
+<td align="center" valign="top"><code>y<br></code></td>
+<td valign="top">패턴 문자수에는 <code>GregorianCalendar</code> 와 같은 규칙이 적용됩니다. <br>
+      </td>
+    </tr>
+    <tr>
+<td colspan="1" rowspan="2" valign="top">일본이 달력<br>
+      </td>
+<td align="center" valign="top"><code>G<br></code></td>
+<td valign="top">서식 설정에서는, 패턴 문자수가 4 이상의 경우, 긴 연호명 (예를 들어 「<span lang="ja">헤세이</span>」)이 사용됩니다. 그 이외의 경우,<a href="#JapaneseEraAbbreviations">약어</a>  (예를 들어 「H」)가 사용됩니다. 구문 분석에서는, 긴 연호명과 약어는 모두 받아들여집니다. <br>
+      </td>
+    </tr>
+    <tr>
+<td align="center" valign="top"><code>y<br></code></td>
+<td valign="top">서식 설정에서는, 패턴 문자수가 4 이상의 경우, 연호의 초년은 로케일 고유의 표현으로서 서식 설정됩니다. 예를 들어, 일본어의 로케일이라면 「<span lang="ja">원</span>」 등이 됩니다. &nbsp;그 외의 경우, 값은 숫자로 표시됩니다. 2 문자 및 4 문자로부터 완성되는 <code>GregorianCalendar</code> 일자의 서식 설정의 규칙은 적용되지 않습니다. 구문 분석에서는, 로케일 고유의 표현과 숫자의 표현은 모두 받아들여집니다. <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br> 변형 요소가 타이어의 로케일로 「TH」의 경우, 일시의 서식 설정에는 타이어의 숫자가 사용됩니다. 예를 들어, 다음의 코드를 실행했다고 합니다. <br>
+<blockquote>
+<pre>DateFormat df = DateFormat.getDateInstance(DateFormat.FULL,<br>                                          &nbsp;new Locale("th", "TH", "TH"));<br>System.out.println(df.format(new Date()));</pre>
+</blockquote>
+다음과 같은 출력이 생성됩니다. <br>
+
+<blockquote><span lang="th">???????????? ?? ?????? ?.?. ????</span><br>
+</blockquote>
+
+<hr size="2" width="100%">
+<h2>5.  직렬화에 대해</h2>
+<code>Calendar.getInstance</code> 팩토리 메소드에 의해 반환된 <code>Calendar</code> 객체를 직렬화해 다른 JVM 에 송신했을 경우, 직렬화 된 <code>Calendar</code> 객체를 작성하기 위해서 사용한 <code>Calendar</code> 서브 클래스를 송신지의 JVM 가 지원하고 있지 않으면, 그 객체의 직렬화 복원은 실패합니다. 직렬화 된 <code>Calendar</code> 객체를 교환하려고 하고 있는 JVM 로, 같은 <code>Calendar</code> 서브 클래스가 지원되고 있는 것을 확인해 주세요. <br> <br> <!-- Body text ends here --><!-- ============================================================== -->
+<hr noshade="noshade" size="3">
+<table summary="layout" border="0" width="100%">
+  <tbody>
+    <tr>
+<td valign="top"><font size="-2"><a  href="../../../legal/SMICopyright.html">Copyright ＆＃169;</a>  2005 <a href="http://www.sun.com/">Sun Microsystems, Inc. </a> </font><font size="-2">All Rights Reserved. </font><br><font size="-1"><a  href="http://developers.sun.com/contact/feedback.jsp?referer=http://java.sun.com/j2se/6.0/docs/technotes/guides/intl/locale.doc.html&amp;category=j2se&amp;mailsubject=Internationalization%20%28I18N%29">연락처</a> </font> </td>
+<td align="right" valign="top"><img  src="../../../images/sunlogo64x30.gif" alt="Sun" align="bottom" border="0"  height="30" width="64"> <i><font size="+1"> Java Software</font></i> </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

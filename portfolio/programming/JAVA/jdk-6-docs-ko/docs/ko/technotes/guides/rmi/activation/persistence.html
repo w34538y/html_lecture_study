@@ -1,0 +1,390 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+   
+<title>액티베이션의 사용:지속성 - xrath.com 에서 번역됨</title>
+<!-- Changed by: Susan Snyder - SMI Software Development, 13-July-2004 -->
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ff" vlink="#000077" alink="#ff0000">
+
+<table border="0" width="100%" summary="layout">
+<tbody><tr>
+<td width="60"></td>
+
+<td>
+
+<center>
+<h1>액티베이션의 사용:지속성<code></code></h1>
+        </center>
+
+</td>
+
+<td width="15%" align="center">
+<font size="-1"><a href="../../../../index.html">문서의 목차</a> </font>
+</td>
+</tr>
+</tbody></table>
+
+<P>
+이 튜토리얼에서는, 구현시에 지속 상태를 사용하는 기동 가능한 원격 객체를 구현하는 방법에 대해 설명합니다. 이 튜토리얼에서는,<code>Setup</code> 프로그램 (<a href="setup.html">「액티베이션의 사용:<code>Setup</code> 프로그램」</a>튜토리얼을 참조)을 사용합니다.  이 프로그램은, 기동 가능한 원격 객체에 관한 정보를 Java<sup><font SIZE="-2">TM</font></sup> Remote Method Invocation (Java RMI) 기동 시스템 demon (<code>rmid</code>)에게 등록해,<code>rmiregistry</code> 로 그 원격 객체의 Stub를 바인드 해, 클라이언트를 검색할 수 있도록(듯이) 합니다. 이 튜토리얼의 전에, Setup 프로그램의 튜토리얼을 읽는 것을 추천합니다.  
+</p>
+<p>이 튜토리얼에서는, 다음의 순서를 실행합니다. </p>
+<uL>
+        
+<LI><A HREF="#1">기동 가능한 원격 객체의 구현</A>  </li>
+<LI><A HREF="#2">클라이언트의 구현</A> </li>
+<LI> <A HREF="#3">원시 파일의 컴파일</A> </li>
+		<LI> <A HREF="#4"><code>Setup</code> 프로그램의 실행</A> </LI>
+<LI> <A HREF="#5">클라이언트의 실행</a> </li>
+</uL>
+
+<p>이 튜토리얼의 실행에 필요한 파일은, 다음과 같습니다. </p>
+<UL>
+<LI><A HREF="src/Counter.java"><code>Counter.java</code></A>  - 카운트용의 원격 인터페이스</li>
+<LI><A HREF="src/CounterImpl.java"><code>CounterImpl.java</code></A>  - 원격 인터페이스의 「기동 가능한」구현</li>
+<LI><code><A HREF="src/CounterClient.java">CounterClient.java</A> </code> - 원격 인터페이스를 사용하는 클라이언트</li>
+<LI><code><A HREF="src/client.policy">client.policy</A> </code> - 클라이언트의 시큐리티 정책 파일 </li>
+</UL>
+
+<hr>
+<h2> <a name="1"></a> 기동 가능한 원격 객체의 구현</h2>
+<blockquote> 
+  <p>
+기동 가능한 원격 객체를 구현하려면 , 몇개의 기본적인 방법이 있습니다. 이 튜토리얼에서는, 구현시에 지속 상태를 사용하는 기동 가능한 원격 객체를 구현하는 방법에 대해 설명합니다.  
+  </p>
+<p>원격 객체는, 클라이언트가 기동 가능한 원격 객체의 Stub로 원격 메소드를 호출할 때 기동됩니다. 기동 가능한 원격 객체의 Stub에는, 원격 객체의 기동 식별자와 그 원격 객체의 Java RMI 기동 시스템 demon (<code>rmid</code>)에게 컨택트 하는 방법에 관한 정보가 포함됩니다. Stub는, 원격 객체의 최신의 주소 (즉, 호스트/포트)에 접속할 수 없는 경우, 원격 객체의 activator (<code>rmid</code>)에 컨택트 해 그 객체를 기동합니다. <code>rmid</code> 는, 기동 요구를 받아들이면(자), 원격 객체의 기동 그룹이 아직 실행되어 있지 않은 경우는, 그 그룹 (또는 컨테이너)의 가상 머신 (VM)을 기동합니다.  다음에,<code>rmid</code> 는, 그룹에 그 원격 객체의 인스턴스를 작성하도록(듯이) 요구합니다. 그룹은, 원격 객체를 구축하면(자), 그 원격 객체의 Stub를 <code>rmid</code> 에 돌려줍니다.  다음에,<code>rmid</code> 는 실제의 Stub를 기동 Stub에 돌려주어, 기동 Stub가 장래 그 원격 객체에 컨택트 하는 방법에 대한 정보를 갱신할 수 있도록(듯이) 합니다.  
+	</p>
+<p>이 액티베이션을 실시하기 전에, 어플리케이션에서는, 사용할 필요가 있는 기동 가능한 원격 객체에 관한 정보를 등록할 필요가 있습니다. 다음의 별개의 튜토리얼에서는, 원격 객체의 기동에 필요한 정보와 그 정보를 <code>rmid</code> 에 등록하는 방법에 대해 설명합니다.
+ 	</p>
+  <ul>
+<li><a href="setup.html">액티베이션의 사용:<code>Setup</code> 프로그램</a> </li>
+  </ul>
+  
+  <p>
+이 예에서는, 원격 인터페이스인 <code>Counter</code> 를 단일의 <code>increment</code> 조작으로 정의합니다. <code>CounterImpl</code> 구현 클래스는,<code>increment</code> 조작의 결과를 파일에 지속적으로 보존합니다.  그 때문에,<code>increment</code> 조작의 결과는, 객체의 기동/종료의 사이클을 넘어 계속 존재합니다.  또, 머신의 리부트 후나 크래쉬 다음에도 존재합니다. 이 처리를 모두 실시하려면 ,<code>CounterImpl</code> 객체가 기동하고 있는 경우, 이 객체에는 카운터치를 읽어내 보존하는데 사용하는 파일명이 필요합니다. 사용자는, 이 파일명을 초기화 데이터로서 <code>MarshalledObject</code> 내에 포함한 기동 기술자를 등록할 수 있습니다. 객체의 기동 그룹은, 그룹이 기동시에 객체를 구축할 경우에, 이 미리 등록된 정렬화 데이터 (파일명)를 객체의 생성자 에 건네줍니다.  
+  </p>
+  <p>
+원격 인터페이스 <code>examples.activation.Counter</code> 는 다음과 같이 정의됩니다.  
+  </p>
+<blockquote> 
+<pre>
+package examples.activation;
+
+import java.rmi.Remote;
+import java.io.IOException;
+
+public interface Counter extends Remote {
+
+    int increment() throws IOException;
+}
+</pre>
+</blockquote> 
+  <p>
+기동 가능한 원격 객체의 <code>examples.activation.CounterImpl</code> 구현 클래스는 다음과 같습니다.  
+  </p>
+<blockquote> 
+<pre>
+package examples.activation; 
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.rmi.MarshalledObject;
+import java.rmi.activation.Activatable;
+import java.rmi.activation.ActivationID;
+
+public class CounterImpl implements Counter {
+    private RandomAccessFile raf;
+    private int count;
+    private final Object countLock = new Object();
+    
+    public CounterImpl(ActivationID id, MarshalledObject data) 
+        throws Exception
+    {
+        if (data ! = null) {
+            String filename = (String) data.get();
+            synchronized (countLock) {
+                count = openFile(filename);
+            }
+            System.err.println("count upon activation = " + count);
+        }
+
+        Activatable.exportObject(this, id, 0);
+    }
+
+    private int openFile(String filename) throws IOException {
+
+        if (filename ! = null && ! filename.equals("")) {
+            File file = new File(filename);
+            boolean fileExists = file.exists();
+            raf = new RandomAccessFile(file, "rws");
+            return (fileExists) ?  raf.readInt() : writeCount(0);
+            
+        } else {
+            throw new IOException("invalid filename");
+        }
+    }
+
+    private int writeCount(int value) throws IOException {
+        raf.setLength(0);
+        raf.writeInt(value);
+        return value;
+    }
+            
+    public int increment() throws IOException {
+        synchronized (countLock) {
+            return writeCount(++count);
+        }
+    }
+}
+</pre>
+  </blockquote>
+
+  <p>
+<code>CounterImpl</code> 클래스는,<code>Counter</code> 원격 인터페이스를 구현합니다만, 어느 클래스도 확장하지 않습니다.  
+  </p>
+  <p>
+이 클래스는, 기동 그룹이 기동 프로세스중에 인스턴스를 구축하기 위해서 호출하는 특별한 기동 생성자 을 선언합니다. 이 특별한 생성자 은, 다음의 2 개의 파라미터를 취합니다.  
+  </p>	
+	<ul>
+<li>1 번째의 파라미터는 <code>ActivationID</code> 로, 기동 가능한 원격 객체의 식별자입니다. 어플리케이션이 기동 기술자를 <code>rmid</code> 에 등록하면(자),<code>rmid</code> 는 거기에 기동 식별자를 할당해 이 기동 식별자가 기술자에게 관련하는 정보를 참조합니다. 원격 객체가 기동되면(자), 이 같은 기동 식별자 (원격 객체의 Stub에도 포함되어 있다)가 생성자 에게 건네집니다.  </li>
+<li>2 번째의 파라미터는 <code>MarshalledObject</code> 로,<code>rmid</code> 에 미리 등록된 초기화 데이터가 포함되어 있습니다. 이 예에서는, 정렬화 된 데이터는, 최신의 카운터치인 객체의 지속 상태를 포함한 파일의 이름입니다.  </li>
+	</ul>
+  <p>
+생성자 은, 2 번째의 파라미터로서 건네받은 <code>MarshalledObject</code> 에 포함되는 파일명을 가져옵니다. 다음에, 생성자 은, 로컬 메소드 <code>openFile</code> 를 호출해, 그 파일을 열어, 현재의 카운터치를 돌려줍니다. 파일이 존재하는 경우,<code>openFile</code> 메소드는 마지막에 파일에 보존된 값을 읽어냅니다.  파일이 존재하지 않는 경우는, 새로운 파일을 작성해, 카운트를 0 에 초기화합니다. 다음에, 생성자 은, static 메소드 <code>Activatable.exportObject</code> 를 호출해, 구현 자체 (<code>this</code>), 기동 식별자, 및 포트 번호 <code>0</code> 을 건네주어, 객체를 익명의 TCP 포트로 export 할 필요가 있는 것을 나타냅니다. 이 구현에서는, 파라미터로서 생성자 에게 건네진 기동 식별자는 사용하지 않습니다만, 다른 구현에서는, 장래의 사용에 대비해, 예를 들어 객체를 종료하기 위해서, 기동 식별자를 보존할 수도 있습니다.  
+  </p>
+  <p>
+마지막으로, 클래스는, 원격 인터페이스의 단일 메소드인 <code>increment</code> 를 구현해, 카운트를 증분 해, 그 카운트를 파일에 보존해, 증분 한 카운트를 돌려줍니다. <code>writeCount</code> 메소드의 구현에는 약점이 있는 것에 주의해 주세요. <code>setLength</code> 와 <code>writeInt</code> 의 호출동안에 머신이 크래쉬 하면(자), 카운터의 값이 없어집니다. 몇 안 되는 시간의 사이에 발생한 크래쉬에 대해서 좀 더 견뢰하게 하는 것이, 리더의 향후의 과제입니다.  
+  </p>
+</blockquote>
+<h2><a name="2"></a> 클라이언트의 구현</h2>
+<blockquote> 
+  <p>
+<code>CounterClient</code>프로그램은, 옵션의 제 1 인수로서 제공된 호스트의 레지스트리내의 원격 객체의 Stub (원격 인터페이스 <code>Counter</code> 를 구현하는 Stub)를 검색해, 그 Stub의 <code>increment</code> 메소드를 호출해, 결과를 표시합니다. 레지스트리로부터 획득한 Stub로 이 클라이언트가 원격 메소드를 호출하면(자), 원격 객체가 기동되어 있지 않은 경우에는 원격 객체가 기동됩니다.  
+  </p>
+  <p>
+프로그램의 소스는 이하대로입니다.  
+  </p>
+  <blockquote> 
+    <pre>
+package examples.activation; 
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+public class CounterClient {
+
+    public static void main(String args[])  throws Exception {
+
+        String hostname = "localhost";
+        if (args.length < 1) {
+            System.err.println(
+                "usage: java [options] examples.activation.CounterClient [host]");
+            System.exit(1);
+        } else {
+            hostname = args[0];
+        }
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        String name = System.getProperty("examples.activation.name");
+        Registry registry = LocateRegistry.getRegistry(hostname);
+        Counter stub = (Counter) registry.lookup(name);
+        System.err.println("Obtained stub from the registry. ");
+
+        System.err.println("Invoking increment method...");
+        int count = stub.increment();
+        System.err.println("Returned from increment remote call. ");
+        System.err.println("count = " + count);
+    }
+}
+</pre>
+  </blockquote>
+  <p>
+이 프로그램을 다음과 같이 실행합니다.  
+  </p>
+  <blockquote> 
+    <pre>
+java -cp <b><i>clientDir</i></b>                               \
+     -Djava.security.policy=<i><b>client.policy</b></i>        \
+     -Dexamples.activation.client.codebase=<i><b>clientCodebase</b></i>   \
+     -Dexamples.activation.name=<i><b>name</b></i>             \
+     examples.activation.CounterClient [<i><b>host</b></i>]
+</pre>
+  </blockquote>
+  <p>
+설명 
+  </p>
+  <ul>
+<li><b>clientDir</b> 는, 클라이언트 프로그램 (그 클래스 패스)의 루트 디렉토리</li>
+<li><b>client.policy</b> 는, 이 프로그램의 시큐리티 정책 파일</li>
+<li><b>clientCodebase</b> 는, 이 프로그램의 클래스 (<b>client.policy</b> 파일로 이 프로그램에 액세스권을 부여할 경우에 사용)의 장소 (URL) </li>
+<li><b>name</b> 는, 레지스트리내의 객체의 Stub의 이름 </li>
+<li><b>host</b> 는, 서버의 호스트</li>
+  </ul>
+  <p>
+주:이 프로그램을 실행하기 전에,<code>rmid</code> 가 그 디폴트 포트로 가동해,<code>rmiregistry</code> 가 그 디폴트 포트 (양쪽 모두 원격 호스트상)로 가동하고 있을 필요가 있습니다.  
+  </p>
+  <p>
+액티베이션의 예로서 적절한 액세스권을 부여하는 <code>client.policy</code> 파일의 예를 이하에 나타냅니다.  
+  </p>
+  <blockquote> 
+    <pre>
+grant codeBase "${examples.activation.client.codebase}" {
+
+    // permissions to read system properties required by the client
+    permission java.util.PropertyPermission "examples.activation.name","read";
+
+    // permission to connect to the registry, activation system, and remote host
+    permission java.net.SocketPermission "*:1024-","connect";
+};
+</pre>
+  </blockquote>
+  <p>
+액세스권이 부여되는 코드 베이스는, 클라이언트의 클래스의 장소를 지정하는 파일 URL 입니다. 이 파일 URL 는,<code>examples.activation.client.codebase</code> 시스템 프로퍼티의 값으로, 클라이언트 프로그램의 실행시에 정의됩니다. 클라이언트에는 2 개의 액세스권이 필요합니다.  
+  </p>
+  <ul>
+<li><code>java.util.PropertyPermission</code> - 레지스트리내의 Stub의 이름을 지정하는 시스템 프로퍼티 <code>examples.activation.name</code> 를 읽어낸다</li>
+<li><code>java.net.SocketPermission</code> - 레지스트리, 기동 시스템, 및 원격 객체의 호스트에게 접속한다</li>
+  </ul>
+  </blockquote>
+  
+
+<h2><a name="3"></a> 원시 파일의 컴파일</h2>
+<blockquote>
+
+<p>이 예의 원시 파일은, 다음과 같이 해 컴파일 할 수 있습니다.
+    </p>	
+
+<blockquote>
+<pre>
+javac -d <b><i>implDir</i></b> Counter.java CounterImpl.java 
+javac -d <b><i>clientDir</i></b> Counter.java CounterClient.java
+</pre>
+</blockquote>
+
+<p><b>implDir</b> 는 구현의 클래스 파일을 배치하는 생성처 디렉토리에서,<b>clientDir</b> 는 클라이언트의 클래스 파일을 배치하는 생성처 디렉토리입니다.  
+    </p>	
+
+</blockquote>
+
+<h2><a name="4"></a> <code>Setup</code> 프로그램의 실행</h2> 
+<blockquote>
+
+  <p>
+구현 단계가 완료하면(자), 기동 가능한 객체에 관한 정보를 등록해, 클라이언트를 사용할 수 있도록(듯이) 할 필요가 있습니다. <code>Setup</code> 프로그램은,<a href="setup.html">「액티베이션의 사용:<code>Setup</code> 프로그램」</a>튜토리얼로 설명되고 있도록(듯이), 기동 가능한 객체의 기동 기술자를 <code>rmid</code> 에 등록해,<code>rmiregistry</code> 로 원격 객체의 Stub를 바인드 해, 클라이언트를 검색할 수 있도록(듯이) 합니다.  
+  </p>
+	
+<p>이 예의 <code>Setup</code> 프로그램을 실행하려면 ,<code>Setup</code> 프로그램의 튜토리얼의<a href="setup.html#3">「<code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램의 기동」</a>을 참조해 주세요.  <code>rmid</code>,<code>rmiregistry</code>, 및 <code>Setup</code> 프로그램 자체의 기동 방법에 대해 설명하고 있습니다.  
+    </p>	
+	
+  <p>
+<code>Setup</code> 튜토리얼의 순서에 따라 <code>rmid</code> 와 <code>rmiregistry</code> 를 실행하면(자),<code>Setup</code> 프로그램을 실행해,<code>examples.activation.CounterImpl</code> 클래스를 구현하는 기동 가능한 객체의 기동 기술자를 등록할 필요가 있습니다. 다음의 커멘드행에서는,<code>Setup</code> 프로그램을 실행해, 사용되는 각 코드 베이스의 적절한 파일 URL 를 제공합니다.  
+  </p>	
+	
+<blockquote>
+    <pre>
+java -cp <i><b>setupDir</b></i>:<i><b>implDir</b></i>                       \
+     -Djava.security.policy=<i><b>setup.policy</b></i>                      \
+     -Djava.rmi.server.codebase=file:/<i><b>implDir</b></i>/                \
+     -Dexamples.activation.setup.codebase=file:/<i><b>setupDir</b></i>/     \
+     -Dexamples.activation.impl.codebase=file:/<i><b>impDir</b></i>/        \
+     -Dexamples.activation.name=examples.activation.Counter                 \
+     -Dexamples.activation.policy=<i><b>group.policy</b></i>                \
+     -Dexamples.activation.file=<i><b>file</b></i>                          \
+	 examples.activation.Setup examples.activation.CounterImpl</pre>
+</blockquote> 
+
+<p>설명</p>
+  <ul>
+<li><b>setupDir</b> 는,<code>Setup</code> 프로그램의 클래스의 루트 디렉토리</li>
+<li><b>implDir</b> 는, 구현의 클래스의 루트 디렉토리 
+    </li>
+<li><b>setup.policy</b> 는,<code>Setup</code> 프로그램의 시큐리티 정책 파일 </li>
+<li><b>group.policy</b> 는, 기동 그룹의 시큐리티 정책 파일</li>
+<li><b>file</b> 는, 객체의 기동 기술자에게 <code>data</code> 로서 등록되어 있는 객체의 지속 상태가 쓰여진 파일의 이름</li>
+  </ul>
+  <p>
+전술의 각 파일 URL 에는, 필수의 말미의 slash가 있는 것에 주의해 주세요. 이 튜토리얼에 적절한 그룹과 셋업 정책 파일의 예는,<code>Setup</code> 의 튜토리얼에 나타나고 있습니다만, 이하에도 가리켜 둡니다.  
+  </p>
+	<ul>
+	<li><a href="src/setup.policy"><code>setup.policy</code></a> </li>
+	<li><a href="src/group.policy"><code>group.policy</code></a> </li>
+	</ul> 
+<p><code>Setup</code> 프로그램으로부터의 출력은, 다음과 같이 됩니다.
+  </p>
+<blockquote>
+<pre>
+Activation group descriptor registered.
+Activation descriptor registered.
+Stub bound in registry.
+</pre>
+</blockquote>
+</blockquote>
+
+<h2><a name="5"></a> 클라이언트의 실행</h2> 
+<blockquote>
+  <p>
+정상적으로 <code>CounterImpl</code> 구현의 기동 기술자를 등록하면(자), 클라이언트 프로그램을 실행할 수 있게 됩니다.  클라이언트 프로그램은, 최초의 실행시에 기동 가능한 객체를 기동합니다.
+  </p>
+	
+  <p>
+<a href="extending.html#5"></a> 다음의 커멘드행에서는, 클라이언트 코드 베이스의 파일 URL 를 지정하는 클라이언트 프로그램의 실행 방법을 나타냅니다.  
+  </p>
+  <blockquote> 
+    <pre>
+java -cp <b><i>clientDir</i></b>                                              \
+     -Djava.security.policy=<i><b>client.policy</b></i>                       \
+     -Dexamples.activation.client.codebase=file:/<i><b>clientDir</b></i>/     \
+     -Dexamples.activation.name=examples.activation.Counter                   \
+     examples.activation.CounterClient [<i><b>host</b></i>]
+</pre>
+  </blockquote>
+  <p>
+설명 
+  </p>
+  <ul>
+<li><b>clientDir</b> 는, 클라이언트 프로그램 (그 클래스 패스)의 루트 디렉토리</li>
+<li><b>client.policy</b> 는, 이 프로그램의 시큐리티 정책 파일</li>
+<li><b>name</b> 는, 레지스트리내의 객체의 Stub의 이름</li>
+<li><b>host</b> 는, 서버의 호스트</li>
+  </ul>
+  <p>
+주 - 
+  </p>
+  <ul>
+<li>클라이언트 코드 베이스에는, 말미에 slash가 필요합니다. </li>
+<li><b>name</b> 는,<code>Setup</code> 프로그램에 제공되는 이름과 일치할 필요가 있습니다. 이 예에서는,<code>examples.activation.Counter</code> 라는 이름을 사용했습니다. </li>
+<li><code>rmid</code> 와 <code>rmiregistry</code> 는, 서버의 호스트상에서 가동하고 있을 필요가 있습니다. 서버의 호스트가 로컬 호스트가 아닌 경우,<b>host</b> 인수는, 그것들이 가동하고 있는 원격 호스트를 지정할 필요가 있습니다. </li>
+  </ul>
+  <p>
+클라이언트로부터의 출력은, 다음과 같이 됩니다.  
+  </p>
+  <blockquote> 
+    <pre>
+Obtained stub from the registry.
+Invoking increment method...
+Returned from increment remote call.
+count = 1
+</pre>
+  </blockquote>
+
+  </blockquote>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<hr SIZE=3 NOSHADE>
+<table summary="layout" BORDER="0" WIDTH="100%">
+<tr VALIGN=TOP>
+<td VALIGN=TOP>
+<font SIZE="-2"><a HREF="../../../../legal/SMICopyright.html">Copyright&#169;</a>  2006 <a HREF="http://www.sun.com/">Sun Microsystems, Inc. </a> All Rights Reserved. </font><p>
+<FONT SIZE="-1">코멘트의 송부처:<A HREF="mailto:rmi-comments@java.sun.com">rmi-comments@java.sun.com</A> </FONT>
+</td>
+<td ALIGN=RIGHT>
+<img SRC="../../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <br> <font SIZE="+1"><i>Java Software</i></font>
+</td>
+</tr>
+</table>
+</body>
+</html>

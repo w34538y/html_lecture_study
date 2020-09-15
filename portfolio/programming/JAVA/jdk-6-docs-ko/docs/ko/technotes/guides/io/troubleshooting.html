@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>트러블 슈팅 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+
+
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#000077" ALINK="#FF0000">
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR>
+
+<TD WIDTH="60">
+
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+
+</TD>
+
+
+
+<TD>
+
+<center>
+
+<h1>트러블 슈팅</h1>
+
+</center>
+
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+
+<font size="-1"><a href="../../../index.html">JDK<sup><font size=-2>TM</font></sup> 목차</a> </font>
+
+</TD>
+
+</TR>
+
+</TABLE>
+
+
+
+<!-- Body text begins here -->
+
+<blockquote>
+
+<ul>
+
+<li> <tt><a href="../../../api/java/io/File.html">File</a> </tt> 객체는, 실제의 파일은 아니고, 파일명을 나타내고 있습니다. 또, 이러한 객체는 불변입니다. 예를 듭니다.
+
+    <pre>
+    File f1 = new File("foo");
+    File f2 = new File("bar");
+    f1.renameTo(f2); </pre>
+
+상기의 코드에서는,<tt>「foo」</tt>라고 하는 파일 (존재하는 경우)의 이름이<tt>「bar」</tt>로 변경됩니다. 이 때,<tt>f1</tt> 에 의해 참조되는 <tt>File</tt> 객체의 값은 변경되지 않습니다.  특히, 식 <tt>f1.getPath()</tt> 의 평가는,<tt>「foo」</tt>인 채입니다.
+
+
+<p><li> <tt><a href="../../../api/java/io/InputStream.html">InputStream</a> </tt> 클래스와 그 서브 클래스의 <tt><a href="../../../api/java/io/InputStream.html#available()">available</a> </tt> 메소드의 반환값은, 반드시, 블록 하지 않고 읽어들일 수가 있는 최대의 바이트수가 아닌 것이 있습니다. 예를 듭니다.
+
+    <pre>
+    int n = in.available();
+    byte buf = new byte[n];
+    in.read(buf); </pre>
+
+이 코드의 경우는, 입력 스트림로부터 나머지의 모든 바이트가 읽히지 않는 것이 있습니다. 같이<tt><a href="../../../api/java/io/Reader.html">Reader</a> </tt> 클래스와 그 서브 클래스의 <tt><a href="../../../api/java/io/Reader.html#ready()">ready</a> </tt> 메소드는, 스트림을 읽어들일 준비가 되어 있는 경우에서도 <tt>false</tt> 를 돌려주는 일이 있습니다.
+
+
+<p><li> <tt><a href="../../../api/java/io/InputStream.html">InputStream</a> </tt> 클래스와 그 서브 클래스의 <tt><a href="../../../api/java/io/InputStream.html#read(byte%5B%5D)">read(byte[])</a> </tt> 및 <tt><a href="../../../api/java/io/InputStream.html#read(byte%5B%5D,%20int,%20int)">read(byte[], &nbsp;int, &nbsp;int)</a> </tt> 메소드에서는, 읽어들여 가능한 모든 바이트가 읽히지 않는 것도 있습니다. 예를 들어, 큰 파일을 배열에 읽어들이는 경우는, 루프가 필요합니다.
+
+    <pre>
+    for (int off = 0; off &lt; size;) {
+        int r = in.read(buf, off, buf.length - off);
+        if (r == -1) break;
+        off += r;
+    } </pre>
+
+다른 방법으로서<tt><a href="../../../api/java/io/BufferedInputStream.html">BufferedInputStream</a> </tt> 를 사용할 수도 있습니다. 같은 주의점이,<tt><a href="../../../api/java/io/Reader.html">Reader</a> </tt> 클래스와 그 서브 클래스의 <tt><a href="../../../api/java/io/Reader.html#read(char%5B%5D)">read(char[])</a> </tt> 및 <tt><a href="../../../api/java/io/Reader.html#read(char%5B%5D,%20int,%20int)">read(char[], &nbsp;int, &nbsp;int)</a> </tt> 메소드에도 들어맞읍니다.
+
+
+<p><li> <tt><a href="../../../api/java/io/PrintStream.html">PrintStream</a> </tt> 및 <tt><a href="../../../api/java/io/PrintWriter.html">PrintWriter</a> </tt> 클래스에서는, 입출력 에러가 모두 억제됩니다. 에러가 발생했는지의 여부를 확인하려면 ,<tt>checkError</tt> 메소드를 호출합니다.
+
+
+<p><li> <tt><a href="../../../api/java/io/PrintStream.html">PrintStream</a> </tt> 및 <tt><a href="../../../api/java/io/PrintWriter.html">PrintWriter</a> </tt> 객체에서는, 출력이 플래시 되지 않는 것이 있습니다. 자동적으로 플래시 하려면 , 이러한 클래스로부터 2 개의 인수를 취하는 생성자 을 호출해, 제 2 인수에 <tt>true</tt> 를 지정합니다.
+</ul>
+
+
+</blockquote>
+
+
+
+<!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+
+<TR VALIGN=TOP>
+
+
+
+<TD>
+
+<P><FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1999
+
+<A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> 
+
+All Rights Reserved. </FONT></P>
+
+</TD>
+
+
+
+<TD ALIGN=RIGHT>
+
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30>
+
+   <BR>
+
+   <FONT SIZE="+1">
+
+<i>Java Software</i>
+
+   </FONT>
+
+</TD>
+
+
+
+</TR>
+
+</TABLE>
+
+</BODY>
+
+</HTML>

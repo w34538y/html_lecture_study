@@ -1,0 +1,76 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="connection.html">[전의 항목]</a>  <a href="statement.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="999674"> </a> 
+<h2> DriverManager</h2>
+<p><a name="1002965"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="998348"> </a> 
+<h3>3.1	 DriverManager 의 개요</h3>
+<p><a name="997394"> </a> <code>DriverManager</code> 클래스는, 사용자와 드라이버의 사이에 기능하는 전통적인 JDBC 의 관리 층입니다. 이 드라이버 매니저는, 사용 가능해, 한편, 데이타베이스와 적절한 드라이버와의 접속을 취급하고 있는 드라이버를 추적합니다. 더해,<code>DriverManager</code> 클래스는, 드라이버의 로그인 시간의 제한이나 로그의 프린트 및 메세지의 추적등을 실시합니다.
+</p><p><a name="1002968"> </a> <code>javax.sql</code> 패키지, 즉 JDBC 2.0 표준 확장 기능 API 에서는, 데이터 소스에 접속하기 위한 바람직한 대체 수단으로서 <code>DataSource</code> 인터페이스를 제공하고 있습니다. 그러나,<code>DriverManager</code> 기능도 계속해,<code>DataSource</code> 구현을 지원하는 드라이버와 함께 사용할 수 있습니다.
+</p><p><a name="998476"> </a> 단순한 어플리케이션의 경우,<code>DriverManager</code> 클래스에서 일반의 프로그래머가 직접 사용할 필요가 있는 유일한 메소드는 <code>DriverManager.getConnection</code> 입니다. 그 이름이 암시하고 있도록(듯이), 이 메소드는 데이타베이스에의 접속을 확립합니다. 어플리케이션은,<code>Driver</code> 의 메소드 <code>connect</code> 와 같게 <code>DriverManager</code> 의 메소드인 <code>getDriver</code>,<code>getDrivers</code>, 및 <code>registerDriver</code> 를 호출할 수 있습니다만, 대부분의 경우,<code>DriverManager</code> 의 클래스에 데이타베이스와의 접속에 관한 상세를 관리시키는 (분)편이 좋은 결과가 됩니다.
+</p><a name="997322"> </a> 
+<h4>3.1. 1	 사용 가능한 드라이버의 추적</h4>
+<p><a name="999681"> </a> <code>DriverManager</code> 클래스는,<code>DriverManager.registerManager</code> 메소드의 호출에 의해 등록되는 <code>Driver</code> 클래스의 리스트를 가지고 있습니다. 모든 <code>Driver</code> 클래스는, 클래스의 인스턴스를 생성하는 static 섹션 (static 초기설정자)을 기술해 둡니다. 로드 되는 타이밍에 <code>DriverManager</code> 클래스에 등록됩니다.  따라서, 사용자는 일반적으로 <code>DriverManager.registerDriver</code> 를 직접 호출할 것은 없고, 로드시에 <code>Driver</code> 클래스에 의해 자동적으로 불려 갑니다. A<code>Driver</code> 클래스가 로드 되어 자동적으로 <code>DriverManager</code> 에 등록되려면 , 다음의 2 통과해 방법이 있습니다.
+</p><p><a name="1002784"> </a> 
+
+</p><ol>
+<a name="997324"> </a> 
+<li><code>Class.forName</code> 메소드를 호출하는 방법. 이것은 명시적으로 드라이버 클래스를 로드합니다. 이것은 외부의 어느 셋업에도 의존하고 있지 않았기 때문에,<code>DriverManager</code> 시스템를 사용하는 경우에는, 이 방법으로 드라이버를 로드하는 것을 추천 합니다. <code>acme.db.Driver</code> 클래스를 로드하는 코드는 이하대로입니다.
+<blockquote><pre>
+Class.forName("acme.db.Driver");
+</pre></blockquote><a name="997365"> </a> 
+<p>
+로드하는 것에 의해 인스턴스를 생성해, 그 인스턴스를 (있어야 할 형태의) 파라미터로서 <code>DriverManager.registerDriver</code> 를 호출하도록(듯이) <code>acme.db.Driver</code> 가 만들어지고 있으면, 그 드라이버는 <code>DriverManager</code> 의 리스트에 존재해, 접속하기 위해서 사용할 수가 있습니다.  <a name="1002774"> </a> 
+<blockquote></blockquote>
+<a name="1002777"> </a> 
+<li><code>Driver</code> 클래스를 <code>java.lang.System</code> 프로퍼티 <code>jdbc.drivers</code> 에 가세하는 방법. 이것은 <code>DriverManager</code> 클래스가 로드하는 드라이버의 클래스명의 리스트로, 구두점으로 단락지어지고 있습니다. <code>DriverManager</code> 클래스가 초기화되면(자), 그것은 시스템 프로퍼티 <code>jdbc.drivers</code> 를 검색해, 사용자가 1 개 이상의 드라이버를 기입해 있으면(자),<code>DriverManager</code> 클래스는 그것들을 로드하려고 시도합니다. 이하의 코드는,~/. hotjava/properties 에 3 개의 드라이버 클래스를 기술해 두는 방법을 나타냅니다 (HotJava 는 기동시에 시스템 프로퍼티내에 이것들을 로드합니다).
+</ol>
+<blockquote><pre>
+jdbc.drivers=foo.bah.Driver:wombat.sql.Driver:bad.test.ourDriver
+</pre></blockquote><a name="998646"> </a> 
+<blockquote><code>DriverManager</code> 메소드에의 최초의 호출은, 이러한 드라이버 클래스를 자동적으로 로드합니다.  </blockquote>
+<a name="1001916"> </a> 
+<blockquote></blockquote>
+<p><a name="999830"> </a>  드라이버를 로드하는 이 제 2 방법에서는, 지속적인 환경을 미리 설정해 둘 필요가 있는 것에 주의해 주세요. 이 환경이 설정되어 있다고 확신할 수 없는 경우는,<code>Class.forName</code> 메소드를 호출해, 각각의 드라이버를 명시적으로 로드하는 (분)편이 안전합니다. 일단 <code>DriverManager</code> 클래스가 초기화되면(자),<code>jdbc.drivers</code> 프로퍼티 리스트는 재체크되지 않기 때문에, 이 방법도 특정의 드라이버를 로드하는데 이용하는 올바른 방법이 됩니다.
+</p><p><a name="999831"> </a> 이것들 양쪽 모두의 경우에 대해,<code>DriverManager.registerDriver</code> 를 호출해 스스로를 등록하는 것은, 새롭게 로드 된 <code>Driver</code> 클래스의 책임입니다. 전술대로, 이것은 클래스의 로드시에, 자동적으로 행해질 필요가 있습니다.
+</p><p><a name="997331"> </a>  시큐리티상의 이유로부터, JDBC 관리 층은 클래스 로더가 어느 드라이버를 공급하는지를 추적합니다. 그리고 <code>DriverManager</code> 클래스가 접속을 개시할 경우에, 로컬 파일 시스템으로부터 얻을 수 있는 드라이버, 또는 접속을 위한 요구를 발행하는 코드와 동일한 클래스 로더로부터 얻을 수 있는 드라이버만을 사용합니다.
+</p><a name="997332"> </a> 
+<h4>3.1. 2	 접속의 확립</h4>
+<p><a name="1002712"> </a> <code>Driver</code> 의 클래스가 로드 되어<code>DriverManager</code> 클래스에 등록되면(자), 그것들은 데이타베이스와의 접속을 확립하기 위해서 사용 가능해집니다. 접속 요구가 <code>DriverManager.getConnection</code> 메소드에 대한 호출에 의해 행해지면(자),<code>DriverManager</code> 는, 차례차례 각 드라이버를 테스트해, 접속을 확립할 수 있을지 어떨지 확인합니다.
+</p><p><a name="998421"> </a>  복수의 JDBC 드라이버가 주어진 URL 에 접속할 수 있는 경우가 일어날 수 있습니다. 예를 들어, 원격의 데이타베이스에 접속하는 경우, JDBC? ODBC 브릿지 드라이버, JDBC- 총칭 네트워크 프로토콜간 드라이버, 또는 데이타베이스의 벤더가 공급하고 있는 드라이버를 사용하는 것이 가능하겠지요. 이러한 경우,<code>DriverManager</code> 는 그 URL 에 정상적으로 접속할 수 있는 것을 알 수 있던 최초의 드라이버를 사용하므로, 드라이버가 어느 순서로 테스트될까는 중요합니다.
+</p><p><a name="998900"> </a> <code>DriverManager</code> 는 우선, 등록된 순서로 드라이버를 사용하려고 시도합니다. <code>jdbc.drivers</code> 에 리스트 되고 있는 드라이버는, 항상 최초로 등록되어 있습니다. <code>DriverManager</code> 는, 접속을 개시하려고 하고 있는 코드와 동일한 소스로부터 로드되어 있지 않은 한, 신뢰되지 않는 코드의 드라이버를 모두 무시합니다.
+</p><p><a name="998422"> </a> <code>DriverManager</code> 은, 각각의 메소드 <code>Driver.connect</code> 를 차례차례 호출하는 것에 의해 드라이버를 테스트해, 사용자가 초에 메소드 <code>DriverManager.getConnection</code> 에 건네준 URL 를 그러한 드라이버에 건네줍니다. URL 를 인식한 최초의 드라이버가 접속을 실시합니다.
+</p><p><a name="998441"> </a>  이 방법은, 언뜻 보았는데 비효율적으로 보일지도 모릅니다.  그러나, 실제로는, 수다스의 드라이버가 동시에 로드 되는 것은 있을 수 없기 때문에, 2, 3 의 프로시저 호출과 접속마다의 캐릭터 라인 비교 밖에 필요하지는 않습니다.
+</p><p><a name="998390"> </a>  이하의 코드는, JDBC? ODBC 브릿지 드라이버와 같은 드라이버에 의해 접속을 셋업 하기 위해서 일반적으로 필요하게 되는 코드의 일례입니다.
+</p><blockquote><pre>
+Class.forName("jdbc.odbc.JdbcOdbcDriver"); //loads the driver
+String url = "jdbc:odbc:fred";
+Connection con = DriverManager.getConnection(
+		url, "userID", "passwd");
+</pre></blockquote>
+<p><a name="999926"> </a> 변수 con 는, SQL 문의 작성 및 실행에 사용할 수 있는 데이터 소스 fred 에의 접속을 나타냅니다.
+</p><p><a name="1001917"> </a> JDBC 2.0 표준 확장 기능 API 를 추가하는 것에 의해,<code>DataSource</code> 객체를 데이터 소스와의 접속의 확립을 위해서(때문에) 사용할 수 있습니다. <code>DriverManager</code> 도 계속해 사용할 수 있습니다만,<code>DataSource</code> 객체는 <code>DriverManager</code> 와 비교해 몇개의 점으로써 우수하기 (위해)때문에, 보다 좋은 대체 수단이 됩니다. 다만, Enterprise JavaBeans 의 컴퍼넌트를 기술하고 있는 개발자는,<code>DriverManager</code> 는 아니고 <code>DataSource</code> 객체를 항상 사용해 주세요. 적절히 구현된 <code>DataSource</code> 객체를 사용하는 것이, 풀 되어 분산 트랜잭션(transaction)에 참가할 수 있는 접속을 취득하는 유일한 방법이 됩니다.  
+</p><a name="999927"> </a> 
+<h4>3.1. 3	 DriverManager 메소드는 static 이다</h4>
+<p><a name="999928"> </a> 모든 <code>DriverManager</code> 메소드는 <code>static</code> 로서 선언되고 있어 이것은 특정의 인스턴스는 아니고 클래스 전체에 대해서 조작되는 것을 의미하고 있습니다. 실제,<code>DriverManager</code> 의 생성자 은, 사용자가 인스턴스를 생성할 수 없게,<code>private</code> 로서 선언되고 있습니다. 논리적이게는,<code>DriverManager</code> 클래스의 인스턴스는 1 개입니다. 이것은, 다음의 코드행과 같이,<code>DriverManager</code> 로 메소드를 수식하는 것에 의해 메소드를 호출하는 것을 의미합니다.
+</p><blockquote><pre>
+DriverManager.setLogWriter(out);
+</pre></blockquote><blockquote><pre>
+</pre></blockquote>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="connection.html">[전의 항목]</a>  <a href="statement.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

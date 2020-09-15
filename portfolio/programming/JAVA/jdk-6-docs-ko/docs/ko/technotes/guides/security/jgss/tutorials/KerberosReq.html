@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Kerberos 요건 - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#000077"
+ alink="#ff0000">
+<center>
+<h1>Kerberos 요건</h1>
+</center>
+<blockquote>
+<p>이 튜토리얼로 개발하는 클라이언트 및 서버 어플리케이션에서는, 인증과 안전한 통신의 양쪽 모두의 분야에서 Kerberos Version 5 를 사용합니다. 이 때문에, 이 문서는, Kerberos 에 익숙 하고 있는 독자를 대상으로 하고 있습니다. 자세한 것은,<a href="http://web.MIT.edu/kerberos/www/index.html">Kerberos 의 문서</a>를 참조해 주세요.
+  </p>
+<p>Java GSS-API 메소드에 필요한 JAAS 시스템 및 Kerberos 기구는, 모든 벤더가 제공하는 버젼 1.4 이후의 JRE 에 짜넣어지고 있습니다. JAAS 는, 버젼 1.3 으로부터 시작되는, 별개에 다운로드 가능한 옵션 패키지로서 이용할 수 있습니다. 벤더의 제공하는 JRE 안에는, 이 튜토리얼의 JAAS 인증에 필요한 Kerberos 로그인 모듈을 사용할 수 없는 것도 있을 가능성이 있습니다. 여기에서는, Sun Microsystems 의 제공하는 JRE (버젼 1.4 이후)에 포함되는 Kerberos 용 로그인 모듈을 사용합니다.
+  </p>
+<p>샘플 프로그램을 실행하려면 , 인스톨 된 Kerberos 에 액세스 할 필요가 있습니다. 계속되는 섹션으로 설명하도록(듯이), Kerberos 구성 파일 <code>krb5.conf</code>, 및 이 파일의 포함 먼저 관한 기술도 필요합니다.
+  </p>
+<p>모든 Kerberos 인스톨로, Kerberos Key Distribution Center (KDC)가 필요합니다. 이것에는, Kerberos 에의 인증에 사용하는 사용자명 및 패스워드를 포함할 필요가 있습니다. 주:KDC 구현은,ｖ 1.4 이후의 J2RE 는 아니고 Kerberos 인스톨의 일부입니다.
+  </p>
+<p> 대부분의 Kerberos 인스톨로, 디폴트 영역 및 KDC 등의 확인에, Kerberos 구성 파일 <code>krb5.conf</code> 가 참조됩니다. <code>krb5.conf</code> 파일을 포함하지 않는, Microsoft 의 제공하는 Windows 2000 용 Kerberos 등을 사용하고 있는 경우, 이 파일을 작성하는지,<a href="#SetProps">「디폴트 영역 및 KDC 를 나타내는 프로퍼티의 설정」</a>으로 설명하는 시스템 프로퍼티을 사용할 필요가 있습니다.
+  </p>
+</blockquote>
+<h2><a name="SetProps">디폴트 영역 및 KDC 를 나타내는 프로퍼티의 설정</a> </h2>
+  <blockquote>
+<p>일반적으로, 디폴트 영역 및 그 영역의 KDC 는, Kerberos 구성 파일 <code>krb5.conf</code> 로 지정됩니다. 다만, 다음에 나타내는 시스템 프로퍼티에 영역 및 KDC 를 설정하는 것으로써, 이러한 값을 지정하는 일도 가능합니다.
+    </p>
+    <blockquote>
+<pre>java.security.krb5.realm <br>java.security.krb5.kdc<br></pre>
+    </blockquote>
+<p>프로퍼티을 설정하는 경우, 1 개(살)만 설정하는 것이 아니라, 양쪽 모두 설정할 필요가 있습니다.  </p>
+<p>또, 이러한 프로퍼티을 설정하는 경우,<code>krb5.conf</code> 파일도 지정하지 않는 한, 상호 영역 인증은 실시할 수 없습니다. 이유는, 이 파일로부터, 상호 영역 인증에 필요한 추가 정보를 취득하기 (위해)때문에입니다.
+    </p>
+<p>이러한 프로퍼티의 값을 설정하는 경우,<code>krb5.conf</code> 로 지정된 디폴트 영역 및 KDC 치는 오버라이드(override) 됩니다. 디폴트 영역 및 KDC 이외의 항목으로 값이 필요한 경우에도,<code>krb5.conf</code> 파일이 참조됩니다. <code>krb5.conf</code> 파일이 발견되지 않는 경우, 이러한 항목에 사용되는 디폴트 값는, 구현에 의해 다릅니다.
+    </p>
+  </blockquote>
+<h2><code>krb5.conf</code> 구성 파일의 검출</h2>
+  <blockquote>
+<p>필수의 Kerberos 구성 정보는, 디폴트 영역 및 디폴트 KDC 입니다. <a href="#SetProps">「디폴트 영역 및 KDC 를 나타내는 프로퍼티의 설정」</a>으로 설명한 것처럼, 이러한 값을 나타내는 프로퍼티을 설정했을 경우, 값은 <code>krb5.conf</code> 구성 파일로부터는 취득되지 않습니다.
+    </p>
+<p>이러한 프로퍼티에 값이 설정되어 있지 않은지, 다른 Kerberos 구성 정보가 필요한 경우,<code>krb5.conf</code> 파일내에서 필요한 정보의 검출이 시도됩니다. <code>krb5.conf</code> 파일을 검출하는 알고리즘을, 다음에 나타냅니다.
+    </p>
+    <ul>
+<li>시스템 프로퍼티 <code>java.security.krb5.conf</code> 가 설정되어 있는 경우, 그 값에 패스 및 파일명이 지정되고 있다고 보여집니다.
+        <p></p>
+      </li>
+<li>이 시스템 프로퍼티이 설정되어 있지 않은 경우, 다음의 디렉토리내에서 구성 파일이 검색됩니다.
+        <blockquote>
+<pre>&lt;java-home&gt;\lib\security      [Windows]<br>&lt;java-home&gt;/lib/security      [Solaris and Linux]<br></pre>
+        </blockquote>
+여기서,<tt>&lt;java-home&gt;</tt> 는 JRE 가 인스톨 되고 있는 디렉토리를 가리킵니다. 예를 들어, Solaris 로,<code>/j2sdk1. 5</code> 라는 이름의 디렉토리에 J2SE v 5.0 이 인스톨 되고 있는 경우, 다음의 디렉토리에서 구성 파일의 검색을 합니다.
+        <blockquote>
+<pre>/j2sdk1. 5/jre/lib/security <br></pre>
+        </blockquote>
+      </li>
+<li>파일이 발견되지 않는 경우, 이하로 검색을 합니다.
+        <blockquote>
+<pre>/etc/krb5/krb5.conf                [Solaris]<br>c:\winnt\krb5.ini                  [Windows]<br>/etc/krb5.conf                     [Linux]<br></pre>
+        </blockquote>
+      </li>
+<li>그런데도 파일이 발견되지 않고, 한편 검색중의 구성 정보가 디폴트 영역 및 KDC 에서는 「없다」경우, 구현 고유의 디폴트가 사용됩니다. 한편, 검색중의 구성 정보가 디폴트 영역 및 KDC 의 경우, 구성 정보가 시스템 프로퍼티으로 지정되지 않고,<code>krb5.conf</code> 파일도 발견되지 않기 때문에, 예외가 throw 됩니다. </li>
+    </ul>
+  </blockquote>
+<a name="realmnamereqs"></a> 
+<h2>영역명 및 호스트명의 명명 규칙</h2>
+<blockquote>
+규칙에 의해, 모든 Kerberos 영역명에는 대문자를 사용해, 모든 DNS 호스트명과 도메인명에는 소문자를 사용합니다. Windows 2000 플랫폼에서는, 도메인이 Kerberos 영역으로도 되어 있습니다만, 영역명은 항상 도메인명을 대문자로 바꾼 이름이 됩니다.
+<P>
+호스트명은 대문자와 소문자가 구별됩니다만, 명명 규칙에 의해 모두 소문자로 합니다. 호스트명은, 각각의 네임 서비스에 의해, 클라이언트와 서버로 같은 호스트명에 해결될 필요가 있습니다.
+<P>
+다만, Kerberos 데이타베이스의 호스트명은, 대문자와 소문자가 구별됩니다. KDC 의 호스트 베이스의 모든 Kerberos 서비스 주체에서는, 호스트명의 대문자와 소문자가 구별됩니다. Kerberos 서비스 주체명으로 사용되는 호스트명은, 네임 서비스로부터 반환되는 호스트명으로 완전하게 일치할 필요가 있습니다. 예를 들어, 네임 서비스가 <code>raven.sun.com</code> 등의 완전 수식된 소문자에 의한 DNS 호스트명을 돌려주어 왔을 경우, 관리자는, KDC 로 호스트 베이스의 주체명을 작성할 때에,<code>host/raven.sun.com</code> 와 같이 완전 수식된 소문자에 의한 같은 DNS 호스트명을 사용할 필요가 있습니다.
+</blockquote>
+
+<a name="crossrealm"></a> 
+<h2>상호 영역 인증</h2>
+<blockquote>
+
+상호 영역 인증에서는, 1 개의 영역의 주체가 다른 영역의 주체를 인증할 수 있습니다.
+<P>
+Kerberos 에서는, 2 개의 영역에서 암호열쇠를 공유하는 것으로써, 상호 영역 인증을 구현하고 있습니다. 2 개(살)이 다른 영역의 KDC 가 특별한 상호 영역의 비밀열쇠를 공유해, 영역간의 경계를 넘는 경우에, 이 비밀열쇠를 사용해 식별 정보를 증명합니다.  
+<P>
+공유되는 열쇠는, Ticket Granting Service 주체의 열쇠입니다. 단일 영역의 경우의 표준적인 Ticket Granting Service 주체를 나타냅니다.
+
+<blockquote>
+<pre>
+ktbtgt/ACME.COM@ACME.COM
+</pre>
+</blockquote>
+
+상호 영역 인증에서는, 각각의 참가 영역에서 2 개의 주체가 작성됩니다. 영역이 2 개의 경우는,<code>ENG.EAST.ACME.COM</code> 와 <code>SALES.WEST.ACME.COM</code> 가 작성되어 이러한 주체는 이하와 같이 됩니다.
+
+<blockquote>
+<pre>
+krbtgt/ENG.EAST.ACME.COM@SALES.WEST.ACME.COM
+krbtgt/SALES.WEST.ACME.COM@ENG.EAST.ACME.COM
+</pre>
+</blockquote>
+
+원격 Ticket Granting Server 주체로 불리는 이러한 주체는, 양쪽 모두의 영역에서 작성할 필요가 있습니다.
+<P>
+Windows 2000 의 KDC 에서는, Windows 2000 도메인이 작성되면(자),<code>krbtgt</code> 어카운트가 자동적으로 작성됩니다. 이 어카운트는, 삭제하거나 이름을 변경하거나 할 수 없습니다.
+
+<h3>영역의 타입</h3>
+<blockquote>
+복수의 영역을 설정하는 경우는, 작성하는 영역의 구성을 1 개의 영역이 다른 영역의 슈퍼 세트가 되는 「계층형」으로 하는지, 영역간의 매핑의 정의가 필요한 「직접형」으로 하는지를 결정할 필요가 있습니다.
+<!--
+상세한 것에 대하여는,Sun 의 문서<a href="http://docs.sun.com/db/doc/805-5500/6j56o02oo?a=view">「Configuring Cross-Realm Authentication」</a>를 참조해 주세요.
+-->
+</blockquote>
+
+<h3>상호 영역 인증의 설정 방법법</h3>
+<blockquote>
+추이형 상호 영역 인증에서는, 상호 영역 비밀열쇠를 개입시켜 접속되는 영역의 패스를 정의해, 그 패스를 사용해 목적의 영역으로부터 자격을 취득할 때까지 영역을 횡단할 수가 있습니다.  
+<P>
+Kerberos 구성 파일의 <code>[capaths]</code> 섹션에서는, 추이형 상호 영역 인증으로 사용하는 일련의 인증 패스가 정의되고 있습니다. 클라이언트는,<code>[capaths]</code> 를 사용해, 추이형 상호 영역 인증을 실행하기 위한 올바른 패스를 결정합니다. 어플리케이션 서버는,<code>[capaths]</code> 섹션을 조사해, 상호 영역 인증 패스가 유효한가 어떤가를 판단합니다.  
+<P>
+예를 들어,<code>ENG.EAST.ACME.COM</code> 와 <code>SALES.WEST.ACME.COM</code> 의 사이에 상호 영역 인증을 설정하려면 ,<code>krb5.conf</code> 에 이하의 엔트리를 포함합니다.
+<blockquote>
+<pre>
+[capaths]
+    ENG.EAST.ACME.COM = {
+        SALES.WEST.ACME.COM = .
+    }
+
+    SALES.WEST.ACME.COM = {
+         ENG.EAST.ACME.COM = .
+    }
+</pre>
+</blockquote>
+
+Windows 2000 에서는, 2 개의 영역간에서 신뢰 관계를 설정할 필요가 있습니다. 구성 방법의 상세한 것에 대하여는, Mircrosoft 의 Web 사이트<a href="http://www.microsoft.com/windows2000/techinfo/planning/security/kerbsteps.asp">「Step-by-Step Guide to Kerberos 5 (krb5 1.0) Interoperability」</a>를 참조해 주세요.  
+</blockquote>
+<P>
+</body>
+</html>

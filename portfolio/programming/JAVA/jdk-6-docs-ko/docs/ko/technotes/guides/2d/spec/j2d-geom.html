@@ -1,0 +1,417 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1128" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="Tue Oct 15 03:09:26 오후 2002" />
+<title>기하학적 도형 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="j2d-bookTOC.html" />
+    <link rel="Previous" href="j2d-awt.html" />
+    <link rel="Next" href="j2d-fonts.html" />
+    <link rel="Index" href="j2d-print.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-awt.html">전의 항목</a>  | <a accesskey="n" href="j2d-fonts.html">다음의 항목</a> 
+       </td>
+	   <td align="right">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내</td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp60754"> </a> <h2 class="pChapNum">
+제 3 장&#160;&#160;
+</h2>
+<a name="wp64788"> </a> <h2 class="pChapTitle">
+기하학적 도형
+</h2>
+<a name="wp64789"> </a> <p class="pBody">
+Java 2D&#8482; API 에서는, 점, 직선, 곡선, 구형 등, 기본적인 기하학 객체를 정의하는 클래스가 몇개인가 제공되고 있습니다. 새로운 기하학 클래스는,<code class="cCode">java.awt.geom</code> 패키지에 포함되어 있습니다. 하위 호환이기 때문에,<code class="cCode">Rectangle</code>,<code class="cCode">Point</code>,<code class="cCode">Polygon</code> 등, 구버젼의 JDK 로 제공되고 있던 기하학 클래스도,<code class="cCode">java.awt</code> 패키지에 남아 있습니다.  
+</p>
+<a name="wp63622"> </a> <p class="pBody">
+<code class="cCode">GeneralPath</code>,<code class="cCode">Arc2D</code>,<code class="cCode">Rectangle2D</code> 등 Java 2D API 의 기하 도형은,<code class="cCode">java.awt</code> 로 정의되고 있는 <code class="cCode">Shape</code> 인터페이스를 구현하고 있습니다. <code class="cCode"><code class="cCode">Shape</code> 에서는, 기하학적인 패스를 가지는 객체를 기술하거나 검사하거나하기 위한 , 공통의 프로토콜이 제공되고 있습니다. 새로운 인터페이스의 <code class="cCode">PathIterator</code> 는, 기하학 도형으로부터 요소를 추출하기 위한 메소드를 정의하고 있습니다.
+</p>
+<a name="wp63691"> </a> <p class="pBody">
+기하학 클래스를 사용하면(자), 거의 모든 2 차원 객체를, 간단하게 정의해 조작할 수 있습니다.  
+</p>
+<a name="wp62744"> </a> <h2 class="pHeading1">
+3.1	인터페이스와 클래스
+</h2>
+<a name="wp64157"> </a> <p class="pBody">
+다음의 겉(표)는, 주요한 기하학 인터페이스와 클래스의 일람입니다. 대부분의 인터페이스와 클래스는,<code class="cCode">java.awt.geom</code> 패키지에 포함되어 있습니다. Shape</code> 등 <code class="cCode">java.awt</code> 패키지에 포함되어 있는 것도 있습니다만, 이것은 주로, 구버젼의 JDK 와의 하위 호환을 유지하기 (위해)때문에입니다.
+</p>
+<a name="wp62349"> </a> <div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+</div><div align="left">
+<table border="0" cellpadding="7" id="wp62240">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62240"> </a> <div class="pCellHeading">
+인터페이스
+</div>
+</th>
+    <th><a name="wp62242"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62244"> </a> <div class="pCellBody">
+<code class="cCode">PathIterator</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62612"> </a> <div class="pCellBody">
+패스로부터 요소를 취득하기 위한 메소드를 정의하고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64151"> </a> <div class="pCellBody">
+<code class="cCode">Shape</code>
+</div>
+<a name="wp64154"> </a> <div class="pCellBody">
+(java.awt)
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64153"> </a> <div class="pCellBody">
+기하학적인 패스를 가지는 객체를 기술 및 검사하기 위한 공통 메소드군을 제공하고 있습니다. <code class="cCode">GeneralPath</code> 클래스 및 다른 기하학 클래스에서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 7pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+ 
+</div>
+<a name="wp63427"> </a> <p class="pBody">
+</p><div align="left">
+<table border="0" cellpadding="7" id="wp62355">
+  <caption></caption>
+<thead>
+<tr  align="center">    <th><a name="wp62355"> </a> <div class="pCellHeading">
+클래스
+</div>
+</th>
+    <th><a name="wp62357"> </a> <div class="pCellHeading">
+설명
+</div>
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62363"> </a> <div class="pCellBody">
+<code class="cCode">Arc2D</code>
+</div>
+<a name="wp64281"> </a> <div class="pCellBody">
+<code class="cCode">Arc2D.Double</code>
+</div>
+<a name="wp64286"> </a> <div class="pCellBody">
+<code class="cCode">Arc2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62621"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RectangularShape</code>
+</div>
+<a name="wp62622"> </a> <div class="pCellBody">
+외접 하는 구형, 개시 위치의 각도, 중심각의 각도, 및 폐쇄의 종류로 정의되는 원호를 나타냅니다. <code class="cCode">Arc2D.Float</code> 와 <code class="cCode">Arc2D.Double</code> 는, 단정밀도와 배정밀도로 원호를 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62372"> </a> <div class="pCellBody">
+<code class="cCode">Area</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62627"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode"> Shape, Cloneable </code>
+</div>
+<a name="wp63389"> </a> <div class="pCellBody">
+불 연산을 지원하는 영역의 기하 형상을 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64311"> </a> <div class="pCellBody">
+<code class="cCode">CubicCurve2D<br />CubicCurve2D.Double</code>
+</div>
+<a name="wp64315"> </a> <div class="pCellBody">
+<code class="cCode">CubicCurve2D.Float</code>
+</div>
+<a name="wp62376"> </a> <div class="pCellBody">
+&#160;
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62632"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Shape</code>
+</div>
+<a name="wp64321"> </a> <div class="pCellBody">
+(w) 좌표 공간내의 3 차 매개 변수 곡선을 나타냅니다. <code class="cCode">CubicCurve2D.Float </code> 와 <code class="cCode">CubicCurve2D.Double</code> 는, 단정밀도와 배정밀도로 3 차 곡선을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62504"> </a> <div class="pCellBody">
+<code class="cCode">Dimension2D</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62642"> </a> <div class="pCellBody">
+폭과 높이의 치수를 캡슐화하고 있습니다. 2 차원의 치수를 포함하는 모든 객체의 추상 슈퍼 클래스입니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64336"> </a> <div class="pCellBody">
+<code class="cCode">Ellipse2D</code>
+</div>
+<a name="wp64339"> </a> <div class="pCellBody">
+<code class="cCode">Ellipse2D.Double</code>
+</div>
+<a name="wp64341"> </a> <div class="pCellBody">
+<code class="cCode">Ellipse2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64353"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RectangularShape</code>
+</div>
+<a name="wp64358"> </a> <div class="pCellBody">
+외접 하는 직사각형으로 정의되는 타원을 나타냅니다. <code class="cCode">Ellipse2D.Float </code> 와 <code class="cCode">Ellipse2D.Double</code> 는, 단정밀도와 배정밀도로 타원을 지정하기 위해서 구현되고 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp64525"> </a> <div class="pCellBody">
+FlatteningPathIterator
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64529"> </a> <div class="pCellBody">
+<code class="cCode">PathIterator</code> 객체를 평활화한 도형을 돌려줍니다.
+</div>
+<a name="wp64530"> </a> <div class="pCellBody">
+그 자체에서는 보간 계산을 실시하지 않는 <code class="cCode">Shape</code> 에 대한 평활화 처리에 사용할 수 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62435"> </a> <div class="pCellBody">
+<code class="cCode">GeneralPath</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62653"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Shape</code>
+</div>
+<a name="wp62654"> </a> <div class="pCellBody">
+직선, 2 차 곡선, 및 3 차 곡선으로부터 구성되는 기하학적 패스를 나타냅니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62443"> </a> <div class="pCellBody">
+<code class="cCode">Line2D</code>
+</div>
+<a name="wp64370"> </a> <div class="pCellBody">
+<code class="cCode">Line2D.Double</code>
+</div>
+<a name="wp64375"> </a> <div class="pCellBody">
+<code class="cCode">Line2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp64386"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Shape</code>
+</div>
+<a name="wp62445"> </a> <div class="pCellBody">
+(x, y) 좌표 공간내의 직선 세그먼트(segment)를 나타냅니다. <code class="cCode">Line2D.Float </code> 와 <code class="cCode">Line2D.Double</code> 는, 단정밀도와 배정밀도로 직선을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62451"> </a> <div class="pCellBody">
+<code class="cCode">Point2D</code>
+</div>
+<a name="wp64413"> </a> <div class="pCellBody">
+<code class="cCode">Point2D.Double</code>
+</div>
+<a name="wp64420"> </a> <div class="pCellBody">
+<code class="cCode">Point2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62669"> </a> <div class="pCellBody">
+(x, y) 좌표 공간내의 위치를 나타내는 점입니다. <code class="cCode">Point2D.Float </code> 와 <code class="cCode">Point2D.Double</code> 는, 단정밀도와 배정밀도로 점을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62558"> </a> <div class="pCellBody">
+<code class="cCode">QuadCurve2D</code>
+</div>
+<a name="wp64442"> </a> <div class="pCellBody">
+<code class="cCode">QuadCurve2D.Double</code>
+</div>
+<a name="wp64449"> </a> <div class="pCellBody">
+<code class="cCode">QuadCurve2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62677"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Shape</code>
+</div>
+<a name="wp62678"> </a> <div class="pCellBody">
+(x, y) 좌표 공간내의 2 차 매개 변수 곡선의 세그먼트(segment)를 나타냅니다. <code class="cCode">QuadCurve2D.Float </code> 와 <code class="cCode">QuadCurve2D.Double</code> 는, 단정밀도와 배정밀도로 2 차 곡선을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62550"> </a> <div class="pCellBody">
+<code class="cCode">Rectangle2D</code>
+</div>
+<a name="wp64471"> </a> <div class="pCellBody">
+<code class="cCode">Rectangle2D.Double</code>
+</div>
+<a name="wp64478"> </a> <div class="pCellBody">
+<code class="cCode">Rectangle2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62683"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RectangularShape</code>
+</div>
+<a name="wp62684"> </a> <div class="pCellBody">
+위치 (x, y)와 치수 (w x h)로 정의되는 구형을 나타냅니다. <code class="cCode">Rectangle2D.Float </code> 와 <code class="cCode">Rectangle2D.Double</code> 는, 단정밀도와 배정밀도로 구형을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62538"> </a> <div class="pCellBody">
+<code class="cCode">RectangularShape</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62692"> </a> <div class="pCellBody">
+인터페이스:<code class="cCode">Shape</code>
+</div>
+<a name="wp62693"> </a> <div class="pCellBody">
+구형의 범위에서 규정되는 도형을 조작하기 위한 공통 처리 루틴을 제공하고 있습니다.  
+</div>
+</td>
+</tr>
+  <tr align="left">    <td align="left" valign="top"><a name="wp62534"> </a> <div class="pCellBody">
+<code class="cCode">RoundRectangle2D</code>
+</div>
+<a name="wp64502"> </a> <div class="pCellBody">
+<code class="cCode">RoundRectangle2D.Double</code>
+</div>
+<a name="wp64507"> </a> <div class="pCellBody">
+<code class="cCode">RoundRectangle2D.Float</code>
+</div>
+</td>
+    <td align="left" valign="top"><a name="wp62699"> </a> <div class="pCellBody">
+슈퍼 클래스:<code class="cCode">RectangularShape</code>
+</div>
+<a name="wp62700"> </a> <div class="pCellBody">
+위치 (x, y), 치수 (w x h), 구석의 호의 폭과 높이로 정의되는 둥근 모퉁이를 가지는 구형을 나타냅니다. <code class="cCode">RoundRectangle2D.Float </code> 와 <code class="cCode">RoundRectangle2D.Double</code> 는, 단정밀도와 배정밀도로 모퉁이의 둥근 구형을 지정하기 위해서 구현되고 있습니다.
+</div>
+</td>
+</tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp63719"> </a> <h2 class="pHeading1">
+3.2	기하학적 도형의 컨셉
+</h2>
+<a name="wp63720"> </a> <p class="pBody">
+<code style="font-style: normal" class="cCode">Shape</code> 는,<em style="font-style: italic" class="cEmphasis">GeneralPath</em> 나 <code class="cCode">Rectangle2D.Float</code> 등,<code class="cCode">Shape</code> 인터페이스를 구현하는 모든 클래스의 인스턴스입니다. <code class="cCode"><code class="cCode">Shape</code> 의 외형 (윤곽)을 「패스」라고 부릅니다. <em class="cEmphasis"></em> 
+</p>
+<a name="wp63732"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 를 draw 하는 경우는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Stroke</code> 객체로 정의되고 있는 펜의 스타일이,<code class="cCode">Shape</code> 의 패스에 적용됩니다. <code class="cCode">Shape</code> 를 전부 칠하는 경우는,<code class="cCode">Graphics2D</code> 문맥의 <code class="cCode">Paint</code> 가, 패스의 안쪽의 영역에 적용됩니다. 상세한 것에 대하여는,<a  href="j2d-awt.html#wp70028">「Graphics2D 를 사용한 렌더링」</a>을 참조해 주세요.
+</p>
+<a name="wp62875"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 의 패스는, 「클리핑 패스」의 정의에도 사용할 수 있습니다. <em class="cEmphasis"></em>클리핑 패스에 의해, 렌더링 되는 픽셀이 정해집니다. 클리핑 패스로 정의되는 영역의 안쪽에 있는 픽셀만이, 렌더링 됩니다. 클리핑 패스는,<code class="cCode">Graphics2D</code> 문맥의 일부입니다. 상세한 것에 대하여는,<a  href="j2d-awt.html#wp70241">「클리핑 패스의 설정」</a>을 참조해 주세요.
+</p>
+<a name="wp63725"> </a> <p class="pBody">
+<code class="cCode">GeneralPath</code> 를 사용하면(자), 직선, 2 차 곡선, 및 3 차 곡선을 사용해 구성되는 임의의 2 차원 객체를 나타낼 수가 있습니다. <code class="cCode"><code class="cCode">java.awt.geom</code> 에서는, 구형, 타원, 원호, 곡선등이 일반적인 기하 도형 객체를 간단하게 표현할 수 있도록, 전용의 <code class="cCode">Shape</code> 인터페이스의 구현이 별도로 제공되고 있습니다. 또, Java2D&#8482; API 에서는, 구성 영역 지오메트리를 지원하는 특별한 종류의 Shape 도 제공되고 있습니다.  
+</p>
+<a name="wp63798"> </a> <h3 class="pHeading2">
+3.2. 1	구성 영역 지오메트리
+</h3>
+<a name="wp63799"> </a> <p class="pBody">
+구성 영역 지오메트리 (CAG)는, 기존의 객체에 불 연산을 행해 새로운 기하학 객체를 만드는 처리입니다. Java 2D API 에서는,<code class="cCode">Area</code> 라는 이름의 특별한 종류의 <code class="cCode">Shape</code> 가, 불 연산을 지원하고 있습니다. 임의의 <code class="cCode">Shape</code> 로부터 <code class="cCode">Area</code> 를 구성할 수 있습니다.  
+</p>
+<a name="wp63800"> </a> <p class="pBody">
+<code class="cCode">Area</code> 에서는, 다음의 불 연산을 실행할 수 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp63801"> </a> <div class="pBullet1"><li>논리합</li></div>
+<a name="wp63802"> </a> <div class="pBullet1Plus"><li>논리적</li></div>
+<a name="wp63803"> </a> <div class="pBullet1Plus"><li>논리차이</li></div>
+<a name="wp64208"> </a> <div class="pBullet1Last"><li>배타적 논리합 (XOR)</li></div>
+</ul>
+<a name="wp64215"> </a> <p class="pBody">
+이러한 연산을<a  href="j2d-geom.html#wp64217">그림&#160;3-1</a>  에 나타냅니다.
+</p>
+<a name="wp64221"> </a> <p class="pBody">
+</p><div align="left"><img src="images/boolean.gif" height="113" width="478" alt="논리합, 논리적, 논리차이, 배타적 논리합 조작의 도시" border="0" hspace="0" vspace="0"/></div><p class="pBody"> 
+</p>
+<a name="wp64217"> </a> <div class="pFigureCaption">
+그림 3-1	불 연산<br /><br />
+</div><a name="wp63262"> </a> <h3 class="pHeading2">
+3.2. 2	도형의 범위와 히트 검사
+</h3>
+<a name="wp63263"> </a> <p class="pBody">
+「<em class="cEmphasis">바운딩 박스</em>」는, Shape 의 도형을 완전하게 둘러싸는 구형입니다. 바운딩 박스를 사용해, 사용자가 객체를 선택했는지 어떠했는지, 즉 「히트」했는지의 여부를 판정합니다.  
+</p>
+<a name="wp63285"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 인터페이스에서는, 도형의 바운딩 박스를 취득하는 메소드로서<code class="cCode">getBounds</code> 와 <code class="cCode">getBounds2D</code> 의 2 개가 정의되고 있습니다. <code class="cCode">getBounds2D</code> 로부터는 <code class="cCode">Rectangle</code> 는 아니고 <code class="cCode">Rectangle2D</code> 가 돌려주어지므로, 도형의 바운딩 박스에 대해 한층 더 높은 정밀도의 기술을 취득할 수 있습니다.
+</p>
+<a name="wp63280"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 에서는, 다음의 판정을 실시하는 메소드도 제공되고 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp63312"> </a> <div class="pBullet1"><li>지정한 점이 도형의 범위내에 있을지 어떨지 (<code class="cCode">contains</code>)</li></div>
+<a name="wp63313"> </a> <div class="pBullet1Plus"><li>지정한 구형이 도형의 범위에 완전하게 포함될지 어떨지 (<code class="cCode">contains</code>)</li></div>
+<a name="wp63314"> </a> <div class="pBullet1Last"><li>지정한 구형이 도형과 교차하고 있을지 어떨지 (<code class="cCode">intersects</code>)</li></div>
+</ul>
+<a name="wp64138"> </a> <h2 class="pHeading1">
+3.3	Area 의 결합에 의한 새로운 Shape 의 작성
+</h2>
+<a name="wp64222"> </a> <p class="pBody">
+<code class="cCode">Area</code> 를 사용하면(자), 엔이나 정방형과 같이 단순한 도형으로부터 복잡한 <code class="cCode">Shape</code> 를 간단하게 만들 수가 있습니다. 다음은,<code class="cCode">Area</code> 를 결합해 새롭고 복잡한 <code class="cCode">Shape</code> 를 만드는 순서입니다.
+</p>
+<ol class="pList1"><a name="wp64139"> </a> <div class="pList1"><li><code class="cCode">Shape</code> 를 사용해, 결합하는 <code class="cCode">Area</code> 를 작성한다</li></div>
+<a name="wp64136"> </a> <div class="pList1Last"><li>불 연산자 <code class="cCode">add</code>,<code class="cCode">subtract</code>,<code class="cCode">intersect</code>,<code class="cCode">exclusiveOr</code> 로부터 적절한 것을 호출한다</li></div>
+</ol>
+<a name="wp64223"> </a> <p class="pBody">
+예를 들어, CAG 를 사용하면(자),<a  href="j2d-geom.html#wp64235"><code class="cCode">그림&#160;3-2</code></a> <code class="cCode"></code> 에 나타내는 것 같은 양없음형을 만들 수가 있습니다.
+</p>
+<a name="wp64226"> </a> <p class="pBody">
+</p><div align="left"><img src="images/cagpear2.gif" height="118" width="478" alt="다음의 문장으로, 이 그래픽스를 설명합니다. " border="0" hspace="0" vspace="0"/></div><p class="pBody"> 
+</p>
+<a name="wp64235"> </a> <div class="pFigureCaption">
+그림 3-2	복수의 엔으로부터 만들어진 양없음<br /><br />
+</div><a name="wp61777"> </a> <p class="pBody">
+양없음의 본체는, 서로 겹치는 엔과 타원의 2 개의 <code class="cCode">Area</code> 에 논리합연산을 행해 만듭니다. 각각의 잎은, 겹치는 2 살의 엔에 논리곱연산을 행해 만들어, 그것을 논리합연산으로 1 개의 <code class="cCode">Shape</code> 에 결합하고 있습니다. 줄기의 부분도, 서로 겹치는 엔에 논리차이 연산을 2 회 행해 만들어지고 있습니다.  
+</p>
+<a name="wp64250"> </a> <h2 class="pHeading1">
+3.4	독자적인 Shape 의 작성
+</h2>
+<a name="wp61818"> </a> <p class="pBody">
+<code class="cCode">Shape</code> 인터페이스를 구현해, 새로운 종류의 형상을 정의하는 클래스를 작성할 수 있습니다. <code class="cCode"><code class="cCode">Shape</code> 인터페이스의 메소드를 구현할 수 있다면, 내부적으로 도형을 어떻게 표현해도 괜찮습니다. <code class="cCode">Shape</code> 에서는, 윤곽을 지정하는 패스를 생성하지 않으면 안됩니다.
+</p>
+<a name="wp63526"> </a> <p class="pBody">
+예를 들어, 점의 배열로서 다각형을 나타내는 <code class="cCode">Shape</code> 의 간단한 구현을 작성할 수 있습니다. 이와 같이 해 다각형을 작성되어 있으면,<code class="cCode">draw</code> 나 <code class="cCode">setClip</code> 등, 인수로서 <code class="cCode">Shape</code> 객체를 받는 임의의 메소드에 다각형을 건네줄 수가 있습니다.
+</p>
+<a name="wp61819"> </a> <p class="pBody">
+<code class="cCode">PolygonPath</code> 클래스에서는, 다음의 <code class="cCode">Shape</code> 인터페이스 메소드를 구현할 필요가 있습니다.
+</p>
+<ul class="pBullet1"><a name="wp61820"> </a> <div class="pBullet1"><li><code class="cCode">contains</code></li></div>
+<a name="wp61821"> </a> <div class="pBullet1Plus"><li><code class="cCode">getBounds</code></li></div>
+<a name="wp61822"> </a> <div class="pBullet1Plus"><li><code class="cCode">getBounds2D</code></li></div>
+<a name="wp61823"> </a> <div class="pBullet1Plus"><li><code class="cCode">getPathIterator</code></li></div>
+<a name="wp61824"> </a> <div class="pBullet1Last"><li><code class="cCode">intersects</code></li></div>
+</ul>
+<a name="wp64684"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="j2d-bookTOC.html">목차</a>  | <a accesskey="p" href="j2d-awt.html">전의 항목</a>  | <a accesskey="n" href="j2d-fonts.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java<font size="-2"><sup>TM</sup></font> 2D API 개발자 안내<br /> Java<font size="-2"><sup>TM</sup></font> 2 SDK, Standard Edition, 1.4 Version</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="copyright.html">Copyright</a>  &#169; 2003 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

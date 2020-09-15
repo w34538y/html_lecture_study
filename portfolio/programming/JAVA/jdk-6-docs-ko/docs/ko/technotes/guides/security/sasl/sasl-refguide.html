@@ -1,0 +1,649 @@
+<!--[Targeted for programmers.]-->
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java SASL API
+    - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+
+<hr SIZE=3 NOSHADE WIDTH="100%"></h1>
+
+<center>
+<h1>
+Java SASL API<br> 프로그래밍 및 배치 가이드
+</h1></center>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+
+
+<ol>
+<li><a href=#INTRO>처음에</a> 
+    <ul>
+<li><a href=#WHAT>SASL 란</a> 
+<li><a href=#SASLAPI>Java SASL API</a> 
+<li><a href=#WHEN>SASL 를 언제 사용할까</a> 
+    </ul>
+<li><a href=#API>API 의 개요</a> 
+    <ul>
+<li><a href=#CREATE>기구의 작성</a> 
+<li><a href=#INPUT>기구에 입력을 건네준다</a> 
+<li><a href=#USE>기구의 사용</a> 
+<li><a href=#LAYER>협상 끝난 시큐리티층의 사용</a> 
+    </ul>
+<li><a href=#INSTALL>SASL 기구를 인스톨 및 선택하는 방법</a> 
+<li><a href=#SUN>SunSASL 프로바이더</a> 
+    <ul>
+<li><a href=#CLIENT>클라이언트 기구</a> 
+<li><a href=#SERVER>서버구</a> 
+<li><a href=#DEBUG>디버그 및 감시</a> 
+    </ul>
+<li><a href=#PROV>SASL 시큐리티 프로바이더의 구현</a> 
+</ol>
+
+<hr SIZE=3 NOSHADE WIDTH="100%">
+
+
+<a name=INTRO><h1>처음에</h1></a> 
+
+<a name=WHAT><h2>SASL 란</h2></a> 
+
+SASL (Simple Authentication and Security Layer)는, 인증 및 클라이언트 어플리케이션과 서버 어플리케이션간의 시큐리티층의 확립 (옵션)을 실시하는 프로토콜을 지정하는 인터넷 표준 (<A HREF="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</A> )입니다. SASL 는 인증 데이터의 교환 방법을 정의합니다만, 그 데이터의 내용은 지정하지 않습니다. 인증 데이터의 내용 및 시멘틱스를 지정하는 특정의 「인증 기구」를 적합할 수 있는 시스템입니다.
+<p>
+SASL 는, Lightweight Directory Access Protocol, 버젼 3 (<a href=http://www.ietf.org/rfc/rfc2251.txt>LDAP v3</a> )이나 Internet Message Access Protocol, 버젼 4 (<a href=http://www.ietf.org/rfc/rfc2060.txt>IMAP v4</a> )등의 프로토콜에 의해 사용되어 플러그 인 가능한 인증을 유효하게 합니다. 인증 메소드를 프로토콜에 고정하는 대신에, LDAP v3 및 IMAP v4 는 SASL 를 사용해 인증을 실행합니다. 따라서, 다양한 SASL 기구에 의한 인증이 가능하게 됩니다.  
+<p>
+다양한 시큐리티 레벨 및 배치 시나리오용으로 인터넷 커뮤니티에 의해 정의된, 다수의 표준 SASL 기구가 있습니다. 그 범위는 시큐리티 없음 (익명 인증등)으로부터 고시큐리티 (Kerberos 인증등)에 이를 때까지, 다양한 레벨이 있습니다.
+<p>
+
+<a name=SASLAPI><h2>Java SASL API</h2></a> 
+
+Java SASL API 는, SASL 기구를 사용하는 어플리케이션용의 클래스 및 인터페이스를 정의합니다. Java SASL API 는, 기구에 의존하지 않게 정의되고 있습니다. API 를 사용하는 어플리케이션을, 특정의 SASL 기구의 사용에 고정할 필요는 없습니다. 이 API 는, 클라이언트와 서버의 양쪽 모두의 어플리케이션을 지원하고 있습니다. 어플리케이션은, 수동적인 사전 공격의 영향을 받기 쉬운지 어떤지, 및 익명 인증을 받아들일지 어떨지 등, 필요한 시큐리티 기능에 근거해 사용하는 기구를 선택할 수 있습니다.
+
+<p>
+
+Java SASL API 에서는, 개발자는 독자적인 커스텀 SASL 기구를 사용할 수도 있습니다. SASL 기구는,<a href="../crypto/CryptoSpec.html#ProviderInstalling">Java 암호화 아키텍쳐(architecture)</a>  (JCA)를 사용해 인스톨 됩니다.
+
+<a name=WHEN><h2>SASL 를 언제 사용할까</h2></a> 
+
+SASL 는, 플러그 인 가능한 인증과 시큐리티층을 네트워크 어플리케이션에 제공합니다. Java SE 에는,<a href="../jsse/JSSERefGuide.html">Java Secure Socket Extension</a>  (JSSE)나 <a href=http://www.ietf.org/rfc/rfc2853.txt>Java Generic Security Service</a>  (Java GSS) 등, 같은 기능을 제공하는 그 외의 기능이 있습니다. JSSE 는,<a href=http://home.netscape.com/eng/ssl3/ssl-toc.html>SSL</a>  및 <a href=http://www.ietf.org/rfc/rfc2246.txt>TLS</a>  프로토콜의 Java 언어 버젼에, 시스템와 구현을 제공합니다. Java GSS 는, Generic Security Service Application Programming Interface (<a href=http://www.ietf.org/rfc/rfc2743.txt>GSS-API</a> ) 용의 Java 언어 바인딩입니다. Java SE 에서는, 이 API 아래에서 현재 지원되고 있는 기구는, Kerberos v5 뿐입니다.
+<p>
+JSSE 및 Java GSS 와 비교하면(자), SASL 는 상대적으로 경량이며, 최근의 프로토콜 중(안)에서 일반적입니다. 일반적이고 경량인 (인프라스트럭쳐(infrastructure) 지원의 점으로써) SASL 기구가 몇개인가 정의되고 있다고 하는 이점도 있습니다. 한편, 주요한 JSSE 및 Java GSS 기구는 상대적으로 중량이 있는 기구를 가져, 보다 정교한 인프라스트럭쳐(infrastructure) (각각 공개키 인프라스트럭쳐(infrastructure) 및 Kerberos)을 필요로 합니다.
+<p>
+SASL, JSSE, 및 Java GSS 는, 자주 병용 됩니다. 예를 들어, 일반적인 패턴에서는, 어플리케이션은 안전한 채널을 확립하기 위해서 JSSE 를 사용해, 클라이언트의 사용자명/패스워드 베이스의 인증에는 SASL 를 사용합니다. GSS-API 기구의 상위층이 되는 SASL 기구도 있습니다. 일반적인 예는, LDAP 로 사용되는 SASL GSS-API/Kerberos v5 기구입니다.
+<p>
+프로토콜을 제로로부터 정의 및 구축하는 경우를 제외해, 어느 API 를 사용할까를 결정하는 경우의 최대 요인은, 많은 경우 프로토콜 정의입니다. 예를 들어, LDAP 및 IMAP 는 SASL 를 사용하도록(듯이) 정의되고 있으므로, 이러한 프로토콜에 관계하는 소프트웨어는 Java SASL API 를 사용하도록 해 주세요. Kerberos 어플리케이션 및 서비스를 구축하는 경우, 사용하는 API 는 Java GSS 입니다. 프로토콜로서 SSL/TLS 를 사용하는 어플리케이션 및 서비스를 구축하는 경우, 사용하는 API 는 JSSE 입니다. JSSE 와 Java GSS 를 언제 사용할까에 대한 자세한 것은,<a href="../jgss/tutorials/JGSSvsJSSE.html">「Java 시큐리티 문서」</a>를 참조해 주세요.
+
+
+<a name=API><h1>API 의 개요</h1></a> 
+
+SASL 는 챌린지 응답 프로토콜입니다. 서버는 클라이언트에 챌린지를 발행해, 클라이언트는 챌린지에 근거해 응답을 송신합니다. 이 교환은, 서버가 충족 해 챌린지를 발행하지 않게 될 때까지 계속됩니다. 이러한 챌린지 및 응답은, 임의의 길이의 바이너리 토큰입니다. 캡슐화를 실시하는 프로토콜 (LDAP 나 IMAP 등)은, 이러한 토큰의 encode 및 교환 방법을 지정합니다. 예를 들어, LDAP 는, SASL 토큰이 LDAP 바인드 요구 및 응답에 어떻게 캡슐화되는지를 지정합니다.  
+<p>
+
+Java SASL API 는, 이 상호작용과 사용 방법의 스타일에 따라 모델화 되고 있습니다. 인터페이스 <a href="../../../../api/javax/security/sasl/SaslClient.html"><tt>SaslClient</tt></a>  및 <a href="../../../../api/javax/security/sasl/SaslServer.html"><tt>SaslServer</tt></a>  가 있어, 이것들은 각각 클라이언트측 및 서버측의 기구를 나타냅니다. 어플리케이션은 챌린지 및 응답을 나타내는 바이트 배열에 의해, 기구와 서로 작용합니다. 서버측의 기구는, 충족 될 때까지 챌린지의 발행과 응답의 처리를 반복합니다. 한편, 클라이언트측의 기구는, 서버가 충족 될 때까지 챌린지의 평가와 응답의 발행을 반복합니다. 기구를 사용하고 있는 어플리케이션이, 각각의 반복을 제어합니다. 즉, 기구를 사용하고 있는 어플리케이션은, 챌린지 또는 응답을 프로토콜 패킷으로부터 추출해 기구에 건네주어, 기구로부터 반환된 응답 또는 챌린지를 프로토콜 패킷에 넣어, 피어에 송신합니다.
+<p>
+
+<a name=CREATE><h2>기구의 작성</h2></a> 
+
+SASL 기구를 사용하는 클라이언트 코드 및 서버 코드는, 특정의 기구를 사용하도록(듯이) 고정은 되고 있지 않습니다. SASL 를 사용하는 많은 프로토콜에서는, 서버는, 지원하는 SASL 기구의 리스트를 (정적 또는 동적으로) 공개합니다. 클라이언트는, 시큐리티 요건에 근거해, 이러한 1 개(살)을 선택합니다.
+
+<p>
+<a href="../../../../api/javax/security/sasl/Sasl.html"><tt>Sasl</tt></a>  클래스가,<a href="../../../../api/javax/security/sasl/SaslClient.html"><tt>SaslClient</tt></a>  및 <a href="../../../../api/javax/security/sasl/SaslServer.html"><tt>SaslServer</tt></a>  의 인스턴스의 작성에 사용됩니다. 다음에, 사용 가능한 SASL 기구의 리스트를 사용해, 어플리케이션이 어떻게 SASL 클라이언트 기구를 작성할까의 예를 나타냅니다.
+
+<pre><blockquote>
+String[] mechanisms = new String[]{"DIGEST-MD5", "PLAIN"};
+SaslClient sc = Sasl.createSaslClient(mechanisms,
+    authzid, protocol, serverName, props, callbackHandler);
+</blockquote></pre>
+
+플랫폼에 의해 지원되는 기구의 가용성 및 파라미터로 제공되는 그 외의 구성 정보에 근거해, Java SASL 시스템는 일람 되고 있는 기구의 1 개를 선택해,<a href="../../../../api/javax/security/sasl/SaslClient.html"><tt>SaslClient</tt></a>  의 인스턴스를 돌려줍니다.
+<p>
+선택된 기구의 이름은, 일반적으로, 어플리케이션 프로토콜에 의해 서버에 전송 됩니다. 기구명을 수신하면(자), 서버는, 클라이언트로부터 송신된 응답을 처리하기 위해서, 대응하는 <a href="../../../../api/javax/security/sasl/SaslServer.html"><tt>SaslServer</tt></a>  객체를 작성합니다. 다음에, 서버가 <a href="../../../../api/javax/security/sasl/SaslServer.html"><tt>SaslServer</tt></a>  의 인스턴스를 작성하는 방법의 예를 나타냅니다.
+
+<pre><blockquote>
+SaslServer ss = Sasl.createSaslServer(mechanism, 
+    protocol, myName, props, callbackHandler);
+</blockquote></pre>
+
+
+<a name=INPUT><h2>기구에 입력을 건네준다</h2></a> 
+
+<p>
+Java SASL API 는 범용 시스템이므로, 다수가 다른 타입의 기구에 대응할 수 있을 필요가 있습니다. 각 기구는 입력에 의해 초기화될 필요가 있어, 먼저 진행되기 위해서(때문에) 입력을 필요로 하는 경우가 있습니다. 이 API 는, 어플리케이션이 기구에 입력을 건네주기 위한 3 개의 수단을 제공합니다.
+
+<ol>
+<li>공통 입력 파라미터.
+
+어플리케이션은 미리 정의된 파라미터를 사용해, SASL 스펙에 의해 정의된, 기구에 의해 공통에 필요하게 되는 정보를 제공합니다. <a href="../../../../api/javax/security/sasl/Sasl.html#createSaslClient(java.lang.String%5B%5D,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.util.Map,%20javax.security.auth.callback.CallbackHandler)">SASL 클라이언트 기구</a>의 경우, 입력 파라미터는 승인 ID, 프로토콜 ID, 및 서버명입니다. <a href="../../../../api/javax/security/sasl/Sasl.html#createSaslServer(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.util.Map,%20javax.security.auth.callback.CallbackHandler)">SASL 서버구</a>의 경우, 공통 입력 파라미터는 프로토콜 ID 및 (완전 수식된 고유의) 서버명입니다.
+<p>
+
+<li>프로퍼티 파라미터.
+
+어플리케이션은 프로퍼티 파라미터를 사용해 구성 정보를 제공합니다. 이 프로퍼티 파라미터는, 프로퍼티명의 프로퍼티치 (캐릭터 라인 이외의 경우도 있을 수 있다)에의 매핑입니다. Java SASL API 는,<a href="../../../../api/javax/security/sasl/Sasl.html#QOP">보호의 품질</a>,<a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH">암호의 강도</a>, 및<a href="../../../../api/javax/security/sasl/Sasl.html#MAX_BUFFER">최대 버퍼 사이즈 </a>등, 몇개의 표준 프로퍼티을 정의하고 있습니다. 파라미터는, 특정의 기구에 고유의 비표준의 프로퍼티을 건네주는 경우에도 사용할 수 있습니다.
+<p>
+<li>콜백.
+
+어플리케이션은<a href="../../../../api/javax/security/auth/callback/CallbackHandler.html">콜백 핸들러 </a>파라미터를 사용해, 미리 결정할 수 없는 입력, 또는 기구간에서 공통이 아닌 경우가 있는 입력을 건네줍니다. 기구는 입력 데이터를 필요로 하는 경우, 어플리케이션에 의해 건네받은 콜백 핸들러를 사용해 데이터를 수집합니다. 어플리케이션의 최종 사용자로부터 수집하는 경우도 있습니다. 예를 들어, 기구는, 어플리케이션의 최종 사용자가 이름과 패스워드를 입력하도록(듯이) 요구하는 경우가 있습니다.   
+<p>
+기구는,<a href="../../../../api/javax/security/auth/callback/package-summary.html"><tt>javax.security.auth.callback</tt></a>  패키지로 정의된 콜백을 사용할 수 있습니다. 이것들은, 인증을 실행하는 어플리케이션을 구축하는데 편리한 총칭 콜백입니다. 기구는, 레룸 및 인증 정보를 수집하기 위한 콜백등의, SASL 고유의 콜백, 및 (표준화되어 있지 않다) 기구 고유의 콜백을 필요로 하는 경우도 있습니다.
+
+어플리케이션은 다양한 기구에 대응할 수 있도록 해 주세요. 따라서, 그 콜백 핸들러는, 기구가 요구할 가능성이 있는 모든 콜백에 대응할 수 있는 것이 필요합니다. 이것은, 임의의 기구에 대해서는 일반적으로는 불가능합니다만, 일반적으로은 배치 및 사용되고 있는 기구는 수가 한정되고 있으므로, 가능합니다.
+
+</ol>
+
+<a name=USE><h2>기구의 사용</h2></a> 
+
+어플리케이션이 기구를 작성하면(자), 어플리케이션은 기구를 사용해 SASL 토큰을 취득해, 피어와 교환합니다.  
+
+일반적으로, 클라이언트는 어플리케이션 프로토콜에 의해, 어느 기구를 사용할까를 서버에 지시합니다. 일부의 프로토콜에서는, 클라이언트는 초기 응답을 가지는 기구용으로, 요구에 옵션의 「초기 응답」을 부가할 수 있습니다. 이 기능은, 인증에 필요한 메시지 교환의 수를 줄이기 위해서(때문에) 사용할 수 있습니다. 다음에, 클라이언트가 인증에 <a href="../../../../api/javax/security/sasl/SaslClient.html"><tt>SaslClient</tt></a>  를 어떻게 사용할까의 예를 나타냅니다.
+
+<pre><blockquote>
+// Get optional initial response
+byte[] response = 
+    (sc.hasInitialResponse() ?  sc.evaluateChallenge(new byte[]) : null);
+
+String mechanism = sc.getName();
+
+// Send selected mechanism name and optional initial response to server
+send(mechanism, response);
+
+// Read response
+msg = receive();
+
+while (! sc.isComplete() && (msg.status == CONTINUE || msg.status == SUCCESS)) {
+
+    // Evaluate server challenge
+    response = sc.evaluateChallenge(msg.contents);
+
+    if (msg.status == SUCCESS) {
+        // done; server doesn't expect any more SASL data
+        if (response ! = null) {
+           throw new IOException(
+               "Protocol error: attempting to send response after completion");
+        }
+	break;
+    } else {
+        send(mechanism, response);
+	msg = receive();
+    }
+}
+</blockquote></pre>
+
+클라이언트 어플리케이션은 기구 (<tt>sc</tt>)를 사용해 인증의 각 스텝을 반복해, 서버로부터 취득한 챌린지를 평가해 서버에 응답을 답장하겠습니다. 클라이언트 어플리케이션은 기구 또는 어플리케이션 레벨의 프로토콜이 인증이 완료한 것을 나타낼 때까지, 또는 기구가 챌린지를 평가할 수 없는 경우에, 이 사이클을 속행합니다. 기구가 챌린지를 평가할 수 없는 경우, 에러를 나타내는 예외를 throw 해, 인증을 종료합니다. 완료 상태에 관해서 기구와 프로토콜의 사이에 불일치가 있는 경우는, 인증 교환에 장해가 있는 것을 나타낼 가능성이 있기 (위해)때문에, 에러로서 처리합니다.
+
+<p>
+다음에, 서버가 <a href="../../../../api/javax/security/sasl/SaslServer.html"><tt>SaslServer</tt></a>  를 어떻게 사용할까의 예를 나타냅니다.
+
+<pre><blockquote>
+
+// Read request that contains mechanism name and optional initial response
+msg.receive();
+
+// Obtain a SaslServer to perform authentication
+SaslServer ss = Sasl.createSaslServer(msg.mechanism, 
+    protocol, myName, props, callbackHandler);
+
+// Perform authentication steps until done
+while (! ss.isComplete()) {
+
+    try {
+        // Process response
+        byte[] challenge = sc.evaluateResponse(msg.contents);
+
+        if (ss.isComplete()) {
+            send(mechanism, challenge, SUCCESS);
+        } else {
+            send(mechanism, challenge, CONTINUE);
+	    msg.receive();
+        }
+    } catch (SaslException e) {
+        send(ERROR);
+	sc.dispose();
+	break;
+    }
+}
+</blockquote></pre>
+
+서버 어플리케이션은 클라이언트의 응답을 기구 (<tt>ss</tt>)에 건네주어 처리하는 것에 의해, 인증의 각 스텝을 반복합니다. 응답이 부정한 경우, 서버가 에러를 보고해 인증을 종료할 수 있도록(듯이), 기구는 <a href="../../../../api/javax/security/sasl/SaslException.html"><tt>SaslException</tt></a>  를 throw 해 에러를 나타냅니다. 응답이 올바른 경우, 기구는 클라이언트에 송신되는 챌린지 데이터를 돌려주어, 인증이 완료했는지의 여부를 나타냅니다. 챌린지 데이터는 「성공」을 나타내는 데이터를 수반할 수가 있습니다. 이것은, 예를 들어, 협상 된 상태를 클라이언트에 완결시키기 위해서(때문에) 사용되는 경우가 있습니다.
+
+<a name=LAYER><h2>협상 끝난 시큐리티층의 사용</h2></a> 
+
+인증만을 지원하는 SASL 기구 뿐만이 아니라, 인증 후에 협상 끝난 시큐리티층의 사용을 지원하는 SASL 기구도 있습니다. 시큐리티층의 기능은 어플리케이션이 SSL/TLS 등의 다른 수단을 사용해 피어와 안전하게 통신하는 경우는, 사용되지 않는 경우가 자주 있습니다.
+<p>
+
+시큐리티층이 협상 끝난 경우, 피어와의 후속의 통신은 모두 시큐리티층을 사용해 발생합니다. 시큐리티층이 협상이 끝난 상태인가 어떤가를 판별하려면 , 협상 끝난<a href="../../../../api/javax/security/sasl/Sasl.html#QOP">보호의 품질</a>  (QOP)을 기구로부터 가져옵니다. 다음에, 시큐리티층이 협상이 끝난 상태인가 어떤가를 판별하는 방법의 예를 나타냅니다.
+
+<pre><blockquote>
+String qop = (String) sc.getNegotiatedProperty(Sasl.QOP);
+boolean hasSecurityLayer = (qop ! = null && 
+    (qop.equals("auth-int") || qop.equals("auth-conf")));
+</blockquote></pre>
+
+<a href="../../../../api/javax/security/sasl/Sasl.html#QOP"><tt>Sasl.QOP</tt></a>  프로퍼티이 무결성 또는 기밀성, 있고는 그 양쪽 모두가 협상이 끝난 상태인 것을 나타내고 있는 경우, 시큐리티층은 협상이 끝난 상태입니다.
+<p>
+협상 끝난 층을 사용해 피어와 통신하려면 , 어플리케이션은 최초로 <a href="../../../../api/javax/security/sasl/SaslClient.html#wrap(byte%5B%5D,%20int,%20int)"><tt>wrap</tt></a>  메소드를 사용해, 피어에 송신되는 데이터를 encode 해 「랩 되었다」버퍼를 생성합니다. 다음에, 랩 된 버퍼내의 8중창의 수를 나타내는 길이 필드와 거기에 계속되어 랩 된 버퍼의 내용을 피어에 전송 합니다. 8중창의 스트림을 수신하는 피어는 길이 필드를 제외한 버퍼를 <a href="../../../../api/javax/security/sasl/SaslClient.html#unwrap(byte%5B%5D,%20int,%20int)"><tt>unwrap</tt></a>  에 건네주어, 피어에 의해 송신된 복호화 된 바이트를 가져옵니다.
+
+이 프로토콜의 자세한 것은 <a href=http://www.ietf.org/rfc/rfc2222.txt>RFC 2222</a>  로 설명되고 있습니다. 다음에, 클라이언트 어플리케이션이 시큐리티층을 사용해 어플리케이션 데이터를 어떻게 송수신 할까의 예를 나타냅니다.
+
+<pre><blockquote>
+// Send outgoing application data to peer
+byte[] outgoing = ...;
+byte[] netOut = sc.wrap(outgoing, 0, outgoing.length);
+
+send(netOut.length, netOut);   // send to peer
+
+// Receive incoming application data from peer
+byte[] netIn = receive();      // read length and ensuing bytes from peer
+
+byte[] incoming = sc.unwrap(netIn, 0, netIn.length);
+</blockquote></pre>
+
+
+<a name=INSTALL><h1>SASL 기구를 인스톨 및 선택하는 방법</h1></a> 
+
+SASL 기구의 구현은, SASL 시큐리티 프로바이더에 의해 제공됩니다. 각 프로바이더는 1 개 이상의 SASL 기구를 지원할 수 있어<a href="../crypto/CryptoSpec.html">Java 암호화 아키텍쳐(architecture) (JCA)</a>  에 등록됩니다. J2SE 5 에서는, 디폴트로 SunSASL 프로바이더가 JCA 프로바이더로서 자동적으로 등록됩니다. 이 프로바이더를 삭제하는지, JCA 프로바이더로서의 우선 순위를 변경하려면 , 다음의 행을 변경합니다.
+
+<pre><blockquote>
+security.provider. 7=com.sun.security.sasl.Provider
+</blockquote></pre>
+
+이것은, Java 시큐리티 프로퍼티 파일 ($JAVA_HOME/lib/security/java.security)에 있습니다.
+<p>
+SASL 프로바이더를 추가 또는 삭제하려면 , 시큐리티 프로퍼티 파일로 대응하는 행을 추가 또는 삭제합니다. 예를 들어, SASL 프로바이더를 추가해, 그 기구가 SunSASL 프로바이더에 의해 구현되고 있는 같은 기구보다 우선해 선택되도록(듯이) 하는 경우는, 시큐리티 프로퍼티 파일에 작은 번호로 행을 추가합니다.
+
+<pre><blockquote>
+security.provider. 7=com.example.MyProvider
+security.provider. 8=com.sun.security.sasl.Provider
+</blockquote></pre>
+<p>
+이 경우,<a href="../../../../api/java/security/Security.html"><tt>java.security.Security</tt></a>  클래스를 사용해, 프로그램으로 독자적인 프로바이더를 추가할 수도 있습니다. 예를 들어, 다음의 샘플 코드는, 사용 가능한 SASL 시큐리티 프로바이더의 리스트에 <tt>com.example.MyProvider</tt> 를 등록합니다.
+
+<pre><blockquote>
+Security.addProvider(new com.example.MyProvider());
+</blockquote></pre>
+
+어플리케이션이 1 개 이상의 기구명을 지정해 SASL 기구를 요구하면(자), SASL 시스템는, 등록이 끝난 프로바이더의 리스트를 순서에 검색해, 그 기구를 지원하는 등록을 마친 SASL 프로바이더를 찾습니다. 다음에, 프로바이더는, 요구된 기구가<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT">선택 정책 프로퍼티</a>에 일치할지 어떨지를 판별해, 일치하는 경우는, 기구의 구현을 돌려줍니다.
+<p>
+선택 정책 프로퍼티은 특정의 공격에 대한 영향의 받기 쉬움 등, 기구의 시큐리티면을 지정합니다. 이것들은, 구현이라고 하는 것보다도 기구의 특성 (정의)입니다. 따라서, 모든 프로바이더는 특정의 기구에 대해 같은 결과가 될 것입니다. 예를 들어, PLAIN 기구는, 어떻게 구현될까에 관계없이, 평문공격의 영향을 받기 쉬워집니다. 선택 정책 프로퍼티이 지정되지 않는 경우, 기구의 선택에 제한은 없습니다. 이러한 프로퍼티을 사용해, 어플리케이션은, 실행 환경에 배치될 가능성이 있는 기구에 대해, 적합하지 않는 것을 사용하지 않게 할 수가 있습니다. 예를 들어, 평문공격의 영향을 받기 쉬운 기구의 사용을 허가하지 않는 경우, 어플리케이션은 다음의 샘플 코드를 사용하는 경우가 있습니다.
+<p>
+<blockquote><pre>
+Map props = new HashMap();
+props.add(Sasl.POLICY_NOPLAINTEXT, "true");
+SaslClient sc = Sasl.createSaslClient(mechanisms,
+    authzid, protocol, serverName, props, callbackHandler);
+</blockquote></pre>
+
+선택 정책 프로퍼티의 자세한 것은,<a href="../../../../api/javax/security/sasl/Sasl.html"><tt>Sasl</tt></a>  클래스를 참조해 주세요.
+
+<a name=SUN><h1>SunSASL 프로바이더</h1></a> 
+
+SunSASL 프로바이더는, 다음의 클라이언트 기구 및 서버구를 지원합니다.
+
+<ul>
+<li>클라이언트 기구
+<ul>
+<li>PLAIN (<A HREF="http://ftp.isi.edu/in-notes/rfc2595.txt">RFC 2595</A> ). 이 기구는, clear text 사용자명/패스워드 인증을 지원하고 있습니다.
+<li>CRAM-MD5 (<A HREF="http://www.ietf.org/rfc/rfc2195.txt">RFC 2195</a> ). 이 기구는, 해시 된 사용자명/패스워드 인증 방식을 지원하고 있습니다.
+<li>DIGEST-MD5 (<A HREF="http://www.ietf.org/rfc/rfc2831.txt">RFC 2831</a> ). 이 기구는, SASL 기구로서 HTTP 다이제스트 인증을 사용하는 방법을 정의합니다.
+
+<li>GSSAPI (<A HREF="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</A> ). 이 기구는, 인증 정보를 취득할 경우에 <A HREF="http://www.ietf.org/rfc/rfc2078.txt">GSSAPI</A>  를 사용합니다. Kerberos v5 인증을 지원하고 있습니다.
+
+<li>EXTERNAL (<A HREF="http://www.ietf.org/rfc/rfc2222.txt">RFC 2222</A> ). 이 기구는, 외부 채널 (TLS 나 IPsec 등)로부터 인증 정보를 가져옵니다.
+</ul>
+<p>
+<li>서버구
+<ul>
+<li>CRAM-MD5
+<li>DIGEST-MD5 
+<li>GSSAPI (Kerberos v5)
+</ul>
+</ul>
+
+<a name=CLIENT><h2>클라이언트 기구</h2></a> 
+
+SunSASL 프로바이더는, LDAP, IMAP, 및 SMTP 등의, 일반적인 프로토콜로 사용되는 복수의 SASL 기구를 지원합니다. 다음의 겉(표)는, 클라이언트 기구와 그것들에 필요한 입력의 개요입니다.
+<p>
+
+<table BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+
+<tr>
+<th>클라이언트 기구명</th>
+<th>파라미터/입력</th>
+<th>콜백</th>
+<th>구성 프로퍼티</th>
+<th>선택 정책</th>
+</tr>
+
+
+<tr>
+<td><a href=#CRAMCLNT>CRAM-MD5</a> </td>
+<td>승인 ID (디폴트의 사용자명으로서)</td>
+<td><a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a> <br> <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a> </td>
+<td>&nbsp;</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> </td>
+</tr>
+
+<tr>
+<td><a href=#DIGESTCLNT>DIGEST-MD5</a> </td>
+<td>승인 ID<br>프로토콜 ID<br>서버명
+</td>
+<td>
+<a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a>  <br> <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a>  <br> <a href="../../../../api/javax/security/sasl/RealmCallback.html"><tt>RealmCallback</tt></a>  <br> <a href="../../../../api/javax/security/sasl/RealmChoiceCallback.html"><tt>RealmChoiceCallback</tt></a> 
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#QOP"><tt>Sasl.QOP</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH"><tt>Sasl.STRENGTH</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#MAX_BUFFER"><tt>Sasl.MAX_BUFFER</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#SERVER_AUTH"><tt>Sasl.SERVER_AUTH</tt></a> <br>「javax.security.sasl.sendmaxbuffer」<br>「com.sun.security.sasl.digest.cipher」<br>
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> 
+</td>
+</tr>
+
+<tr>
+<td>EXTERNAL</td>
+<td>승인 ID<br> 외부 채널</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOACTIVE"><tt>Sasl.POLICY_NOACTIVE</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NODICTIONARY"><tt>Sasl.POLICY_NODICTIONARY</tt></a> </td>
+</tr>
+
+<tr>
+<td><a href=#GSSAPICLNT>GSSAPI</a> </td>
+<td>
+<a href="../../../../api/javax/security/auth/Subject.html">JAAS&nbsp;Subject</a> <br>승인 ID <br>프로토콜 ID <br>서버명</td>
+<td>&nbsp;
+
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#QOP"><tt>Sasl.QOP</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#MAX_BUFFER"><tt>Sasl.MAX_BUFFER</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#SERVER_AUTH"><tt>Sasl.SERVER_AUTH</tt></a> <br>「javax.security.sasl.sendmaxbuffer」<br>
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOACTIVE"><tt>Sasl.POLICY_NOACTIVE</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> 
+</td>
+
+
+<tr>
+<td>PLAIN</td>
+<td>승인 ID</td>
+<td><a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a> <br> <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a> </td>
+<td>&nbsp;</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> </td>
+</tr>
+
+</table>
+
+<p>
+
+SunSASL 프로바이더의 이러한 기구를 사용하는 어플리케이션은, 필요한 파라미터, 콜백, 및 프로퍼티을 제공할 필요가 있습니다. 프로퍼티에는 적절한 디폴트 값가 설정되어 있기 (위해)때문에, 어플리케이션이 디폴트 값를 오버라이드(override) 하는 경우에게만 설정할 필요가 있습니다. 대부분의 파라미터, 콜백, 및 프로퍼티은, API 문서로 설명되고 있습니다. 다음의 섹션에서는, 기구 고유의 동작, 및 API 문서로 설명되어 있지 않은 파라미터에 대해 설명합니다.
+<p>
+
+<a name=CRAMCLNT><h3>Cram-MD5</h3></a> 
+
+Cram-MD5 클라이언트 기구는 승인 ID 파라미터가 지정되었을 경우, 그 승인 ID 파라미터를 <a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a>  내에서 디폴트의 사용자명으로서 사용해, 어플리케이션/최종 사용자에 승인 ID 를 요구합니다. 그 이외에서는, 승인 ID 는 Cram-MD5 기구에 의해 사용되지 않습니다. 인증 ID 만이 서버와 교환됩니다.
+
+
+<p>
+
+<a name=DIGESTCLNT><h3>Digest-MD5</h3></a> 
+
+Digest-MD5 기구는, 다이제스트 인증 및 옵션으로 시큐리티층을 확립하는 경우에 사용됩니다. 시큐리티층과 함께 사용하는 Triple DES, DES, 및 RC4 (128, 56, 및 40 비트)의 암호를 지정합니다. Digest-MD5 기구는, 플랫폼에서 사용 가능한 암호만을 지원할 수 있습니다. 예를 들어, 플랫폼이 RC4 암호를 지원하지 않는 경우, Digest-MD5 기구는 그 암호를 사용하지 않습니다.
+<p>
+<a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH"><tt>Sasl.STRENGTH</tt></a>  프로퍼티은, 「high」, 「medium」, 및 「low」설정을 지원하고 있어, 디폴트는 「high, medium, low」입니다. 암호는, 다음과 같이 강도 설정에 매핑 되고 있습니다.
+<p>
+<table BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+<tr>
+<th>강도</th>
+<th>암호</th>
+<th>암호 ID</th>
+</tr>
+
+<tr>
+<td>high</td>
+<td>Triple&nbsp;DES<br> RC4&nbsp;128&nbsp; 비트
+</td>
+<td>3des rc4</td>
+</tr>
+
+<tr>
+<td>medium</td>
+<td>DES<br> RC4&nbsp;56&nbsp; 비트
+</td>
+<td>des rc4-56</td>
+</tr>
+
+<tr>
+<td>low</td>
+<td>RC4&nbsp;40&nbsp; 비트</td>
+<td>rc4-40</td>
+</tr>
+</table>
+<p>
+
+특정의 강도에 복수의 선택사항이 있는 경우, 선택되는 암호는, 기반이 되는 플랫폼에서의 암호의 가용성에 의해 정해집니다. 사용하는 암호를 명시적으로 지정하려면 , 「com.sun.security.sasl.digest.cipher」프로퍼티을 대응하는 암호 ID 로 설정합니다. 이 프로퍼티 설정은,<a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH"><tt>Sasl.STRENGTH</tt></a>  및 기반이 되는 플랫폼에서 이용 가능한 암호와 호환성을 갖게해 주세요. 예를 들어, 「low」로 설정되어 있는 <a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH"><tt>Sasl.STRENGTH</tt></a>  와 「3 des」로 설정되어 있는 「com.sun.security.sasl.digest.cipher」에는, 호환성이 없습니다. 「com.sun.security.sasl.digest.cipher」프로퍼티에는, 디폴트는 없습니다.
+
+<p>
+「javax.security.sasl.sendmaxbuffer」프로퍼티은, 최대 송신 버퍼 사이즈 (의 캐릭터 라인 표현)를 바이트 단위로 지정합니다. 디폴트 값는 65536 입니다. 실제의 최대 바이트수는, 이 수의 최소치 및 피어의 최대 수신 버퍼 사이즈가 됩니다.   
+
+
+<a name=GSSAPICLNT><h3>GSSAPI</h3></a> 
+
+GSSAPI 기구는, Kerberos v5 인증 및 옵션으로 시큐리티층의 확립에 사용됩니다. 기구는 호출해 옆thread의 <a href="../../../../api/javax/security/auth/Subject.html"><tt>Subject</tt></a>  가 클라이언트의 Kerberos 자격을 포함하는 것, 또는 Kerberos 에 암묵적으로 로그인하는 것에 의해 자격이 취득되는 것을 상정하고 있습니다. 클라이언트의 Kerberos 자격을 가져오려면 ,<a href="http://java.sun.com/products/jaas/">Java Authentication and Authorization Service (JAAS)</a>  를 사용해, Kerberos 로그인 모듈을 사용해 로그인합니다. 상세 및 예는,<a href=../jgss/tutorials/index.html>「Kerberos 를 사용한 Java GSS-API 및 JAAS 의 튜토리얼」</a>을 참조해 주세요. JAAS 인증을 사용해 Kerberos 자격을 취득한 후에, SASL GSSAPI 기구를 사용하는 코드를 <a href="../../../../api/javax/security/auth/Subject.html#doAs(javax.security.auth.Subject,%20java.security.PrivilegedAction)"><tt>doAs</tt></a>  또는 <a href="../../../../api/javax/security/auth/Subject.html#doAsPrivileged(javax.security.auth.Subject,%20java.security.PrivilegedAction,%20java.security.AccessControlContext)"><tt>doAsPrivileged</tt></a>  내에 배치합니다.
+<pre><blockquote>
+LoginContext lc = new LoginContext("JaasSample", new TextCallbackHandler());
+lc.login();
+lc.getSubject(). doAs(new SaslAction());
+
+class SaslAction implements java.security.PrivilegedAction {
+   public class run() {
+       ...
+       String[] mechanisms = new String[]{"GSSAPI"};
+       SaslClient sc = Sasl.createSaslClient(mechanisms,
+           authzid, protocol, serverName, props, callbackHandler);
+       ...
+   }
+}
+</blockquote></pre>
+JAAS 프로그래밍을 명시적으로 실시하지 않고 Kerberos 자격을 가져오려면 ,<a href=../jgss/tutorials/index.html>「Kerberos 를 사용한 Java GSS-API 및 JAAS 의 튜토리얼」</a>을 참조해 주세요. 이 방법을 사용하는 경우는, 코드를 <a href="../../../../api/javax/security/auth/Subject.html#doAs(javax.security.auth.Subject,%20java.security.PrivilegedAction)"><tt>doAs</tt></a>  또는 <a href="../../../../api/javax/security/auth/Subject.html#doAsPrivileged(javax.security.auth.Subject,%20java.security.PrivilegedAction,%20java.security.AccessControlContext)"><tt>doAsPrivileged</tt></a>  내에 랩 할 필요는 없습니다.
+
+<p>
+「javax.security.sasl.sendmaxbuffer」프로퍼티은, 최대 송신 버퍼 사이즈 (의 캐릭터 라인 표현)를 바이트 단위로 지정합니다. 디폴트 값는 65536 입니다. 실제의 최대 바이트수는, 이 수의 최소치 및 피어의 최대 수신 버퍼 사이즈가 됩니다.   
+
+<a name=SERVER><h2>서버구</h2></a> 
+
+다음의 겉(표)는, 서버구와 그것들에 필요한 입력의 개요입니다.
+<p>
+
+<table BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+
+<tr>
+<th>서버구명</th>
+<th>파라미터/입력</th>
+<th>콜백</th>
+<th>구성 프로퍼티</th>
+<th>선택 정책</th>
+</tr>
+
+<tr>
+<td><a href=#CRAMSRV>CRAM-MD5</a> </td>
+<td>서버명</td>
+<td><a href="../../../../api/javax/security/sasl/AuthorizeCallback.html"><tt>AuthorizeCallback</tt></a> <br> <a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a> <br> <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a> </td>
+<td>&nbsp;</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> </td>
+</tr>
+
+<tr>
+<td><a href=#DIGESTSRV>DIGEST-MD5</a> </td>
+<td>
+프로토콜 ID<br> 서버명
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/AuthorizeCallback.html"><tt>AuthorizeCallback</tt></a>  <br> <a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a>  <br> <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a>  <br> <a href="../../../../api/javax/security/sasl/RealmCallback.html"><tt>RealmCallback</tt></a> 
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#QOP"><tt>Sasl.QOP</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#STRENGTH"><tt>Sasl.STRENGTH</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#MAX_BUFFER"><tt>Sasl.MAX_BUFFER</tt></a> <br>「javax.security.sasl.sendmaxbuffer」<br>「com.sun.security.sasl.digest.realm」<br>「com.sun.security.sasl.digest.utf8」
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> 
+</td>
+</tr>
+
+<tr>
+<td><a href=#GSSAPISRV>GSSAPI</a> </td>
+<td><a href="../../../../api/javax/security/auth/Subject.html">JAAS&nbsp;Subject</a> <br>프로토콜 ID<br> 서버명</td>
+<td>
+<a href="../../../../api/javax/security/sasl/AuthorizeCallback.html"><tt>AuthorizeCallback</tt></a> 
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#QOP"><tt>Sasl.QOP</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#MAX_BUFFER"><tt>Sasl.MAX_BUFFER</tt></a> <br>「javax.security.sasl.sendmaxbuffer」<br>
+</td>
+<td>
+<a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOACTIVE"><tt>Sasl.POLICY_NOACTIVE</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOANONYMOUS"><tt>Sasl.POLICY_NOANONYMOUS</tt></a> <br> <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_NOPLAINTEXT</tt></a> 
+</td>
+
+
+</table>
+<p>
+SunSASL 프로바이더의 이러한 기구를 사용하는 어플리케이션은, 필요한 파라미터, 콜백, 및 프로퍼티을 제공할 필요가 있습니다. 프로퍼티에는 적절한 디폴트 값가 설정되어 있기 (위해)때문에, 어플리케이션이 디폴트 값를 오버라이드(override) 하는 경우에게만 설정할 필요가 있습니다.   
+<p>
+서버구의 모든 사용자에게는,<a href="../../../../api/javax/security/sasl/AuthorizeCallback.html"><tt>AuthorizeCallback</tt></a>  를 처리하는 콜백 핸들러가 필요합니다. 이것은, 요구된 승인 ID 에 대신해 인증 끝난 사용자가 조작할 수 있을지 어떨지를 판별하기 위해(때문에), 및 승인된 사용자의 정규화된 이름을 취득하기 위해서 (정규화가 적용 가능한 경우), 기구에 의해 사용됩니다.
+<p>
+대부분의 파라미터, 콜백, 및 프로퍼티은 API 문서로 설명되고 있습니다. 다음의 섹션에서는, 기구 고유의 동작, 및 API 문서로 설명되어 있지 않은 파라미터에 대해 설명합니다.
+
+<h3><a name=CRAMSRV>Cram-MD5</a> </h3>
+
+Cram-MD5 서버구는 <a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a>  및 <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a>  를 사용해, SASL 클라이언트의 응답의 검증에 필요한 패스워드를 가져옵니다. 콜백 핸들러는, 패스워드를 취득하기 위한 열쇠로서 <a href="../../../../api/javax/security/auth/callback/NameCallback.html#getDefaultName()"><tt>NameCallback.getDefaultName()</tt></a>  를 사용합니다.
+
+<h3><a name=DIGESTSRV>Digest-MD5</a> </h3>
+
+Digest-MD5 서버구는 <a href="../../../../api/javax/security/sasl/RealmCallback.html"><tt>RealmCallback</tt></a> ,<a href="../../../../api/javax/security/auth/callback/NameCallback.html"><tt>NameCallback</tt></a> , 및 <a href="../../../../api/javax/security/auth/callback/PasswordCallback.html"><tt>PasswordCallback</tt></a>  를 사용해, SASL 클라이언트의 응답의 검증에 필요한 패스워드를 가져옵니다. 콜백 핸들러는, 패스워드를 취득하기 위한 열쇠로서 <a href="../../../../api/javax/security/auth/callback/TextInputCallback.html#getDefaultText()"><tt>RealmCallback.getDefaultText()</tt></a>  및 <a href="../../../../api/javax/security/auth/callback/NameCallback.html#getDefaultName()"><tt>NameCallback.getDefaultName()</tt></a>  를 사용합니다.
+<p>
+
+「javax.security.sasl.sendmaxbuffer」프로퍼티에 대해서는,<a href=#DIGESTCLNT>Digest-MD5 클라이언트</a>의 항으로 설명하고 있습니다.
+<p>
+<p>
+「com.sun.security.sasl.digest.realm」프로퍼티은, 서버가 지원하는 레룸의 이름을 공백에서 단락지은 리스트를 지정하기 위해서 사용됩니다. 이 리스트는, 챌린지의 일부로서 클라이언트에 송신됩니다. 이 프로퍼티이 설정되어 있지 않은 경우, 디폴트의 레룸은 서버의 이름입니다 (파라미터로서 지정).
+<p>
+「com.sun.security.sasl.digest.utf8」프로퍼티은, 사용하는 문자 인코딩을 지정하기 위해서 사용됩니다. 「true」는 UTF-8 인코딩을 사용하는 것을 의미해, 「false」는 ISO Latin 1 (ISO-8859-1)을 사용하는 것을 의미합니다. 디폴트는 「true」입니다.
+
+<h3><a name=GSSAPISRV>GSSAPI</a> </h3>
+
+GSSAPI 서버구에는, Kerberos 자격 및 「javax.security.sasl.sendmaxbuffer」프로퍼티에 관해서,<a href=#GSSAPICLNT>GSSAPI 클라이언트 기구</a>와 같은 요건이 있습니다.
+
+<a name=DEBUG><h2>디버그 및 감시</h2></a> 
+
+SunSASL 프로바이더는,<a href=../../logging/index.html>로깅 API</a>  을 사용해, 구현의 로그를 출력합니다. 이 출력은, 로깅<a href=../../logging/overview.html#1.8%22>구성 파일 </a>및 프로그램상의 API (<a href="../../../../api/java/util/logging/package-summary.html">java.util.logging</a> )를 사용해 제어할 수 있습니다. SunSASL 프로바이더에 의해 사용되는 로거이름은, 「<tt>javax.security.sasl</tt>」입니다. 다음에, SunSASL 프로바이더의 <a href="../../../../api/java/util/logging/Level.html#FINEST"><tt>FINEST</tt></a>  로깅레벨을 유효하게 하는 산프르로깅 구성 파일을 나타냅니다.
+<pre><blockquote>
+javax.security.sasl.level=FINEST
+handlers=java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.level=FINEST
+</blockquote></pre>
+
+<p>
+다음의 겉(표)에, 기구 및 그것들이 생성하는 로깅 출력을 나타냅니다.
+<p>
+
+<table BORDER CELLPADDING=3 WIDTH="100%" NOSAVE >
+
+<tr>
+<th>기구</th>
+<th>로깅레벨</th>
+<th>로그 기록되는 정보</th>
+</tr>
+
+<tr>
+<td>CRAM-MD5</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINE"><tt>FINE</tt></a> </td>
+<td>구성 프로퍼티. 챌린지 및 응답 메세지</td>
+</tr>
+
+<tr>
+<td>DIGEST-MD5</td>
+<td><a href="../../../../api/java/util/logging/Level.html#INFO"><tt>INFO</tt></a> </td>
+<td>인코딩의 문제를 위해서(때문에) 파기된 메세지<br> (불일치의 MAC, 부정한 패딩 등)</td>
+</tr>
+
+<tr>
+<td>DIGEST-MD5</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINE"><tt>FINE</tt></a> </td>
+<td>구성 프로퍼티. 챌린지 및 응답 메세지</td>
+</tr>
+
+<tr>
+<td>DIGEST-MD5</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINER"><tt>FINER</tt></a> </td>
+<td>챌린지 및 응답 메세지에 관한보다 상세한 정보</td>
+</tr>
+
+<tr>
+<td>DIGEST-MD5</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINEST"><tt>FINEST</tt></a> </td>
+<td>시큐리티층에서 교환되는 버퍼</td>
+</tr>
+
+<tr>
+<td>GSSAPI</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINE"><tt>FINE</tt></a> </td>
+<td>구성 프로퍼티. 챌린지 및 응답 메세지</td>
+</tr>
+
+<tr>
+<td>GSSAPI</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINER"><tt>FINER</tt></a> </td>
+<td>챌린지 및 응답 메세지에 관한보다 상세한 정보</td>
+</tr>
+
+<tr>
+<td>GSSAPI</td>
+<td><a href="../../../../api/java/util/logging/Level.html#FINEST"><tt>FINEST</tt></a> </td>
+<td>시큐리티층에서 교환되는 버퍼</td>
+</tr>
+
+</table>
+
+<a name=PROV><h1>SASL 시큐리티 프로바이더의 구현</h1></a> 
+
+SASL 시큐리티 프로바이더의 구현에는, 3 개의 기본적인 순서가 있습니다.
+<ol>
+<li><a href=../../../../api/javax/security/sasl/SaslClient.html><tt>SaslClient</tt></a>  또는 <a href=../../../../api/javax/security/sasl/SaslServer.html><tt>SaslServer</tt></a>  인터페이스를 구현하는 클래스를 기술합니다.
+<li>클래스의 인스턴스를 작성하는 팩토리 클래스 (<a href=../../../../api/javax/security/sasl/SaslClientFactory.html><tt>SaslClientFactory</tt></a>  또는 <a href=../../../../api/javax/security/sasl/SaslServerFactory.html><tt>SaslServerFactory</tt></a>  를 구현)를 기술합니다.
+<li>팩토리를 등록하는 JCA 프로바이더를 기술합니다.
+</ol>
+
+<p>
+
+최초의 스텝에서는, SASL 기구를 구현합니다. 클라이언트 기구를 구현하려면 ,<a href=../../../../api/javax/security/sasl/SaslClient.html><tt>SaslClient</tt></a>  인터페이스로 선언된 메소드를 구현할 필요가 있습니다. 같이 서버구의 경우는,<a href=../../../../api/javax/security/sasl/SaslServer.html><tt>SaslServer</tt></a>  인터페이스로 선언된 메소드를 구현할 필요가 있습니다.   
+
+이 설명에서는, 클라이언트 기구 「SAMPLE-MECH」의 구현을 개발한다고 합니다. 이 기구는, 클래스 <tt>com.example.SampleMechClient</tt> 에 의해 구현됩니다. 기구가 필요로 하는 입력, 및 그것들을 구현이 수집하는 방법을 결정합니다. 예를 들어, 기구가 사용자명/패스워드 베이스의 경우, 구현에서는 그 정보를 콜백 핸들러 파라미터 경유로 수집하는 필요성이 높아집니다.
+<p>
+다음의 스텝에서는,<tt>com.example.SampleMechClient</tt> 의 인스턴스를 작성하는 팩토리 클래스를 기술합니다. 팩토리는 <a href="../../../../api/javax/security/sasl/Sasl.html#POLICY_NOPLAINTEXT"><tt>Sasl.POLICY_*</tt></a>  프로퍼티에 의해 기술되도록(듯이), 지원하는 기구의 특성을 결정할 필요가 있습니다. 그렇게 하는 것으로써, 호환성이 있는 정책 프로퍼티을 사용해 API 사용자가 요구했을 때에, 기구의 인스턴스를 돌려줄 수가 있습니다. 팩토리는, 또, 기구를 작성하기 전에 파라미터의 타당성을 체크하는 경우도 있습니다. 이 설명에서는, 팩토리 클래스의 이름을 <tt>com.example.MySampleClientFactory</tt> 로 합니다. 샘플 팩토리는 1 개의 기구만을 처리합니다만, 1 개의 팩토리는 임의의 수의 기구를 처리할 수 있습니다.
+<p>
+마지막 스텝에서는, JCA 프로바이더를 작성합니다. JCA 프로바이더를 작성하는 순서는,<a href=../crypto/HowToImplAProvider.html>「Java 암호화 아키텍쳐(architecture)용 프로바이더의 구현 방법」</a>으로 상세하게 설명되고 있습니다.
+
+SASL 클라이언트 팩토리는, 다음의 형식의 프로퍼티명을 사용해 등록됩니다.
+<blockquote>
+<tt>SaslClientFactory. </tt><em>mechName</em>
+</blockquote>
+한편, SASL 서버 팩토리는, 다음의 형식의 프로퍼티명을 사용해 등록됩니다.
+<blockquote>
+<tt>SaslServerFactory. </tt><em>mechName</em>
+</blockquote>
+<em>mechName</em> 는, SASL 기구의 이름입니다. 이것은,<a href="../../../../api/javax/security/sasl/SaslClient.html#getMechanismName()"><tt>SaslClient.getMechanismName()</tt></a>  및 <a href="../../../../api/javax/security/sasl/SaslServer.html#getMechanismName()"><tt>SaslServer.getMechanismName()</tt></a>  에 의해 반환된 이름입니다. 이 예로, 프로바이더가 「SAMPLE-MECH」기구를 등록하는 방법을 다음에 나타냅니다.
+<pre><blockquote>
+put("SaslClientFactory.SAMPLE-MECH",  "com.example.MySampleClientFactory");
+</blockquote></pre>
+
+1 개의 SASL 프로바이더가, 다수의 기구를 처리하는 경우가 있습니다. 그 때문에, 관련하는 팩토리를 등록하는 <a href="../../../../api/java/security/Provider.html#put(java.lang.Object,%20java.lang.Object)"><tt>put</tt></a>  의 호출이 다수 있는 경우가 있습니다.
+
+완료한 SASL 프로바이더는,<a href=#INSTALL>전술</a>의 순서를 사용해, 어플리케이션으로 이용 가능하게 할 수가 있습니다.
+
+<p>
+<hr SIZE=3 NOSHADE WIDTH="100%">
+<br><i>Copyright &copy; 2006 Sun Microsystems, Inc.  All rights reserved. </i>
+</body>
+</html>

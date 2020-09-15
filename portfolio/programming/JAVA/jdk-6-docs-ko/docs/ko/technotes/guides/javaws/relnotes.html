@@ -1,0 +1,479 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Java Web Start 1.4. 2 릴리스 노트 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+  <TR> 
+<TD WIDTH="60"> <IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88> 
+    </TD>
+    <TD> <center>
+<h1>Java<sup><font size="-2">TM</font></sup> Web Start 1.4. 2 릴리스 노트</h1>
+      </center></TD>
+<TD ALIGN=RIGHT VALIGN=TOP WIDTH="60"> <font size="-1"><a href="../../../index.html">문서의 목차</a> </font> </TD>
+  </TR>
+</TABLE>
+<!-- Body text begins here -->
+<p>&nbsp;</p>
+<p>이 릴리스 노트에는, 다음의 섹션이 포함되어 있습니다. </p>
+<ul>
+<li><a href="#enhancements">확장</a>  
+    <ul>
+<li><a href="#improved">어플리케이션 매니저의 JNLP URL 지원의 개선</a> </li>
+<li><a href="#dynamic">HTTPS 증명서의 동적 다운로드</a> </li>
+<li><a href="#automatic">JRE 의 자동 검출</a> </li>
+<li><a href="#combined">컨트롤 패널의 인프라스트럭쳐(infrastructure)를 통합</a> </li>
+<li><a href="#security">Java Web Start 의 시큐리티 감사</a> </li>
+<li><a href="#Prompt">쇼트 컷의 첫회 메세지</a> </li>
+<li><a href="#integration">InstallShield 7 과의 통합</a> </li>
+    </ul>
+  </li>
+<li><a href="#bug">버그의 수정</a> </li>
+</ul>
+<h2><a name="enhancements"></a> 확장</h2>
+<h3><a name="improved"></a> 어플리케이션 매니저의 JNLP URL 지원의 개선</h3>
+<p>JNLP URL 를 JAWS 어플리케이션 매니저로부터 직접 열어, 북마크할 수 있게 되었습니다. 게다가 파일을 <code>. html</code> 또는 <code>. jnlp</code> 로 할 수 있습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4531885.html">4531885</a> ). </p>
+<h3><a name="dynamic"></a> HTTPS 증명서의 동적 다운로드</h3>
+<p>Java Web Start 가 브라우저와 같은 방법으로 증명서를 동적으로 임포트 할 수 있게 되어,<code>https</code> 를 한층 더 활용할 수 있게 되었습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4696477.html">4696477</a> ). 상세한 것에 대하여는,<a href="developersguide/contents.html">「Java Web Start 1.4. 2 개발자 가이드」</a>의<a href="developersguide/development.html#dynamic">「HTTPS 증명서의 동적 다운로드」</a>를 참조해 주세요. </p>
+<h3><a name="automatic"></a> JRE 의 자동 검출</h3>
+<p>JAWS 가 실행되면(자), 매회 컴퓨터상에 「등록」된 모든 JRE 가 검출됩니다. </p>
+<p>JAWS 에 인식되는 JRE 에는, 등록을 마친 것과 미등록의 것의 2 개의 타입이 있습니다. 등록을 마친 JRE 는, 시스템이나 패키지의 레지스트리 (Windows 의 시스템 레지스트리, Solaris 의 패키지 데이타베이스, Linux 의 RPM 데이타베이스등)에 기록되고 있습니다. 미등록의 JRE 는 레지스트리에 기록되고 있지 않습니다 (미등록의 JRE 의 네트워크 드라이브에 마운트된 JRE 등) (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4474876.html">4474876</a> ).  
+</p>
+<h3><a name="combined"></a> 컨트롤 패널의 인프라스트럭쳐(infrastructure)를 통합</h3>
+<p>Java Plug-in 나 Java Web Start 등, Java 배치의 제품으로 사용하는 컨트롤 패널의 인프라스트럭쳐(infrastructure)를 통합했습니다. Java Web Start 의 캐쉬 배치, 구성 파일의 형식이나 장소등의 문서화되어 있지 않은 기존의 정보를 이용했을 경우, 이것에 의해 영향을 받는 일이 있습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4723794.html">4723794</a> ). </p>
+<h3><a name="security"></a> Java Web Start 의 시큐리티 감사</h3>
+<p>Java Web Start 의 시큐리티 감사가 완료했습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4645808.html">4645808</a> ). </p>
+<h3><a name="Prompt"></a> 쇼트 컷의 첫회 메세지</h3>
+<p>처음 어플리케이션을 다운로드해 캐쉬할 때에, 데스크탑에 쇼트 컷을 작성할지 어떨지를 묻는 메세지가 표시되게 되었습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4737538.html">4737538</a> ). </p>
+<h3><a name="integration"></a> InstallShield 7 과의 통합</h3>
+<p>Java Web Start 가 JRE 의 일부로서 InstallShield 7 으로 인스톨 되게 되었습니다. 이번으로부터, Java Web Start 의 인스톨러와는 다른 프로그램이 필요하게 될 것은 없습니다 (RFE <a href="http://developer.java.sun.com/developer/bugParade/bugs/4718282.html">4718282</a> ).  
+</p>
+<h2><a name="bug"></a> 버그의 수정</h2>
+<br>
+<table summary="bug fixes" width="90%" border="2" align="center" cellpadding="5" cellspacing="0">
+  <tr align="center" valign="middle" bgcolor="#CCCCCC"> 
+<td width="25%"><strong><font size="+1">버그 ID</font></strong></td>
+<td><strong><font size="+1">형식</font></strong></td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4791532.html">4791532</a>  
+    </td>
+<td>javawebstart 의 다이얼로그의 레이아웃이 잘못하고 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4778185.html">4778185</a> </td>
+<td> 계속 JNLPClassLoader 가 encode되어 있지 않은 URL 를 되돌리는 일이 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4780676.html">4780676</a> </td>
+<td>오프 라인시에, Java Web Start 가 어플리케이션의 기동에 실패하는 일이 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4757170.html">4757170</a> </td>
+<td>JAWS 의 pop-up 윈도우 「Rename HTML Entry」에 「You must enter and entry name」라고 하는 미스프린트가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4777238.html">4777238</a> </td>
+<td>Cache Location JTextField 에서는, 「enter」를 적절히 처리할 필요가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4685501.html">4685501</a> </td>
+<td>De - JAWS 콘솔 다이얼로그의 타이틀 바에 있는 「Console」라고 하는 말이 번역되고 있지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4688776.html">4688776</a> </td>
+<td>JaWS, JAWS 1.2 b08, 번역 에러</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4785128.html">4785128</a> </td>
+<td>Windows 로 jre1. 2.2 의 mantis 베타 JAWS 를 사용했을 경우, 예외가 발생합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772298.html">4772298</a> </td>
+<td>사용자명으로 패스워드가 올발라도 프록시 인증의 다이얼로그가 2 번 표시됩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772381.html">4772381</a> </td>
+<td>shutdownhook 와 JWS 콘솔이 연동하지 않고 시스템이 종료합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4784292.html">4784292</a> </td>
+<td>개시 시간을 개선할 수 있는 것 같으면, Java Web Start 는 캐쉬된 jnlp 파일을 사용합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4782008.html">4782008</a> </td>
+<td>Web Start 의 ActiveX 컨트롤을 확인합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4782000.html">4782000</a> </td>
+<td>Web Start 의 자동 인스톨 버젼의 태그를 갱신할 필요가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4785581.html">4785581</a> </td>
+<td>기호 연결을 사용해 Linux 의 JAWS 를 호출할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4789162.html">4789162</a> </td>
+<td>기호 연결을 사용해 Solaris/SPARC 의 JAWS 를 호출할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4792033.html">4792033</a> </td>
+<td>Solaris 의 /usr/bin 에 javaws 링크가 필요합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4792949.html">4792949</a> </td>
+<td>javaws 파일의 자동 갱신이 RE 에리어의 단계에 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4791695.html">4791695</a> </td>
+<td>헬프 메뉴 항목 「Check For Update」가 최신의 1.2 JWS 버젼을 통지하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4735750.html">4735750</a> </td>
+<td>증명서 연쇄의 검증을 수정</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4711515.html">4711515</a> </td>
+<td>RMI thread로 부정한 AppContext 가 사용되었습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4757168.html">4757168</a> </td>
+<td>어플리케이션의 PATH 에 문자의 N 가 포함되어 있는 경우, JAWS 어플리케이션이 적절히 캐쉬되지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4759001.html">4759001</a> </td>
+<td>다운로드한 vie 로 폴더를 클리어 하려고 했을 경우, (getText())에 예외가 발생합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4759005.html">4759005</a> </td>
+<td>다운로드한 vie 로 폴더를 클리어 하려고 했을 경우, (synchron)에 예외가 발생합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4665132.html">4665132</a> </td>
+<td>Web Start 가 JRE 1.4. 0 으로 연동해 ContextClassLoader 를 돌려주지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4696315.html">4696315</a> </td>
+<td>스플래쉬 화면이 큰 이미지로 표시되지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4699299.html">4699299</a> </td>
+<td>Linux 머신의 경우, 스플래쉬 화면이 이상해집니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4734410.html">4734410</a> </td>
+<td>JAVAWS 가 확장한 인스톨러의 프로퍼티 세트를 메인 프로그램에 건네주고 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4739089.html">4739089</a> </td>
+<td>Java Web Wtart 가 서명필의 jar 를 적절히 처리하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4743169.html">4743169</a> </td>
+<td>cacerts 가 없는 경우, Java WS app mgr 의 「루트 증명서」패널이 공백이 됩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4754648.html">4754648</a> </td>
+<td>「Advanced Preference」패널에 중요한 쇼트 컷이 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4754763.html">4754763</a> </td>
+<td>getResourceAsStream()가 JNLPClassLoader 에 실패했습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772558.html">4772558</a> </td>
+<td>UE 그룹으로부터 새로운 아이콘을 구현합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772559.html">4772559</a> </td>
+<td>액세스 스코프를 줄입니다 (국면 2)</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772563.html">4772563</a> </td>
+<td>새로운 디폴트의 스플래쉬 화면, 및 수정, 커스터마이즈 된 스플래쉬 화면</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772926.html">4772926</a> </td>
+<td>윈도우 타이틀에 extra ; char 를 추가</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4773110.html">4773110</a> </td>
+<td>어플리케이션이 부정한 JRE 로 가동되었습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4775373.html">4775373</a> </td>
+<td>https 코드 베이스의 갱신시에 문제가 있는지 없는지를 확인합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4379831.html">4379831</a> </td>
+<td>-Dsun.java2d.noddraw=true 의 경우, 새로운 VM 를 기동해 주세요</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4474875.html">4474875</a> </td>
+<td>기본 proto 로부터 버젼 베이스로 이행하는 경우, 증분 갱신에 실패합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4485537.html">4485537</a> </td>
+<td>DL 윈도우에 계속해 'Read -1 of 2k (0%)'메세지가 표시됩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4653074.html">4653074</a> </td>
+<td>JWS: jnlp 파일의 app 명을 변경하면(자), 쇼트 컷과 프로그램 폴더를 갱신합니다 </td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4666303.html">4666303</a> </td>
+<td>어플리케이션 매니저의 java.sun.com 의 캐쉬 디렉토리 구조를 삭제할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><p><a href="http://developer.java.sun.com/developer/bugParade/bugs/4687256.html">4687256</a> </p>
+      </td>
+<td>Jaws App_mgr 가 2 번째의 기동시에 j2re1. 2.2 로 쇼트 컷 옵션을 표시하지 않았습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4688193.html">4688193</a> </td>
+<td>액세스 스코프를 줄입니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4691541.html">4691541</a> </td>
+<td>JWS 가 스플래쉬 화면의 아이콘의 버젼 관리를 실시합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4708051.html">4708051</a> </td>
+<td>View/Download_App 를 유효하게 한 상태로 폴더를 클리어 하려고 하면(자), 예외가 발생합니다 </td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4718813.html">4718813</a> </td>
+<td>최초의 기동 후에 어플리케이션 매니저가 포커스를 잃습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4729230.html">4729230</a> </td>
+<td>TEMP 파일에의 기록이 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4761563.html">4761563</a> </td>
+<td>jnlp 파일의 프로퍼티에 &quot;&quot; 를 설정할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4625826.html">4625826</a> </td>
+<td>미서명의 jar 파일의 지연 로딩시에 돌연 종료합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4775823.html">4775823</a> </td>
+<td>작성시의 지시의 뒤에, Appman 쇼트 컷 탭에 불필요한 .  (닷) </td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4685497.html">4685497</a> </td>
+<td>De - 증명서 탭의 텍스트가 서로 겹치고 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4723717.html">4723717</a> </td>
+<td>JRE1. 4.0_x - JaWS 의 컴퍼넌트가 디폴트 설정 이외의 장소에 인스톨 할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4777764.html">4777764</a> </td>
+<td>증명서의 임포트를 취소하면(자), CA 연쇄가 완전하게 망가집니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4694453.html">4694453</a> </td>
+<td>href 가 없으면 스플래쉬 화면의 커스터마이즈가 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4720897.html">4720897</a> </td>
+<td>jar 가 war 파일에 패키지 되고 있는 경우, Jar Diff'ing 가 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4724977.html">4724977</a> </td>
+<td>어플리케이션 패널의 사이즈가 너무 작기 (위해)때문에 캐릭터 라인을 표시할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4726525.html">4726525</a> </td>
+<td>증명서의 상세 패널에 「OK」버튼에 포커스 시키도록(듯이) 합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4751780.html">4751780</a> </td>
+<td>JWS Hanging on Jar 의 갱신 (LONG 타임의 스캔시의 엔트리 100%)</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4759104.html">4759104</a> </td>
+<td>캐쉬를 클리어 하는 기능이 증명서를 삭제할 수 없었습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4759298.html">4759298</a> </td>
+<td>「details」버튼이 app_mgr 루트의 증명서 탭에 표시되지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4480656.html">4480656</a> </td>
+<td>Notepad Demo 의 쇼트 컷 작성 후, IE 의 「소스의 표시」가 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4498419.html">4498419</a> </td>
+<td>디폴트 브라우저가 삭제되었을 경우, Web Start 는 개시하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4623207.html">4623207</a> </td>
+<td>jaxp.jar</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4626733.html">4626733</a> </td>
+<td>복수의 플랫폼을 지원</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4653036.html">4653036</a> </td>
+<td>JarDiffHandler()가 javax.servlet.context 를 사용합니다. </td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4654173.html">4654173</a> </td>
+<td>JWS 가 $WINUSERHOME\Local Settings\Temp 및 d:\TMP 를 부숩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4667701.html">4667701</a> </td>
+<td>JWS 가 실패하는 자원명을 제공합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4668473.html">4668473</a> </td>
+<td>타이틀이 너무 길면(자) 쇼트 컷을 작성할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4676386.html">4676386</a> </td>
+<td>http 요구 헤더의 user-agent 의 값을 개선</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4685505.html">4685505</a> </td>
+<td>De - 「Choose Log File Name」의 경계선이 망가져 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4687857.html">4687857</a> </td>
+<td>다이얼로그를 다문 후, 부정한 윈도우에 포커스가 돌아옵니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4699771.html">4699771</a> </td>
+<td>시큐리티의 높은 자원에 대한 JWS 의 로그인시의 메세지가 취약합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4744945.html">4744945</a> </td>
+<td>업그레이드 후, JWS 1.2 어플리케이션을 삭제할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4775777.html">4775777</a> </td>
+<td>「Invalid Cache Location」윈도우가 부정한 동작을 합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4492987.html">4492987</a> </td>
+<td>Linux 용의 Java Web Start 의 인스톨 문서</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4768914.html">4768914</a> </td>
+<td>Javaws 의 미서명의 확장 인스톨러를 setJREInfo 를 호출할 수 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4773602.html">4773602</a> </td>
+<td>Netscape 4.79 및 7.0 을 사용하면(자), 자동 프록시 검출이 실패합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4777392.html">4777392</a> </td>
+<td>JNLP 의 Mantis b06: 의 파일 타입의 설명이 Win98 ja 의 NS/IE 로 설정되어 있지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4665251.html">4665251</a> </td>
+<td>「Preferences」: 「Shortcut Options」:「When To Create」의 순서에 선택했을 경우, &quot;Always&quot; 가 실패합니다 (always:)</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4692415.html">4692415</a> </td>
+<td>Sol 의 브라우저로부터 루트로서 기동했을 경우, Jaws 어플리케이션이 다운 당합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4723790.html">4723790</a> </td>
+<td>Web Start 의 인스톨은 crunch 는 아니고 pack 를 사용합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4739415.html">4739415</a> </td>
+<td>Jaws j2re1. 4.0 의 인스톨러에 문제가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4772158.html">4772158</a> </td>
+<td>Web Start 를 Unix 플랫폼의 JRE 이미지에 포함합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4776098.html">4776098</a> </td>
+<td>Javaws JRE 자동 다운로드가 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4431364.html">4431364</a> </td>
+<td>JRE 가 항상 인스톨 됩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4459559.html">4459559</a> </td>
+<td>J2SE 인스톨러가 인스톨 되었을 경우, 작업을 종료할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4463745.html">4463745</a> </td>
+<td>Web Start 가 Netscape 의 자동 프록시 구성을 처리할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4469455.html">4469455</a> </td>
+<td>프록시의 자동 구성 스크립트의 해석에 문제가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4514686.html">4514686</a> </td>
+<td>Windows 상의 Netscape 에 100 을 넘는 MIME 타입을 추가하는 작업을, 인스톨러를 처리할 수 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4615288.html">4615288</a> </td>
+<td>인스톨 디렉토리가 존재하지 않기 때문에, Windows 의 빌드가 실패합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4653566.html">4653566</a> </td>
+<td>JWS 는 NT 의 홈 디렉토리의 집중화와 호환성이 없습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4685474.html">4685474</a> </td>
+<td>일본어의 인스톨러/언 인스톨러의 메세지가 표시 영역으로부터 어긋나 표시됩니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4730185.html">4730185</a> </td>
+<td>$USERPROFILE 의 javaws.cfg 파일이 언인스톨되지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4763779.html">4763779</a> </td>
+<td>빌드 관리중에 javaws bootdir 를 확인할 필요가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4764601.html">4764601</a> </td>
+<td>Main.systemExit 가 불려 가면(자), 미서명의 확장 인스톨러에 예외가 발생합니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4765164.html">4765164</a> </td>
+<td>singleton api 의 서비스 클래스를 재초기화할 수 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4765165.html">4765165</a> </td>
+<td>com.sun.jnlp 패키지는 패키지의 추가로부터 보호될 필요가 있습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4775492.html">4775492</a> </td>
+<td>JNLP 에 href 가 없는 Javaws app 가 Netscape/Unix 로 치명적이지 않은 예외를 일으킵니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4768903.html">4768903</a> </td>
+<td>dev 의 빌드중에 Javaws dev 타겟이 기능하지 않습니다</td>
+  </tr>
+  <tr> 
+    <td width="25%"><a href="http://developer.java.sun.com/developer/bugParade/bugs/4741507.html">4741507</a> </td>
+<td>분실한 서명필의 엔트리 JNLPException 가 명확하지는 않습니다</td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+<TABLE BORDER="0" WIDTH="100%">
+  <TR VALIGN=TOP> 
+<TD> <P><FONT SIZE="-2"> <A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2002 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+<FONT SIZE="-1"><a href="/docs/forms/javaws-sendusmail.html">피드백 폼</a>에 코멘트를 전송해 주세요.  </FONT> </TD>
+<TD ALIGN=RIGHT> <IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"> <i>Java Software </i> </FONT> </TD>
+  </TR>
+</TABLE>
+</body>
+</html>

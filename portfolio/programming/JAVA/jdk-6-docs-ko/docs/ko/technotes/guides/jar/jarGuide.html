@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+ 
+<title>JAR 파일의 개요 - xrath.com 에서 번역됨</title>
+  <!-- Created by: Susan Keohan 30-Oct-1996 --> <!-- Updated by: Beth Stearns 18-Nov-1996 -->
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink=
+"#000077" alink="#FF0000">
+
+<table width="100%" summary="layout" border="0">
+    <tbody>
+      <tr>
+<td width="60"><img src="../../../images/javalogo52x88.gif"         alt="Java" width="52" height="88" /></td>
+
+        <td>
+          <center>
+<h1>JAR 파일의 개요</h1>
+          </center>
+        </td>
+
+        <td width="60"></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+<h2>JAR 란</h2>
+
+<p>JAR 는 Java ARchive 의 약어입니다. 이것은 보급되어 있는 ZIP 파일 형식에 근거하는 파일 형식에서, 다수의 파일을 1 개로 정리하기 위해서(때문에) 사용됩니다. JAR 는, 일반적인 어카이브(archive) 툴로서 사용할 수 있습니다만, 이것을 개발한 주된 동기는, Java 애플릿 및 그 필수의 컴퍼넌트 (. class 파일, 이미지와 음성)이 각각에 대해서 새로운 HTTP 접속을 여는 일 없이 단일의 HTTP 트랜잭션(transaction)로, 브라우저에 다운로드할 수 있도록(듯이) 하는 것이었습니다. 이것은 애플릿을 Web 페이지에 로드해 기능 지난 속도를 크게 개선합니다. JAR 형식은 압축도 지원하고 있어, 이것에 의해 파일 사이즈가 축소해, 다운로드의 소요 시간이 한층 더 단축합니다. 게다가 애플릿의 작성자가, JAR 파일의 개별의 엔트리에 디지털 서명 해, 그 출처(소)를 인증할 수가 있습니다. </p>
+
+<p>JAR 에는, 다음의 특성이 있습니다. </p>
+
+  <ul>
+<li>크로스 플랫폼인 유일한 어카이브(archive) 형식</li>
+
+<li>클래스 파일과 같게, 오디오와 이미지 파일을 취급하는 유일한 형식</li>
+
+<li>기존의 애플릿 코드와 후방 호환</li>
+
+<li>오픈 표준이며, 완전 확장 가능해, java 로 쓰여져 있다</li>
+
+<li>java 애플릿의 단편을 정리하는 바람직한 방법이다</li>
+  </ul>
+
+<p>JAR 는 PKWARE 로 정의되고 있는 zip 어카이브(archive)로부터 되어, Manifest 파일을 포함해,<a href="jar.html">「JAR 파일의 스펙」</a>으로 정의되고 있는 것 같은 서명 파일을 포함하는 일도 있습니다. </p>
+
+<h2>APPLET 태그</h2>JAR 파일을 준비하기 위해서 HTML 페이지의 APPLET 태그를 변경하는 것은 간단합니다. 서버상의 JAR 파일은 <b>ARCHIVE</b> 파라미터에 의해 식별됩니다. 이 파라미터에서는, jar 파일의 디렉토리 위치는 다음의 html 페이지의 위치에 관련지을 수 있고 있을 필요가 있습니다.
+  <pre>
+    &lt;applet code=Animator.class 
+      archive="jars/animator.jar"
+      width=460 height=160&gt;
+      &lt;param name=foo value="bar"&gt;
+    &lt;/applet&gt;
+</pre>종래부터 있는 <b>CODE=myApplet.class</b> 파라미터도, 여전히 필요한 것으로 주의해 주세요. <b>CODE</b> 파라미터는, 종래와 같이, 실행이 개시되는 애플릿의 이름을 식별합니다. 다만, 애플릿의 클래스 파일과 그 모든 헬퍼 클래스는, JAR 파일로부터 로드 됩니다.
+
+<p>ARCHIVE 속성은, 「프리로드 된다」클래스와 그 외의 자원을 포함한 1 개(살) 이상의 JAR 파일을 나타냅니다. 이러한 클래스는, 지정된 CODEBASE 로 AppletClassLoder 의 인스턴스를 사용해 로드 됩니다. 이것은 <tt>archive&nbsp;=&nbsp;<em>archiveList</em></tt> 라고 하는 형식을 취합니다. <em>archiveList</em> 내의 어카이브(archive)는 「,」그리고 단락지어집니다. </p>
+
+<p>archive파일은, 일단 식별되면(자), 다운로드되어 컴퍼넌트 로 분리됩니다. 애플릿의 실행중에, 새로운 클래스, 이미지 또는 오디오 클립이 애플릿에 의해 요구되었을 때, 최초로 애플릿에 관련하는 어카이브(archive)내에서 검색됩니다. 다운로드된 어카이브(archive) 중(안)에서 파일이 발견되지 않는 경우, 애플릿 서버상에서 CODEBASE 로부터의 상대 위치를 검색합니다.  즉, JDK1. 0.2 에서의 검색 방법과 같습니다. </p>
+
+<p>archive 태그는, 복수의 JAR 파일을 지정하는 일이 있습니다. 각 JAR 파일은 「,」(콤마)로 단락지을 필요가 있습니다. 차례로 각 파일이 다운로드됩니다. </p>
+  <pre>
+    &lt;applet code=Animator.class 
+      archive="classes.jar ,  images.jar ,  sounds.jar"
+      width=460 height=160&gt;
+      &lt;param name=foo value="bar"&gt;
+    &lt;/applet&gt;
+</pre>어카이브(archive) 파라미터의 엔트리의 사이에는, 몇개(살)에서도 공백을 들어갈 수 있을 수가 있습니다. 게다가 archive 태그 자체는, 대문자와 소문자를 구별하지 않습니다.  이 때문에, 소문자만, 대문자만, 또는 「ArCHiVe」와 같이 대문자와 소문자를 조합해 지정할 수가 있습니다.
+
+<h2>실행 가능 JAR 파일</h2>Microsoft Windows 시스템에서는, Java 2 Runtime Environment 의 인스톨 프로그램이 JAR 파일의 디폴트의 대응부를 등록합니다.  그 결과, 데스크탑상에서 JAR 파일을 더블 클릭 하면 <tt>javaw&nbsp;-jar</tt> 에 의해 JAR 파일이 자동적으로 실행됩니다. 어플리케이션에 번들 된, 어플리케이션이 의존하고 있는 확장 기능도 자동적으로 로드 됩니다. 이 기능에 의해, Microsoft Windows 시스템상에서의 최종 사용자의 실행 환경이 보다 사용하기 쉽게 됩니다.
+
+<p>Solaris 2.6 의 커넬은, JAR 파일을 나타내는 특별한 「매직」넘버를 인식하도록(듯이) 벌써 확장이 베풀어지고 있어<tt>java -jar</tt> 로 JAR 파일을 Solaris 의 네이티브 실행 가능 파일인것 같이 기동할 수 있게 되어 있습니다. 그 때문에, JAR 파일에 정리된 어플리케이션은, 커멘드행으로부터 직접 실행하는 일도, CDE 데스크탑상에서 아이콘을 클릭해 실행할 수도 있습니다. </p>
+
+  <p>
+  <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --></p>
+  <hr size="3" noshade="noshade" />
+<img src="../../../images/sunlogo64x30.gif" alt="Sun logo" align=   "right" /> <font size="-2"><a href=   "../../../legal/SMICopyright.html">Copyright &copy;</a>  1996-1999 Sun Microsystems, Inc., 901 San Antonio Road, Palo Alto, CA 94303-4900 USA.All rights reserved. </font><br /> <br />
+</body>
+</html>

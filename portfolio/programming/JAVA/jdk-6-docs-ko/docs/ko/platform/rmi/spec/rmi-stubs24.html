@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:8 - Stub 인터페이스와 스켈리턴 인터페이스
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs23.html">전의 항목</a>  | <a href="rmi-stubs25.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">8.3 <code>RemoteRef</code> 인터페이스</a> </h2>
+
+<blockquote>
+<a name="5475"><!-- --></a> <code>RemoteRef</code> 인터페이스는, 원격 객체에의 핸들을 나타냅니다. 각각의 Stub는,<code>RemoteRef</code> 의 인스턴스를 가져, 그 인스턴스는 참조의 구체적인 표현을 포함합니다. 이 원격 참조는, 참조되고 있는 원격 객체에의 원격 호출 실행에 사용됩니다. <p>
+</blockquote><blockquote><pre>package java.rmi.server;
+
+public interface RemoteRef extends java.io.Externalizable {
+	Object invoke(Remote obj, 
+				   java.lang.reflect.Method method,
+				   Object[] params,
+				   long opnum)
+		throws Exception;
+
+	RemoteCall newCall(RemoteObject obj, Operation[] op, int opnum,
+		           long hash) throws RemoteException;
+	void invoke(RemoteCall call) throws Exception;
+	void done(RemoteCall call) throws RemoteException;
+	String getRefClass(java.io.ObjectOutput out);
+	int remoteHashCode();
+	boolean remoteEquals(RemoteRef obj);
+	String remoteToString();
+}
+
+
+
+</pre></blockquote><blockquote>
+<a name="6906"><!-- --></a>  <code>invoke(Remote, Method, Object[], long)</code> 메소드는, 메소드 호출을 Stub의 (<em>obj</em>) 원격 참조에 위양 합니다.  위양에 의해, 이 참조는 원격 호스트에게로의 접속의 셋업 처리를 맡아<em>method</em> 및 파라미터 <em>params</em> 의 표현을 정렬화하고 나서, 원격 호스트에게로의 메소드 호출을 전합니다. 이 메소드는, 원격 호스트상의 원격 객체에의 메소드 호출의 결과를 돌려주는지, 또는 호출이 실패했을 경우는 <code>RemoteException</code> 를 throw 해, 원격 호출에 의해 예외를 throw 했을 경우는 어플리케이션 레벨의 예외를 throw 합니다. 조작 번호 <em>opnum</em> 는, 메소드시그니챠의 해시를 나타내, 전송용의 메소드의 encode에 사용할 수도 있습니다. <p>
+<a name="6907"><!-- --></a> <em>opnum</em> 파라미터에 사용되는 메소드 hash 는, 64 비트 (long)의 정수로, 미국 국립 표준 기술 연구소 (NIST)의 Secure Hash Algorithm (SHA-1)에 의해, 바이트 스트림의 메세지 다이제스트의 최초의 2 개의 32 비트치로부터 계산됩니다. 이 바이트 스트림에는,<code>java.io.DataOutput.writeUTF</code> 메소드를 사용해 기술되었을 경우와 같게 원격 메소드의 이름의 후에 메소드 기술자를 계속한 캐릭터 라인이 포함되어 있습니다. 메소드 기술자의 설명에 대해서는, 「Java 가상 머신 스펙」(JVMS)의 4.3. 3 절을 참조해 주세요.  <p>
+<a name="7253"><!-- --></a> 예를 들어, 원격 인터페이스의 메소드가 다음의 이름과 시그니챠를 가지고 있는 경우,<p>
+</blockquote><blockquote><pre>	void myRemoteMethod(int count, Object obj, boolean flag)
+
+
+</pre></blockquote><blockquote>
+<a name="6919"><!-- --></a>  원격 메소드의 이름 및 기술자를 포함한 캐릭터 라인은, 다음과 같이 됩니다. <p>
+</blockquote><blockquote><pre>	myRemoteMethod(ILjava/lang/Object;Z) V
+
+
+</pre></blockquote><blockquote>
+<a name="7013"><!-- --></a>  64 비트 해시치는, 8 바이트 순서의 little endian 구성입니다. 최초의 4 바이트는 메세지 다이제스트의 최초의 32 비트치 (빅 endian의 바이트순서)로, 후의 4 바이트는 메세지 다이제스트의 2 번째의 32 비트치 (빅 endian의 바이트순서)입니다. 예를 들어, 메세지 다이제스트의 최초의 2 개의 32 비트치가 <code>0xB0B1B2B3</code> 및 <code>0xB4B5B6B7</code> 의 경우, 해시치는 <code>0xB7B6B5B4B3B2B1B0</code> 가 됩니다.
+
+
+</blockquote>
+<blockquote>
+<blockquote><hr noshade size="1">
+<b><a name="6731">주 - </a> </b>Java 2 SDK, Standard Edition, v1. 2 에서는,<code>newCall(RemoteObject, Operation[], int, long)</code>,<code>invoke(RemoteCall)</code>, 및 <code>done(RemoteCall)</code> 메소드의 사용은 추천 되고 있지 않습니다. 1.2 의 Stub 프로토콜 버젼을 사용한 <code>rmic</code> 에 의해 생성된 Stub는, 이러한 메소드를 현재는 사용하지 않습니다. <code>newCall</code>,<code>invoke</code>, 및 <code>done</code> 로 구성되는 호출의 순서는,<code>Method</code> 객체를 파라미터의 1 개에 있는 새로운 <code>invoke</code> 메소드로 옮겨졌습니다.  
+<hr noshade size="1">
+</blockquote>
+</blockquote>
+<blockquote>
+<a name="6725"><!-- --></a> <code>newCall</code> 메소드는, 원격 객체 <em>obj</em> 상에서의 새로운 원격 메소드 호출용의 적절한 호출 객체를 작성합니다. 조작 배열 <em>op</em> 는, 원격 객체상에서 이용 가능한 복수의 조작을 포함합니다. 조작 번호 <em>opnum</em> 는, 조작 배열안의 이번 원격 호출로 사용하는 특정의 조작을 지정하기 위한 인덱스입니다. 인터페이스 「해시」는, v1. 1 Stub 프로토콜을 사용하는 Stub와 스켈리턴간의 호환성 유지에 사용하는 64 비트치입니다. <em></em>인터페이스 해시는, SHA-1 를 사용하는 특정의 바이트 스트림의 메세지 다이제스트의 최초의 2 개의 32 비트치로부터 계산됩니다. 이 바이트 스트림에 포함되는 데이터의 기입은,<code>java.io.DataOutput</code> 인터페이스의 <code>writeInt</code> 및 <code>writeUTF</code> 메소드를 사용했을 경우와 같은 방법으로 행해집니다. 데이터에는 다음의 항목이 포함됩니다.
+<p>
+<li>(<code>int</code>) Stub의 버젼 번호 (항상 1)
+<li>원격 메소드마다, 한편 조작 번호순서:
+	<ul>
+	<li>(UTF-8) 원격 메소드명
+	<li>(UTF-8) 원격 메소드 기술자 (JVMS 의 4.3. 3 절을 참조) 
+	<li>선언된 예외마다, 한편 바이너리명의 사전식 순서:
+		<ul>
+		<li>(UTF-8) 예외 클래스의 이름
+		</ul>
+	</ul>
+<p>
+<a name="6105"><!-- --></a>  인터페이스 해시치를 메세지 다이제스트로부터 작성하는 방법은,<code>invoke</code> 메소드로 사용하는 메소드 해시에 관해서 벌써 설명한 방법과 같습니다.  <p>
+<a name="6106"><!-- --></a> <code>invoke(RemoteCall)</code> 메소드는, 원격 호출을 실행합니다.  <code>invoke</code> 는, 모든 「사용자 (user) 정의」예외를 발생시킵니다.  이 예외는, Stub에서는 캐치 하지 않고 통과시키는 것입니다. 원격 호출의 도중에 하등의 예외가 발생했을 경우에는,<code>invoke</code> 는, 사용자 정의 예외 또는 <code>RemoteException</code> 를 발생시키기 전에 접속의 클린 업을 실시합니다. <p>
+<a name="6136"><!-- --></a> <code>done</code> 메소드는, 원격 참조에 접속의 클린 업 (또는 재사용)을 허가합니다. <code>done</code> 가 불려 가는 것은,<code>invoke</code> 호출이 정상적으로 행해져 (예외를 발생시키지 않고 ) 종료해, Stub에 돌아왔을 경우만입니다. <p>
+<a name="6112"><!-- --></a> <code>getRefClass</code> 메소드는, 직렬화 되어 스트림에 출력 (<em>out</em>)되는 참조 타입내에서 패키지 수식되어 있지 않은 클래스명을 돌려줍니다. <p>
+<a name="6119"><!-- --></a> <code>remoteHashCode</code> 메소드는, 원격 객체의 해시 코드를 돌려줍니다. 동일한 원격 객체를 참조하는 2 개의 원격 객체 Stub는 (원격 객체를 해시 테이블상의 키로서 지원하기 위해서) 같은 해시 코드를 가집니다. <code>RemoteObject</code> 는,<code>hashCode</code>메소드에의 호출을 원격 참조의 <code>remoteHashCode</code> 메소드에 전송 합니다. <p>
+<a name="6124"><!-- --></a> <code>remoteEquals</code> 메소드는, 2 개의 원격 객체를 비교해 이동 판정합니다. 2 개의 원격 객체는, 양자가 동일한 원격 객체를 참조할 때 동일하다고 여겨집니다. 예를 들어, 2 개의 Stub는 양자가 동일한 원격 객체를 참조한다면 동일한다고 여겨집니다. <code>RemoteObject</code> 는, 그 <code>equals</code> 메소드에의 호출을 원격 참조의 <code>remoteEquals</code> 메소드에 전송 합니다.  <p>
+<a name="6687"><!-- --></a> <code>remoteToString</code> 메소드는, 그 원격 객체에의 참조를 나타내는 <code>String</code> 를 돌려줍니다. <p>
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-stubs23.html">전의 항목</a>  | <a href="rmi-stubs25.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

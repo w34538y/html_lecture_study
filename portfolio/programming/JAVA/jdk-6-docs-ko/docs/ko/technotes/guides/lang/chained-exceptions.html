@@ -1,0 +1,62 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title>예외 체인 기능 - xrath.com 에서 번역됨</title>
+<link rel="stylesheet" href="doc.css" type="text/css">
+
+
+</head>
+<body bgcolor="#ffffff">
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+<TD>
+
+<h1>예외 체인 기능</h1>
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="../../../index.html">문서의 목차</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+<p>
+Java 코드가, 어느 예외를 캐치 해 다른 예외를 throw 하는 것은 일반적인 일입니다.
+</p>
+<pre>
+try {
+    ...
+} catch(YourException e) {
+    throw new MyException();
+}
+</pre>
+<p>
+그런데 「원인이 된 예외」 (위의 예에서는 <tt>YourException</tt> )에 포함되는 정보는 일반적으로 잃게 되어 버리기 (위해)때문에, 디버그가 매우 복잡하게 됩니다. 이 문제를 인식한 개발자가, 특정의 「랩 된 예외」에 2 개째의 예외를 포함하는 특별한 기구를 구축하는 일이 있습니다. 일반적으로, 포함한 예외를 추출하기 위해서 액세스용의 기능이 준비되어 있습니다. 이러한 기구는 「예외 체인 기능」이라고 불리는 일이 있습니다. 이것은, 포함된 예외 그 자체가 랩 된 예외인 경우, 임의의 예외 체인이 구축되기 때문입니다.
+</p>
+<p>
+이러한 기능 모든 것을 통합하는 것에는 많은 이점이 있습니다. 주된 이점은 다음과 같습니다. (1) 예외의 종류에 관계없이, 어느 예외가 다른 예외를 일으킨 사실을 확실히 기록할 수 있습니다. (2) 있는 예외가 다른 예외를 일으킨 사실을 기록하기 위한 공통 API 를 제공하는 것으로, 이 태스크가 용이하게 되어, 프로그래머가 이 문제에 임하기 쉬워집니다. (3) 원인이 된 예외에 액세스하기 위한 공통 API 를 제공하는 것으로, 이 정보를 필요로 하는 사람이 사용할 수 있게 될 전망이 큰폭으로 늘어납니다. 실제로, 여기서 제안되고 있는 기구에서는, 「원인의 체인」전체를 표준 스택의 백 트레이스의 일부로서 인쇄하므로, 작성자가 추가 작업을 실시하지 않아도 기존의 프로그램이 이 정보를 제공할 수 있게 됩니다.
+<p>
+이 문제에 대처하기 위해서,<a href="../../../api/java/lang/Throwable.html#getCause()"><tt>getCause()</tt></a>  및 <a href="../../../api/java/lang/Throwable.html#initCause(java.lang.Throwable)"><tt>initCause(Throwable)</tt></a>  라고 하는 2 개의 메소드와 <a href="../../../api/java/lang/Throwable.html#Throwable(java.lang.Throwable)"><tt>Throwable(Throwable)</tt></a>  및 <a href="../../../api/java/lang/Throwable.html#Throwable(java.lang.String,%20java.lang.Throwable)"><tt>Throwable(String, Throwable)</tt></a>  라고 하는 2 개의 생성자 이,<tt>Throwable</tt> 에 추가되었습니다. 그 외 「범용의」예외 클래스 (<a href="../../../api/java/lang/Exception.html"><tt>Exception</tt></a> ,<a href="../../../api/java/lang/RuntimeException.html"><tt>RunTimeException</tt></a> ,<a href="../../../api/java/lang/Error.html"><tt>Error</tt></a> 등)도 같이<tt>(Throwable)</tt> 및 <tt>(String, &nbsp;Throwable</tt>) 생성자 에 장비 되었습니다. 다만, 이러한 생성자 을 갖지 않는 예외에서도 <tt>initCause</tt> 메소드를 사용하면 「랩 된 예외」로서 사용할 수 있습니다.  
+<p><a href="../../../api/java/lang/Throwable.html#printStackTrace()"><tt>Throwable.printStackTrace</tt></a>  의 구현은, 원인의 예외 체인 전체의 백 트레이스를 표시하도록(듯이) 변경되고 있습니다. 새로운 메소드인 <tt><a href="../../../api/java/lang/Throwable.html#getStackTrace()">getStackTrace</a> </tt> 에서는,<tt>printStackTrace</tt> 에 의해 제공되는 스택 트레이스 정보에 프로그램으로 액세스 할 수 있게 되었습니다.
+<p>
+모든 플랫폼의 랩 된 예외가 (유산의 API 에 추가해) 이 신기능을 지원하도록(듯이) 갱신될 예정입니다.  
+<p>
+<!-- The bugtraq report that corresponds to this change is <A href="http://developer.java.sun.com/developer/bugParade/bugs/4209652.html">4209652</A> .  -->
+
+<!-- Body text ends here --> <!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+<TD>
+<P><FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 2002-2006 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT></P>
+</TD>
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+</TR>
+</TABLE>
+
+</body></html>
+

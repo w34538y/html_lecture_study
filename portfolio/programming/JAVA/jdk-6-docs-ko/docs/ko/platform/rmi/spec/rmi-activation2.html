@@ -1,0 +1,83 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java Remote Method Invocation:7 -  원격 객체 기동
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+<a href="#skip" title="네비게이션 바를 스킵"></a>  
+<table width="100%" SUMMARY="layout"><tr>
+<td> <a href="rmiTOC.html">목차</a>  | <a href="rmi-activation.html">전의 항목</a>  | <a href="rmi-activation3.html">다음의 항목</a>  
+</td><td align=right><i>Java Remote Method Invocation</i></td>
+</tr></table>
+
+<br>
+ 
+<a name="skip"></a> 
+<p>
+<hr size="8" width="35%" align="left" noshade>
+
+<h2><a name="5112">	7.1	 개요</a> </h2>
+
+<blockquote>
+<a name="1122"><!-- --></a>  분산 객체 시스템은, 라이프 타임의 긴 지속 객체를 지원하도록(듯이) 설계되고 있습니다. 예를 들어, 지극히 다수의 지속 객체 (예를 들어 수백만개)로 구성되어 있는 분산 객체 시스템이 있다고 합니다.  이 시스템으로, 객체의 구현이 기동된 뒤, 쭉 기동된 상태인 채이다면, 귀중한 system resource를 무기한으로 점유 계속 하게 되어, 이것은 합리적이 아닙니다. 또, 일반적으로 분산 객체에의 참조는, 그 객체가 기동되고 있는 동안만 유효하기 때문에, 시스템 크래쉬 후에 객체간의 통신을 다시 할 수가 있도록(듯이), 클라이언트측에서는 객체에의 지속성이 있는 참조를 보관 유지해 두는 기능이 필요하게 됩니다. <p>
+<a name="993"><!-- --></a>  객체 기동은, 객체에의 지속성이 있는 참조를 제공함과 함께, 객체의 구현의 실행을 관리하기 위한 기구입니다. RMI 에서는, 기동에 의해 필요에 따라서 객체의 실행을 개시할 수 있게 되어 있습니다. 메소드 호출에 의해, 「기동 가능」인 원격 객체에의 액세스가 있었을 때, 그 원격 객체가 현재 실행중이 아닌 경우는, 적절한 JVM 내에서 그 객체의 실행이 개시됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="1000"><!-- --></a>  	7.1. 1	 용어
+</h3>
+
+<blockquote>
+<a name="1002"><!-- --></a>  「액티브」인 객체란, 임의의 시스템내의 임의의 JVM 상에서 인스턴스가 생성되어 export 된 원격 객체를 가리킵니다. 「패시브」인 객체란, JVM 상에서 아직 인스턴스의 생성 (또는 export) 하행 깨지지 않지만, 액티브한 상태에 이행 가능한 원격 객체를 가리킵니다. 수동적인 객체를 액티브한 객체로 하는 것을, 「기동」이라고 합니다. 기동을 실시하기 위해서(때문에)는, 객체를 JVM 에 관련짓는다, 즉, 그 객체의 클래스를 JVM 에 로드해, 그 지속 상태를 복원하는 객체를 필요로 합니다.  <p>
+<a name="1198"><!-- --></a>  RMI 시스템에서는, 「지연 기동」이 사용되고 있습니다. 지연 기동에서는, 메소드를 호출하는 등, 클라이언트가 객체를 최초로 사용할 때까지, 객체의 기동이 보류됩니다. <p>
+</blockquote>
+<br>
+<h3>
+<a name="1199"><!-- --></a>  7.1. 2	 지연 기동
+</h3>
+
+<blockquote>
+<a name="2604"><!-- --></a>  원격 객체의 지연 기동은, 「fault 원격 참조」(fault 블록이라고도 불린다)에 의해 실현되고 있습니다. 원격 객체에의 fault 원격 참조는, 그 원격 객체에 대해서 메소드 호출이 최초로 행해졌을 때, 액티브한 객체의 참조로 「장해를 발생」시킵니다. 각각의 fault 참조는, 대상이 되는 원격 객체의 지속 핸들 (기동 식별자)과 일시 원격 참조의 양쪽 모두를 보관 유지하고 있습니다. 원격 객체의 기동 식별자에는, 해당 객체의 기동시에 제삼자와 교환하는데 충분한 정보가 포함되어 있습니다. 일시 참조는, 동작중의 객체에의 액세스에 사용할 수 있는, 액티브한 원격 객체에의 실제의 「라이브」참조입니다. <p>
+<a name="2605"><!-- --></a>  fault 참조에서는, 원격 객체에의 라이브 참조가 <code>null</code> 의 경우, 그 객체는 액티브하지 않는 것이라고 보여집니다. 메소드의 호출이 발생하면(자), 해당 객체의 fault 참조는, 기동 프로토콜을 사용해, 새롭게 기동된 객체의 원격 참조 (uni-cast 원격 참조등)인 「라이브」참조를 가져옵니다. fault 참조는, 라이브 참조를 취득하면(자), 메소드 호출을 배후의 원격 참조에 전송 해, 원격 참조는, 이번은 그것을 원격 객체에 전송 합니다. <p>
+<a name="1033"><!-- --></a>  보다 구체적으로 말하면, 원격 객체의 Stub에는, 다음의 2 개를 포함한 「faulting」원격 참조형이 포함됩니다. <p>
+</blockquote>
+<blockquote>
+<ul><li>
+<a name="1037"><!-- --></a>  원격 객체의 기동 식별자
+</li>
+</ul>
+</blockquote>
+
+<blockquote>
+<ul><li>
+<a name="1038"><!-- --></a>  uni-cast의 시멘틱스를 가지는 원격 참조형 등, 「액티브」인 원격 참조형의 원격 객체가 포함되는 「라이브」참조 (<code>null</code> 의 경우도 있어)
+</li>
+</ul>
+</blockquote>
+
+<blockquote><hr noshade size="1">
+<b><a name="5045">주 - </a> </b>RMI 시스템에서는, 원격 호출에 대해서는 「최대로 1 회」라고 하는 시멘틱스가 준수됩니다. 바꾸어 말하면, 「기동 가능」또는 「uni-cast」인 원격 객체의 호출은, 최대로 1 회까지 밖에 보내지지 않는다고 하는 것입니다. 따라서, 원격 객체의 호출이 실패했을 경우 (<code>RemoteException</code> 가 throw 되었을 경우), 클라이언트는, 그 원격 메소드가 최대로 1 회 밖에 실행되어 있지 않은 (일반적으로은 1 회나 실행되어 있지 않다)라고 하는 것을 판단할 수 있습니다.  
+<hr noshade size="1">
+</blockquote>
+<br>
+<hr>
+<a href="rmiTOC.html">목차</a>  | <a href="rmi-activation.html">전의 항목</a>  | <a href="rmi-activation3.html">다음의 항목</a>  
+
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169 1997-2006 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+
+<!-- by Susan Snyder --> <!-- Last updated: 1/16/05 -->
+ 
+
+
+</body>
+</html>

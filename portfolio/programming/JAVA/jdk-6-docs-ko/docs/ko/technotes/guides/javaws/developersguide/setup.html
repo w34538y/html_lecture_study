@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>Web 사이트의 설정  - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../deployment/css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<hr>
+<h1>Web 사이트의 설정 </h1>
+<hr>
+<form name="form1">
+  <select name="menu1" onChange="Eminem_jumpMenu('parent',this,1)">
+    <SCRIPT SRC="menu_script.js" language="JavaScript"></SCRIPT>
+  </select>
+</form>
+<h2><br> <a name="intro"></a>  	처음에 </h2>
+<p>Java Web Start 는, HTTP 프로토콜이나 Web 서버라고 하는 기존의 인터넷 테크놀러지를 이용합니다.  이 때문에, Java Web Start 를 사용해 Java 테크놀러지 베이스의 어플리케이션을 배치할 때에, HTML 베이스의 컨텐츠를 배치하는 기존 인프라스트럭쳐(infrastructure)를 재사용할 수가 있습니다.  
+</p>
+<p>어플리케이션을 클라이언트 머신에 배치할 수 있도록(듯이) 하려면 , 어플리케이션을 구성하는 모든 파일에 Web 서버로부터 액세스 할 수 있을 필요가 있습니다. 이것은 일반적으로, 1 개(살) 또는 복수의 JAR 파일과 1 개의 JNLP 파일을, Web 서버의 디렉토리내에 카피하는 것을 의미합니다. Web 사이트상에서 Java Web Start 를 지원하기 위해서 필요한 설정은, HTML 베이스의 컨텐츠를 배치할 때의 설정과 매우 자주(잘) 닮았습니다. 다만 1 개(살) 주의가 필요한 것은, 새로운 MIME 타입을 Web 서버로 설정할 필요가 있는 점입니다. </p>
+<h2><a name="steps"></a> 기본적인 순서 </h2>
+<p><b>1.  Java Web Start 의 MIME 타입을 사용할 수 있도록(듯이) Web 서버를 설정한다</b> </p>
+<p>Web 서버를 설정해, 확장자(extension) <tt>. jnlp</tt> 를 가지는 모든 파일이 <tt>application/x-java-jnlp-file</tt> MIME 타입으로서 설정되도록(듯이) 합니다.  </p>
+<p>대부분의 Web 브라우저는, Web 서버로부터 컨텐츠와 함께 보내져 오는 MIME 타입에 근거해, 각 컨텐츠의 처리 방법을 판단합니다. 서버가 JNLP 파일에 대해서 <tt>application/x-java-jnlp-file</tt> MIME 타입을 돌려주지 않았던 경우, Java Web Start 는 기동되지 않습니다.  </p>
+<p>MIME 타입을 추가하는 방법은, Web 서버 마다 다릅니다. 예를 들어, Apache Web 서버의 경우,<tt>. mime.types</tt> 설정 파일에 다음의 1 행을 추가할 필요가 있습니다.  </p>
+<p><tt>application/x-java-jnlp-file JNLP</tt> </p>
+<p>사용의 Web 서버에서의 방법에 대해서는, 부속의 메뉴얼을 참조해 주세요.  </p>
+<p><b>2.  어플리케이션에 대한 JNLP 파일을 작성한다</b> </p>
+<p>이 파일을 작성하는 가장 간단한 방법은, 기존의 JNLP 파일을 필요에 따라서 변경하는 것입니다.  </p>
+<p>JNLP 파일의 구문과 형식에 대해서는, 나머지의<a href="syntax.html">섹션</a>으로 설명합니다.  
+</p>
+<p><b>3.  Web 서버상에서 어플리케이션을 액세스 할 수 있도록(듯이) 한다</b> </p>
+<p>JNLP 파일내에 기재된 URL 를 사용해, 어플리케이션의 JAR 파일과 JNLP 파일에 액세스 할 수 있는 것을 확인해 주세요.  </p>
+<p><b>4.  어플리케이션 기동용 Web 페이지를 작성한다</b> </p>
+<p>순서 4 의 상세한 것에 대하여는, 다음의 장<a href="launch.html">「어플리케이션 기동용 Web 페이지의 작성」</a>을 참조해 주세요. </p>
+</body>
+</html>

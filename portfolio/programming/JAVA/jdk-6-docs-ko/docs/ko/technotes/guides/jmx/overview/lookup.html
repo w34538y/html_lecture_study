@@ -1,0 +1,137 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.5.1025" />
+<meta name="TEMPLATEBASE" content="book-no-index" />
+<meta name="LASTUPDATED" content="2006 연 8 월 11 일 금요일 14:57:34" />
+<title>검출·검색 서비스 - xrath.com 에서 번역됨</title>
+	<link rel="StyleSheet" href="document.css" type="text/css" />
+	<link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="JMXoverviewTOC.html" />
+    <link rel="Previous" href="connectors.html" />
+    <link rel="Next" href="appendixA.html" />
+    <link rel="Index" href="appendixA.html" />
+  </head>
+
+  <body>
+<a href="#skip" title="네비게이션 링크를 스킵"></a> 
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="connectors.html">전의 항목</a>  | <a accesskey="n" href="appendixA.html">다음의 항목</a> 
+       </td>
+	   <td align="right"><i>Java Management Extensions (JMX) 테크놀러지 개요</i></td>
+      </tr>
+    </table>
+<hr size="8" width="35%" align="left" noshade>
+<a name="skip"></a>  <a name="wp874"> </a> <h2 class="pChapNum">
+제 6 장
+</h2>
+<a name="wp997591"> </a> <h2 class="pChapTitle">
+검출·검색 서비스
+</h2>
+<a name="wp997677"> </a> <p class="pBody">
+<em class="cEmphasis">Java Management Extensions (JMX) Remote API Specification</em>」에서는, 기존의 검출·검색 인프라스트럭쳐(infrastructure)를 사용해 JMX API 에이전트를 통지하거나 검색하거나 할 방법이 설명되고 있습니다. 이 스펙에서는, JMX 테크놀러지 고유의 검출·검색 API 에 대해서는 정의되고 있지 않습니다.  
+</p>
+<a name="wp997704"> </a> <p class="pBody">
+이 장에서는, JMX 테크놀러지로 사용할 수 있는 기존의 검출·검색 인프라스트럭쳐(infrastructure)의 개요를, 이하의 섹션으로 간단하게 설명합니다.  
+</p>
+<ul class="pBullet1"><a name="wp997681"> </a> <div class="pBullet1"><li><a  href="lookup.html#wp997814"><span style="color: #3366CC">&quot;검색 서비스에 대해 &quot;</span></a> </li></div>
+<a name="wp998803"> </a> <div class="pBullet1Plus"><li><a  href="lookup.html#wp997349"><span style="color: #3366CC">&quot;Service Location Protocol (SLP)의 사용 &quot;</span></a> </li></div>
+<a name="wp997682"> </a> <div class="pBullet1Plus"><li><a  href="lookup.html#wp997759"><span style="color: #3366CC">&quot;Jini 네트워크 테크놀러지의 사용 &quot;</span></a> </li></div>
+<a name="wp997296"> </a> <div class="pBullet1Last"><li><a  href="lookup.html#wp997177"><span style="color: #3366CC">&quot;LDAP 연구 최종 단계에서의 Java Naming and Directory Interface (JNDI) API 의 사용 &quot;</span></a>  </li></div>
+</ul>
+<a name="wp998783"> </a> <p class="pBody">
+이러한 인프라스트럭쳐(infrastructure)에 대한 자세한 것은, 「<em class="cEmphasis">Java Management Extensions Remote API 1.0 Specification</em>」의 「References」섹션을 참조해 주세요.
+</p>
+<a name="wp997814"> </a> <h2 class="pHeading1">
+	검색 서비스에 대해
+</h2>
+<a name="wp997650"> </a> <p class="pBody">
+검색 서비스는 JMX 에이전트와 JMX 클라이언트가 사용합니다. 1 개의 Java VM 에는, 다수의 JMX 에이전트나 JMX 클라이언트가 포함되어 있는 경우가 있습니다.  
+</p>
+<ul class="pBullet1"><a name="wp997249"> </a> <div class="pBullet1"><li>JMX 에이전트는, 다음의 기능으로부터 되는 논리 서버 어플리케이션입니다.  </li></div>
+<ul class="pBullet2"><a name="wp997251"> </a> <div class="pBullet2"><li>MBean 서버가 1 개 </li></div>
+<a name="wp997329"> </a> <div class="pBullet2Last"><li>JMX 연결기 서버가 1 개 이상.  JMX 연결기 서버에 의해, 그 MBean 서버에 포함되는 MBean 에 대해서 원격 클라이언트를 액세스 할 수 있게 된다 </li></div>
+</ul>
+<a name="wp997255"> </a> <div class="pBullet1Last"><li>JMX 클라이언트는, JMX 에이전트와의 클라이언트 접속을 여는 논리 클라이언트 어플리케이션입니다.  </li></div>
+</ul>
+<a name="wp997348"> </a> <p class="pBody">
+「Java Management Extensions (JMX) 테크놀러지의 튜토리얼」과 부속의 예에서는, 검색 서비스를 사용해 JMX 에이전트를 통지하거나 검색하거나 할 방법이 나타나고 있습니다. 3 개의 인프라스트럭쳐(infrastructure)의 순서는 닮았습니다. 크게 다른 점은, SLP 와 JNDI 의 경우는, 검색 서비스로 에이전트가 등록하는 것은 주소입니다만, Jini 네트워크 테크놀러지를 사용했을 경우에 등록하는 것은 JMX 연결기 Stub입니다.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp998790"> </a>  <b>주 &#8211;</b>  이 스펙에서는, 독자적인 검출·검색 서비스는 정의되고 있지 않습니다. 기존의 검출·검색 서비스를 사용할 수도 있습니다만, JMX API 에이전트의 주소를 URL 의 형식에서 encode 해, 그 URL 를 매니저에게 통지할 수도 있습니다.
+<hr class="pHr"/></note> <a name="wp997349"> </a> <h2 class="pHeading1">
+	Service Location Protocol (SLP)의 사용
+</h2>
+<a name="wp998606"> </a> <p class="pBody">
+Service Location Protocol (SLP)에서는, 기업 네트워크내에서 네트워크화된 서비스의 존재, 위치, 및 구성을 네트워크 기능 어플리케이션을 검출할 수 있는 시스템를 제공합니다.  
+</p>
+<a name="wp998607"> </a> <p class="pBody">
+다음의 순서는, SLP 검색 서비스를 사용해 JMX 에이전트를 통지 및 검색하기 위한 , JMX Remote API 스펙으로 정의된 순서를 집계한 것입니다.  
+</p>
+<ol class="pList1"><a name="wp997368"> </a> <div class="pList1"><li>에이전트는 1 개 이상의 JMX 연결기 서버를 작성합니다. </li></div>
+<a name="wp997401"> </a> <div class="pList1Plus"><li>공개하는 각 연결기에 대해, 에이전트는 SLP 검색 서비스를 사용해, 그 주소를 등록합니다.  이 때 경우에 따라서는, 에이전트나 연결기를 한정해, 필터로서 사용할 수 있는 것 같은 추가의 속성을 지정합니다.  </li></div>
+<a name="wp997412"> </a> <div class="pList1Plus"><li>클라이언트는 SLP 검색 서비스를 쿼리해, 쿼리에 들어맞는 1 개(살) 이상의 주소를 가져옵니다.  </li></div>
+<a name="wp997419"> </a> <div class="pList1Last"><li>마지막으로, 클라이언트는, 취득한 주소로 특정되는 서버에 대해서 접속하고 있는 연결기를 가져옵니다. </li></div>
+</ol>
+<a name="wp997754"> </a> <p class="pBody">
+JMX Remote API 스펙에서는, SLP 프로토콜에 준거한 URL 스킴을 정의하고 있습니다. <em class="cEmphasis">Java Management Extensions (JMX) Remote API Specification</em>」를 참조해 주세요. 스펙에서는, 등록시로 지정되는, 필수 및 생략 가능한 SLP 검색 속성도 정의하고 있습니다.  
+</p>
+<a name="wp997759"> </a> <h2 class="pHeading1">
+	Jini 네트워크 테크놀러지의 사용
+</h2>
+<a name="wp997431"> </a> <p class="pBody">
+Jini<sup class="cSuperscript">TM</sup> 네트워크 테크놀러지는, 개방적인 소프트웨어 아키텍쳐(architecture)로, 개발자는 네트워크의 변화에 대응 가능한 서비스를 작성할 수 있습니다. Jini 의 스펙에서는, 표준의 검색 서비스가 있습니다. 실행중의 Jini 검색 서비스는, 간단한 API 호출로 검출할 수 있습니다.  
+</p>
+<a name="wp997437"> </a> <p class="pBody">
+다음의 순서는, Jini 검색 서비스를 사용해 JMX 에이전트를 통지 및 검색하기 위한 , JMX Remote API 스펙으로 정의된 순서를 집계한 것입니다.  
+</p>
+<ol class="pList1"><a name="wp997440"> </a> <div class="pList1"><li>에이전트는 1 개 이상의 JMX 연결기 서버를 작성합니다.  </li></div>
+<a name="wp997441"> </a> <div class="pList1Plus"><li>공개하는 각 연결기에 대해, 에이전트는 Jini 검색 서비스를 사용해, JMX 연결기 Stub를 등록합니다.  이 때 경우에 따라서는, 에이전트나 연결기를 한정해, 필터로서 사용할 수 있는 것 같은 추가의 속성을 지정합니다.  </li></div>
+<a name="wp997445"> </a> <div class="pList1Plus"><li>클라이언트는 Jini 검색 서비스를 쿼리해, 쿼리에 들어맞는 1 개(살) 이상의 연결기 Stub를 가져옵니다.  </li></div>
+<a name="wp997447"> </a> <div class="pList1Last"><li>마지막으로, 클라이언트는, 취득한 연결기 Stub를 사용해, 서버에 직접 접속합니다. </li></div>
+</ol>
+<a name="wp997767"> </a> <p class="pBody">
+JMX Remote API 스펙에서는, Jini 테크놀러지 베이스의 엔트리에 의한 바인드를 정의하고 있습니다. <em class="cEmphasis">Java Management Extensions (JMX) Remote API Specification</em>」를 참조해 주세요. 스펙에서는, 에이전트 연결기의 등록시로 지정하는, 필수 및 생략 가능한 엔트리도 정의하고 있습니다.
+</p>
+<a name="wp997177"> </a> <h2 class="pHeading1">
+	LDAP 연구 최종 단계에서의 Java Naming and Directory Interface (JNDI) API 의 사용
+</h2>
+<a name="wp997466"> </a> <p class="pBody">
+Java Naming and Directory Interface<sup class="cSuperscript">TM</sup> (JNDI) API 는, Java 플랫폼의 표준의 기능확장입니다. Java 테크놀러지 대응의 어플리케이션에, 다양한 네임 및 디렉토리 서비스에 대한 통일적인 인터페이스를 제공합니다.  
+</p>
+<a name="wp997469"> </a> <p class="pBody">
+JMX Remote API 스펙에서는, LDAP 서버를 사용해, JMX 에이전트에 공개된 JMX 연결기의 정보를 포함 및 취득하는 방법을 상세하게 정하고 있습니다.  
+</p>
+<a name="wp997475"> </a> <p class="pBody">
+다음의 순서는, Jini 검색 서비스를 사용하기 위한 , JMX Remote API 스펙으로 정의된 순서를 집계한 것입니다.  
+</p>
+<ol class="pList1"><a name="wp997477"> </a> <div class="pList1"><li>에이전트는 1 개 이상의 JMX 연결기 서버를 작성합니다.  </li></div>
+<a name="wp997478"> </a> <div class="pList1Plus"><li>공개하는 각 연결기에 대해, 에이전트는 JNDI 검색 서비스를 사용해, 그 주소를 등록합니다.  이 때 경우에 따라서는, 에이전트나 연결기를 한정해, 필터로서 사용할 수 있는 것 같은 추가의 속성을 지정합니다.  </li></div>
+<a name="wp997482"> </a> <div class="pList1Plus"><li>클라이언트는 JNDI 검색 서비스를 쿼리해, 쿼리에 들어맞는 1 개(살) 이상의 주소를 가져옵니다.  </li></div>
+<a name="wp997484"> </a> <div class="pList1Last"><li>마지막으로, 클라이언트는, 취득한 주소로 특정되는 서버에 대해서 접속하고 있는 연결기를 가져옵니다. </li></div>
+</ol>
+<a name="wp999479"> </a> <p class="pBody">
+JMX Remote API 에서는, 주소를 등록하기 위한 LDAP schema를 정의해, 또 등록한 에이전트를 클라이언트가 검출하는 방법에 대해 설명하고 있습니다. 자세한 것은, 「JVM 1.4 스펙」을 참조해 주세요. 스펙에서는, 리스 기구도 정의하고 있습니다.
+</p>
+<a name="wp997124"> </a> <p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+    <table width="100%" summary="layout">
+      <tr><td align="left">
+<a accesskey="c" href="JMXoverviewTOC.html">목차</a>  | <a accesskey="p" href="connectors.html">전의 항목</a>  | <a accesskey="n" href="appendixA.html">다음의 항목</a> 
+       </td>
+        <td align="right">
+<span class="copyright">Java Management Extensions (JMX) 테크놀러지 개요<br /> Java Management Extensions (JMX), Java Platform, Standard Edition 6</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+<p class="copyright"><a         href="../../../../legal/SMICopyright.html">Copyright</a>  &#169; 2006 Sun Microsystems, Inc.  All rights reserved. </p>
+  </body>
+</html>

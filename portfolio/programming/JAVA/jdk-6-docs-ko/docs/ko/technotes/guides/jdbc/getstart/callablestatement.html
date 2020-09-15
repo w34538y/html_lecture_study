@@ -1,0 +1,112 @@
+<html><head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<title> - xrath.com 에서 번역됨</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="preparedstatement.html">[전의 항목]</a>  <a href="mapping.html">[다음의 항목]</a>  
+<hr><br>
+ 
+<a name="999652"> </a> 
+<h2> CallableStatement</h2>
+<p><a name="1005788"> </a> 주: 이 장의 내용은, Addison Wesley 사부터 Java 시리즈의 1 권으로서 출판된 「<em>JDBC</em><sup><font size=-2>TM</font></sup><em> API Tutorial and Reference, Second Edition:Universal Data Access for the Java</em><sup><font size=-2>TM</font></sup><em> 2 Platform</em>」(ISBN 0-201-43328-1)에 근거해 작성한 것입니다.
+</p><a name="999651"> </a> 
+<h3>7.1	 CallableStatement 의 개요 &#32;</h3>
+<p><a name="1001837"> </a> <code>CallableStatement</code> 객체는, 모든 RDBMS 에 대해 표준적인 방법으로 스트아드프로시쟈를 호출하는 방법을 제공합니다. 스트아드프로시쟈는, 데이타베이스에 포함되어 스트아드프로시쟈에의 호출은,<code>CallableStatement</code> 객체가 보관 유지합니다. 이 호출은, 이스케이프 구문으로 쓰여집니다. 이 구문에는, 결과 파라미터를 수반하는 서식과 수반하지 않는 서식의 2 개의 서식이 있습니다. 결과 파라미터는 OUT 파라미터의 일종으로, 스트아드프로시쟈의 반환값입니다. 어느 쪽의 형식도, 입력 (IN 파라미터), 출력 (OUT 파라미터), 또는 그 양쪽 모두 (INOUT 파라미터)로서 사용하는 변수를 가질 수가 있습니다. 물음표는 파라미터의 플레이스홀더로서 사용할 수 있습니다.
+</p><p><a name="998255"> </a> JDBC API 를 사용해 스트아드프로시쟈를 호출하는 구문은, 다음과 같습니다. 꺽쇄묶음은, 거기에 둘러싸인 부분이 옵션인 것을 나타냅니다.  이러한 외모는, 그 자체 구문의 일부에서는 없습니다.
+</p><blockquote><pre>
+{call procedure_name[(?, ?, ...)]}
+</pre></blockquote><p><a name="998254"> </a> 이하는, 결과 파라미터를 돌려주는 프로시저의 구문입니다.
+</p><blockquote><pre>
+{?  = call procedure_name[(?, ?, ...)]}
+</pre></blockquote><p><a name="1000167"> </a>  파라미터가 붙지 않는 스트아드프로시쟈의 구문은, 이하와 같이 됩니다.
+</p><blockquote><pre>
+{call procedure_name}
+</pre></blockquote><p><a name="1001781"> </a>  일반적으로,<code>CallableStatement</code> 객체의 작성자는, 사용되고 있는 DBMS 가 스트아드프로시쟈를 지원하고 있는 것, 및 그러한 프로시저가 무엇인가 말하는 것을 알고 있습니다. 그러나, 확인이 필요한 경우는, 다양한 <code>DatabaseMetaData</code> 메소드가 이러한 정보를 제공합니다. 예를 들어, 메소드 <code>supportsStoredProcedures</code> 는, DBMS 가 스트아드프로시쟈 호출을 지원하는 경우,<code>true</code> 를 돌려주어, 메소드 <code>getProcedures</code> 는, 사용 가능한 스트아드프로시쟈의 설명을 돌려줍니다.
+</p><p><a name="998690"> </a>  <code>CallableStatement</code> 는, SQL 후미카즈반을 처리하는 <code>Statement</code> 의 메소드를 상속해, 또 IN 파라미터를 처리하는 <code>PreparedStatement</code> 의 메소드를 상속합니다. <code><code>CallableStatement</code> 에 정의 떠날 수 있어 모든 메소드는, OUT 파라미터 또는 INOUT 파라미터의 OUT 부분의 처리 (OUT 파라미터의 JDBC 의 형태의 등록, 그러한 값의 꺼내, 또는 반환값이 JDBC <code>NULL</code> 였는지 어떠했는지의 확인)를 실시합니다. <code>ResultSet</code> 에 정의된 <code>getXXX</code> 메소드가 결과 세트로부터의 값을 꺼내는데 대해,<code>CallableStatement</code> 에 정의된 <code>getXXX</code> 메소드는 OUT 파라미터로부터 값을 꺼내는지, 스트아드프로시쟈의 값을 돌려주든가, 혹은 그 양쪽 모두를 실시합니다.
+</p><a name="998526"> </a> 
+<h4>7.1. 1	 CallableStatement 객체의 생성</h4>
+<p><a name="998090"> </a>  <code>CallableStatement</code> 객체는,<code>Connection</code> 메소드의 <code>prepareCall</code> 에 의해 생성됩니다. 다음의 예에서는,<code>CallableStatement</code> 의 인스턴스가 생성됩니다.  con 는 액티브한 JDBC 의 <code>Connection</code> 객체입니다.
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+	"{call getTestData(?, ? )}");
+</pre></blockquote><p><a name="998100"> </a> 변수 cstmt 에는, 스트아드프로시쟈 <code>getTestData</code> 의 호출이 포함되어 있습니다.  이 스트아드프로시쟈에는, 2 개의 입력 파라미터가 지정되어 결과 파라미터는 지정되고 있지 않습니다. <code>? </code> 플레이스홀더가, IN, OUT, 또는 INOUT 파라미터의 어느 것으로 될까는, 스트아드프로시쟈 <code>getTestData</code> 에 의존합니다. <code>CallableStatement</code> 객체의 이 인스턴스는, JDBC 1.0 API 를 사용해 생성되고 있기 (위해)때문에, cstmt 에 의해 불려 가는 스트아드프로시쟈내의 쿼리는, 모두 디폴트의 <code>ResultSet</code> 객체 (스크롤 및 갱신을 실시할 수가 없는 객체)를 생성합니다.  
+</p><p><a name="1003380"> </a> JDBC 2.0 API 에서는,<code>CallableStatement</code> 객체를 생성해, 그 객체로부터, 스크롤 및 갱신을 실시할 수가 있는 <code>ResultSet</code> 객체를 생성할 수 있습니다. 다음의 코드를 참조해 주세요.
+</p><blockquote><pre>
+String sql = "{call getTestData(?, ? )}";
+CallableStatement cstmt2 = con.prepareCall(sql,
+	ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+</pre></blockquote><p><a name="1003418"> </a> 변수 cstmt2 에는, cstmt 와 같게, 스트아드프로시쟈 <code>getTestData </code>의 호출이 포함되어 있습니다.  다만 cstmt2 의 경우,<code>getTestData</code> 에 의해 생성된 <code>resultSet</code> 객체는 어떤 것에서도, 모두 갱신 및 스크롤을 실시할 수가 있습니다 (그렇지만, 열리고 있는 동안에 행해진 변경은 반영되지 않습니다 ). 스크롤 및 갱신을 실시할 수가 있을지 어떨지를 식별할 경우에 사용하는 정수에 대해서는, 「ResultSet」의 장을 참조해 주세요.
+</p><a name="999427"> </a> 
+<h4>7.1. 2	 IN 파라미터</h4>
+<p><a name="998103"> </a>  IN 파라미터의 값의 <code>CallableStatement</code> 객체에의 인도는,<code>PreparedStatement</code> 로부터 상속된 <code>setXXX</code> 메소드를 사용해 행해집니다. 건네받는 값의 형태는, 어느 <code>setXXX</code> (<code>float</code> 의 값을 건네주기 위해서(때문에)는 <code>setFloat</code>,<code>boolean</code> 의 값을 건네주기 위해서(때문에)는 <code>setBoolean</code> 등)를 사용할까에 의해 정해집니다. 파라미터를 사용하는 프로그램에서는, 많은 경우, IN 파라미터만이 사용됩니다.
+</p><a name="1000220"> </a> 
+<h4>7.1. 3	 배치 갱신의 실행</h4>
+<p><a name="1003294"> </a> <code>CallableStatement</code> 객체의 배치 갱신은,<code>PreparedStatement</code> 객체와 같게 행해집니다. 실제,<code>CallableStatement</code> 객체의 기능은,<code>PreparedStatement</code> 객체의 기능과 같은 제한을 받습니다. 즉, 배치 갱신 기능을 사용할 때는,<code>CallableStatement</code> 객체는, 입력 파라미터를 지정하는 것도 깔고는 파라미터를 전혀 지정하지 않는, 스트아드프로시쟈 밖에 호출할 수 없습니다. 게다가 그 스트아드프로시쟈는, 갱신 카운트를 돌려주지 않으면 안됩니다. 스트아드프로시쟈가 갱신 카운트 이외의 결과를 돌려주거나 스트아드프로시쟈가 OUT 또는 INPUT 파라미터를 취하는 경우는,<code>CallableStatement.executeBatch</code> 메소드 (<code>PreparedStatement</code> 로부터 상속)는,<code>BatchUpdateException</code> 를 throw 합니다.
+</p><p><a name="1003367"> </a> 다음의 코드에서는, 배치 갱신 기능을 사용해, 2 개의 파라미터를 <code>CallableStatement</code> 객체에 관련짓고 있습니다.
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+			"{call updatePrices(?, ? )}");
+cstmt.setString(1, "Colombian");
+cstmt.setFloat(2, 8.49f);
+cstmt.addBatch();
+
+cstmt.setString(1, "Colombian_Decaf");
+cstmt.setFloat(2, 9.49f);
+cstmt.addBatch();
+
+int [] updateCounts = cstmt.executeBatch();
+</pre></blockquote><p><a name="1003355"> </a> 변수 cstmt 에는, 스트아드프로시쟈 <code>updatePrices</code> 에의 호출이 포함되어 있습니다.  스트아드프로시쟈에는, 2 개의 파라미터를 관련지을 수 있고 있습니다. cstmt 를 실행하면(자), 2 개의 갱신문이, 배치로 해 정리해 실행됩니다. 한편의 갱신문에는,<code>Colombian</code> 및 <code>8.49f</code> 가 파라미터로서 지정되고 있습니다.  이제(벌써) 한편의 갱신문에는,<code>Colombian_Decaf</code> 및 <code>9.49f</code> 가 파라미터로서 지정되고 있습니다. <code>8.49f</code> 와 같이, 수치의 후에 <code>f</code> 가 지정되고 있는 경우는, 그 수치가 <code>float</code> 인 것을 Java 컴파일러에게 전하고 있습니다.  <code>f</code> 가 지정되어 있지 않은 경우, 컴파일러는 10 진수의 수치를 <code>double</code> 라고 보므로,<code>float</code> 로서의 사용이 용서되지 않습니다.
+</p><a name="1003293"> </a> 
+<h4>7.1. 4	 OUT 파라미터</h4>
+<p><a name="1000230"> </a>  스트아드프로시쟈가 OUT 파라미터를 돌려주는 경우, 각 OUT 파라미터의 JDBC 의 형태는 <code>CallableStatement</code> 를 사용하기 전에 등록할 필요가 있습니다. 이 등록이 필요한 것은, 일부의 DBMS 에서는, SQL 형 ( JDBC 형이 나타내고 있습니다 )이 필요하기 때문에입니다.  JDBC 가 필요로 하고 있는 것은 아닙니다. JDBC 의 데이터형, 사용 빈도의 높은 SQL 의 데이터형을 나타내는 총칭 SQL 의 형태 식별자에 대한 자세한 것은,<a href="mapping.html#996857">「SQL 와 Java 의 형태의 매핑」</a>을 참조해 주세요.
+</p><p><a name="1001504"> </a> JDBC 의 형태의 등록은, 메소드 <code>registerOutParameter</code> 에 의해 실시합니다. 문장의 실행이 완료하고 나서,<code>CallableStatement</code> 의 <code>getXXX</code> 메소드를 사용해 OUT 파라미터의 값을 가져옵니다. 사용에 적절한 <code>CallableStatement</code>. <code>getXXX</code> 메소드는, 그 OUT 파라미터에 등록되어 있는 JDBC 의 형태에 대응하는 Java 프로그램 언어의 형태의 메소드입니다 (JDBC 의 형태로부터 Java 의 형태에의 표준 매핑에 대해서는,<a href="mapping.html#1051555">표 8.1</a>  을 참조). 즉,<code>registerOutParameter</code> 는, (그것이 데이타베이스가 돌려주는 데이터의 형태에 일치하도록(듯이)) JDBC 의 형태를 사용해,<code>getXXX</code> 가 그것을 Java 의 형태에 캐스트 합니다.
+</p><p><a name="998136"> </a>  예를 들어 설명하면(자), 다음의 코드는 OUT 파라미터를 등록해, cstmt 가 호출하는 스트아드프로시쟈를 실행하고 나서, OUT 파라미터에 반환된 값을 꺼냅니다. 메소드 <code>getByte</code> 는, 최초의 OUT 파라미터로부터 Java 의 <code>byte</code> 를 꺼내,<code>getBigDecimal</code> 는, 2 번째의 OUT 파라미터로부터 <code>java.math.BigDecimal</code> 객체 (소수점 이하 제 3 위까지)를 꺼냅니다. cstmt 에 의해 불려 간 스트아드프로시쟈가 결과 세트를 돌려주므로, cstmt 의 실행에는 <code>executeQuery</code> 메소드를 사용하고 있습니다.
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+	"{call getTestData(?, ? )}");
+cstmt.registerOutParameter(1, java.sql.Types.TINYINT);
+cstmt.registerOutParameter(2, java.sql.Types.DECIMAL, 3);
+ResultSet rs = cstmt.executeQuery();
+// .  .  .  retrieve result set values with rs.getXXX methods
+byte x = cstmt.getByte(1);
+java.math.BigDecimal n = cstmt.getBigDecimal(2);
+</pre></blockquote><p><a name="998397"> </a> <code>ResultSet</code> 과는 달리,<code>CallableStatement</code> 에서는, 큰 OUT 치를 조금씩 차례차례로 취득하기 위한 특별한 기구는 제공되고 있지 않습니다. 즉,<code>getAsciiStream</code> 또는 <code>getBinary-Stream</code> 등의 데이터 스트림을 취득하는 것 같은 <code>getXXX</code> 메소드를 가지고 있지 않습니다. 다만, JDBC 2.0 API 의 <code>CallableStatement</code> 의 메소드에서는, OUT 파라미터 또는 INOUT 파라미터로서 SQL3 의 데이터형을 취득할 수가 있습니다. <code> CallableStatement</code> 에는,<code>getBlob</code> 메소드 및 <code>getClob</code> 메소드가 짜넣어지고 있어 바이너리 라지 객체 및 캐릭터 라지 객체를 취득할 수가 있습니다.
+</p><a name="999937"> </a> 
+<h4>7.1. 5	 파라미터의 번호 붙어라</h4>
+<p><a name="999941"> </a> 대상 파라미터를 지정하는 <code>int</code> 를 인수에 취하는 메소드 (<code>setXXX</code>,<code>getXXX</code>, 및 <code>registerOutParameter</code>)의 경우, 그 <code>int</code> 는,<code>? </code> 플레이스홀더 파라미터만을 참조합니다. 그 int 는 1 으로부터 셀 수 있습니다. 이 파라미터의 번호는, 스트아드프로시쟈 호출로 지정되는 리터럴 파라미터를 참조하지 않습니다. 예를 들어, 다음의 코드는, 1 개의 리터럴 파라미터 ( <code>25</code> )와 1 개의 <code>? </code> 파라미터를 가지는 스트아드프로시쟈 호출의 예입니다.  
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+		"{call getTestData(25, ? )}");
+cstmt.registerOutParameter(1, java.sql.Types.TINYINT);
+</pre></blockquote><p><a name="999951"> </a> 이 코드에서는,<code>registerOutParameter</code> 의 제 1 인수인 <code>int</code> <code>1</code> 은, 최초의 <code>?  </code> 파라미터 (여기에서는 <code>?  </code> 파라미터는 1 개 밖에 없습니다)를 참조하고 있습니다. 이 <code>int 1</code> 은, 스트아드프로시쟈의 제 1 파라미터인 리터럴의 <code>25</code> 를 참조하고 있는 것은 아닙니다.
+</p><a name="999940"> </a> 
+<h4>7.1. 6	 INOUT 파라미터</h4>
+<p><a name="999944"> </a>  입력을 공급해, 출력을 받는 파라미터는, 메소드 <code>registerOutParameter</code> 를 호출하는 것 외에, (<code>PreparedStatement</code>로부터 상속된) 적절한 <code>setXXX</code>를 호출할 필요가 있습니다. <code>setXXX</code> 메소드는, 파라미터의 값을 입력 파라미터로 설정해, 메소드 <code>registerOutParameter</code> 가 그 JDBC 의 형태를 출력 파라미터로서 등록합니다. <code><code>setXXX</code> 메소드는, Java 의 값을 제공합니다.  드라이버는 그 값을 데이타베이스에 송신하기 전에 JDBC 의 값으로 변환합니다. 이 IN 의 값의 JDBC 의 형태와 메소드 <code>registerOutParameter</code> 에 공급하는 JDBC 의 형태는 동일하지 않으면 안됩니다. 그리고, 출력치를 꺼내기 위해서(때문에)는, 대응하는 <code>getXXX</code> 메소드를 사용합니다. 예를 들어, 파라미터의 Java 의 형태가 <code>byte</code> 의 경우는,<code>setByte</code> 메소드를 사용해 입력치를 대입해,<code>TINYINT</code> 를 JDBC 의 형태로서 <code>registerOutParameter</code> 에 건네주어,<code>getByte</code> 를 사용해 출력치를 꺼낼 필요가 있습니다 (형태의 매핑의 일람에 대해서는,<a href="mapping.html#996857">「SQL 와 Java 의 형태의 매핑」</a>을 참조).
+</p><p><a name="998437"> </a>  이하의 예에서는, 스트아드프로시쟈 <code>reviseTotal</code> 가 있어, 그 유일한 파라미터가 1 개의 INOUT 파라미터인 경우를 상정하고 있습니다. 메소드 <code>setByte</code> 는 이 파라미터를 <code>25</code> 로 설정해, 드라이버는 이것을 JDBC 의 <code>TINYINT</code> 로서 후에 데이타베이스에 송신합니다. 다음의 <code>registerOutParameter</code> 는, 이 파라미터를 JDBC 의 <code>TINYINT</code> 로서 등록합니다. 스트아드프로시쟈가 실행되면(자), 새로운 JDBC <code>TINYINT</code> 의 값이 돌려주어져 메소드 <code>getByte</code> 가 이 새로운 값을 Java 의 <code>byte</code> 로서 꺼냅니다. 이 예로 불려 가고 있는 스트아드프로시쟈는 갱신 카운트를 돌려주기 (위해)때문에,<code>executeUpdate</code> 메소드가 사용되고 있습니다.
+</p><blockquote><pre>
+CallableStatement cstmt = con.prepareCall(
+		"{call reviseTotal(? )}");
+cstmt.setByte(1, (byte) 25);
+cstmt.registerOutParameter(1, java.sql.Types.TINYINT);
+cstmt.executeUpdate();
+byte x = cstmt.getByte(1);
+</pre></blockquote><a name="998187"> </a> 
+<h4>7.1. 7	 결과 세트의 뒤에 OUT 파라미터를 꺼낸다</h4>
+<p><a name="1000244"> </a> 일부의 DBMS 에 부과되어 있는 제한을 위해, 이식성을 크게 하기 위해서 다음을 추천 합니다.  OUT 파라미터를 꺼내기 전에,<code>CallableStatement</code> 객체의 실행에 의해 생성된 <code>ResultSet</code> 객체의 모든 결과를 꺼내 주세요. 결과 세트의 값이 모두 꺼내지면(자), <code>ResultSet.next</code> 메소드는 <code>false</code> 를 돌려줍니다.
+</p><p><a name="1000753"> </a> <code>CallableStatement</code> 객체가 복수의 <code>ResultSet</code> 객체를 돌려주는 경우 (<code>execute</code> 메소드의 호출에 의해 실행되었을 경우만 일어날 수 있다), OUT 파라미터를 꺼내기 전에, 모든 결과를 꺼낼 필요가 있습니다. 이 경우, 모든 결과에 확실히 액세스 하도록(듯이), 결과가 없어질 때까지 <code>Statement</code> 의 메소드 <code>getResultSet</code>,<code>getUpdateCount</code>, 및 <code>getMoreResults</code> 를 호출할 필요가 있습니다. 모든 결과가 없어진 후에,<code>getMoreResults</code> 메소드를 호출하면(자) <code>false</code> 가 돌려주어져<code>getUpdateCount</code> 메소드를 호출하면(자) <code>-1</code> 가 돌려주어집니다.
+</p><p><a name="998197"> </a> <code>ResultSet.getXXX</code> 메소드를 사용해 <code>ResultSet</code> 객체로부터 모든 값이 꺼내져 갱신 카운트가 돌려주어지고 없어지면(자),<code>CallableStatement</code>. <code>getXXX</code> 메소드를 사용해 OUT 파라미터의 값을 꺼낼 수가 있습니다.
+</p><a name="998204"> </a> 
+<h4>7.1. 8	 NULL 치를 OUT 파라미터로서 꺼낸다</h4>
+<p><a name="998220"> </a>  OUT 파라미터에 반환되는 값은 JDBC <code>NULL</code> 인 경우가 있습니다. JDBC <code>NULL</code> 치는,<code>getXXX</code> 메소드가 돌려주는 값이 <code>getXXX</code> 메소드의 형태에 의해 <code>null</code>,<code>0</code>,<code>false</code> 의 어떤 것인가가 되도록(듯이) 변환됩니다. <code>ResultSet</code> 객체에 대해,<code>0</code> 또는 <code>false</code> 의 값이 원래 JDBC <code>NULL</code> 였는지의 여부를 아는 유일한 방법은, <code>wasNull</code> 메소드를 사용해 확인하는 방법입니다.  <code>wasNull</code> 는,<code>getXXX</code> 메소드가 읽어낸 마지막 값이 JDBC <code>NULL</code> 의 경우 <code>true</code> 를 돌려주어, 그렇지 않은 경우 <code>false</code> 를 돌려줍니다.  
+</p>
+<hr><br>
+ 
+<a href="GettingStartedTOC.fm.html">[목차]</a>  <a href="preparedstatement.html">[전의 항목]</a>  <a href="mapping.html">[다음의 항목]</a>  
+<hr><br>
+
+
+
+<i><a href="copyright.html">Copyright</a>  &#169; 1999, Sun Microsystems, Inc.    All rights reserved. </i>
+
+</body>
+</html>

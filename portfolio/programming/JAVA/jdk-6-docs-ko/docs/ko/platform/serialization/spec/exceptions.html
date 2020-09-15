@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:객체 직렬화에 있어서의 예외		
+
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="security.html">전의 항목</a>  | <a href="examples.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0</td>
+</tr></table>
+<br>
+ 
+<a name="3601"><!-- --></a> 
+<h1>
+객체 직렬화에 있어서의 예외		
+</h1>
+<!-- <hr size="1" width="100%" align="left" noshade> --> <br> <br> <br><a name="3616"><!-- --></a> 
+<hr size="8" width="35%" align="left" noshade>
+
+<table border=0>
+<tr valign=bottom>
+<td valign=bottom>
+<U><h1><FONT FACE="ARIAL,HELVETICA,TIMES ROMAN" SIZE=-1>부록</FONT> B 
+</h1></U>
+</td>
+</tr>
+</table>
+
+<blockquote>
+<a name="3526"><!-- --></a> 직렬화 클래스에 의해 throw 되는 모든 예외는,<code>IOException</code> 의 서브 클래스인 <code>ObjectStreamException</code> 의 서브 클래스입니다.
+
+<br><br>
+<Table Border="1" Cellpadding="5">
+<caption></caption>
+
+<tr><td><a name="4249"><!-- --></a>  <b>예외</b><br>
+
+</td><td><a name="4251"><!-- --></a>  <b>설명</b><br>
+
+</td></tr>
+<tr valign="bottom"><td><a name="4253"><!-- --></a> 
+<p><code>ObjectStreamException</code>
+
+</td>
+<td><a name="4255"><!-- --></a> 
+<p>모든 직렬화 예외의 슈퍼 클래스
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4257"><!-- --></a> 
+<p><code>InvalidClassException</code>
+
+</td>
+<td><a name="4259"><!-- --></a> 
+<p>다음의 어떤 것인가의 이유에 의해, 클래스가 객체를 복원할 수 없을 때에 throw 된다
+
+<p>
+<li>
+<a name="4288"><!-- --></a>  그 클래스가, 스트림에 있는 클래스의 직렬화 버젼과 일치하지 않는다
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4293"><!-- --></a>  그 클래스에 무효인 프리미티브(primitive) 데이터형을 가지는 필드가 포함되어 있다
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4296"><!-- --></a> <code>Externalizable</code> 클래스에, public 로 인수 없음의 생성자 이 없다
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4342"><!-- --></a> <code>Serializable</code> 클래스가, 가장 가까운 비직렬화 가능 슈퍼 클래스의 인수 없음의 생성자 에 액세스 할 수 없다
+</li><p></p>
+
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4261"><!-- --></a> 
+<p><code>NotSerializableException</code>
+
+</td>
+<td><a name="4263"><!-- --></a> 
+<p><code>readObject</code> 이나 <code>writeObject</code> 메소드에 의해 throw 되어 직렬화 또는 직렬화 복원을 정지한다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4265"><!-- --></a> 
+<p><code>StreamCorruptedException</code>
+
+</td>
+<td><a name="4267"><!-- --></a> 
+<p>다음의 경우에 throw 된다
+
+<p>
+<li>
+<a name="4335"><!-- --></a> 스트림 헤더가 올바르지 않다
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4327"><!-- --></a> 제어 정보가 발견되지 않는다 
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4333"><!-- --></a> 제어 정보가 올바르지 않다
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4334"><!-- --></a>  JDK<sup>TM</sup> 1.1. 5 이전의 릴리스로 <em>PROTOCOL_VERSION_2</em> 스트림상에 <code>readExternal</code> 를 호출하려고 했다
+</li><p></p>
+
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4269"><!-- --></a> 
+<p><code>NotActiveException</code>
+
+</td>
+<td><a name="4271"><!-- --></a> 
+<p>다음의 <code>ObjectOutputStream</code> 메소드내에서 <code>writeObject</code> 상태가 올바르지 않은 경우에 throw 된다
+
+<p>
+<li>
+<a name="4363"><!-- --></a>  <code>defaultWriteObject</code>
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4364"><!-- --></a>  <code>putFields</code>
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4359"><!-- --></a>  <code>writeFields</code>
+</li><p></p>
+
+
+<a name="4370"><!-- --></a> 
+<p>
+
+<a name="4365"><!-- --></a> 
+<p>다음의 <code>ObjectInputStream</code> 메소드내에서 <code>readObject</code> 상태가 올바르지 않은 경우에 throw 된다
+
+<p>
+<li>
+<a name="4369"><!-- --></a>  <code>defaultReadObject</code>
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4367"><!-- --></a>  <code>readFields</code>
+</li><p></p>
+
+
+<p>
+<li>
+<a name="4368"><!-- --></a>  <code>registerValidation</code>
+</li><p></p>
+
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4273"><!-- --></a> 
+<p><code>InvalidObjectException</code>
+
+</td>
+<td><a name="4275"><!-- --></a> 
+<p>복원된 객체를 유효하게 할 수 없으면 throw 된다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4277"><!-- --></a> 
+<p><code>OptionalDataException</code>
+
+</td>
+<td><a name="4279"><!-- --></a> 
+<p>스트림에 프리미티브(primitive) 데이터가 있어, 객체가 예기 될 때 <code>readObject</code> 에 의해 throw 된다. 예외의 길이 필드는, 현재의 블록으로 사용 가능한 바이트수를 나타낸다
+
+</td>
+</tr>
+<tr valign="bottom"><td><a name="4281"><!-- --></a> 
+<p><code>WriteAbortedException</code>
+
+</td>
+<td><a name="4283"><!-- --></a> 
+<p>스트림의 기입중에 일어난 예외에 의해 정지된 스트림을 읽어들이면(자) throw 된다
+
+</td>
+</tr>
+
+</Table>
+ 
+<Table>
+<tr><td></td>
+</tr>
+</Table><p>
+<p>
+<a name="4242"><!-- --></a> 
+<p>
+</blockquote>
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="security.html">전의 항목</a>  | <a href="examples.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:48 2005 -->
+ 
+
+
+</body>
+</html>

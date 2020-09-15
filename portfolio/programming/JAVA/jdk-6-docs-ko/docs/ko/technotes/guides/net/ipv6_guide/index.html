@@ -1,0 +1,225 @@
+<html>
+<head>
+<title>네트워크 IPv6 사용자 가이드 - xrath.com 에서 번역됨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../css/styles1.css" rel="stylesheet" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<h1>네트워크 IPv6 사용자 가이드 (JDK/JRE 5.0)</h1>
+<hr>
+<p>이 문서에서는, 다음의 토픽에 대해 설명합니다. </p>
+<ul>
+<li><a href="#overview">개요</a> </li>
+<li><a href="#supported">지원되는  operating system</a> </li>
+<li><a href="#using">Java 에서의 IPv6 의 사용</a> </li>
+<li><a href="#details">Java 에서의 IPv6 지원의 상세</a>  
+    <ul>
+<li><a href="#special">특수한 IPv6 주소형</a> </li>
+<li><a href="#ipv6-related">IPv6 관련의 시스템 프로퍼티</a> </li>
+<li><a href="#dual">듀얼 스택 노드</a> </li>
+<li><a href="#java">Java 어플리케이션에의 영향</a> </li>
+<li><a href="#ipv6-networking">IPv6 의 네트워크 프로퍼티</a> </li>
+    </ul>
+  </li>
+</ul>
+<h2><a name="overview"></a> 개요 </h2>
+<p>이 불과 수년으로, IPv6 는 업계에서 (특히, 유럽과 아시아 태평양 지역의 업계에서), 폭넓게 받아들여지게 되었습니다. 확장성, 유동성, 서비스 품질, 광대한 address 공간, 자동 구성, 시큐리티, multi-homed, 이탈리아 국연탄화수소공사-캐스트와 멀티 캐스트, 리난바링 등은, IPv6 로 실현될 수 있는 기능의 일부입니다. </p>
+<p>J2SE 1.4 가 2002 년 2 월에 릴리스 되고 나서, Java 에서는 Solaris 와 Linux 에서의 IPv6 지원를 개시했습니다. Windows 에서의 IPv6 지원는, J2SE 5.0 으로 추가되었습니다. C 나 C++ 등의 그 외의 언어에서도 IPv6 를 지원하고 있습니다만, Java 에는 큰 이점이 몇개인가 있습니다. </p>
+<ul>
+<li>Java 를 사용하면(자), 단일의 코드 베이스에 투자하는 것으로, IPv4 및 IPv6 의 양쪽 모두에 대응할 수 있다 </li>
+<li>기존의 Java 어플리케이션이 벌써 IPv6 대응하고 있다</li>
+<li>IPv6 에의 이행이 용이</li>
+</ul>
+<p>후술 하는 코드예로 이상의 점을 증명해, IPv6 지원에 대해 추가의 정보를 설명합니다. </p>
+<h2><a name="supported"></a> 지원되는  operating system</h2>
+<p>J2SE 레퍼런스 구현에서는, 다음의  operating system가 지원되고 있습니다. </p>
+<ul>
+<li>Solaris 8 이후 </li>
+<li>Linux 커넬 2.1. 2 이후 (IPv6 의 것보다 좋은 지원에는 커넬 2.4. 0 이후를 추천)</li>
+<li>Windows XP SP1 및 Windows 2003</li>
+</ul>
+<h2><a name="using"></a> Java 에서의 IPv6 의 사용</h2>
+<p>IPv6 를 Java 로 사용하는 것은 간단하고 투과적이어 자동적으로 행해집니다. 그 외가 많은 언어와는 달라, 이식은 필요 없습니다. 실제, 원시 파일의 재컴파일마저 필요 없습니다. </p>
+<p><a href="http://java.sun.com/docs/books/tutorial/networking/sockets/readingWriting.html">「The Java Tutorial」</a>로부터의 예를 나타냅니다. </p>
+<blockquote>
+<p> <code>Socket echoSocket = null;<br> &nbsp;&nbsp;&nbsp;PrintWriter out = null;<br> &nbsp;&nbsp;&nbsp;BufferedReader in = null;</code></p>
+<p> <code>&nbsp;&nbsp;&nbsp;try {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echoSocket = new Socket(&quot;taranis&quot;, 7);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out = new PrintWriter(echoSocket.getOutputStream(), true);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in = new BufferedReader(new InputStreamReader(<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echoSocket.getInputStream()));<br> &nbsp;&nbsp;&nbsp;} catch (UnknownHostException e) {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println(&quot;Don't know about host:taranis. &quot;);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.exit(1);<br> &nbsp;&nbsp;&nbsp;} catch (IOException e) {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println(&quot;Couldn't get I/O for &quot;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ &quot;the connection to:taranis. &quot;);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.exit(1);<br> &nbsp;&nbsp;&nbsp;}<br> // ... code omitted here<br> communicateWithEchoServer(out, in);</code></p>
+<p><code> out.close();<br> in.close();<br> stdIn.close();<br> echoSocket.close();</code></p>
+</blockquote>
+<p>로컬 호스트 머신과 행선지 머신 (taranis)이 IPv6 에 대응하고 있으면, 이 예와 같은 바이트 코드를 IPv6 모드로 실행할 수가 있습니다. </p>
+<p>대조적으로, 대응하는 C 프로그램을 IPv6 모드로 실행하려고 하면(자), 최초로 이식하지 않으면 안됩니다. 다음에, 무엇을 해야 할까를 나타냅니다. </p>
+<h4>오리지날의 C 코드의 일부</h4>
+<blockquote>
+<p> <code>struct sockaddr_in sin;<br> struct hostent *hp;<br> int sock;</code></p>
+<p><code> /* Open socket. */<br> sock = socket(AF_INET, SOCK_STREAM, 0);<br> if (sock == -1) {<br> &nbsp;&nbsp;&nbsp;perror(&quot;socket&quot;);<br> &nbsp;&nbsp;&nbsp;return (-1);<br> }<br> <br> /* Get host address */<br> hp = gethostbyname(hostname);<br> if (hp == NULL || hp-&gt;h_addrtype ! = AF_INET || hp-&gt;h_length ! = 4) {<br> &nbsp;&nbsp;&nbsp;(void) fprintf(stderr, &quot;Unknown host '%s'\n&quot;, hostname);<br> &nbsp;&nbsp;&nbsp;(void) close(sock);<br> &nbsp;&nbsp;&nbsp;return (-1);<br> }</code></p>
+<p><code> sin.sin_family = AF_INET;<br> sin.sin_port = htons(port);<br> (void) memcpy((void *) &amp;sin.sin_addr, (void *) hp-&gt;h_addr, hp-&gt;h_length);</code></p>
+<p><code> /* Connect to the host */<br> if (connect(sock, (struct sockaddr *) &amp;sin, sizeof(sin)) == -1) {<br> &nbsp;&nbsp;&nbsp;perror(&quot;connect&quot;);<br> &nbsp;&nbsp;&nbsp;(void) close(sock);<br> &nbsp;&nbsp;&nbsp;return (-1);<br> } </code></p>
+</blockquote>
+<h4>수정한 IPv6 대응의 C 코드</h4>
+<blockquote>
+<p> <code>struct addrinfo *res, *aip;<br> struct addrinfo hints;<br> int sock = -1;<br> int error;</code></p>
+<p><code> /* Get host address.Any type of address will do.  */<br> bzero(&amp;hints, sizeof(hints));<br> hints.ai_flags = AI_ALL|AI_ADDRCONFIG;<br> hints.ai_socktype = SOCK_STREAM;</code></p>
+<p><code> error = getaddrinfo(hostname, servicename, &amp;hints, &amp;res);<br> if (error ! = 0) {<br> &nbsp;&nbsp;&nbsp;(void) fprintf(stderr,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;getaddrinfo:%s for host %s service %s\n&quot;,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gai_strerror(error), hostname, servicename);<br> &nbsp;&nbsp;&nbsp;return (-1);<br> }<br> /* Try all returned addresses until one works */<br> for (aip = res; aip ! = NULL; aip = aip-&gt;ai_next) {<br> &nbsp;&nbsp;&nbsp;/*<br> &nbsp;&nbsp;&nbsp;* Open socket.The address type depends on what<br> &nbsp;&nbsp;&nbsp;* getaddrinfo() gave us. <br>&nbsp;&nbsp;&nbsp;*/<br> &nbsp;&nbsp;&nbsp;sock = socket(aip-&gt;ai_family, aip-&gt;ai_socktype, aip-&gt;ai_protocol);<br> &nbsp;&nbsp;&nbsp;if (sock == -1) {<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perror(&quot;socket&quot;);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;freeaddrinfo(res);<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return (-1);<br> &nbsp;&nbsp;&nbsp;}</code></p>
+<p><code> /* Connect to the host. */<br> if (connect(sock, aip-&gt;ai_addr, aip-&gt;ai_addrlen) == -1) {<br> &nbsp;&nbsp;&nbsp;perror(&quot;connect&quot;);<br> &nbsp;&nbsp;&nbsp;(void) close(sock);<br> &nbsp;&nbsp;&nbsp;sock = -1;<br> &nbsp;&nbsp;&nbsp;continue;<br> }<br> break;<br> }<br> &nbsp;&nbsp;&nbsp;freeaddrinfo(res);</code></p>
+</blockquote>
+<p>새로운 어플리케이션의 경우, 주소 패밀리를 허용 하는 데이터 구조체를 작성했을 경우, 이식은 필요 없습니다. </p>
+<p>그러나, C 또는 C++ 에 의한 서버 사이드 프로그래밍에서는, 한층 더 결점이 있습니다. 어플리케이션이 Solaris 나 Linux 등의 듀얼 스택 플랫폼용으로 작성된 것인가, Windows 등의 싱글스 탁 플랫폼용으로 기술된 것인가에 의해, 다른 코드 구조로 하지 않으면 안됩니다. 서버 사이드 프로그래밍의 경우, Java 에는 큰 이점이 있습니다. 지금까지 대로, 같은 코드를 기술합니다. </p>
+<blockquote>
+<p> <code>ServerSocket server = new ServerSocket(port);<br> Socket s;<br> while (true) {<br> &nbsp;&nbsp;&nbsp;s = server.accept();<br> &nbsp;&nbsp;&nbsp;doClientStuff(s);<br> }</code></p>
+</blockquote>
+<p>그리고, 이 코드를 IPv6 대응의 머신으로 실행하는 경우는, IPv6 대응 서비스를 곧바로 제공할 수 있습니다. </p>
+<p>듀얼 스택 플랫폼에서, C 에 의한 대응하는 서버 코드는 다음과 같습니다. </p>
+<blockquote>
+<p> <code>int ServSock, csock;<br> struct sockaddr addr, from;<br> ...<br>ServSock = socket(AF_INET6, SOCK_STREAM, PF_INET6);<br> bind(ServSock, &amp;addr, sizeof(addr));<br> do {<br> &nbsp;&nbsp;&nbsp;csock = accept(ServSocket, &amp;from, sizeof(from));<br> &nbsp;&nbsp;&nbsp;doClientStuff(csock);<br> } while (! finished);</code></p>
+</blockquote>
+<p>듀얼 스택 머신에서는, IPv6 소켓 1 개(살)이 IPv4 와 IPv6 프로토콜 스택의 양쪽 모두에 액세스 하기 위한(해), 1 소켓만 작성할 필요가 있습니다. 그 때문에, 이 서버는 잠재적으로 IPv4 와 IPv6 클라이언트의 양쪽 모두를 지원할 수 있습니다. </p>
+<p>싱글스 탁 플랫폼용의, 같은 서버의 C 코드는 다음과 같이 됩니다. </p>
+<blockquote>
+<p> <code>SOCKET ServSock[FD_SETSIZE];<br> ADDRINFO AI0, AI1;<br> ServSock[0] = socket(AF_INET6, SOCK_STREAM, PF_INET6);<br> ServSock[1] = socket(AF_INET, SOCK_STREAM, PF_INET);<br> &nbsp;...<br> bind(ServSock[0], AI0-&gt;ai_addr, AI0-&gt;ai_addrlen);<br> bind(ServSock[1], AI1-&gt;ai_addr, AI1-&gt;ai_addrlen);<br> &nbsp;...<br> select(2, &amp;SockSet, 0, 0, 0);<br> if (FD_ISSET(ServSocket[0], &amp;SockSet)) {<br> &nbsp;&nbsp;&nbsp;// IPv6 connection csock = accept(ServSocket[0], (LPSOCKADDR) &amp;From, FromLen);<br> &nbsp;&nbsp;&nbsp;&nbsp;...<br>}<br> if (FD_ISSET(ServSocket[1], &amp;SockSet))<br> &nbsp;&nbsp;&nbsp;// IPv4 connection csock = accept(ServSocket[1], (LPSOCKADDR) &amp;From, FromLen);<br> &nbsp;&nbsp;&nbsp;&nbsp;...<br> }</code></p>
+</blockquote>
+<p>여기에서는, IPv6 스택용으로 1 개(살)과 IPv4 스택용으로 1 개(살), 합계 2 개의 서버 소켓을 작성할 필요가 있습니다. 또, IPv4 또는 IPv6 클라이언트로부터의 접속을 대기하기 위해서, 2 개의 소켓상에서 다중화할 필요가 있습니다. </p>
+<p>Java 를 사용하면, J2SE 1.4 이후를 사용해, 모든 Java 어플리케이션, 클라이언트, 또는 서버를 IPv6 대응 플랫폼에서 실행할 수 있습니다.  또, 어플리케이션은 마법과 같이 자동적으로 IPv6 대응이 됩니다. </p>
+<p>대조적으로, 유산인 네이티브 언어 어플리케이션에서는, C 또는 C++ 어플리케이션을 IPv6 대응으로 하려고 하면(자), 이식과 재컴파일이 필요하게 됩니다. </p>
+<h4>Java 플랫폼에서의 IPv6 의 동작</h4>
+<p>Java 네트워킹 스택은 우선, IPv6 를 기본이 되는 OS 로 지원하고 있을지 어떨지를 확인합니다. IPv6 가 지원되고 있는 경우는, IPv6 스택을 사용하려고 합니다. 구체적으로는, 듀얼 스택 시스템의 경우, IPv6 소켓을 작성합니다. 개별 스택 시스템의 경우는, 좀 더 복잡합니다. IPv4 통신과 IPv6 통신용으로 1 개(살)씩, 합계 2 개의 소켓을 작성합니다. 클라이언트측의 TCP 어플리케이션에서는, 소켓이 접속되면(자), 인터넷 프로토콜 패밀리 타입이 고정되어 이제(벌써) 1 개의 소켓이 닫혀집니다. 서버측의 TCP 어플리케이션에서는, 다음의 클라이언트 요구가 어느 IP 패밀리 타입으로부터 송신될까를 알 방법이 없기 때문에, 2 개의 소켓을 유지해 둘 필요가 있습니다. UDP 어플리케이션에서는, 통신의 계속기간중, 양쪽 모두의 소켓이 필요합니다. </p>
+<p>Java 에서는, 네임 서비스로부터 IP 주소를 가져옵니다. </p>
+<h2><a name="details" id="details"></a> Java 에서의 IPv6 지원의 상세</h2>
+<p>IPv6 를 Java 로 사용하려면 , 다음의 내용을 알아 둘 필요는 없습니다. 그러나, 다양한 상황으로 의문을 느끼거나 무엇을 하고 있는지를 알기 위해서(때문에), 이 문서의 나머지의 부분에서 설명해 둡니다. </p>
+<h3><a name="special"></a> 특수한 IPv6 주소형 </h3>
+<h4>미지정 주소 (:: IPv4 의 0.0. 0.0 에 대응)</h4>
+<p>이것은 「이탈리아 국연탄화수소공사-로컬 (anylocal)」또는 「와일드 카드」주소라고도 불립니다. 소켓이 듀얼 스택의 머신상의 IPv6 이탈리아 국연탄화수소공사-로컬 주소에 바인드 되고 있는 경우, 그 소켓은, IPv6 트래픽과 IPv4 트래픽의 양쪽 모두를 받아들일 수가 있습니다. 소켓이 IPv4 (IPv4 맵) 이탈리아 국연탄화수소공사-로컬 주소에 바인드 되고 있는 경우, 그 소켓은 IPv4 트래픽만을 받아들일 수가 있습니다. 듀얼 스택의 머신상에서는, 관련하는 시스템 프로퍼티으로 IPv4 스택의 지정이 설정되어 있지 않은 한, IPv6 이탈리아 국연탄화수소공사-로컬 주소에 바인드 하는 것이 시도됩니다. </p>
+<p><code>::</code> 에 바인드 되고 있을 때, 메소드 <a href="../../../../api/java/net/ServerSocket.html#accept()"><tt>ServerSocket.accept</tt></a>  는, IPv6 호스트와 IPv4 호스트의 양쪽 모두로부터의 접속을 받아들입니다. 현재의 Java 플랫폼 API 에서는, IPv6 호스트로부터의 접속만을 받아들이도록(듯이) 지정하는 방법은 없습니다. </p>
+<p> 어플리케이션에서는,<a href="../../../../api/java/net/NetworkInterface.html"><tt>NetworkInterface</tt></a>  을 사용해 인터페이스를 열거해, 각 IPv6 주소에 <a href="../../../../api/java/nio/channels/ServerSocketChannel.html"><tt>ServerSocketChannel</tt></a>  를 바인드 해,<a href="../../../../api/java/nio/package-summary.html">New I/O API</a>  로부터의 셀렉터를 사용해 그러한 소켓으로부터의 접속을 받아들일 수가 있습니다.  </p>
+<table width="80%" border="0" align="center" cellpadding="5" bgcolor="#FFFFCC">
+  <tr>
+    <td>
+<p align="left"><b><font size="+1">주:</font></b> 이후에 설명하는 옵션은, Draft-ietf-ipngwg-rfc2553bis-03.txt 로 도입되고 있습니다. 그것이 표준 규격이 된 시점에서, 그 옵션이 Java 2 플랫폼에서 지원될 예정입니다. </p>
+    </td>
+  </tr>
+</table>
+<p>다만, 전술의 동작을 변경하는, 새로운 소켓 옵션이 있습니다. Draft-ietf-ipngwg-rfc2553bis-03.txt 에서는, 새로운 IP 레벨의 소켓 옵션으로서 IPV6_V6ONLY 가 도입되었습니다. 이 소켓 옵션은, AF_INET6 소켓을 IPv6 통신인 만큼 한정합니다. 일반적으로, AF_INET6 소켓은, IPv4 및 IPv6 의 양쪽 모두의 통신을 위해서(때문에) 사용할 수 있습니다. 어플리케이션에 따라서는, AF_INET6 소켓의 사용을 IPv6 통신인 만큼 한정하고 싶은 경우가 있습니다. 그러한 어플리케이션에서는, IPV6_V6ONLY 소켓 옵션을 정의합니다. 이 옵션을 온으로 설정하면(자), IPv6 패킷만을 송수신 하기 위해서 그 소켓을 사용할 수 있습니다. 디폴트에서는, 이 옵션은 오프가 되어 있습니다. </p>
+<h4>루프백 주소 (::1 IPv4 의 127.0. 0.1 에 대응)</h4>
+<p>루프백 주소가 지정된 패킷은, 결코 링크상에 송신하거나 IPv6 라우터에 의해 전송 하거나 하지 말아 주세요. IPv4 와 IPv6 에는 2 개가 다른 루프백 주소가 있어, 각각 별개에 처리됩니다. </p>
+<p>IPv4 와 IPv6 의 주소는, 「::」의 경우를 제외해, 다른 address 공간을 차지합니다. </p>
+<h4>호환 주소 (::w.x.y.z)</h4>
+<p>이 주소는, 호스트 및 라우터가, IPv6 패킷을 IPv4 루팅 인프라스트럭쳐(infrastructure)상을 동적으로 터널 하기 위해서 사용됩니다. 이 주소는, OS 커넬과 라우터에 대해서 의미를 가집니다. Java 에서는, 이 주소를 테스트하기 위한 유틸리티 메소드가 제공되고 있습니다. </p>
+<h4>IPv4 맵 주소 (::ffff:w.x.y.z)</h4>
+<p>이것은, IPv4 주소를 표현하기 위해서 사용되는 IPv6 주소입니다. 이 주소를 이용하면(자), 네이티브 프로그램에서는, IPv4 노드와 IPv6 노드의 양쪽 모두와 통신할 때에, 같은 주소 데이터 구조와 또 같은 소켓을 사용할 수 있습니다. 이 때문에, IPv4 맵 주소를 지원하는 듀얼 스택 노드상에서는, IPv6 어플리케이션은 IPv4 피어와 IPv6 피어의 양쪽 모두와 통신할 수 있습니다. IPv4 의 데이터 그램을 송수신 하는데 필요한 기본이 되는 제처리는 OS 가 실행해, 그 결과를 IPv6 의 행선지 소켓에 건네줍니다. 또, OS 는, 필요한 때에 IPv4 맵 IPv6 주소를 합성합니다. </p>
+<p>Java 에서는, 이 주소는 내부의 표현에 사용되어 기능상의 역할은 없습니다. Java 로부터 IPv4 맵 주소가 돌려주어질 것은 없습니다. Java 에서는, IPv4 맵 주소의 구문이, 바이트 배열과 텍스트 표현의 양쪽 모두로 이해됩니다. 다만, 그 주소는 IPv4 주소에 변환됩니다. </p>
+<h3><a name="ipv6-related"></a> IPv6 관련의 시스템 프로퍼티</h3>
+<p>듀얼 스택 머신에서는, 우선되는 프로토콜 스택 (IPv4 또는 IPv6)과 우선되는 주소 패밀리의 형태 (inet4 또는 inet6)를 설정하기 위한 시스템 프로퍼티이 제공됩니다.  디폴트에서는, IPv6 스택이 우선됩니다. </p>
+<p>디폴트에서는, IPv6 스택이 우선됩니다. 듀얼 스택 머신에서는, IPv6 소켓이 IPv4 피어와 IPv6 피어의 양쪽 모두와 통신할 수 있기 (위해)때문에입니다.  </p>
+<p>이 설정을 변경하려면 ,<code>java.net.preferIPv4Stack=&lt;true|false&gt;</code> 시스템 프로퍼티을 사용합니다. </p>
+<p>주소의 디폴트에 대해서는, IPv6 주소보다 IPv4 주소를 추천합니다. 네임 서비스 (DNS 서비스등)에 조회하면(자), IPv6 주소는 아니고 IPv4 주소가 돌려주어집니다. 이 선택에는, 다음의 2 개의 이유가 있습니다.  </p>
+<ol>
+<li>일부의 어플리케이션에서는, IPv4 주소의 텍스트 형식 (%d. %d. %d. %d)가 상정되고 있다. IPv4 주소를 사용하면, 예기치 않은 동작을 최소한으로 할 수 있다 
+  </li>
+<li>IPv4 주소를 사용하면, 1 개의 호출 (IPv6 소켓을 사용한다)로, 구래의 IPv4 만의 서비스와 IPv6 서비스의 어느 쪽에도 도달할 수 있다 (IPv6 서비스가 IPv6 만의 노드상에 없는 경우)</li>
+</ol>
+<p>이 설정을 변경하려면 ,<code>java.net.preferIPv6Addresses=&lt;true|false&gt;</code> 시스템 프로퍼티을 사용합니다. </p>
+
+<!--  <p>(diagram)</p>  -->
+
+<h3><a name="dual"></a> 듀얼 스택 노드</h3>
+<p>이 앞몇년의 사이 (영구히는 아니라고 해도), 인터넷은 IPv6 노드와 IPv4 노드가 혼재한 상태가 되겠지요. 이 때문에, IPv4 노드의 대규모 인스톨 베이스와의 호환성이, IPv4 로부터 IPv6 에의 이행을 성공시키기 위해서(때문에) 중요합니다. 듀얼 스택 (RFC 1933 으로 정의되고 있다)은, 원활한 이행을 보증하기 위한 주요한 기구의 1 개입니다. 이제(벌써) 1 개의 기구는 IPv6 패킷의 터널링입니다만, 이 기구와 J2SDK 와의 관련성은 IPv4 호환 주소에 관계하는 것 뿐입니다. 전자의 기구는, J2SDK 와 가장 관련성이 있습니다. 듀얼 스택에는, IPv4 와 IPv6 의 양쪽 모두의 버젼의 인터넷 프로토콜을 구현하는 것이 포함됩니다. </p>
+<p>듀얼 스택 노드의 일반적인 특성은, IPv6 소켓이 IPv4 피어 및 IPv6 피어의 양쪽 모두와 트랜스폴트층 (TCP 또는 UDP)에서 통신할 수 있다고 하는 것입니다. 네이티브 레벨에서는, IPv6 소켓은, IPv4 맵 IPv6 주소를 사용해 IPv4 와 통신합니다. 다만, 소켓이 피어의 주소형을 조사하지 않는 이상 IPv4 피어 또는 IPv6 피어의 어느 쪽과 통신하고 있을까를 소켓이 인식할 것은 없습니다. 주소형에 관계한 내부의 처리와 변환은 모두, 듀얼 프로토콜 스택에 의해 실행됩니다. </p>
+<p><font size="+1"><b>주:</b></font> IPv4 맵 주소는, 듀얼 프로토콜 스택의 구현에 대해만 의미를 가집니다. IPv4 맵 주소는, IPv6 주소를 「모방」해 (IPv6 와 같은 형식이 되도록(듯이) 해), 주소를 IPv6 소켓에 건네줄 수 있도록(듯이) 하기 위해서 사용됩니다. 개념상의 레벨에서는 특히 역할이 없고, 그 역할은 Java API 의 레벨로 한정되고 있습니다. IPv4 맵 주소의 해석은 지원되고 있습니다만, IPv4 맵 주소가 돌려주어질 것은 없습니다.  <!--An example follows:  (needs to be fille in) -->
+</p>
+<h3><a name="java"></a>  Java 어플리케이션에의 영향</h3>
+<ol>
+<li>모든 것이 적절히 기술되고 있으면, Java 어플리케이션 코드로 변경은 필요없다. 즉, IPv4 의 리터럴 주소를 직접 참조하는 것이 아니라, 호스트명을 사용하고 있으면 좋다</li>
+<li>주소나 소켓의 형태에 관한 정보는 모두, Java 네트워크 API 에 캡슐화되고 있다</li>
+<li>시스템 프로퍼티을 설정하는 것으로, 우선되는 주소나 소켓의 형태를 설정할 수 있다 </li>
+<li>신규 어플리케이션에서는, IPv6 에 고유의 새로운 클래스 및 API 를 이용할 수 있다</li>
+</ol>
+<h4>통신의 시나리오 </h4>
+<blockquote>
+  <table border="1" cellpadding="5">
+    <tr align="center" valign="middle" bgcolor="#66CCFF">
+<td bgcolor="#66CCFF"><b><font size="+1">(노드)</font></b></td>
+<td><b><font size="+1">V4 마셔</font></b></td>
+<td><b><font size="+1">V4/V6</font></b></td>
+<td><b><font size="+1">V6 마셔</font></b></td>
+    </tr>
+    <tr align="center" valign="middle">
+<td bgcolor="#66CCFF"><b><font size="+1">V4 마셔</font></b></td>
+<td>x</td>
+<td>x</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr align="center" valign="middle">
+<td bgcolor="#66CCFF"><b><font size="+1">V4/V6</font></b></td>
+<td>x</td>
+<td>x</td>
+<td>x</td>
+    </tr>
+    <tr align="center" valign="middle">
+<td bgcolor="#66CCFF"><b><font size="+1">V6 마셔</font></b></td>
+      <td>&nbsp;</td>
+<td>x</td>
+<td>x</td>
+    </tr>
+  </table>
+</blockquote>
+<p>가장 위의 행과 좌단의 열은, 통신하려고 하는 노드의 종류를 나타냅니다. 「x」는, 그러한 노드를 서로 통신할 수 있는 것을 나타냅니다. </p>
+<h4>UDP<br> 시나리오 1:</h4>
+<p>host1 또는 host2 의 어느 쪽인지는, 네이티브 어플리케이션으로 할 수 있습니다.  </p>
+<h4>host1 가 서버, host2 가 클라이언트</h4>
+<p>host2 로부터 host1 에 통신하려고 할 때, host2 는 V6 소켓을 작성합니다. 다음에, host2 는 host1 의 IP 주소를 검색합니다. host1 는 V4 프로토콜 스택밖에 가지고 있지 않기 때문에, 이름 검색 서비스에도 IPv4 의 레코드 밖에 없습니다. 그 때문에, hots2 는 IPv4 맵 주소를 사용해 host1 에 도달하려고 합니다. host2 로부터는 IPv4 패킷이 송신되어 오므로, host1 는, 자신이 V4 클라이언트와 통신하고 있는 것이라고 인식합니다. </p>
+<h4>host1 가 클라이언트, host2 가 서버</h4>
+<p>host2 가 서버의 경우, host2 는 우선 V6 형의 소켓 (이것이 디폴트)을 작성해, 접속을 대기합니다. host1 는 V4 밖에 지원하고 있지 않기 때문에, host1 는 V4 형의 소켓을 작성합니다. 양자는, host2 의 이름을 해결합니다. host1 는, IPv6 주소를 인식하지 않기 때문에, host2 의 V4 주소만을 가져옵니다. 그 때문에, host1 는 V4 주소를 사용해 host2 에 접속합니다. 그리고, V4 패킷이 회선상에 송신됩니다. host2 에서는, 듀얼 스택에 의해 V4 패킷이 V6 패킷 (V4 맵 주소를 가진다)에 변환되어 V6 소켓에게 건네집니다. 서버 어플리케이션은, 그것이 V6 노드로부터의 접속인것 같이 해 패킷을 처리합니다.  <!--scenario 2: Java v4/v6 and v4/v6  (comming soon)  scenario 3: Java v4/v6 and v6  (coming soon) -->
+</p>
+<h3><a name="class"></a> 클래스의 변경</h3>
+<h4><code>InetAddress</code></h4>
+<p>이 클래스는, IP 주소를 나타냅니다. 그리고, 주소의 포함 장소, 이름과 주소를 변환하는 메소드, 주소를 변환하는 메소드, 및 주소를 테스트하는 메소드를 제공합니다. J2SE 1.4 에서는, IPv4 주소와 IPv6 주소의 양쪽 모두를 지원하도록(듯이) 이 클래스가 확장되었습니다. 또, 주소형과 스코프를 체크하는 유틸리티 메소드가 추가되었습니다. IPv4 와 IPv6 라고 하는 2 개의 형태의 주소는, Java 형의 <code>Inet4Address</code> 및 <code>Inet6Address</code> 에 의해 구별할 수 있습니다. </p>
+<p><code>InetAddress</code> 의 새로운 서브 클래스로서<code>Inet4Address</code> 및 <code>Inet6Address</code> 의 2 개의 클래스가 작성되었습니다. 이 2 개의 서브 클래스에는, V4 및 V6 에 고유 상태와 동작이 구현되고 있습니다. Java 의 객체 지향의 성질이기 때문에, 어플리케이션은 일반적으로,<code>InetAddress</code> 수업을 들어 취급하는 것만으로 끝납니다.  다상성에 의해, 올바른 동작을 얻을 수 있기 (위해)때문에입니다. 각 프로토콜 패밀리에게 고유의 동작에 액세스 할 필요가 있는 경우 (예를 들어, IPv6 전용의 메소드를 호출하는 경우나, IP 주소의 클래스형을 알 필요가 있는 경우)에 한정해, 어플리케이션은 <code>Inet4Address</code> 와 <code>Inet6Address</code> 를 구별하게 됩니다. </p>
+<p>도입된 새로운 메소드는 다음과 같습니다. </p>
+<blockquote>
+<p><code>InetAddress:<br> isAnyLocalAddress<br> isLoopbackAddress<br> isLinkLocalAddress<br> isSiteLocalAddress<br> isMCGlobal<br> isMCNodeLocal<br> isMCLinkLocal<br> isMCSiteLocal<br> isMCOrgLocal<br> getCanonicalHostName<br> getByAddr</code></p>
+</blockquote>
+<h4><code>Inet6Address:isIPv4CompatibleAddress
+</h4>
+<h4><code>InetAddress</code> 및 다른 네임 서비스</h4>
+<p>1.4 보다 전에서는,<code>InetAddress</code> 는, 시스템에 구성된 네임 서비스를 이용해 호스트명을 해결하고 있었습니다. 1.4 에서는, 대신에 되는 이름 검색 수단으로서 JNDI 를 개입시킨 Java DNS 프로바이더가 추가되었습니다. 몇개의 시스템 프로퍼티을 설정하면, 이 프로바이더를 사용하도록(듯이) J2SDK 에 명령할 수가 있습니다. 이러한 시스템 프로퍼티에 대해서는, Java 시스템 프로퍼티의 항에 설명이 있습니다. 장래적으로는, 개발자가 독자적인 네임 서비스 프로바이더를 기술할 수 있도록(듯이) 하기 위한(해), 총칭 서비스 프로바이더의 시스템를 제공할 예정입니다.  
+</p>
+<h4>직렬화에 대해</h4>
+<p>모든 IPv4 주소는, Java 에서는 <code>Inet4Address</code> 객체로서 표현됩니다. 그 객체는 <code>InetAddress</code> 객체로서 직렬화 되어 하위 호환성을 유지하기 위해서(때문에),<code>InetAddress</code> 로부터는 <code>Inet4Address</code> 에 직렬화 복원됩니다. IPv6 주소는 <code>Inet6Address</code> 로서 표현되어 똑같이 직렬화 됩니다. </p>
+<h4><code>Socket</code>,<code>ServerSocket</code>, 및 <code>DatagramSocket</code></h4>
+<p>Java 의 객체 지향의 성질이기 때문에, 주소의 종류와 정보를 포함하고 있는 구조체는, 소켓 API 의 레벨에서는 공개되지 않습니다. 그 때문에, 새로운 API 는 불필요합니다. 기존의 소켓 API 에 의해, IPv4 트래픽과 IPv6 트래픽의 양쪽 모두가 다루어집니다. </p>
+<p>어느 쪽의 스택이 사용될까의 선택은, 다음의 기준에 의합니다. </p>
+<ol>
+<li>기본이 되는 OS 지원 </li>
+<li>우선하는 스택에 관한 프로퍼티을 사용자가 어떻게 설정했는지</li>
+</ol>
+<p>지원되는 모든 IPv6 소켓 옵션에는, 대응하는 IPv4 옵션이 있습니다. 따라서, IPv6 소켓 옵션을 지원하기 위한 새로운 API 는 추가되고 있지 않습니다. 그 대신에, 낡은 API 가, V4 와 V6 의 양쪽 모두의 소켓 옵션을 지원하도록(듯이) overload 되었습니다. </p>
+<h4><code>MulticastSocket</code> </h4>
+<p>이 소켓의 경우도, 소켓 옵션의 모든 API 가, IPv6 의 멀티 캐스트 소켓 옵션을 지원하도록(듯이) overload 되었습니다.  </p>
+<p>네트워크 인터페이스를 설정 및 취득하기 위한 새로운 2 개의 API 가 추가되었습니다. 이것은,<code>InetAddress</code> 인스턴스를 설정 및 취득하는 기존의 <code>MulticastSocket.setInterface</code> 및 <code>MulticastSocket.getInterface</code> 와는 별도로 추가된 것입니다. 2 개의 기존의 메소드는, 멀티 캐스트 패킷을 송신하기 위한 현재의 <code>MulticastSocket</code> 로 사용되고 있는 네트워크 인터페이스를 설정 또는 취득하기 위해서 사용됩니다. IPv4 의 경우, 인터페이스는 IP 주소에 의해 나타나고 있었습니다. 그 때문에, Java 에서는, 그것과 등가의 <code>InetAddress</code> 를 사용할 수 있습니다. 이 2 개의 메소드는, IPv6 의 멀티 캐스트 소켓에 대해서도 계속 기능합니다. 다만, IPv6 에서는, RFC 2553 의 스펙에 의하면, 인터페이스는 인터페이스 인덱스를 사용해 가리킬 필요가 있습니다. 네트워크 인터페이스의 개념을 보다 적절히 지원하기 위해(때문에), 새로운 클래스로서 <code>NetworkInterface</code> 가 도입되었습니다. 이 클래스는, 네트워크 인터페이스 상태를 나타내는 데이터를 캡슐화합니다. 이름이나 IP 주소등의 데이터와 몇개의 기본 조작을 실행하는 메소드가 짜넣어지고 있습니다. 이것에 수반해, 멀티 캐스트 소켓의 송출 인터페이스를 설정하기 위한 새로운 2 개의 메소드로서<code>setNetworkInterface</code> 와 <code>getNetworkInterface</code> 가 도입되었습니다. 이 2 개의 메소드는,<code>NetworkInterface</code> 객체를 인수에 있어, 반환값으로서 돌려줍니다. 새로운 메소드는, V4 와 V6 의 양쪽 모두의 멀티 캐스트로 사용할 수 있습니다.  </p>
+<p>게다가 네트워크 인터페이스상의 멀티 캐스트 그룹에 참가하거나 거기로부터 빠지거나하기 위한 메소드도 추가되었습니다. 이것은, 이전의 Java API 에서는 이용할 수 없었습니다. </p>
+<blockquote>
+<p><code>MulticastSocket:<br> NetworkInterface getNetworkInterface()<br> setNetworkInterface(NetworkInterface netIf)<br> joinGroup(SocketAddress mcastaddr, NetworkInterface netIf)<br> leaveGroup(SocketAddress mcastaddr, NetworkInterface netIf)</code></p>
+</blockquote>
+<h4><code>URL</code>,<code>URI</code> 퍼서</h4>
+<p>URL 나 URI 에서는, 리터럴 IP 주소를 사용할 수 있습니다. 다만, 기존의 URL 및 URI 의 스펙에서는, 호스트와 포트를 단락짓기 위해서(때문에) 구두점 (<code>:</code>)이 사용되고 있기 (위해)때문에, 현상인 채로 URL 또는 URI 에 리터럴의 IPv6 표현을 사용하면(자), 해석에 실패합니다. 이 때문에, URL 나 URI 에 리터럴의 IPv6 주소를 지정하기 위해서, RFC 2732 가 작성되었습니다. URL 와 URI 의 해석 처리는, RFC 2732 에 준거하도록(듯이) 갱신되었습니다. </p>
+<h4>SocketPermission</h4>
+<p><code>SocketPermission</code> 는 URL 를 이용하므로, RFC 2732 에 준거하도록(듯이) 구현이 갱신되었습니다. </p>
+<p>액세스권을 정의하는데 사용되는 <code>codebase</code> 는, URL 를 변형한 것입니다. 따라서,<code>codebase</code> 도, URL 의 형식이라고 규정에 따를 필요가 있습니다. URL 와 <code>codebase</code> 의 경우는 RFC 2732 형식이 사용되어 그 외의 경우에는 RFC 2373 형식이 사용됩니다.  
+</p>
+<h3><a name="ipv6-networking"></a> IPv6 의 네트워크 프로퍼티</h3>
+<h3><code>java.net.preferIPv4Stack (디폴트 :false)</code></h3>
+<p>IPv6 를 이용 가능한  operating system에서는, 기본이 되는 네이티브 소켓은 IPv6 소켓입니다. 이 때문에, Java(TM) 어플리케이션은, IPv4 호스트와 IPv6 호스트의 양쪽 모두에 접속하거나 그 양쪽 모두의 호스트로부터의 접속을 받아들이거나 할 수 있습니다. </p>
+<p>IPv4 소켓만을 사용하도록(듯이) 설정되어 있는 어플리케이션에서는, 이 프로퍼티을 true 로 설정할 수 있습니다. 즉, 그 어플리케이션은 IPv6 호스트와 통신할 수 없다고 하는 것입니다. </p>
+<h3><code>java.net.preferIPv6Addresses (디폴트 :false)</code></h3>
+<p>IPv6 를 이용 가능한  operating system에서는, 디폴트의 설정으로서 IPv4 맵의 주소를 IPv6 주소보다 우선하게 되어 있습니다. 이것은, 하위 호환성의 이유에 의합니다.  예를 들어, IPv4 만의 서비스에의 액세스에 의존하는 어플리케이션이나, %d. %d. %d. %d 의 형식에서 표현된 IP 주소에 의존하는 어플리케이션과의 호환성이기 때문에입니다. <br>IPv6 주소를 IPv4 주소보다 우선하는 설정을 시험해 보려면 , 이 프로퍼티을 true 로 설정합니다. 그러면, 어플리케이션이 IPv6 서비스에 접속된다고 예상되는 환경에서 어플리케이션을 테스트해, 그러한 환경에 어플리케이션을 배치할 수가 있습니다. </p>
+<h3>JNDI DNS 서비스 프로바이더의 설정:</h3>
+<h3><code>sun.net.spi.nameservice.provider. &lt;n&gt;=&lt;default|dns, sun|...&gt;</code></h3>
+<p>사용할 수 있는 네임 서비스 프로바이더를 지정합니다. 디폴트에서는, Java 는, 시스템에 구성된 이름 검색 기구를 사용합니다 (file, nis 등). 이 옵션을 설정하면(자), 독자적인 이름 서비스 프로바이더를 지정할 수 있습니다. <code>&lt;n&gt;</code> 에는, 정의 수치를 지정합니다. 이 수치는 우선 순위를 나타내고 있어 작은 값(정도)만큼 우선 순위가 높아집니다. 1.4 에서는, JNDI 를 사용해 1 개의 DNS 네임 서비스 프로바이더가 제공되고 있어 그 이름은 <code>dns, sun</code> 입니다. </p>
+<h3><code>sun.net.spi.nameservice.nameservers=&lt;server1_ipaddr, server2_ipaddr ...&gt;</code></h3>
+<p>사용하는 DNS 서버를 가리키는 IP 주소를, 콤마로 단락지은 리스트로서 지정할 수 있습니다. </p>
+<h3><code>sun.net.spi.nameservice.domain=&lt;domainname&gt;</code></h3>
+<p>이 프로퍼티에서는, 디폴트의 DNS 도메인명 (예를 들어,<code>eng.sun.com</code>)을 지정합니다. </p>
+<p></p><p></P>
+<p>&nbsp;</p></body>
+</html>

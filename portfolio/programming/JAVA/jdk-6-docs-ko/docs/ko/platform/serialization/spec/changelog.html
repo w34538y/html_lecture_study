@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>Java 객체 직렬화 스펙:  - 
+ - xrath.com 에서 번역됨</title>
+</head>
+<body bgcolor="#ffffff">
+ 
+<table width="100%"><tr>
+<td><!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="serialTOC.html">전의 항목</a>  | <a href="serial-arch.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font --></td><td align=right>Java 객체 직렬화 스펙<br>Version 6.0<i></i></td>
+</tr></table>
+<br>
+ 
+<a name="4657"><!-- --></a> 
+<center><h1> 변경 이력</h1></center>
+<hr><p><a name="9381"><!-- --></a> 
+<p>2005 년 5 월 12 일	JavaTM SE Development Kit, v6 Beta 1 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9433"><!-- --></a>  비공유의 읽을 실행시에,<code>readResolve</code> 의 호출에 의해 반환되는 배열 객체의 처리 방법에 관한 설명을 추가했습니다.
+</li>
+<li>
+<a name="9436"><!-- --></a>  <code>serialPersistentFields</code> 치가 무효인 이벤트의 동작을 명시했습니다.
+</li>
+<li>
+<a name="9439"><!-- --></a>  배열 클래스에서 <code>serialVersionUID</code> 의 일치가 적용되지 않는 것을 명시했습니다.
+</li>
+<li>
+<a name="9442"><!-- --></a>  <code>ObjectOutputStream.PutFields</code> 메소드에 의해 <code>IllegalArgumentException</code> 가 throw 되는 타이밍을 명시했습니다.
+</li>
+</ul>
+</blockquote>
+<a name="9370"><!-- --></a> 
+<p>2003 년 7 월 24 일	Java<sup>TM</sup> 2 SDK, Standard Edition, v1. 5 Beta 1 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9363"><!-- --></a>  enum 정수의 직렬화의 지원를 추가했습니다.
+</li>
+<li>
+<a name="9364"><!-- --></a> 디폴트의 <code>serialVersionUID</code> 치의 계산으로 사용되는 클래스 수식자 플래그의 스펙을,<a href="class.html#4100">「4.6 스트림 고유 식별자」</a>에 추가했습니다.  
+</li>
+</ul>
+</blockquote>
+<a name="9358"><!-- --></a> 
+<p>2001 년 8 월 16 일	Java<sup>TM</sup> 2 SDK, Standard Edition, v1. 4 Beta 2 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9273"><!-- --></a> 클래스 정의 메소드 <code>readObjectNoData</code> 의 지원를 추가했습니다. 이것은, 클래스 정의 메소드 readObject 로 대응할 수 없는 경우에 직렬화 가능 클래스의 필드를 초기화하기 위해서 사용합니다. <a href="input.html#6053">「3.5 readObjectNoData 메소드」 </a>및 부록 A 「객체 직렬화에 있어서의 시큐리티」를 참조해 주세요.
+</li>
+<li>
+<a name="9309"><!-- --></a> 새로운 메소드 <code>ObjectOutputStream.writeUnshared</code> 및 <code>ObjectInputStream.readUnshared</code> 는, 직렬화 복원된 객체에의 일의 참조를 보증하는 기구를 제공합니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」</a>,<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>, 및 부록 A 「객체 직렬화에 있어서의 시큐리티」를 참조해 주세요.
+</li>
+<li>
+<a name="9313"><!-- --></a>  <code>ObjectOutputStream</code> 및 <code>ObjectInputStream</code> 의 단일 인수 생성자 에 있어서의 새로운 시큐리티 체크를 문서화했습니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」 </a>및<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9338"><!-- --></a> <a href="serial-arch.html#4539">「1.10 Serializable 인터페이스」</a>에, 직렬화에서의 내부 클래스의 사용에 대한 경고를 추가했습니다.  
+</li>
+<li>
+<a name="9331"><!-- --></a> 클래스 정의의 <code>writeObject</code> 메소드는, 임의 지정의 데이터를 기입하기 전에 <code>ObjectOutputStream.defaultWriteObject</code> 또는 <code>writeFields</code> 를 한 번 호출할 필요가 있는 것, 및 클래스 정의의 <code>readObject</code> 메소드는, 임의 지정의 데이터를 읽어들이기 전에 <code>ObjectInputStream.defaultReadObject</code> 또는 <code>readFields</code> 를 한 번 호출할 필요가 있는 것을 명시했습니다. <a href="output.html#861">「2.3 writeObject 메소드」 </a>및<a href="input.html#2971">「3.4 readObject 메소드」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9324"><!-- --></a> 클래스 정의의 <code>readObject</code> 메소드 또는 <code>readExternal</code> 메소드가 이용 가능한 데이터의 범위를 넘는 읽기 조작을 시행했을 때의 <code>ObjectInputStream</code> 의 동작을 명시했습니다. <a href="input.html#2971">「3.4 readObject 메소드」 </a>및<a href="input.html#6014">「3.6 readExternal 메소드」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9302"><!-- --></a> 「필드 기술자」형식에서 기입해질 필요가 있는 비프록시 클래스 기술자 필드형의 캐릭터 라인의 설명을 명시했습니다. <a href="protocol.html#8299">「6.2 스트림 요소」</a>를 참조해 주세요.
+</li>
+</ul>
+</blockquote>
+<a name="9270"><!-- --></a> 
+<p>1999 년 7 월 30 일	Java<sup>TM</sup> 2 SDK, Standard Edition, v1. 3 Beta 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9199"><!-- --></a> UTF 인코딩으로 65535 바이트를 넘는 길이의 <code>String</code> 객체를 기술하는 기능을 추가했습니다. <a href="protocol.html#8299">「6.2 스트림 요소」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9214"><!-- --></a> 새로운 메소드인 <code>ObjectOutputStream.writeClassDescriptor</code> 및 <code>ObjectInputStream.readClassDescriptor</code> 를 사용해,<code>ObjectStreamClass</code> 클래스 기술자의 직렬화 표현을 커스터마이즈 할 수 있습니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」 </a>및<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9221"><!-- --></a> 부록 A<a href="security.html#2527">「객체 직렬화에 있어서의 시큐리티」</a>에 설명을 추가했습니다.
+</li>
+</ul>
+</blockquote>
+<a name="9222"><!-- --></a> 
+<p>1998 년 9 월 30 일	JDK<sup>TM</sup> 1.2 Beta4 RC1 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9156"><!-- --></a> 문서의 정정만
+</li>
+</ul>
+</blockquote>
+<a name="9157"><!-- --></a> 
+<p>1998 년 6 월 22 일	JDK<sup>TM</sup> 1.2 Beta4 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="9121"><!-- --></a>  JDK<sup>TM</sup> 1.2 <code>java.io</code> 인터페이스의 <code>Replaceable</code> 및 <code>Resolvable</code> 를 삭제했습니다. 인터페이스로서의 이러한 클래스에의 참조는, 모두 <code>java.io.Serializable</code> 에 옮겨놓을 필요가 있습니다. 직렬화 가능 클래스가 <code>writeReplace</code> 및 <code>readResolve</code> 메소드를 정의하는 경우는, 직렬화는 리플렉션을 사용해 이러한 메소드를 호출합니다. <a href="output.html#5324">「2.5 writeReplace 메소드」</a>  및<a href="input.html#5903">「3.7 readResolve 메소드」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="9107"><!-- --></a> 새로운 javadoc 태그 <em>@serial</em>,<em>@serialField</em> 및 <em>@serialData</em> 로, Serializable 클래스의 직렬화 된 폼을 문서화하는 수단을 제공합니다. javadoc 는, 이러한 태그의 내용을 기본으로 해 직렬화의 스펙을 생성합니다. <a href="serial-arch.html#5251">「1.6 클래스의 직렬화 가능한 필드 및 데이터의 문서화」</a>를 참조해 주세요.  
+</li>
+<li>
+<a name="9113"><!-- --></a> 특별한 Serializable 클래스 멤버 <code>serialPersistentFields</code> 에서는, private 를 선언하지 않으면 안됩니다. <a href="serial-arch.html#6250">「1.5 클래스의 직렬화 가능한 필드의 지정」</a>을 참조해 주세요.
+</li>
+<li>
+<a name="9232"><!-- --></a>  <code>serialVersionUID</code> 의 산출에 관련하는 순서를<a href="class.doc6.html#4100">「4.6 스트림 고유 식별자」</a>에 명시했습니다.
+</li>
+</ul>
+</blockquote>
+<a name="9254"><!-- --></a> 
+<p>1998 년 2 월 6 일	JDK<sup>TM</sup> 1.2 Beta 3 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="4599"><!-- --></a> STREAM_PROTOCOL 버젼의 개념을 도입했습니다. 로컬의 가상 머신내에서 <code>Externalizable</code> 객체의 클래스를 이용할 수 없는 경우에서도, 스트림내의 <code>Externalizable</code> 객체를 사용해 스킵을 가능하게 하는 <code>Externalizable</code> 객체의 새로운 형식을 나타내기 (위해)때문에,<code>STREAM_PROTOCOL_2</code> 버젼을 추가했습니다. 호환성의 문제에 대해서는,<a href="protocol.html#5849">「6.3 스트림 프로토콜의 버젼」</a>을 참조해 주세요.
+</li>
+<li>
+<a name="4603"><!-- --></a>  <code>ObjectInputStream.resolveClass</code> 메소드는, 스트림내의 클래스명과는 다른 패키지의 로컬 클래스를 돌려줄 수가 있습니다. 이 기능에 의해, 릴리스간에 패키지명을 바꿀 수가 있습니다. <code>serialVersionUID</code> 및 base class명은, 스트림내와 클래스의 로컬 버젼내에서 같은 필요가 있습니다. <a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="4607"><!-- --></a>  스트림에의 기입해, 또는 스트림로부터의 read시에,<code>String</code> 또는 <code>array</code> 객체의 치환이 가능해집니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」 </a>및<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조해 주세요.
+</li>
+</ul>
+</blockquote>
+<a name="9241"><!-- --></a> 
+<p>1997 년 9 월 4 일	JDK<sup>TM</sup> 1.2 Beta1 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="4418"><!-- --></a> Replaceable 인터페이스를, Replaceable 및 Resolvable 의 2 개의 인터페이스에 분할했습니다. Replaceable 인터페이스에 의해, 객체를 스트림에 직렬화하기 직전에, 클래스가 스스로의 치환을 지정할 수가 있습니다. Resolvable 인터페이스에 의해, 스트림로부터 객체를 읽어들일 때, 클래스가 스스로의 치환을 지정할 수가 있습니다.  
+</li>
+<li>
+<a name="4424"><!-- --></a>  직렬화를, JDK<sup>TM</sup> 1.2 시큐리티 모델을 사용하도록(듯이) 수정해 또. <code>ObjectInputStream.enableReplace</code> 메소드 및 <code>ObjectOutputStream.enableResolve</code> 메소드내에서 <code>SerializablePermission &#34;enableSubstitution&#34;</code> 가 체크됩니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」 </a>및<a href="input.html#961">「3.1 ObjectInputStream 클래스」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="4446"><!-- --></a>  처리된 <code>IOException</code> 가 스트림에 기입해지도록(듯이),<code>writeObject</code> 의 예외 핸들러를 변경했습니다. <a href="output.html#933">「2.1 ObjectOutputStream 클래스」</a>를 참조해 주세요.
+</li>
+</ul>
+</blockquote>
+<a name="4636"><!-- --></a> 
+<p>1997 년 7 월 3 일		JDK<sup>TM</sup> 1.2 Alpha 에서의 변경</p>
+
+<blockquote>
+<ul><li>
+<a name="4618"><!-- --></a> 클래스의 직렬화 상태를 지정하기 위한 요건을 문서화했습니다. <a href="serial-arch.html#6250">「1.5 클래스의 직렬화 가능한 필드의 지정」</a>을 참조해 주세요.
+</li>
+<li>
+<a name="4622"><!-- --></a> 클래스의 직렬화 된 필드에 클래스가 한층 더 유연하게 액세스 할 수 있도록(듯이), 직렬화 가능 필드 API 를 추가했습니다. 스트림의 프로토콜은 변경되고 있지 않습니다. <a href="serial-arch.html#5253">「1.7 클래스의 직렬화 가능 필드에의 액세스」</a>,<a href="output.html#5068">「2.2 ObjectOutputStream.PutField 클래스」</a>, 및<a href="input.html#4936">「3.2 ObjectInputStream.GetField 클래스」</a>를 참조해 주세요.
+</li>
+<li>
+<a name="4632"><!-- --></a> 필드 기술자 및 데이터의, 스트림에의 기입 및 스트림로부터의 read가, 표준 순서로 행해지는 것을 명시했습니다. <a href="class.html#5082">「4.1 ObjectStreamClass 클래스」</a>를 참조해 주세요.
+</li>
+</ul>
+</blockquote>
+
+
+<br>
+<hr>
+<!-- Bug in Communicator w/font: NavBar text disappears for Times 14pt pref. --> <!-- font size="-1" --> <a href="serialTOC.html">목차</a>  | <a href="serialTOC.html">전의 항목</a>  | <a href="serial-arch.html">다음의 항목</a>  <!-- | <a href="examples.html">INDEX</a>   --> <!-- /font -->
+
+<hr>
+<font size="-1"><i><A HREF="../../../legal/SMICopyright.html">Copyright</a>  &#169; 2005 Sun Microsystems, Inc.  All Rights Reserved. </i></font>
+
+
+<!-- This HTML file was created with Quadralay WebWorks Publisher Professional Edition 7.0.2.1128 --> <!-- by Suzette Haines --> <!-- Last updated: Mon Nov 21 12:31:29 2005 -->
+ 
+
+
+</body>
+</html>

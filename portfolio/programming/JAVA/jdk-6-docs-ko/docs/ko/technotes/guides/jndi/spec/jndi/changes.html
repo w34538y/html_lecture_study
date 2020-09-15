@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>부록 C:JNDI 의 변경 이력 - xrath.com 에서 번역됨</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><TABLE summary="layout" WIDTH="100%" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+  <TR>
+    <TD>
+<A HREF="jndiTOC.html">목차</A>  | <A HREF="legend.html">전의 항목</A>  | 다음의 항목</TD> 
+    <TD ALIGN="RIGHT">
+<I><FONT COLOR="#707070">JNDI API</FONT></I></TD> 
+  </TR>
+</TABLE><HR ALIGN=LEFT SIZE="8" WIDTH="35%" NOSHADE><p></P>
+
+<P><FONT COLOR="#707070">부록 4:</FONT></P>
+
+<H1 CLASS="appendix"><A NAME="pgfId=150244"></A> JNDI 의 변경 이력</H1>
+
+<DIV>
+
+<H2 CLASS="Heading1"><A NAME="pgfId=151997"></A> JNDI 1.2:JNDI 1.1 이후의 변경<DIV> </DIV></H2>
+
+<UL>
+<LI CLASS="Bulleted"><A NAME="pgfId=152002"></A> <CODE>javax.naming.event</CODE> 패키지를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152002"></A> <CODE>javax.naming.ldap</CODE> 패키지를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152004"></A> resource file를 사용한 구성의 지원를 추가. JNDI API 의 문서의 제 6 장을 참조
+</UL>
+
+<DIV>
+
+<H3 CLASS="Heading2"><A NAME="pgfId=152008"></A> API 관련의 변경</H3>
+
+<UL>
+<LI CLASS="Bulleted"><A NAME="pgfId=152003"></A> 열거의 취소해 또는 종료를 실시하기 위해서(때문에) <CODE>NamingEnumeration.close()</CODE> 를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152014"></A> 환경 프로퍼티이 다른 참조 문맥의 작성 및 재시행을 실시하기 위해서(때문에),<CODE>ReferralException.getReferralContext(Hashtable env)</CODE> 및 <CODE>ReferralException.retryReferral()</CODE> 를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152015"></A> <CODE>Name</CODE> 인수를 받는 문맥 메소드로,<CODE>CompositeName</CODE> 인수와 <CODE>CompositeName</CODE> 인수 이외의 처리를 명시적으로 정의. 특히,<CODE>CompositeName</CODE> 의 인스턴스는 합성명으로서 처리되어 그 외의 인스턴스는 모두 복합명으로서 처리된다
+<LI CLASS="Bulleted"><A NAME="pgfId=152016"></A> 문맥의 이름 공간에서 그 문맥의 풀네임을 취득하기 위해서,<CODE>Context.getNameInNamespace()</CODE> 를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152018"></A> <CODE>Reference</CODE> 객체의 클래스 팩토리 위치를 명시적으로 정의. 특히, 위치는 코드 베이스로, 공백에서 단락지어진 URL 의 리스트로 구성된다
+<LI CLASS="Bulleted"><A NAME="pgfId=152019"></A> <CODE>Attribute</CODE> 및 <CODE>BasicAttribute</CODE> 에 대해서, 소트 된 복수치의 속성의 지원를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152053"></A> <CODE>BasicAttributes.equals()</CODE> 및 <CODE>BasicAttributes.hashCode()</CODE> 를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152020"></A> <CODE>DirContext.getSchemaClassDefinition()</CODE> 의 시멘틱스를 재정의.  1 개의 (임의의) 클래스 정의를 돌려주지 않고 , 클래스 정의의 <code>DirContext</code> 객체가 포함되는 문맥을 돌려주도록(듯이) 변경
+<LI CLASS="Bulleted"><A NAME="pgfId=152037"></A> 지연 초기화를 실시하기 위해서(때문에), protected <CODE>InitialContext</CODE>/<CODE>InitialDirContext</CODE> 생성자 을 추가. 서브 클래스의 구현에 사용한다
+</UL>
+
+</DIV><DIV>
+
+<H3 CLASS="Heading2"><A NAME="pgfId=152011"></A> SPI 관련의 변경</H3>
+
+<UL>
+<LI CLASS="Bulleted"><A NAME="pgfId=152061"></A> 객체 상태를 변환하고 나서 객체를 네임 서비스 및 디렉토리 서비스에 바인드 하기 위해서,<CODE>StateFactory</CODE> 및 <CODE> NamingManager.getStateToBind()</CODE> 를 추가.  이것들은 <CODE>ObjectFactory</CODE> 및 <CODE> NamingManager.getObjectInstance()</CODE> 에 유사하고 있다
+<LI CLASS="Bulleted"><A NAME="pgfId=152060"></A> <CODE>DirContext</CODE> 인터페이스가 구현되고 있는 서비스 프로바이더의 지원를 향상시키기 위해서(때문에),<CODE>DirObjectFactory</CODE> 및 <CODE>DirStateFactory</CODE> 인터페이스를 추가. 이러한 인터페이스를 사용하기 위해서,<CODE>DirectoryManager.getObjectInstance()</CODE> 및 <CODE>DirectoryManager.getStateToStore()</CODE> 를 추가
+<LI CLASS="Bulleted"><A NAME="pgfId=152009"></A> URL 캐릭터 라인이 처리되지 않게,<CODE>NamingManager.getObjectInstance()</CODE> 의 정의를 변경. 이 때문에, URL 는,<CODE>RefAddr</CODE> 의 타입이 「URL」인 <CODE>Reference</CODE> 에 랩 해야 한다.
+<LI CLASS="Bulleted"><A NAME="pgfId=152058"></A> <CODE>ResolveResult</CODE> 에 <CODE>Serializable</CODE> 를 구현
+<LI CLASS="Bulleted"><A NAME="pgfId=152073"></A> 「동적 연합」을 지원하기 위해서, Next Naming System (NNS) 참조라고 하는 특별한 형식의 <CODE>Reference</CODE> 를 정의. 이 참조에는, 「nns」의 <CODE>RefAddr</CODE> 타입과 해결 지음의 객체로 구성되는 컨텐츠가 포함되어 있다.
+<LI CLASS="Bulleted"><A NAME="pgfId=152085"></A> <CODE>NamingManager.getContinuationContext()</CODE> 및 <CODE> DirectoryManager.getContinuationContext()</CODE> 에 의해 프로퍼티 세트에 이름을 붙이는 <CODE>NamingManager.CPE</CODE> 캐릭터 라인 정수를 추가. 이 프로퍼티의 값은,<CODE>CannotProceedException</CODE> 의 인스턴스이다. CPE 를 연쇄시키는 것에 의해 연합을 구현하는 서비스 프로바이더로 사용한다
+<LI CLASS="Bulleted"><A NAME="pgfId=152100"></A> 서비스 프로바이더가 환경 프로퍼티에 이름을 붙일 때 사용하는 규약을 정의. 6.1 절을 참조
+</UL>
+
+<P><BR>
+<HR ALIGN=LEFT><A HREF="jndiTOC.html">목차</A>  | <A HREF="legend.html">전의 항목</A>  | 다음의 항목<HR ALIGN=LEFT><I><FONT SIZE="-2"><A HREF="../../../../../legal/SMICopyright.html">Copyright</A>  &COPY;1997-1999 Sun Microsystems, Inc.  All Rights Reserved. </FONT></I>
+
+</div></div></BODY>
+</HTML>

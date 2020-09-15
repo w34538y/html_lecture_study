@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>JDK 의 JNI 의 확장 기능 - xrath.com 에서 번역됨</title>
+  </head>
+
+  <body bgcolor="#ffffff">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<TD WIDTH="60">
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>버젼 1.2 의 Java<sup><font size=-2>TM</font></sup> 2 SDK <br>그리고 도입된 JNI 의 확장 기능</h1>
+</center>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">JNI 문서</a> </font>
+</TD>
+</TR>
+</TABLE>
+
+
+
+<p>
+Java 2 SDK 에서는, 다음의 JNI 의 기능이 확장되고 있습니다.
+<ul>
+<li>진화하는 Java 플랫폼에 신기능의 편입이 가능
+<li>Java 및 native code용으로 효율적으로 안정된 인터페이스를 확립
+</ul>
+
+<p>
+JNI 에 대한 변경은, 사용자의 분들로부터의 피드백에 근거해 행해집니다. 코멘트, 제안, 관심이 있는 점에 대해,<a href="mailto:jni@java.sun.com">jni@java.sun.com</a>  까지 알려주세요.
+
+<h2>새로운 정수</h2>
+<blockquote>
+<pre>
+#define JNI_VERSION_1_1 0x00010001
+#define JNI_VERSION_1_2 0x00010002
+
+/* Error codes */
+#define JNI_EDETACHED    (-2)              /* thread detached from the VM */
+#define JNI_EVERSION     (-3)              /* JNI version error */
+</pre>
+</blockquote>
+
+<h2>기존의 API 의 확장</h2>
+<ul>
+<li><a href="#classops"><strong>클래스 조작</strong></a> 
+<ul>
+<li><a href="#FindClass"><code>FindClass</code></a> 
+</ul>
+<li><a href="#invo"><strong>호출 API</strong></a> 
+<ul>
+<li><a href="#JNI_CreateJavaVM"><code>JNI_CreateJavaVM</code></a> 
+<li><a href="#AttachCurrentThread"><code>AttachCurrentThread</code></a> 
+<li><a href="#DetachCurrentThread"><code>DetachCurrentThread</code></a> 
+<li><a href="#DestroyJavaVM"><code>DestroyJavaVM</code></a> 
+</ul>
+</ul>
+
+<h2>새로운 함수</h2>
+
+<ul>
+
+<li><a href="#libmanage"><strong>라이브러리 및 버젼 관리</strong></a> 
+<ul>
+<li><a href="#JNI_OnLoad"><code>JNI_OnLoad</code></a> 
+<li><a href="#JNI_OnUnload"><code>JNI_OnUnload</code></a> 
+</ul>
+
+<li><a href="#localrefs"><strong>로컬 참조의 관리</strong></a> 
+<ul>
+<li><a href="#EnsureLocalCapacity"><code>EnsureLocalCapacity</code></a> 
+<li><a href="#PushLocalFrame"><code>PushLocalFrame</code></a> 
+<li><a href="#PopLocalFrame"><code>PopLocalFrame</code></a> 
+<li><a href="#NewLocalRef"><code>NewLocalRef</code></a> 
+</ul>
+<li><a href="#excep"><strong>예외</strong></a> 
+<ul>
+<li><a href="#ExceptionCheck"><code>ExceptionCheck</code></a> 
+</ul>
+<li><a href="#weakrefs"><strong>약글로벌 참조</strong></a> 
+<ul>
+<li><a href="#NewWeakGlobalRef"><code>NewWeakGlobalRef</code></a> 
+<li><a href="#DeleteWeakGlobalRef"><code>DeleteWeakGlobalRef</code></a> 
+</ul>
+
+<li><a href="#arrayops"><strong>배열 조작</strong></a> 
+<ul>
+<li><a href="#GetPrimitiveArrayCritical"><code>GetPrimitiveArrayCritical</code></a> 
+<li><a href="#ReleasePrimitiveArrayCritical"><code>ReleasePrimitiveArrayCritical</code></a> 
+</ul>
+
+<li><a href="#stringops"><strong>캐릭터 라인 조작</strong></a> 
+<ul>
+<li><a href="#GetStringRegion"><code>GetStringRegion</code></a> 
+<li><a href="#GetStringUTFRegion"><code>GetStringUTFRegion</code></a> 
+<li><a href="#GetStringCritical"><code>GetStringCritical</code></a> 
+<li><a href="#ReleaseStringCritical"><code>ReleaseStringCritical</code></a> 
+</ul>
+
+<li><a href="#reflection"><strong>리플렉션의 지원</strong></a> 
+<ul>
+<li><a href="#FromReflectedMethod"><code>FromReflectedMethod</code></a> 
+<li><a href="#FromReflectedField"><code>FromReflectedField</code></a> 
+<li><a href="#ToReflectedMethod"><code>ToReflectedMethod</code></a> 
+<li><a href="#ToReflectedField"><code>ToReflectedField</code></a> 
+</ul>
+
+<li><a href="#invo"><strong>호출 API</strong></a> 
+<ul>
+<li><a href="#GetEnv"><code>GetEnv</code></a> 
+</ul>
+
+</ul>
+
+
+<a name="classops"></a> 
+<h2>클래스 조작</h2>
+
+확장된 Java 시큐리티 모델에서는, 시스템 클래스 이외의 클래스를 native code를 로드할 수 있습니다. JNI 의 <code>FindClass</code> 함수가 확장되어 클래스 로더에 의해 로드 된 클래스를 검색할 수가 있게 되었습니다.
+
+<a name="FindClass"></a> 
+<p>
+<code>jclass FindClass(JNIEnv *env, const char *name);</code>
+<blockquote>
+
+<p>JDK 1.1 에서는,<code>FindClass</code> 는 <code>CLASSPATH</code> 내의 로컬 클래스만을 검색했습니다. 검색된 클래스는, 클래스 로더를 가지고 있지 않았습니다.
+
+<p>Java 시큐리티 모델은 확장되어 시스템 클래스 이외의 클래스에 의한 네이티브 메소드의 로드 및 호출이 가능하게 되었습니다. Java 2 플랫폼에서는,<code>FindClass</code> 가, 현재의 네이티브 메소드와 관련지을 수 있고 있는 클래스 로더를 검출합니다. native code가 시스템 클래스에 속하는 경우, 클래스 로더는 검출되지 않습니다. 그 이외의 경우에는, 적절한 클래스 로더가 불려 가 이름을 붙일 수 있었던 클래스의 로드 및 링크를 실시합니다.
+
+<p><code>FindClass</code> 가 호출해 인터페이스에 의해 불려 갔을 경우, 현재의 네이티브 메소드 또는 거기에 관련지을 수 있었던 클래스 로더는 존재하지 않습니다. 이 경우,<code>ClassLoader.getBaseClassLoader</code> 의 결과가 사용됩니다. 이것은, 가상 머신이 어플리케이션용으로 작성하는 클래스 로더입니다. <code>java.class.path</code> 프로퍼티에 리스트 된 클래스를 검색할 수 있습니다.
+
+</blockquote>
+
+<a name="libmanage"></a> 
+<h2>라이브러리 및 버젼 관리</h2>
+
+JDK 1.1 에서는, 네이티브 라이브러리를 한 번 로드하면(자), 모든 클래스 로더로부터 그 라이브러리를 인식할 수 있었습니다. 그 때문에, 다른 클래스 로더의 2 살의 클래스가, 같은 네이티브 메소드에 링크해 버릴 가능성이 있었습니다. 이 때문에 다음의 2 개의 문제가 발생합니다.
+
+<ul>
+<li>어느 클래스는, 다른 클래스 로더내에서 같은 이름을 가지는 클래스가 로드한 네이티브 라이브러리와 잘못해 링크해 버릴 가능성이 있다
+
+<li>네이티브 메소드는, 다른 클래스 로더로부터의 클래스와 용이하게 혼동 되어 버리는 일이 있다. 이것에 의해, 클래스 로더에 의해 지정된 이름 공간의 분류가 파괴되어 형태의 안전성의 문제가 일으켜진다
+</ul>
+
+<p>
+Java 2 SDK 에서는, 각 클래스 로더는, 독자적인 네이티브 라이브러리세트를 관리합니다. <strong>같은 JNI 네이티브 라이브러리를, 2 개(살) 이상의 클래스 로더에 로드할 수 없습니다. </strong> 로드하려고 하면(자),<code>UnsatisfiedLinkError</code> 가 발생합니다. 예를 들어,<code>System.loadLibrary</code> 를 사용해 2 개의 클래스 로더에 네이티브 라이브러리를 로드하려고 하면(자),<code>UnsatisfiedLinkError</code> 가 발생합니다. 이 새로운 수법의 이점은 다음과 같습니다.
+<ul>
+<li>클래스 로더에 근거하는 이름 공간의 분류는, 네이티브 라이브러리에 보관된다. 네이티브 라이브러리는, 다른 클래스 로더로부터의 클래스를 용이하게 혼동 할 것은 없다  
+
+<li>더해, 네이티브 라이브러리는, 대응하는 클래스 로더의 가베지 컬렉션시에 언로드할 수 있다
+</ul>
+
+<p>
+버젼 관리 및 자원 관리를 용이하게 하기 위해서, Java 2 플랫폼의 JNI 라이브러리는 다음의 2 개의 함수를 옵션으로 export 할 수가 있습니다.
+
+<p><a name="JNI_OnLoad"></a>  <code>jint JNI_OnLoad(JavaVM *vm, void *reserved);</code>
+<blockquote>
+네이티브 라이브러리가 로드 되면(자) (예를 들어 <code>System.loadLibrary</code> 에 의해), VM 는 <code>JNI_OnLoad</code> 를 호출합니다. JNI_OnLoad</code> 는, 네이티브 라이브러리가 필요로 하는 JNI 버젼을 돌려주지 않으면 안됩니다.
+
+<p> 새로운 JNI 함수의 어떤 것인지를 사용하기 위해서, 네이티브 라이브러리는 <code>JNI_VERSION_1_2</code> 를 돌려주는 <code>JNI_OnLoad</code> 함수를 export 할 필요가 있습니다. 네이티브 라이브러리가 <code>JNI_OnLoad</code> 함수를 export 하지 않는 경우, VM 는 라이브러리가 JNI 버젼 <code>JNI_VERSION_1_1</code> 를 요구하고 있는 것만으로 있으면(자) 간주합니다. VM 가 <code>JNI_OnLoad</code> 에 의해 반환된 버젼 번호를 인식하지 않는 경우, 네이티브 라이브러리를 로드할 수 없습니다.
+</blockquote>
+
+<p> <a name="JNI_OnUnload"></a>  <code>void JNI_OnUnload(JavaVM *vm, void *reserved);</code>
+<blockquote>
+네이티브 라이브러리를 포함한 클래스 로더의 가베지 컬렉션 시에, VM 는 <code>JNI_OnUnload</code> 를 호출합니다. 이 함수는, 클린 업 오퍼레이션에 사용됩니다. 이것은 미확인의 문맥 (파이나라이자로부터의 문맥등)으로 불려 가는 함수이므로, 프로그래머는 신중하게 Java VM 서비스를 사용할 필요가 있습니다. 또 Java 콜백을 임의에 실시할리가 없게 하지 않으면 안됩니다.
+
+</blockquote>
+
+<p>
+<code>JNI_OnLoad</code> 와 <code>JNI_OnUnload</code> 는, JNI 라이브러리가 옵션으로 제공하는 2 개의 함수이며, VM 로부터 export 되는 것이 아닙니다.
+ 
+<a name="localrefs"></a>  <h2>로컬 참조의 관리</h2>
+
+로컬 참조는, 네이티브 메소드의 호출 기간중 유효합니다. 로컬 참조는, 네이티브 메소드가 복귀하면(자) 자동적으로 해제됩니다. 각 로컬 참조는, Java 가상 머신의 자원을 얼마인가 소비합니다. 프로그래머는, 네이티브 메소드가 로컬 참조를 과잉에 할당하지 않게 확인할 필요가 있습니다. 로컬 참조는, 네이티브 메소드가 Java 에 복귀하면(자) 자동적으로 해제됩니다만, 로컬 참조를 과잉에 할당하면(자), 네이티브 메소드의 실행중에 VM 가 메모리를 다 써 버려 버릴 가능성이 있습니다.
+
+<p>
+JDK 1.1 은,<code>DeleteLocalRef</code> 함수를 제공했기 때문에, 프로그래머는 수동으로 로컬 참조를 삭제할 수가 있었습니다. 예를 들어, native code가 객체의 잠재적으로 큰 배열을 반복에 의해 처리해, 반복 마다 1 개의 요소를 사용하는 경우, 다음의 반복으로 새로운 로컬 참조가 작성되기 전에, 이제 사용되지 않는 배열 요소에의 로컬 참조를 삭제하는 것은 좋은 방법입니다.
+
+<p>
+Java 2 SDK 에서는, 로컬 참조의 유효기간의 관리용으로 함수세트가 추가되었습니다.
+
+<p>
+<a name="EnsureLocalCapacity"></a>  <code>jint EnsureLocalCapacity(JNIEnv *env, jint capacity);</code>
+<blockquote>
+<p>현재의 thread로 최저한 지정된 수의 로컬 참조를 작성할 수 있는 것을 보증합니다. 함수가 정상적으로 실행되었을 경우에는, 0 이 돌려주어집니다. 그 이외의 경우에는, 부의 수가 돌려주어지고 <code>OutOfMemoryError</code> 가 throw 됩니다.
+
+<p>네이티브 메소드에 들어가기 전에, VM 는 자동적으로 최저 <strong>16</strong> 의 로컬 참조의 작성을 보증합니다.
+
+<p>하위 호환성을 위해서(때문에) VM 는, 보증된 용량 이상으로 로컬 참조를 할당합니다. (디버그의 지원로서 VM 가 사용자에 대해, 로컬 참조의 작성수가 너무 많다고 하는 내용의 경고를 발표하는 경우가 있습니다. Java 2 SDK 에서는, 프로그래머는<code>-verbose:jni</code> 커멘드행 옵션을 공급해, 이러한 메세지를 유효하게 할 수가 있는) 보증된 용량을 넘어 버려, 더 이상 로컬 참조를 작성할 수 없는 경우, VM 는,<code>FatalError</code> 를 호출합니다.
+</blockquote>
+
+<p>
+<a name="PushLocalFrame"></a>  <code>jint PushLocalFrame(JNIEnv *env, jint capacity);</code>
+<blockquote>
+<p>새로운 로컬 참조 프레임을 작성합니다. 이 프레임에 최저한 지정된 수의 로컬 참조를 작성할 수 있습니다. 정상적으로 실행되었을 경우에는, 0 이 돌려주어집니다. 실패했을 경우에는, 부의 수가 돌려주어져<code>OutOfMemoryError</code> 가 throw 됩니다.
+
+<p>
+전회의 로컬 프레임으로 작성 끝난 로컬 참조는, 현재의 로컬 프레임에서도 여전히 유효합니다.
+</blockquote>
+
+<p><a name="PopLocalFrame"></a>  <code>jobject PopLocalFrame(JNIEnv *env, jobject result);</code>
+<blockquote>
+<p>현재의 로컬 참조 프레임을 무효로 해, 모든 로컬 참조를 해제합니다. 그리고 지정된 <code>result</code> 객체에 대한 전회의 로컬 참조 프레임의 로컬 참조를 돌려줍니다.
+
+<p>전회의 프레임에 참조를 돌려줄 필요가 없는 경우에는,<code>result</code> 로서 <code>null</code> 를 건네줍니다.
+</blockquote>
+
+<p>
+<a name="NewLocalRef"></a>  <code>jobject NewLocalRef(JNIEnv *env, jobject ref);</code>
+<blockquote>
+<code>ref</code> 와 같은 객체를 참조하는 새로운 로컬 참조를 작성합니다. 건네받은 <code>ref</code> 는, 글로벌 참조 또는 로컬 참조일 가능성이 있습니다. <code>ref</code> 가 <code>null</code> 를 참조하고 있는 경우에는,<code>null</code> 가 돌려주어집니다.
+
+</blockquote>
+<a name="excep"></a> 
+<h2>예외</h2>
+
+예외 객체에의 로컬 참조를 작성하지 않고 , 미처리의 예외를 확인하기 위한 편리한 함수를 다음에 나타냅니다.
+
+<p><a name="ExceptionCheck"></a>  <code>jboolean ExceptionCheck(JNIEnv *env);</code>
+<blockquote>
+
+미처리의 예외가 있는 경우는 <code>JNI_TRUE</code> 를, 없는 경우는 <code>JNI_FALSE</code> 를 돌려줍니다.
+
+</blockquote>
+<a name="weakrefs"></a> 
+<h2>약글로벌 참조</h2>
+
+약글로벌 참조는, 특별한 종류의 글로벌 참조입니다. 일반적으로의 글로벌 참조와 달리, 약글로벌 참조를 사용하면(자), 부하의 Java 객체를 가베지 컬렉트할 수가 있습니다. 약글로벌 참조는, 글로벌 또는 로컬 참조가 사용되고 있는 상황이라면 어디서에서도 사용할 수 있습니다. 가비지 컬렉터를 실행하면(자), 부하의 객체가 약참조 에 의해서만 참조되고 있는 경우, 그 객체가 해제됩니다. 해제된 객체를 참조하는 약글로벌 참조는, 기능적으로 <code>null</code> 와 동등합니다. 프로그래머는,<code>IsSameObject</code> 를 사용해 약참조와 <code>null</code> 를 비교하는 것으로써, 약글로벌 참조가 해제된 객체를 참조하고 있을지 어떨지 확인할 수 있습니다.
+
+<p>JNI 의 약글로벌 참조는, Java 2 플랫폼 API (<code>java.lang.ref</code> 및 그 클래스)의 일부로서 입수 가능한 Java 약참조의 간이판입니다.
+
+<a name="weakrefs clarification"></a> 
+
+<p><strong>해설</strong> &nbsp;&nbsp;&nbsp; (2001년 6월에 추가)
+
+<blockquote><p>
+
+가베지 컬렉션은 네이티브 메소드의 실행중에 발생하기 위해(때문에), 약글로벌 참조로 참조되고 있는 객체는 언제라도 해제할 수 있습니다. 약글로벌 참조는, 글로벌 참조가 사용되고 있는 곳(중)이라면 어디에서라도 사용할 수 있습니다만, 그처럼 사용한다고 예고없이 <code>null</code> 와 기능적으로 동등하게 되는 경우가 있으므로, 일반적으로는 부적절합니다.
+
+</i><p>「<code>IsSameObject</code>」는 약글로벌 참조가 해제된 객체를 참조하고 있을지 어떨지를 판별하는데 사용할 수 있습니다만, 객체가 그 직후에 해제되는 것을 방지하는 것은 아닙니다. 그 때문에, 프로그래머는 이 검사에 근거해, 그 후의 JNI 호출로 약글로벌 참조가 (<code> null </code>참조 이외로) 사용되고 있는지 어떤지를 판별할 수 없습니다.
+
+</i><p>이 상속 제한을 해소하기 위해(때문에), JNI 함수 「<code>NewLocalRef</code>」또는 「<code>NewGlobalRef</code>」를 사용해 동일한 객체에의 표준 (강하다) 로컬 참조 또는 글로벌 참조를 취득해, 이 강한 참조를 사용해 해당하는 객체에 액세스 하는 것을 추천합니다. 객체가 해제되고 있는 경우, 이 함수는 <code>null</code> 를 돌려줍니다. 그 외의 경우, 강한 참조를 돌려줍니다 (강한 참조는 객체가 해제되는 것을 방지합니다). 객체에의 직접 액세스가 불필요하게 되었을 때는, 객체를 해제할 수 있도록(듯이), 새로운 참조를 명시적으로 삭제할 필요가 있습니다.
+
+</i><p>약글로벌 참조는, 다른 종류의 약한 참조 (SoftReference 클래스 또는 WeakReference 클래스의 Java 객체)보다 약한 참조입니다. 특정의 객체에의 약한 글로벌 참조는, 그 객체를 참조하는 SoftReference 객체 또는 WeakReference 객체가 참조를 해제할 때까지, 기능적으로 <code>null</code> 와 동등하게는 되지 않습니다.
+
+</i><p>약글로벌 참조는, finalize를 필요로 하는 객체에의 Java 의 내부 참조보다 약한 참조입니다. 약글로벌 참조는, 참조처의 객체의 파이나라이자가 존재하는 경우, 그것이 완료할 때까지,<code>null</code> 와 기능적으로 동등하게는 되지 않습니다.
+
+<p>약글로벌 참조와 PhantomReference 와의 상호 동작은 미정도리입니다. 특히, Java VM 의 구현은, PhantomReference 의 후에 약글로벌 참조를 처리하는 경우가 있어, PhantomReference 객체에서도 참조되고 있는 객체를 보관 유지하기 위해서 약글로벌 참조를 사용하는 것이 가능한 경우가 있습니다. 약글로벌 참조를 이러한 미정도리의 방법으로 사용하는 것은 피해야 합니다.
+
+</i></blockquote>
+
+<p>
+
+<p><a name="NewWeakGlobalRef"></a>  <code>jweak NewWeakGlobalRef(JNIEnv *env, jobject obj);</code>
+<blockquote>
+
+약글로벌 참조를 신규 작성합니다. <code>obj</code> 가 <code>null</code> 를 참조하고 있는 경우, 또는 VM 가 메모리를 다 써 버려 버렸을 경우는,<code>null</code> 가 돌려주어집니다. VM 가 메모리를 다 써 버려 버렸을 경우,<code>OutOfMemoryError</code> 가 throw 됩니다.
+
+</blockquote>
+
+<p><a name="DeleteWeakGlobalRef"></a>  <code>void DeleteWeakGlobalRef(JNIEnv *env, jweak obj);</code>
+<blockquote>
+
+건네받은 약글로벌 참조에 필요한 VM 자원을 삭제합니다.
+
+</blockquote>
+
+<a name="arrayops"></a> 
+<h2>배열 조작</h2>
+
+<p>JDK 1.1 에서는, 프로그래머는 <code>Get/Release&lt;PrimitiveType>ArrayElements</code> 함수를 사용해, 프리미티브(primitive) 배열 요소에의 포인터를 취득할 수 있었습니다. VM 가 피닝을 지원하고 있는 경우, 원의 데이터에의 포인터가 돌려주어졌습니다.  지원하고 있지 않는 경우에는, 카피가 작성되었습니다.
+
+<p>새로운 함수를 사용하면(자), VM 가 피닝을 지원하고 있지 않는 경우에서도, native code는 배열 요소에의 직접 포인터를 취득할 수가 있습니다.
+
+<p><a name="GetPrimitiveArrayCritical"></a>  <code>void * GetPrimitiveArrayCritical(JNIEnv *env, jarray array, jboolean *isCopy);<br> <a name="ReleasePrimitiveArrayCritical"></a>  void ReleasePrimitiveArrayCritical(JNIEnv *env, jarray array, void *carray, jint mode);</code>
+
+<blockquote>
+위의 2 개의 함수의 시멘틱스는, 기존의 <code>Get/Release&lt;PrimitiveType>ArrayElements</code> 함수와 매우 자주(잘) 닮았습니다. 가능한 경우는, VM 는 프리미티브(primitive) 배열에의 포인터를 돌려줍니다. 그렇지 않은 경우는, 카피가 작성됩니다. <strong>다만, 이러한 함수의 사용 방법에 관해서 중요한 제한이 있습니다. </strong>
+
+<p>
+<code>GetPrimitiveArrayCritical</code> 를 호출한 뒤,<code>ReleasePrimitiveArrayCritical</code> 를 호출하기 전에, native code를 특정의 기간 실행하지 않게 합니다. 이 1 조의 함수 내부의 코드는 「위기 리젼」으로 실행되고 있는 것으로서 취급할 필요가 있습니다. 위기 리젼 내부에 있어 native code는, 다른 JNI 함수를 호출해 안되어, 현재의 thread에 다른 Java thread를 블록 해 대기시키는 것을 가능하게 하는 어느 시스템 콜도 호출해서는 안됩니다. 예를 들어, 현재의 thread는, 다른 Java thread가 기술한 스트림상의 <code>read</code> 를 호출해서는 안됩니다.
+
+<p><strong>이러한 제한은, VM 가 피닝을 지원하지 않는 경우에서도, native code가 배열의 카피되어 있지 않은 버젼을 취득할 가능성을 높입니다. </strong>예를 들어, native code가 <code>GetPrimitiveArrayCritical</code> 에 의해 취득된 배열에의 포인터를 보관 유지하고 있는 경우, VM 는 일시적으로 가베지 컬렉션을 무효로 하는 일이 있습니다.
+
+<p><code>GetPrimtiveArrayCritical</code> 및 <code>ReleasePrimitiveArrayCritical</code> 의 복수의 편성은, 상자로 할 수 있습니다. 예를 나타냅니다.
+<pre>
+  jint len = (*env)->GetArrayLength(env, arr1); 
+  jbyte *a1 = (*env)->GetPrimitiveArrayCritical(env, arr1, 0);
+  jbyte *a2 = (*env)->GetPrimitiveArrayCritical(env, arr2, 0);
+  /* We need to check in case the VM tried to make a copy.  */
+  if (a1 == NULL || a2 == NULL) {
+    ... /* out of memory exception thrown */
+  }
+  memcpy(a1, a2, len);
+  (*env)->ReleasePrimitiveArrayCritical(env, arr2, a2, 0);
+  (*env)->ReleasePrimitiveArrayCritical(env, arr1, a1, 0);
+</pre>
+</blockquote>
+
+<p>
+VM 가 내부적으로 다른 형식에서 배열을 나타내는 경우,<code>GetPrimitiveArrayCritical</code> 는 아직 배열의 카피를 작성할 가능성이 있습니다. 그 때문에, 일어날 수 있는 메모리 부족의 상황에 대응해 <code>null</code> 에 대한 반환값을 체크할 필요가 있습니다.
+
+<a name="stringops"></a> 
+<h2>캐릭터 라인 조작</h2>
+
+JDK 1.1 에서는, 프로그래머는 사용자가 제공하는 버퍼의 프리미티브(primitive) 배열 요소를 취득할 수 있었습니다. Java 2 SDK 에서는, native code를 사용해, 사용자가 제공하는 버퍼의 Unicode 또는 UTF-8 문자를 취득할 수가 있습니다.
+
+<p><a name="GetStringRegion"></a>  <code>void GetStringRegion(JNIEnv *env, jstring str, jsize start, jsize len, jchar *buf);</code>
+<blockquote>
+오프셋(offset) <code>start</code> 로 시작되는 <code>len</code> 개의 Unicode 문자를, 주어진 버퍼 <code>buf</code> 에 카피합니다.
+
+<p><code>StringIndexOutOfBoundsException</code> 를 인덱스 오버플로우시에 throw 합니다.
+</blockquote>
+
+<p><a name="GetStringUTFRegion"></a> < <code>void GetStringUTFRegion(JNIEnv *env, jstring str, jsize start, jsize len, char *buf);</code>
+<blockquote>
+오프셋(offset) <code>start</code> 로 시작되는 <code>len</code> 개의 Unicode 문자를 UTF-8 형식으로 변환해, 그 결과가 주어진 버퍼 <code>buf</code> 에 둡니다.
+
+<p><code>StringIndexOutOfBoundsException</code> 를 인덱스 오버플로우시에 throw 합니다.
+</blockquote>
+
+<p><a name="GetStringCritical"></a>  <code>const jchar * GetStringCritical(JNIEnv *env, jstring string, jboolean *isCopy);<br> <a name="ReleaseStringCritical"></a>  void ReleaseStringCritical(JNIEnv *env, jstring string, const jchar *carray);</code>
+
+<blockquote>
+위의 2 개의 함수의 시멘틱스는, 기존의 <code>Get/ReleaseStringChars</code> 함수를 닮아 있습니다. 가능한 경우에는, VM 는 캐릭터 라인 요소에의 포인터를 돌려줍니다. 그렇지 않은 경우, 카피가 작성됩니다. <strong>다만, 이러한 함수의 사용 방법에 관해서 중요한 제한이 있습니다. </strong><code>Get/ReleaseStringCritical</code> 의 호출에 의해 둘러싸이는 code segment에 대해, native code는 임의의 JNI 호출을 행하거나 현재의 thread에 블록 시켜 되지 않습니다.
+<p>
+<code>Get/ReleaseStringCritical</code> 의 제한은,<code>Get/ReleasePrimitiveArrayCritical</code> 의 제한 과 유사합니다.
+</blockquote>
+
+<a name="reflection"></a>  <h2>리플렉션의 지원</h2> 
+
+<p>프로그래머는, 메소드 또는 필드의 이름 및 형태를 파악하고 있는 경우, JNI 를 사용해 Java 메소드의 호출해 또는 Java 필드에의 액세스를 실시할 수가 있습니다. Java Core Reflection API 를 사용하면(자), 프로그래머는 실행시에 Java 클래스의 내부를 조사할 수가 있습니다. JNI 는, JNI 로 사용되는 필드와 메소드 ID 및 Java Core Reflection API 로 사용되는 메소드 객체의 사이의 변환 함수세트를 제공합니다.
+
+<p><a name="FromReflectedMethod"></a>  <code>jmethodID FromReflectedMethod(JNIEnv *env, jobject method);</code>
+<blockquote>
+<code>java.lang.reflect.Method</code> 또는 <code>java.lang.reflect.Constructor</code> 객체를 메소드 ID 로 변환합니다.
+</blockquote>
+<p>
+<a name="FromReflectedField"></a>  <code>jfieldID FromReflectedField(JNIEnv *env, jobject field);</code>
+<blockquote>
+<code>java.lang.reflect.Field</code> 를 필드 ID 로 변환합니다.
+</blockquote>
+
+<p><a name="ToReflectedMethod"></a>  <code>jobject ToReflectedMethod(JNIEnv *env, jclass cls,<br> &nbsp;&nbsp; jmethodID methodID);</code>
+<blockquote>
+<code>cls</code> 로부터 취득한 메소드 ID 를 <code>java.lang.reflect.Method</code> 또는 <code>java.lang.reflect.Constructor</code> 객체로 변환합니다.
+
+<p>변환에 실패했을 경우에는,<code>OutOfMemoryError</code> 를 throw 해, 0 을 돌려줍니다.
+</blockquote>
+<p><a name="ToReflectedField"></a>  <code>jobject ToReflectedField(JNIEnv *env, jclass cls,<br> &nbsp;&nbsp; jfieldID fieldID);</code>
+<blockquote>
+<code>cls</code> 로부터 취득한 필드 ID 를 <code>java.lang.reflect.Field</code> 객체로 변환합니다.
+
+<p>변환에 실패했을 경우에는,<code>OutOfMemoryError</code> 를 throw 해, 0 을 돌려줍니다.
+</blockquote>
+
+<a name="invo"></a> 
+<h2>호출 API</h2>
+
+<a name="JNI_CreateJavaVM"></a> 
+<p><code>jint JNI_CreateJavaVM(JavaVM **pvm, void **penv, void *args);</code>
+<blockquote>
+JDK 1.1 에서는,<code>JNI_CreateJavaVM</code> 에의 2 번째의 인수는 항상 <code>JNIEnv *</code> 에의 포인터였습니다. 3 번째의 인수는, JDK 1.1 에 고유의 구조체 (<code>JDK1_1InitArgs</code>)에의 포인터입니다. <code> JDK1_1InitArgs</code> 구조는, 모든 VM 에 이식성이 있는 것으로서 설계되어 있지 않은 것은 분명합니다.
+
+<p>Java 2 SDK 에서는, 표준 VM 초기화 구조가 도입됩니다. 하위 호환성은 보관 유지됩니다. VM 초기화 인수가 <code>JDK1_1InitArgs</code> 구조를 가리키는 경우,<code>JNI_CreateJavaVM</code> 는 JNI 인터페이스 포인터의 1.1 버젼을 돌려줍니다. 3 번째의 인수가 <code>JavaVMInitArgs</code> 구조체에 포인트 하는 경우, VM 는, JNI 인터페이스 포인터의 1.2 버젼을 돌려줍니다. 고정 옵션 세트를 포함한 <code>JDK1_1InitArgs</code> 와 달리,<code>JavaVMInitArgs</code> 는 옵션 캐릭터 라인을 사용해, 임의의 VM 기동 옵션을 encode 합니다.
+
+<pre>
+typedef struct JavaVMInitArgs {
+    jint version;
+
+    jint nOptions;
+    JavaVMOption *options;
+    jboolean ignoreUnrecognized;
+} JavaVMInitArgs;
+</pre>
+
+<code>version</code> 필드는 <code>JNI_VERSION_1_2</code> 로 설정할 필요가 있습니다. (반대로,<code>JDK1_1InitArgs</code> 의 버젼 필드는,<code>JNI_VERSION_1_1</code> 로 설정할 필요가 있습니다. )<code> options</code> 필드는, 다음의 형태의 배열입니다.
+
+<pre>
+typedef struct JavaVMOption {
+    char *optionString;
+    void *extraInfo;
+} JavaVMOption;
+</pre>
+
+배열의 사이즈는,<code>JavaVMInitArgs</code> 의 nOptions 필드에 나타납니다. <code><code>ignoreUnrecognized</code> 가 <code>JNI_TRUE</code> 의 경우,<code>JNI_CreateJavaVM</code> 는, 「<code>-X</code>」또는 「<code>_</code>」으로 시작되는 모든 인식할 수 없는 옵션 캐릭터 라인을 무시합니다. ignoreUnrecognized</code> 가 <code>JNI_FALSE</code> 로 설정되어 있는 경우,<code>JNI_CreateJavaVM</code> 는 인식할 수 없는 옵션 캐릭터 라인에 조우하면(자), 즉시 <code>JNI_ERR</code> 를 돌려줍니다. 모든 Java 가상 머신은, 다음의 표준 옵션세트를 인식할 필요가 있습니다.
+
+<p>
+<center>
+<table summary="standard options" border=1>
+<thead>
+<tr><th><bf>optionString</bf>
+	<th> 설명
+	</thead>
+<tr><td><code>-D&lt;name&gt;=&lt;value&gt;</code>
+	<td> 시스템 프로퍼티을 설정한다
+<tr><td><code>-verbose[:class|gc|jni]</code>
+	<td> 장황 출력을 유효하게 한다. 각 옵션의 뒤에, VM 가 인쇄하는 메세지의 종류를 나타내는, 콤마로 단락지은 이름의 리스트를 계속할 수가 있다. 예를 들어, 「<code>-verbose:gc, class</code>」는, VM 에 GC 와 클래스 로딩 관련의 메세지를 인쇄하도록(듯이) 지정한다. 표준적인 이름에는,<code>gc</code>,<code>class</code>, 및 <code>jni</code> 등이 있다. 표준이 아닌 (VM 고유의) 이름은 모두, 「<code>X</code>」로 시작될 필요가 있다.
+<tr><td><code>vfprintf</code>
+<td> <code>extraInfo</code> 는,<code>vfprintf</code> 훅에의 포인터
+<tr><td><code>exit</code>
+<td> <code>extraInfo</code> 는,<code>exit</code> 훅에의 포인터
+<tr><td><code>abort</code>
+<td> <code>extraInfo</code> 는,<code>abort</code> 훅에의 포인터
+</table>
+</center>
+
+<p>
+더해, 각 VM 구현은, 표준이 아닌 독자적인 옵션 캐릭터 라인세트를 지원합니다. 표준이 아닌 옵션명은, 「<code>-X</code>」또는 밑줄 ( 「<code>_</code>」)로 시작될 필요가 있습니다. 예를 들어, Java 2 SDK 는 <code>-Xms</code> 및 <code>-Xmx</code> 옵션을 지원하고 있기 (위해)때문에, 프로그래머는 초기 및 최대의 heap 사이즈를 지정할 수 있습니다. <code>-X</code>」로 시작되는 옵션은, 「<code>java</code>」커멘드행으로부터 액세스 가능합니다.
+
+<p>다음의 예는, Java 2 SDK 로 Java 가상 머신을 작성하는 코드입니다.
+
+<pre>
+JavaVMInitArgs vm_args;
+JavaVMOption options[4];
+
+options[0]. optionString = "-Djava.compiler=NONE";           /* disable JIT */
+options[1]. optionString = "-Djava.class.path=c:\myclasses"; /* user classes */
+options[2]. optionString = "-Djava.library.path=c:\mylibs";  /* set native library path */
+options[3]. optionString = "-verbose:jni";                   /* print JNI-related messages */
+
+vm_args.version = JNI_VERSION_1_2;
+vm_args.options = options;
+vm_args.nOptions = 4;
+vm_args.ignoreUnrecognized = TRUE;
+
+/* Note that in the Java 2 SDK, there is no longer any need to call 
+ * JNI_GetDefaultJavaVMInitArgs.  
+ */
+res = JNI_CreateJavaVM(&vm, (void **) &env, &vm_args);
+if (res < 0) ...
+</pre>
+
+<p>
+Java 2 SDK 에서는, JDK 1.1 으로 엄밀하게 같은 방법으로 <code>JDK1_1InitArgs</code> 를 지원하고 있습니다.
+
+</blockquote>
+
+<a name="AttachCurrentThread"></a> 
+<p><code>jint AttachCurrentThread(JavaVM *vm, void **penv, void *args);</code>
+<blockquote>
+JDK 1.1 으로,<code>AttachCurrentThread</code> 에의 2 번째의 인수는, 항상 <code>JNIEnv</code> 에의 포인터입니다. <code>AttachCurrentThread</code> 에의 3 번째의 인수는 예약되고 있어<code>null</code> 로 설정하지 않으면 안됩니다.
+
+<p>Java 2 SDK 로 1.1 의 동작을 시키는 경우에는, 3 번째의 인수로서 <code>null</code> 를 건네줍니다. 또는 다음의 구조체에 포인터를 건네주어, 추가 정보를 지정할 수가 있습니다.
+<blockquote>
+<pre>
+typedef struct JavaVMAttachArgs {
+    jint version;  /* must be JNI_VERSION_1_2 */
+    char *name;    /* the name of the thread, or NULL */
+    jobject group; /* global ref of a ThreadGroup object, or NULL */
+} JavaVMAttachArgs;
+</pre>
+</blockquote>
+</blockquote>
+
+<a name="DetachCurrentThread"></a> 
+<p><code>jint DetachCurrentThread(JavaVM *vm);</code>
+<blockquote>
+JDK 1.1 에서는, VM 로부터 메인 thread를 떼어낼 수 없습니다. VM 전체를 언로드하려면 ,<code>DestroyJavaVM</code> 를 호출할 필요가 있습니다.
+
+<p>Java 2 SDK 에서는, VM 로부터 메인 thread를 떼어낼 수가 있습니다.
+</blockquote>
+
+<a name="DestroyJavaVM"></a> 
+<p><code>jint DestroyJavaVM(JavaVM *vm);</code>
+
+<blockquote>
+JDK 1.1 에서는,<code>DestroyJavaVM</code> 는 완전하게 지원되고 있는 것은 아닙니다. 메인 thread만이 <code>DestroyJavaVM</code> 를 호출할 수가 있습니다. Java 2 SDK 에서는, 접속되고 있을까 않은 것처럼 관련되지 않고, 어느 thread도 이 함수를 호출할 수가 있습니다. 현재의 thread가 접속되고 있는 경우, VM 는, 현재의 thread가 유일한 사용자 레벨 Java thread가 될 때까지 대기합니다. 현재의 thread가 접속되어 있지 않은 경우는, VM 가 현재의 thread를 접속해, 현재의 thread가 유일한 사용자 레벨의 thread가 될 때까지 대기합니다. 다만, VM 의 언로드는, Java 2 SDK 에서도 지원되지 않습니다. <code>DestroyJavaVM</code> 는, 항상 에러 코드를 돌려줍니다.
+</blockquote>
+
+<p><a name="GetEnv"></a>  <code>jint GetEnv(JavaVM *vm, void **env, jint version);</code>
+<blockquote>
+현재의 thread가 VM 에 접속되어 있지 않은 경우,<code>*env</code> 를 <code>null</code> 로 설정해,<code>JNI_EDETACHED</code> 를 돌려줍니다. 지정한 버젼이 지원되어 있지 않은 경우,<code>*env</code> 를 <code>null</code> 로 설정해,<code>JNI_EVERSION</code> 를 돌려줍니다. 그 이외의 경우는,<code>*env</code> 를 적절한 인터페이스로 설정해,<code>JNI_OK</code> 를 돌려줍니다.
+</blockquote>
+<!-- Body text ends here --> <!-- ============================================================== -->
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+<FONT SIZE="-2"><A HREF="../../../legal/SMICopyright.html">Copyright</A>  &#169; 1995-99 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved. </FONT> <br> <br>
+
+<FONT SIZE=-1>코멘트의 송부처:<a href="mailto:jni@java.sun.com">jni@java.sun.com</a> </FONT>
+
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR>
+
+</TD>
+
+</TR>
+</TABLE>
+
+  </body>
+</html>

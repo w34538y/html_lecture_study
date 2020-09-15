@@ -1,0 +1,176 @@
+<html>
+<head>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<!--  Copyright 2005 Sun Microsystems, Inc. All rights reserved. -->
+</head>
+<body>
+
+<h2>Java<sup><font size="-2">TM</font></sup> XML 디지털 서명 API 스펙 (JSR 105)</h2>
+
+<h2>목차</h2>
+<ul>
+<li><a href="#Introduction">처음에</a> 
+<li><a href="#Acknowledgements">사례</a> 
+<li><a href="#Requirements">요건</a> 
+<li><a href="#API Dependencies">API 의존</a> 
+<li><a href="#Non-Goals">목표로 하지 않는 사항</a> 
+<li><a href="#Package Overview">패키지의 개요</a> 
+<li><a href="#Service Provider">서비스 프로바이더</a> 
+<li><a href="#DOM Mechanism Requirements">DOM 기구의 요건</a> 
+<li><a href="#Open API Issues">오픈 API 의 문제</a> 
+<li><a href="#Examples">례</a> 
+</ul>
+
+<h2><a name="Introduction">처음에</a> </h2>
+이 문서에서는,<a href = "http://jcp.org/jsr/detail/105.jsp">Java<sup><font size="-2">TM</font></sup> XML 디지털 서명 API 스펙 (JSR 105)</a>  에 대해 설명합니다. 이 JSR 의 목적은, XML 서명을 생성 및 검증하기 위한 표준의 Java<sup><font size="-2">TM</font></sup> API 를 정의하는 것입니다.
+<p>
+이 스펙이 완성하면(자), 이 API 의 기능에 대해 설명하는 레퍼런스 구현이 작성되게 되어, 이 스펙의 오퍼레이션의 정의가 제공됩니다. 이 스펙의 구현에 대응하고 있을지 어떨지를 확인하기 위한 Technology Compatibility Kit (TCK)도 사용 가능하게 됩니다. <a href="http://jcp.org/procedures/jcp2/index.jsp">Java Community Process <sup><font size="-2">SM</font></sup> 2.1</a>  에 따라 이것들이 필요하게 됩니다.
+<p>
+JSR 105 API 는, 다음의 2 종류의 사용자를 타겟으로 하고 있습니다.  
+<ul>
+<li>JSR 105 API 를 사용해 XML 서명을 생성 및 검증하는 Java<sup><font size="-2">TM</font></sup> 프로그래머.
+<li>JSR 105 API 의 고정 구현을 작성해,<a href="../crypto/CryptoSpec.html#Provider">JCA 프로바이더</a>  의 암호화 서비스로서 이 구현을 등록하는 Java<sup><font size="-2">TM</font></sup> 프로그래머.  
+</ul>
+
+<h2><a name="Acknowledgements">사례</a> </h2>
+JSR 105 전문가 그룹:
+<ul>
+<li>Nicolas Catania, Hewlett-Packard
+<li>Donald E.  Eastlake 3 rd, Motorola
+<li>Christian Geuer-Pollmann, Apache Software Foundation
+<li>Hans Granqvist, VeriSign
+<li>Kazuyuki Harada, Fujitsu
+<li>Anthony Ho, DSTC
+<li>Merlin Hughes, Baltimore Technologies
+<li>Joyce Leung, IBM
+<li>Gregor Karlinger, IAIK
+<li>Serge Mister, Entrust Technologies
+<li>Takuya Mori, NEC Corporation
+<li>Sean Mullan, Sun Microsystems (공동 스펙 리드)
+<li>Anthony Nadalin, IBM (공동 스펙 리드)
+<li>Erwin van der Koogh, Apache Software Foundation
+<li>Chris Yeung, XML Asia
+</ul>
+또, 다음의 멤버에게도 감사를 바칩니다. Sun Microsystems 의 Valerie Peng, Vincent Ryan, Sharon Liu, Chok Poh, K.  Venugopal Rao. , Paul Rank, Alexey Gavrilov, Bill Situ, Eric Jendrock, Andrew Fan, Manveen Kaur, Tom Amiro, Michael Mi, Dmitri Silaev, Roman Makarchuk, Vanitha Venkatraman, Arkadiy Sutchilin, and Scott Fordin, Apache 의 Vishal Mahajan, IAIK 의 Martin Centner.
+
+<h2><a name="Requirements">요건</a> </h2>
+이 문서의 키워드 「MUST」, 「MUST NOT」, 「REQUIRED」, 「SHALL」, 「SHALL NOT」, 「SHOULD」, 「SHOULD NOT」, 「RECOMMENDED」, 「MAY」, 및 「OPTIONAL」는,<a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a>  에 설명되고 있는 대로 해석됩니다.
+<p>
+<ol>
+<li><a href="http://www.w3.org/TR/xmldsig-core/"><b>W3C Recommendation, XML-Signature Syntax and Processing</b></a> .
+  <ul>
+<li> API 를 사용해, 프로그래머는 W3C 권고로 규정되고 있는 SHOULD 및 MUST 의 모든 요건을 채우는 XML 서명을 생성 및 검증할 수 있을 필요가 있습니다.
+<li> API 를 사용해, W3C 권고로 규정되고 있는 SHOULD 및 MUST 의 모든 요건을 채우는 API 의 구현을 작성할 수 있을 필요가 있습니다.
+  </ul>
+<li>구현은,<a href="http://www.w3.org/TR/xmldsig-filter2/"><b>W3C Recommendation, XML-Signature XPath Filter Transform 2.0</b></a>  을 지원할 필요가 있습니다.
+<li>구현은,<a href="http://www.w3.org/TR/xml-exc-c14n/"><b>W3C Recommendation, Exclusive XML Canonicalization Version 1.0</b></a>  을 지원할 필요가 있습니다.
+<li><b>DOM 에 의존하지 않는 API. </b>API 는, DOM 등의 특정의 XML 표현에 의존하고 있지 않을 필요가 있습니다. DOM,<a href="http://jdom.org">JDOM</a> ,<a href="http://dom4j.org">dom4j</a>  등의 다른 XML 처리나 기구 표현에 대해서 API 구현을 작성할 수 있을 필요가 있습니다.
+<li><b>확장 가능한 프로바이더 베이스의 API. </b>서드 파티가, 암호화 알고리즘이나 변환 알고리즘의 관리나 작성, URI 의 사이접참조, 및 XML 의 객체의 정렬화를 실시하는 구현을 작성 및 플러그 인 할 수가 있을 필요가 있습니다.
+<li><b>디폴트의 XML 기구 타입 DOM 의 지원. </b>구현은, 디폴트의 기구 타입 DOM 를 최저한 지원할 필요가 있습니다. 이것에 의해, JSR 105 의 모든 구현으로 최저 레벨의 기능성이 보증됩니다. 구현은, 다른 기능 타입도 지원할 수 있습니다.
+<li><b>디폴트의 XML 기구 타입 DOM 의 상호 운용성. </b>API 는, DOM 구현을 사용하는 어플리케이션으로 이식성 및 상호 운용성을 보증할 필요가 있습니다.
+<li><b>J2SE 요건. </b>이 테크놀러지의 구현은 J2SE 1.2 이후를 지원할 수 있습니다만, 최저한 J2SE 의 버젼 1.4 를 지원할 필요가 있습니다.
+</ol>
+
+<h2><a name="API Dependencies">API 의존</a> </h2>
+<ul>
+<li><a href="http://java.sun.com/products/jdk/1.2"><b>J2SE (JDK) 1.2</b></a>  이후
+<li><a href="http://www.w3.org/DOM/DOMTR"><b>W3C DOM Level 2 API</b></a> . 이 의존은, 패키지 <code>javax.xml.crypto.dom</code> 및 <code>javax.xml.crypto.dsig.dom</code> 의 클래스에서 필요합니다.
+</ul>
+
+<h2><a name="Non-Goals">목표로 하지 않는 사항</a> </h2>
+<ol>
+<li><b>비 DOM 구현의 지원. </b>API 에서는 비 DOM 구현을 작성할 수 있을 필요가 있습니다만, DOM 이외의 구현간에서의 상호 운용성을 보증하는 것은 최초의 버젼의 범위외입니다. 추가의 표준 서비스 프로바이더 타입이 향후 추가되거나 JSR 105 의 보수 버젼으로 필요한 API 의 확장 기능이 검토될 가능성이 있습니다.
+<li><b>고레벨의 API 의 지원. </b>프로그래머는, JSR 105 API 에 근거해 구축되는 고레벨의 API 를 설계해, 저레벨의 상세를 비표시로 하거나 공통의 유스 케이스에 대처하거나 프로 파일링의 제한을 적용할 수 있습니다. 다만, 이러한 요건을 지원하는 것은 최초의 버젼의 범위외입니다. 고레벨의 API 는, JSR 105 의 보수 릴리스로 고려될 가능성이 있습니다.
+<li><b>사용자가 플러그 인 가능한 알고리즘 (<a href="../../../../api/javax/xml/crypto/dsig/TransformService.html">javax.xml.crypto.dsig.TransformService</a>  클래스에서 지원되고 있는 변환 알고리즘 및 정규화 알고리즘 이외)의 지원. </b>개발자가 완전한 JSR 105 구현을 작성하지 않고 독자적인 XML 서명 알고리즘의 구현을 플러그 인 할 수 있도록(듯이) 하는 것은, 유용한 일이라고 생각됩니다만, JSR 105 의 이 릴리스에서는 필요 없습니다. Java SE 의 후속 릴리스에서는, 기초가 되는 JCA/JCE 를 확장해, XML 시큐리티 알고리즘, 파라미터, 열쇠 정보의 등록, 해석, 및 처리의 지원를 추가하는 솔루션을 검토하고 있습니다.
+</ol>
+
+<h2><a name="Package Overview"/>패키지의 개요</h2>
+JSR 105 API 는, 다음의 6 개의 패키지로 구성되어 있습니다.
+<ul>
+<li><b><a href="../../../../api/javax/xml/crypto/package-summary.html">javax.xml.crypto</a> </b>
+<li><b><a href="../../../../api/javax/xml/crypto/dom/package-summary.html">javax.xml.crypto.dom</a> </b>
+<li><b><a href="../../../../api/javax/xml/crypto/dsig/package-summary.html">javax.xml.crypto.dsig</a> </b>
+<li><b><a href="../../../../api/javax/xml/crypto/dsig/dom/package-summary.html">javax.xml.crypto.dsig.dom</a> </b>
+<li><b><a href="../../../../api/javax/xml/crypto/dsig/keyinfo/package-summary.html">javax.xml.crypto.dsig.keyinfo</a> </b>
+<li><b><a href="../../../../api/javax/xml/crypto/dsig/spec/package-summary.html">javax.xml.crypto.dsig.spec</a> </b>
+</ul>
+<a href="../../../../api/javax/xml/crypto/package-summary.html">javax.xml.crypto</a>  패키지에는, XML 서명의 생성이나 XML 데이터의 암호화 등, XML 암호화 조작을 실시하는 경우에 사용하는 공통 클래스가 포함되어 있습니다. 이 패키지내의 주요한 클래스에는 다음의 2 개가 있습니다. <a href="../../../../api/javax/xml/crypto/KeySelector.html">KeySelector</a>  클래스를 사용하면(자), 개발자는,<code>KeyInfo</code> 객체에 포함되어 있는 정보를 사용해 열쇠를 검출해 임의에 검증하는 구현을 제공할 수 있습니다. <a href="../../../../api/javax/xml/crypto/URIDereferencer.html">URIDereferencer</a>  클래스를 사용하면(자), 개발자는, 독자적인 URI 간접 참조 구현을 작성 및 지정할 수 있습니다.
+<p>
+<a href="../../../../api/javax/xml/crypto/dsig/package-summary.html">javax.xml.crypto.dsig</a>  패키지에는, W3C XML 디지털 서명 스펙으로 정의되고 있는 코어 요소를 나타내는 인터페이스가 포함되어 있습니다. 무엇보다 중요한 것은 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.html">XMLSignature</a>  클래스입니다. 이 클래스를 사용하면(자), XML 디지털 서명의 서명 및 검증을 실시할 수가 있습니다. 대부분의 XML 서명 또는 요소는, 대응하는 인터페이스에 의해 나타내집니다. 다만,<code>KeyInfo</code> 구조는 독자적인 패키지에 포함되어 있기 (위해)때문에, 다음의 단락으로 설명합니다. 인터페이스는, 다음과 같습니다. <a href="../../../../api/javax/xml/crypto/dsig/SignedInfo.html">SignedInfo</a> ,<a href="../../../../api/javax/xml/crypto/dsig/CanonicalizationMethod.html">CanonicalizationMethod</a> ,<a href="../../../../api/javax/xml/crypto/dsig/SignatureMethod.html">SignatureMethod</a> ,<a href="../../../../api/javax/xml/crypto/dsig/Reference.html">Reference</a> ,<a href="../../../../api/javax/xml/crypto/dsig/Transform.html">Transform</a> ,<a href="../../../../api/javax/xml/crypto/dsig/DigestMethod.html">DigestMethod</a> ,<a href="../../../../api/javax/xml/crypto/dsig/XMLObject.html">XMLObject</a> ,<a href="../../../../api/javax/xml/crypto/dsig/Manifest.html">Manifest</a> ,<a href="../../../../api/javax/xml/crypto/dsig/SignatureProperty.html">SignatureProperty</a> , 및 <a href="../../../../api/javax/xml/crypto/dsig/SignatureProperties.html">SignatureProperties</a> . <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html">XMLSignatureFactory</a>  클래스는, 이러한 인터페이스를 구현하는 객체를 작성하는 경우에 사용하는 추상 팩토리입니다.
+<p>
+<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/package-summary.html">javax.xml.crypto.dsig.keyinfo</a>  패키지에는, W3C XML 디지털 서명 권고로 정의되고 있는 대부분의 <code>KeyInfo</code> 구조를 나타내는 인터페이스가 포함되어 있습니다. 이 구조에는,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfo.html">KeyInfo</a> ,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyName.html">KeyName</a> ,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyValue.html">KeyValue</a> ,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/X509Data.html">X509Data</a> ,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/X509IssuerSerial.html">X509IssuerSerial</a> ,<a href="../../../../api/javax/xml/crypto/dsig/keyinfo/RetrievalMethod.html">RetrievalMethod</a> , 및 <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/PGPData.html">PGPData</a>  가 있습니다. <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfoFactory.html">KeyInfoFactory</a>  클래스는, 이러한 인터페이스를 구현하는 객체를 작성하는 경우에 사용하는 추상 팩토리입니다.
+<p>
+<a href="../../../../api/javax/xml/crypto/dsig/spec/package-summary.html">javax.xml.crypto.dsig.spec</a>  패키지에는, 다이제스트, 서명, 변환, 또는 XML 서명의 처리로 사용되는 정규화 알고리즘용의 입력 파라미터를 나타내는 인터페이스 및 클래스가 포함되어 있습니다.  
+<p>
+마지막으로,<a href="../../../../api/javax/xml/crypto/dom/package-summary.html">javax.xml.crypto.dom</a>  및 <a href="../../../../api/javax/xml/crypto/dsig/dom/package-summary.html">javax.xml.crypto.dsig.dom</a>  패키지에는,<a href="../../../../api/javax/xml/crypto/package-summary.html">javax.xml.crypto</a>  및 <a href="../../../../api/javax/xml/crypto/dsig/package-summary.html">javax.xml.crypto.dsig</a>  패키지용의 DOM 고유의 클래스가 포함되어 있습니다. DOM 베이스의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html">XMLSignatureFactory</a>  또는 <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfoFactory.html">KeyInfoFactory</a>  구현을 작성 또는 사용하는 개발자 및 사용자만이, 이러한 패키지를 직접 사용할 필요가 있습니다.
+
+<h2><a name="Service Provider">서비스 프로바이더</a> </h2>
+JSR 105 암호화 서비스는,<a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html">XMLSignatureFactory</a>  및 <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfoFactory.html">KeyInfoFactory</a>  추상 클래스의 고정 구현이며, XML 서명이나 KeyInfo 구조를 해석, 생성, 및 검증하는 객체나 알고리즘을 작성합니다. <code>XMLSignatureFactory</code> 의 고정 구현은, XML 구조에 관한 W3C 권고에 규정되고 있도록(듯이), 필요한 각각의 알고리즘을 지원하고 있을 필요가 있습니다. 이 고정 구현은, W3C 권고나 다른 스펙에 규정되고 있도록(듯이), 다른 알고리즘을 지원할 수 있습니다.
+<p>
+JSR 105 는,<a href= "../crypto/CryptoSpec.html#Provider">JCA 프로바이더 모델</a>을 사용해 <code>XMLSignatureFactory</code> 및 <code>KeyInfoFactory</code> 구현의 등록과 로드를 실시합니다.
+<p>
+고정 구현 <code>XMLSignatureFactory</code> 또는 <code>KeyInfoFactory</code> 는 각각, XML 서명이나 KeyInfo 구조를 해석 및 생성할 경우에 구현에 의해 내부에서 사용되는 XML 처리 기구를 식별하는 특정의 「XML 기구 타입」을 지원하고 있습니다. 이 JSR 는 표준 타입 <b>DOM</b> 를 지원하고 있습니다. 새로운 표준 타입 (JDOM 등)의 지원는, 향후 추가될 가능성이 있습니다.
+<p>
+JSR 105 구현은,<a href="../../../../api/java/security/Signature.html">java.security.Signature</a>  나 <a href="../../../../api/java/security/MessageDigest.html">java.security.MessageDigest</a>  등의 기초가 되는 JCA 엔진 클래스를 사용해 암호화 조작을 실시할 필요가 있습니다.  
+<p>
+<code>XMLSignatureFactory</code> 및 <code>KeyInfoFactory</code> 클래스 이외에, JSR 105 는, 변환 및 정규화 알고리즘용의 서비스 프로바이더 인터페이스도 지원하고 있습니다. <a href="../../../../api/javax/xml/crypto/dsig/TransformService.html">TransformService</a>  클래스를 사용하면(자), 특정의 XML 기구용의 고유의 변환 또는 정규화 알고리즘의 구현을 개발 및 플러그 인 할 수가 있습니다. <code>TransformService</code> 클래스는, 구현을 등록 및 로드할 때 표준 JCA 프로바이더 모델을 사용합니다. 각 JSR 105 구현은 <code>TransformService</code> 클래스를 사용해, 생성 또는 검증하고 있는 XML 서명으로 변환 알고리즘 및 정규화 알고리즘을 지원하는 프로바이더를 찾아낼 필요가 있습니다.
+
+<h2><a name="DOM Mechanism Requirements">DOM 기구의 요건</a> </h2>
+상호 운용성의 문제를 최소한으로 하기 위해서(때문에), DOM 베이스의 <code>XMLSignatureFactory</code>,<code>KeyInfoFactory</code>, 또는 <code>TransformService</code> 를 구현하는 경우는, 다음의 요건에 따를 필요가 있습니다.
+<ol>
+<li><code>XMLSignatureFactory</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html#unmarshalXMLSignature">unmarshalXMLSignature</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dsig/dom/DOMValidateContext.html">DOMValidateContext</a>  형을 지원할 필요가 있습니다. 형태가 <code>DOMValidateContext</code> 의 경우는, 형태 <code>Signature</code> 의<a href="../../../../api/org/w3c/dom/Element.html">요소</a>를 포함할 필요가 있습니다. 또,<code>unmarshalXMLSignature</code> 메소드는 건네받는 <code>DOMValidateContext</code> 의 ID/요소 매핑을 생성할 수 있습니다.
+<li><code>XMLSignatureFactory</code> 에 의해 생성되는 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.html">XMLSignature</a>  의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.html#sign">sign</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dsig/dom/DOMSignContext.html">DOMSignContext</a>  형을 지원해,<a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.html#validate">validate</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dsig/dom/DOMValidateContext.html">DOMValidateContext</a>  형을 지원할 필요가 있습니다. 이 요건은,<a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.SignatureValue.html">SignatureValue</a>  의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignature.SignatureValue.html#validate">validate</a>  메소드 및 <a href="../../../../api/javax/xml/crypto/dsig/Reference.html">Reference</a>  의 <a href="../../../../api/javax/xml/crypto/dsig/Reference.html#validate">validate</a>  메소드에도 들어맞읍니다.
+<li>구현은, 어플리케이션이 확장 가능한 컨텐츠 (임의의 요소 또는 혼합 컨텐츠)를 지정하기 위한 기구로서 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  를 지원할 필요가 있습니다.
+<li>사용자 지정의 <a href="../../../../api/javax/xml/crypto/URIDereferencer.html">URIDereferencer</a>  의 <a href="../../../../api/javax/xml/crypto/URIDereferencer.html#dereference">dereference</a>  메소드가 <a href="../../../../api/javax/xml/crypto/NodeSetData.html">NodeSetData</a>  객체를 돌려주는 경우,<code>iterator</code> 메소드는 형태 <code>org.w3c.dom.Node</code> 의 객체의 반복을 돌려줄 필요가 있습니다.
+<li>사용자 지정의 <code>URIDereferencer</code> 의 <code>dereference</code> 메소드에게 건네진 <code>URIReference</code> 객체는 형태 <a href="../../../../api/javax/xml/crypto/dom/DOMURIReference.html">DOMURIReference</a>  이며,<code>XMLCryptoContext</code> 객체는 <a href="../../../../api/javax/xml/crypto/dom/DOMCryptoContext.html">DOMCryptoContext</a>  를 구현할 필요가 있습니다.
+<li>직전의 2 개의 요건은,<code>XMLSignatureFactory</code> 및 <code>KeyInfoFactory</code> 의 <code>getURIDereferencer</code> 메소드에 의해 반환되는 <code>URIDereferencer</code> 에도 들어맞읍니다.
+<li><code>KeyInfoFactory</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfoFactory.html#unmarshalKeyInfo">unmarshalKeyInfo</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  형을 지원할 필요가 있습니다. 형태가 <code>DOMStructure</code> 의 경우는, 형태 <code>KeyInfo</code> 의<a href="../../../../api/org/w3c/dom/Element.html">요소</a>를 포함할 필요가 있습니다.  
+<li><code>Transform</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/Transform.html#transform">transform</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMCryptoContext.html">DOMCryptoContext</a>  문맥 파라미터 타입을 지원할 필요가 있습니다.
+<li><code>XMLSignatureFactory</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html#newTransform(String,%20XMLStructure)">newtransform</a>  및 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html#newCanonicalizationMethod(String,%20XMLStructure)">newCanonicalizationMethod</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  파라미터 타입을 지원할 필요가 있습니다.
+<li><code>TransformService</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/TransformService.html#init">init</a>  및 <a href="../../../../api/javax/xml/crypto/dsig/TransformService.html#marshalParams">marshalParams</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  및 <a href="../../../../api/javax/xml/crypto/dom/DOMCryptoContext.html">DOMCryptoContext</a>  형을 지원할 필요가 있습니다.
+<li><code>XMLSignatureFactory</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/XMLSignatureFactory.html#unmarshalXMLSignature">unmarshalXMLSignature</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  형을 지원할 필요가 있습니다. 형태가 <code>DOMStructure</code> 의 경우는, 형태 <code>Signature</code> 의<a href="../../../../api/org/w3c/dom/Element.html">요소</a>를 포함할 필요가 있습니다.  
+<li><code>KeyInfo</code> 의 <a href="../../../../api/javax/xml/crypto/dsig/keyinfo/KeyInfo.html#marshal">marshal</a>  메소드는 <a href="../../../../api/javax/xml/crypto/dom/DOMStructure.html">DOMStructure</a>  및 <a href="../../../../api/javax/xml/crypto/dom/DOMCryptoContext.html">DOMCryptoContext</a>  파라미터 타입을 지원할 필요가 있습니다.  
+</ol>
+DOM 구현은, 상호 운용성에 영향을 주지 않는 경우, DOM 이외의 XML 해석 API 를 내부적으로 사용할 수 있습니다. 예를 들어,<code>XMLSignatureFactory</code> 의 DOM 구현은, 내부적으로 SAX 퍼서를 사용해 데이터를 정규화할 수가 있습니다.
+ 
+<h2><a name="Open API Issues">오픈 API 의 문제</a> </h2>
+오픈 API 의 문제는, 다음과 같습니다.
+<ol>
+<li>외부 XML 문서 참조의 ID 속성의 등록이 지원되고 있지 않습니다. <br>다음의 참조에 대해 검토해 보겠습니다.
+      <pre><code>
+  &lt;Reference URI="document.xml"&gt;
+    &lt;Transforms&gt;
+      &lt;Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116"&gt;
+        &lt;XPath>id("foo") &lt;/XPath&gt;
+      &lt;/Transform&gt;
+    &lt;/Transforms&gt;
+  &lt;/Reference&gt;
+      </code></pre>
+외부 문서의 간접 참조에 의해 8중창 스트림이 생성되어 그것이 JSR 105 구현에 의해 NodeSet 에 변환되고 있습니다. 다만, API 에서는 외부 문서의 ID 속성을 등록하기 위한 기구가 제공되어 있지 않기 때문에, XPath 변환 구현은 「foo」ID를 식별할 수 없을 가능성이 있습니다. <br>
+</ol>
+
+<h2><a name="Examples">프로그래밍예</a> </h2>
+다음의 예 1 ?  3 에서는, JSR 105 API 를 사용해 다양한 타입의 단순한 XML 디지털 서명을 생성하는 방법에 대해 설명합니다. 예 1 에서는, DSA 서명 알고리즘을 사용해<a href="http://www.w3.org/TR/xmldsig-core/#def-SignatureDetached"/>분리 서명</a>을 생성하는 방법에 대해 설명합니다. 예 2 에서는,<a href="http://www.w3.org/TR/xmldsig-core/#def-SignatureEnveloped"/>포락선 된 서명</a>을 생성하는 방법에 대해 설명합니다. 예 3 에서는,<a href="http://www.w3.org/TR/xmldsig-core/#def-SignatureEnveloping"/>포락선 하는 서명</a>을 생성하는 방법에 대해 설명합니다. 예 4 에서는, XML 서명을 검증하는 방법에 대해 설명합니다.  
+<ol>
+<li><a href="GenDetached.java"><b>분리된 XML 디지털 서명의 생성</b></a> 
+<li><a href="GenEnveloped.java"><b>포락선 된 XML 디지털 서명의 생성</b></a> 
+<li><a href="GenEnveloping.java"><b>포락선 하는 XML 디지털 서명의 생성</b></a> 
+<li><a href="Validate.java"><b>XML 디지털 서명의 검증</b></a> 
+</ol>
+
+<hr size=3 noshade>
+<table summary="layout" border="0" width="100%">
+<tr valign=top>
+<td>
+
+<p><font size="-2">Copyright &#169; 2006, Sun Microsystems, Inc.  4150 Network Circle Santa Clara, California 95054 All Rights Reserved. </font></p>
+
+<font size="-1">코멘트의 송부처:<a href="mailto:java-security@sun.com">java-security@sun.com</a> . 이것은 구독 리스트가 아닙니다. </font>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

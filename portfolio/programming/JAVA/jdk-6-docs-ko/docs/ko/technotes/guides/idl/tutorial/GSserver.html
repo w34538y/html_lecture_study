@@ -1,0 +1,534 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<TITLE>Java IDL 입문 :Hello World 서버의 개발 - xrath.com 에서 번역됨</TITLE>
+<!-- Changed by: dbc 4/2001 --> <X-SAS-WINDOW TOP=42 BOTTOM=477 LEFT=4 RIGHT=534>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+
+<H1 ALIGN=CENTER>Java IDL 입문: <BR>Hello World 서버의 개발</H1>
+<HR>
+
+<P>여기서 소개하는 서버는, 서번트와 서버의 2 개의 클래스로 구성됩니다. 서번트인 <TT>HelloImpl</TT> 는,<TT>Hello</TT> IDL 인터페이스의 구현입니다. 즉,<TT>Hello</TT> 의 각 인스턴스는,<TT>HelloImpl</TT> 의 인스턴스에 의해 구현됩니다. 서번트는,<TT>idlj</TT> 컴파일러에 의해 예의 IDL 로부터 생성되는 <TT>HelloPOA</TT> 의 서브 클래스입니다.
+
+<P>서번트에게는, IDL 오퍼레이션 마다 1 개의 메소드가 포함됩니다. 이 예에서는,<TT>sayHello()</TT> 및 <TT>shutdown()</TT> 메소드입니다. 서번트 메소드는, Java 의 일반적으로의 메소드와 변화는 없습니다. ORB 의 처리, 인수나 결과의 정렬화등을 실시하는 코드는, 스켈리턴으로 구현합니다. </P>
+
+<P>서버 클래스에는 서버의 <TT>main()</TT> 메소드가 포함됩니다.  이 <TT>main()</TT> 메소드에서는, 다음의 처리를 실시합니다.
+
+</P>
+<UL>
+
+<LI>ORB 의 인스턴스를 생성해 초기화한다   
+<LI>루트 POA 의 참조를 취득해,<tt>POAManager</tt> 를 기동한다
+<LI>서번트의 인스턴스 (1 개의 CORBA <TT>Hello</TT> 객체의 구현)를 생성해, 그것을 ORB 에게 전한다
+<LI>새로운 CORBA 객체를 네이밍 문맥에 등록하기 위해(때문에), CORBA 객체의 객체 참조를 취득한다   
+<LI>루트의 네이밍 문맥을 취득한다
+<LI>새로운 객체를 「Hello」라고 하는 이름으로 네이밍 문맥에 등록한다
+<LI>클라이언트로부터 새로운 객체가 불려 가는 것을 기다린다
+</UL>
+
+<P>이 레슨에서는, CORBA 서버 작성의 기본을 배웁니다. 지속 객체 서버를 사용하는 「Hello World」프로그램의 예에 대해서는,<a  href="../jidlExample2.html"><em>「예 2:지속성을 갖춘 Hello World」</em></a> 를 참조해 주세요. CORBA 서버의 상세한 것에 대하여는,<a href="../jidlServers.html"><em>「서버의 개발」</em></a> 을 참조해 주세요.   
+
+<P>이 레슨의 순서는 다음과 같습니다.
+
+<OL>
+<LI><A href="#create">HelloServer.java 의 생성</A> 
+<LI><A href="#understand">HelloServer.java 의 이해</A> 
+<LI><A href="#compile">Hello World 서버의 컴파일</A> 
+</OL>
+
+<P>
+
+<HR>
+<A NAME="create">
+<H2>HelloServer.java 의 생성</H2></A> 
+<P><TT>HelloServer.java</TT> 를 생성하려면 , 다음과 같이 합니다.
+<P>
+<OL>
+<LI>텍스트 문자 편집기를 기동해,<TT>HelloServer.java</TT> 라는 이름의 파일을 메인 프로젝트 디렉토리의 <TT>Hello</TT> 에 작성합니다.
+<P>
+<LI><TT>HelloServer.java</TT> 의 다음의 코드를 텍스트 파일에 기술합니다. 코드의 각 행의 상세한 것에 대하여는, 다음의<A HREF="#understand">「HelloServer.java 의 이해」</a>로 설명합니다.
+<P>
+<pre>
+// <STRONG>HelloServer.java</STRONG>
+// <A HREF="../examplelicense.html">Copyright and License</A>  
+import HelloApp. *;
+import org.omg.CosNaming. *;
+import org.omg.CosNaming.NamingContextPackage. *;
+import org.omg.CORBA. *;
+import org.omg.PortableServer. *;
+import org.omg.PortableServer.POA;
+
+import java.util.Properties;
+
+class HelloImpl extends HelloPOA {
+  private ORB orb;
+
+  public void setORB(ORB orb_val) {
+    orb = orb_val; 
+  }
+    
+  // implement sayHello() method
+  public String sayHello() {
+    return "\nHello world !!\n";
+  }
+    
+  // implement shutdown() method
+  public void shutdown() {
+    orb.shutdown(false);
+  }
+}
+
+
+public class HelloServer {
+
+  public static void main(String args[]) {
+    try{
+      // create and initialize the ORB
+      ORB orb = ORB.init(args, null);
+
+      // get reference to rootpoa & activate the POAManager
+      POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+      rootpoa.the_POAManager(). activate();
+
+      // create servant and register it with the ORB
+      HelloImpl helloImpl = new HelloImpl();
+      helloImpl.setORB(orb); 
+
+      // get object reference from the servant
+      org.omg.CORBA.Object ref = rootpoa.servant_to_reference(helloImpl);
+      Hello href = HelloHelper.narrow(ref);
+	  
+      // get the root naming context
+      org.omg.CORBA.Object objRef =
+          orb.resolve_initial_references("NameService");
+      // Use NamingContextExt which is part of the Interoperable
+      // Naming Service (INS) specification.
+      NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+
+      // bind the Object Reference in Naming
+      String name = "Hello";
+      NameComponent path[] = ncRef.to_name( name );
+      ncRef.rebind(path, href);
+
+      System.out.println("HelloServer ready and waiting ...");
+
+      // wait for invocations from clients
+      orb.run();
+    } 
+	
+      catch (Exception e) {
+        System.err.println("ERROR: " + e);
+        e.printStackTrace(System.out);
+      }
+	  
+      System.out.println("HelloServer Exiting ...");
+	
+  }
+}
+&nbsp;</pre>
+
+<P>
+<LI><TT>HelloServer.java</TT> 를 보존해 닫습니다.
+</OL>
+
+<!--**********************************-->
+<HR>
+<A NAME="understand">
+<H2>HelloServer.java 의 이해</H2></A> 
+<P>여기에서는,<TT>HelloServer.java</TT> 의 각 행에 대해, 코드가 무엇을 하고 있는지, 또 이 어플리케이션으로 왜 필요한가에 임해서 설명합니다.
+
+
+
+<A name="setup">
+<H3>기본 설정</H3></A> 
+
+<P>CORBA 서버 프로그램의 구조는, 대부분의 Java 어플리케이션과 같습니다. 즉, 필요한 라이브러리 패키지를 임포트 해, 서버 클래스를 선언해,<TT>main()</TT> 메소드를 정의해, 예외의 처리를 실시합니다. &nbsp;
+
+<A name="import">
+<H4>필요한 패키지의 임포트</H4></A> 
+
+<P>우선, 서버 클래스에 필요한 패키지를 임포트 합니다.
+<pre>
+// The package containing our stubs
+import HelloApp. *;
+
+// HelloServer will use the naming service
+import org.omg.CosNaming. *;
+
+// The package containing special exceptions thrown by the name service
+import org.omg.CosNaming.NamingContextPackage. *;
+
+// All CORBA applications need these classes
+import org.omg.CORBA. *;
+
+// Classes needed for the Portable Server Inheritance Model
+import org.omg.PortableServer. *;
+import org.omg.PortableServer.POA;
+
+// Properties to initiate the ORB
+import java.util.Properties;
+</pre>
+
+<A name="helloservant">
+<H4>서번트 클래스의 정의</H4></A> 
+
+<P>이 예에서는,<TT>HelloServer.java</TT> 내의 <TT>HelloServer</TT> 클래스의 외측에, 서번트 객체의 클래스를 정의하고 있습니다.  
+
+<P>
+<pre>
+class HelloImpl extends HelloPOA
+{
+  // The sayHello() and shutdown() methods go here.
+}
+</pre>
+<P>이 서번트는 <TT>HelloPOA</TT> 의 서브 클래스이므로, 컴파일러가 HelloPOA 를 위해서(때문에) 생성한 범용의 CORBA 기능을 상속합니다. <P>
+
+<P>우선,<code>setORB(ORB)</code> 메소드로 사용되는 프라이빗 변수 <code>orb</code> 를 작성합니다. <tt>setORB</tt> 메소드는, 서번트에게 ORB (값)를 설정할 수 있도록(듯이) 어플리케이션 개발자에 의해 정의되는 어플리케이션 고유의 메소드입니다. 이 ORB 치는, 클라이언트로부터의 <tt>shutdown()</tt> 메소드의 호출에 응해, 고유의 ORB 상에서 <tt>shutdown()</tt> 를 호출하기 위해서(때문에) 사용됩니다.
+<P>
+<pre>
+  private ORB orb;
+  
+  public void setORB(ORB orb_val) {
+    orb = orb_val; 
+  }
+</pre>
+
+<P>다음에, 필요한 <TT>sayHello()</TT> 메소드를, 선언해 구현합니다. <P>
+<pre>
+  public String sayHello()
+  {
+    return "\nHello world!!\n";   
+  }
+</pre>
+
+
+
+<P>마지막으로,<code>shutdown()</code> 메소드를 같은 방법으로 구현합니다. <code>shutdown()</code> 메소드는, ORB 용으로 <code>org.omg.CORBA.ORB.shutdown(boolean)</code> 메소드를 호출합니다. <code>shutdown(false)</code> 오퍼레이션은, ORB 가 처리의 완료를 기다리지 않고 , 곧바로 종료 할 필요가 있는 것을 지시합니다.
+<P>
+<pre>
+  public void shutdown() {
+    orb.shutdown(false);
+  }
+</pre>
+
+
+
+<A name="class">
+<H4>서버 클래스의 선언</H4></A> 
+
+<P>다음에, 서버 클래스를 선언합니다.
+<pre>
+public class HelloServer 
+{
+  // The main() method goes here.
+}
+</pre>
+
+
+<A name="main">
+<H4>main() 메소드의 정의</H4></A> 
+
+<P>모든 Java 어플리케이션에는 <TT>main</TT> 메소드가 필요합니다. 이 메소드를 다음과 같이,<TT>HelloServer</TT> 클래스의 스코프내에서 선언합니다.
+<pre>
+  public static void main(String args[])
+  {
+    // The try-catch block goes here.
+  }
+</pre>
+
+<A name="except">
+<H4>CORBA 시스템 예외의 처리</H4></A> 
+
+<P>어느 CORBA 프로그램에서도, 실행시에 CORBA 시스템 예외가 발생할 가능성이 있으므로,<TT>main()</TT> 메소드의 기능은, 모두 try-catch 블록내에 기술합니다. CORBA 프로그램은, 호출에 수반하는 프로세스 (정렬화, 비정렬화, 업 콜)로 문제가 발생하면(자), 시스템 예외를 발생시킵니다. 이 레슨의 예외 핸들러는 간단한 것으로, 어떤 문제가 일어났는지를 알 수 있도록(듯이), 예외의 이름과 그 스택 트레이스를 표준 출력에 출력합니다.  
+
+<P><TT>main()</TT> 안에, 다음의 try-catch 블록을 기술합니다.
+<pre>
+    try{
+    
+      // The rest of the HelloServer code goes here.
+    
+    } catch(Exception e) {
+        System.err.println("ERROR: " + e);
+        e.printStackTrace(System.out);
+      }
+</pre>
+
+
+<!--************************************************--> <A name="orb">
+<H3>ORB 객체의 생성 및 초기화</H3></A> 
+
+
+<P>CORBA 서버에는, CORBA 클라이언트와 같게 로컬 ORB 객체가 필요합니다. 각 서버는 ORB 의 인스턴스를 생성해, 그것이 호출을 받았을 때에 서버를 검색할 수 있도록(듯이), 그 <A  href="../jidlGlossary.html#servant%20object">서번트 객체</a>를 등록합니다.
+
+<P>try-catch 블록 중(안)에서, ORB 변수를 선언해 초기화합니다.
+<pre>
+      ORB orb = ORB.init(args, null);
+</pre>
+
+<P>ORB 의 <TT>init()</TT> 메소드의 호출은, 서버의 커멘드행 인수에게 건네지므로, 실행시에 특정의<A  href="../jidlInitialization.html#systempropertiesobject">프로퍼티</a>을 설정할 수 있습니다.  
+
+<!--************************************************--> <A name="poaref">
+<H3>루트 POA 에의 참조의 취득 및 <tt>POAManager</tt> 의 활성화</H3></A> 
+
+<P>ORB 는,<code>resolve_initial_references</code> 메소드를 사용하는 네임 서비스등의 초기적인 서비스에의 객체 참조를 가져옵니다.
+
+<P>루트 POA 에의 참조가 취득되어<tt>POAManager</tt> 가 try-catch 블록 중(안)에서 활성화 합니다.
+<pre>
+      POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+      rootpoa.the_POAManager(). activate();
+</pre>
+
+<P> <code>activate()</code> 오퍼레이션은, POA 매니저 상태를 액티브하게 변경합니다. 그 결과, 관련지을 수 있었던 POA 는 요구의 처리를 개시합니다. POA 매니저는, 관련지을 수 있고 있는 POA 의 처리 상태를 캡슐화합니다. 각 <code>POA</code> 객체에는, 1 개의 <code>POAManager</code> 객체를 관련지을 수 있고 있습니다. POA 매니저는, 1 개(살) 이상의 POA 객체에 관련지을 수 있고 있는 일이 있습니다.
+
+
+
+<!--**********************************--> <A name="servantobject">
+<H3>서번트 객체의 관리</H3></A> 
+
+<A href="../jidlGlossary.html#server">서버</a>란,1 개(살) 이상의 서번트 객체의 인스턴스를 생성하는 프로세스입니다. <A href="../jidlGlossary.html#servant%20object">서번트</a>는,<TT>idlj</TT> 가 생성한 인터페이스로부터 상속해, 그 인터페이스상에서 실제의 오퍼레이션을 실시합니다. 이 레슨의 <TT>HelloServer</TT> 에는 1 개의 <TT>HelloImpl</TT> 가 필요합니다.
+
+<A name="servant">
+<H4>서번트 객체의 인스턴스의 생성</H4></A> 
+
+
+<P>다음과 같이, POA 매니저를 기동한 직후에, try-catch 블록 중(안)에서 서번트 객체의 인스턴스를 생성합니다.
+<pre>
+      HelloImpl helloImpl = new HelloImpl();
+</pre>
+<P>서번트 클래스를 기술하는 코드에 대해서는, 이미 설명되고 있습니다.
+
+<P>다음의 코드행은,<tt>ORB.shutdown()</tt> 를 종료 오퍼레이션의 일부로서 호출할 수 있도록(듯이) 하기 위한(해),<tt>setORB(orb)</tt> 는 서번트로 정의되고 있습니다. 이 순서가 필요한 것은,<tt>shutdown()</tt> 메소드가 <tt>Hello.idl</tt> 에 정의되고 있기 때문입니다.
+<pre>
+      helloImpl.setORB(orb); 
+</pre>
+
+<P>종료 오퍼레이션의 구현에는, 다른 방법도 있습니다. 이 예에서는,<tt>Object</tt> 상에서 불려 간 <tt>shutdown()</tt> 메소드는, ORB 의 종료을 실시합니다. 다른 구현예에서는, 종료 메소드의 구현은 플래그를 설정하는 것만으로 끝납니다. 서버가 플래그를 확인해 <tt>shutdown()</tt> 를 호출합니다.   
+
+<P>다음의 일련의 코드는, 서번트가 관련지을 수 있었던 객체 참조의 취득에 사용됩니다. <TT>narrow()</TT> 메소드는, CORBA <A href="../jidlGlossary.html#object%20reference">객체 참조</a>를 적절한 형태로 변환하기 위해서(때문에) 필요합니다.
+
+<P>
+<pre>
+      org.omg.CORBA.Object ref = rootpoa.servant_to_reference(helloImpl);
+      Hello href = HelloHelper.narrow(ref);
+</pre>
+
+
+
+
+
+<!--*********************************************-->
+
+<A name="namingservice">
+<H3>COS 네이밍의 이용</H3></A> 
+
+<P><TT>HelloServer</TT> 는 COS (Common Object Services) 네임 서비스를 이용해, 클라이언트측으로부터 서번트 객체의 오퍼레이션을 이용 가능하게 합니다. 서버는, 다양한 인터페이스를 구현하고 있는 객체의 참조를 발행할 수 있도록(듯이) 하기 위한(해), 네임 서비스에의 객체 참조가 필요합니다. 이러한 객체 참조는, 클라이언트가 메소드를 호출하는데 사용됩니다. 서번트가 객체를 클라이언트측에서 호출하게 할 수가 있도록(듯이) 하는 이제(벌써) 1 개의 방법은, 파일에의 객체 참조를 캐릭터 라인화하는 것입니다.
+
+<P>J2SE v1. 4 에 부속되어 있는 네임 서비스에는, 다음의 2 개의 옵션이 있습니다.
+<P>
+<UL>
+	<LI><tt><a href="../../../tools/share/orbd.html">orbd</a> </tt> - 서버 매니저 외에, 일시 네임 서비스와 지속 네임 서비스도 포함한다
+	<LI><tt><a href="../../../tools/share/tnameserv.html">tnameserv</a> </tt> - 일시 네임 서비스
+	</UL>
+	
+<P>이 예에서는 <tt>orbd</tt> 를 사용합니다.
+
+
+<A name="rootnc">
+<H4>초기 네이밍 문맥의 취득</H4></A> 
+
+<P>try-catch 블록 중(안)에서, 서번트의 객체 참조를 취득하면(자), 다음에 <TT>orb.resolve_initial_references()</TT> 를 호출해 네임서버-에의 객체 참조를 가져옵니다.
+
+<pre>
+      org.omg.CORBA.Object objRef =
+          orb.resolve_initial_references("NameService");
+</pre>
+
+<P>캐릭터 라인 「NameService」는, 모든 CORBA ORB 에 대해서 정의되고 있습니다. 이 캐릭터 라인을 건네주면(자), ORB 는 네임 서비스에의 객체 참조인 네이밍 문맥 객체를 돌려줍니다. 캐릭터 라인 NameService 는, 다음 일을 나타내고 있습니다.
+<P>
+<UL>
+<LI>이 예의 같게 ORBD 의 네임 서비스를 사용할 때는, 지속 네임 서비스가 된다
+<LI><tt>tnameserv</tt> 를 사용할 때는, 일시 네임 서비스가 된다
+</UL>
+ 
+<P>독자적인 캐릭터 라인 TNameService 는, ORBD 의 네임 서비스를 사용할 때는, 일시 네임 서비스가 되는 것을 나타내고 있습니다.   
+
+<A name="narrow">
+<H4>객체 참조의 네로우 변환</H4></A> 
+
+<P>CORBA 목의 객체 참조와도 같이<TT>objRef</TT> 는 범용의 CORBA 객체입니다. 이것을 <TT>NamingContextExt object</TT> 로서 사용하려면 , 적절한 형태에 네로우 변환할 필요가 있습니다. <TT>narrow()</TT> 의 호출은, 전의 문장의 직후에 있습니다.
+
+<pre>
+      NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+</pre>
+
+<P>이것은,<TT>idlj</TT> 로부터 생성되는 헬퍼 클래스의 사용 방법입니다. 그것들은 <TT>HelloHelper</TT> 에 기능적으로 유사하고 있습니다. 여기서 <TT>ncRef</TT> 객체는 <TT>org.omg.CosNaming.NamingContextExt</TT> 가 되었으므로, 다음의 스텝에서 지시받도록(듯이), 이것을 사용해 네임 서비스에 액세스 해, 서버를 등록할 수가 있습니다.
+
+<P><TT>NamingContextExt 객체</TT> 는, J2SE v1. 4 로 새롭게 추가된 것으로,<a  href="../jidlNaming.html#INS">Interoperable Naming Service</a>  의 스펙의 일부입니다.   
+
+
+<A name="naming">
+<H4>네임서버-에의 서번트의 등록</H4></A> 
+
+
+<P><TT>narrow()</TT> 의 호출의 직후에, 새로운 <TT>NameComponent</TT> 배열을 작성합니다. <TT>NamingContext.resolve</TT> 에는 작업용에 배열이 필요합니다. <TT>Hello</TT> 객체에의 패스에는 요소가 1 개 밖에 없기 때문에, 단일 요소의 배열을 작성합니다.
+<pre>
+      String name = "Hello";
+      NameComponent path[] = ncRef.to_name( name );
+</pre>
+
+
+<P><TT>path</TT> 와 서번트 객체를 네임 서비스에 인도해, 서번트 객체를 「Hello」id 에 묶습니다.
+<pre>
+      ncRef.rebind(path, href);
+</pre>
+
+<P>이것으로, 클라이언트가 초기 네이밍 문맥으로 <TT>resolve("Hello")</TT> 를 호출하면(자), 네임 서비스로부터 <TT>Hello</TT> 서번트에게로의 객체 참조가 돌려주어집니다. <P>
+
+
+
+
+<!--**************************************--> <A name="invoke">
+<H3>호출해 대기</H3></A> 
+
+<P>전의 마디에서는, 서버를 준비하기 위한 코드의 설명을 했습니다. 다음의 마디에서는, 클라이언트가 서비스를 요구하는 것을 기다리는 코드에 대해 설명합니다. try-catch 블록내의 마지막에 있는 다음의 코드는, 이것을 실행하기 위한의 것입니다.
+<pre>
+      orb.run();
+</pre>
+
+<P><TT>ORB.run()</TT> 는, 메인 thread에 의해 불려 가면(자), ORB 가 그 메인 thread를 사용해 동작할 수 있게 되기 (위해)때문에, ORB 로부터의 호출을 받을 때까지 대기합니다. 호출은 <TT>main()</TT> 의 try-catch 블록안에 있으므로 , 호출이 종료해 <TT>sayHello()</TT> 가 복귀한 후, 서버는 다시 호출해 기다리러 돌아옵니다. 태스크의 종료후에 <code>HelloClient</code> 가 명시적으로 ORB 를 종료 하는 것은 이 때문에입니다.
+
+
+<HR>
+<!--**************************************************--> <A name="compile">
+<H2>Hello World 서버의 컴파일</H2></A> 
+
+<P>여기서 <TT>HelloServer.java</TT> 를 컴파일 해, 에러를 수정하고 나서 레슨을 계속합니다.
+
+<P>Windows 의 사용자는, 이 메뉴얼의 패스의 slash (/)를 backslash (\)에 옮겨놓아 주세요.
+
+<P><TT>HelloServer.java</TT> 를 컴파일 하려면 , 다음과 같이 합니다.
+<OL>
+<LI><TT>Hello</TT> 디렉토리에 이동합니다. <P>
+<LI><TT>HelloServer.java</TT> 에 대해서 Java 컴파일러를 실행합니다.
+<pre>
+javac HelloServer.java HelloApp/*.java
+</pre>
+<LI>파일에 에러가 있으면, 수정해 컴파일 다시 합니다.  <p>
+
+<LI><TT>HelloServer.class</TT> 와 <TT>HelloImpl.class</TT> 파일은,<TT>Hello</TT> 디렉토리내에 생성됩니다.
+</OL>
+
+<A name="running">
+<H3>Hello World 서버의 실행</H3></A> 
+
+<P>문서<A HREF="GScompile.html">「Hello World 어플리케이션의 실행」</a>에서는,<tt>HelloServer</tt> 와 나머지의 어플리케이션의 실행에 대해 말하고 있습니다.
+
+<P>
+<HR>
+<P>
+<!--**************************************--> <A name="models">
+<H1>서버측의 구현 모델의 이해</H1></a> 
+
+
+
+
+<P>CORBA 는 IDL 인터페이스를 구현하는 서버측 매핑 가운데, 적어도 다음의 2 종류를 지원하고 있습니다.
+<P>
+<UL>
+<LI>상속 모델
+
+<P>상속 모델을 사용해, 컴파일러가 작성한 스켈리턴의 확장도 실시하는 구현 클래스를 사용해, IDL 인터페이스를 구현합니다.   
+
+<P>상속 모델에게는, 다음의 것이 포함되어 있습니다.
+<P>
+	<UL>
+	<LI>OMG 표준의 <em>POA</em>. <tt>My.idl</tt> 내에서 <tt>My</tt> 인터페이스가 정의되고 있는 경우는,<tt>idlj</tt> 컴파일러로 <tt>MyPOA.java</tt> 라고 하는 파일이 생성됩니다. <tt>My</tt> 에 구현을 제공할 필요가 있어, 그것은 <tt>MyPOA</tt> 를 상속하고 있을 필요가 있습니다. 이것은 스트림 베이스의 스켈리턴으로,<a  href="../../../../api/org/omg/PortableServer/Servant.html"><tt>org.omg.PortableServer.Servant</tt></A>  를 확장한 것이어, 모든 POA 서번트 구현의 base class가 되어 있습니다.  
+	  
+<P><EM>J2SE v1. 4 의 신기능:</EM><tt>-fall</tt> 또는 <tt>-fserver</tt> 의 어느 쪽인가의 인수가 사용될 때 생성되는 디폴트의 서버측 매핑은, CORBA 2.3. 1 스펙의 제 11 장 「POA (Portable Object Adapter)」(<a  href="http://cgi.omg.org/cgi-bin/doc?formal/99-10-07">formal/99-10-07</a> )에 준거하고 있습니다. <em></em>POA 의 상세한 것에 대하여는,<a href="../POA.html"><em>「Portable Object Adapter」</em></a> 를 참조해 주세요.
+
+
+<P>POA (Portable Object Adaptor)를 사용하는 이점은, 다음과 같습니다.
+<P>
+<UL>
+<LI>프로그래머가, 다른 ORB 제품간에 이식 가능한 객체 구현을 구축할 수 있도록(듯이) 한다
+<LI>지속성이 있는 식별 정보를 가지는 객체를 지원한다
+<LI>객체가 투과적으로 기동하도록(듯이) 지원한다
+<LI>단독의 서번트가 각각 식별되는 복수의 객체를 동시에 지원할 수 있도록(듯이) 한다
+</UL>
+	<P>
+	<LI><em>ImplBase</em>. <tt>My.idl</tt> 내에서 <tt>My</tt> 인터페이스가 정의되고 있는 경우는,<tt>_MyImplBase.java</tt> 라고 하는 파일이 생성됩니다. <tt>My</tt> 에 대해서 그 구현을 제공해, 이 구현은 <tt>_MyImplBase</tt> 로부터 상속하지 않으면 안됩니다.
+	
+	<P><strong>주: ImplBase 는 POA 모델이 있으므로 추천 되지 않습니다만, 버젼 1.3 이전의 J2SE 로 기술된 서버와 호환성을 가지기 위해서(때문에) 제공되고 있습니다. 이것은 비표준 모델이므로, 이것을 사용해 새로운 서버를 작성하는 것은 추천하지 않습니다. </strong>
+	
+	</UL>
+<P>
+<LI>위양 모델
+
+<P>위양 모델을 사용해, 다음의 2 개의 클래스를 사용해 IDL 인터페이스를 구현합니다.
+<P>
+<UL>
+<LI>IDL 로 생성된 Tie 클래스. 컴파일러로 생성된 스켈리턴으로부터 상속됩니다만, 호출은 모두 구현 클래스에 위양 됩니다.
+<LI>IDL 가 생성한 오퍼레이션 인터페이스 (<tt>HelloOperations</tt> 등)를 구현하는 클래스에서, 그것은 IDL 함수를 정의합니다. <P>
+</UL>
+
+<P>위양 모델은,<em>Tie</em> 모델이나 Tie 위양 모델로서도 알려져 있습니다. 이 모델은 POA 또는 ImplBase 컴파일러로 작성된 스켈리턴의 어느 쪽인지를 상속하므로, 이 문서에서는 POA/Tie 또는 ImplBase/Tie 모델과 같이 기술됩니다.
+</UL>
+
+<P>이 튜토리얼에서는, 서버측 구현의 POA 상속 모델을 취급합니다. 다른 서버측 구현을 사용하는 튜토리얼은, 다음의 문서를 참조해 주세요.
+
+
+<UL>
+<P>
+
+<LI><a href="../jidlTieServer.html"><em>Java IDL:POA/Tie 서버측 모델을 사용한 「Hello World」의 예</em></a> 
+
+
+<P>다른 구현으로부터 상속해야 하는 경우, 표준의 상속 모델은 아니고 Tie 모델을 사용하는 일이 있습니다. Java 의 경우는, 인터페이스의 상속의 개수에 제한은 없습니다만, 클래스의 상속에 사용할 수 있는 슬롯은 1 개 뿐입니다. 상속 모델을 사용했을 경우는, 그 슬롯이 점유 됩니다. Tie 모델을 사용했을 경우는, 그 슬롯이 사용되지 않고, 사용자가 독자적인 목적으로 사용할 수가 있습니다. 다만, 간접 참조의 레벨이 1 개 도입된다고 하는 결점이 있습니다. 즉, 메소드를 호출할 때 여분의 메소드 호출이 발생합니다.
+<P>
+<LI><a href="../jidlImplBaseServer.html"><em>Java IDL:ImplBase 서버측 모델을 사용한 「Hellow World」의 예</em></a> 
+<P>ImplBase 서버측의 모델은, POA 모델과 같이 상속 모델입니다. <tt>idlj</tt> 컴파일러에 의해,<tt>-oldImplBase</TT> 플래그를 사용해 J2SE 1.4 이전의 버젼의 Java IDL 와 호환성이 있는 서버측 바인딩을 생성합니다.  
+<P><STRONG><tt>-oldImplBase</TT> 플래그를 사용하는 것은 일반적이지는 않습니다. 이러한 API 는 추천 되고 있지 않습니다. 이 플래그를 사용하는 것은, J2SE 1.3 이전에 쓰여진 기존의 서버와의 호환성을 취하는 경우만입니다. 그 경우, 기존의 MAKEFILE 를 변경해 <tt>idlj</tt> 컴파일러에 <tt>-oldImplBase</TT> 플래그를 추가할 필요가 있습니다. 플래그를 추가하지 않는 경우, POA 베이스의 서버측 매핑이 생성됩니다.   </STRONG>
+<P>
+
+</UL>
+
+
+
+
+
+
+
+<HR>
+<!--**************************************--> <A name="information">
+<H2>상세 정보</H2></A> 
+
+<DL>
+<DT><A href="../jidlExceptions.html#systemexceptions"><em>예외:시스템 예외</em></A> 
+<DD>CORBA 의 시스템 예외의 동작과 Java&nbsp;IDL 의 시스템 예외의 마이너 코드의 상세한 설명
+
+<DT><A href="../jidlServers.html"><em>서버의 개발</em></A> 
+<DD>CORBA 서버의 프로그래밍에 관한 문제
+
+<DT><A href="../jidlNaming.html"><em>Java&nbsp;IDL 네임 서비스</em></A> 
+<DD>COS 네임 서비스의 상세한 설명
+
+</DL>
+
+<P><HR>
+<CENTER><P><A href="GSIDL.html">전의 레슨:<em>인터페이스 정의의 기술</em></A>  <BR> <A href="GSapp.html">다음의 레슨:<em>클라이언트 어플리케이션의 개발</em></A>  <BR> <A href="../GShome.html">튜토리얼의 홈</A>  
+
+<TABLE summary="layout" cellpadding=8 cellspacing=4>
+<TR>
+<TD ALIGN=CENTER><A href="../index.html">Java IDL 탑에</A> </TD>
+</TR></TABLE>
+
+<HR>
+<FONT SIZE="-2"><A HREF="http://www.sun.com/share/text/SMICopyright.html">Copyright &copy;</A> 1996-2001 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn.View, CA. 94043-1100 USA., All rights reserved. </FONT><p></P></CENTER>
+
+</BODY>
+</HTML>
+
+

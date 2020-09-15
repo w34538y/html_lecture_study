@@ -1,0 +1,217 @@
+<HTML>
+<HEAD>
+<!-- Inserted by TRADOS: --><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+
+<title>주석 - xrath.com 에서 번역됨</title>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR>
+<!--TD WIDTH=60-->
+<TD>
+<IMG SRC="../../../images/javalogo52x88.gif" ALT="Java" BORDER=0 WIDTH=52 HEIGHT=88>
+</TD>
+
+<TD>
+<center>
+<h1>주석</h1>
+</center>
+</TD>
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<font size="-1"><a href="index.html">Language 의 목차</a> </font>
+<p>
+</TR>
+</TABLE>
+
+<!-- Body text begins here -->
+
+<hr size=3 noshade>
+
+많은 API 에서는, 정해진 형태의 코드가 꽤 필요하게 됩니다. 예를 들어 JAX-RPC Web 서비스를 기술하기 위해서, 인터페이스와 구현의 편성을 제공할 필요가 있습니다. 이 정형구는, 원격로부터 액세스 가능한 메소드를 나타내는 주석으로 프로그램이 「장식」되고 있는 경우에, 툴로 자동적으로 생성할 수가 있습니다.
+
+<p>다른 API 의 경우는, 프로그램과 병행해 보수되는 「부속 파일」이 필요합니다. 예를 들어 JavaBeans 에는 Bean 와 병행해 보수되는 <a href="../../../api/java/beans/BeanInfo.html"><code>BeanInfo</code></a>  클래스가 필요해, Enterprise JavaBeans (EJB)의 경우는 「배치 기술자」가 필요합니다. 이러한 부속 파일내의 정보가 프로그램 자체의 주석으로서 보수되면, 취급이 간단해 에러가 발생하기 어려워집니다.
+
+<p>Java 플랫폼에는, 개개가 목적에 따라 다양한 주석의 기구가 있습니다. 예를 들어 <code>transient</code> 수식자는, 필드가 직렬화 하부조직에 의해 무시 되는 것이 당연한 것을 나타내는 주석이며,<code>@deprecated</code> javadoc 태그는 특정의 메소드를 사용 해서는 안된 것을 나타내는 주석입니다. 릴리스 5.0 에서는, 범용의 주석 ( 「메타데이타」라고도 불린다) 기능이 있습니다.  이 기능에서는, 사용자가 독자적인 주석형을 정의해 사용할 수 있습니다. 이 기능은, 주석형의 선언 구문, 선언의 주석 구문, 주석을 읽어내는 API, 주석의 클래스 파일 표현, 및<a href="../apt/index.html">주석 처리 툴</a>로 구성됩니다.
+
+<p>주석은 프로그램의 시멘틱스에 직접 영향을 주지 않습니다만, 툴이나 라이브러리가 프로그램을 취급하는 방법으로 영향을 줍니다.  그 때문에, 실행중의 프로그램의 시멘틱스에 영향을 주는 경우가 있습니다. 주석은 원시 파일, 클래스 파일, 또는 실행시에 리플렉션으로서 읽어낼 수가 있습니다.
+
+<p>주석은 javadoc 태그를 보완합니다. 일반적으로, 마크 업의 목적이 문서의 변경 또는 생성인 경우는 javadoc 태그를 사용해, 그렇지 않은 경우는 주석을 사용합니다.  
+
+<p>일반적으로의 어플리케이션 프로그래머는 주석형을 정의할 필요는 전혀 없습니다만, 정의하는 것은 어렵지는 않습니다. 주석형의 선언은, 일반적으로의 인터페이스의 선언을 닮아 있습니다. 단가 기호 (<code>@</code>)가 <code>interface</code> 키워드의 선두를 뒤따릅니다. 각각의 메소드 선언에서는, 주석형의 요소를 정의합니다. 메소드 선언에는, 파라미터나 <code>throws</code> 절을 포함할 수 없습니다. 반환값의 형태는, 프리미티브(primitive),<a href="../../../api/java/lang/String.html"><code>String</code></a> ,<a href="../../../api/java/lang/Class.html"><code>Class</code></a> ,<a href="enums.html">열거</a>, 주석, 및 그러한 형태의 배열에 한정됩니다. 메소드에는 「디폴트 값」를 설정할 수 있습니다. 주석형의 선언의 예를 나타냅니다.
+<blockquote>
+<pre>
+/**
+ * Describes the Request-For-Enhancement(RFE) that led
+ * to the presence of the annotated API element.
+ */
+public @interface RequestForEnhancement {
+    int    id();
+    String synopsis();
+    String engineer() default "[unassigned]"; 
+    String date()    default "[unimplemented]"; 
+}
+</pre>
+</blockquote>
+<p>주석형을 정의하면(자), 선언을 주석 할 수가 있습니다. 주석은 특수한 수식자로, 다른 수식자 (<code>public</code>,<code>static</code>,<code>final</code> 등)를 사용할 수 있는 장소이면 사용할 수 있습니다.  다만, 주석은 다른 수식자에 선행한다고 하는 규칙이 있습니다. 규칙에 의해, 주석은 다른 수식자의 전에 둡니다. 주석은, 단가 기호 (<code>@</code>)에 계속되는 주석형과 요소 - 치 페어를 괄호로 둘러싼 리스트로 구성됩니다. 값은 컴파일시에 정수가 아니면 안됩니다. 상기로 선언한 주석형에 대응하는 주석을 사용한 메소드 선언의 예를 나타냅니다.
+<blockquote>
+<pre>
+@RequestForEnhancement(
+    id       = 2868724,
+    synopsis = "Enable time-travel",
+    engineer = "Mr.  Peabody",
+    date     = "4/1/3007"
+)
+public static void travelThroughTime(Date destination) { ... }
+</pre>
+</blockquote>
+요소가 없는 주석형은, 「마커」주석형으로 불립니다.
+<blockquote>
+<pre>
+/**
+ * Indicates that the specification of the annotated API element
+ * is preliminary and subject to change.
+ */
+public @interface Preliminary { }
+</pre>
+</blockquote>
+마커 주석에서는, 다음과 같이 괄호를 생략 할 수가 있습니다.
+<blockquote>
+<pre>
+@Preliminary public class TimeTravel { ... }
+</pre>
+</blockquote>
+단일 요소에 의한 주석의 경우, 그 요소는, 다음과 같이 <code>value</code> 라는 이름으로 하지 않으면 안됩니다.
+<blockquote>
+<pre>
+/**
+ * Associates a copyright notice with the annotated API element.
+ */
+public @interface Copyright {
+    String <font color="#009900">value</font>();
+}
+</pre>
+</blockquote>
+요소명이 <code>value</code> 인 단일 요소의 주석에서는, 요소명과 등호 (<code>=</code>)를 생략 할 수 있습니다.
+<blockquote>
+<pre>
+@Copyright("2002 Yoyodyne Propulsion Systems")
+public class OscillationOverthruster { ... }
+</pre>
+</blockquote>
+이상을 조합해, 단순한 주석 베이스의 테스트 시스템를 구축합니다. 우선, 메소드가 테스트용 메소드이며, 테스트 툴로 실행해야 하는 것을 나타내는 마커 주석형이 필요합니다.
+<blockquote>
+<pre>
+import java.lang.annotation. *;
+
+/**
+ * Indicates that the annotated method is a test method.
+ * This annotation should be used only on parameterless static methods.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public <font color="#009900">@interface Test</font> { }
+</pre>
+</blockquote>
+주석형의 선언은, 그 자체가 주석이 되어 있는 것에 주의해 주세요. 이러한 주석은 「메타 주석」이라고 불립니다. 1 번째 (<code>@Retention(RetentionPolicy.RUNTIME)</code>)는, 이 형태의 주석은 VM 에 의해 보관 유지되기 (위해)때문에, 실행시에 리플렉션으로서 읽어낼 수가 있다, 라고 하는 것을 나타내고 있습니다. 2 번째 (<code>@Target(ElementType.METHOD)</code>)는, 이 주석형은 메소드 선언만을 주석 하는 것을 나타내고 있습니다.
+<p>
+다음의 샘플 프로그램에서는, 일부의 메소드가 전술의 인터페이스로 주석 되고 있습니다.
+<blockquote>
+<pre>
+public class Foo {
+    <font color="#009900">@Test</font> public static void m1() { }
+    public static void m2() { }
+    <font color="#009900">@Test</font> public static void m3() {
+        throw new RuntimeException("Boom");
+    }
+    public static void m4() { }
+    <font color="#009900">@Test</font> public static void m5() { }
+    public static void m6() { }
+    <font color="#009900">@Test</font> public static void m7() {
+        throw new RuntimeException("Crash");
+    }
+    public static void m8() { }
+}
+</pre>
+</blockquote>
+다음의 예는 테스트 툴입니다.
+<blockquote>
+<pre>
+import java.lang.reflect. *;
+
+public class RunTests {
+   public static void main(String[] args) throws Exception {
+      int passed = 0, failed = 0;
+      for (Method m : Class.forName(args[0]). getMethods()) {
+         if (<font color="#009900">m.isAnnotationPresent(Test.class)</font>) {
+            try {
+               m.invoke(null);
+               passed++;
+            } catch (Throwable ex) {
+               System.out.printf("Test %s failed: %s %n", m, ex.getCause());
+               failed++;
+            }
+         }
+      }
+      System.out.printf("Passed: %d, Failed %d%n", passed, failed);
+   }
+}
+</pre>
+</blockquote>
+이 툴에서는, 클래스명을 커멘드행 인수로서 취해, 지정한 클래스의 모든 메소드에 대해, 각 메소드를 호출하려고 반복 처리를 실시합니다.  이러한 메소드는 <code>Test</code> 주석형 (상기의 디폴트)으로 주석 되고 있습니다. 메소드가 <code>Test</code> 주석인가 어떤가를 조사하는 리플렉트 조회의 개소를 녹색으로 강조 표시하고 있습니다. 테스트 메소드의 호출로 예외가 throw 되는 경우, 테스트는 실패했다고 보여져 에러 리포트가 출력됩니다. 마지막으로, 테스트의 합격수와 실패수가 나타난 서머리가 출력됩니다. 다음의 예는, 전술의 <code>Foo</code> 프로그램에 대해서 테스트 툴을 실행했을 때의 모습을 나타내고 있습니다.
+<blockquote>
+<pre>
+$ java RunTests Foo
+Test public static void Foo.m3() failed: java.lang.RuntimeException: Boom 
+Test public static void Foo.m7() failed: java.lang.RuntimeException: Crash 
+Passed: 2, Failed 2
+</pre>
+</blockquote>
+이 테스트 툴은 간단한 것입니다만, 주석의 기능을 예시하고 있어, 간단하게 확장해 제한을 해소할 수 있습니다.  <!-- Body text ends here -->
+
+<!-- ============================================================== -->
+
+<HR SIZE=3 NOSHADE>
+
+<TABLE summary="layout" BORDER="0" WIDTH="100%">
+<TR VALIGN=TOP>
+
+<TD>
+   <FONT SIZE="-2">
+
+<A HREF="../../../legal/SMICopyright.html">Copyright &#169;</A>  2004 <A HREF="http://www.sun.com/">Sun Microsystems, Inc. </A> All Rights Reserved.
+
+   </FONT>
+</TD>
+
+<TD ALIGN=RIGHT>
+<IMG SRC="../../../images/sunlogo64x30.gif" ALT="Sun" BORDER=0 WIDTH=64 HEIGHT=30> <BR><BR> <FONT SIZE="+1"><i>Java Software</i></FONT>
+</TD>
+
+</TR>
+</TABLE>
+
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+</BODY>
+</HTML>
